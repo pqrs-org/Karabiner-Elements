@@ -1,6 +1,7 @@
 CONFIGURATION = Release
 
 all:
+	$(MAKE) -C ../../../pkginfo
 	xcodebuild -alltargets -configuration $(CONFIGURATION) build
 
 clean:
