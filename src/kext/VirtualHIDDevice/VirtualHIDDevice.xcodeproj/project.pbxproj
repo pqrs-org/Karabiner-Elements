@@ -1,0 +1,226 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 47;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		34E4502C1D2F3EF300C5AC13 /* diagnostic_macros.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34E4502B1D2F3EF300C5AC13 /* diagnostic_macros.hpp */; };
+		34E450341D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34E450321D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp */; };
+		34E450351D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34E450331D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3491159E1D31263400FE93B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		34D210D61D1637AB005AF893 /* VirtualHIDKeyboard.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualHIDKeyboard.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		34E4502B1D2F3EF300C5AC13 /* diagnostic_macros.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = diagnostic_macros.hpp; path = share/diagnostic_macros.hpp; sourceTree = SOURCE_ROOT; };
+		34E450321D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VirtualHIDKeyboard.cpp; path = VirtualHIDKeyboard/VirtualHIDKeyboard.cpp; sourceTree = SOURCE_ROOT; };
+		34E450331D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VirtualHIDKeyboard.hpp; path = VirtualHIDKeyboard/VirtualHIDKeyboard.hpp; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		34D210D21D1637AB005AF893 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		34D210CC1D1637AA005AF893 = {
+			isa = PBXGroup;
+			children = (
+				34D210D71D1637AB005AF893 /* Products */,
+				34E4502D1D2F41C300C5AC13 /* share */,
+				34D210D81D1637AB005AF893 /* VirtualHIDKeyboard */,
+			);
+			sourceTree = "<group>";
+		};
+		34D210D71D1637AB005AF893 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				34D210D61D1637AB005AF893 /* VirtualHIDKeyboard.kext */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		34D210D81D1637AB005AF893 /* VirtualHIDKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				3491159E1D31263400FE93B7 /* Info.plist */,
+				34E450321D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp */,
+				34E450331D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp */,
+			);
+			path = VirtualHIDKeyboard;
+			sourceTree = "<group>";
+		};
+		34E4502D1D2F41C300C5AC13 /* share */ = {
+			isa = PBXGroup;
+			children = (
+				34E4502B1D2F3EF300C5AC13 /* diagnostic_macros.hpp */,
+			);
+			name = share;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		34D210D31D1637AB005AF893 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34E4502C1D2F3EF300C5AC13 /* diagnostic_macros.hpp in Headers */,
+				34E450351D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		34D210D51D1637AB005AF893 /* VirtualHIDKeyboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 34D210E01D1637AB005AF893 /* Build configuration list for PBXNativeTarget "VirtualHIDKeyboard" */;
+			buildPhases = (
+				34D210D11D1637AB005AF893 /* Sources */,
+				34D210D21D1637AB005AF893 /* Frameworks */,
+				34D210D31D1637AB005AF893 /* Headers */,
+				34D210D41D1637AB005AF893 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VirtualHIDKeyboard;
+			productName = VirtualHIDKeyboard;
+			productReference = 34D210D61D1637AB005AF893 /* VirtualHIDKeyboard.kext */;
+			productType = "com.apple.product-type.kernel-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		34D210CD1D1637AA005AF893 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Takayama Fumihiko";
+				TargetAttributes = {
+					34D210D51D1637AB005AF893 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+				};
+			};
+			buildConfigurationList = 34D210D01D1637AA005AF893 /* Build configuration list for PBXProject "VirtualHIDDevice" */;
+			compatibilityVersion = "Xcode 6.3";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 34D210CC1D1637AA005AF893;
+			productRefGroup = 34D210D71D1637AB005AF893 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				34D210D51D1637AB005AF893 /* VirtualHIDKeyboard */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		34D210D41D1637AB005AF893 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		34D210D11D1637AB005AF893 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34E450341D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		34D210DF1D1637AB005AF893 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		34D210E21D1637AB005AF893 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1.0.0d1;
+				INFOPLIST_FILE = VirtualHIDKeyboard/Info.plist;
+				MODULE_NAME = org.pqrs.driver.VirtualHIDKeyboard;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_BUNDLE_IDENTIFIER = org.pqrs.driver.VirtualHIDKeyboard;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		34D210D01D1637AA005AF893 /* Build configuration list for PBXProject "VirtualHIDDevice" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				34D210DF1D1637AB005AF893 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		34D210E01D1637AB005AF893 /* Build configuration list for PBXNativeTarget "VirtualHIDKeyboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				34D210E21D1637AB005AF893 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 34D210CD1D1637AA005AF893 /* Project object */;
+}
