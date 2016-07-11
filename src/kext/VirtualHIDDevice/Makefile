@@ -1,7 +1,7 @@
 CONFIGURATION = Release
 
 all:
-	$(MAKE) -C ../../../pkginfo
+	../../../scripts/setversion.sh
 	xcodebuild -alltargets -configuration $(CONFIGURATION) build
 
 clean:
