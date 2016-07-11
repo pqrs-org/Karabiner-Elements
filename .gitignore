@@ -1,0 +1,14 @@
+.DS_Store
+*.pkg/
+*.zip
+*.dmg
+*.o
+*.tmp
+a.out
+pkgroot/
+build/
+xcuserdata/
+*.mode1
+*.mode1v3
+*.pbxuser
+*.xccheckout
