@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-gui-script minSpecVersion="1">
+  <title>Karabiner PKGVERSION</title>
+  <volume-check>
+    <allowed-os-versions>
+      <os-version min="10.9"/>
+    </allowed-os-versions>
+  </volume-check>
+  <!--
+      Do not specify <domains>.
+      Installer does not show "OS X version X.Y.Z or later is required" message when <domains> exists.
+      <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true" />
+  -->
+
+  <pkg-ref id="org.pqrs.driver.Karabiner"/>
+  <options customize="never" require-scripts="false"/>
+  <choices-outline>
+    <line choice="default">
+      <line choice="org.pqrs.driver.Karabiner"/>
+    </line>
+  </choices-outline>
+  <choice id="default"/>
+  <choice id="org.pqrs.driver.Karabiner" visible="false">
+    <pkg-ref id="org.pqrs.driver.Karabiner"/>
+  </choice>
+  <pkg-ref id="org.pqrs.driver.Karabiner" version="PKGVERSION">Installer.pkg</pkg-ref>
+</installer-gui-script>
