@@ -23,10 +23,7 @@ find $basedir/../../* -name 'Info.plist.tmpl' | while read f; do
     dirname=$(dirname "$f")
     dirbasename=$(basename "$dirname")
     case "$dirbasename/$basename" in
-        pkginfo/Info.plist.tmpl)
-            "$basedir/plist.rb" CFBundleIconFile < "$f" || exit 1
-            ;;
-        kext/Info.plist.tmpl)
+        VirtualHIDKeyboard/Info.plist.tmpl)
             "$basedir/plist.rb" CFBundleIconFile < "$f" || exit 1
             ;;
         *)
