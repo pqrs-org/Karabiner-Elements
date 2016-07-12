@@ -12,7 +12,7 @@ public:
 
   ~human_interface_device(void) {
     if (grabbed_) {
-      ungrab();
+      ungrab_queue();
     } else {
       close();
     }
@@ -32,6 +32,7 @@ public:
     return IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
   }
 
+#if 0
   void grab(IOHIDReportCallback _Nonnull report_callback, void* _Nullable report_callback_context) {
     if (!device_) {
       return;
@@ -79,6 +80,77 @@ public:
     if (report_buffer_) {
       delete[] report_buffer_;
       report_buffer_size_ = 0;
+    }
+
+    grabbed_ = false;
+  }
+#endif
+
+  void grab_queue(IOHIDCallback _Nonnull value_available_callback, void* _Nullable callback_context) {
+    if (!device_) {
+      return;
+    }
+
+    if (grabbed_) {
+      ungrab_queue();
+    }
+
+    IOReturn r = open(kIOHIDOptionsTypeSeizeDevice);
+    if (r != kIOReturnSuccess) {
+      std::cerr << "Failed to IOHIDDeviceOpen: " << std::hex << r << std::endl;
+      return;
+    }
+
+    const CFIndex depth = 1024;
+    queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
+    if (queue_) {
+      // Add all elements
+      auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone);
+      for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
+        IOHIDQueueAddElement(queue_, static_cast<IOHIDElementRef>(const_cast<void*>(CFArrayGetValueAtIndex(elements, i))));
+      }
+
+      IOHIDQueueRegisterValueAvailableCallback(queue_, value_available_callback, callback_context);
+
+      IOHIDQueueStart(queue_);
+    }
+
+    IOHIDDeviceScheduleWithRunLoop(device_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    IOHIDQueueScheduleWithRunLoop(queue_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+
+    grabbed_ = true;
+  }
+
+  void ungrab_queue(void) {
+    if (!device_) {
+      return;
+    }
+
+    if (!grabbed_) {
+      return;
+    }
+
+    IOHIDQueueUnscheduleFromRunLoop(queue_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+
+    if (queue_) {
+      IOHIDQueueRegisterValueAvailableCallback(queue_, nullptr, nullptr);
+      IOHIDQueueStop(queue_);
+
+      // Remove all elements
+      auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone);
+      for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
+        IOHIDQueueRemoveElement(queue_, static_cast<IOHIDElementRef>(const_cast<void*>(CFArrayGetValueAtIndex(elements, i))));
+      }
+
+      CFRelease(queue_);
+      queue_ = nullptr;
+    }
+
+    IOReturn r = close();
+    if (r != kIOReturnSuccess) {
+      std::cerr << "Failed to IOHIDDeviceClose: " << std::hex << r << std::endl;
+      return;
     }
 
     grabbed_ = false;

@@ -84,6 +84,7 @@ private:
       }
     }
 
+#if 0
     // kHIDUsage_GD_Mouse
     {
       auto device_matching_dictionary = create_device_matching_dictionary(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
@@ -92,6 +93,7 @@ private:
         CFRelease(device_matching_dictionary);
       }
     }
+#endif
 
     return device_matching_dictionaries;
   }
@@ -129,7 +131,7 @@ private:
     } else {
       //if (dev->get_manufacturer() != "pqrs.org") {
       if (dev->get_manufacturer() == "Apple Inc.") {
-        dev->grab(input_report_callback, self);
+        dev->grab_queue(queue_value_available_callback, self);
       }
     }
 
@@ -162,6 +164,21 @@ private:
     }
   }
 
+  static void queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
+    std::cout << "queue_value_available_callback" << std::endl;
+
+    auto queue = static_cast<IOHIDQueueRef>(sender);
+    while (true) {
+      auto value = IOHIDQueueCopyNextValueWithTimeout(queue, 0.);
+      if (!value) {
+        break;
+      }
+
+      std::cout << "value arrived" << std::endl;
+      CFRelease(value);
+    }
+  }
+
   static void input_report_callback(
       void* _Nullable context,
       IOReturn result,
@@ -189,7 +206,7 @@ private:
       uint8_t* new_report_buffer = new uint8_t[new_report_buffer_length];
       memset(new_report_buffer, 0, new_report_buffer_length);
 
-      if (reportLength == 8) {
+      if (reportLength == 9) {
         // Generic keyboard report descriptor
         memcpy(new_report_buffer, report, new_report_buffer_length);
       } else if (reportLength == 10) {
