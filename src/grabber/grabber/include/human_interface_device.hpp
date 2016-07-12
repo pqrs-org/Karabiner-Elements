@@ -3,8 +3,6 @@
 class human_interface_device final {
 public:
   human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
-                                                           report_buffer_(nullptr),
-                                                           report_buffer_size_(0),
                                                            queue_(nullptr),
                                                            grabbed_(false) {
     CFRetain(device_);
@@ -12,7 +10,7 @@ public:
 
   ~human_interface_device(void) {
     if (grabbed_) {
-      ungrab_queue();
+      ungrab();
     } else {
       close();
     }
@@ -32,67 +30,13 @@ public:
     return IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
   }
 
-#if 0
-  void grab(IOHIDReportCallback _Nonnull report_callback, void* _Nullable report_callback_context) {
+  void grab(IOHIDCallback _Nonnull value_available_callback, void* _Nullable callback_context) {
     if (!device_) {
       return;
     }
 
     if (grabbed_) {
       ungrab();
-    }
-
-    IOReturn r = open(kIOHIDOptionsTypeSeizeDevice);
-    if (r != kIOReturnSuccess) {
-      std::cerr << "Failed to IOHIDDeviceOpen: " << std::hex << r << std::endl;
-      return;
-    }
-
-    report_buffer_size_ = get_max_input_report_size();
-    if (report_buffer_size_ > 0) {
-      report_buffer_ = new uint8_t[report_buffer_size_];
-      IOHIDDeviceRegisterInputReportCallback(device_, report_buffer_, report_buffer_size_, report_callback, report_callback_context);
-    }
-
-    IOHIDDeviceScheduleWithRunLoop(device_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-
-    grabbed_ = true;
-  }
-
-  void ungrab(void) {
-    if (!device_) {
-      return;
-    }
-
-    if (!grabbed_) {
-      return;
-    }
-
-    IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-    IOHIDDeviceRegisterInputReportCallback(device_, nullptr, 0, nullptr, nullptr);
-
-    IOReturn r = close();
-    if (r != kIOReturnSuccess) {
-      std::cerr << "Failed to IOHIDDeviceClose: " << std::hex << r << std::endl;
-      return;
-    }
-
-    if (report_buffer_) {
-      delete[] report_buffer_;
-      report_buffer_size_ = 0;
-    }
-
-    grabbed_ = false;
-  }
-#endif
-
-  void grab_queue(IOHIDCallback _Nonnull value_available_callback, void* _Nullable callback_context) {
-    if (!device_) {
-      return;
-    }
-
-    if (grabbed_) {
-      ungrab_queue();
     }
 
     IOReturn r = open(kIOHIDOptionsTypeSeizeDevice);
@@ -121,7 +65,7 @@ public:
     grabbed_ = true;
   }
 
-  void ungrab_queue(void) {
+  void ungrab(void) {
     if (!device_) {
       return;
     }
@@ -247,8 +191,6 @@ private:
   }
 
   IOHIDDeviceRef _Nonnull device_;
-  uint8_t* _Nullable report_buffer_;
-  CFIndex report_buffer_size_;
   IOHIDQueueRef _Nullable queue_;
 
   bool grabbed_;
