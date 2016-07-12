@@ -9,7 +9,7 @@ sudo rm -rf $targetdir
 mkdir $targetdir
 
 cp -R build/Release/VirtualHIDKeyboard.kext $targetdir/VirtualHIDKeyboard.signed.kext
-bash ../../script/codesign.sh $targetdir
+bash ../../../scripts/codesign.sh $targetdir
 sudo chown -R root:wheel $targetdir
 
 sudo kextutil -t $targetdir/VirtualHIDKeyboard.signed.kext
