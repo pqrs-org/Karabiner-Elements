@@ -126,11 +126,11 @@ private:
     if (dev->get_serial_number_string() == "org.pqrs.driver.VirtualHIDKeyboard") {
       dev->open();
       self->virtual_keyboard_ = dev;
-    }
-
-    //if (dev->get_manufacturer() != "pqrs.org") {
-    if (dev->get_manufacturer() == "Apple Inc.") {
-      dev->grab(input_report_callback, self);
+    } else {
+      //if (dev->get_manufacturer() != "pqrs.org") {
+      if (dev->get_manufacturer() == "Apple Inc.") {
+        dev->grab(input_report_callback, self);
+      }
     }
 
     (self->hids_)[device] = dev;
@@ -174,18 +174,46 @@ private:
       return;
     }
 
-    std::cout << "input_report_callback" << std::endl;
-    std::cout << "  type:" << type << std::endl;
-    std::cout << "  reportID:" << reportID << std::endl;
-    for (CFIndex i = 0; i < reportLength; ++i) {
-      std::cout << "  report[" << i << "]:0x" << std::hex << static_cast<int>(report[i]) << std::endl;
-    }
-
     if (result == kIOReturnSuccess) {
       auto self = static_cast<event_grabber*>(context);
 
+      std::cout << "input_report_callback" << std::endl;
+      std::cout << "  type:" << type << std::endl;
+      std::cout << "  reportID:" << reportID << std::endl;
+      std::cout << "  reportLength:" << reportLength << std::endl;
+      for (CFIndex i = 0; i < reportLength; ++i) {
+        std::cout << "  report[" << i << "]:0x" << std::hex << static_cast<int>(report[i]) << std::endl;
+      }
+
+      CFIndex new_report_buffer_length = 8;
+      uint8_t* new_report_buffer = new uint8_t[new_report_buffer_length];
+      memset(new_report_buffer, 0, new_report_buffer_length);
+
+      if (reportLength == 8) {
+        // Generic keyboard report descriptor
+        memcpy(new_report_buffer, report, new_report_buffer_length);
+      } else if (reportLength == 10) {
+        // Apple keyboard report descriptor
+        new_report_buffer[0] = report[1];
+        new_report_buffer[2] = report[3];
+        new_report_buffer[3] = report[4];
+        new_report_buffer[4] = report[5];
+        new_report_buffer[5] = report[6];
+        new_report_buffer[6] = report[7];
+        new_report_buffer[7] = report[8];
+      }
+
+      for (CFIndex i = 2; i < 8; ++i) {
+        if (new_report_buffer[i] == kHIDUsage_KeyboardEscape) {
+          exit(0);
+        }
+        if (new_report_buffer[i] == kHIDUsage_KeyboardCapsLock) {
+          new_report_buffer[i] = kHIDUsage_KeyboardEscape;
+        }
+      }
+
       if (auto vk = self->virtual_keyboard_.lock()) {
-        IOReturn r = vk->set_report(type, reportID, report, reportLength);
+        IOReturn r = vk->set_report(type, reportID, new_report_buffer, new_report_buffer_length);
         std::cout << "IOReturn " << r << std::endl;
       }
     }
