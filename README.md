@@ -3,7 +3,7 @@
 
 # Karabiner-Elements
 
-Karabiner-Elements is the subset of next generation Karabiner for macOS Sierra.
+Karabiner-Elements is the subset of the next generation Karabiner for macOS Sierra.
 
 ## Project Status
 
