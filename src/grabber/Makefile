@@ -2,7 +2,6 @@ CONFIGURATION = Release
 
 all:
 	xcodebuild -alltargets -configuration $(CONFIGURATION) build
-	codesign --force --sign '8ECD43BA902B40380BD84C4512385E6C5EB3F160' build/Release/grabber
 
 clean:
 	rm -rf build
