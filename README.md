@@ -3,4 +3,12 @@
 
 # Karabiner-Elements
 
-Karabiner-Elements is a subset of Karabiner.
+Karabiner-Elements is the subset of next generation Karabiner for macOS Sierra.
+
+## Project Status
+
+Karabiner-Elements is an early prototyping stage.
+Do not use Karabiner-Elements on your machine at the moment.
+
+Please use Karabiner on OS X 10.11.
+https://pqrs.org/osx/karabiner/
