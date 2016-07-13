@@ -165,13 +165,26 @@ private:
   }
 
   static void queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
-    std::cout << "queue_value_available_callback" << std::endl;
-
     auto queue = static_cast<IOHIDQueueRef>(sender);
     while (true) {
       auto value = IOHIDQueueCopyNextValueWithTimeout(queue, 0.);
       if (!value) {
         break;
+      }
+
+      auto element = IOHIDValueGetElement(value);
+      auto integerValue = IOHIDValueGetIntegerValue(value);
+
+      if (element) {
+        auto usagePage = IOHIDElementGetUsagePage(element);
+        auto usage = IOHIDElementGetUsage(element);
+
+        std::cout << "element" << std::endl
+                  << "  usagePage:0x" << std::hex << usagePage << std::endl
+                  << "  usage:0x" << std::hex << usage << std::endl
+                  << "  type:" << IOHIDElementGetType(element) << std::endl
+                  << "  integerValue:" << integerValue << std::endl
+          ;
       }
 
       std::cout << "value arrived" << std::endl;
