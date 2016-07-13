@@ -102,48 +102,47 @@ public:
 
   long get_max_input_report_size(void) const {
     long value = 0;
-    get_long_property_(CFSTR(kIOHIDMaxInputReportSizeKey), value);
+    get_long_property(CFSTR(kIOHIDMaxInputReportSizeKey), value);
     return value;
   }
 
   long get_vendor_id(void) const {
     long value = 0;
-    get_long_property_(CFSTR(kIOHIDVendorIDKey), value);
+    get_long_property(CFSTR(kIOHIDVendorIDKey), value);
     return value;
   }
 
   long get_product_id(void) const {
     long value = 0;
-    get_long_property_(CFSTR(kIOHIDProductIDKey), value);
+    get_long_property(CFSTR(kIOHIDProductIDKey), value);
     return value;
   }
 
   long get_location_id(void) const {
     long value = 0;
-    get_long_property_(CFSTR(kIOHIDLocationIDKey), value);
+    get_long_property(CFSTR(kIOHIDLocationIDKey), value);
     return value;
   }
 
   std::string get_manufacturer(void) const {
     std::string value;
-    get_string_property_(CFSTR(kIOHIDManufacturerKey), value);
+    get_string_property(CFSTR(kIOHIDManufacturerKey), value);
     return value;
   }
 
   std::string get_product(void) const {
     std::string value;
-    get_string_property_(CFSTR(kIOHIDProductKey), value);
+    get_string_property(CFSTR(kIOHIDProductKey), value);
     return value;
   }
 
   std::string get_serial_number_string(void) const {
     std::string value;
-    get_string_property_(CFSTR(kIOHIDSerialNumberKey), value);
+    get_string_property(CFSTR(kIOHIDSerialNumberKey), value);
     return value;
   }
 
-private:
-  bool get_long_property_(const CFStringRef _Nonnull key, long& value) const {
+  bool get_long_property(const CFStringRef _Nonnull key, long& value) const {
     if (!device_) {
       return false;
     }
@@ -160,7 +159,7 @@ private:
     return CFNumberGetValue(static_cast<CFNumberRef>(property), kCFNumberLongType, &value);
   }
 
-  bool get_string_property_(const CFStringRef _Nonnull key, std::string& value) const {
+  bool get_string_property(const CFStringRef _Nonnull key, std::string& value) const {
     if (!device_) {
       return false;
     }
@@ -183,6 +182,7 @@ private:
     return true;
   }
 
+private:
   IOHIDDeviceRef _Nonnull device_;
   IOHIDQueueRef _Nullable queue_;
 
