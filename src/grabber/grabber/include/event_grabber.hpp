@@ -1,9 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <string>
-#include <unordered_map>
-
 #include "human_interface_device.hpp"
 
 class event_grabber final {
@@ -85,6 +81,15 @@ private:
     }
 
 #if 0
+    // kHIDUsage_Csmr_ConsumerControl
+    {
+      auto device_matching_dictionary = create_device_matching_dictionary(kHIDPage_Consumer, kHIDUsage_Csmr_ConsumerControl);
+      if (device_matching_dictionary) {
+        CFArrayAppendValue(device_matching_dictionaries, device_matching_dictionary);
+        CFRelease(device_matching_dictionary);
+      }
+    }
+
     // kHIDUsage_GD_Mouse
     {
       auto device_matching_dictionary = create_device_matching_dictionary(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
@@ -122,11 +127,14 @@ private:
               << "  product_id:0x" << std::hex << dev->get_product_id() << std::endl
               << "  location_id:0x" << std::hex << dev->get_location_id() << std::endl
               << "  serial_number:" << dev->get_serial_number_string() << std::endl
-              << "  " << dev->get_manufacturer() << std::endl
-              << "  " << dev->get_product() << std::endl;
+              << "  manufacturer:" << dev->get_manufacturer() << std::endl
+              << "  product:" << dev->get_product() << std::endl
+              << "  transport:" << dev->get_transport() << std::endl;
 
     if (dev->get_serial_number_string() == "org.pqrs.driver.VirtualHIDKeyboard") {
       dev->open();
+      dev->schedule();
+      std::cout << "set virtual_keyboard_ " << std::endl;
       self->virtual_keyboard_ = dev;
     } else {
       //if (dev->get_manufacturer() != "pqrs.org") {
@@ -165,7 +173,9 @@ private:
   }
 
   static void queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
+    auto self = static_cast<event_grabber*>(context);
     auto queue = static_cast<IOHIDQueueRef>(sender);
+
     while (true) {
       auto value = IOHIDQueueCopyNextValueWithTimeout(queue, 0.);
       if (!value) {
@@ -173,21 +183,26 @@ private:
       }
 
       auto element = IOHIDValueGetElement(value);
-      auto integerValue = IOHIDValueGetIntegerValue(value);
-
       if (element) {
-        auto usagePage = IOHIDElementGetUsagePage(element);
+        auto usage_page = IOHIDElementGetUsagePage(element);
         auto usage = IOHIDElementGetUsage(element);
 
         std::cout << "element" << std::endl
-                  << "  usagePage:0x" << std::hex << usagePage << std::endl
+                  << "  usage_page:0x" << std::hex << usage_page << std::endl
                   << "  usage:0x" << std::hex << usage << std::endl
                   << "  type:" << IOHIDElementGetType(element) << std::endl
-                  << "  integerValue:" << integerValue << std::endl
-          ;
+                  << "  length:" << IOHIDValueGetLength(value) << std::endl;
+
+        if (kHIDUsage_KeyboardA <= usage) {
+          if (self) {
+            auto vk = (self->virtual_keyboard_).lock();
+            if (vk) {
+              std::cout << vk->set_value(usage_page, usage, value) << std::endl;
+            }
+          }
+        }
       }
 
-      std::cout << "value arrived" << std::endl;
       CFRelease(value);
     }
   }
