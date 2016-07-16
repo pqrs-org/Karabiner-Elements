@@ -1,3 +1,16 @@
+# The difference of event grabbing methods
+
+## CGEventTapCreate
+
+`CGEventTapCreate` is a limited approach.<br />
+It does not work with Secure Keyboard Entry even if we use `kCGHIDEventTap` and root privillege.<br />
+Thus, it does not work in Terminal.<br />
+You can confirm this behavior in `appendix/eventtap`.
+
+## IOKit
+
+IOKit allows you to read raw HID input events from kernel.
+
 # The limitation of `device reports`
 
 ## Apple devices reports
