@@ -9,7 +9,28 @@ You can confirm this behavior in `appendix/eventtap`.
 
 ## IOKit
 
-IOKit allows you to read raw HID input events from kernel.
+IOKit allows you to read raw HID input events from kernel.<br />
+The highest layer is IOHIDQueue which provides us the HID values.
+
+# The difference of event posting methods
+
+## IOKit device report
+
+It requires posting HID events.<br />
+The IOHIKeyboard processes the reports by passing reports to `handleReport`.
+
+## IOKit device value
+
+It requires posting HID events.<br />
+
+## IOHIDPostEvent
+
+It requires posting mac events.<br />
+
+## CGEventCreate
+
+It requires posting mac events.<br />
+
 
 # The limitation of `device reports`
 
