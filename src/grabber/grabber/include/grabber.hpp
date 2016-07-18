@@ -13,3 +13,4 @@
 
 #include "event_grabber.hpp"
 #include "human_interface_device.hpp"
+#include "hid_report.hpp"
