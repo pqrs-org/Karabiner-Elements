@@ -23,6 +23,10 @@ The IOHIKeyboard processes the reports by passing reports to `handleReport`.
 
 It requires posting HID events.<br />
 
+## IOKit call IOHIKeyboard::dispatchKeyboardEvent
+
+It requires posting mac events.<br />
+
 ## IOHIDPostEvent
 
 It requires posting mac events.<br />
