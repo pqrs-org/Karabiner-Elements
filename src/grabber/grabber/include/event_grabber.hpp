@@ -200,16 +200,18 @@ private:
           exit(0);
         }
 
-        if (usage == kHIDUsage_KeyboardCapsLock) {
-          if (self) {
-            auto vk = (self->virtual_keyboard_).lock();
-            if (vk) {
-              hid_report::keyboard_input report;
-              if (IOHIDValueGetIntegerValue(value)) {
+        if (self) {
+          auto vk = (self->virtual_keyboard_).lock();
+          if (vk) {
+            hid_report::keyboard_input report;
+            if (IOHIDValueGetIntegerValue(value)) {
+              if (usage == kHIDUsage_KeyboardCapsLock) {
                 report.keys[0] = kHIDUsage_KeyboardSpacebar;
+              } else {
+                report.keys[0] = usage;
               }
-              vk->set_report(kIOHIDReportTypeInput, 0, reinterpret_cast<const uint8_t*>(&report), sizeof(report));
             }
+            vk->set_report(kIOHIDReportTypeInput, 0, reinterpret_cast<const uint8_t*>(&report), sizeof(report));
           }
         }
 
