@@ -111,7 +111,7 @@ OSNumber* org_pqrs_driver_VirtualHIDKeyboard::newLocationIDNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
 }
 
-#if 0
+#if 1
 IOReturn org_pqrs_driver_VirtualHIDKeyboard::setReport(IOMemoryDescriptor* report, IOHIDReportType reportType, IOOptionBits options) {
   IOReturn r = handleReport(report, reportType, options);
   return r;
