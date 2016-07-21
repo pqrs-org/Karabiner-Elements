@@ -133,6 +133,7 @@ private:
 
     if (dev->get_serial_number_string() == "org.pqrs.driver.VirtualHIDKeyboard") {
       dev->open();
+      dev->create_transaction();
       dev->schedule();
       std::cout << "set virtual_keyboard_ " << std::endl;
       self->virtual_keyboard_ = dev;
