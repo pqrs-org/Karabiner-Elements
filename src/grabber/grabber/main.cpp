@@ -1,4 +1,3 @@
-#include <iostream>
 #include "grabber.hpp"
 
 int main(int argc, const char* argv[]) {
