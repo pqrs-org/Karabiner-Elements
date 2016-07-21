@@ -1,3 +1,9 @@
+# About security
+
+Virtual HID devices must not allow to post input events from remote session.
+It causes the current session will be controled by another user.
+
+
 # The difference of event grabbing methods
 
 ## CGEventTapCreate
