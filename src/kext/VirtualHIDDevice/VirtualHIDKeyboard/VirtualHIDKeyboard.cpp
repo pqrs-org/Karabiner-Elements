@@ -59,17 +59,12 @@ bool org_pqrs_driver_VirtualHIDKeyboard::start(IOService* provider) {
     }
   }
 
-  setProperty("IOUserClientClass", "org_pqrs_driver_VirtualHIDKeyboard_UserClient");
-
   // http://lists.apple.com/archives/usb/2005/Mar/msg00122.html
   setProperty("HIDDefaultBehavior", "Keyboard");
 
   if (!super::start(provider)) {
     return false;
   }
-
-  // Publish ourselves so clients can find us
-  registerService();
 
   return true;
 }
