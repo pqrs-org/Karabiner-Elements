@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hid_report.hpp"
 #include "human_interface_device.hpp"
 
 class event_grabber final {
@@ -192,13 +193,31 @@ private:
                   << "  usage_page:0x" << std::hex << usage_page << std::endl
                   << "  usage:0x" << std::hex << usage << std::endl
                   << "  type:" << IOHIDElementGetType(element) << std::endl
-                  << "  length:" << IOHIDValueGetLength(value) << std::endl;
+                  << "  length:" << IOHIDValueGetLength(value) << std::endl
+                  << "  integer_value:" << IOHIDValueGetIntegerValue(value) << std::endl;
+
+        if (usage == kHIDUsage_KeyboardEscape) {
+          exit(0);
+        }
+
+        if (usage == kHIDUsage_KeyboardCapsLock) {
+          if (self) {
+            auto vk = (self->virtual_keyboard_).lock();
+            if (vk) {
+              hid_report::keyboard_input report;
+              if (IOHIDValueGetIntegerValue(value)) {
+                report.keys[0] = kHIDUsage_KeyboardSpacebar;
+              }
+              vk->set_report(kIOHIDReportTypeInput, 0, reinterpret_cast<const uint8_t*>(&report), sizeof(report));
+            }
+          }
+        }
 
         if (kHIDUsage_KeyboardA <= usage) {
           if (self) {
             auto vk = (self->virtual_keyboard_).lock();
             if (vk) {
-              std::cout << vk->set_value(usage_page, usage, value) << std::endl;
+              //std::cout << vk->set_value(usage_page, usage, value) << std::endl;
             }
           }
         }
