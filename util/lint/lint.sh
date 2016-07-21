@@ -26,6 +26,9 @@ find $basedir/../../* -name 'Info.plist.tmpl' | while read f; do
         VirtualHIDKeyboard/Info.plist.tmpl)
             "$basedir/plist.rb" CFBundleIconFile < "$f" || exit 1
             ;;
+        VirtualHIDManager/Info.plist.tmpl)
+            "$basedir/plist.rb" CFBundleIconFile < "$f" || exit 1
+            ;;
         *)
             "$basedir/plist.rb" < "$f" || exit 1
             ;;
