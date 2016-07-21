@@ -33,6 +33,8 @@
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E450281D2AB18B00C5AC13 /* event_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_grabber.hpp; path = include/event_grabber.hpp; sourceTree = "<group>"; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		34ECF2971D3FCB880004D3B8 /* user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = user_client.hpp; path = include/user_client.hpp; sourceTree = "<group>"; };
+		34ECF29A1D3FD4E30004D3B8 /* user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = user_client_method.hpp; path = ../../share/user_client_method.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				3495C6811D3CE65C007CB9E7 /* hid_report.hpp */,
+				34ECF29A1D3FD4E30004D3B8 /* user_client_method.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -98,6 +101,7 @@
 				34E450281D2AB18B00C5AC13 /* event_grabber.hpp */,
 				3495C67E1D368FF0007CB9E7 /* grabber.hpp */,
 				349115941D2F754500FE93B7 /* human_interface_device.hpp */,
+				34ECF2971D3FCB880004D3B8 /* user_client.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
