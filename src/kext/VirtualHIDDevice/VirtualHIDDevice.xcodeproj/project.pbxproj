@@ -7,17 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		34E4502C1D2F3EF300C5AC13 /* diagnostic_macros.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34E4502B1D2F3EF300C5AC13 /* diagnostic_macros.hpp */; };
-		34E450341D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34E450321D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp */; };
-		34E450351D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34E450331D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp */; };
+		3495C6891D3D8757007CB9E7 /* hid_report.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3495C6881D3D8757007CB9E7 /* hid_report.hpp */; };
+		3495C6931D3D8CBE007CB9E7 /* DiagnosticMacros.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3495C6921D3D8CBE007CB9E7 /* DiagnosticMacros.hpp */; };
+		3495C6961D3D8CCA007CB9E7 /* VirtualHIDKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3495C6941D3D8CCA007CB9E7 /* VirtualHIDKeyboard.cpp */; };
+		3495C6971D3D8CCA007CB9E7 /* VirtualHIDKeyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3495C6951D3D8CCA007CB9E7 /* VirtualHIDKeyboard.hpp */; };
+		3495C69A1D3D8CD1007CB9E7 /* UserClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3495C6981D3D8CD1007CB9E7 /* UserClient.cpp */; };
+		3495C69B1D3D8CD1007CB9E7 /* UserClient.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3495C6991D3D8CD1007CB9E7 /* UserClient.hpp */; };
+		34ECF2991D3FD31B0004D3B8 /* user_client_method.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34ECF2981D3FD31B0004D3B8 /* user_client_method.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3491159E1D31263400FE93B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3495C6881D3D8757007CB9E7 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../share/hid_report.hpp; sourceTree = "<group>"; };
+		3495C6921D3D8CBE007CB9E7 /* DiagnosticMacros.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = DiagnosticMacros.hpp; path = share/DiagnosticMacros.hpp; sourceTree = "<group>"; };
+		3495C6941D3D8CCA007CB9E7 /* VirtualHIDKeyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualHIDKeyboard.cpp; sourceTree = "<group>"; };
+		3495C6951D3D8CCA007CB9E7 /* VirtualHIDKeyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VirtualHIDKeyboard.hpp; sourceTree = "<group>"; };
+		3495C6981D3D8CD1007CB9E7 /* UserClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserClient.cpp; sourceTree = "<group>"; };
+		3495C6991D3D8CD1007CB9E7 /* UserClient.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UserClient.hpp; sourceTree = "<group>"; };
 		34D210D61D1637AB005AF893 /* VirtualHIDKeyboard.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualHIDKeyboard.kext; sourceTree = BUILT_PRODUCTS_DIR; };
-		34E4502B1D2F3EF300C5AC13 /* diagnostic_macros.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = diagnostic_macros.hpp; path = share/diagnostic_macros.hpp; sourceTree = SOURCE_ROOT; };
-		34E450321D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VirtualHIDKeyboard.cpp; path = VirtualHIDKeyboard/VirtualHIDKeyboard.cpp; sourceTree = SOURCE_ROOT; };
-		34E450331D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VirtualHIDKeyboard.hpp; path = VirtualHIDKeyboard/VirtualHIDKeyboard.hpp; sourceTree = SOURCE_ROOT; };
+		34ECF2981D3FD31B0004D3B8 /* user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = user_client_method.hpp; path = ../../share/user_client_method.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,8 +60,10 @@
 			isa = PBXGroup;
 			children = (
 				3491159E1D31263400FE93B7 /* Info.plist */,
-				34E450321D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp */,
-				34E450331D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp */,
+				3495C6981D3D8CD1007CB9E7 /* UserClient.cpp */,
+				3495C6991D3D8CD1007CB9E7 /* UserClient.hpp */,
+				3495C6941D3D8CCA007CB9E7 /* VirtualHIDKeyboard.cpp */,
+				3495C6951D3D8CCA007CB9E7 /* VirtualHIDKeyboard.hpp */,
 			);
 			path = VirtualHIDKeyboard;
 			sourceTree = "<group>";
@@ -61,7 +71,9 @@
 		34E4502D1D2F41C300C5AC13 /* share */ = {
 			isa = PBXGroup;
 			children = (
-				34E4502B1D2F3EF300C5AC13 /* diagnostic_macros.hpp */,
+				3495C6921D3D8CBE007CB9E7 /* DiagnosticMacros.hpp */,
+				3495C6881D3D8757007CB9E7 /* hid_report.hpp */,
+				34ECF2981D3FD31B0004D3B8 /* user_client_method.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -73,8 +85,11 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34E4502C1D2F3EF300C5AC13 /* diagnostic_macros.hpp in Headers */,
-				34E450351D2F41F400C5AC13 /* VirtualHIDKeyboard.hpp in Headers */,
+				3495C6931D3D8CBE007CB9E7 /* DiagnosticMacros.hpp in Headers */,
+				3495C6891D3D8757007CB9E7 /* hid_report.hpp in Headers */,
+				3495C69B1D3D8CD1007CB9E7 /* UserClient.hpp in Headers */,
+				3495C6971D3D8CCA007CB9E7 /* VirtualHIDKeyboard.hpp in Headers */,
+				34ECF2991D3FD31B0004D3B8 /* user_client_method.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,7 +160,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34E450341D2F41F400C5AC13 /* VirtualHIDKeyboard.cpp in Sources */,
+				3495C6961D3D8CCA007CB9E7 /* VirtualHIDKeyboard.cpp in Sources */,
+				3495C69A1D3D8CD1007CB9E7 /* UserClient.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

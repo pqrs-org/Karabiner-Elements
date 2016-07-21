@@ -59,12 +59,19 @@ bool org_pqrs_driver_VirtualHIDKeyboard::start(IOService* provider) {
     }
   }
 
+  setProperty("IOUserClientClass", "org_pqrs_driver_VirtualHIDKeyboard_UserClient");
+
   // http://lists.apple.com/archives/usb/2005/Mar/msg00122.html
   setProperty("HIDDefaultBehavior", "Keyboard");
 
-  setProperty(kIOHIDVirtualHIDevice, kOSBooleanTrue);
+  if (!super::start(provider)) {
+    return false;
+  }
 
-  return super::start(provider);
+  // Publish ourselves so clients can find us
+  registerService();
+
+  return true;
 }
 
 OSString* org_pqrs_driver_VirtualHIDKeyboard::newManufacturerString() const {
@@ -104,7 +111,9 @@ OSNumber* org_pqrs_driver_VirtualHIDKeyboard::newLocationIDNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
 }
 
+#if 0
 IOReturn org_pqrs_driver_VirtualHIDKeyboard::setReport(IOMemoryDescriptor* report, IOHIDReportType reportType, IOOptionBits options) {
   IOReturn r = handleReport(report, reportType, options);
   return r;
 }
+#endif

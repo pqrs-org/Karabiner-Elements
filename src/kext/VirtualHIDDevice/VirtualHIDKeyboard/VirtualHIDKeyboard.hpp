@@ -1,6 +1,6 @@
 #pragma once
 
-#include "diagnostic_macros.hpp"
+#include "DiagnosticMacros.hpp"
 
 BEGIN_IOKIT_INCLUDE;
 #include <IOKit/hid/IOHIDDevice.h>
@@ -21,5 +21,4 @@ public:
   virtual IOReturn newReportDescriptor(IOMemoryDescriptor** descriptor) const override;
   virtual OSString* newSerialNumberString() const override;
   virtual OSNumber* newLocationIDNumber() const override;
-  virtual IOReturn setReport(IOMemoryDescriptor* report, IOHIDReportType reportType, IOOptionBits options = 0) override;
 };
