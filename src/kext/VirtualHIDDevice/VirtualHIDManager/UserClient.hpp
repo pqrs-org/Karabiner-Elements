@@ -3,7 +3,7 @@
 #include "VirtualHIDKeyboard.hpp"
 #include "VirtualHIDManager.hpp"
 #include "hid_report.hpp"
-#include "user_client_method.hpp"
+#include "virtual_hid_manager_user_client_method.hpp"
 
 class org_pqrs_driver_VirtualHIDManager_UserClient final : public IOUserClient {
   OSDeclareDefaultStructors(org_pqrs_driver_VirtualHIDManager_UserClient);

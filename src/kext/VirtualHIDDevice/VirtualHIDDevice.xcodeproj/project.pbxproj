@@ -15,7 +15,7 @@
 		3495C6931D3D8CBE007CB9E7 /* DiagnosticMacros.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3495C6921D3D8CBE007CB9E7 /* DiagnosticMacros.hpp */; };
 		3495C6961D3D8CCA007CB9E7 /* VirtualHIDKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3495C6941D3D8CCA007CB9E7 /* VirtualHIDKeyboard.cpp */; };
 		3495C6971D3D8CCA007CB9E7 /* VirtualHIDKeyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3495C6951D3D8CCA007CB9E7 /* VirtualHIDKeyboard.hpp */; };
-		34ECF2991D3FD31B0004D3B8 /* user_client_method.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34ECF2981D3FD31B0004D3B8 /* user_client_method.hpp */; };
+		34ECF2991D3FD31B0004D3B8 /* virtual_hid_manager_user_client_method.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34ECF2981D3FD31B0004D3B8 /* virtual_hid_manager_user_client_method.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,7 +31,7 @@
 		3495C6941D3D8CCA007CB9E7 /* VirtualHIDKeyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualHIDKeyboard.cpp; sourceTree = "<group>"; };
 		3495C6951D3D8CCA007CB9E7 /* VirtualHIDKeyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VirtualHIDKeyboard.hpp; sourceTree = "<group>"; };
 		34D210D61D1637AB005AF893 /* VirtualHIDKeyboard.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualHIDKeyboard.kext; sourceTree = BUILT_PRODUCTS_DIR; };
-		34ECF2981D3FD31B0004D3B8 /* user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = user_client_method.hpp; path = ../../share/user_client_method.hpp; sourceTree = "<group>"; };
+		34ECF2981D3FD31B0004D3B8 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,7 +98,7 @@
 			children = (
 				3495C6921D3D8CBE007CB9E7 /* DiagnosticMacros.hpp */,
 				3495C6881D3D8757007CB9E7 /* hid_report.hpp */,
-				34ECF2981D3FD31B0004D3B8 /* user_client_method.hpp */,
+				34ECF2981D3FD31B0004D3B8 /* virtual_hid_manager_user_client_method.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -122,7 +122,7 @@
 				3495C6931D3D8CBE007CB9E7 /* DiagnosticMacros.hpp in Headers */,
 				3495C6891D3D8757007CB9E7 /* hid_report.hpp in Headers */,
 				3495C6971D3D8CCA007CB9E7 /* VirtualHIDKeyboard.hpp in Headers */,
-				34ECF2991D3FD31B0004D3B8 /* user_client_method.hpp in Headers */,
+				34ECF2991D3FD31B0004D3B8 /* virtual_hid_manager_user_client_method.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
