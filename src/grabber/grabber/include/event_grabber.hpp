@@ -2,10 +2,17 @@
 
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
+#include "user_client.hpp"
+#include "virtual_hid_manager_user_client_method.hpp"
 
 class event_grabber final {
 public:
   event_grabber(void) {
+    if (!user_client_.open("org_pqrs_driver_VirtualHIDManager")) {
+      std::cerr << "Failed to open user_client." << std::endl;
+      return;
+    }
+
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       return;
@@ -133,16 +140,12 @@ private:
               << "  transport:" << dev->get_transport() << std::endl;
 
     if (dev->get_serial_number_string() == "org.pqrs.driver.VirtualHIDKeyboard") {
-      dev->open();
-      dev->create_transaction();
-      dev->schedule();
-      std::cout << "set virtual_keyboard_ " << std::endl;
-      self->virtual_keyboard_ = dev;
-    } else {
-      //if (dev->get_manufacturer() != "pqrs.org") {
-      if (dev->get_manufacturer() == "Apple Inc.") {
-        dev->grab(queue_value_available_callback, self);
-      }
+      return;
+    }
+
+    //if (dev->get_manufacturer() != "pqrs.org") {
+    if (dev->get_manufacturer() == "Apple Inc.") {
+      dev->grab(queue_value_available_callback, self);
     }
 
     (self->hids_)[device] = dev;
@@ -163,9 +166,7 @@ private:
     }
 
     auto it = (self->hids_).find(device);
-    if (it == (self->hids_).end()) {
-      std::cout << "unknown device has been removed" << std::endl;
-    } else {
+    if (it != (self->hids_).end()) {
       auto dev = it->second;
       if (dev) {
         std::cout << "removal vendor_id:0x" << std::hex << dev->get_vendor_id() << " product_id:0x" << std::hex << dev->get_product_id() << std::endl;
@@ -196,31 +197,10 @@ private:
                   << "  length:" << IOHIDValueGetLength(value) << std::endl
                   << "  integer_value:" << IOHIDValueGetIntegerValue(value) << std::endl;
 
-        if (usage == kHIDUsage_KeyboardEscape) {
-          exit(0);
-        }
-
-        if (self) {
-          auto vk = (self->virtual_keyboard_).lock();
-          if (vk) {
-            hid_report::keyboard_input report;
-            if (IOHIDValueGetIntegerValue(value)) {
-              if (usage == kHIDUsage_KeyboardCapsLock) {
-                report.keys[0] = kHIDUsage_KeyboardSpacebar;
-              } else {
-                report.keys[0] = usage;
-              }
-            }
-            vk->set_report(kIOHIDReportTypeInput, 0, reinterpret_cast<const uint8_t*>(&report), sizeof(report));
-          }
-        }
-
-        if (kHIDUsage_KeyboardA <= usage) {
+        if (usage_page == kHIDPage_KeyboardOrKeypad) {
+          bool pressed = IOHIDValueGetIntegerValue(value);
           if (self) {
-            auto vk = (self->virtual_keyboard_).lock();
-            if (vk) {
-              //std::cout << vk->set_value(usage_page, usage, value) << std::endl;
-            }
+            self->handle_keyboard_event(usage, pressed);
           }
         }
       }
@@ -229,7 +209,44 @@ private:
     }
   }
 
+  void handle_keyboard_event(uint32_t usage, bool pressed) {
+    // ----------------------------------------
+    // modify usage
+    if (usage == kHIDUsage_KeyboardCapsLock) {
+      usage = kHIDUsage_KeyboardDeleteOrBackspace;
+    }
+
+    // ----------------------------------------
+    if (pressed) {
+      pressing_key_usages_.push_back(usage);
+    } else {
+      pressing_key_usages_.remove(usage);
+    }
+
+    // ----------------------------------------
+    hid_report::keyboard_input report;
+
+    while (pressing_key_usages_.size() > sizeof(report.keys)) {
+      pressing_key_usages_.pop_front();
+    }
+
+    int i = 0;
+    for (const auto& u : pressing_key_usages_) {
+      report.keys[i] = u;
+      ++i;
+    }
+
+    kern_return_t kr = IOConnectCallStructMethod(user_client_.get_connect(),
+                                                 static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
+                                                 static_cast<const void*>(&report), sizeof(report),
+                                                 nullptr, 0);
+    if (kr != KERN_SUCCESS) {
+      std::cerr << "failed to sent report: 0x" << std::hex << kr << std::dec << std::endl;
+    }
+  }
+
+  user_client user_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::shared_ptr<human_interface_device>> hids_;
-  std::weak_ptr<human_interface_device> virtual_keyboard_;
+  std::list<uint32_t> pressing_key_usages_;
 };

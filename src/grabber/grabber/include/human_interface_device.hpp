@@ -4,7 +4,6 @@ class human_interface_device final {
 public:
   human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
                                                            queue_(nullptr),
-                                                           transaction_(nullptr),
                                                            grabbed_(false) {
     CFRetain(device_);
 
@@ -43,10 +42,6 @@ public:
       close();
     }
 
-    if (transaction_) {
-      CFRelease(transaction_);
-    }
-
     if (queue_) {
       CFRelease(queue_);
     }
@@ -67,32 +62,18 @@ public:
     return IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
   }
 
-  void create_transaction(void) {
-    if (transaction_) {
-      return;
-    }
-
-    transaction_ = IOHIDTransactionCreate(kCFAllocatorDefault, device_, kIOHIDTransactionDirectionTypeOutput, kIOHIDOptionsTypeNone);
-  }
-
   void schedule(void) {
     IOHIDDeviceScheduleWithRunLoop(device_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     if (queue_) {
       IOHIDQueueScheduleWithRunLoop(queue_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     }
-    if (transaction_) {
-      IOHIDTransactionScheduleWithRunLoop(transaction_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-    }
   }
 
   void unschedule(void) {
-    if (transaction_) {
-      IOHIDTransactionUnscheduleFromRunLoop(transaction_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-    }
     if (queue_) {
       IOHIDQueueUnscheduleFromRunLoop(queue_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     }
-    IOHIDQueueUnscheduleFromRunLoop(queue_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
   }
 
   void grab(IOHIDCallback _Nonnull value_available_callback, void* _Nullable callback_context) {
@@ -159,63 +140,6 @@ public:
     }
 
     grabbed_ = false;
-  }
-
-  IOReturn set_value(uint32_t usage_page, uint32_t usage, IOHIDValueRef _Nonnull value) {
-    auto value_element = IOHIDValueGetElement(value);
-    if (!value_element) {
-      return kIOReturnError;
-    }
-
-    IOHIDElementRef element = nullptr;
-    auto value_device = IOHIDElementGetDevice(value_element);
-    if (value_device == device_) {
-      element = value_element;
-      CFRetain(value);
-    } else {
-      auto key = elements_key(usage_page, usage);
-      auto it = elements_.find(key);
-      if (it == elements_.end()) {
-        value = nullptr;
-      } else {
-        element = it->second;
-
-        // create value for device_.
-        auto p = IOHIDValueGetBytePtr(value);
-        if (p) {
-          value = IOHIDValueCreateWithBytesNoCopy(kCFAllocatorDefault, element, mach_absolute_time(), p, IOHIDValueGetLength(value));
-        } else {
-          value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault, element, mach_absolute_time(), IOHIDValueGetIntegerValue(value));
-        }
-      }
-    }
-
-    if (!element) {
-      return kIOReturnError;
-    }
-
-    if (!transaction_) {
-      return kIOReturnError;
-    }
-
-    std::cout << std::hex << "0x" << usage_page << " 0x" << usage << std::endl;
-
-    IOHIDTransactionAddElement(transaction_, element);
-    IOHIDTransactionSetValue(transaction_, element, value, kIOHIDOptionsTypeNone);
-    auto result = IOHIDTransactionCommit(transaction_);
-
-#if 0
-    auto result = IOHIDDeviceSetValue(device_, element, value);
-#endif
-
-    if (value) {
-      CFRelease(value);
-    }
-    return result;
-  }
-
-  IOReturn set_report(IOHIDReportType report_type, CFIndex report_id, const uint8_t* _Nonnull report, CFIndex report_length) {
-    return IOHIDDeviceSetReport(device_, report_type, report_id, report, report_length);
   }
 
   long get_max_input_report_size(void) const {
@@ -313,7 +237,6 @@ private:
 
   IOHIDDeviceRef _Nonnull device_;
   IOHIDQueueRef _Nullable queue_;
-  IOHIDTransactionRef _Nullable transaction_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
   bool grabbed_;

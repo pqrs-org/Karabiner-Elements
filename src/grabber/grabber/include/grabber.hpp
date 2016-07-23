@@ -9,6 +9,7 @@
 #include <mach/mach_time.h>
 
 #include <iostream>
+#include <list>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -17,4 +18,4 @@
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
 #include "user_client.hpp"
-#include "user_client_method.hpp"
+#include "virtual_hid_manager_user_client_method.hpp"
