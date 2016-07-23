@@ -1,6 +1,6 @@
 #pragma once
 
 enum class virtual_hid_manager_user_client_method {
-  report,
+  keyboard_input_report,
   end_,
 };

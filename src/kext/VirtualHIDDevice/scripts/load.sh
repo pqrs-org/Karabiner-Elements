@@ -14,5 +14,8 @@ cp -R build/Release/VirtualHIDManager.kext $targetdir/VirtualHIDManager.signed.k
 bash ../../../scripts/codesign.sh $targetdir
 sudo chown -R root:wheel $targetdir
 
-sudo kextutil -t $targetdir/VirtualHIDKeyboard.signed.kext
+sudo rm -rf /Library/Extensions/org.pqrs.driver.VirtualHIDKeyboard.kext
+sudo mv $targetdir/VirtualHIDKeyboard.signed.kext /Library/Extensions/org.pqrs.driver.VirtualHIDKeyboard.kext
+
+sudo kextutil -t /Library/Extensions/org.pqrs.driver.VirtualHIDKeyboard.kext
 sudo kextutil -t $targetdir/VirtualHIDManager.signed.kext

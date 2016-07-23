@@ -16,8 +16,8 @@ public:
                                   IOExternalMethodDispatch* dispatch = 0, OSObject* target = 0, void* reference = 0) override;
 
 private:
-  static IOReturn static_callback_report(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments);
-  IOReturn callback_report(const hid_report::keyboard_input& input);
+  static IOReturn staticKeyboardInputReportCallback(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments);
+  IOReturn keyboardInputReportCallback(const hid_report::keyboard_input& input);
 
   static IOExternalMethodDispatch methods_[static_cast<size_t>(virtual_hid_manager_user_client_method::end_)];
   task_t owner_;

@@ -21,7 +21,4 @@ public:
   virtual IOReturn newReportDescriptor(IOMemoryDescriptor** descriptor) const override;
   virtual OSString* newSerialNumberString() const override;
   virtual OSNumber* newLocationIDNumber() const override;
-#if 1
-  virtual IOReturn setReport(IOMemoryDescriptor* report, IOHIDReportType reportType, IOOptionBits options) override;
-#endif
 };

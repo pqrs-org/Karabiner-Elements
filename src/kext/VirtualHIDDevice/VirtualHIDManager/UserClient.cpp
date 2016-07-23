@@ -13,18 +13,16 @@ OSDefineMetaClassAndStructors(org_pqrs_driver_VirtualHIDManager_UserClient, IOUs
 
 IOExternalMethodDispatch org_pqrs_driver_VirtualHIDManager_UserClient::methods_[static_cast<size_t>(virtual_hid_manager_user_client_method::end_)] = {
     {
-        // report
-        reinterpret_cast<IOExternalMethodAction>(&static_callback_report), // Method pointer.
-        0,                                                                 // One scalar input value.
-        sizeof(hid_report::keyboard_input),                                // No struct input value.
-        0,                                                                 // No scalar output value.
-        0                                                                  // No struct output value.
+        // keyboard_input_report
+        reinterpret_cast<IOExternalMethodAction>(&staticKeyboardInputReportCallback), // Method pointer.
+        0,                                                                            // One scalar input value.
+        sizeof(hid_report::keyboard_input),                                           // No struct input value.
+        0,                                                                            // No scalar output value.
+        0                                                                             // No struct output value.
     },
 };
 
 bool org_pqrs_driver_VirtualHIDManager_UserClient::initWithTask(task_t owningTask, void* securityToken, UInt32 type) {
-  IOLog("%s initWithTask\n", __PRETTY_FUNCTION__);
-
   if (clientHasPrivilege(owningTask, kIOClientPrivilegeAdministrator) != KERN_SUCCESS) {
     IOLog("%s Error: clientHasPrivilege failed.\n", __PRETTY_FUNCTION__);
     return false;
@@ -41,8 +39,6 @@ bool org_pqrs_driver_VirtualHIDManager_UserClient::initWithTask(task_t owningTas
 }
 
 bool org_pqrs_driver_VirtualHIDManager_UserClient::start(IOService* provider) {
-  IOLog("%s start\n", __PRETTY_FUNCTION__);
-
   provider_ = OSDynamicCast(org_pqrs_driver_VirtualHIDManager, provider);
   if (!provider_) {
     IOLog("%s Error: provider_ == nullptr\n", __PRETTY_FUNCTION__);
@@ -58,8 +54,6 @@ bool org_pqrs_driver_VirtualHIDManager_UserClient::start(IOService* provider) {
 
 IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::externalMethod(uint32_t selector, IOExternalMethodArguments* arguments,
                                                                       IOExternalMethodDispatch* dispatch, OSObject* target, void* reference) {
-  IOLog("externalMethod: %d\n", selector);
-
   if (selector >= static_cast<uint32_t>(virtual_hid_manager_user_client_method::end_)) {
     return kIOReturnUnsupported;
   }
@@ -74,7 +68,7 @@ IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::externalMethod(uint32_t s
 
 #pragma mark - report
 
-IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::static_callback_report(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments) {
+IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::staticKeyboardInputReportCallback(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments) {
   if (!target) {
     return kIOReturnBadArgument;
   }
@@ -87,10 +81,25 @@ IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::static_callback_report(or
     return kIOReturnBadArgument;
   }
 
-  return target->callback_report(*input);
+  return target->keyboardInputReportCallback(*input);
 }
 
-IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::callback_report(const hid_report::keyboard_input& input) {
-  IOLog("callback_report\n");
-  return kIOReturnSuccess;
+IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::keyboardInputReportCallback(const hid_report::keyboard_input& input) {
+  if (!provider_) {
+    return kIOReturnError;
+  }
+
+  auto keyboard = provider_->getVirtualHIDKeyboard();
+  if (!keyboard) {
+    return kIOReturnError;
+  }
+
+  IOMemoryDescriptor* report = IOBufferMemoryDescriptor::withBytes(&input, sizeof(input), kIODirectionNone);
+  if (!report) {
+    return kIOReturnError;
+  }
+
+  IOReturn result = keyboard->handleReport(report, kIOHIDReportTypeInput, kIOHIDOptionsTypeNone);
+  report->release();
+  return result;
 }
