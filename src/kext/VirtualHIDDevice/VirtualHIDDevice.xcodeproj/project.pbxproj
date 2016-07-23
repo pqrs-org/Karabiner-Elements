@@ -322,6 +322,7 @@
 				345437081D41204200CE355E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		34D210D01D1637AA005AF893 /* Build configuration list for PBXProject "VirtualHIDDevice" */ = {
 			isa = XCConfigurationList;
