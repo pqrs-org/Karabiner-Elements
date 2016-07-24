@@ -1,3 +1,13 @@
+# IOKit drivers in Karabiner
+
+* VirtualHIDManager
+  * IOService which provides UserClient.
+* VirtualHIDKeyboard
+  * Virtual keyboard which sends generic keyboard events.
+* VirtualHIKeyboard
+  * Virtual keyboard which sends the secondary fn keyboard event.
+
+
 # About security
 
 Virtual HID devices must not allow to post input events from remote session.
@@ -36,6 +46,10 @@ It requires posting mac events.<br />
 ## IOHIDPostEvent
 
 It requires posting mac events.<br />
+
+`IOHIDPostEvent` will be failed if the process is not running in the current session user.
+(The root user is also forbidden.)
+
 
 ## CGEventCreate
 
