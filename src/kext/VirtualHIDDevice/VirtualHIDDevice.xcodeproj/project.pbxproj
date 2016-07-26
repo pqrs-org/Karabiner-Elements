@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		340E33F51D44AA1E00CF7785 /* VirtualHIKeyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 340E33F41D44AA1E00CF7785 /* VirtualHIKeyboard.hpp */; };
 		340E33F71D44AA1E00CF7785 /* VirtualHIKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 340E33F61D44AA1E00CF7785 /* VirtualHIKeyboard.cpp */; };
+		340E33FD1D470DA200CF7785 /* ServiceDetector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 340E33FC1D470DA200CF7785 /* ServiceDetector.hpp */; };
 		345437041D41204200CE355E /* VirtualHIDManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 345437031D41204200CE355E /* VirtualHIDManager.hpp */; };
 		345437061D41204200CE355E /* VirtualHIDManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 345437051D41204200CE355E /* VirtualHIDManager.cpp */; };
 		3454370C1D4120AC00CE355E /* UserClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3454370A1D4120AC00CE355E /* UserClient.cpp */; };
@@ -24,6 +25,7 @@
 		340E33F21D44AA1E00CF7785 /* VirtualHIKeyboard.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualHIKeyboard.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		340E33F41D44AA1E00CF7785 /* VirtualHIKeyboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VirtualHIKeyboard.hpp; sourceTree = "<group>"; };
 		340E33F61D44AA1E00CF7785 /* VirtualHIKeyboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualHIKeyboard.cpp; sourceTree = "<group>"; };
+		340E33FC1D470DA200CF7785 /* ServiceDetector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ServiceDetector.hpp; path = include/ServiceDetector.hpp; sourceTree = "<group>"; };
 		345437011D41204200CE355E /* VirtualHIDManager.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualHIDManager.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		345437031D41204200CE355E /* VirtualHIDManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VirtualHIDManager.hpp; sourceTree = "<group>"; };
 		345437051D41204200CE355E /* VirtualHIDManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualHIDManager.cpp; sourceTree = "<group>"; };
@@ -73,9 +75,18 @@
 			path = VirtualHIKeyboard;
 			sourceTree = "<group>";
 		};
+		340E33FB1D470D9B00CF7785 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				340E33FC1D470DA200CF7785 /* ServiceDetector.hpp */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
 		345437021D41204200CE355E /* VirtualHIDManager */ = {
 			isa = PBXGroup;
 			children = (
+				340E33FB1D470D9B00CF7785 /* include */,
 				3454370A1D4120AC00CE355E /* UserClient.cpp */,
 				3454370B1D4120AC00CE355E /* UserClient.hpp */,
 				345437031D41204200CE355E /* VirtualHIDManager.hpp */,
@@ -143,6 +154,7 @@
 			files = (
 				3454370D1D4120AC00CE355E /* UserClient.hpp in Headers */,
 				345437041D41204200CE355E /* VirtualHIDManager.hpp in Headers */,
+				340E33FD1D470DA200CF7785 /* ServiceDetector.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,6 +419,7 @@
 				340E33F91D44AA1E00CF7785 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		345437091D41204200CE355E /* Build configuration list for PBXNativeTarget "VirtualHIDManager" */ = {
 			isa = XCConfigurationList;

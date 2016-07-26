@@ -2,6 +2,7 @@
 
 #include "DiagnosticMacros.hpp"
 #include "VirtualHIDKeyboard.hpp"
+#include "VirtualHIKeyboard.hpp"
 
 BEGIN_IOKIT_INCLUDE;
 #include <IOKit/IOService.h>
@@ -14,13 +15,13 @@ public:
   virtual bool start(IOService* provider) override;
   virtual void stop(IOService* provider) override;
 
-  org_pqrs_driver_VirtualHIDKeyboard* getVirtualHIDKeyboard(void) { return virtualHIDKeyboard_; }
+  org_pqrs_driver_VirtualHIDKeyboard* getVirtualHIDKeyboard(void) {
+    return OSDynamicCast(org_pqrs_driver_VirtualHIDKeyboard, virtualHIDKeyboardDetector_.getService());
+  }
 
 private:
-  static bool virtualHIDKeyboardMatchedCallback(void* target, void* refCon, IOService* newService, IONotifier* notifier);
-  static bool virtualHIDKeyboardTerminatedCallback(void* target, void* refCon, IOService* newService, IONotifier* notifier);
+#include "include/ServiceDetector.hpp"
 
-  IONotifier* virtualHIDKeyboardMatchedNotifier_;
-  IONotifier* virtualHIDKeyboardTerminatedNotifier_;
-  org_pqrs_driver_VirtualHIDKeyboard* virtualHIDKeyboard_;
+  ServiceDetector virtualHIDKeyboardDetector_;
+  ServiceDetector virtualHIKeyboardDetector_;
 };
