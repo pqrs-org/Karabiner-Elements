@@ -6,6 +6,7 @@
 #include <IOKit/hid/IOHIDManager.h>
 #include <IOKit/hid/IOHIDQueue.h>
 #include <IOKit/hid/IOHIDValue.h>
+#include <IOKit/hidsystem/IOHIDShared.h>
 #include <mach/mach_time.h>
 
 #include <iostream>
@@ -14,6 +15,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "apple_hid_usage_tables.hpp"
 #include "event_grabber.hpp"
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"

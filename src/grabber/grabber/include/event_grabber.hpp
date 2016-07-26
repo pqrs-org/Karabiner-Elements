@@ -1,5 +1,6 @@
 #pragma once
 
+#include "apple_hid_usage_tables.hpp"
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
 #include "user_client.hpp"
@@ -8,7 +9,7 @@
 class event_grabber final {
 public:
   event_grabber(void) {
-    if (!user_client_.open("org_pqrs_driver_VirtualHIDManager")) {
+    if (!user_client_.open("org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType)) {
       std::cerr << "Failed to open user_client." << std::endl;
       return;
     }
@@ -197,11 +198,22 @@ private:
                   << "  length:" << IOHIDValueGetLength(value) << std::endl
                   << "  integer_value:" << IOHIDValueGetIntegerValue(value) << std::endl;
 
-        if (usage_page == kHIDPage_KeyboardOrKeypad) {
+        switch (usage_page) {
+        case kHIDPage_KeyboardOrKeypad: {
           bool pressed = IOHIDValueGetIntegerValue(value);
           if (self) {
             self->handle_keyboard_event(usage, pressed);
           }
+          break;
+        }
+
+        case kHIDPage_AppleVendorTopCase:
+          if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
+          }
+          break;
+
+        default:
+          break;
         }
       }
 

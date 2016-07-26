@@ -5,7 +5,7 @@ public:
   user_client(void) : connect_(IO_OBJECT_NULL) {
   }
 
-  bool open(const std::string& class_name) {
+  bool open(const std::string& class_name, uint32_t type) {
     if (connect_ != IO_OBJECT_NULL) {
       return true;
     }
@@ -24,7 +24,7 @@ public:
         break;
       }
 
-      kr = IOServiceOpen(service_, mach_task_self(), 0, &connect_);
+      kr = IOServiceOpen(service_, mach_task_self(), type, &connect_);
       if (kr == KERN_SUCCESS) {
         break;
       }
