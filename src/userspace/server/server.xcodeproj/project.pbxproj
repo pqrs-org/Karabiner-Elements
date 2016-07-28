@@ -25,16 +25,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		340E33EC1D43BFF900CF7785 /* apple_hid_usage_tables.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = apple_hid_usage_tables.hpp; path = include/apple_hid_usage_tables.hpp; sourceTree = "<group>"; };
-		344149111D212A1600C8ECFC /* grabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = grabber; sourceTree = BUILT_PRODUCTS_DIR; };
+		344149111D212A1600C8ECFC /* server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = server; sourceTree = BUILT_PRODUCTS_DIR; };
 		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		3446AA8D1D49A41100337B36 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../../share/hid_report.hpp; sourceTree = "<group>"; };
-		3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = "<group>"; };
-		3446AA8F1D49A46A00337B36 /* user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = user_client.hpp; path = ../../share/user_client.hpp; sourceTree = "<group>"; };
-		349115941D2F754500FE93B7 /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = include/human_interface_device.hpp; sourceTree = "<group>"; };
-		3495C67E1D368FF0007CB9E7 /* grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber.hpp; path = include/grabber.hpp; sourceTree = "<group>"; };
+		3446AA901D49A63E00337B36 /* io_hid_post_event_wrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = io_hid_post_event_wrapper.hpp; path = include/io_hid_post_event_wrapper.hpp; sourceTree = "<group>"; };
+		3446AA911D49A66600337B36 /* user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = user_client.hpp; path = ../../share/user_client.hpp; sourceTree = "<group>"; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		34E450281D2AB18B00C5AC13 /* event_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_grabber.hpp; path = include/event_grabber.hpp; sourceTree = "<group>"; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -55,7 +50,7 @@
 			isa = PBXGroup;
 			children = (
 				34BB0F0C1D22853D00372174 /* Frameworks */,
-				344149131D212A1600C8ECFC /* grabber */,
+				344149131D212A1600C8ECFC /* server */,
 				344149121D212A1600C8ECFC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -63,27 +58,25 @@
 		344149121D212A1600C8ECFC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				344149111D212A1600C8ECFC /* grabber */,
+				344149111D212A1600C8ECFC /* server */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		344149131D212A1600C8ECFC /* grabber */ = {
+		344149131D212A1600C8ECFC /* server */ = {
 			isa = PBXGroup;
 			children = (
 				34E450271D2AB18400C5AC13 /* include */,
 				344149141D212A1600C8ECFC /* main.cpp */,
 				3495C6801D3CE652007CB9E7 /* share */,
 			);
-			path = grabber;
+			path = server;
 			sourceTree = "<group>";
 		};
 		3495C6801D3CE652007CB9E7 /* share */ = {
 			isa = PBXGroup;
 			children = (
-				3446AA8D1D49A41100337B36 /* hid_report.hpp */,
-				3446AA8F1D49A46A00337B36 /* user_client.hpp */,
-				3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */,
+				3446AA911D49A66600337B36 /* user_client.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -100,10 +93,7 @@
 		34E450271D2AB18400C5AC13 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				340E33EC1D43BFF900CF7785 /* apple_hid_usage_tables.hpp */,
-				34E450281D2AB18B00C5AC13 /* event_grabber.hpp */,
-				3495C67E1D368FF0007CB9E7 /* grabber.hpp */,
-				349115941D2F754500FE93B7 /* human_interface_device.hpp */,
+				3446AA901D49A63E00337B36 /* io_hid_post_event_wrapper.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
@@ -111,9 +101,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		344149101D212A1600C8ECFC /* grabber */ = {
+		344149101D212A1600C8ECFC /* server */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 344149181D212A1600C8ECFC /* Build configuration list for PBXNativeTarget "grabber" */;
+			buildConfigurationList = 344149181D212A1600C8ECFC /* Build configuration list for PBXNativeTarget "server" */;
 			buildPhases = (
 				3441490D1D212A1600C8ECFC /* Sources */,
 				3441490E1D212A1600C8ECFC /* Frameworks */,
@@ -123,9 +113,9 @@
 			);
 			dependencies = (
 			);
-			name = grabber;
-			productName = grabber;
-			productReference = 344149111D212A1600C8ECFC /* grabber */;
+			name = server;
+			productName = server;
+			productReference = 344149111D212A1600C8ECFC /* server */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -141,7 +131,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3441490C1D212A1600C8ECFC /* Build configuration list for PBXProject "grabber" */;
+			buildConfigurationList = 3441490C1D212A1600C8ECFC /* Build configuration list for PBXProject "server" */;
 			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -153,7 +143,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				344149101D212A1600C8ECFC /* grabber */,
+				344149101D212A1600C8ECFC /* server */,
 			);
 		};
 /* End PBXProject section */
@@ -223,7 +213,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3441490C1D212A1600C8ECFC /* Build configuration list for PBXProject "grabber" */ = {
+		3441490C1D212A1600C8ECFC /* Build configuration list for PBXProject "server" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				344149171D212A1600C8ECFC /* Release */,
@@ -231,7 +221,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		344149181D212A1600C8ECFC /* Build configuration list for PBXNativeTarget "grabber" */ = {
+		344149181D212A1600C8ECFC /* Build configuration list for PBXNativeTarget "server" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3441491A1D212A1600C8ECFC /* Release */,

@@ -1,8 +1,12 @@
 #pragma once
 
-class user_client {
+class user_client final {
 public:
   user_client(void) : connect_(IO_OBJECT_NULL) {
+  }
+
+  ~user_client(void) {
+    close();
   }
 
   bool open(const std::string& class_name, uint32_t type) {
@@ -11,7 +15,7 @@ public:
     }
 
     io_iterator_t iterator = IO_OBJECT_NULL;
-    kern_return_t kr = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(class_name.c_str()), &iterator);
+    auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(class_name.c_str()), &iterator);
     if (kr != KERN_SUCCESS) {
       std::cerr << "IOServiceGetMatchingServices failed" << std::endl;
       goto finish;
@@ -19,7 +23,6 @@ public:
 
     while (true) {
       service_ = IOIteratorNext(iterator);
-      std::cout << "service_ " << service_ << std::endl;
       if (service_ == IO_OBJECT_NULL) {
         break;
       }
