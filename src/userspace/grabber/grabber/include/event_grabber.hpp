@@ -209,18 +209,6 @@ private:
 
         case kHIDPage_AppleVendorTopCase:
           if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
-            if (self) {
-              hid_report::apple_keyboard_input report;
-              report.key_code = 0x3f;
-              report.key_down = IOHIDValueGetIntegerValue(value);
-              auto kr = IOConnectCallStructMethod(self->user_client_.get_connect(),
-                                                  static_cast<uint32_t>(virtual_hid_manager_user_client_method::apple_keyboard_input_report),
-                                                  static_cast<const void*>(&report), sizeof(report),
-                                                  nullptr, 0);
-              if (kr != KERN_SUCCESS) {
-                std::cerr << "failed to sent report: 0x" << std::hex << kr << std::dec << std::endl;
-              }
-            }
           }
           break;
 
