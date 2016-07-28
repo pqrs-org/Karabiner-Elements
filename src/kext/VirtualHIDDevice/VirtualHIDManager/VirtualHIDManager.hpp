@@ -2,7 +2,6 @@
 
 #include "DiagnosticMacros.hpp"
 #include "VirtualHIDKeyboard.hpp"
-#include "VirtualHIKeyboard.hpp"
 
 BEGIN_IOKIT_INCLUDE;
 #include <IOKit/IOService.h>
@@ -23,5 +22,4 @@ private:
 #include "include/ServiceDetector.hpp"
 
   ServiceDetector virtualHIDKeyboardDetector_;
-  ServiceDetector virtualHIKeyboardDetector_;
 };

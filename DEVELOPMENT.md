@@ -4,8 +4,6 @@
   * IOService which provides UserClient.
 * VirtualHIDKeyboard
   * Virtual keyboard which sends generic keyboard events.
-* VirtualHIKeyboard
-  * Virtual keyboard which sends the secondary fn keyboard event.
 
 
 # About security

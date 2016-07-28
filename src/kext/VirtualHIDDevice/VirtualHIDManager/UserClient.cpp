@@ -66,7 +66,7 @@ IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::externalMethod(uint32_t s
   return super::externalMethod(selector, arguments, dispatch, target, reference);
 }
 
-#pragma mark - report
+#pragma mark - keyboard_input_report
 
 IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::staticKeyboardInputReportCallback(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments) {
   if (!target) {

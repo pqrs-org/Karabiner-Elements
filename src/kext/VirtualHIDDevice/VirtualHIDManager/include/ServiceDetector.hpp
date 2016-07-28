@@ -31,7 +31,10 @@ public:
       terminatedNotifier_ = nullptr;
     }
 
-    service_ = nullptr;
+    if (service_) {
+      service_->release();
+      service_ = nullptr;
+    }
   }
 
   IOService* getService(void) { return service_; }
@@ -40,7 +43,19 @@ private:
   static bool matchedCallback(void* target, void* refCon, IOService* newService, IONotifier* notifier) {
     auto self = static_cast<ServiceDetector*>(target);
     if (self) {
-      self->service_ = newService;
+      if (newService) {
+        auto name = newService->getName();
+        if (name) {
+          IOLog("org_pqrs_driver_VirtualHIDManager: %s is found.\n", name);
+        }
+
+        if (self->service_) {
+          self->service_->release();
+        }
+
+        newService->retain();
+        self->service_ = newService;
+      }
     }
     return true;
   }
@@ -48,7 +63,10 @@ private:
   static bool terminatedCallback(void* target, void* refCon, IOService* newService, IONotifier* notifier) {
     auto self = static_cast<ServiceDetector*>(target);
     if (self) {
-      self->service_ = nullptr;
+      if (self->service_) {
+        self->service_->release();
+        self->service_ = nullptr;
+      }
     }
     return true;
   }
