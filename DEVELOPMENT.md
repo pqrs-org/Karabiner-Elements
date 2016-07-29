@@ -118,7 +118,7 @@ We have to convert the f1 key report to the brightness control report manually.
 
 ```
 0x0007003a, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF1)
-0x00ff0005, // ??,
+0x00ff0005, // ??, ??
 
 0x0007003b, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF2)
 0x00ff0004,
