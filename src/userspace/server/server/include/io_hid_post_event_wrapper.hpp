@@ -17,8 +17,6 @@ public:
     NXEventData event;
     memset(&event, 0, sizeof(event));
 
-    std::cout << std::hex << flags << std::dec << std::endl;
-
     IOGPoint loc = {0, 0};
     auto kr = IOHIDPostEvent(connect, NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
 
