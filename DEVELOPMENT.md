@@ -4,6 +4,8 @@
   * IOService which provides UserClient.
 * VirtualHIDKeyboard
   * Virtual keyboard which sends generic keyboard events.
+* VirtualHIDConsumer
+  * Virtual keyboard which sends media control events.
 
 
 # About security
