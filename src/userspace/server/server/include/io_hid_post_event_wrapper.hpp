@@ -17,14 +17,17 @@ public:
     NXEventData event;
     memset(&event, 0, sizeof(event));
 
+    std::cout << std::hex << flags << std::dec << std::endl;
+
     IOGPoint loc = {0, 0};
-    auto kr = IOHIDPostEvent(connect, NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, true);
+    auto kr = IOHIDPostEvent(connect, NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
+
     if (KERN_SUCCESS != kr) {
       std::cerr << "IOHIDPostEvent returned 0x" << std::hex << kr << std::dec << std::endl;
     }
   }
 
-  void post_aux_key(uint8_t key_code, bool key_down) {
+  void post_aux_key(uint8_t key_code, bool key_down, IOOptionBits flags) {
     auto connect = user_client_.get_connect();
     if (!connect) {
       return;
@@ -36,7 +39,7 @@ public:
     event.compound.misc.L[0] = (key_code << 16) | ((key_down ? NX_KEYDOWN : NX_KEYUP) << 8);
 
     IOGPoint loc = {0, 0};
-    kern_return_t kr = IOHIDPostEvent(connect, NX_SYSDEFINED, loc, &event, kNXEventDataVersion, 0, false);
+    kern_return_t kr = IOHIDPostEvent(connect, NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, 0);
     if (KERN_SUCCESS != kr) {
       std::cerr << "IOHIDPostEvent returned 0x" << std::hex << kr << std::dec << std::endl;
     }
