@@ -117,28 +117,39 @@ We have to convert the f1 key report to the brightness control report manually.
 # About FnFunctionUsageMap
 
 ```
-0x0007003a,
-0x00ff0005,
-0x0007003b,
+0x0007003a, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF1)
+0x00ff0005, // ??,
+
+0x0007003b, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF2)
 0x00ff0004,
-0x0007003c,
+
+0x0007003c, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF3)
 0xff010010,
-0x0007003d,
+
+0x0007003d, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF4)
 0xff010004,
-0x0007003e,
+
+0x0007003e, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF5)
 0x00ff0009,
-0x0007003f,
+
+0x0007003f, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF6)
 0x00ff0008,
-0x00070040,
+
+0x00070040, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF7)
 0x000C00B4,
-0x00070041,
+
+0x00070041, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF8)
 0x000C00CD,
-0x00070042,
+
+0x00070042, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF9)
 0x000C00B3,
-0x00070043,
+
+0x00070043, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF10)
 0x000C00E2,
-0x00070044,
+
+0x00070044, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF11)
 0x000C00EA,
-0x00070045,
+
+0x00070045, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF12)
 0x000C00E9
 ```
