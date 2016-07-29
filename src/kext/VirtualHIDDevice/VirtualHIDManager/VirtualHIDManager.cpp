@@ -9,6 +9,7 @@ bool org_pqrs_driver_VirtualHIDManager::start(IOService* provider) {
   }
 
   virtualHIDKeyboardDetector_.setNotifier("org_pqrs_driver_VirtualHIDKeyboard");
+  virtualHIDPointingDetector_.setNotifier("org_pqrs_driver_VirtualHIDPointing");
 
   // Publish ourselves so clients can find us
   //
@@ -22,4 +23,5 @@ bool org_pqrs_driver_VirtualHIDManager::start(IOService* provider) {
 
 void org_pqrs_driver_VirtualHIDManager::stop(IOService* provider) {
   virtualHIDKeyboardDetector_.unsetNotifier();
+  virtualHIDPointingDetector_.unsetNotifier();
 }

@@ -19,6 +19,9 @@ private:
   static IOReturn staticKeyboardInputReportCallback(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments);
   IOReturn keyboardInputReportCallback(const hid_report::keyboard_input& input);
 
+  static IOReturn staticPointingInputReportCallback(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments);
+  IOReturn pointingInputReportCallback(const hid_report::pointing_input& input);
+
   static IOExternalMethodDispatch methods_[static_cast<size_t>(virtual_hid_manager_user_client_method::end_)];
   task_t owner_;
   org_pqrs_driver_VirtualHIDManager* provider_;

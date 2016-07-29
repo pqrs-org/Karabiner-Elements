@@ -198,9 +198,10 @@ private:
                   << "  length:" << IOHIDValueGetLength(value) << std::endl
                   << "  integer_value:" << IOHIDValueGetIntegerValue(value) << std::endl;
 
+        bool pressed = IOHIDValueGetIntegerValue(value);
+
         switch (usage_page) {
         case kHIDPage_KeyboardOrKeypad: {
-          bool pressed = IOHIDValueGetIntegerValue(value);
           if (self) {
             self->handle_keyboard_event(usage, pressed);
           }
@@ -209,6 +210,21 @@ private:
 
         case kHIDPage_AppleVendorTopCase:
           if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
+            hid_report::pointing_input report;
+            if (pressed) {
+              report.buttons[3] = 0x1;
+              //report.x = 0x80;
+              //report.vertical_wheel = 0x80;
+              //report.horizontal_wheel = 0x80;
+            }
+
+            auto kr = IOConnectCallStructMethod(self->user_client_.get_connect(),
+                                                static_cast<uint32_t>(virtual_hid_manager_user_client_method::pointing_input_report),
+                                                static_cast<const void*>(&report), sizeof(report),
+                                                nullptr, 0);
+            if (kr != KERN_SUCCESS) {
+              std::cerr << "failed to sent report: 0x" << std::hex << kr << std::dec << std::endl;
+            }
           }
           break;
 

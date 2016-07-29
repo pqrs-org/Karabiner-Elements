@@ -6,8 +6,8 @@ BEGIN_IOKIT_INCLUDE;
 #include <IOKit/hid/IOHIDDevice.h>
 END_IOKIT_INCLUDE;
 
-class org_pqrs_driver_VirtualHIDConsumer final : public IOHIDDevice {
-  OSDeclareDefaultStructors(org_pqrs_driver_VirtualHIDConsumer);
+class org_pqrs_driver_VirtualHIDPointing final : public IOHIDDevice {
+  OSDeclareDefaultStructors(org_pqrs_driver_VirtualHIDPointing);
 
 public:
   virtual bool start(IOService* provider) override;
