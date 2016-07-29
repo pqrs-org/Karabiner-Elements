@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		340E33FD1D470DA200CF7785 /* ServiceDetector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 340E33FC1D470DA200CF7785 /* ServiceDetector.hpp */; };
+		3446AA9A1D4B0AEC00337B36 /* VirtualHIDConsumer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3446AA991D4B0AEC00337B36 /* VirtualHIDConsumer.hpp */; };
+		3446AA9C1D4B0AEC00337B36 /* VirtualHIDConsumer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3446AA9B1D4B0AEC00337B36 /* VirtualHIDConsumer.cpp */; };
 		345437041D41204200CE355E /* VirtualHIDManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 345437031D41204200CE355E /* VirtualHIDManager.hpp */; };
 		345437061D41204200CE355E /* VirtualHIDManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 345437051D41204200CE355E /* VirtualHIDManager.cpp */; };
 		3454370C1D4120AC00CE355E /* UserClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3454370A1D4120AC00CE355E /* UserClient.cpp */; };
@@ -21,6 +23,10 @@
 
 /* Begin PBXFileReference section */
 		340E33FC1D470DA200CF7785 /* ServiceDetector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ServiceDetector.hpp; path = include/ServiceDetector.hpp; sourceTree = "<group>"; };
+		3446AA971D4B0AEC00337B36 /* VirtualHIDConsumer.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualHIDConsumer.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		3446AA991D4B0AEC00337B36 /* VirtualHIDConsumer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VirtualHIDConsumer.hpp; sourceTree = "<group>"; };
+		3446AA9B1D4B0AEC00337B36 /* VirtualHIDConsumer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualHIDConsumer.cpp; sourceTree = "<group>"; };
+		3446AA9D1D4B0AEC00337B36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		345437011D41204200CE355E /* VirtualHIDManager.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualHIDManager.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		345437031D41204200CE355E /* VirtualHIDManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VirtualHIDManager.hpp; sourceTree = "<group>"; };
 		345437051D41204200CE355E /* VirtualHIDManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualHIDManager.cpp; sourceTree = "<group>"; };
@@ -37,6 +43,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3446AA931D4B0AEC00337B36 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		345436FD1D41204200CE355E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -62,6 +75,16 @@
 			name = include;
 			sourceTree = "<group>";
 		};
+		3446AA981D4B0AEC00337B36 /* VirtualHIDConsumer */ = {
+			isa = PBXGroup;
+			children = (
+				3446AA991D4B0AEC00337B36 /* VirtualHIDConsumer.hpp */,
+				3446AA9B1D4B0AEC00337B36 /* VirtualHIDConsumer.cpp */,
+				3446AA9D1D4B0AEC00337B36 /* Info.plist */,
+			);
+			path = VirtualHIDConsumer;
+			sourceTree = "<group>";
+		};
 		345437021D41204200CE355E /* VirtualHIDManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -78,6 +101,7 @@
 		34D210CC1D1637AA005AF893 = {
 			isa = PBXGroup;
 			children = (
+				3446AA981D4B0AEC00337B36 /* VirtualHIDConsumer */,
 				34D210D71D1637AB005AF893 /* Products */,
 				34E4502D1D2F41C300C5AC13 /* share */,
 				34D210D81D1637AB005AF893 /* VirtualHIDKeyboard */,
@@ -90,6 +114,7 @@
 			children = (
 				34D210D61D1637AB005AF893 /* VirtualHIDKeyboard.kext */,
 				345437011D41204200CE355E /* VirtualHIDManager.kext */,
+				3446AA971D4B0AEC00337B36 /* VirtualHIDConsumer.kext */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -117,6 +142,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		3446AA941D4B0AEC00337B36 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3446AA9A1D4B0AEC00337B36 /* VirtualHIDConsumer.hpp in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		345436FE1D41204200CE355E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -141,6 +174,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		3446AA961D4B0AEC00337B36 /* VirtualHIDConsumer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3446AA9E1D4B0AEC00337B36 /* Build configuration list for PBXNativeTarget "VirtualHIDConsumer" */;
+			buildPhases = (
+				3446AA921D4B0AEC00337B36 /* Sources */,
+				3446AA931D4B0AEC00337B36 /* Frameworks */,
+				3446AA941D4B0AEC00337B36 /* Headers */,
+				3446AA951D4B0AEC00337B36 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VirtualHIDConsumer;
+			productName = VirtualHIDConsumer;
+			productReference = 3446AA971D4B0AEC00337B36 /* VirtualHIDConsumer.kext */;
+			productType = "com.apple.product-type.kernel-extension";
+		};
 		345437001D41204200CE355E /* VirtualHIDManager */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 345437091D41204200CE355E /* Build configuration list for PBXNativeTarget "VirtualHIDManager" */;
@@ -186,6 +237,9 @@
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = "Takayama Fumihiko";
 				TargetAttributes = {
+					3446AA961D4B0AEC00337B36 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
 					345437001D41204200CE355E = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
@@ -208,11 +262,19 @@
 			targets = (
 				34D210D51D1637AB005AF893 /* VirtualHIDKeyboard */,
 				345437001D41204200CE355E /* VirtualHIDManager */,
+				3446AA961D4B0AEC00337B36 /* VirtualHIDConsumer */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3446AA951D4B0AEC00337B36 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		345436FF1D41204200CE355E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -230,6 +292,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3446AA921D4B0AEC00337B36 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3446AA9C1D4B0AEC00337B36 /* VirtualHIDConsumer.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		345436FC1D41204200CE355E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -250,6 +320,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		3446AA9F1D4B0AEC00337B36 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1.0.0d1;
+				INFOPLIST_FILE = VirtualHIDConsumer/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MODULE_NAME = org.pqrs.driver.VirtualHIDConsumer;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_BUNDLE_IDENTIFIER = org.pqrs.driver.VirtualHIDConsumer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Release;
+		};
 		345437081D41204200CE355E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -328,6 +413,13 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3446AA9E1D4B0AEC00337B36 /* Build configuration list for PBXNativeTarget "VirtualHIDConsumer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3446AA9F1D4B0AEC00337B36 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		345437091D41204200CE355E /* Build configuration list for PBXNativeTarget "VirtualHIDManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
