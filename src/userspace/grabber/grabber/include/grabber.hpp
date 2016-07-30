@@ -35,6 +35,7 @@
 #include "grabber_server.hpp"
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
+#include "local_datagram_server.hpp"
 #include "session.hpp"
 #include "user_client.hpp"
 #include "virtual_hid_manager_user_client_method.hpp"

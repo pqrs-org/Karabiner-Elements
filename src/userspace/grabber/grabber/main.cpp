@@ -2,8 +2,10 @@
 
 int main(int argc, const char* argv[]) {
   event_grabber observer;
+
   grabber_server server;
-  server.start();
+  std::thread th = server.start();
+
   CFRunLoopRun();
   return 0;
 }
