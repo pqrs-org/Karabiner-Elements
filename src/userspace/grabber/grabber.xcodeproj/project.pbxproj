@@ -26,6 +26,8 @@
 
 /* Begin PBXFileReference section */
 		340E33EC1D43BFF900CF7785 /* apple_hid_usage_tables.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = apple_hid_usage_tables.hpp; path = include/apple_hid_usage_tables.hpp; sourceTree = "<group>"; };
+		341C8E831D4BC2980018D32C /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = "<group>"; };
+		341C8E841D4C8C740018D32C /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = "<group>"; };
 		344149111D212A1600C8ECFC /* grabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = grabber; sourceTree = BUILT_PRODUCTS_DIR; };
 		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3446AA8D1D49A41100337B36 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../../share/hid_report.hpp; sourceTree = "<group>"; };
@@ -102,8 +104,10 @@
 			children = (
 				340E33EC1D43BFF900CF7785 /* apple_hid_usage_tables.hpp */,
 				34E450281D2AB18B00C5AC13 /* event_grabber.hpp */,
+				341C8E841D4C8C740018D32C /* grabber_server.hpp */,
 				3495C67E1D368FF0007CB9E7 /* grabber.hpp */,
 				349115941D2F754500FE93B7 /* human_interface_device.hpp */,
+				341C8E831D4BC2980018D32C /* session.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
@@ -207,6 +211,9 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../vendor,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
