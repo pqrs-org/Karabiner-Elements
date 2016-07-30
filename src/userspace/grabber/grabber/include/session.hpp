@@ -2,18 +2,21 @@
 
 class session final {
 public:
-  static uid_t get_user_id(void) {
+  static bool get_user_id(uid_t& user_id) {
     auto dictionary = CGSessionCopyCurrentDictionary();
     if (!dictionary) {
-      return -1;
+      return false;
     }
 
-    uid_t user_id;
+    bool result = false;
     auto number = static_cast<CFNumberRef>(CFDictionaryGetValue(dictionary, kCGSessionUserIDKey));
-    CFNumberGetValue(number, kCFNumberIntType, &user_id);
+    if (number) {
+      CFNumberGetValue(number, kCFNumberIntType, &user_id);
+      result = true;
+    }
 
     CFRelease(dictionary);
 
-    return user_id;
+    return result;
   }
 };
