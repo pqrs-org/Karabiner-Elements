@@ -85,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				3446AA8D1D49A41100337B36 /* hid_report.hpp */,
+				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				3446AA8F1D49A46A00337B36 /* user_client.hpp */,
 				3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */,
 			);
@@ -108,7 +109,6 @@
 				341C8E841D4C8C740018D32C /* grabber_server.hpp */,
 				3495C67E1D368FF0007CB9E7 /* grabber.hpp */,
 				349115941D2F754500FE93B7 /* human_interface_device.hpp */,
-				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				341C8E831D4BC2980018D32C /* session.hpp */,
 			);
 			name = include;
