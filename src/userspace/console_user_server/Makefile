@@ -16,4 +16,4 @@ xcode:
 	open *.xcodeproj
 
 run:
-	./build/Release/server
+	./build/Release/console_user_server
