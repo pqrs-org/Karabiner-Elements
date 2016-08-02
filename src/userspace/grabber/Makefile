@@ -1,6 +1,10 @@
 CONFIGURATION = Release
+VERSION = `cat ../../../version`
 
 all:
+	@echo '"'$(VERSION)'"' > grabber/src/version.hpp.tmp
+	@cmp --quiet grabber/src/version.hpp.tmp grabber/src/version.hpp || mv grabber/src/version.hpp.tmp grabber/src/version.hpp
+	@rm -f grabber/src/version.hpp.tmp
 	xcodebuild -alltargets -configuration $(CONFIGURATION) build
 
 clean:

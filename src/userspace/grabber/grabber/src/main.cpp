@@ -1,7 +1,11 @@
 #include "grabber.hpp"
 
 int main(int argc, const char* argv[]) {
-  logger::get_logger()->info("hello!");
+  const char* version = "version "
+#include "version.hpp"
+      ;
+
+  logger::get_logger()->info(version);
 
   event_grabber observer;
 
