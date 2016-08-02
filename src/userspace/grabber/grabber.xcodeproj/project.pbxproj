@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		344149151D212A1600C8ECFC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 344149141D212A1600C8ECFC /* main.cpp */; };
+		341C8E911D5012260018D32C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 341C8E8F1D5012260018D32C /* main.cpp */; };
 		34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34BB0F0A1D22853700372174 /* IOKit.framework */; };
+		34E420611D5042240022F821 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E420601D5042240022F821 /* SystemConfiguration.framework */; };
 		34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E9F62E1D2134770007AE90 /* Carbon.framework */; };
 /* End PBXBuildFile section */
 
@@ -29,14 +30,18 @@
 		341C8E831D4BC2980018D32C /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = "<group>"; };
 		341C8E841D4C8C740018D32C /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = "<group>"; };
 		341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../../share/local_datagram_server.hpp; sourceTree = "<group>"; };
+		341C8E8A1D4F8AE90018D32C /* server_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = server_client.hpp; path = include/server_client.hpp; sourceTree = "<group>"; };
+		341C8E8B1D4F8AE90018D32C /* userspace_connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_connection_manager.hpp; path = include/userspace_connection_manager.hpp; sourceTree = "<group>"; };
+		341C8E8C1D4F98250018D32C /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = "<group>"; };
+		341C8E8F1D5012260018D32C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<group>"; };
 		344149111D212A1600C8ECFC /* grabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = grabber; sourceTree = BUILT_PRODUCTS_DIR; };
-		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3446AA8D1D49A41100337B36 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../../share/hid_report.hpp; sourceTree = "<group>"; };
 		3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = "<group>"; };
 		3446AA8F1D49A46A00337B36 /* user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = user_client.hpp; path = ../../share/user_client.hpp; sourceTree = "<group>"; };
 		349115941D2F754500FE93B7 /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = include/human_interface_device.hpp; sourceTree = "<group>"; };
 		3495C67E1D368FF0007CB9E7 /* grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber.hpp; path = include/grabber.hpp; sourceTree = "<group>"; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		34E420601D5042240022F821 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		34E450281D2AB18B00C5AC13 /* event_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_grabber.hpp; path = include/event_grabber.hpp; sourceTree = "<group>"; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -46,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34E420611D5042240022F821 /* SystemConfiguration.framework in Frameworks */,
 				34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */,
 				34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */,
 			);
@@ -54,6 +60,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		341C8E8D1D5012110018D32C /* src */ = {
+			isa = PBXGroup;
+			children = (
+				341C8E8F1D5012260018D32C /* main.cpp */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
 		344149081D212A1600C8ECFC = {
 			isa = PBXGroup;
 			children = (
@@ -75,8 +89,8 @@
 			isa = PBXGroup;
 			children = (
 				34E450271D2AB18400C5AC13 /* include */,
-				344149141D212A1600C8ECFC /* main.cpp */,
 				3495C6801D3CE652007CB9E7 /* share */,
+				341C8E8D1D5012110018D32C /* src */,
 			);
 			path = grabber;
 			sourceTree = "<group>";
@@ -95,6 +109,7 @@
 		34BB0F0C1D22853D00372174 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				34E420601D5042240022F821 /* SystemConfiguration.framework */,
 				34BB0F0A1D22853700372174 /* IOKit.framework */,
 				34E9F62E1D2134770007AE90 /* Carbon.framework */,
 			);
@@ -109,7 +124,10 @@
 				341C8E841D4C8C740018D32C /* grabber_server.hpp */,
 				3495C67E1D368FF0007CB9E7 /* grabber.hpp */,
 				349115941D2F754500FE93B7 /* human_interface_device.hpp */,
+				341C8E8C1D4F98250018D32C /* logger.hpp */,
+				341C8E8A1D4F8AE90018D32C /* server_client.hpp */,
 				341C8E831D4BC2980018D32C /* session.hpp */,
+				341C8E8B1D4F8AE90018D32C /* userspace_connection_manager.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
@@ -169,7 +187,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				344149151D212A1600C8ECFC /* main.cpp in Sources */,
+				341C8E911D5012260018D32C /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

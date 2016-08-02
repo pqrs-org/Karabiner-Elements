@@ -1,22 +1,18 @@
 #pragma once
 
+#include <SystemConfiguration/SystemConfiguration.h>
+
+#include "logger.hpp"
+
 class session final {
 public:
-  static bool get_user_id(uid_t& user_id) {
-    auto dictionary = CGSessionCopyCurrentDictionary();
-    if (!dictionary) {
+  static bool get_current_console_user_id(uid_t& user_id) {
+    auto user_name = SCDynamicStoreCopyConsoleUser(nullptr, &user_id, nullptr);
+    if (! user_name) {
+      user_id = 0;
       return false;
     }
-
-    bool result = false;
-    auto number = static_cast<CFNumberRef>(CFDictionaryGetValue(dictionary, kCGSessionUserIDKey));
-    if (number) {
-      CFNumberGetValue(number, kCFNumberIntType, &user_id);
-      result = true;
-    }
-
-    CFRelease(dictionary);
-
-    return result;
+    CFRelease(user_name);
+    return true;
   }
 };
