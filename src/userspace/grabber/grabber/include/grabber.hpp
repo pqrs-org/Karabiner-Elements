@@ -1,7 +1,6 @@
 #pragma once
 
 // OS X headers
-#include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -36,6 +35,9 @@
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
 #include "local_datagram_server.hpp"
+#include "logger.hpp"
+#include "server_client.hpp"
 #include "session.hpp"
 #include "user_client.hpp"
+#include "userspace_connection_manager.hpp"
 #include "virtual_hid_manager_user_client_method.hpp"

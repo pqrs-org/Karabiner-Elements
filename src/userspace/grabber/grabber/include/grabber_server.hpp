@@ -11,7 +11,7 @@ public:
     server_ = std::make_unique<local_datagram_server>(path);
 
     uid_t uid;
-    if (session::get_user_id(uid)) {
+    if (session::get_current_console_user_id(uid)) {
       chown(path, uid, 0);
     }
     chmod(path, 0600);
