@@ -14,21 +14,21 @@ public:
     timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
     if (!timer_) {
       logger->error("failed to dispatch_source_create");
+    } else {
+      dispatch_source_set_timer(timer_, dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), 1.0 * NSEC_PER_SEC, 0);
+      dispatch_source_set_event_handler(timer_, ^{
+        uid_t uid = 0;
+        session::get_current_console_user_id(uid);
+
+        if (last_uid_ != uid) {
+          last_uid_ = uid;
+          logger->info("current_console_user_id: {0}", uid);
+          prepare_socket_directory(uid);
+        }
+      });
+
+      dispatch_resume(timer_);
     }
-
-    dispatch_source_set_timer(timer_, dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), 1.0 * NSEC_PER_SEC, 0);
-    dispatch_source_set_event_handler(timer_, ^{
-      uid_t uid = 0;
-      session::get_current_console_user_id(uid);
-
-      if (last_uid_ != uid) {
-        last_uid_ = uid;
-        logger->info("current_console_user_id: {0}", uid);
-        prepare_socket_directory(uid);
-      }
-    });
-
-    dispatch_resume(timer_);
   }
 
   void prepare_socket_directory(uid_t uid) {
