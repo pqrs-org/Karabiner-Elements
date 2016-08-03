@@ -27,7 +27,8 @@
 /* Begin PBXFileReference section */
 		341C8E851D4CE6C00018D32C /* grabber_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_client.hpp; path = include/grabber_client.hpp; sourceTree = "<group>"; };
 		341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../../share/local_datagram_server.hpp; sourceTree = "<group>"; };
-		341C8E881D4CF6BD0018D32C /* grabber_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_observer.hpp; path = include/grabber_observer.hpp; sourceTree = "<group>"; };
+		341F59CB1D516AEC00B441A8 /* receiver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = receiver.hpp; path = include/receiver.hpp; sourceTree = "<group>"; };
+		341F59CC1D516B1500B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = "<group>"; };
 		344149111D212A1600C8ECFC /* console_user_server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = console_user_server; sourceTree = BUILT_PRODUCTS_DIR; };
 		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3446AA901D49A63E00337B36 /* io_hid_post_event_wrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = io_hid_post_event_wrapper.hpp; path = include/io_hid_post_event_wrapper.hpp; sourceTree = "<group>"; };
@@ -79,6 +80,7 @@
 		3495C6801D3CE652007CB9E7 /* share */ = {
 			isa = PBXGroup;
 			children = (
+				341F59CC1D516B1500B441A8 /* constants.hpp */,
 				341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */,
 				3446AA911D49A66600337B36 /* user_client.hpp */,
 			);
@@ -97,8 +99,8 @@
 		34E450271D2AB18400C5AC13 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				341F59CB1D516AEC00B441A8 /* receiver.hpp */,
 				341C8E851D4CE6C00018D32C /* grabber_client.hpp */,
-				341C8E881D4CF6BD0018D32C /* grabber_observer.hpp */,
 				3446AA901D49A63E00337B36 /* io_hid_post_event_wrapper.hpp */,
 			);
 			name = include;

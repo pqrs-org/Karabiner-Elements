@@ -1,15 +1,19 @@
 #pragma once
 
+#include "constants.hpp"
 #include "local_datagram_server.hpp"
 
-class grabber_observer final {
+class receiver final {
 public:
   std::thread start(void) {
-    const char* path = "/tmp/karabiner_observer";
-    unlink(path);
-    server_ = std::make_unique<local_datagram_server>(path);
-
-    chmod(path, 0600);
+    try {
+      const char* path = constants::get_console_user_socket_file_path();
+      unlink(path);
+      server_ = std::make_unique<local_datagram_server>(path);
+      chmod(path, 0600);
+    } catch (...) {
+      std::cout << "default exception";
+    }
 
     return std::thread([this] { this->worker(); });
   }
@@ -22,8 +26,7 @@ public:
       return;
     }
 
-    for (;;)
-    {
+    for (;;) {
       asio::local::datagram_protocol::endpoint sender_endpoint;
       size_t length = server_->get_socket().receive_from(asio::buffer(buffer_), sender_endpoint);
       std::cout << length << std::endl;
