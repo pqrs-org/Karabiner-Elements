@@ -6,9 +6,7 @@
 #include <memory>
 #include <thread>
 
-// asio headers
-#define ASIO_STANDALONE
-#include <asio.hpp>
+#include "include_boost.hpp"
 
 #include "connection_manager.hpp"
 #include "grabber_client.hpp"
@@ -20,7 +18,7 @@ int main(int argc, const char* argv[]) {
   connection_manager manager;
 
   receiver r;
-  auto th = r.start();
+  r.start();
 
   CFRunLoopRun();
   return 0;

@@ -29,8 +29,8 @@ public:
 
     for (;;) {
       std::cout << "receive_from" << std::endl;
-      asio::local::datagram_protocol::endpoint sender_endpoint;
-      size_t length = server_->get_socket().receive_from(asio::buffer(buffer_), sender_endpoint);
+      boost::asio::local::datagram_protocol::endpoint sender_endpoint;
+      size_t length = server_->get_socket().receive_from(boost::asio::buffer(buffer_), sender_endpoint);
       std::cout << length << std::endl;
     }
   }

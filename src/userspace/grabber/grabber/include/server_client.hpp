@@ -9,11 +9,11 @@ public:
   }
 
   void send(const uint8_t* _Nonnull buffer, size_t buffer_length) {
-    socket_.send_to(asio::buffer(buffer, buffer_length), endpoint_);
+    socket_.send_to(boost::asio::buffer(buffer, buffer_length), endpoint_);
   }
 
 private:
-  asio::local::datagram_protocol::endpoint endpoint_;
-  asio::io_service io_service_;
-  asio::local::datagram_protocol::socket socket_;
+  boost::asio::local::datagram_protocol::endpoint endpoint_;
+  boost::asio::io_service io_service_;
+  boost::asio::local::datagram_protocol::socket socket_;
 };

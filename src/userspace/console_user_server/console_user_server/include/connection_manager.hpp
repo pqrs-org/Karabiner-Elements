@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "receiver.hpp"
 #include "session.hpp"
 
 class connection_manager final {
@@ -24,4 +25,5 @@ public:
 private:
   dispatch_source_t timer_;
   session::state session_state_;
+  receiver receiver_;
 };

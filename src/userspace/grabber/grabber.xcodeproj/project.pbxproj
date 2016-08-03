@@ -35,6 +35,7 @@
 		341C8E8C1D4F98250018D32C /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = "<group>"; };
 		341C8E8F1D5012260018D32C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<group>"; };
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = "<group>"; };
+		341F59CF1D51F6CA00B441A8 /* include_boost.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = include_boost.hpp; path = include/include_boost.hpp; sourceTree = "<group>"; };
 		344149111D212A1600C8ECFC /* grabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = grabber; sourceTree = BUILT_PRODUCTS_DIR; };
 		3446AA8D1D49A41100337B36 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../../share/hid_report.hpp; sourceTree = "<group>"; };
 		3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = "<group>"; };
@@ -126,6 +127,7 @@
 				341C8E841D4C8C740018D32C /* grabber_server.hpp */,
 				3495C67E1D368FF0007CB9E7 /* grabber.hpp */,
 				349115941D2F754500FE93B7 /* human_interface_device.hpp */,
+				341F59CF1D51F6CA00B441A8 /* include_boost.hpp */,
 				341C8E8C1D4F98250018D32C /* logger.hpp */,
 				341C8E8A1D4F8AE90018D32C /* server_client.hpp */,
 				341C8E831D4BC2980018D32C /* session.hpp */,
@@ -233,7 +235,11 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = ../vendor;
+				HEADER_SEARCH_PATHS = (
+					../vendor,
+					/opt/local/include,
+					/usr/local/include,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;

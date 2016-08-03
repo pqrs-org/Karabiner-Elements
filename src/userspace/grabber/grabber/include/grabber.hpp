@@ -24,9 +24,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-// asio headers
-#define ASIO_STANDALONE
-#include <asio.hpp>
+#include "include_boost.hpp"
 
 // grabber headers
 #include "apple_hid_usage_tables.hpp"
