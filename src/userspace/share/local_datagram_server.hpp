@@ -10,8 +10,6 @@ public:
     check_deadline();
   }
 
-  boost::asio::local::datagram_protocol::socket& get_socket(void) { return socket_; }
-
   // from doc/html/boost_asio/example/cpp03/timeouts/blocking_udp_client.cpp
   std::size_t receive(const boost::asio::mutable_buffer& buffer, boost::posix_time::time_duration timeout, boost::system::error_code& ec) {
     deadline_.expires_from_now(timeout);

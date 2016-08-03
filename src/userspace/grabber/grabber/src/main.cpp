@@ -10,7 +10,7 @@ int main(int argc, const char* argv[]) {
   event_grabber observer;
 
   grabber_server server;
-  std::thread th = server.start();
+  server.start();
 
   userspace_connection_manager connection_manager;
 
