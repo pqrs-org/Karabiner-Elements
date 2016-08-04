@@ -5,7 +5,7 @@ int main(int argc, const char* argv[]) {
 #include "version.hpp"
       ;
 
-  logger::get_logger()->info(version);
+  logger::get_logger().info(version);
 
   event_grabber observer;
 
