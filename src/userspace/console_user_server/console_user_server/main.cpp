@@ -15,11 +15,6 @@
 #include "session.hpp"
 
 int main(int argc, const char* argv[]) {
-  io_hid_post_event_wrapper w;
-  w.start();
-  w.post_key(0xa0, KRBN_EV_TYPE_KEY_DOWN, 0, false);
-  w.post_key(0xa0, KRBN_EV_TYPE_KEY_UP, 0, false);
-
   connection_manager manager;
 
   receiver r;

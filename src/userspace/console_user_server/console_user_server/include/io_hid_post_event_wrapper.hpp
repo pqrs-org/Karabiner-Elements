@@ -1,5 +1,6 @@
 #pragma once
 
+#include "logger.hpp"
 #include "user_client.hpp"
 #include "userspace_defs.h"
 
@@ -12,6 +13,7 @@ public:
   void post_modifier_flags(IOOptionBits flags) {
     auto connect = user_client_.get_connect();
     if (!connect) {
+      logger::get_logger().error("connect == nullptr");
       return;
     }
 
@@ -20,15 +22,15 @@ public:
 
     IOGPoint loc = {0, 0};
     auto kr = IOHIDPostEvent(connect, NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
-
     if (KERN_SUCCESS != kr) {
-      std::cerr << "IOHIDPostEvent returned 0x" << std::hex << kr << std::dec << std::endl;
+      logger::get_logger().error("IOHIDPostEvent returned 0x{0:x}", kr);
     }
   }
 
   void post_key(uint8_t key_code, enum krbn_ev_type ev_type, IOOptionBits flags, bool repeat) {
     auto connect = user_client_.get_connect();
     if (!connect) {
+      logger::get_logger().error("connect == nullptr");
       return;
     }
 
@@ -52,13 +54,14 @@ public:
                              0);
 
     if (KERN_SUCCESS != kr) {
-      std::cerr << "IOHIDPostEvent returned 0x" << std::hex << kr << std::dec << std::endl;
+      logger::get_logger().error("IOHIDPostEvent returned 0x{0:x}", kr);
     }
   }
 
   void post_aux_key(uint8_t key_code, bool key_down, IOOptionBits flags) {
     auto connect = user_client_.get_connect();
     if (!connect) {
+      logger::get_logger().error("connect == nullptr");
       return;
     }
 
@@ -70,7 +73,7 @@ public:
     IOGPoint loc = {0, 0};
     kern_return_t kr = IOHIDPostEvent(connect, NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, 0);
     if (KERN_SUCCESS != kr) {
-      std::cerr << "IOHIDPostEvent returned 0x" << std::hex << kr << std::dec << std::endl;
+      logger::get_logger().error("IOHIDPostEvent returned 0x{0:x}", kr);
     }
   }
 
