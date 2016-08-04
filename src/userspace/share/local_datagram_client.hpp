@@ -1,7 +1,5 @@
 #pragma once
 
-#include <mutex>
-
 class local_datagram_client final {
 public:
   local_datagram_client(const char* _Nonnull path) : endpoint_(path),
@@ -18,48 +16,20 @@ public:
   }
 
   void send_to(const uint8_t* _Nonnull buffer, size_t buffer_length) {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    auto item_ptr = std::make_shared<item>(buffer, buffer_length);
-    queue_.push_back(item_ptr);
-    io_service_.post(boost::bind(&local_datagram_client::do_send, this, boost::ref(*item_ptr)));
+    auto ptr = std::make_shared<std::vector<uint8_t>>();
+    ptr->resize(buffer_length);
+    memcpy(&((*ptr)[0]), buffer, buffer_length);
+    io_service_.post(boost::bind(&local_datagram_client::do_send, this, ptr));
   }
 
 private:
-  class item final {
-  public:
-    item(const uint8_t* _Nonnull buffer, size_t buffer_length) : id_(get_next_id()) {
-      buffer_.resize(buffer_length);
-      memcpy(&(buffer_[0]), buffer, buffer_length);
-    }
-
-    static uint64_t get_next_id(void) {
-      static uint64_t id;
-      return ++id;
-    }
-
-    uint64_t get_id(void) const { return id_; }
-    const std::vector<uint8_t> get_buffer(void) const { return buffer_; }
-
-  private:
-    uint64_t id_;
-    std::vector<uint8_t> buffer_;
-  };
-
-  void do_send(const item& item) {
-    socket_.async_send_to(boost::asio::buffer(item.get_buffer()), endpoint_,
-                          boost::bind(&local_datagram_client::handle_send, this, item.get_id()));
+  void do_send(const std::shared_ptr<std::vector<uint8_t>>& ptr) {
+    socket_.async_send_to(boost::asio::buffer(*ptr), endpoint_,
+                          boost::bind(&local_datagram_client::handle_send, this, ptr));
   }
 
-  void handle_send(uint64_t item_id) {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    for (const auto& i : queue_) {
-      if (i->get_id() == item_id) {
-        queue_.remove(i);
-        return;
-      }
-    }
+  void handle_send(const std::shared_ptr<std::vector<uint8_t>>& ptr) {
+    // shared_ptr will be released.
   }
 
   boost::asio::local::datagram_protocol::endpoint endpoint_;
@@ -67,6 +37,4 @@ private:
   boost::asio::io_service::work work_;
   boost::asio::local::datagram_protocol::socket socket_;
   std::thread thread_;
-  std::mutex mutex_;
-  std::list<std::shared_ptr<item>> queue_;
 };
