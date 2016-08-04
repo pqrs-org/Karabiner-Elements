@@ -32,6 +32,7 @@
 #include "grabber_server.hpp"
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
+#include "local_datagram_client.hpp"
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
 #include "server_client.hpp"

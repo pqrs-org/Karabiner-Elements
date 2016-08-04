@@ -1,14 +1,16 @@
 #pragma once
 
 #include "apple_hid_usage_tables.hpp"
+#include "constants.hpp"
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
+#include "local_datagram_client.hpp"
 #include "user_client.hpp"
 #include "virtual_hid_manager_user_client_method.hpp"
 
 class event_grabber final {
 public:
-  event_grabber(void) {
+  event_grabber(void) : console_user_client_(constants::get_console_user_socket_file_path()) {
     if (!user_client_.open("org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType)) {
       std::cerr << "Failed to open user_client." << std::endl;
       return;
@@ -210,21 +212,9 @@ private:
 
         case kHIDPage_AppleVendorTopCase:
           if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
-            hid_report::pointing_input report;
-            if (pressed) {
-              report.buttons[3] = 0x1;
-              //report.x = 0x80;
-              //report.vertical_wheel = 0x80;
-              //report.horizontal_wheel = 0x80;
-            }
-
-            auto kr = IOConnectCallStructMethod(self->user_client_.get_connect(),
-                                                static_cast<uint32_t>(virtual_hid_manager_user_client_method::pointing_input_report),
-                                                static_cast<const void*>(&report), sizeof(report),
-                                                nullptr, 0);
-            if (kr != KERN_SUCCESS) {
-              std::cerr << "failed to sent report: 0x" << std::hex << kr << std::dec << std::endl;
-            }
+            uint8_t buffer[8];
+            memset(buffer, 0x80, sizeof(buffer));
+            self->console_user_client_.send_to(buffer, sizeof(buffer));
           }
           break;
 
@@ -277,4 +267,6 @@ private:
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::shared_ptr<human_interface_device>> hids_;
   std::list<uint32_t> pressing_key_usages_;
+
+  local_datagram_client console_user_client_;
 };
