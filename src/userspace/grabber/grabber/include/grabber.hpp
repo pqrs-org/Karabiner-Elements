@@ -9,6 +9,7 @@
 #include <IOKit/hid/IOHIDQueue.h>
 #include <IOKit/hid/IOHIDValue.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
+#include <IOKit/hidsystem/ev_keymap.h>
 #include <mach/mach_time.h>
 
 // C++ headers

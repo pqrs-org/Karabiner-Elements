@@ -37,6 +37,7 @@
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = "<group>"; };
 		341F59CF1D51F6CA00B441A8 /* include_boost.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = include_boost.hpp; path = include/include_boost.hpp; sourceTree = "<group>"; };
 		341F59D11D5244F200B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../../share/local_datagram_client.hpp; sourceTree = "<group>"; };
+		341F59D81D538EE900B441A8 /* userspace_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = userspace_defs.h; path = ../../share/userspace_defs.h; sourceTree = "<group>"; };
 		344149111D212A1600C8ECFC /* grabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = grabber; sourceTree = BUILT_PRODUCTS_DIR; };
 		3446AA8D1D49A41100337B36 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../../share/hid_report.hpp; sourceTree = "<group>"; };
 		3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = "<group>"; };
@@ -106,6 +107,7 @@
 				341F59D11D5244F200B441A8 /* local_datagram_client.hpp */,
 				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				3446AA8F1D49A46A00337B36 /* user_client.hpp */,
+				341F59D81D538EE900B441A8 /* userspace_defs.h */,
 				3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */,
 			);
 			name = share;

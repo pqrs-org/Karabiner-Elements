@@ -6,6 +6,7 @@
 #include "human_interface_device.hpp"
 #include "local_datagram_client.hpp"
 #include "user_client.hpp"
+#include "userspace_defs.h"
 #include "virtual_hid_manager_user_client_method.hpp"
 
 class event_grabber final {
@@ -212,9 +213,16 @@ private:
 
         case kHIDPage_AppleVendorTopCase:
           if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
-            uint8_t buffer[8];
-            memset(buffer, 0x80, sizeof(buffer));
-            self->console_user_client_.send_to(buffer, sizeof(buffer));
+            IOOptionBits flags = 0;
+            if (pressed) {
+              flags |= NX_SECONDARYFNMASK;
+            }
+
+            std::vector<uint8_t> buffer;
+            buffer.resize(1 + sizeof(flags));
+            buffer[0] = KRBN_OP_TYPE_POST_MODIFIER_FLAGS;
+            memcpy(&(buffer[1]), &flags, sizeof(flags));
+            self->console_user_client_.send_to(buffer);
           }
           break;
 
