@@ -15,14 +15,18 @@ public:
     thread_.join();
   }
 
-  void send_to(const uint8_t* _Nonnull p, size_t length) {
-    auto ptr = std::make_shared<buffer>(p, length);
+  void send_to(const std::vector<uint8_t>& v) {
+    auto ptr = std::make_shared<buffer>(v);
     io_service_.post(boost::bind(&local_datagram_client::do_send, this, ptr));
   }
 
 private:
   class buffer final {
   public:
+    buffer(const std::vector<uint8_t> v) {
+      v_ = v;
+    }
+
     buffer(const uint8_t* _Nonnull p, size_t length) {
       v_.resize(length);
       memcpy(&(v_[0]), p, length);
