@@ -30,7 +30,6 @@
 		341C8E831D4BC2980018D32C /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = "<group>"; };
 		341C8E841D4C8C740018D32C /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = "<group>"; };
 		341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../../share/local_datagram_server.hpp; sourceTree = "<group>"; };
-		341C8E8A1D4F8AE90018D32C /* server_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = server_client.hpp; path = include/server_client.hpp; sourceTree = "<group>"; };
 		341C8E8B1D4F8AE90018D32C /* userspace_connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_connection_manager.hpp; path = include/userspace_connection_manager.hpp; sourceTree = "<group>"; };
 		341C8E8C1D4F98250018D32C /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = "<group>"; };
 		341C8E8F1D5012260018D32C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<group>"; };
@@ -133,7 +132,6 @@
 				349115941D2F754500FE93B7 /* human_interface_device.hpp */,
 				341F59CF1D51F6CA00B441A8 /* include_boost.hpp */,
 				341C8E8C1D4F98250018D32C /* logger.hpp */,
-				341C8E8A1D4F8AE90018D32C /* server_client.hpp */,
 				341C8E831D4BC2980018D32C /* session.hpp */,
 				341C8E8B1D4F8AE90018D32C /* userspace_connection_manager.hpp */,
 			);

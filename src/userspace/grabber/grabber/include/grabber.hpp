@@ -36,7 +36,6 @@
 #include "local_datagram_client.hpp"
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
-#include "server_client.hpp"
 #include "session.hpp"
 #include "user_client.hpp"
 #include "userspace_connection_manager.hpp"
