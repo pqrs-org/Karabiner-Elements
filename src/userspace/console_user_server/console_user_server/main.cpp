@@ -9,10 +9,7 @@
 #include "include_boost.hpp"
 
 #include "connection_manager.hpp"
-#include "grabber_client.hpp"
-#include "io_hid_post_event_wrapper.hpp"
 #include "receiver.hpp"
-#include "session.hpp"
 
 int main(int argc, const char* argv[]) {
   connection_manager manager;
