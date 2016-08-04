@@ -11,7 +11,7 @@ public:
   }
 
   ~local_datagram_client(void) {
-    io_service_.stop();
+    io_service_.post(boost::bind(&local_datagram_client::do_stop, this));
     thread_.join();
   }
 
@@ -41,6 +41,10 @@ private:
 
   void handle_send(const std::shared_ptr<buffer>& ptr) {
     // buffer will be released.
+  }
+
+  void do_stop(void) {
+    io_service_.stop();
   }
 
   boost::asio::local::datagram_protocol::endpoint endpoint_;
