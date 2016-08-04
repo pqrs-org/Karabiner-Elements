@@ -15,21 +15,32 @@ public:
     thread_.join();
   }
 
-  void send_to(const uint8_t* _Nonnull buffer, size_t buffer_length) {
-    auto ptr = std::make_shared<std::vector<uint8_t>>();
-    ptr->resize(buffer_length);
-    memcpy(&((*ptr)[0]), buffer, buffer_length);
+  void send_to(const uint8_t* _Nonnull p, size_t length) {
+    auto ptr = std::make_shared<buffer>(p, length);
     io_service_.post(boost::bind(&local_datagram_client::do_send, this, ptr));
   }
 
 private:
-  void do_send(const std::shared_ptr<std::vector<uint8_t>>& ptr) {
-    socket_.async_send_to(boost::asio::buffer(*ptr), endpoint_,
+  class buffer final {
+  public:
+    buffer(const uint8_t* _Nonnull p, size_t length) {
+      v_.resize(length);
+      memcpy(&(v_[0]), p, length);
+    }
+
+    const std::vector<uint8_t>& get_vector(void) const { return v_; }
+
+  private:
+    std::vector<uint8_t> v_;
+  };
+
+  void do_send(const std::shared_ptr<buffer>& ptr) {
+    socket_.async_send_to(boost::asio::buffer(ptr->get_vector()), endpoint_,
                           boost::bind(&local_datagram_client::handle_send, this, ptr));
   }
 
-  void handle_send(const std::shared_ptr<std::vector<uint8_t>>& ptr) {
-    // shared_ptr will be released.
+  void handle_send(const std::shared_ptr<buffer>& ptr) {
+    // buffer will be released.
   }
 
   boost::asio::local::datagram_protocol::endpoint endpoint_;
