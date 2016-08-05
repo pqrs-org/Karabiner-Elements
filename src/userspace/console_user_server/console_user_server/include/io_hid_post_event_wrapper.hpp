@@ -6,7 +6,7 @@
 
 class io_hid_post_event_wrapper final {
 public:
-  void start(void) {
+  io_hid_post_event_wrapper(void) {
     user_client_.open(kIOHIDSystemClass, kIOHIDParamConnectType);
   }
 

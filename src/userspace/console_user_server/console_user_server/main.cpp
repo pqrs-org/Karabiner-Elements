@@ -9,13 +9,9 @@
 #include "include_boost.hpp"
 
 #include "connection_manager.hpp"
-#include "receiver.hpp"
 
 int main(int argc, const char* argv[]) {
   connection_manager manager;
-
-  receiver r;
-  r.start();
 
   CFRunLoopRun();
   return 0;
