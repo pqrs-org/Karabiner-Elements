@@ -4,18 +4,18 @@
 #include "constants.hpp"
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
+#include "iokit_user_client.hpp"
 #include "local_datagram_client.hpp"
 #include "logger.hpp"
-#include "user_client.hpp"
 #include "userspace_defs.h"
 #include "virtual_hid_manager_user_client_method.hpp"
 
 class event_grabber final {
 public:
-  event_grabber(void) : user_client_(logger::get_logger()),
+  event_grabber(void) : iokit_user_client_(logger::get_logger()),
                         console_user_client_(constants::get_console_user_socket_file_path()) {
-    if (!user_client_.open("org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType)) {
-      std::cerr << "Failed to open user_client." << std::endl;
+    if (!iokit_user_client_.open("org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType)) {
+      std::cerr << "Failed to open iokit_user_client." << std::endl;
       return;
     }
 
@@ -264,7 +264,7 @@ private:
       ++i;
     }
 
-    auto kr = IOConnectCallStructMethod(user_client_.get_connect(),
+    auto kr = IOConnectCallStructMethod(iokit_user_client_.get_connect(),
                                         static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
                                         static_cast<const void*>(&report), sizeof(report),
                                         nullptr, 0);
@@ -273,7 +273,7 @@ private:
     }
   }
 
-  user_client user_client_;
+  iokit_user_client iokit_user_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::shared_ptr<human_interface_device>> hids_;
   std::list<uint32_t> pressing_key_usages_;

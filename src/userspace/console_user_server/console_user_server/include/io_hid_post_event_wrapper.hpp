@@ -4,18 +4,18 @@
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 
+#include "iokit_user_client.hpp"
 #include "logger.hpp"
-#include "user_client.hpp"
 #include "userspace_defs.h"
 
 class io_hid_post_event_wrapper final {
 public:
-  io_hid_post_event_wrapper(void) : user_client_(logger::get_logger()) {
-    user_client_.open(kIOHIDSystemClass, kIOHIDParamConnectType);
+  io_hid_post_event_wrapper(void) : iokit_user_client_(logger::get_logger()) {
+    iokit_user_client_.open(kIOHIDSystemClass, kIOHIDParamConnectType);
   }
 
   void post_modifier_flags(IOOptionBits flags) {
-    auto connect = user_client_.get_connect();
+    auto connect = iokit_user_client_.get_connect();
     if (!connect) {
       logger::get_logger().error("connect == nullptr");
       return;
@@ -32,7 +32,7 @@ public:
   }
 
   void post_key(uint8_t key_code, enum krbn_ev_type ev_type, IOOptionBits flags, bool repeat) {
-    auto connect = user_client_.get_connect();
+    auto connect = iokit_user_client_.get_connect();
     if (!connect) {
       logger::get_logger().error("connect == nullptr");
       return;
@@ -63,7 +63,7 @@ public:
   }
 
   void post_aux_key(uint8_t key_code, bool key_down, IOOptionBits flags) {
-    auto connect = user_client_.get_connect();
+    auto connect = iokit_user_client_.get_connect();
     if (!connect) {
       logger::get_logger().error("connect == nullptr");
       return;
@@ -82,5 +82,5 @@ public:
   }
 
 private:
-  user_client user_client_;
+  iokit_user_client iokit_user_client_;
 };

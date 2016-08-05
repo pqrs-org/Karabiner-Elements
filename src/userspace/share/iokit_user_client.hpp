@@ -2,14 +2,14 @@
 
 #include <spdlog/spdlog.h>
 
-class user_client final {
+class iokit_user_client final {
 public:
-  user_client(spdlog::logger& logger) : logger_(logger),
-                                        connect_(IO_OBJECT_NULL),
-                                        service_(IO_OBJECT_NULL) {
+  iokit_user_client(spdlog::logger& logger) : logger_(logger),
+                                              connect_(IO_OBJECT_NULL),
+                                              service_(IO_OBJECT_NULL) {
   }
 
-  ~user_client(void) {
+  ~iokit_user_client(void) {
     close();
   }
 
