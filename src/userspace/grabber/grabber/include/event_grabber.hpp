@@ -5,13 +5,15 @@
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
 #include "local_datagram_client.hpp"
+#include "logger.hpp"
 #include "user_client.hpp"
 #include "userspace_defs.h"
 #include "virtual_hid_manager_user_client_method.hpp"
 
 class event_grabber final {
 public:
-  event_grabber(void) : console_user_client_(constants::get_console_user_socket_file_path()) {
+  event_grabber(void) : user_client_(logger::get_logger()),
+                        console_user_client_(constants::get_console_user_socket_file_path()) {
     if (!user_client_.open("org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType)) {
       std::cerr << "Failed to open user_client." << std::endl;
       return;

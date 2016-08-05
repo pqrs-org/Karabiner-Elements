@@ -1,12 +1,16 @@
 #pragma once
 
+#include <IOKit/IOKitLib.h>
+#include <IOKit/hidsystem/IOHIDShared.h>
+#include <IOKit/hidsystem/ev_keymap.h>
+
 #include "logger.hpp"
 #include "user_client.hpp"
 #include "userspace_defs.h"
 
 class io_hid_post_event_wrapper final {
 public:
-  io_hid_post_event_wrapper(void) {
+  io_hid_post_event_wrapper(void) : user_client_(logger::get_logger()) {
     user_client_.open(kIOHIDSystemClass, kIOHIDParamConnectType);
   }
 

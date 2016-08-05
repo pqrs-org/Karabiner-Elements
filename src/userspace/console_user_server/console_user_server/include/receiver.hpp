@@ -57,13 +57,21 @@ public:
 
       if (!ec && n > 0) {
         --n;
-        if (buffer_[0] == KRBN_OP_TYPE_POST_MODIFIER_FLAGS) {
+
+        switch (buffer_[0]) {
+        case KRBN_OP_TYPE_POST_MODIFIER_FLAGS:
           if (n == sizeof(IOOptionBits)) {
             __block IOOptionBits flags;
             memcpy(&flags, &(buffer_[1]), sizeof(flags));
-            std::cout << "0x" << std::hex << flags << std::endl;
             io_hid_post_event_wrapper_.post_modifier_flags(flags);
           }
+          break;
+
+        case KRBN_OP_TYPE_POST_KEY:
+          break;
+
+        default:
+          break;
         }
       }
     }

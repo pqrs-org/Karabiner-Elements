@@ -1,8 +1,12 @@
 #pragma once
 
+#include <spdlog/spdlog.h>
+
 class user_client final {
 public:
-  user_client(void) : connect_(IO_OBJECT_NULL) {
+  user_client(spdlog::logger& logger) : logger_(logger),
+                                        connect_(IO_OBJECT_NULL),
+                                        service_(IO_OBJECT_NULL) {
   }
 
   ~user_client(void) {
@@ -17,7 +21,7 @@ public:
     io_iterator_t iterator = IO_OBJECT_NULL;
     auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(class_name.c_str()), &iterator);
     if (kr != KERN_SUCCESS) {
-      std::cerr << "IOServiceGetMatchingServices failed" << std::endl;
+      logger_.error("IOServiceGetMatchingServices failed: class_name:{0} 0x{1:x}", class_name, kr);
       goto finish;
     }
 
@@ -59,6 +63,7 @@ public:
   io_connect_t get_connect(void) const { return connect_; }
 
 private:
+  spdlog::logger& logger_;
   io_connect_t connect_;
   io_service_t service_;
 };

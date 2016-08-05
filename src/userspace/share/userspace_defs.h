@@ -32,3 +32,7 @@ enum krbn_key_code {
   KRBN_KEY_CODE_F18 = 0x4f,
   KRBN_KEY_CODE_F19 = 0x50,
 };
+
+struct __attribute__((packed)) krbn_op_type_post_modifier_flags {
+  IOOptionBits flags;
+};
