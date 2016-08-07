@@ -10,8 +10,9 @@
 
 class io_hid_post_event_wrapper final {
 public:
-  io_hid_post_event_wrapper(void) : iokit_user_client_(logger::get_logger()) {
+  io_hid_post_event_wrapper(void) : iokit_user_client_(logger::get_logger(), kIOHIDSystemClass, kIOHIDParamConnectType) {
     iokit_user_client_.open(kIOHIDSystemClass, kIOHIDParamConnectType);
+    iokit_user_client_.start();
   }
 
   void post_modifier_flags(IOOptionBits flags) {

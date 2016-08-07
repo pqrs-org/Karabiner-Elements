@@ -12,8 +12,9 @@
 
 class event_grabber final {
 public:
-  event_grabber(void) : iokit_user_client_(logger::get_logger()),
+  event_grabber(void) : iokit_user_client_(logger::get_logger(), "org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType),
                         console_user_client_(constants::get_console_user_socket_file_path()) {
+    iokit_user_client_.start();
     if (!iokit_user_client_.open("org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType)) {
       std::cerr << "Failed to open iokit_user_client." << std::endl;
       return;
