@@ -11,34 +11,21 @@
 class io_hid_post_event_wrapper final {
 public:
   io_hid_post_event_wrapper(void) : iokit_user_client_(logger::get_logger(), kIOHIDSystemClass, kIOHIDParamConnectType) {
-    iokit_user_client_.open(kIOHIDSystemClass, kIOHIDParamConnectType);
     iokit_user_client_.start();
   }
 
   void post_modifier_flags(IOOptionBits flags) {
-    auto connect = iokit_user_client_.get_connect();
-    if (!connect) {
-      logger::get_logger().error("connect == nullptr");
-      return;
-    }
-
     NXEventData event;
     memset(&event, 0, sizeof(event));
 
     IOGPoint loc = {0, 0};
-    auto kr = IOHIDPostEvent(connect, NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
+    auto kr = iokit_user_client_.hid_post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
     if (KERN_SUCCESS != kr) {
       logger::get_logger().error("IOHIDPostEvent returned 0x{0:x}", kr);
     }
   }
 
   void post_key(uint8_t key_code, enum krbn_ev_type ev_type, IOOptionBits flags, bool repeat) {
-    auto connect = iokit_user_client_.get_connect();
-    if (!connect) {
-      logger::get_logger().error("connect == nullptr");
-      return;
-    }
-
     NXEventData event;
     memset(&event, 0, sizeof(event));
     event.key.origCharCode = 0;
@@ -50,13 +37,12 @@ public:
     event.key.keyboardType = 0;
 
     IOGPoint loc = {0, 0};
-    auto kr = IOHIDPostEvent(connect,
-                             ev_type == KRBN_EV_TYPE_KEY_DOWN ? NX_KEYDOWN : NX_KEYUP,
-                             loc,
-                             &event,
-                             kNXEventDataVersion,
-                             flags,
-                             0);
+    auto kr = iokit_user_client_.hid_post_event(ev_type == KRBN_EV_TYPE_KEY_DOWN ? NX_KEYDOWN : NX_KEYUP,
+                                                loc,
+                                                &event,
+                                                kNXEventDataVersion,
+                                                flags,
+                                                0);
 
     if (KERN_SUCCESS != kr) {
       logger::get_logger().error("IOHIDPostEvent returned 0x{0:x}", kr);
@@ -64,19 +50,13 @@ public:
   }
 
   void post_aux_key(uint8_t key_code, bool key_down, IOOptionBits flags) {
-    auto connect = iokit_user_client_.get_connect();
-    if (!connect) {
-      logger::get_logger().error("connect == nullptr");
-      return;
-    }
-
     NXEventData event;
     memset(&event, 0, sizeof(event));
     event.compound.subType = NX_SUBTYPE_AUX_CONTROL_BUTTONS;
     event.compound.misc.L[0] = (key_code << 16) | ((key_down ? NX_KEYDOWN : NX_KEYUP) << 8);
 
     IOGPoint loc = {0, 0};
-    kern_return_t kr = IOHIDPostEvent(connect, NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, 0);
+    kern_return_t kr = iokit_user_client_.hid_post_event(NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, 0);
     if (KERN_SUCCESS != kr) {
       logger::get_logger().error("IOHIDPostEvent returned 0x{0:x}", kr);
     }

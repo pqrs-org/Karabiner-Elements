@@ -1,8 +1,11 @@
 #pragma once
 
 #include <IOKit/IOKitLib.h>
+#include <IOKit/hid/IOHIDLib.h>
 #include <list>
+#include <memory>
 #include <spdlog/spdlog.h>
+#include <thread>
 
 #include "iokit_utility.hpp"
 
@@ -13,9 +16,7 @@ public:
                                                                                             type_(type),
                                                                                             notification_port_(nullptr),
                                                                                             matched_notification_(IO_OBJECT_NULL),
-                                                                                            terminated_notification_(IO_OBJECT_NULL),
-                                                                                            connect_(IO_OBJECT_NULL),
-                                                                                            service_(IO_OBJECT_NULL) {
+                                                                                            terminated_notification_(IO_OBJECT_NULL) {
     notification_port_ = IONotificationPortCreate(kIOMasterPortDefault);
     if (notification_port_) {
       if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
@@ -25,8 +26,6 @@ public:
   }
 
   ~iokit_user_client(void) {
-    close();
-
     if (matched_notification_) {
       IOObjectRelease(matched_notification_);
       matched_notification_ = IO_OBJECT_NULL;
@@ -86,54 +85,38 @@ public:
     }
   }
 
-  bool open(const std::string& class_name, uint32_t type) {
-    if (connect_ != IO_OBJECT_NULL) {
-      return true;
+  kern_return_t call_struct_method(uint32_t selector,
+                                   const void* _Nullable input_struct,
+                                   size_t input_struct_length,
+                                   void* _Nullable output_struct,
+                                   size_t* _Nullable output_struct_length) {
+    std::lock_guard<std::mutex> guard(mutex_);
+
+    if (!connections_.empty()) {
+      auto connect = (connections_.front())->get_connect();
+      return IOConnectCallStructMethod(connect, selector, input_struct, input_struct_length, output_struct, output_struct_length);
     }
 
-    io_iterator_t iterator = IO_OBJECT_NULL;
-    auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(class_name.c_str()), &iterator);
-    if (kr != KERN_SUCCESS) {
-      logger_.error("IOServiceGetMatchingServices failed: class_name:{0} 0x{1:x}", class_name, kr);
-      goto finish;
-    }
-
-    while (true) {
-      service_ = IOIteratorNext(iterator);
-      if (service_ == IO_OBJECT_NULL) {
-        break;
-      }
-
-      kr = IOServiceOpen(service_, mach_task_self(), type, &connect_);
-      if (kr == KERN_SUCCESS) {
-        break;
-      }
-
-      IOObjectRelease(service_);
-      service_ = IO_OBJECT_NULL;
-      connect_ = IO_OBJECT_NULL;
-    }
-
-  finish:
-    if (iterator) {
-      IOObjectRelease(iterator);
-    }
-
-    return connect_ != IO_OBJECT_NULL;
+    logger_.error("iokit_user_client::call_struct_method: connections_ is empty");
+    return kIOReturnError;
   }
 
-  void close() {
-    if (connect_ != IO_OBJECT_NULL) {
-      IOServiceClose(connect_);
-      connect_ = IO_OBJECT_NULL;
-    }
-    if (service_ != IO_OBJECT_NULL) {
-      IOObjectRelease(service_);
-      service_ = IO_OBJECT_NULL;
-    }
-  }
+  kern_return_t hid_post_event(UInt32 event_type,
+                               IOGPoint location,
+                               const NXEventData* _Nullable event_data,
+                               UInt32 event_data_version,
+                               IOOptionBits event_flags,
+                               IOOptionBits options) {
+    std::lock_guard<std::mutex> guard(mutex_);
 
-  io_connect_t get_connect(void) const { return connect_; }
+    if (!connections_.empty()) {
+      auto connect = (connections_.front())->get_connect();
+      return IOHIDPostEvent(connect, event_type, location, event_data, event_data_version, event_flags, options);
+    }
+
+    logger_.error("iokit_user_client::hid_post_event: connections_ is empty");
+    return kIOReturnError;
+  }
 
 private:
   class connection final {
@@ -164,7 +147,6 @@ private:
       }
     }
 
-    io_service_t get_service(void) const { return service_; }
     io_connect_t get_connect(void) const { return connect_; }
     const std::string& get_serial_number(void) const { return serial_number_; }
 
@@ -182,9 +164,11 @@ private:
 
   void matched_callback(io_iterator_t iterator) {
     while (auto service = IOIteratorNext(iterator)) {
-      connections_.push_back(connection(logger_, service, type_));
+      std::lock_guard<std::mutex> guard(mutex_);
 
-      logger_.info("iokit_user_client::matched_callback: {0}", connections_.back().get_serial_number());
+      connections_.push_back(std::make_unique<connection>(logger_, service, type_));
+
+      logger_.info("iokit_user_client::matched_callback: {0}", (connections_.back())->get_serial_number());
       logger_.info("iokit_user_client::matched_callback connections_.size():{0}", connections_.size());
 
       IOObjectRelease(service);
@@ -198,16 +182,15 @@ private:
 
   void terminated_callback(io_iterator_t iterator) {
     while (auto service = IOIteratorNext(iterator)) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
       auto serial_number = iokit_utility::get_serial_number(service);
 
-      auto it = connections_.begin();
-      while (it != connections_.end()) {
-        if (it->get_serial_number() == serial_number) {
-          it = connections_.erase(it);
-        } else {
-          ++it;
-        }
-      }
+      auto it = std::remove_if(connections_.begin(), connections_.end(),
+                               [&serial_number](std::unique_ptr<connection>& c) {
+                                 return c->get_serial_number() == serial_number;
+                               });
+      connections_.erase(it, connections_.end());
 
       logger_.info("iokit_user_client::terminated_callback: {0}", serial_number);
       logger_.info("iokit_user_client::terminated_callback connections_.size():{0}", connections_.size());
@@ -224,8 +207,6 @@ private:
   io_iterator_t matched_notification_;
   io_iterator_t terminated_notification_;
 
-  std::list<connection> connections_;
-
-  io_connect_t connect_;
-  io_service_t service_;
+  std::list<std::unique_ptr<connection>> connections_;
+  std::mutex mutex_;
 };

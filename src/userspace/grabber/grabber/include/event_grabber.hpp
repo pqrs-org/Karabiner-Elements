@@ -15,10 +15,6 @@ public:
   event_grabber(void) : iokit_user_client_(logger::get_logger(), "org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType),
                         console_user_client_(constants::get_console_user_socket_file_path()) {
     iokit_user_client_.start();
-    if (!iokit_user_client_.open("org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType)) {
-      std::cerr << "Failed to open iokit_user_client." << std::endl;
-      return;
-    }
 
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
@@ -265,10 +261,9 @@ private:
       ++i;
     }
 
-    auto kr = IOConnectCallStructMethod(iokit_user_client_.get_connect(),
-                                        static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
-                                        static_cast<const void*>(&report), sizeof(report),
-                                        nullptr, 0);
+    auto kr = iokit_user_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
+                                                    static_cast<const void*>(&report), sizeof(report),
+                                                    nullptr, 0);
     if (kr != KERN_SUCCESS) {
       std::cerr << "failed to sent report: 0x" << std::hex << kr << std::dec << std::endl;
     }

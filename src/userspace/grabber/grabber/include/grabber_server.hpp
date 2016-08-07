@@ -42,9 +42,7 @@ public:
       boost::system::error_code ec;
       std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
 
-      if (ec) {
-        std::cout << "Receive error: " << ec.message() << "\n";
-      } else {
+      if (!ec) {
         std::cout << n << std::endl;
       }
     }
