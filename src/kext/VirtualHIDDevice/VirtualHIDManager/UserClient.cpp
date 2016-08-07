@@ -84,12 +84,11 @@ IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::staticKeyboardInputReport
     return kIOReturnBadArgument;
   }
 
-  auto input = static_cast<const hid_report::keyboard_input*>(arguments->structureInput);
-  if (!input) {
-    return kIOReturnBadArgument;
+  if (auto input = static_cast<const hid_report::keyboard_input*>(arguments->structureInput)) {
+    return target->keyboardInputReportCallback(*input);
   }
 
-  return target->keyboardInputReportCallback(*input);
+  return kIOReturnBadArgument;
 }
 
 IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::keyboardInputReportCallback(const hid_report::keyboard_input& input) {
@@ -97,19 +96,15 @@ IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::keyboardInputReportCallba
     return kIOReturnError;
   }
 
-  auto keyboard = provider_->getVirtualHIDKeyboard();
-  if (!keyboard) {
-    return kIOReturnError;
+  if (auto keyboard = provider_->getVirtualHIDKeyboard()) {
+    if (auto report = IOBufferMemoryDescriptor::withBytes(&input, sizeof(input), kIODirectionNone)) {
+      auto result = keyboard->handleReport(report, kIOHIDReportTypeInput, kIOHIDOptionsTypeNone);
+      report->release();
+      return result;
+    }
   }
 
-  IOMemoryDescriptor* report = IOBufferMemoryDescriptor::withBytes(&input, sizeof(input), kIODirectionNone);
-  if (!report) {
-    return kIOReturnError;
-  }
-
-  IOReturn result = keyboard->handleReport(report, kIOHIDReportTypeInput, kIOHIDOptionsTypeNone);
-  report->release();
-  return result;
+  return kIOReturnError;
 }
 
 #pragma mark - consumer_input_report
@@ -122,12 +117,11 @@ IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::staticPointingInputReport
     return kIOReturnBadArgument;
   }
 
-  auto input = static_cast<const hid_report::pointing_input*>(arguments->structureInput);
-  if (!input) {
-    return kIOReturnBadArgument;
+  if (auto input = static_cast<const hid_report::pointing_input*>(arguments->structureInput)) {
+    return target->pointingInputReportCallback(*input);
   }
 
-  return target->pointingInputReportCallback(*input);
+  return kIOReturnBadArgument;
 }
 
 IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::pointingInputReportCallback(const hid_report::pointing_input& input) {
@@ -135,17 +129,13 @@ IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::pointingInputReportCallba
     return kIOReturnError;
   }
 
-  auto pointing = provider_->getVirtualHIDPointing();
-  if (!pointing) {
-    return kIOReturnError;
+  if (auto pointing = provider_->getVirtualHIDPointing()) {
+    if (auto report = IOBufferMemoryDescriptor::withBytes(&input, sizeof(input), kIODirectionNone)) {
+      auto result = pointing->handleReport(report, kIOHIDReportTypeInput, kIOHIDOptionsTypeNone);
+      report->release();
+      return result;
+    }
   }
 
-  IOMemoryDescriptor* report = IOBufferMemoryDescriptor::withBytes(&input, sizeof(input), kIODirectionNone);
-  if (!report) {
-    return kIOReturnError;
-  }
-
-  IOReturn result = pointing->handleReport(report, kIOHIDReportTypeInput, kIOHIDOptionsTypeNone);
-  report->release();
-  return result;
+  return kIOReturnError;
 }
