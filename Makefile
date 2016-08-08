@@ -1,5 +1,5 @@
 all:
-	$(MAKE) -C src
+	$(MAKE) -C src | ruby ./scripts/reduce-logs.rb
 
 clean:
 	$(MAKE) -C src clean
