@@ -17,6 +17,8 @@ public:
                                                                                             notification_port_(nullptr),
                                                                                             matched_notification_(IO_OBJECT_NULL),
                                                                                             terminated_notification_(IO_OBJECT_NULL) {
+    logger_.info("iokit_user_client::iokit_user_client");
+
     notification_port_ = IONotificationPortCreate(kIOMasterPortDefault);
     if (notification_port_) {
       if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
@@ -26,6 +28,8 @@ public:
   }
 
   ~iokit_user_client(void) {
+    logger_.info("iokit_user_client::~iokit_user_client");
+
     if (matched_notification_) {
       IOObjectRelease(matched_notification_);
       matched_notification_ = IO_OBJECT_NULL;
@@ -137,8 +141,14 @@ private:
     }
 
     ~connection(void) {
+      logger_.info("iokit_user_client::connection::~connection");
+
       if (connect_) {
-        IOServiceClose(connect_);
+        auto kr = IOServiceClose(connect_);
+        if (kr != kIOReturnSuccess) {
+          logger_.error("IOConnectRelease error: 0x{0:x}", kr);
+        }
+
         connect_ = IO_OBJECT_NULL;
       }
       if (service_) {
