@@ -128,10 +128,8 @@ private:
       return;
     }
 
-    auto dev = std::make_shared<human_interface_device>(device);
-    if (!dev) {
-      return;
-    }
+    (self->hids_)[device] = std::make_unique<human_interface_device>(device);
+    auto& dev = (self->hids_)[device];
 
     std::cout << "matching: " << std::endl
               << "  vendor_id:0x" << std::hex << dev->get_vendor_id() << std::endl
@@ -150,8 +148,6 @@ private:
     if (dev->get_manufacturer() == "Apple Inc.") {
       dev->grab(queue_value_available_callback, self);
     }
-
-    (self->hids_)[device] = dev;
   }
 
   static void device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
@@ -170,7 +166,7 @@ private:
 
     auto it = (self->hids_).find(device);
     if (it != (self->hids_).end()) {
-      auto dev = it->second;
+      auto& dev = it->second;
       if (dev) {
         std::cout << "removal vendor_id:0x" << std::hex << dev->get_vendor_id() << " product_id:0x" << std::hex << dev->get_product_id() << std::endl;
         (self->hids_).erase(it);
@@ -271,7 +267,7 @@ private:
 
   iokit_user_client iokit_user_client_;
   IOHIDManagerRef _Nullable manager_;
-  std::unordered_map<IOHIDDeviceRef, std::shared_ptr<human_interface_device>> hids_;
+  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   std::list<uint32_t> pressing_key_usages_;
 
   local_datagram_client console_user_client_;
