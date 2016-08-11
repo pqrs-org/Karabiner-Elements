@@ -70,6 +70,19 @@ uint8_t reserved;
 uint8_t keys[6];
 ```
 
+#### modifiers bit:
+
+```
+0x1 << 0 : left control
+0x1 << 1 : left shift
+0x1 << 2 : left option
+0x1 << 3 : left command
+0x1 << 4 : right control
+0x1 << 5 : right shift
+0x1 << 6 : right option
+0x1 << 7 : right command
+```
+
 ### Apple HID keyboard report descriptor
 
 ```
