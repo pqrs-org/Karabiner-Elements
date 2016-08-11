@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "modifier_flag.hpp"
 
@@ -8,21 +9,21 @@ class modifier_flag_manager {
 public:
   modifier_flag_manager(void) {
     // left control
-    modifier_flags_.push(std::make_unique<modifier_flag>(0x1 << 0, "control", "⌃"));
+    modifier_flags_.push_back(std::make_unique<modifier_flag>(0x1 << 0, "control", "⌃"));
     // left shift
-    modifier_flags_.push(std::make_unique<modifier_flag>(0x1 << 1, "shift", "⇧"));
+    modifier_flags_.push_back(std::make_unique<modifier_flag>(0x1 << 1, "shift", "⇧"));
     // left option
-    modifier_flags_.push(std::make_unique<modifier_flag>(0x1 << 2, "option", "⌥"));
+    modifier_flags_.push_back(std::make_unique<modifier_flag>(0x1 << 2, "option", "⌥"));
     // left command
-    modifier_flags_.push(std::make_unique<modifier_flag>(0x1 << 3, "command", "⌘"));
+    modifier_flags_.push_back(std::make_unique<modifier_flag>(0x1 << 3, "command", "⌘"));
     // right control
-    modifier_flags_.push(std::make_unique<modifier_flag>(0x1 << 4, "control", "⌃"));
+    modifier_flags_.push_back(std::make_unique<modifier_flag>(0x1 << 4, "control", "⌃"));
     // right shift
-    modifier_flags_.push(std::make_unique<modifier_flag>(0x1 << 5, "shift", "⇧"));
+    modifier_flags_.push_back(std::make_unique<modifier_flag>(0x1 << 5, "shift", "⇧"));
     // right option
-    modifier_flags_.push(std::make_unique<modifier_flag>(0x1 << 6, "option", "⌥"));
+    modifier_flags_.push_back(std::make_unique<modifier_flag>(0x1 << 6, "option", "⌥"));
     // right command
-    modifier_flags_.push(std::make_unique<modifier_flag>(0x1 << 7, "command", "⌘"));
+    modifier_flags_.push_back(std::make_unique<modifier_flag>(0x1 << 7, "command", "⌘"));
   }
 
 private:
