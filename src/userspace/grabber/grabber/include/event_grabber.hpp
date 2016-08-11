@@ -5,6 +5,7 @@
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_user_client.hpp"
+#include "iokit_utility.hpp"
 #include "local_datagram_client.hpp"
 #include "logger.hpp"
 #include "userspace_defs.h"
@@ -21,7 +22,11 @@ public:
       return;
     }
 
-    auto device_matching_dictionaries = create_device_matching_dictionaries();
+    auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
+        std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard),
+        // std::make_pair(kHIDPage_Consumer, kHIDUsage_Csmr_ConsumerControl),
+        // std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse),
+    });
     if (device_matching_dictionaries) {
       IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
       CFRelease(device_matching_dictionaries);
@@ -42,78 +47,6 @@ public:
   }
 
 private:
-  CFDictionaryRef _Nonnull create_device_matching_dictionary(uint32_t usage_page, uint32_t usage) {
-    auto device_matching_dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-    if (!device_matching_dictionary) {
-      goto finish;
-    }
-
-    // usage_page
-    if (!usage_page) {
-      goto finish;
-    } else {
-      auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage_page);
-      if (!number) {
-        goto finish;
-      }
-      CFDictionarySetValue(device_matching_dictionary, CFSTR(kIOHIDDeviceUsagePageKey), number);
-      CFRelease(number);
-    }
-
-    // usage (The usage is only valid if the usage page is also defined)
-    if (!usage) {
-      goto finish;
-    } else {
-      auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage);
-      if (!number) {
-        goto finish;
-      }
-      CFDictionarySetValue(device_matching_dictionary, CFSTR(kIOHIDDeviceUsageKey), number);
-      CFRelease(number);
-    }
-
-  finish:
-    return device_matching_dictionary;
-  }
-
-  CFArrayRef _Nullable create_device_matching_dictionaries(void) {
-    auto device_matching_dictionaries = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-    if (!device_matching_dictionaries) {
-      return nullptr;
-    }
-
-    // kHIDUsage_GD_Keyboard
-    {
-      auto device_matching_dictionary = create_device_matching_dictionary(kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
-      if (device_matching_dictionary) {
-        CFArrayAppendValue(device_matching_dictionaries, device_matching_dictionary);
-        CFRelease(device_matching_dictionary);
-      }
-    }
-
-#if 0
-    // kHIDUsage_Csmr_ConsumerControl
-    {
-      auto device_matching_dictionary = create_device_matching_dictionary(kHIDPage_Consumer, kHIDUsage_Csmr_ConsumerControl);
-      if (device_matching_dictionary) {
-        CFArrayAppendValue(device_matching_dictionaries, device_matching_dictionary);
-        CFRelease(device_matching_dictionary);
-      }
-    }
-
-    // kHIDUsage_GD_Mouse
-    {
-      auto device_matching_dictionary = create_device_matching_dictionary(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
-      if (device_matching_dictionary) {
-        CFArrayAppendValue(device_matching_dictionaries, device_matching_dictionary);
-        CFRelease(device_matching_dictionary);
-      }
-    }
-#endif
-
-    return device_matching_dictionaries;
-  }
-
   static void device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
     if (result != kIOReturnSuccess) {
       return;
