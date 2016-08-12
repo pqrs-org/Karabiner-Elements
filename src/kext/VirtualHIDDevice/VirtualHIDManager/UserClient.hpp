@@ -10,6 +10,7 @@ class org_pqrs_driver_VirtualHIDManager_UserClient final : public IOUserClient {
 
 public:
   virtual bool initWithTask(task_t owningTask, void* securityToken, UInt32 type) override;
+  virtual IOReturn clientClose(void) override;
 
   virtual bool start(IOService* provider) override;
   virtual IOReturn externalMethod(uint32_t selector, IOExternalMethodArguments* arguments,

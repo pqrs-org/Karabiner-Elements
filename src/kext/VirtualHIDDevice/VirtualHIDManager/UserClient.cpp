@@ -46,6 +46,16 @@ bool org_pqrs_driver_VirtualHIDManager_UserClient::initWithTask(task_t owningTas
   return true;
 }
 
+IOReturn org_pqrs_driver_VirtualHIDManager_UserClient::clientClose(void) {
+  IOLog("%s\n", __PRETTY_FUNCTION__);
+
+  // clear input events.
+  hid_report::keyboard_input report;
+  keyboardInputReportCallback(report);
+
+  return super::clientClose();
+}
+
 bool org_pqrs_driver_VirtualHIDManager_UserClient::start(IOService* provider) {
   provider_ = OSDynamicCast(org_pqrs_driver_VirtualHIDManager, provider);
   if (!provider_) {
