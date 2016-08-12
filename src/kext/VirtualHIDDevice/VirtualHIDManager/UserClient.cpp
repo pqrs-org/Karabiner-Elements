@@ -31,12 +31,15 @@ IOExternalMethodDispatch org_pqrs_driver_VirtualHIDManager_UserClient::methods_[
 };
 
 bool org_pqrs_driver_VirtualHIDManager_UserClient::initWithTask(task_t owningTask, void* securityToken, UInt32 type) {
+  IOLog("%s\n", __PRETTY_FUNCTION__);
+
   if (clientHasPrivilege(owningTask, kIOClientPrivilegeAdministrator) != KERN_SUCCESS) {
     IOLog("%s Error: clientHasPrivilege failed.\n", __PRETTY_FUNCTION__);
     return false;
   }
 
   if (!super::initWithTask(owningTask, securityToken, type)) {
+    IOLog("%s Error: initWithTask failed.\n", __PRETTY_FUNCTION__);
     return false;
   }
 
