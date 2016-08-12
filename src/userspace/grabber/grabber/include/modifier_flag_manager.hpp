@@ -42,17 +42,22 @@ public:
     }
   }
 
-  void increase(physical_keys k) {
-    auto i = static_cast<size_t>(k);
-    if (modifier_flags_[i]) {
-      modifier_flags_[i]->increase();
-    }
-  }
+  enum class operation {
+    increase,
+    decrease,
+  };
 
-  void decrease(physical_keys k) {
+  void manipulate(physical_keys k, operation operation) {
     auto i = static_cast<size_t>(k);
     if (modifier_flags_[i]) {
-      modifier_flags_[i]->decrease();
+      switch (operation) {
+        case operation::increase:
+          modifier_flags_[i]->increase();
+          break;
+        case operation::decrease:
+          modifier_flags_[i]->decrease();
+          break;
+      }
     }
   }
 
