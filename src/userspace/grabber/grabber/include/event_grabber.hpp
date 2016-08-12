@@ -84,7 +84,7 @@ private:
 
     //if (dev->get_manufacturer() != "pqrs.org") {
     if (dev->get_manufacturer() == "Apple Inc.") {
-      dev->grab(queue_value_available_callback, this);
+      dev->grab(boost::bind(&event_grabber::value_callback, this, _1, _2, _3, _4, _5));
     }
   }
 
@@ -116,59 +116,44 @@ private:
     }
   }
 
-  static void queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
-    auto self = static_cast<event_grabber*>(context);
-    auto queue = static_cast<IOHIDQueueRef>(sender);
+  void value_callback(IOHIDValueRef _Nonnull value,
+                      IOHIDElementRef _Nonnull element,
+                      uint32_t usage_page,
+                      uint32_t usage,
+                      CFIndex integer_value) {
 
-    while (true) {
-      auto value = IOHIDQueueCopyNextValueWithTimeout(queue, 0.);
-      if (!value) {
-        break;
-      }
+    std::cout << "element" << std::endl
+              << "  usage_page:0x" << std::hex << usage_page << std::endl
+              << "  usage:0x" << std::hex << usage << std::endl
+              << "  type:" << IOHIDElementGetType(element) << std::endl
+              << "  length:" << IOHIDValueGetLength(value) << std::endl
+              << "  integer_value:" << integer_value << std::endl;
 
-      auto element = IOHIDValueGetElement(value);
-      if (element) {
-        auto usage_page = IOHIDElementGetUsagePage(element);
-        auto usage = IOHIDElementGetUsage(element);
+    switch (usage_page) {
+    case kHIDPage_KeyboardOrKeypad: {
+      bool pressed = integer_value;
+      handle_keyboard_event(usage, pressed);
+      break;
+    }
 
-        std::cout << "element" << std::endl
-                  << "  usage_page:0x" << std::hex << usage_page << std::endl
-                  << "  usage:0x" << std::hex << usage << std::endl
-                  << "  type:" << IOHIDElementGetType(element) << std::endl
-                  << "  length:" << IOHIDValueGetLength(value) << std::endl
-                  << "  integer_value:" << IOHIDValueGetIntegerValue(value) << std::endl;
-
-        bool pressed = IOHIDValueGetIntegerValue(value);
-
-        switch (usage_page) {
-        case kHIDPage_KeyboardOrKeypad: {
-          if (self) {
-            self->handle_keyboard_event(usage, pressed);
-          }
-          break;
+    case kHIDPage_AppleVendorTopCase:
+      if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
+        bool pressed = integer_value;
+        IOOptionBits flags = 0;
+        if (pressed) {
+          flags |= NX_SECONDARYFNMASK;
         }
 
-        case kHIDPage_AppleVendorTopCase:
-          if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
-            IOOptionBits flags = 0;
-            if (pressed) {
-              flags |= NX_SECONDARYFNMASK;
-            }
-
-            std::vector<uint8_t> buffer;
-            buffer.resize(1 + sizeof(flags));
-            buffer[0] = KRBN_OP_TYPE_POST_MODIFIER_FLAGS;
-            memcpy(&(buffer[1]), &flags, sizeof(flags));
-            self->console_user_client_.send_to(buffer);
-          }
-          break;
-
-        default:
-          break;
-        }
+        std::vector<uint8_t> buffer;
+        buffer.resize(1 + sizeof(flags));
+        buffer[0] = KRBN_OP_TYPE_POST_MODIFIER_FLAGS;
+        memcpy(&(buffer[1]), &flags, sizeof(flags));
+        console_user_client_.send_to(buffer);
       }
+      break;
 
-      CFRelease(value);
+    default:
+      break;
     }
   }
 

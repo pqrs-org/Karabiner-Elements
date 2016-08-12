@@ -2,16 +2,16 @@
 
 class human_interface_device final {
 public:
-  typedef void (*value_callback)(IOHIDValueRef _Nonnull value,
-                                 IOHIDElementRef _Nonnull element,
-                                 uint32_t usage_page,
-                                 uint32_t usage,
-                                 CFIndex integerValue);
+  typedef boost::function<void(IOHIDValueRef _Nonnull value,
+                               IOHIDElementRef _Nonnull element,
+                               uint32_t usage_page,
+                               uint32_t usage,
+                               CFIndex integer_value)>
+      value_callback;
 
   human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
                                                            queue_(nullptr),
-                                                           grabbed_(false),
-                                                           value_callback_(nullptr) {
+                                                           grabbed_(false) {
     CFRetain(device_);
 
     auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone);
@@ -83,7 +83,7 @@ public:
     IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
   }
 
-  void grab(IOHIDCallback _Nonnull value_available_callback, void* _Nullable callback_context) {
+  void grab(value_callback callback) {
     if (!device_) {
       return;
     }
@@ -106,7 +106,8 @@ public:
         IOHIDQueueAddElement(queue_, it.second);
       }
 
-      IOHIDQueueRegisterValueAvailableCallback(queue_, value_available_callback, callback_context);
+      value_callback_ = callback;
+      IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
 
       IOHIDQueueStart(queue_);
     }
@@ -267,10 +268,23 @@ private:
       if (element) {
         auto usage_page = IOHIDElementGetUsagePage(element);
         auto usage = IOHIDElementGetUsage(element);
-        auto integerValue = IOHIDValueGetIntegerValue(value);
+        auto integer_value = IOHIDValueGetIntegerValue(value);
 
+        // update pressed_key_usages_
+        if ((usage_page == kHIDPage_KeyboardOrKeypad) ||
+            (usage_page == kHIDPage_AppleVendorTopCase && usage == kHIDUsage_AV_TopCase_KeyboardFn)) {
+          bool pressed = integer_value;
+          uint64_t u = (static_cast<uint64_t>(usage_page) << 32) | usage;
+          if (pressed) {
+            pressed_key_usages_.push_back(u);
+          } else {
+            pressed_key_usages_.remove(u);
+          }
+        }
+
+        // call value_callback_
         if (value_callback_) {
-          value_callback_(value, element, usage_page, usage, integerValue);
+          value_callback_(value, element, usage_page, usage, integer_value);
         }
       }
 
@@ -287,6 +301,6 @@ private:
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
   bool grabbed_;
-  std::list<uint32_t> pressed_key_usages_;
-  value_callback _Nullable value_callback_;
+  std::list<uint64_t> pressed_key_usages_;
+  value_callback value_callback_;
 };
