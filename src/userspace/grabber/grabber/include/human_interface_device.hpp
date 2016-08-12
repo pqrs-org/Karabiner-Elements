@@ -2,9 +2,16 @@
 
 class human_interface_device final {
 public:
+  typedef void (*value_callback)(IOHIDValueRef _Nonnull value,
+                                 IOHIDElementRef _Nonnull element,
+                                 uint32_t usage_page,
+                                 uint32_t usage,
+                                 CFIndex integerValue);
+
   human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
                                                            queue_(nullptr),
-                                                           grabbed_(false) {
+                                                           grabbed_(false),
+                                                           value_callback_(nullptr) {
     CFRetain(device_);
 
     auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone);
@@ -231,6 +238,46 @@ public:
   }
 
 private:
+  static void static_queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
+    if (result != kIOReturnSuccess) {
+      return;
+    }
+
+    auto self = static_cast<human_interface_device*>(context);
+    if (!self) {
+      return;
+    }
+
+    auto queue = static_cast<IOHIDQueueRef>(sender);
+    if (!queue) {
+      return;
+    }
+
+    self->queue_value_available_callback(queue);
+  }
+
+  void queue_value_available_callback(IOHIDQueueRef _Nonnull queue) {
+    while (true) {
+      auto value = IOHIDQueueCopyNextValueWithTimeout(queue, 0.);
+      if (!value) {
+        break;
+      }
+
+      auto element = IOHIDValueGetElement(value);
+      if (element) {
+        auto usage_page = IOHIDElementGetUsagePage(element);
+        auto usage = IOHIDElementGetUsage(element);
+        auto integerValue = IOHIDValueGetIntegerValue(value);
+
+        if (value_callback_) {
+          value_callback_(value, element, usage_page, usage, integerValue);
+        }
+      }
+
+      CFRelease(value);
+    }
+  }
+
   uint64_t elements_key(uint32_t usage_page, uint32_t usage) {
     return (static_cast<uint64_t>(usage_page) << 32 | usage);
   }
@@ -240,4 +287,6 @@ private:
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
   bool grabbed_;
+  std::list<uint32_t> pressed_key_usages_;
+  value_callback _Nullable value_callback_;
 };
