@@ -1,6 +1,7 @@
 #pragma once
 
 #include <IOKit/IOKitLib.h>
+#include <IOKit/hid/IOHIDDevice.h>
 #include <IOKit/hid/IOHIDKeys.h>
 
 #include <cstdint>
@@ -78,5 +79,79 @@ public:
     }
 
     return device_matching_dictionaries;
+  }
+
+  static bool get_long_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key, long& value) {
+    auto property = IOHIDDeviceGetProperty(device, key);
+    if (!property) {
+      return false;
+    }
+
+    if (CFNumberGetTypeID() != CFGetTypeID(property)) {
+      return false;
+    }
+
+    return CFNumberGetValue(static_cast<CFNumberRef>(property), kCFNumberLongType, &value);
+  }
+
+  static bool get_string_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key, std::string& value) {
+    auto property = IOHIDDeviceGetProperty(device, key);
+    if (!property) {
+      return false;
+    }
+
+    if (CFStringGetTypeID() != CFGetTypeID(property)) {
+      return false;
+    }
+
+    auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8);
+    if (!p) {
+      value.clear();
+    } else {
+      value = p;
+    }
+    return true;
+  }
+
+  static long get_max_input_report_size(IOHIDDeviceRef _Nonnull device) {
+    long value = 0;
+    get_long_property(device, CFSTR(kIOHIDMaxInputReportSizeKey), value);
+    return value;
+  }
+
+  static long get_vendor_id(IOHIDDeviceRef _Nonnull device) {
+    long value = 0;
+    get_long_property(device, CFSTR(kIOHIDVendorIDKey), value);
+    return value;
+  }
+
+  static long get_product_id(IOHIDDeviceRef _Nonnull device) {
+    long value = 0;
+    get_long_property(device, CFSTR(kIOHIDProductIDKey), value);
+    return value;
+  }
+
+  static long get_location_id(IOHIDDeviceRef _Nonnull device) {
+    long value = 0;
+    get_long_property(device, CFSTR(kIOHIDLocationIDKey), value);
+    return value;
+  }
+
+  static std::string get_manufacturer(IOHIDDeviceRef _Nonnull device) {
+    std::string value;
+    get_string_property(device, CFSTR(kIOHIDManufacturerKey), value);
+    return value;
+  }
+
+  static std::string get_product(IOHIDDeviceRef _Nonnull device) {
+    std::string value;
+    get_string_property(device, CFSTR(kIOHIDProductKey), value);
+    return value;
+  }
+
+  static std::string get_serial_number(IOHIDDeviceRef _Nonnull device) {
+    std::string value;
+    get_string_property(device, CFSTR(kIOHIDSerialNumberKey), value);
+    return value;
   }
 };
