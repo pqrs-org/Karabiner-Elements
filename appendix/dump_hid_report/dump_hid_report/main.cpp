@@ -52,6 +52,19 @@ private:
 
   void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
+    std::cout << "  " << iokit_utility::get_max_input_report_size(device) << std::endl;
+    std::cout << "  " << iokit_utility::get_vendor_id(device) << std::endl;
+    std::cout << "  " << iokit_utility::get_product_id(device) << std::endl;
+    std::cout << "  " << iokit_utility::get_location_id(device) << std::endl;
+    std::cout << "  " << iokit_utility::get_manufacturer(device) << std::endl;
+    std::cout << "  " << iokit_utility::get_product(device) << std::endl;
+    std::cout << "  " << iokit_utility::get_serial_number(device) << std::endl;
+
+    // Logitech Unifying Receiver sends a lot of null report. We ignore them.
+    if (iokit_utility::get_manufacturer(device) == "Logitech" &&
+        iokit_utility::get_product(device) == "USB Receiver") {
+      return;
+    }
 
     IOHIDDeviceOpen(device, kIOHIDOptionsTypeNone);
 
@@ -60,6 +73,8 @@ private:
                                            sizeof(report_),
                                            static_report_callback,
                                            this);
+
+    IOHIDDeviceScheduleWithRunLoop(device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
   }
 
   static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
@@ -77,6 +92,8 @@ private:
 
   void device_removal_callback(IOHIDDeviceRef _Nonnull device) {
     std::cout << __PRETTY_FUNCTION__ << std::endl;
+
+    IOHIDDeviceUnscheduleFromRunLoop(device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 
     IOHIDDeviceClose(device, kIOHIDOptionsTypeNone);
   }
