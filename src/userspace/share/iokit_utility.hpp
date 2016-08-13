@@ -10,24 +10,46 @@
 
 class iokit_utility {
 public:
-  static std::string get_serial_number(io_service_t service) {
-    std::string serial_number;
-
-    if (service) {
-      if (auto property = IORegistryEntrySearchCFProperty(service,
-                                                          kIOServicePlane,
-                                                          CFSTR(kIOHIDSerialNumberKey),
-                                                          kCFAllocatorDefault,
-                                                          kIORegistryIterateRecursively | kIORegistryIterateParents)) {
-        auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8);
-        if (p) {
-          serial_number = p;
-        }
-        CFRelease(property);
-      }
+  static bool get_string_property(io_service_t service, CFStringRef _Nonnull key, std::string& value) {
+    if (!service) {
+      return false;
     }
 
-    return serial_number;
+    auto property = IORegistryEntrySearchCFProperty(service,
+                                                    kIOServicePlane,
+                                                    key,
+                                                    kCFAllocatorDefault,
+                                                    kIORegistryIterateRecursively | kIORegistryIterateParents);
+    if (!property) {
+      return false;
+    }
+
+    if (auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8)) {
+      value = p;
+    } else {
+      value.clear();
+    }
+
+    CFRelease(property);
+    return true;
+  }
+
+  static std::string get_manufacturer(io_service_t service) {
+    std::string value;
+    get_string_property(service, CFSTR(kIOHIDManufacturerKey), value);
+    return value;
+  }
+
+  static std::string get_product(io_service_t service) {
+    std::string value;
+    get_string_property(service, CFSTR(kIOHIDProductKey), value);
+    return value;
+  }
+
+  static std::string get_serial_number(io_service_t service) {
+    std::string value;
+    get_string_property(service, CFSTR(kIOHIDSerialNumberKey), value);
+    return value;
   }
 
   static CFDictionaryRef _Nonnull create_device_matching_dictionary(uint32_t usage_page, uint32_t usage) {
@@ -104,11 +126,10 @@ public:
       return false;
     }
 
-    auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8);
-    if (!p) {
-      value.clear();
-    } else {
+    if (auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8)) {
       value = p;
+    } else {
+      value.clear();
     }
     return true;
   }
