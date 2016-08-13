@@ -249,8 +249,6 @@ private:
     }
 
     // send new report only if it is changed from last report.
-    //
-    // we have to check the last report because some devices sent.
     if (last_keyboard_input_report_ != report) {
       last_keyboard_input_report_ = report;
 
