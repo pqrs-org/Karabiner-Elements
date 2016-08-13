@@ -132,56 +132,14 @@ private:
     switch (usage_page) {
     case kHIDPage_KeyboardOrKeypad: {
       bool pressed = integer_value;
-      auto operation = pressed ? modifier_flag_manager::operation::increase : modifier_flag_manager::operation::decrease;
-
-      switch (usage) {
-        case kHIDUsage_KeyboardLeftControl:
-          modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::left_control, operation);
-          break;
-        case kHIDUsage_KeyboardLeftShift:
-          modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::left_shift, operation);
-          break;
-        case kHIDUsage_KeyboardLeftAlt:
-          modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::left_option, operation);
-          break;
-        case kHIDUsage_KeyboardLeftGUI:
-          modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::left_command, operation);
-          break;
-        case kHIDUsage_KeyboardRightControl:
-          modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::right_control, operation);
-          break;
-        case kHIDUsage_KeyboardRightShift:
-          modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::right_shift, operation);
-          break;
-        case kHIDUsage_KeyboardRightAlt:
-          modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::right_option, operation);
-          break;
-        case kHIDUsage_KeyboardRightGUI:
-          modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::right_command, operation);
-          break;
-      }
-
-      handle_keyboard_event(usage, pressed);
+      handle_keyboard_event(usage_page, usage, pressed);
       break;
     }
 
     case kHIDPage_AppleVendorTopCase:
       if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
         bool pressed = integer_value;
-        auto operation = pressed ? modifier_flag_manager::operation::increase : modifier_flag_manager::operation::decrease;
-
-        modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::fn, operation);
-
-        IOOptionBits flags = 0;
-        if (pressed) {
-          flags |= NX_SECONDARYFNMASK;
-        }
-
-        std::vector<uint8_t> buffer;
-        buffer.resize(1 + sizeof(flags));
-        buffer[0] = KRBN_OP_TYPE_POST_MODIFIER_FLAGS;
-        memcpy(&(buffer[1]), &flags, sizeof(flags));
-        console_user_client_.send_to(buffer);
+        handle_keyboard_event(usage_page, usage, pressed);
       }
       break;
 
@@ -190,7 +148,70 @@ private:
     }
   }
 
-  void handle_keyboard_event(uint32_t usage, bool pressed) {
+  bool handle_modifier_flag_event(uint32_t usage_page, uint32_t usage, bool pressed) {
+    auto operation = pressed ? modifier_flag_manager::operation::increase : modifier_flag_manager::operation::decrease;
+
+    switch (usage_page) {
+    case kHIDPage_KeyboardOrKeypad: {
+      auto key = modifier_flag_manager::physical_keys::end_;
+
+      switch (usage) {
+      case kHIDUsage_KeyboardLeftControl:
+        key = modifier_flag_manager::physical_keys::left_control;
+        break;
+      case kHIDUsage_KeyboardLeftShift:
+        key = modifier_flag_manager::physical_keys::left_shift;
+        break;
+      case kHIDUsage_KeyboardLeftAlt:
+        key = modifier_flag_manager::physical_keys::left_option;
+        break;
+      case kHIDUsage_KeyboardLeftGUI:
+        key = modifier_flag_manager::physical_keys::left_command;
+        break;
+      case kHIDUsage_KeyboardRightControl:
+        key = modifier_flag_manager::physical_keys::right_control;
+        break;
+      case kHIDUsage_KeyboardRightShift:
+        key = modifier_flag_manager::physical_keys::right_shift;
+        break;
+      case kHIDUsage_KeyboardRightAlt:
+        key = modifier_flag_manager::physical_keys::right_option;
+        break;
+      case kHIDUsage_KeyboardRightGUI:
+        key = modifier_flag_manager::physical_keys::right_command;
+        break;
+      }
+
+      if (key != modifier_flag_manager::physical_keys::end_) {
+        modifier_flag_manager_.manipulate(key, operation);
+        send_keyboard_input_report();
+        return true;
+      }
+      break;
+    }
+
+    case kHIDPage_AppleVendorTopCase:
+      if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
+        modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::fn, operation);
+
+        IOOptionBits flags = modifier_flag_manager_.get_io_option_bits();
+        logger::get_logger().info("IOOptionBits 0x{0:x}", flags);
+
+        std::vector<uint8_t> buffer;
+        buffer.resize(1 + sizeof(flags));
+        buffer[0] = KRBN_OP_TYPE_POST_MODIFIER_FLAGS;
+        memcpy(&(buffer[1]), &flags, sizeof(flags));
+        console_user_client_.send_to(buffer);
+
+        return true;
+      }
+      break;
+    }
+
+    return false;
+  }
+
+  void handle_keyboard_event(uint32_t usage_page, uint32_t usage, bool pressed) {
     // ----------------------------------------
     // modify usage
     if (usage == kHIDUsage_KeyboardCapsLock) {
@@ -205,10 +226,16 @@ private:
     }
 
     // ----------------------------------------
-    hid_report::keyboard_input report;
+    if (handle_modifier_flag_event(usage_page, usage, pressed)) {
+      return;
+    }
+    send_keyboard_input_report();
+  }
 
+  void send_keyboard_input_report(void) {
+    // make report
+    hid_report::keyboard_input report;
     report.modifiers = modifier_flag_manager_.get_hid_report_bits();
-    std::cout << "report.modifiers 0x" << std::hex << static_cast<int>(report.modifiers) << std::dec << std::endl;
 
     while (pressed_key_usages_.size() > sizeof(report.keys)) {
       pressed_key_usages_.pop_front();
@@ -220,11 +247,18 @@ private:
       ++i;
     }
 
-    auto kr = iokit_user_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
-                                                    static_cast<const void*>(&report), sizeof(report),
-                                                    nullptr, 0);
-    if (kr != KERN_SUCCESS) {
-      std::cerr << "failed to sent report: 0x" << std::hex << kr << std::dec << std::endl;
+    // send new report only if it is changed from last report.
+    //
+    // we have to check the last report because some devices sent.
+    if (last_keyboard_input_report_ != report) {
+      last_keyboard_input_report_ = report;
+
+      auto kr = iokit_user_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
+                                                      static_cast<const void*>(&report), sizeof(report),
+                                                      nullptr, 0);
+      if (kr != KERN_SUCCESS) {
+        logger::get_logger().error("failed to sent report: 0x{0:x}", kr);
+      }
     }
   }
 
@@ -232,7 +266,9 @@ private:
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   std::list<uint32_t> pressed_key_usages_;
+
   modifier_flag_manager modifier_flag_manager_;
+  hid_report::keyboard_input last_keyboard_input_report_;
 
   local_datagram_client console_user_client_;
 };
