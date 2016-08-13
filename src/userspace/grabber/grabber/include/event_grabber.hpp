@@ -82,9 +82,10 @@ private:
       return;
     }
 
-    //if (dev->get_manufacturer() != "pqrs.org") {
-    if (dev->get_manufacturer() == "Apple Inc.") {
-      dev->grab(boost::bind(&event_grabber::value_callback, this, _1, _2, _3, _4, _5));
+    if (dev->get_manufacturer() != "pqrs.org") {
+      if (dev->get_manufacturer() == "Apple Inc.") {
+        dev->grab(boost::bind(&event_grabber::value_callback, this, _1, _2, _3, _4, _5));
+      }
     }
   }
 
