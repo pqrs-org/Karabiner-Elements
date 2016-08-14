@@ -55,19 +55,25 @@ public:
       boost::system::error_code ec;
       std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
 
-      if (!ec && n > 0) {
-        --n;
-
+      if (!ec) {
         switch (buffer_[0]) {
         case KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS:
-          if (n == sizeof(IOOptionBits)) {
-            __block IOOptionBits flags;
-            memcpy(&flags, &(buffer_[1]), sizeof(flags));
-            io_hid_post_event_wrapper_.post_modifier_flags(flags);
+          if (n != sizeof(krbn_operation_type_post_modifier_flags)) {
+            logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS");
+          } else {
+            auto p = reinterpret_cast<krbn_operation_type_post_modifier_flags*>(&(buffer_[0]));
+            io_hid_post_event_wrapper_.post_modifier_flags(p->flags);
           }
           break;
 
         case KRBN_OPERATION_TYPE_POST_KEY:
+          if (n != sizeof(krbn_operation_type_post_key)) {
+            logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_POST_KEY");
+          } else {
+            auto p = reinterpret_cast<krbn_operation_type_post_key*>(&(buffer_[0]));
+            io_hid_post_event_wrapper_.post_modifier_flags(p->flags);
+            io_hid_post_event_wrapper_.post_key(p->key_code, p->event_type, p->flags, false);
+          }
           break;
 
         default:

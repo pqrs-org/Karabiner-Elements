@@ -23,7 +23,7 @@ public:
     }
   }
 
-  void post_key(uint8_t key_code, enum krbn_event_type event_type, IOOptionBits flags, bool repeat) {
+  void post_key(krbn_key_code key_code, krbn_event_type event_type, IOOptionBits flags, bool repeat) {
     NXEventData event;
     memset(&event, 0, sizeof(event));
     event.key.origCharCode = 0;
