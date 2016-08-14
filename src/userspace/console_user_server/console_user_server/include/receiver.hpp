@@ -4,6 +4,7 @@
 #include "io_hid_post_event_wrapper.hpp"
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
+#include "system_preferences.hpp"
 #include "userspace_defs.h"
 
 class receiver final {
@@ -72,7 +73,36 @@ public:
           } else {
             auto p = reinterpret_cast<krbn_operation_type_post_key*>(&(buffer_[0]));
             io_hid_post_event_wrapper_.post_modifier_flags(p->flags);
-            io_hid_post_event_wrapper_.post_key(p->key_code, p->event_type, p->flags, false);
+
+            bool fn_pressed = (p->flags & NX_SECONDARYFNMASK);
+            bool standard_function_key = false;
+            if (system_preferences::get_keyboard_fn_state()) {
+              // "Use all F1, F2, etc. keys as standard function keys."
+              standard_function_key = !fn_pressed;
+            } else {
+              standard_function_key = fn_pressed;
+            }
+
+            switch (p->key_code) {
+            case KRBN_KEY_CODE_F1:
+              if (standard_function_key) {
+                io_hid_post_event_wrapper_.post_key(p->key_code, p->event_type, p->flags, false);
+              } else {
+                io_hid_post_event_wrapper_.post_aux_key(NX_KEYTYPE_BRIGHTNESS_DOWN, p->event_type, p->flags, false);
+              }
+              break;
+
+            case KRBN_KEY_CODE_F2:
+              if (standard_function_key) {
+                io_hid_post_event_wrapper_.post_key(p->key_code, p->event_type, p->flags, false);
+              } else {
+                io_hid_post_event_wrapper_.post_aux_key(NX_KEYTYPE_BRIGHTNESS_UP, p->event_type, p->flags, false);
+              }
+              break;
+
+            default:
+              io_hid_post_event_wrapper_.post_key(p->key_code, p->event_type, p->flags, false);
+            }
           }
           break;
 
