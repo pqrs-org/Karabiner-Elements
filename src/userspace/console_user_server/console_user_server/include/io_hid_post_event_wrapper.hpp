@@ -10,9 +10,7 @@
 
 class io_hid_post_event_wrapper final {
 public:
-  io_hid_post_event_wrapper(void) : iokit_user_client_(logger::get_logger(), kIOHIDSystemClass, kIOHIDParamConnectType) {
-    iokit_user_client_.start();
-  }
+  io_hid_post_event_wrapper(void) : iokit_user_client_(logger::get_logger(), kIOHIDSystemClass, kIOHIDParamConnectType) {}
 
   void post_modifier_flags(IOOptionBits flags) {
     NXEventData event;
@@ -25,7 +23,7 @@ public:
     }
   }
 
-  void post_key(uint8_t key_code, enum krbn_ev_type ev_type, IOOptionBits flags, bool repeat) {
+  void post_key(uint8_t key_code, enum krbn_event_type event_type, IOOptionBits flags, bool repeat) {
     NXEventData event;
     memset(&event, 0, sizeof(event));
     event.key.origCharCode = 0;
@@ -37,7 +35,7 @@ public:
     event.key.keyboardType = 0;
 
     IOGPoint loc = {0, 0};
-    auto kr = iokit_user_client_.hid_post_event(ev_type == KRBN_EV_TYPE_KEY_DOWN ? NX_KEYDOWN : NX_KEYUP,
+    auto kr = iokit_user_client_.hid_post_event(event_type == KRBN_EVENT_TYPE_KEY_DOWN ? NX_KEYDOWN : NX_KEYUP,
                                                 loc,
                                                 &event,
                                                 kNXEventDataVersion,

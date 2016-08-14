@@ -59,7 +59,7 @@ public:
         --n;
 
         switch (buffer_[0]) {
-        case KRBN_OP_TYPE_POST_MODIFIER_FLAGS:
+        case KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS:
           if (n == sizeof(IOOptionBits)) {
             __block IOOptionBits flags;
             memcpy(&flags, &(buffer_[1]), sizeof(flags));
@@ -67,7 +67,7 @@ public:
           }
           break;
 
-        case KRBN_OP_TYPE_POST_KEY:
+        case KRBN_OPERATION_TYPE_POST_KEY:
           break;
 
         default:

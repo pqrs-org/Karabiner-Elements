@@ -20,42 +20,13 @@ public:
     logger_.info("iokit_user_client::iokit_user_client");
 
     notification_port_ = IONotificationPortCreate(kIOMasterPortDefault);
-    if (notification_port_) {
-      if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-        CFRunLoopAddSource(CFRunLoopGetCurrent(), loop_source, kCFRunLoopDefaultMode);
-      }
-    }
-  }
-
-  ~iokit_user_client(void) {
-    logger_.info("iokit_user_client::~iokit_user_client");
-
-    if (matched_notification_) {
-      IOObjectRelease(matched_notification_);
-      matched_notification_ = IO_OBJECT_NULL;
-    }
-
-    if (terminated_notification_) {
-      IOObjectRelease(terminated_notification_);
-      terminated_notification_ = IO_OBJECT_NULL;
-    }
-
-    if (notification_port_) {
-      if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), loop_source, kCFRunLoopDefaultMode);
-      }
-
-      IONotificationPortDestroy(notification_port_);
-      notification_port_ = nullptr;
-    }
-  }
-
-  void start() {
-    logger_.info("iokit_user_client::start");
-
     if (!notification_port_) {
-      logger_.error("notification_port_ is nullptr");
+      logger_.error("IONotificationPortCreate is failed");
       return;
+    }
+
+    if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
+      CFRunLoopAddSource(CFRunLoopGetCurrent(), loop_source, kCFRunLoopDefaultMode);
     }
 
     // kIOMatchedNotification
@@ -86,6 +57,29 @@ public:
       } else {
         terminated_callback(terminated_notification_);
       }
+    }
+  }
+
+  ~iokit_user_client(void) {
+    logger_.info("iokit_user_client::~iokit_user_client");
+
+    if (matched_notification_) {
+      IOObjectRelease(matched_notification_);
+      matched_notification_ = IO_OBJECT_NULL;
+    }
+
+    if (terminated_notification_) {
+      IOObjectRelease(terminated_notification_);
+      terminated_notification_ = IO_OBJECT_NULL;
+    }
+
+    if (notification_port_) {
+      if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
+        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), loop_source, kCFRunLoopDefaultMode);
+      }
+
+      IONotificationPortDestroy(notification_port_);
+      notification_port_ = nullptr;
     }
   }
 
