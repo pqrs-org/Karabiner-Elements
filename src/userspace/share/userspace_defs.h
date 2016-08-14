@@ -33,12 +33,12 @@ enum krbn_key_code {
   KRBN_KEY_CODE_F19 = 0x50,
 };
 
-struct __attribute__((packed)) krbn_operation_type_post_modifier_flags {
+struct krbn_operation_type_post_modifier_flags {
   uint8_t operation_type;
   IOOptionBits flags;
 };
 
-struct __attribute__((packed)) krbn_operation_type_post_key {
+struct krbn_operation_type_post_key {
   uint8_t operation_type;
   enum krbn_key_code key_code;
   enum krbn_event_type event_type;
