@@ -5,7 +5,7 @@ find ../../* \
     -type f \
     ! -ipath '*/Pods/*' \
     ! -ipath '*/build/*' \
-    ! -ipath '*/Tests/include/catch.hpp' \
+    ! -ipath '*/vendor/*' \
     \
     | while read f; do
     clang-format -i "$f"
