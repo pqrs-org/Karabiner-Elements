@@ -1,14 +1,14 @@
 #pragma once
 
-enum krbn_op_type {
-  KRBN_OP_TYPE_NONE,
-  KRBN_OP_TYPE_POST_MODIFIER_FLAGS,
-  KRBN_OP_TYPE_POST_KEY,
+enum krbn_operation_type {
+  KRBN_OPERATION_TYPE_NONE,
+  KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS,
+  KRBN_OPERATION_TYPE_POST_KEY,
 };
 
-enum krbn_ev_type {
-  KRBN_EV_TYPE_KEY_DOWN,
-  KRBN_EV_TYPE_KEY_UP,
+enum krbn_event_type {
+  KRBN_EVENT_TYPE_KEY_DOWN,
+  KRBN_EVENT_TYPE_KEY_UP,
 };
 
 enum krbn_key_code {
@@ -33,6 +33,12 @@ enum krbn_key_code {
   KRBN_KEY_CODE_F19 = 0x50,
 };
 
-struct __attribute__((packed)) krbn_op_type_post_modifier_flags {
+struct __attribute__((packed)) krbn_operation_type_post_modifier_flags {
+  IOOptionBits flags;
+};
+
+struct __attribute__((packed)) krbn_operation_type_post_key {
+  enum krbn_key_code key_code;
+  enum krbn_event_type event_type;
   IOOptionBits flags;
 };
