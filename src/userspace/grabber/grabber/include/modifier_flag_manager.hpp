@@ -51,12 +51,12 @@ public:
     auto i = static_cast<size_t>(k);
     if (modifier_flags_[i]) {
       switch (operation) {
-        case operation::increase:
-          modifier_flags_[i]->increase();
-          break;
-        case operation::decrease:
-          modifier_flags_[i]->decrease();
-          break;
+      case operation::increase:
+        modifier_flags_[i]->increase();
+        break;
+      case operation::decrease:
+        modifier_flags_[i]->decrease();
+        break;
       }
     }
   }
