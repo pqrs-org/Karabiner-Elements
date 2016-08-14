@@ -39,6 +39,8 @@
 		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3446AA901D49A63E00337B36 /* io_hid_post_event_wrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = io_hid_post_event_wrapper.hpp; path = include/io_hid_post_event_wrapper.hpp; sourceTree = "<group>"; };
 		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = "<group>"; };
+		345AC0001D60B766009D1FB4 /* keyboard_event_output_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = keyboard_event_output_manager.hpp; path = include/keyboard_event_output_manager.hpp; sourceTree = "<group>"; };
+		345AC0011D60B766009D1FB4 /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = "<group>"; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -112,6 +114,8 @@
 				341F59CE1D5196C100B441A8 /* connection_manager.hpp */,
 				341F59D01D523AA100B441A8 /* include_boost.hpp */,
 				3446AA901D49A63E00337B36 /* io_hid_post_event_wrapper.hpp */,
+				345AC0001D60B766009D1FB4 /* keyboard_event_output_manager.hpp */,
+				345AC0011D60B766009D1FB4 /* logger.hpp */,
 				341F59CB1D516AEC00B441A8 /* receiver.hpp */,
 				341F59CD1D5190DD00B441A8 /* session.hpp */,
 			);
