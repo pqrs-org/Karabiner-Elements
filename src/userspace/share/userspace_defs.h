@@ -34,10 +34,12 @@ enum krbn_key_code {
 };
 
 struct __attribute__((packed)) krbn_operation_type_post_modifier_flags {
+  uint8_t operation_type;
   IOOptionBits flags;
 };
 
 struct __attribute__((packed)) krbn_operation_type_post_key {
+  uint8_t operation_type;
   enum krbn_key_code key_code;
   enum krbn_event_type event_type;
   IOOptionBits flags;
