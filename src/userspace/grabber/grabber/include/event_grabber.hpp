@@ -1,12 +1,12 @@
 #pragma once
 
 #include "apple_hid_usage_tables.hpp"
+#include "console_user_client.hpp"
 #include "constants.hpp"
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_user_client.hpp"
 #include "iokit_utility.hpp"
-#include "local_datagram_client.hpp"
 #include "logger.hpp"
 #include "modifier_flag_manager.hpp"
 #include "userspace_defs.h"
@@ -15,9 +15,7 @@
 class event_grabber final {
 public:
   event_grabber(void) : iokit_user_client_(logger::get_logger(), "org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType),
-                        console_user_client_(constants::get_console_user_socket_file_path()) {
-    iokit_user_client_.start();
-
+                        console_user_client_(modifier_flag_manager_) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       return;
@@ -194,19 +192,40 @@ private:
     case kHIDPage_AppleVendorTopCase:
       if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
         modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::fn, operation);
-
-        IOOptionBits flags = modifier_flag_manager_.get_io_option_bits();
-        logger::get_logger().info("IOOptionBits 0x{0:x}", flags);
-
-        std::vector<uint8_t> buffer;
-        buffer.resize(1 + sizeof(flags));
-        buffer[0] = KRBN_OP_TYPE_POST_MODIFIER_FLAGS;
-        memcpy(&(buffer[1]), &flags, sizeof(flags));
-        console_user_client_.send_to(buffer);
-
+        console_user_client_.post_modifier_flags();
         return true;
       }
       break;
+    }
+
+    return false;
+  }
+
+  bool handle_function_key_event(uint32_t usage_page, uint32_t usage, bool pressed) {
+    if (usage_page != kHIDPage_KeyboardOrKeypad) {
+      return false;
+    }
+
+    auto event_type = pressed ? KRBN_EVENT_TYPE_KEY_DOWN : KRBN_EVENT_TYPE_KEY_UP;
+
+#define POST_KEY(KEY)                                               \
+  case kHIDUsage_Keyboard##KEY:                                     \
+    console_user_client_.post_key(KRBN_KEY_CODE_##KEY, event_type); \
+    return true;
+
+    switch (usage) {
+      POST_KEY(F1);
+      POST_KEY(F2);
+      POST_KEY(F3);
+      POST_KEY(F4);
+      POST_KEY(F5);
+      POST_KEY(F6);
+      POST_KEY(F7);
+      POST_KEY(F8);
+      POST_KEY(F9);
+      POST_KEY(F10);
+      POST_KEY(F11);
+      POST_KEY(F12);
     }
 
     return false;
@@ -230,6 +249,10 @@ private:
     if (handle_modifier_flag_event(usage_page, usage, pressed)) {
       return;
     }
+    if (handle_function_key_event(usage_page, usage, pressed)) {
+      return;
+    }
+
     send_keyboard_input_report();
   }
 
@@ -269,5 +292,5 @@ private:
   modifier_flag_manager modifier_flag_manager_;
   hid_report::keyboard_input last_keyboard_input_report_;
 
-  local_datagram_client console_user_client_;
+  console_user_client console_user_client_;
 };

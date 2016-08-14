@@ -44,6 +44,7 @@
 		3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = "<group>"; };
 		345ABFF41D5A3F09009D1FB4 /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/modifier_flag_manager.hpp; sourceTree = "<group>"; };
 		345ABFF51D5A3F09009D1FB4 /* modifier_flag.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag.hpp; path = include/modifier_flag.hpp; sourceTree = "<group>"; };
+		345ABFFC1D5FF2D4009D1FB4 /* console_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = console_user_client.hpp; path = include/console_user_client.hpp; sourceTree = "<group>"; };
 		349115941D2F754500FE93B7 /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = include/human_interface_device.hpp; sourceTree = "<group>"; };
 		3495C67E1D368FF0007CB9E7 /* grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber.hpp; path = include/grabber.hpp; sourceTree = "<group>"; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -130,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				340E33EC1D43BFF900CF7785 /* apple_hid_usage_tables.hpp */,
+				345ABFFC1D5FF2D4009D1FB4 /* console_user_client.hpp */,
 				34E450281D2AB18B00C5AC13 /* event_grabber.hpp */,
 				341C8E841D4C8C740018D32C /* grabber_server.hpp */,
 				3495C67E1D368FF0007CB9E7 /* grabber.hpp */,
