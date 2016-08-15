@@ -25,8 +25,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "include_boost.hpp"
-
 // grabber headers
 #include "apple_hid_usage_tables.hpp"
 #include "event_grabber.hpp"

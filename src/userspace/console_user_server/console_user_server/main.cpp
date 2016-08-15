@@ -1,5 +1,3 @@
-#include "include_boost.hpp"
-
 #include "connection_manager.hpp"
 
 int main(int argc, const char* argv[]) {

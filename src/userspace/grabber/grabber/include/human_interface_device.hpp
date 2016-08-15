@@ -1,5 +1,9 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
+#include <boost/function.hpp>
+
 class human_interface_device final {
 public:
   typedef boost::function<void(IOHIDValueRef _Nonnull value,

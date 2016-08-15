@@ -1,5 +1,10 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+
 class local_datagram_client final {
 public:
   local_datagram_client(const char* _Nonnull path) : endpoint_(path),

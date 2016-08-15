@@ -30,7 +30,6 @@
 		341F59CC1D516B1500B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = "<group>"; };
 		341F59CD1D5190DD00B441A8 /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = "<group>"; };
 		341F59CE1D5196C100B441A8 /* connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connection_manager.hpp; path = include/connection_manager.hpp; sourceTree = "<group>"; };
-		341F59D01D523AA100B441A8 /* include_boost.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = include_boost.hpp; path = include/include_boost.hpp; sourceTree = "<group>"; };
 		341F59D51D535D2500B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../../share/local_datagram_client.hpp; sourceTree = "<group>"; };
 		341F59D71D538C4000B441A8 /* userspace_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = userspace_defs.h; path = ../../share/userspace_defs.h; sourceTree = "<group>"; };
 		341F59DA1D54EABD00B441A8 /* iokit_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_user_client.hpp; path = ../../share/iokit_user_client.hpp; sourceTree = "<group>"; };
@@ -116,7 +115,6 @@
 			isa = PBXGroup;
 			children = (
 				341F59CE1D5196C100B441A8 /* connection_manager.hpp */,
-				341F59D01D523AA100B441A8 /* include_boost.hpp */,
 				3446AA901D49A63E00337B36 /* io_hid_post_event_wrapper.hpp */,
 				345AC0001D60B766009D1FB4 /* keyboard_event_output_manager.hpp */,
 				345AC0011D60B766009D1FB4 /* logger.hpp */,
