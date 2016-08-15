@@ -101,18 +101,28 @@ public:
 
     // set key repeat
     if (event_type == KRBN_EVENT_TYPE_KEY_DOWN) {
-      key_repeat_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-      if (!key_repeat_timer_) {
-        logger::get_logger().error("failed to dispatch_source_create");
-      } else {
-        dispatch_source_set_timer(key_repeat_timer_,
-                                  dispatch_time(DISPATCH_TIME_NOW, initial_key_repeat_milliseconds * NSEC_PER_MSEC),
-                                  key_repeat_milliseconds * NSEC_PER_MSEC,
-                                  0);
-        dispatch_source_set_event_handler(key_repeat_timer_, ^{
+      bool repeat_target = true;
+      if (post_key_type == io_hid_post_event_wrapper::post_key_type::aux_control_button) {
+        if (new_key_code == NX_KEYTYPE_PLAY ||
+            new_key_code == NX_KEYTYPE_MUTE) {
+          repeat_target = false;
+        }
+      }
+
+      if (repeat_target) {
+        key_repeat_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+        if (!key_repeat_timer_) {
+          logger::get_logger().error("failed to dispatch_source_create");
+        } else {
+          dispatch_source_set_timer(key_repeat_timer_,
+                                    dispatch_time(DISPATCH_TIME_NOW, initial_key_repeat_milliseconds * NSEC_PER_MSEC),
+                                    key_repeat_milliseconds * NSEC_PER_MSEC,
+                                    0);
+          dispatch_source_set_event_handler(key_repeat_timer_, ^{
             io_hid_post_event_wrapper_.post_key(post_key_type, new_key_code, event_type, flags, true);
           });
-        dispatch_resume(key_repeat_timer_);
+          dispatch_resume(key_repeat_timer_);
+        }
       }
     }
   }
