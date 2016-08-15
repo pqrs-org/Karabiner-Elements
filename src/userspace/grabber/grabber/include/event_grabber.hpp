@@ -121,12 +121,14 @@ private:
                       uint32_t usage,
                       CFIndex integer_value) {
 
+#if 0
     std::cout << "element" << std::endl
               << "  usage_page:0x" << std::hex << usage_page << std::endl
               << "  usage:0x" << std::hex << usage << std::endl
               << "  type:" << IOHIDElementGetType(element) << std::endl
               << "  length:" << IOHIDValueGetLength(value) << std::endl
               << "  integer_value:" << integer_value << std::endl;
+#endif
 
     switch (usage_page) {
     case kHIDPage_KeyboardOrKeypad: {
@@ -238,26 +240,46 @@ private:
       usage = kHIDUsage_KeyboardDeleteOrBackspace;
     }
 
-    if (modifier_flag_manager_.pressed(modifier_flag_manager::physical_keys::fn)) {
+    // change fn+arrow keys, etc.
+    // TODO: integrate into __KeyToKey__.
+    if ((pressed && modifier_flag_manager_.pressed(modifier_flag_manager::physical_keys::fn)) ||
+        std::find(fn_changed_keys_.begin(), fn_changed_keys_.end(), usage) != fn_changed_keys_.end()) {
+      bool changed = false;
+      uint32_t new_usage = 0;
       switch (usage) {
-      case kHIDUsage_KeyboardReturnOrEnter:
-        usage = kHIDUsage_KeypadEnter;
+        case kHIDUsage_KeyboardReturnOrEnter:
+        new_usage = kHIDUsage_KeypadEnter;
+        changed = true;
         break;
       case kHIDUsage_KeyboardDeleteOrBackspace:
-        usage = kHIDUsage_KeyboardDeleteForward;
+        new_usage = kHIDUsage_KeyboardDeleteForward;
+        changed = true;
         break;
       case kHIDUsage_KeyboardRightArrow:
-        usage = kHIDUsage_KeyboardEnd;
+        new_usage = kHIDUsage_KeyboardEnd;
+        changed = true;
         break;
       case kHIDUsage_KeyboardLeftArrow:
-        usage = kHIDUsage_KeyboardHome;
+        new_usage = kHIDUsage_KeyboardHome;
+        changed = true;
         break;
       case kHIDUsage_KeyboardDownArrow:
-        usage = kHIDUsage_KeyboardPageDown;
+        new_usage = kHIDUsage_KeyboardPageDown;
+        changed = true;
         break;
       case kHIDUsage_KeyboardUpArrow:
-        usage = kHIDUsage_KeyboardPageUp;
+        new_usage = kHIDUsage_KeyboardPageUp;
+        changed = true;
         break;
+      }
+
+      if (changed) {
+        if (pressed) {
+          fn_changed_keys_.push_back(usage);
+        } else {
+          fn_changed_keys_.remove(usage);
+        }
+        usage = new_usage;
       }
     }
 
@@ -312,6 +334,7 @@ private:
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   std::list<uint32_t> pressed_key_usages_;
+  std::list<uint32_t> fn_changed_keys_;
 
   modifier_flag_manager modifier_flag_manager_;
   hid_report::keyboard_input last_keyboard_input_report_;
