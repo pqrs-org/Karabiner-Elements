@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "logger.hpp"
+#include "grabber_server.hpp"
 #include "notification_center.hpp"
 #include "session.hpp"
 
@@ -9,6 +10,7 @@ class userspace_connection_manager final {
 public:
   userspace_connection_manager(void) : timer_(0), last_uid_(0) {
     prepare_socket_directory(0);
+    grabber_server_.stop();
 
     timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
     if (!timer_) {
@@ -22,6 +24,8 @@ public:
         if (last_uid_ != uid) {
           last_uid_ = uid;
           logger::get_logger().info("current_console_user_id: {0}", uid);
+          grabber_server_.stop();
+          grabber_server_.start();
           prepare_socket_directory(uid);
 
           notification_center::post_distributed_notification(krbn_distributed_notification_console_user_socket_directory_is_ready);
@@ -41,4 +45,6 @@ public:
 private:
   dispatch_source_t timer_;
   uid_t last_uid_;
+
+  grabber_server grabber_server_;
 };

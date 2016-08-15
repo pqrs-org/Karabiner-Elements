@@ -21,6 +21,8 @@ public:
   }
 
   void stop(void) {
+    unlink(constants::get_grabber_socket_file_path());
+
     if (!thread_.joinable()) {
       return;
     }

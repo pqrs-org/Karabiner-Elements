@@ -12,9 +12,6 @@ int main(int argc, const char* argv[]) {
 
   event_grabber observer;
 
-  grabber_server server;
-  server.start();
-
   userspace_connection_manager connection_manager;
 
   CFRunLoopRun();
