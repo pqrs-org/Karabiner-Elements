@@ -57,6 +57,10 @@ public:
 
       if (!ec) {
         switch (buffer_[0]) {
+        case KRBN_OPERATION_TYPE_STOP_KEY_REPEAT:
+          keyboard_event_output_manager_.stop_key_repeat();
+          break;
+
         case KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS:
           if (n != sizeof(krbn_operation_type_post_modifier_flags)) {
             logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS");

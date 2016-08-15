@@ -239,18 +239,19 @@ private:
     }
 
     // ----------------------------------------
-    if (pressed) {
-      pressed_key_usages_.push_back(usage);
-    } else {
-      pressed_key_usages_.remove(usage);
-    }
-
-    // ----------------------------------------
     if (handle_modifier_flag_event(usage_page, usage, pressed)) {
+      console_user_client_.stop_key_repeat();
       return;
     }
     if (handle_function_key_event(usage_page, usage, pressed)) {
       return;
+    }
+
+    if (pressed) {
+      pressed_key_usages_.push_back(usage);
+      console_user_client_.stop_key_repeat();
+    } else {
+      pressed_key_usages_.remove(usage);
     }
 
     send_keyboard_input_report();
