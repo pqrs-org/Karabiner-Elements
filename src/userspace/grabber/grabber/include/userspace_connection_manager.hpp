@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "logger.hpp"
+#include "notification_center.hpp"
 #include "session.hpp"
 
 class userspace_connection_manager final {
@@ -22,6 +23,8 @@ public:
           last_uid_ = uid;
           logger::get_logger().info("current_console_user_id: {0}", uid);
           prepare_socket_directory(uid);
+
+          notification_center::post_distributed_notification(krbn_distributed_notification_console_user_socket_directory_is_ready);
         }
       });
 

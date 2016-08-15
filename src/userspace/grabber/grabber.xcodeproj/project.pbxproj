@@ -45,6 +45,8 @@
 		345ABFF41D5A3F09009D1FB4 /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/modifier_flag_manager.hpp; sourceTree = "<group>"; };
 		345ABFF51D5A3F09009D1FB4 /* modifier_flag.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag.hpp; path = include/modifier_flag.hpp; sourceTree = "<group>"; };
 		345ABFFC1D5FF2D4009D1FB4 /* console_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = console_user_client.hpp; path = include/console_user_client.hpp; sourceTree = "<group>"; };
+		345AC0021D620C8C009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = "<group>"; };
+		345AC0041D62163F009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = "<group>"; };
 		349115941D2F754500FE93B7 /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = include/human_interface_device.hpp; sourceTree = "<group>"; };
 		3495C67E1D368FF0007CB9E7 /* grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber.hpp; path = include/grabber.hpp; sourceTree = "<group>"; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
@@ -105,12 +107,14 @@
 		3495C6801D3CE652007CB9E7 /* share */ = {
 			isa = PBXGroup;
 			children = (
+				345AC0041D62163F009D1FB4 /* boost_defs.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
 				3446AA8D1D49A41100337B36 /* hid_report.hpp */,
 				341F59D91D54EA3300B441A8 /* iokit_user_client.hpp */,
 				341F59DC1D5778A000B441A8 /* iokit_utility.hpp */,
 				341F59D11D5244F200B441A8 /* local_datagram_client.hpp */,
 				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
+				345AC0021D620C8C009D1FB4 /* notification_center.hpp */,
 				341F59D81D538EE900B441A8 /* userspace_defs.h */,
 				3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */,
 			);
