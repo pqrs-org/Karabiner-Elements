@@ -1,5 +1,10 @@
 #pragma once
 
+#include <CoreFoundation/CoreFoundation.h>
+
+#define krbn_distributed_notification_observed_object CFSTR("org.pqrs.karabiner")
+#define krbn_distributed_notification_console_user_socket_directory_is_ready CFSTR("console_user_socket_directory_is_ready")
+
 enum krbn_operation_type {
   KRBN_OPERATION_TYPE_NONE,
   KRBN_OPERATION_TYPE_STOP_KEY_REPEAT,
