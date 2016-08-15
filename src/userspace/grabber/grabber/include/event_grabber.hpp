@@ -238,6 +238,29 @@ private:
       usage = kHIDUsage_KeyboardDeleteOrBackspace;
     }
 
+    if (modifier_flag_manager_.pressed(modifier_flag_manager::physical_keys::fn)) {
+      switch (usage) {
+      case kHIDUsage_KeyboardReturnOrEnter:
+        usage = kHIDUsage_KeypadEnter;
+        break;
+      case kHIDUsage_KeyboardDeleteOrBackspace:
+        usage = kHIDUsage_KeyboardDeleteForward;
+        break;
+      case kHIDUsage_KeyboardRightArrow:
+        usage = kHIDUsage_KeyboardEnd;
+        break;
+      case kHIDUsage_KeyboardLeftArrow:
+        usage = kHIDUsage_KeyboardHome;
+        break;
+      case kHIDUsage_KeyboardDownArrow:
+        usage = kHIDUsage_KeyboardPageDown;
+        break;
+      case kHIDUsage_KeyboardUpArrow:
+        usage = kHIDUsage_KeyboardPageUp;
+        break;
+      }
+    }
+
     // ----------------------------------------
     if (handle_modifier_flag_event(usage_page, usage, pressed)) {
       console_user_client_.stop_key_repeat();
