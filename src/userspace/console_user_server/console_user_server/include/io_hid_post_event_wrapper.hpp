@@ -23,7 +23,24 @@ public:
     }
   }
 
-  void post_key(krbn_key_code key_code, krbn_event_type event_type, IOOptionBits flags, bool repeat) {
+  enum class post_key_type {
+    key,
+    aux_control_button,
+  };
+
+  void post_key(post_key_type type, uint8_t key_code, krbn_event_type event_type, IOOptionBits flags, bool repeat) {
+    switch (type) {
+    case post_key_type::key:
+      post_key(key_code, event_type, flags, repeat);
+      break;
+
+    case post_key_type::aux_control_button:
+      post_aux_control_button(key_code, event_type, flags, repeat);
+      break;
+    }
+  }
+
+  void post_key(uint8_t key_code, krbn_event_type event_type, IOOptionBits flags, bool repeat) {
     NXEventData event;
     memset(&event, 0, sizeof(event));
     event.key.origCharCode = 0;
@@ -47,7 +64,7 @@ public:
     }
   }
 
-  void post_aux_key(uint8_t key_code, krbn_event_type event_type, IOOptionBits flags, bool repeat) {
+  void post_aux_control_button(uint8_t key_code, krbn_event_type event_type, IOOptionBits flags, bool repeat) {
     NXEventData event;
     memset(&event, 0, sizeof(event));
     event.compound.subType = NX_SUBTYPE_AUX_CONTROL_BUTTONS;

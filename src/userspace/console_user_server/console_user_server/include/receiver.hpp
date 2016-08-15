@@ -1,10 +1,9 @@
 #pragma once
 
 #include "constants.hpp"
-#include "io_hid_post_event_wrapper.hpp"
+#include "keyboard_event_output_manager.hpp"
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
-#include "system_preferences.hpp"
 #include "userspace_defs.h"
 
 class receiver final {
@@ -63,7 +62,7 @@ public:
             logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS");
           } else {
             auto p = reinterpret_cast<krbn_operation_type_post_modifier_flags*>(&(buffer_[0]));
-            io_hid_post_event_wrapper_.post_modifier_flags(p->flags);
+            keyboard_event_output_manager_.post_modifier_flags(p->flags);
           }
           break;
 
@@ -72,37 +71,7 @@ public:
             logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_POST_KEY");
           } else {
             auto p = reinterpret_cast<krbn_operation_type_post_key*>(&(buffer_[0]));
-            io_hid_post_event_wrapper_.post_modifier_flags(p->flags);
-
-            bool fn_pressed = (p->flags & NX_SECONDARYFNMASK);
-            bool standard_function_key = false;
-            if (system_preferences::get_keyboard_fn_state()) {
-              // "Use all F1, F2, etc. keys as standard function keys."
-              standard_function_key = !fn_pressed;
-            } else {
-              standard_function_key = fn_pressed;
-            }
-
-            switch (p->key_code) {
-            case KRBN_KEY_CODE_F1:
-              if (standard_function_key) {
-                io_hid_post_event_wrapper_.post_key(p->key_code, p->event_type, p->flags, false);
-              } else {
-                io_hid_post_event_wrapper_.post_aux_key(NX_KEYTYPE_BRIGHTNESS_DOWN, p->event_type, p->flags, false);
-              }
-              break;
-
-            case KRBN_KEY_CODE_F2:
-              if (standard_function_key) {
-                io_hid_post_event_wrapper_.post_key(p->key_code, p->event_type, p->flags, false);
-              } else {
-                io_hid_post_event_wrapper_.post_aux_key(NX_KEYTYPE_BRIGHTNESS_UP, p->event_type, p->flags, false);
-              }
-              break;
-
-            default:
-              io_hid_post_event_wrapper_.post_key(p->key_code, p->event_type, p->flags, false);
-            }
+            keyboard_event_output_manager_.post_key(p->key_code, p->event_type, p->flags);
           }
           break;
 
@@ -123,5 +92,5 @@ private:
   std::mutex mutex_;
   volatile bool exit_loop_;
 
-  io_hid_post_event_wrapper io_hid_post_event_wrapper_;
+  keyboard_event_output_manager keyboard_event_output_manager_;
 };
