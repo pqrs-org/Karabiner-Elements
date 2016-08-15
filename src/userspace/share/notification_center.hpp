@@ -12,9 +12,9 @@ public:
                                          true);
   }
 
-  static void observe_distributed_notification(CFStringRef name, CFNotificationCallback callback) {
+  static void observe_distributed_notification(const void* observer, CFNotificationCallback callback, CFStringRef name) {
     CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(),
-                                    nullptr,
+                                    observer,
                                     callback,
                                     name,
                                     krbn_distributed_notification_observed_object,

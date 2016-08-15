@@ -41,6 +41,8 @@
 		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = "<group>"; };
 		345AC0001D60B766009D1FB4 /* keyboard_event_output_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = keyboard_event_output_manager.hpp; path = include/keyboard_event_output_manager.hpp; sourceTree = "<group>"; };
 		345AC0011D60B766009D1FB4 /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = "<group>"; };
+		345AC0031D620E28009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = "<group>"; };
+		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = "<group>"; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -88,11 +90,13 @@
 		3495C6801D3CE652007CB9E7 /* share */ = {
 			isa = PBXGroup;
 			children = (
+				345AC0051D621651009D1FB4 /* boost_defs.hpp */,
 				341F59CC1D516B1500B441A8 /* constants.hpp */,
 				341F59DA1D54EABD00B441A8 /* iokit_user_client.hpp */,
 				341F59DB1D57789500B441A8 /* iokit_utility.hpp */,
 				341F59D51D535D2500B441A8 /* local_datagram_client.hpp */,
 				341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */,
+				345AC0031D620E28009D1FB4 /* notification_center.hpp */,
 				345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */,
 				341F59D71D538C4000B441A8 /* userspace_defs.h */,
 			);
