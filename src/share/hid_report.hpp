@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cstring>
+// Do not use <cstring> for kext
+#include <string.h>
 
 class hid_report {
 public:
