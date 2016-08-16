@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "grabber_client.hpp"
 #include "keyboard_event_output_manager.hpp"
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
@@ -23,6 +24,9 @@ public:
     server_ = std::make_unique<local_datagram_server>(path);
     chmod(path, 0600);
 
+    grabber_client_ = std::make_unique<grabber_client>();
+    grabber_client_->connect();
+
     exit_loop_ = false;
     thread_ = std::thread([this] { this->worker(); });
 
@@ -42,6 +46,7 @@ public:
     exit_loop_ = true;
     thread_.join();
     server_.reset(nullptr);
+    grabber_client_.reset(nullptr);
 
     logger::get_logger().info("receiver is stopped");
   }
@@ -55,7 +60,7 @@ public:
       boost::system::error_code ec;
       std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
 
-      if (!ec) {
+      if (!ec && n > 0) {
         switch (buffer_[0]) {
         case KRBN_OPERATION_TYPE_STOP_KEY_REPEAT:
           keyboard_event_output_manager_.stop_key_repeat();
@@ -92,6 +97,7 @@ private:
   };
   std::array<uint8_t, buffer_length> buffer_;
   std::unique_ptr<local_datagram_server> server_;
+  std::unique_ptr<grabber_client> grabber_client_;
   std::thread thread_;
   std::mutex mutex_;
   volatile bool exit_loop_;

@@ -24,6 +24,9 @@ public:
         if (last_uid_ != uid) {
           last_uid_ = uid;
           logger::get_logger().info("current_console_user_id: {0}", uid);
+
+          // set up grabber_server before prepare_socket_directory
+          // in order to guarantee that the grabber_server is ready if console_user_server can make their receiver socket.
           grabber_server_.stop();
           grabber_server_.start();
           prepare_socket_directory(uid);

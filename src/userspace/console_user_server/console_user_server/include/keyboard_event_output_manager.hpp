@@ -15,6 +15,7 @@ public:
 
   void stop_key_repeat(void) {
     if (key_repeat_timer_) {
+      dispatch_source_cancel(key_repeat_timer_);
       dispatch_release(key_repeat_timer_);
       key_repeat_timer_ = 0;
     }

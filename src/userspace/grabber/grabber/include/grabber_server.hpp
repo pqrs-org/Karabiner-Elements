@@ -44,8 +44,17 @@ public:
       boost::system::error_code ec;
       std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
 
-      if (!ec) {
-        std::cout << n << std::endl;
+      if (!ec && n > 0) {
+        switch (buffer_[0]) {
+        case KRBN_OPERATION_TYPE_CONNECT:
+          if (n != sizeof(krbn_operation_type_connect)) {
+            logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_CONNECT");
+          } else {
+            auto p = reinterpret_cast<krbn_operation_type_connect*>(&(buffer_[0]));
+            std::cout << "pid " << std::dec << p->console_user_server_pid << std::endl;
+          }
+          break;
+        }
       }
     }
   }

@@ -8,8 +8,13 @@
 
 enum krbn_operation_type {
   KRBN_OPERATION_TYPE_NONE,
+  // console_user_server -> grabber
+  KRBN_OPERATION_TYPE_CONNECT,
+  // grabber -> console_user_server
   KRBN_OPERATION_TYPE_STOP_KEY_REPEAT,
+  // grabber -> console_user_server
   KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS,
+  // grabber -> console_user_server
   KRBN_OPERATION_TYPE_POST_KEY,
 };
 
@@ -38,6 +43,14 @@ enum krbn_key_code {
   KRBN_KEY_CODE_F17 = 0x40,
   KRBN_KEY_CODE_F18 = 0x4f,
   KRBN_KEY_CODE_F19 = 0x50,
+};
+
+struct krbn_operation_type_connect {
+public:
+  krbn_operation_type_connect(void) : operation_type(KRBN_OPERATION_TYPE_CONNECT) {}
+
+  uint8_t operation_type;
+  pid_t console_user_server_pid;
 };
 
 struct krbn_operation_type_stop_key_repeat {
