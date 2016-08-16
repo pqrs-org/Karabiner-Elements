@@ -166,3 +166,15 @@ We have to convert the f1 key report to the brightness control report manually.
 0x00070045, // (kHIDPage_KeyboardOrKeypad << 32 | kHIDUsage_KeyboardF12)
 0x000C00E9
 ```
+
+# program sequence
+
+1. Run grabber.
+2. Open grabber server unix domain socket.
+3. Polling session state in grabber.
+4. When session state is changed, grabber change the unix domain socket owner to console user.
+5. Run console_user_server.
+6. Try to open console_user_server unix domain socket.
+7. Send `KRBN_OPERATION_TYPE_CONNECT` to grabber from console_user_server.
+8. grabber connects to console_user_server.
+9. grabber seizes input devices.
