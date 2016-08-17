@@ -10,6 +10,15 @@
 
 class iokit_utility {
 public:
+  static bool get_registry_entry_id(io_registry_entry_t registry_entry, uint64_t& value) {
+    // Note:
+    // IORegistryEntryGetRegistryEntryID returns MACH_SEND_INVALID_DEST in callback of IOHIDManagerRegisterDeviceRemovalCallback.
+    // Thus, we cannot use it as a unique id for device matching/removal.
+
+    auto kr = IORegistryEntryGetRegistryEntryID(registry_entry, &value);
+    return (kr == KERN_SUCCESS);
+  }
+
   static bool get_string_property(io_service_t service, CFStringRef _Nonnull key, std::string& value) {
     if (!service) {
       return false;
@@ -101,6 +110,10 @@ public:
     }
 
     return device_matching_dictionaries;
+  }
+
+  static bool get_registry_entry_id(IOHIDDeviceRef _Nonnull device, uint64_t& value) {
+    return get_registry_entry_id(IOHIDDeviceGetService(device), value);
   }
 
   static bool get_long_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key, long& value) {
