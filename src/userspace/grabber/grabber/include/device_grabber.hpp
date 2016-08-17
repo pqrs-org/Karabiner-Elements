@@ -12,9 +12,9 @@
 #include "userspace_defs.h"
 #include "virtual_hid_manager_user_client_method.hpp"
 
-class event_grabber final {
+class device_grabber final {
 public:
-  event_grabber(void) : iokit_user_client_(logger::get_logger(), "org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType),
+  device_grabber(void) : iokit_user_client_(logger::get_logger(), "org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType),
                         console_user_client_(modifier_flag_manager_) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
@@ -37,7 +37,7 @@ public:
     }
   }
 
-  ~event_grabber(void) {
+  ~device_grabber(void) {
     if (manager_) {
       IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
       CFRelease(manager_);
@@ -51,7 +51,7 @@ private:
       return;
     }
 
-    auto self = static_cast<event_grabber*>(context);
+    auto self = static_cast<device_grabber*>(context);
     if (!self) {
       return;
     }
@@ -64,10 +64,19 @@ private:
       return;
     }
 
+    uint64_t entry_id;
+    if (!iokit_utility::get_registry_entry_id(device, entry_id)) {
+      logger::get_logger().error("get_registry_entry_id is failed");
+      return;
+    }
+
     hids_[device] = std::make_unique<human_interface_device>(device);
     auto& dev = hids_[device];
 
     std::cout << "matching: " << std::endl
+              << "  device: " << device << std::endl
+              << "  service: " << IOHIDDeviceGetService(device) << std::endl
+              << "  get_registry_entry_id: " << entry_id << std::endl
               << "  vendor_id:0x" << std::hex << dev->get_vendor_id() << std::endl
               << "  product_id:0x" << std::hex << dev->get_product_id() << std::endl
               << "  location_id:0x" << std::hex << dev->get_location_id() << std::endl
@@ -82,7 +91,7 @@ private:
 
     if (dev->get_manufacturer() != "pqrs.org") {
       if (dev->get_manufacturer() == "Apple Inc.") {
-        dev->grab(boost::bind(&event_grabber::value_callback, this, _1, _2, _3, _4, _5));
+        dev->grab(boost::bind(&device_grabber::value_callback, this, _1, _2, _3, _4, _5));
       }
     }
   }
@@ -92,7 +101,7 @@ private:
       return;
     }
 
-    auto self = static_cast<event_grabber*>(context);
+    auto self = static_cast<device_grabber*>(context);
     if (!self) {
       return;
     }
@@ -104,6 +113,21 @@ private:
     if (!device) {
       return;
     }
+
+    uint64_t v;
+    std::cout << "removal: " << std::endl
+              << "  device: " << device << std::endl
+              << "  service: " << IOHIDDeviceGetService(device) << std::endl
+              << IORegistryEntryGetRegistryEntryID(IOHIDDeviceGetService(device), &v) << std::endl;
+
+    uint64_t entry_id;
+    if (!iokit_utility::get_registry_entry_id(device, entry_id)) {
+      logger::get_logger().error("get_registry_entry_id is failed");
+      return;
+    }
+
+    std::cout << "removal: " << std::endl
+              << "get_registry_entry_id: " << entry_id << std::endl;
 
     auto it = hids_.find(device);
     if (it != hids_.end()) {
@@ -247,7 +271,7 @@ private:
       bool changed = false;
       uint32_t new_usage = 0;
       switch (usage) {
-        case kHIDUsage_KeyboardReturnOrEnter:
+      case kHIDUsage_KeyboardReturnOrEnter:
         new_usage = kHIDUsage_KeypadEnter;
         changed = true;
         break;

@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "local_datagram_server.hpp"
 #include "session.hpp"
+#include "userspace_defs.h"
 
 class grabber_server final {
 public:

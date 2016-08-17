@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "apple_hid_usage_tables.hpp"
 #include <boost/function.hpp>
 
 class human_interface_device final {

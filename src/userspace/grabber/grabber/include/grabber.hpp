@@ -26,8 +26,6 @@
 #include <sys/types.h>
 
 // grabber headers
-#include "apple_hid_usage_tables.hpp"
-#include "event_grabber.hpp"
 #include "grabber_server.hpp"
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"

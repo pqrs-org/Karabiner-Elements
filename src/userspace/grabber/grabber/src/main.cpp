@@ -7,10 +7,7 @@ int main(int argc, const char* argv[]) {
   const char* version = "version "
 #include "version.hpp"
       ;
-
   logger::get_logger().info(version);
-
-  event_grabber observer;
 
   userspace_connection_manager connection_manager;
 
