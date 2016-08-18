@@ -12,8 +12,6 @@ public:
   receiver(void) : exit_loop_(false) {}
 
   void start(void) {
-    std::lock_guard<std::mutex> guard(mutex_);
-
     if (server_) {
       logger::get_logger().error("receiver is already running");
       return;
@@ -34,7 +32,7 @@ public:
   }
 
   void stop(void) {
-    std::lock_guard<std::mutex> guard(mutex_);
+    unlink(constants::get_console_user_socket_file_path());
 
     if (!thread_.joinable()) {
       return;
@@ -99,7 +97,6 @@ private:
   std::unique_ptr<local_datagram_server> server_;
   std::unique_ptr<grabber_client> grabber_client_;
   std::thread thread_;
-  std::mutex mutex_;
   volatile bool exit_loop_;
 
   keyboard_event_output_manager keyboard_event_output_manager_;
