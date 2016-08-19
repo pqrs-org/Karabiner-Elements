@@ -12,6 +12,7 @@ public:
 
   void connect(void) {
     krbn_operation_type_connect data;
+    data.operation_type = KRBN_OPERATION_TYPE_CONNECT;
     data.console_user_server_pid = getpid();
     client_.send_to(reinterpret_cast<uint8_t*>(&data), sizeof(data));
   }
