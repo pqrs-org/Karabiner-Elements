@@ -17,16 +17,18 @@ public:
                                                                                             notification_port_(nullptr),
                                                                                             matched_notification_(IO_OBJECT_NULL),
                                                                                             terminated_notification_(IO_OBJECT_NULL) {
-    logger_.info("iokit_user_client::iokit_user_client");
+    logger_.info(__PRETTY_FUNCTION__);
 
     notification_port_ = IONotificationPortCreate(kIOMasterPortDefault);
     if (!notification_port_) {
-      logger_.error("IONotificationPortCreate is failed");
+      logger_.error("IONotificationPortCreate is failed @ {0}", __PRETTY_FUNCTION__);
       return;
     }
 
     if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-      CFRunLoopAddSource(CFRunLoopGetCurrent(), loop_source, kCFRunLoopDefaultMode);
+      CFRunLoopAddSource(CFRunLoopGetMain(), loop_source, kCFRunLoopDefaultMode);
+    } else {
+      logger_.error("IONotificationPortGetRunLoopSource is failed @ {0}", __PRETTY_FUNCTION__);
     }
 
     // kIOMatchedNotification
@@ -38,7 +40,7 @@ public:
                                                  static_cast<void*>(this),
                                                  &matched_notification_);
       if (kr != kIOReturnSuccess) {
-        logger_.error("IOServiceAddMatchingNotification error: 0x{0:x}", kr);
+        logger_.error("IOServiceAddMatchingNotification error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
       } else {
         matched_callback(matched_notification_);
       }
@@ -53,7 +55,7 @@ public:
                                                  static_cast<void*>(this),
                                                  &terminated_notification_);
       if (kr != kIOReturnSuccess) {
-        logger_.error("IOServiceAddMatchingNotification error: 0x{0:x}", kr);
+        logger_.error("IOServiceAddMatchingNotification error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
       } else {
         terminated_callback(terminated_notification_);
       }
@@ -61,7 +63,7 @@ public:
   }
 
   ~iokit_user_client(void) {
-    logger_.info("iokit_user_client::~iokit_user_client");
+    logger_.info(__PRETTY_FUNCTION__);
 
     if (matched_notification_) {
       IOObjectRelease(matched_notification_);
@@ -75,7 +77,7 @@ public:
 
     if (notification_port_) {
       if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), loop_source, kCFRunLoopDefaultMode);
+        CFRunLoopRemoveSource(CFRunLoopGetMain(), loop_source, kCFRunLoopDefaultMode);
       }
 
       IONotificationPortDestroy(notification_port_);
@@ -95,7 +97,7 @@ public:
       return IOConnectCallStructMethod(connect, selector, input_struct, input_struct_length, output_struct, output_struct_length);
     }
 
-    logger_.error("iokit_user_client::call_struct_method: connections_ is empty");
+    logger_.error("connections_ is empty @ {0}", __PRETTY_FUNCTION__);
     return kIOReturnError;
   }
 
@@ -112,7 +114,7 @@ public:
       return IOHIDPostEvent(connect, event_type, location, event_data, event_data_version, event_flags, options);
     }
 
-    logger_.error("iokit_user_client::hid_post_event: connections_ is empty");
+    logger_.error("connections_ is empty @ {0}", __PRETTY_FUNCTION__);
     return kIOReturnError;
   }
 
@@ -122,6 +124,8 @@ private:
     connection(spdlog::logger& logger, io_service_t service, uint32_t type) : logger_(logger),
                                                                               service_(service),
                                                                               connect_(IO_OBJECT_NULL) {
+      logger_.info(__PRETTY_FUNCTION__);
+
       if (service_) {
         IOObjectRetain(service_);
 
@@ -129,18 +133,18 @@ private:
 
         auto kr = IOServiceOpen(service_, mach_task_self(), type, &connect_);
         if (kr != kIOReturnSuccess) {
-          logger_.error("IOServiceOpen error: 0x{0:x}", kr);
+          logger_.error("IOServiceOpen error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
         }
       }
     }
 
     ~connection(void) {
-      logger_.info("iokit_user_client::connection::~connection");
+      logger_.info(__PRETTY_FUNCTION__);
 
       if (connect_) {
         auto kr = IOServiceClose(connect_);
         if (kr != kIOReturnSuccess) {
-          logger_.error("IOConnectRelease error: 0x{0:x}", kr);
+          logger_.error("IOConnectRelease error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
         }
 
         connect_ = IO_OBJECT_NULL;
@@ -172,8 +176,8 @@ private:
 
       connections_.push_back(std::make_unique<connection>(logger_, service, type_));
 
-      logger_.info("iokit_user_client::matched_callback: {0}", (connections_.back())->get_serial_number());
-      logger_.info("iokit_user_client::matched_callback connections_.size():{0}", connections_.size());
+      logger_.info("serial_number:{1} @ {0}", __PRETTY_FUNCTION__, (connections_.back())->get_serial_number());
+      logger_.info("connections_.size():{1} @ {0}", __PRETTY_FUNCTION__, connections_.size());
 
       IOObjectRelease(service);
     }
@@ -196,8 +200,8 @@ private:
                                });
       connections_.erase(it, connections_.end());
 
-      logger_.info("iokit_user_client::terminated_callback: {0}", serial_number);
-      logger_.info("iokit_user_client::terminated_callback connections_.size():{0}", connections_.size());
+      logger_.info("serial_number:{1} @ {0}", __PRETTY_FUNCTION__, serial_number);
+      logger_.info("connections_.size():{1} @ {0}", __PRETTY_FUNCTION__, connections_.size());
 
       IOObjectRelease(service);
     }
