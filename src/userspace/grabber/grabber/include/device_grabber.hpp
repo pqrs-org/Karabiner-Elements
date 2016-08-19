@@ -15,9 +15,12 @@
 class device_grabber final {
 public:
   device_grabber(void) : iokit_user_client_(logger::get_logger(), "org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType),
-                        console_user_client_(modifier_flag_manager_) {
+                         console_user_client_(modifier_flag_manager_) {
+    logger::get_logger().info(__PRETTY_FUNCTION__);
+
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
+      logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
       return;
     }
 
@@ -33,13 +36,15 @@ public:
       IOHIDManagerRegisterDeviceMatchingCallback(manager_, static_device_matching_callback, this);
       IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
 
-      IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+      IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     }
   }
 
   ~device_grabber(void) {
+    logger::get_logger().info(__PRETTY_FUNCTION__);
+
     if (manager_) {
-      IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+      IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
       CFRelease(manager_);
       manager_ = nullptr;
     }
