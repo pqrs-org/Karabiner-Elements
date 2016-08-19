@@ -46,32 +46,20 @@ enum krbn_key_code {
 };
 
 struct krbn_operation_type_connect {
-public:
-  krbn_operation_type_connect(void) : operation_type(KRBN_OPERATION_TYPE_CONNECT) {}
-
   uint8_t operation_type;
   pid_t console_user_server_pid;
 };
 
 struct krbn_operation_type_stop_key_repeat {
-public:
-  krbn_operation_type_stop_key_repeat(void) : operation_type(KRBN_OPERATION_TYPE_STOP_KEY_REPEAT) {}
-
   uint8_t operation_type;
 };
 
 struct krbn_operation_type_post_modifier_flags {
-public:
-  krbn_operation_type_post_modifier_flags(void) : operation_type(KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS) {}
-
   uint8_t operation_type;
   IOOptionBits flags;
 };
 
 struct krbn_operation_type_post_key {
-public:
-  krbn_operation_type_post_key(void) : operation_type(KRBN_OPERATION_TYPE_POST_KEY) {}
-
   uint8_t operation_type;
   enum krbn_key_code key_code;
   enum krbn_event_type event_type;
