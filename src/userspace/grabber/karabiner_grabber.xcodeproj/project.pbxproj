@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		341C8E911D5012260018D32C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 341C8E8F1D5012260018D32C /* main.cpp */; };
+		34A88A961D6858D300DD480B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34A88A951D6858D300DD480B /* main.cpp */; };
 		34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34BB0F0A1D22853700372174 /* IOKit.framework */; };
 		34E420611D5042240022F821 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E420601D5042240022F821 /* SystemConfiguration.framework */; };
 		34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E9F62E1D2134770007AE90 /* Carbon.framework */; };
@@ -26,13 +26,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		340E33EC1D43BFF900CF7785 /* apple_hid_usage_tables.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = apple_hid_usage_tables.hpp; path = include/apple_hid_usage_tables.hpp; sourceTree = "<group>"; };
-		341C8E831D4BC2980018D32C /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = "<group>"; };
-		341C8E841D4C8C740018D32C /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = "<group>"; };
 		341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../../share/local_datagram_server.hpp; sourceTree = "<group>"; };
-		341C8E8B1D4F8AE90018D32C /* userspace_connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_connection_manager.hpp; path = include/userspace_connection_manager.hpp; sourceTree = "<group>"; };
-		341C8E8C1D4F98250018D32C /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = "<group>"; };
-		341C8E8F1D5012260018D32C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<group>"; };
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = "<group>"; };
 		341F59D11D5244F200B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../../share/local_datagram_client.hpp; sourceTree = "<group>"; };
 		341F59D81D538EE900B441A8 /* userspace_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = userspace_defs.h; path = ../../share/userspace_defs.h; sourceTree = "<group>"; };
@@ -41,14 +35,21 @@
 		344149111D212A1600C8ECFC /* karabiner_grabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner_grabber; sourceTree = BUILT_PRODUCTS_DIR; };
 		3446AA8D1D49A41100337B36 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../../share/hid_report.hpp; sourceTree = "<group>"; };
 		3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = "<group>"; };
-		345ABFF41D5A3F09009D1FB4 /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/modifier_flag_manager.hpp; sourceTree = "<group>"; };
-		345ABFF51D5A3F09009D1FB4 /* modifier_flag.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag.hpp; path = include/modifier_flag.hpp; sourceTree = "<group>"; };
-		345ABFFC1D5FF2D4009D1FB4 /* console_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = console_user_client.hpp; path = include/console_user_client.hpp; sourceTree = "<group>"; };
 		345AC0021D620C8C009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = "<group>"; };
 		345AC0041D62163F009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = "<group>"; };
-		345AC0071D648621009D1FB4 /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = "<group>"; };
-		349115941D2F754500FE93B7 /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = include/human_interface_device.hpp; sourceTree = "<group>"; };
-		3495C67E1D368FF0007CB9E7 /* grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber.hpp; path = include/grabber.hpp; sourceTree = "<group>"; };
+		34A88A861D6840C200DD480B /* apple_hid_usage_tables.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = apple_hid_usage_tables.hpp; path = include/apple_hid_usage_tables.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A871D6840C200DD480B /* console_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = console_user_client.hpp; path = include/console_user_client.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A891D6840C200DD480B /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A8A1D6840C200DD480B /* grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber.hpp; path = include/grabber.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A8B1D6840C200DD480B /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = include/human_interface_device.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A8C1D6840C200DD480B /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A8D1D6840C200DD480B /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/modifier_flag_manager.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A8E1D6840C200DD480B /* modifier_flag.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag.hpp; path = include/modifier_flag.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A8F1D6840C200DD480B /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A901D6840C200DD480B /* userspace_connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_connection_manager.hpp; path = include/userspace_connection_manager.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A941D68446C00DD480B /* karabiner_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = karabiner_version.h; path = ../../../share/karabiner_version.h; sourceTree = "<group>"; };
+		34A88A951D6858D300DD480B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E420601D5042240022F821 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
@@ -68,14 +69,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		341C8E8D1D5012110018D32C /* src */ = {
-			isa = PBXGroup;
-			children = (
-				341C8E8F1D5012260018D32C /* main.cpp */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
 		344149081D212A1600C8ECFC = {
 			isa = PBXGroup;
 			children = (
@@ -97,8 +90,8 @@
 			isa = PBXGroup;
 			children = (
 				34E450271D2AB18400C5AC13 /* include */,
+				34A88A951D6858D300DD480B /* main.cpp */,
 				3495C6801D3CE652007CB9E7 /* share */,
-				341C8E8D1D5012110018D32C /* src */,
 			);
 			path = grabber;
 			sourceTree = "<group>";
@@ -111,6 +104,7 @@
 				3446AA8D1D49A41100337B36 /* hid_report.hpp */,
 				341F59D91D54EA3300B441A8 /* iokit_user_client.hpp */,
 				341F59DC1D5778A000B441A8 /* iokit_utility.hpp */,
+				34A88A941D68446C00DD480B /* karabiner_version.h */,
 				341F59D11D5244F200B441A8 /* local_datagram_client.hpp */,
 				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				345AC0021D620C8C009D1FB4 /* notification_center.hpp */,
@@ -133,17 +127,17 @@
 		34E450271D2AB18400C5AC13 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				340E33EC1D43BFF900CF7785 /* apple_hid_usage_tables.hpp */,
-				345ABFFC1D5FF2D4009D1FB4 /* console_user_client.hpp */,
-				345AC0071D648621009D1FB4 /* device_grabber.hpp */,
-				341C8E841D4C8C740018D32C /* grabber_server.hpp */,
-				3495C67E1D368FF0007CB9E7 /* grabber.hpp */,
-				349115941D2F754500FE93B7 /* human_interface_device.hpp */,
-				341C8E8C1D4F98250018D32C /* logger.hpp */,
-				345ABFF41D5A3F09009D1FB4 /* modifier_flag_manager.hpp */,
-				345ABFF51D5A3F09009D1FB4 /* modifier_flag.hpp */,
-				341C8E831D4BC2980018D32C /* session.hpp */,
-				341C8E8B1D4F8AE90018D32C /* userspace_connection_manager.hpp */,
+				34A88A861D6840C200DD480B /* apple_hid_usage_tables.hpp */,
+				34A88A871D6840C200DD480B /* console_user_client.hpp */,
+				34A88A881D6840C200DD480B /* device_grabber.hpp */,
+				34A88A891D6840C200DD480B /* grabber_server.hpp */,
+				34A88A8A1D6840C200DD480B /* grabber.hpp */,
+				34A88A8B1D6840C200DD480B /* human_interface_device.hpp */,
+				34A88A8C1D6840C200DD480B /* logger.hpp */,
+				34A88A8D1D6840C200DD480B /* modifier_flag_manager.hpp */,
+				34A88A8E1D6840C200DD480B /* modifier_flag.hpp */,
+				34A88A8F1D6840C200DD480B /* session.hpp */,
+				34A88A901D6840C200DD480B /* userspace_connection_manager.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";
@@ -203,7 +197,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				341C8E911D5012260018D32C /* main.cpp in Sources */,
+				34A88A961D6858D300DD480B /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
