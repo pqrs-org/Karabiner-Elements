@@ -5,6 +5,7 @@
 #include "logger.hpp"
 #include "notification_center.hpp"
 #include "session.hpp"
+#include <sys/stat.h>
 
 class userspace_connection_manager final {
 public:
@@ -30,6 +31,8 @@ public:
           grabber_server_.stop();
           grabber_server_.start();
           prepare_socket_directory(uid);
+          // unlink old socket.
+          unlink(constants::get_console_user_socket_file_path());
 
           notification_center::post_distributed_notification(krbn_distributed_notification_console_user_socket_directory_is_ready);
         }
@@ -40,7 +43,14 @@ public:
   }
 
   void prepare_socket_directory(uid_t uid) {
-    unlink(constants::get_console_user_socket_file_path());
+    // make directories.
+    mkdir(constants::get_socket_directory(), 0755);
+    mkdir(constants::get_console_user_socket_directory(), 0700);
+
+    // chmod,chown directories.
+    chmod(constants::get_socket_directory(), 0755);
+    chown(constants::get_socket_directory(), 0, 0);
+
     chmod(constants::get_console_user_socket_directory(), 0700);
     chown(constants::get_console_user_socket_directory(), uid, 0);
   }
