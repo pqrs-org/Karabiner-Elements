@@ -71,11 +71,11 @@ public:
               logger::get_logger().error("{0}: failed to dispatch_source_create", __PRETTY_FUNCTION__);
             } else {
               dispatch_source_set_event_handler(grabber_client_pid_monitor_, ^{
-                  logger::get_logger().info("grabber_client is exited (pid:{0})", pid);
+                logger::get_logger().info("grabber_client is exited (pid:{0})", pid);
 
-                  device_grabber_.reset(nullptr);
-                  release_grabber_client_pid_monitor();
-                });
+                device_grabber_.reset(nullptr);
+                release_grabber_client_pid_monitor();
+              });
               dispatch_resume(grabber_client_pid_monitor_);
             }
           }
