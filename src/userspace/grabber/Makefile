@@ -12,7 +12,6 @@ clean:
 	rm -f *.xcodeproj/*.pbxuser
 	rm -rf *.xcodeproj/xcuserdata
 	rm -rf *.xcodeproj/project.xcworkspace/xcuserdata
-	rm -f *.app.zip
 
 xcode:
 	open *.xcodeproj
