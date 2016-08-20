@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <installer-gui-script minSpecVersion="1">
-  <title>Karabiner PKGVERSION</title>
+  <title>Karabiner-Elements PKGVERSION</title>
   <volume-check>
     <allowed-os-versions>
       <os-version min="10.9"/>
@@ -12,16 +12,16 @@
       <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true" />
   -->
 
-  <pkg-ref id="org.pqrs.driver.Karabiner"/>
+  <pkg-ref id="org.pqrs.Karabiner-Elements"/>
   <options customize="never" require-scripts="false"/>
   <choices-outline>
     <line choice="default">
-      <line choice="org.pqrs.driver.Karabiner"/>
+      <line choice="org.pqrs.Karabiner-Elements"/>
     </line>
   </choices-outline>
   <choice id="default"/>
-  <choice id="org.pqrs.driver.Karabiner" visible="false">
-    <pkg-ref id="org.pqrs.driver.Karabiner"/>
+  <choice id="org.pqrs.Karabiner-Elements" visible="false">
+    <pkg-ref id="org.pqrs.Karabiner-Elements"/>
   </choice>
-  <pkg-ref id="org.pqrs.driver.Karabiner" version="PKGVERSION">Installer.pkg</pkg-ref>
+  <pkg-ref id="org.pqrs.Karabiner-Elements" version="PKGVERSION">Installer.pkg</pkg-ref>
 </installer-gui-script>
