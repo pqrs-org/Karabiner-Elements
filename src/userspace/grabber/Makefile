@@ -20,4 +20,4 @@ xcode:
 	open *.xcodeproj
 
 run:
-	sudo ./build/Release/grabber
+	sudo ./build/Release/karabiner_grabber

@@ -38,7 +38,7 @@
 		341F59D81D538EE900B441A8 /* userspace_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = userspace_defs.h; path = ../../share/userspace_defs.h; sourceTree = "<group>"; };
 		341F59D91D54EA3300B441A8 /* iokit_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_user_client.hpp; path = ../../share/iokit_user_client.hpp; sourceTree = "<group>"; };
 		341F59DC1D5778A000B441A8 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../../share/iokit_utility.hpp; sourceTree = "<group>"; };
-		344149111D212A1600C8ECFC /* grabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = grabber; sourceTree = BUILT_PRODUCTS_DIR; };
+		344149111D212A1600C8ECFC /* karabiner_grabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner_grabber; sourceTree = BUILT_PRODUCTS_DIR; };
 		3446AA8D1D49A41100337B36 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../../share/hid_report.hpp; sourceTree = "<group>"; };
 		3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = "<group>"; };
 		345ABFF41D5A3F09009D1FB4 /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/modifier_flag_manager.hpp; sourceTree = "<group>"; };
@@ -88,7 +88,7 @@
 		344149121D212A1600C8ECFC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				344149111D212A1600C8ECFC /* grabber */,
+				344149111D212A1600C8ECFC /* karabiner_grabber */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -151,9 +151,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		344149101D212A1600C8ECFC /* grabber */ = {
+		344149101D212A1600C8ECFC /* karabiner_grabber */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 344149181D212A1600C8ECFC /* Build configuration list for PBXNativeTarget "grabber" */;
+			buildConfigurationList = 344149181D212A1600C8ECFC /* Build configuration list for PBXNativeTarget "karabiner_grabber" */;
 			buildPhases = (
 				3441490D1D212A1600C8ECFC /* Sources */,
 				3441490E1D212A1600C8ECFC /* Frameworks */,
@@ -163,9 +163,9 @@
 			);
 			dependencies = (
 			);
-			name = grabber;
+			name = karabiner_grabber;
 			productName = grabber;
-			productReference = 344149111D212A1600C8ECFC /* grabber */;
+			productReference = 344149111D212A1600C8ECFC /* karabiner_grabber */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -181,7 +181,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3441490C1D212A1600C8ECFC /* Build configuration list for PBXProject "grabber" */;
+			buildConfigurationList = 3441490C1D212A1600C8ECFC /* Build configuration list for PBXProject "karabiner_grabber" */;
 			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -193,7 +193,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				344149101D212A1600C8ECFC /* grabber */,
+				344149101D212A1600C8ECFC /* karabiner_grabber */,
 			);
 		};
 /* End PBXProject section */
@@ -261,14 +261,14 @@
 		3441491A1D212A1600C8ECFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = karabiner_grabber;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3441490C1D212A1600C8ECFC /* Build configuration list for PBXProject "grabber" */ = {
+		3441490C1D212A1600C8ECFC /* Build configuration list for PBXProject "karabiner_grabber" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				344149171D212A1600C8ECFC /* Release */,
@@ -276,7 +276,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		344149181D212A1600C8ECFC /* Build configuration list for PBXNativeTarget "grabber" */ = {
+		344149181D212A1600C8ECFC /* Build configuration list for PBXNativeTarget "karabiner_grabber" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3441491A1D212A1600C8ECFC /* Release */,
