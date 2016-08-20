@@ -10,10 +10,9 @@ clean:
 	rm -f *.xcodeproj/*.pbxuser
 	rm -rf *.xcodeproj/xcuserdata
 	rm -rf *.xcodeproj/project.xcworkspace/xcuserdata
-	rm -f *.app.zip
 
 xcode:
 	open *.xcodeproj
 
 run:
-	./build/Release/console_user_server
+	./build/Release/karabiner_console_user_server
