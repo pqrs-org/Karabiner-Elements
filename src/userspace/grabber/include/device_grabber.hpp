@@ -78,17 +78,21 @@ private:
     hids_[device] = std::make_unique<human_interface_device>(device);
     auto& dev = hids_[device];
 
-    std::cout << "matching: " << std::endl
-              << "  device: " << device << std::endl
-              << "  service: " << IOHIDDeviceGetService(device) << std::endl
-              << "  get_registry_entry_id: " << entry_id << std::endl
-              << "  vendor_id:0x" << std::hex << dev->get_vendor_id() << std::endl
-              << "  product_id:0x" << std::hex << dev->get_product_id() << std::endl
-              << "  location_id:0x" << std::hex << dev->get_location_id() << std::endl
-              << "  serial_number:" << dev->get_serial_number_string() << std::endl
-              << "  manufacturer:" << dev->get_manufacturer() << std::endl
-              << "  product:" << dev->get_product() << std::endl
-              << "  transport:" << dev->get_transport() << std::endl;
+    logger::get_logger().info("matching device: "
+                              "manufacturer:{1}, "
+                              "product:{2}, "
+                              "vendor_id:0x{3:x}, "
+                              "product_id:0x{4:x}, "
+                              "location_id:0x{5:x}, "
+                              "serial_number:{6} "
+                              "@ {0}",
+                              __PRETTY_FUNCTION__,
+                              dev->get_manufacturer(),
+                              dev->get_product(),
+                              dev->get_vendor_id(),
+                              dev->get_product_id(),
+                              dev->get_location_id(),
+                              dev->get_serial_number_string());
 
     if (dev->get_serial_number_string() == "org.pqrs.driver.VirtualHIDKeyboard") {
       return;
@@ -119,26 +123,20 @@ private:
       return;
     }
 
-    uint64_t v;
-    std::cout << "removal: " << std::endl
-              << "  device: " << device << std::endl
-              << "  service: " << IOHIDDeviceGetService(device) << std::endl
-              << IORegistryEntryGetRegistryEntryID(IOHIDDeviceGetService(device), &v) << std::endl;
-
-    uint64_t entry_id;
-    if (!iokit_utility::get_registry_entry_id(device, entry_id)) {
-      logger::get_logger().error("get_registry_entry_id is failed");
-      return;
-    }
-
-    std::cout << "removal: " << std::endl
-              << "get_registry_entry_id: " << entry_id << std::endl;
-
     auto it = hids_.find(device);
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
-        std::cout << "removal vendor_id:0x" << std::hex << dev->get_vendor_id() << " product_id:0x" << std::hex << dev->get_product_id() << std::endl;
+        logger::get_logger().info("removal device: "
+                                  "vendor_id:0x{1:x}, "
+                                  "product_id:0x{2:x}, "
+                                  "location_id:0x{3:x} "
+                                  "@ {0}",
+                                  __PRETTY_FUNCTION__,
+                                  dev->get_vendor_id(),
+                                  dev->get_product_id(),
+                                  dev->get_location_id());
+
         hids_.erase(it);
       }
     }

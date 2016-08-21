@@ -41,7 +41,6 @@
 		34A88A871D6840C200DD480B /* console_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = console_user_client.hpp; path = include/console_user_client.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A891D6840C200DD480B /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = SOURCE_ROOT; };
-		34A88A8A1D6840C200DD480B /* grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber.hpp; path = include/grabber.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A8B1D6840C200DD480B /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = include/human_interface_device.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A8C1D6840C200DD480B /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A8D1D6840C200DD480B /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/modifier_flag_manager.hpp; sourceTree = SOURCE_ROOT; };
@@ -131,7 +130,6 @@
 				34A88A871D6840C200DD480B /* console_user_client.hpp */,
 				34A88A881D6840C200DD480B /* device_grabber.hpp */,
 				34A88A891D6840C200DD480B /* grabber_server.hpp */,
-				34A88A8A1D6840C200DD480B /* grabber.hpp */,
 				34A88A8B1D6840C200DD480B /* human_interface_device.hpp */,
 				34A88A8C1D6840C200DD480B /* logger.hpp */,
 				34A88A8D1D6840C200DD480B /* modifier_flag_manager.hpp */,

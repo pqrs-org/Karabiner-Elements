@@ -1,5 +1,7 @@
 #pragma once
 
+#include <IOKit/IOKitLib.h>
+#include <IOKit/hidsystem/IOHIDShared.h>
 #include <memory>
 #include <vector>
 

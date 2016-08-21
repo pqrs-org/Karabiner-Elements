@@ -3,7 +3,16 @@
 #include "boost_defs.hpp"
 
 #include "apple_hid_usage_tables.hpp"
+#include "logger.hpp"
+#include <IOKit/hid/IOHIDDevice.h>
+#include <IOKit/hid/IOHIDElement.h>
+#include <IOKit/hid/IOHIDQueue.h>
+#include <IOKit/hid/IOHIDUsageTables.h>
+#include <IOKit/hid/IOHIDValue.h>
 #include <boost/function.hpp>
+#include <cstdint>
+#include <list>
+#include <unordered_map>
 
 class human_interface_device final {
 public:
@@ -99,7 +108,7 @@ public:
 
     IOReturn r = open(kIOHIDOptionsTypeSeizeDevice);
     if (r != kIOReturnSuccess) {
-      std::cerr << "Failed to IOHIDDeviceOpen: " << std::hex << r << std::endl;
+      logger::get_logger().error("IOHIDDeviceOpen error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
       return;
     }
 
@@ -148,7 +157,7 @@ public:
 
     IOReturn r = close();
     if (r != kIOReturnSuccess) {
-      std::cerr << "Failed to IOHIDDeviceClose: " << std::hex << r << std::endl;
+      logger::get_logger().error("IOHIDDeviceClose error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
       return;
     }
 
