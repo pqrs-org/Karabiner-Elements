@@ -5,10 +5,16 @@
 #include "local_datagram_server.hpp"
 #include "session.hpp"
 #include "userspace_defs.h"
+#include <vector>
 
 class grabber_server final {
 public:
-  grabber_server(void) : exit_loop_(false), grabber_client_pid_monitor_(0) {}
+  grabber_server(void) : exit_loop_(false), grabber_client_pid_monitor_(0) {
+    enum {
+      buffer_length = 8 * 1024 * 1024,
+    };
+    buffer_.resize(buffer_length);
+  }
 
   void start(void) {
     const char* path = constants::get_grabber_socket_file_path();
@@ -94,10 +100,7 @@ private:
     }
   }
 
-  enum {
-    buffer_length = 8 * 1024 * 1024,
-  };
-  std::array<uint8_t, buffer_length> buffer_;
+  std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
   std::thread thread_;
   volatile bool exit_loop_;
