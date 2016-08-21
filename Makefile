@@ -1,6 +1,9 @@
-all:
-	$(MAKE) -C appendix | ruby ./scripts/reduce-logs.rb
-	$(MAKE) -C src | ruby ./scripts/reduce-logs.rb
+all: gitclean
+	./make-package.sh
+
+build:
+	$(MAKE) -C appendix
+	$(MAKE) -C src
 
 clean:
 	$(MAKE) -C appendix clean
