@@ -29,70 +29,125 @@ public:
   void post_key(uint8_t key_code, krbn_event_type event_type, IOOptionBits flags) {
     stop_key_repeat();
 
-    bool fn_pressed = (flags & NX_SECONDARYFNMASK);
     bool standard_function_key = false;
     if (system_preferences::get_keyboard_fn_state()) {
       // "Use all F1, F2, etc. keys as standard function keys."
-      standard_function_key = !fn_pressed;
+      standard_function_key = (KRBN_KEY_CODE_F1 <= key_code && key_code <= KRBN_KEY_CODE_F12);
     } else {
-      standard_function_key = fn_pressed;
+      standard_function_key = (KRBN_KEY_CODE_FN_F1 <= key_code && key_code <= KRBN_KEY_CODE_FN_F12);
     }
 
     uint8_t new_key_code = 0;
     auto post_key_type = io_hid_post_event_wrapper::post_key_type::key;
-    if (standard_function_key) {
-      new_key_code = static_cast<uint8_t>(key_code);
-    } else {
-      switch (key_code) {
-      case KRBN_KEY_CODE_F1:
+    switch (key_code) {
+    case KRBN_KEY_CODE_F1:
+    case KRBN_KEY_CODE_FN_F1:
+      if (standard_function_key) {
+        new_key_code = 0x7a;
+      } else {
         new_key_code = NX_KEYTYPE_BRIGHTNESS_DOWN;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
-      case KRBN_KEY_CODE_F2:
+      }
+      break;
+    case KRBN_KEY_CODE_F2:
+    case KRBN_KEY_CODE_FN_F2:
+      if (standard_function_key) {
+        new_key_code = 0x78;
+      } else {
         new_key_code = NX_KEYTYPE_BRIGHTNESS_UP;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
-      case KRBN_KEY_CODE_F3:
+      }
+      break;
+    case KRBN_KEY_CODE_F3:
+    case KRBN_KEY_CODE_FN_F3:
+      if (standard_function_key) {
+        new_key_code = 0x63;
+      } else {
         // mission control
         new_key_code = 0xa0;
-        break;
-      case KRBN_KEY_CODE_F4:
+      }
+      break;
+    case KRBN_KEY_CODE_F4:
+    case KRBN_KEY_CODE_FN_F4:
+      if (standard_function_key) {
+        new_key_code = 0x76;
+      } else {
         // launchpad
         new_key_code = 0x83;
-        break;
-      case KRBN_KEY_CODE_F5:
+      }
+      break;
+    case KRBN_KEY_CODE_F5:
+    case KRBN_KEY_CODE_FN_F5:
+      if (standard_function_key) {
+        new_key_code = 0x60;
+      } else {
         new_key_code = NX_KEYTYPE_ILLUMINATION_DOWN;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
-      case KRBN_KEY_CODE_F6:
+      }
+      break;
+    case KRBN_KEY_CODE_F6:
+    case KRBN_KEY_CODE_FN_F6:
+      if (standard_function_key) {
+        new_key_code = 0x61;
+      } else {
         new_key_code = NX_KEYTYPE_ILLUMINATION_UP;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
-      case KRBN_KEY_CODE_F7:
+      }
+      break;
+    case KRBN_KEY_CODE_F7:
+    case KRBN_KEY_CODE_FN_F7:
+      if (standard_function_key) {
+        new_key_code = 0x62;
+      } else {
         new_key_code = NX_KEYTYPE_PREVIOUS;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
-      case KRBN_KEY_CODE_F8:
+      }
+      break;
+    case KRBN_KEY_CODE_F8:
+    case KRBN_KEY_CODE_FN_F8:
+      if (standard_function_key) {
+        new_key_code = 0x64;
+      } else {
         new_key_code = NX_KEYTYPE_PLAY;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
-      case KRBN_KEY_CODE_F9:
+      }
+      break;
+    case KRBN_KEY_CODE_F9:
+    case KRBN_KEY_CODE_FN_F9:
+      if (standard_function_key) {
+        new_key_code = 0x65;
+      } else {
         new_key_code = NX_KEYTYPE_NEXT;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
-      case KRBN_KEY_CODE_F10:
+      }
+      break;
+    case KRBN_KEY_CODE_F10:
+    case KRBN_KEY_CODE_FN_F10:
+      if (standard_function_key) {
+        new_key_code = 0x6d;
+      } else {
         new_key_code = NX_KEYTYPE_MUTE;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
-      case KRBN_KEY_CODE_F11:
+      }
+      break;
+    case KRBN_KEY_CODE_F11:
+    case KRBN_KEY_CODE_FN_F11:
+      if (standard_function_key) {
+        new_key_code = 0x67;
+      } else {
         new_key_code = NX_KEYTYPE_SOUND_DOWN;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
-      case KRBN_KEY_CODE_F12:
+      }
+      break;
+    case KRBN_KEY_CODE_F12:
+    case KRBN_KEY_CODE_FN_F12:
+      if (standard_function_key) {
+        new_key_code = 0x6f;
+      } else {
         new_key_code = NX_KEYTYPE_SOUND_UP;
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
-        break;
       }
+      break;
     }
 
     auto initial_key_repeat_milliseconds = system_preferences::get_initial_key_repeat_milliseconds();

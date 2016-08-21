@@ -8,15 +8,14 @@
 #include "iokit_user_client.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
-#include "modifier_flag_manager.hpp"
-#include "types.hpp"
+#include "manipulator.hpp"
 #include "userspace_defs.h"
 #include "virtual_hid_manager_user_client_method.hpp"
 
 class device_grabber final {
 public:
   device_grabber(void) : iokit_user_client_(logger::get_logger(), "org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType),
-                         console_user_client_(modifier_flag_manager_) {
+                         console_user_client_() {
     logger::get_logger().info(__PRETTY_FUNCTION__);
 
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
@@ -159,16 +158,17 @@ private:
 #endif
 
     switch (usage_page) {
-    case kHIDPage_KeyboardOrKeypad: {
-      bool pressed = integer_value;
-      handle_keyboard_event(usage_page, usage, pressed);
+    case kHIDPage_KeyboardOrKeypad:
+      if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
+        bool pressed = integer_value;
+        handle_keyboard_event(static_cast<manipulator::key_code>(usage), pressed);
+      }
       break;
-    }
 
     case kHIDPage_AppleVendorTopCase:
       if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
         bool pressed = integer_value;
-        handle_keyboard_event(usage_page, usage, pressed);
+        handle_keyboard_event(manipulator::key_code::vk_fn_modifier, pressed);
       }
       break;
 
@@ -177,157 +177,108 @@ private:
     }
   }
 
-  bool handle_modifier_flag_event(uint32_t usage_page, uint32_t usage, bool pressed) {
-    auto operation = pressed ? modifier_flag_manager::operation::increase : modifier_flag_manager::operation::decrease;
+  bool handle_modifier_flag_event(manipulator::key_code key_code, bool pressed) {
+    auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
 
-    switch (usage_page) {
-    case kHIDPage_KeyboardOrKeypad: {
-      auto key = modifier_flag_manager::physical_keys::end_;
-
-      switch (usage) {
-      case kHIDUsage_KeyboardLeftControl:
-        key = modifier_flag_manager::physical_keys::left_control;
-        break;
-      case kHIDUsage_KeyboardLeftShift:
-        key = modifier_flag_manager::physical_keys::left_shift;
-        break;
-      case kHIDUsage_KeyboardLeftAlt:
-        key = modifier_flag_manager::physical_keys::left_option;
-        break;
-      case kHIDUsage_KeyboardLeftGUI:
-        key = modifier_flag_manager::physical_keys::left_command;
-        break;
-      case kHIDUsage_KeyboardRightControl:
-        key = modifier_flag_manager::physical_keys::right_control;
-        break;
-      case kHIDUsage_KeyboardRightShift:
-        key = modifier_flag_manager::physical_keys::right_shift;
-        break;
-      case kHIDUsage_KeyboardRightAlt:
-        key = modifier_flag_manager::physical_keys::right_option;
-        break;
-      case kHIDUsage_KeyboardRightGUI:
-        key = modifier_flag_manager::physical_keys::right_command;
-        break;
-      }
-
-      if (key != modifier_flag_manager::physical_keys::end_) {
-        modifier_flag_manager_.manipulate(key, operation);
+    auto modifier_flag = manipulator::get_modifier_flag(key_code);
+    if (modifier_flag != manipulator::modifier_flag::zero) {
+      modifier_flag_manager_.manipulate(modifier_flag, operation);
+      if (modifier_flag == manipulator::modifier_flag::fn) {
+        console_user_client_.post_modifier_flags(modifier_flag_manager_.get_io_option_bits());
+      } else {
         send_keyboard_input_report();
-        return true;
       }
-      break;
-    }
-
-    case kHIDPage_AppleVendorTopCase:
-      if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
-        modifier_flag_manager_.manipulate(modifier_flag_manager::physical_keys::fn, operation);
-        console_user_client_.post_modifier_flags();
-        return true;
-      }
-      break;
+      return true;
     }
 
     return false;
   }
 
-  bool handle_function_key_event(uint32_t usage_page, uint32_t usage, bool pressed) {
-    if (usage_page != kHIDPage_KeyboardOrKeypad) {
-      return false;
-    }
-
+  bool handle_function_key_event(manipulator::key_code key_code, bool pressed) {
     auto event_type = pressed ? KRBN_EVENT_TYPE_KEY_DOWN : KRBN_EVENT_TYPE_KEY_UP;
 
-#define POST_KEY(KEY)                                               \
-  case kHIDUsage_Keyboard##KEY:                                     \
-    console_user_client_.post_key(KRBN_KEY_CODE_##KEY, event_type); \
-    return true;
-
-    switch (usage) {
-      POST_KEY(F1);
-      POST_KEY(F2);
-      POST_KEY(F3);
-      POST_KEY(F4);
-      POST_KEY(F5);
-      POST_KEY(F6);
-      POST_KEY(F7);
-      POST_KEY(F8);
-      POST_KEY(F9);
-      POST_KEY(F10);
-      POST_KEY(F11);
-      POST_KEY(F12);
+    if (manipulator::key_code::vk_f1 <= key_code && key_code <= manipulator::key_code::vk_f12) {
+      auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(manipulator::key_code::vk_f1);
+      console_user_client_.post_key(static_cast<krbn_key_code>(KRBN_KEY_CODE_F1 + i),
+                                    event_type,
+                                    modifier_flag_manager_.get_io_option_bits());
+      return true;
+    }
+    if (manipulator::key_code::vk_fn_f1 <= key_code && key_code <= manipulator::key_code::vk_fn_f12) {
+      auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(manipulator::key_code::vk_fn_f1);
+      console_user_client_.post_key(static_cast<krbn_key_code>(KRBN_KEY_CODE_FN_F1 + i),
+                                    event_type,
+                                    modifier_flag_manager_.get_io_option_bits());
+      return true;
     }
 
     return false;
   }
 
-  void handle_keyboard_event(uint32_t usage_page, uint32_t usage, bool pressed) {
+  void handle_keyboard_event(manipulator::key_code key_code, bool pressed) {
     // ----------------------------------------
     // modify usage
-    if (usage == kHIDUsage_KeyboardCapsLock) {
-      usage = kHIDUsage_KeyboardDeleteOrBackspace;
+    if (static_cast<uint32_t>(key_code) == kHIDUsage_KeyboardCapsLock) {
+      key_code = manipulator::key_code(kHIDUsage_KeyboardDeleteOrBackspace);
     }
 
-    // change fn+arrow keys, etc.
-    // TODO: integrate into __KeyToKey__.
-    if ((pressed && modifier_flag_manager_.pressed(modifier_flag_manager::physical_keys::fn)) ||
-        std::find(fn_changed_keys_.begin(), fn_changed_keys_.end(), usage) != fn_changed_keys_.end()) {
-      bool changed = false;
-      uint32_t new_usage = 0;
-      switch (usage) {
-      case kHIDUsage_KeyboardReturnOrEnter:
-        new_usage = kHIDUsage_KeypadEnter;
-        changed = true;
-        break;
-      case kHIDUsage_KeyboardDeleteOrBackspace:
-        new_usage = kHIDUsage_KeyboardDeleteForward;
-        changed = true;
-        break;
-      case kHIDUsage_KeyboardRightArrow:
-        new_usage = kHIDUsage_KeyboardEnd;
-        changed = true;
-        break;
-      case kHIDUsage_KeyboardLeftArrow:
-        new_usage = kHIDUsage_KeyboardHome;
-        changed = true;
-        break;
-      case kHIDUsage_KeyboardDownArrow:
-        new_usage = kHIDUsage_KeyboardPageDown;
-        changed = true;
-        break;
-      case kHIDUsage_KeyboardUpArrow:
-        new_usage = kHIDUsage_KeyboardPageUp;
-        changed = true;
-        break;
+    // modify fn+arrow, function keys
+    if (!pressed) {
+      auto it = fn_changed_keys_.find(key_code);
+      if (it != fn_changed_keys_.end()) {
+        key_code = it->second;
+        fn_changed_keys_.erase(it);
       }
-
-      if (changed) {
-        if (pressed) {
-          fn_changed_keys_.push_back(usage);
-        } else {
-          fn_changed_keys_.remove(usage);
+    } else {
+      auto k = static_cast<uint32_t>(key_code);
+      auto new_key_code = key_code;
+      if (modifier_flag_manager_.pressed(manipulator::modifier_flag::fn)) {
+        if (k == kHIDUsage_KeyboardReturnOrEnter) {
+          new_key_code = manipulator::key_code(kHIDUsage_KeypadEnter);
+        } else if (k == kHIDUsage_KeyboardDeleteOrBackspace) {
+          new_key_code = manipulator::key_code(kHIDUsage_KeyboardDeleteForward);
+        } else if (k == kHIDUsage_KeyboardRightArrow) {
+          new_key_code = manipulator::key_code(kHIDUsage_KeyboardEnd);
+        } else if (k == kHIDUsage_KeyboardLeftArrow) {
+          new_key_code = manipulator::key_code(kHIDUsage_KeyboardHome);
+        } else if (k == kHIDUsage_KeyboardDownArrow) {
+          new_key_code = manipulator::key_code(kHIDUsage_KeyboardPageDown);
+        } else if (k == kHIDUsage_KeyboardUpArrow) {
+          new_key_code = manipulator::key_code(kHIDUsage_KeyboardPageUp);
+        } else if (kHIDUsage_KeyboardF1 <= k && k <= kHIDUsage_KeyboardF12) {
+          new_key_code = manipulator::key_code(static_cast<uint32_t>(manipulator::key_code::vk_fn_f1) + k - kHIDUsage_KeyboardF1);
         }
-        usage = new_usage;
+      } else {
+        if (kHIDUsage_KeyboardF1 <= k && k <= kHIDUsage_KeyboardF12) {
+          new_key_code = manipulator::key_code(static_cast<uint32_t>(manipulator::key_code::vk_f1) + k - kHIDUsage_KeyboardF1);
+        }
+      }
+      if (key_code != new_key_code) {
+        fn_changed_keys_[key_code] = new_key_code;
+        key_code = new_key_code;
       }
     }
 
     // ----------------------------------------
-    if (handle_modifier_flag_event(usage_page, usage, pressed)) {
+    if (handle_modifier_flag_event(key_code, pressed)) {
       console_user_client_.stop_key_repeat();
       return;
     }
-    if (handle_function_key_event(usage_page, usage, pressed)) {
+    if (handle_function_key_event(key_code, pressed)) {
       return;
     }
 
-    if (pressed) {
-      pressed_key_usages_.push_back(usage);
-      console_user_client_.stop_key_repeat();
-    } else {
-      pressed_key_usages_.remove(usage);
-    }
+    if (static_cast<uint32_t>(key_code) < kHIDUsage_Keyboard_Reserved) {
+      auto usage = static_cast<uint32_t>(key_code);
+      if (pressed) {
+        pressed_key_usages_.push_back(usage);
+        console_user_client_.stop_key_repeat();
+      } else {
+        pressed_key_usages_.remove(usage);
+      }
 
-    send_keyboard_input_report();
+      send_keyboard_input_report();
+    }
   }
 
   void send_keyboard_input_report(void) {
@@ -362,9 +313,9 @@ private:
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   std::list<uint32_t> pressed_key_usages_;
-  std::list<uint32_t> fn_changed_keys_;
+  std::unordered_map<manipulator::key_code, manipulator::key_code> fn_changed_keys_;
 
-  modifier_flag_manager modifier_flag_manager_;
+  manipulator::modifier_flag_manager modifier_flag_manager_;
   hid_report::keyboard_input last_keyboard_input_report_;
 
   console_user_client console_user_client_;
