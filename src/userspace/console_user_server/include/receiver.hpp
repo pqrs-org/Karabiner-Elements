@@ -6,10 +6,16 @@
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
 #include "userspace_defs.h"
+#include <vector>
 
 class receiver final {
 public:
-  receiver(void) : exit_loop_(false) {}
+  receiver(void) : exit_loop_(false) {
+    enum {
+      buffer_length = 8 * 1024,
+    };
+    buffer_.resize(buffer_length);
+  }
 
   void start(void) {
     if (server_) {
@@ -90,10 +96,7 @@ public:
   }
 
 private:
-  enum {
-    buffer_length = 8 * 1024,
-  };
-  std::array<uint8_t, buffer_length> buffer_;
+  std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
   std::unique_ptr<grabber_client> grabber_client_;
   std::thread thread_;
