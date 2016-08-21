@@ -12,6 +12,14 @@ public:
                                          true);
   }
 
+  static void post_distributed_notification_to_all_sessions(CFStringRef name) {
+    CFNotificationCenterPostNotificationWithOptions(CFNotificationCenterGetDistributedCenter(),
+                                                    name,
+                                                    krbn_distributed_notification_observed_object,
+                                                    nullptr,
+                                                    kCFNotificationDeliverImmediately | kCFNotificationPostToAllSessions);
+  }
+
   static void observe_distributed_notification(const void* observer, CFNotificationCallback callback, CFStringRef name) {
     CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(),
                                     observer,

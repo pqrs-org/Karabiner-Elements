@@ -18,3 +18,7 @@ xcode:
 
 run:
 	sudo ./build/Release/karabiner_grabber
+
+install: all
+	sudo install -m 755 ./build/Release/karabiner_grabber '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_grabber'
+	sudo killall karabiner_grabber

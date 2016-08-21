@@ -34,7 +34,8 @@ public:
           // unlink old socket.
           unlink(constants::get_console_user_socket_file_path());
 
-          notification_center::post_distributed_notification(krbn_distributed_notification_console_user_socket_directory_is_ready);
+          logger::get_logger().info("console_user_socket_directory_is_ready for {0}", uid);
+          notification_center::post_distributed_notification_to_all_sessions(krbn_distributed_notification_console_user_socket_directory_is_ready);
         }
       });
 
