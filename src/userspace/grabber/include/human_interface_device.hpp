@@ -4,6 +4,7 @@
 
 #include "apple_hid_usage_tables.hpp"
 #include "logger.hpp"
+#include "manipulator.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
 #include <IOKit/hid/IOHIDElement.h>
 #include <IOKit/hid/IOHIDQueue.h>
@@ -16,7 +17,8 @@
 
 class human_interface_device final {
 public:
-  typedef boost::function<void(IOHIDValueRef _Nonnull value,
+  typedef boost::function<void(human_interface_device& device,
+                               IOHIDValueRef _Nonnull value,
                                IOHIDElementRef _Nonnull element,
                                uint32_t usage_page,
                                uint32_t usage,
@@ -252,6 +254,10 @@ public:
     return true;
   }
 
+  std::unordered_map<manipulator::key_code, manipulator::key_code>& get_fn_changed_keys(void) {
+    return fn_changed_keys_;
+  }
+
 private:
   static void static_queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
     if (result != kIOReturnSuccess) {
@@ -298,7 +304,7 @@ private:
 
         // call value_callback_
         if (value_callback_) {
-          value_callback_(value, element, usage_page, usage, integer_value);
+          value_callback_(*this, value, element, usage_page, usage, integer_value);
         }
       }
 
@@ -317,4 +323,6 @@ private:
   bool grabbed_;
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
+
+  std::unordered_map<manipulator::key_code, manipulator::key_code> fn_changed_keys_;
 };

@@ -100,7 +100,7 @@ private:
 
     if (dev->get_manufacturer() != "pqrs.org") {
       if (dev->get_manufacturer() == "Apple Inc.") {
-        dev->grab(boost::bind(&device_grabber::value_callback, this, _1, _2, _3, _4, _5));
+        dev->grab(boost::bind(&device_grabber::value_callback, this, _1, _2, _3, _4, _5, _6));
       }
     }
   }
@@ -142,7 +142,8 @@ private:
     }
   }
 
-  void value_callback(IOHIDValueRef _Nonnull value,
+  void value_callback(human_interface_device& device,
+                      IOHIDValueRef _Nonnull value,
                       IOHIDElementRef _Nonnull element,
                       uint32_t usage_page,
                       uint32_t usage,
@@ -161,14 +162,14 @@ private:
     case kHIDPage_KeyboardOrKeypad:
       if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
         bool pressed = integer_value;
-        handle_keyboard_event(static_cast<manipulator::key_code>(usage), pressed);
+        handle_keyboard_event(device, manipulator::key_code(usage), pressed);
       }
       break;
 
     case kHIDPage_AppleVendorTopCase:
       if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
         bool pressed = integer_value;
-        handle_keyboard_event(manipulator::key_code::vk_fn_modifier, pressed);
+        handle_keyboard_event(device, manipulator::key_code::vk_fn_modifier, pressed);
       }
       break;
 
@@ -215,7 +216,7 @@ private:
     return false;
   }
 
-  void handle_keyboard_event(manipulator::key_code key_code, bool pressed) {
+  void handle_keyboard_event(human_interface_device& device, manipulator::key_code key_code, bool pressed) {
     // ----------------------------------------
     // modify usage
     if (static_cast<uint32_t>(key_code) == kHIDUsage_KeyboardCapsLock) {
@@ -224,10 +225,10 @@ private:
 
     // modify fn+arrow, function keys
     if (!pressed) {
-      auto it = fn_changed_keys_.find(key_code);
-      if (it != fn_changed_keys_.end()) {
+      auto it = device.get_fn_changed_keys().find(key_code);
+      if (it != device.get_fn_changed_keys().end()) {
         key_code = it->second;
-        fn_changed_keys_.erase(it);
+        device.get_fn_changed_keys().erase(it);
       }
     } else {
       auto k = static_cast<uint32_t>(key_code);
@@ -254,7 +255,7 @@ private:
         }
       }
       if (key_code != new_key_code) {
-        fn_changed_keys_[key_code] = new_key_code;
+        (device.get_fn_changed_keys())[key_code] = new_key_code;
         key_code = new_key_code;
       }
     }
@@ -313,7 +314,6 @@ private:
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   std::list<uint32_t> pressed_key_usages_;
-  std::unordered_map<manipulator::key_code, manipulator::key_code> fn_changed_keys_;
 
   manipulator::modifier_flag_manager modifier_flag_manager_;
   hid_report::keyboard_input last_keyboard_input_report_;
