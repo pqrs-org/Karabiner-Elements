@@ -2,6 +2,7 @@
 
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDLib.h>
+#include <IOKit/hidsystem/IOHIDLib.h>
 #include <list>
 #include <memory>
 #include <spdlog/spdlog.h>
