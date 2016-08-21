@@ -44,11 +44,11 @@
 		34A88A8B1D6840C200DD480B /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = include/human_interface_device.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A8C1D6840C200DD480B /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A8D1D6840C200DD480B /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/modifier_flag_manager.hpp; sourceTree = SOURCE_ROOT; };
-		34A88A8E1D6840C200DD480B /* modifier_flag.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag.hpp; path = include/modifier_flag.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A8F1D6840C200DD480B /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A901D6840C200DD480B /* userspace_connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_connection_manager.hpp; path = include/userspace_connection_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A941D68446C00DD480B /* karabiner_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = karabiner_version.h; path = ../../../share/karabiner_version.h; sourceTree = "<group>"; };
 		34A88A951D6858D300DD480B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
+		34A88AA11D697DBA00DD480B /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = include/types.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E420601D5042240022F821 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
@@ -133,8 +133,8 @@
 				34A88A8B1D6840C200DD480B /* human_interface_device.hpp */,
 				34A88A8C1D6840C200DD480B /* logger.hpp */,
 				34A88A8D1D6840C200DD480B /* modifier_flag_manager.hpp */,
-				34A88A8E1D6840C200DD480B /* modifier_flag.hpp */,
 				34A88A8F1D6840C200DD480B /* session.hpp */,
+				34A88AA11D697DBA00DD480B /* types.hpp */,
 				34A88A901D6840C200DD480B /* userspace_connection_manager.hpp */,
 			);
 			name = include;

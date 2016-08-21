@@ -9,6 +9,7 @@
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "modifier_flag_manager.hpp"
+#include "types.hpp"
 #include "userspace_defs.h"
 #include "virtual_hid_manager_user_client_method.hpp"
 

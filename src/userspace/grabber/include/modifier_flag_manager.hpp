@@ -1,11 +1,10 @@
 #pragma once
 
+#include "types.hpp"
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <memory>
 #include <vector>
-
-#include "modifier_flag.hpp"
 
 class modifier_flag_manager {
 public:
@@ -23,23 +22,23 @@ public:
   };
 
   modifier_flag_manager(void) {
-    modifier_flags_.resize(static_cast<size_t>(physical_keys::end_));
+    states_.resize(static_cast<size_t>(physical_keys::end_));
 
-    modifier_flags_[static_cast<size_t>(physical_keys::left_control)] = std::make_unique<modifier_flag>("control", "⌃");
-    modifier_flags_[static_cast<size_t>(physical_keys::left_shift)] = std::make_unique<modifier_flag>("shift", "⇧");
-    modifier_flags_[static_cast<size_t>(physical_keys::left_option)] = std::make_unique<modifier_flag>("option", "⌥");
-    modifier_flags_[static_cast<size_t>(physical_keys::left_command)] = std::make_unique<modifier_flag>("command", "⌘");
-    modifier_flags_[static_cast<size_t>(physical_keys::right_control)] = std::make_unique<modifier_flag>("control", "⌃");
-    modifier_flags_[static_cast<size_t>(physical_keys::right_shift)] = std::make_unique<modifier_flag>("shift", "⇧");
-    modifier_flags_[static_cast<size_t>(physical_keys::right_option)] = std::make_unique<modifier_flag>("option", "⌥");
-    modifier_flags_[static_cast<size_t>(physical_keys::right_command)] = std::make_unique<modifier_flag>("command", "⌘");
-    modifier_flags_[static_cast<size_t>(physical_keys::fn)] = std::make_unique<modifier_flag>("fn", "fn");
+    states_[static_cast<size_t>(physical_keys::left_control)] = std::make_unique<state>("control", "⌃");
+    states_[static_cast<size_t>(physical_keys::left_shift)] = std::make_unique<state>("shift", "⇧");
+    states_[static_cast<size_t>(physical_keys::left_option)] = std::make_unique<state>("option", "⌥");
+    states_[static_cast<size_t>(physical_keys::left_command)] = std::make_unique<state>("command", "⌘");
+    states_[static_cast<size_t>(physical_keys::right_control)] = std::make_unique<state>("control", "⌃");
+    states_[static_cast<size_t>(physical_keys::right_shift)] = std::make_unique<state>("shift", "⇧");
+    states_[static_cast<size_t>(physical_keys::right_option)] = std::make_unique<state>("option", "⌥");
+    states_[static_cast<size_t>(physical_keys::right_command)] = std::make_unique<state>("command", "⌘");
+    states_[static_cast<size_t>(physical_keys::fn)] = std::make_unique<state>("fn", "fn");
   }
 
   void reset(void) {
-    for (const auto& f : modifier_flags_) {
-      if (f) {
-        f->reset();
+    for (const auto& s : states_) {
+      if (s) {
+        s->reset();
       }
     }
   }
@@ -51,13 +50,13 @@ public:
 
   void manipulate(physical_keys k, operation operation) {
     auto i = static_cast<size_t>(k);
-    if (modifier_flags_[i]) {
+    if (states_[i]) {
       switch (operation) {
       case operation::increase:
-        modifier_flags_[i]->increase();
+        states_[i]->increase();
         break;
       case operation::decrease:
-        modifier_flags_[i]->decrease();
+        states_[i]->decrease();
         break;
       }
     }
@@ -65,10 +64,20 @@ public:
 
   bool pressed(physical_keys k) const {
     auto i = static_cast<size_t>(k);
-    if (!modifier_flags_[i]) {
+    if (!states_[i]) {
       return false;
     }
-    return modifier_flags_[i]->pressed();
+    return states_[i]->pressed();
+  }
+
+  bool pressed(const std::vector<modifier_flag>& modifier_flags) {
+    for (const auto& modifier_flag : modifier_flags) {
+      auto m = static_cast<uint32_t>(modifier_flag);
+      if (m < states_.size() && !states_[m]->pressed()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   uint8_t get_hid_report_bits(void) const {
@@ -127,5 +136,34 @@ public:
   }
 
 private:
-  std::vector<std::unique_ptr<modifier_flag>> modifier_flags_;
+  class state {
+  public:
+    state(const std::string& name, const std::string& symbol) : name_(name),
+                                                                symbol_(symbol),
+                                                                count_(0) {}
+
+    const std::string& get_name(void) const { return name_; }
+    const std::string& get_symbol(void) const { return symbol_; }
+
+    bool pressed(void) const { return count_ > 0; }
+
+    void reset(void) {
+      count_ = 0;
+    }
+
+    void increase(void) {
+      ++count_;
+    }
+
+    void decrease(void) {
+      --count_;
+    }
+
+  private:
+    std::string name_;
+    std::string symbol_;
+    int count_;
+  };
+
+  std::vector<std::unique_ptr<state>> states_;
 };
