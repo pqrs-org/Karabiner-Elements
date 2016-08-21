@@ -4,6 +4,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <thread>
 
 class local_datagram_client final {
 public:
