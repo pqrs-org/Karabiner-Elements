@@ -93,6 +93,8 @@ public:
         }
       }
     }
+
+    keyboard_event_output_manager_.stop_key_repeat();
   }
 
 private:
