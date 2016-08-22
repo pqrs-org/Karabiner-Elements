@@ -258,6 +258,10 @@ public:
     return fn_changed_keys_;
   }
 
+  size_t get_pressed_keys_count(void) const {
+    return pressed_key_usages_.size();
+  }
+
 private:
   static void static_queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
     if (result != kIOReturnSuccess) {

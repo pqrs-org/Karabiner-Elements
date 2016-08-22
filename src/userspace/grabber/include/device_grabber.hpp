@@ -99,9 +99,7 @@ private:
     }
 
     if (dev->get_manufacturer() != "pqrs.org") {
-      if (dev->get_manufacturer() == "Apple Inc.") {
-        dev->grab(boost::bind(&device_grabber::value_callback, this, _1, _2, _3, _4, _5, _6));
-      }
+      dev->grab(boost::bind(&device_grabber::value_callback, this, _1, _2, _3, _4, _5, _6));
     }
   }
 
@@ -184,6 +182,12 @@ private:
     auto modifier_flag = manipulator::get_modifier_flag(key_code);
     if (modifier_flag != manipulator::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
+
+      // reset modifier_flags state if all keys are released.
+      if (get_all_devices_pressed_keys_count() == 0) {
+        modifier_flag_manager_.reset();
+      }
+
       if (modifier_flag == manipulator::modifier_flag::fn) {
         console_user_client_.post_modifier_flags(modifier_flag_manager_.get_io_option_bits());
       } else {
@@ -261,6 +265,7 @@ private:
     }
 
     // ----------------------------------------
+    // send input events to virtual devices.
     if (handle_modifier_flag_event(key_code, pressed)) {
       console_user_client_.stop_key_repeat();
       return;
@@ -308,6 +313,16 @@ private:
         logger::get_logger().error("failed to sent report: 0x{0:x}", kr);
       }
     }
+  }
+
+  size_t get_all_devices_pressed_keys_count(void) const {
+    size_t total = 0;
+    for (const auto& it : hids_) {
+      if (it.second) {
+        total += (it.second)->get_pressed_keys_count();
+      }
+    }
+    return total;
   }
 
   iokit_user_client iokit_user_client_;
