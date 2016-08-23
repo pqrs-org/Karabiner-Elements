@@ -254,6 +254,10 @@ public:
     return true;
   }
 
+  std::unordered_map<manipulator::key_code, manipulator::key_code>& get_simple_changed_keys(void) {
+    return simple_changed_keys_;
+  }
+
   std::unordered_map<manipulator::key_code, manipulator::key_code>& get_fn_changed_keys(void) {
     return fn_changed_keys_;
   }
@@ -328,5 +332,6 @@ private:
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
 
+  std::unordered_map<manipulator::key_code, manipulator::key_code> simple_changed_keys_;
   std::unordered_map<manipulator::key_code, manipulator::key_code> fn_changed_keys_;
 };

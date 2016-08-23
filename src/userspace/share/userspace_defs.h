@@ -10,6 +10,8 @@ enum krbn_operation_type {
   KRBN_OPERATION_TYPE_NONE,
   // console_user_server -> grabber
   KRBN_OPERATION_TYPE_CONNECT,
+  // console_user_server -> grabber
+  KRBN_OPERATION_TYPE_DEFINE_SIMPLE_MODIFICATIONS,
   // grabber -> console_user_server
   KRBN_OPERATION_TYPE_STOP_KEY_REPEAT,
   // grabber -> console_user_server
@@ -53,6 +55,12 @@ enum krbn_key_code {
 struct krbn_operation_type_connect {
   uint8_t operation_type;
   pid_t console_user_server_pid;
+};
+
+struct krbn_operation_type_define_simple_modifications {
+  uint8_t operation_type;
+  size_t size;
+  uint32_t data[0];
 };
 
 struct krbn_operation_type_stop_key_repeat {

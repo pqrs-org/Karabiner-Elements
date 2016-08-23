@@ -11,6 +11,7 @@
 #include "manipulator.hpp"
 #include "userspace_defs.h"
 #include "virtual_hid_manager_user_client_method.hpp"
+#include <thread>
 
 class device_grabber final {
 public:
@@ -47,6 +48,18 @@ public:
       IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
       CFRelease(manager_);
       manager_ = nullptr;
+    }
+  }
+
+  void set_simple_modifications(const uint32_t* _Nullable data, size_t size) {
+    std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
+
+    simple_modifications_.clear();
+    if (size > 0) {
+      for (size_t i = 0; i < size - 1; i += 2) {
+        logger::get_logger().info("simple_modification: 0x{0:x} -> 0x{1:x}", data[i], data[i + 1]);
+        simple_modifications_[manipulator::key_code(data[i])] = manipulator::key_code(data[i + 1]);
+      }
     }
   }
 
@@ -223,8 +236,20 @@ private:
   void handle_keyboard_event(human_interface_device& device, manipulator::key_code key_code, bool pressed) {
     // ----------------------------------------
     // modify usage
-    if (static_cast<uint32_t>(key_code) == kHIDUsage_KeyboardCapsLock) {
-      key_code = manipulator::key_code(kHIDUsage_KeyboardDeleteOrBackspace);
+    if (!pressed) {
+      auto it = device.get_simple_changed_keys().find(key_code);
+      if (it != device.get_simple_changed_keys().end()) {
+        key_code = it->second;
+        device.get_simple_changed_keys().erase(it);
+      }
+    } else {
+      std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
+
+      auto it = simple_modifications_.find(key_code);
+      if (it != simple_modifications_.end()) {
+        (device.get_simple_changed_keys())[key_code] = it->second;
+        key_code = it->second;
+      }
     }
 
     // modify fn+arrow, function keys
@@ -332,6 +357,9 @@ private:
 
   manipulator::modifier_flag_manager modifier_flag_manager_;
   hid_report::keyboard_input last_keyboard_input_report_;
+
+  std::unordered_map<manipulator::key_code, manipulator::key_code> simple_modifications_;
+  std::mutex simple_modifications_mutex_;
 
   console_user_client console_user_client_;
 };

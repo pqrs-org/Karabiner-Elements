@@ -31,6 +31,12 @@ public:
     grabber_client_ = std::make_unique<grabber_client>();
     grabber_client_->connect();
 
+    const uint32_t buffer[] = {
+        kHIDUsage_KeyboardCapsLock, kHIDUsage_KeyboardDeleteOrBackspace,
+        kHIDUsage_KeyboardEscape, kHIDUsage_KeyboardSpacebar,
+    };
+    grabber_client_->define_simple_modifications(buffer, sizeof(buffer) / sizeof(buffer[0]));
+
     exit_loop_ = false;
     thread_ = std::thread([this] { this->worker(); });
 

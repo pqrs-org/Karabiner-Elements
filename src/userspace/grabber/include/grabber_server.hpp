@@ -86,6 +86,17 @@ public:
             }
           }
           break;
+
+        case KRBN_OPERATION_TYPE_DEFINE_SIMPLE_MODIFICATIONS:
+          if (n < sizeof(krbn_operation_type_define_simple_modifications)) {
+            logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_DEFINE_SIMPLE_MODIFICATIONS ({0})", n);
+          } else {
+            auto p = reinterpret_cast<krbn_operation_type_define_simple_modifications*>(&(buffer_[0]));
+            if (device_grabber_) {
+              device_grabber_->set_simple_modifications(p->data, p->size);
+            }
+          }
+          break;
         }
       }
     }
