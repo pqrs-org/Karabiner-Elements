@@ -57,7 +57,6 @@ public:
     simple_modifications_.clear();
     if (size > 0) {
       for (size_t i = 0; i < size - 1; i += 2) {
-        logger::get_logger().info("simple_modification: 0x{0:x} -> 0x{1:x}", data[i], data[i + 1]);
         simple_modifications_[manipulator::key_code(data[i])] = manipulator::key_code(data[i + 1]);
       }
     }
