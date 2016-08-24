@@ -35,7 +35,7 @@ public:
           unlink(constants::get_console_user_socket_file_path());
 
           logger::get_logger().info("console_user_socket_directory_is_ready for {0}", uid);
-          notification_center::post_distributed_notification_to_all_sessions(krbn_distributed_notification_console_user_socket_directory_is_ready);
+          notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_console_user_socket_directory_is_ready());
         }
       });
 

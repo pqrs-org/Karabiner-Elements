@@ -16,7 +16,7 @@ public:
 
     notification_center::observe_distributed_notification(this,
                                                           static_console_user_socket_directory_is_ready_callback,
-                                                          krbn_distributed_notification_console_user_socket_directory_is_ready);
+                                                          constants::get_distributed_notification_console_user_socket_directory_is_ready());
   }
 
   ~connection_manager(void) {

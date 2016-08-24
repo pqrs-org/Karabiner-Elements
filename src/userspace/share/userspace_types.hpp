@@ -5,9 +5,6 @@
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
 
-#define krbn_distributed_notification_observed_object CFSTR("org.pqrs.karabiner")
-#define krbn_distributed_notification_console_user_socket_directory_is_ready CFSTR("console_user_socket_directory_is_ready")
-
 namespace krbn {
 enum class operation_type : uint8_t {
   none,

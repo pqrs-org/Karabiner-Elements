@@ -1,13 +1,14 @@
 #pragma once
 
 #include "userspace_types.hpp"
+#include "constants.hpp"
 
 class notification_center final {
 public:
   static void post_distributed_notification(CFStringRef name) {
     CFNotificationCenterPostNotification(CFNotificationCenterGetDistributedCenter(),
                                          name,
-                                         krbn_distributed_notification_observed_object,
+                                         constants::get_distributed_notification_observed_object(),
                                          nullptr,
                                          true);
   }
@@ -15,7 +16,7 @@ public:
   static void post_distributed_notification_to_all_sessions(CFStringRef name) {
     CFNotificationCenterPostNotificationWithOptions(CFNotificationCenterGetDistributedCenter(),
                                                     name,
-                                                    krbn_distributed_notification_observed_object,
+                                                    constants::get_distributed_notification_observed_object(),
                                                     nullptr,
                                                     kCFNotificationDeliverImmediately | kCFNotificationPostToAllSessions);
   }
@@ -25,7 +26,7 @@ public:
                                     observer,
                                     callback,
                                     name,
-                                    krbn_distributed_notification_observed_object,
+                                    constants::get_distributed_notification_observed_object(),
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
   }
 };
