@@ -52,7 +52,7 @@ public:
     event.key.keyboardType = 0;
 
     IOGPoint loc{0, 0};
-    auto kr = iokit_user_client_.hid_post_event(event_type == KRBN_EVENT_TYPE_KEY_DOWN ? NX_KEYDOWN : NX_KEYUP,
+    auto kr = iokit_user_client_.hid_post_event(event_type == krbn_event_type_key_down ? NX_KEYDOWN : NX_KEYUP,
                                                 loc,
                                                 &event,
                                                 kNXEventDataVersion,
@@ -68,7 +68,7 @@ public:
     NXEventData event;
     memset(&event, 0, sizeof(event));
     event.compound.subType = NX_SUBTYPE_AUX_CONTROL_BUTTONS;
-    event.compound.misc.L[0] = (key_code << 16) | ((event_type == KRBN_EVENT_TYPE_KEY_DOWN ? NX_KEYDOWN : NX_KEYUP) << 8) | repeat;
+    event.compound.misc.L[0] = (key_code << 16) | ((event_type == krbn_event_type_key_down ? NX_KEYDOWN : NX_KEYUP) << 8) | repeat;
 
     IOGPoint loc{0, 0};
     auto kr = iokit_user_client_.hid_post_event(NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, 0);

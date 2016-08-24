@@ -212,18 +212,18 @@ private:
   }
 
   bool handle_function_key_event(manipulator::key_code key_code, bool pressed) {
-    auto event_type = pressed ? KRBN_EVENT_TYPE_KEY_DOWN : KRBN_EVENT_TYPE_KEY_UP;
+    auto event_type = pressed ? krbn_event_type_key_down : krbn_event_type_key_up;
 
     if (manipulator::key_code::vk_f1 <= key_code && key_code <= manipulator::key_code::vk_f12) {
       auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(manipulator::key_code::vk_f1);
-      console_user_client_.post_key(static_cast<krbn_key_code>(KRBN_KEY_CODE_F1 + i),
+      console_user_client_.post_key(static_cast<krbn_key_code>(krbn_key_code_f1 + i),
                                     event_type,
                                     modifier_flag_manager_.get_io_option_bits());
       return true;
     }
     if (manipulator::key_code::vk_fn_f1 <= key_code && key_code <= manipulator::key_code::vk_fn_f12) {
       auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(manipulator::key_code::vk_fn_f1);
-      console_user_client_.post_key(static_cast<krbn_key_code>(KRBN_KEY_CODE_FN_F1 + i),
+      console_user_client_.post_key(static_cast<krbn_key_code>(krbn_key_code_fn_f1 + i),
                                     event_type,
                                     modifier_flag_manager_.get_io_option_bits());
       return true;

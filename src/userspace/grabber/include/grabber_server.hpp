@@ -55,11 +55,11 @@ public:
 
       if (!ec && n > 0) {
         switch (buffer_[0]) {
-        case KRBN_OPERATION_TYPE_CONNECT:
-          if (n != sizeof(krbn_operation_type_connect)) {
-            logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_CONNECT");
+        case krbn_operation_type_connect:
+          if (n != sizeof(krbn_operation_type_connect_struct)) {
+            logger::get_logger().error("invalid size for krbn_operation_type_connect");
           } else {
-            auto p = reinterpret_cast<krbn_operation_type_connect*>(&(buffer_[0]));
+            auto p = reinterpret_cast<krbn_operation_type_connect_struct*>(&(buffer_[0]));
             auto pid = p->console_user_server_pid;
 
             logger::get_logger().info("grabber_client is connected (pid:{0})", pid);
@@ -87,11 +87,11 @@ public:
           }
           break;
 
-        case KRBN_OPERATION_TYPE_DEFINE_SIMPLE_MODIFICATIONS:
-          if (n < sizeof(krbn_operation_type_define_simple_modifications)) {
-            logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_DEFINE_SIMPLE_MODIFICATIONS ({0})", n);
+        case krbn_operation_type_define_simple_modifications:
+          if (n < sizeof(krbn_operation_type_define_simple_modifications_struct)) {
+            logger::get_logger().error("invalid size for krbn_operation_type_define_simple_modifications ({0})", n);
           } else {
-            auto p = reinterpret_cast<krbn_operation_type_define_simple_modifications*>(&(buffer_[0]));
+            auto p = reinterpret_cast<krbn_operation_type_define_simple_modifications_struct*>(&(buffer_[0]));
             if (device_grabber_) {
               device_grabber_->set_simple_modifications(p->data, p->size);
             }

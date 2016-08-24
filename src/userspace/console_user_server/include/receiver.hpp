@@ -72,24 +72,24 @@ public:
 
       if (!ec && n > 0) {
         switch (buffer_[0]) {
-        case KRBN_OPERATION_TYPE_STOP_KEY_REPEAT:
+        case krbn_operation_type_stop_key_repeat:
           keyboard_event_output_manager_.stop_key_repeat();
           break;
 
-        case KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS:
-          if (n != sizeof(krbn_operation_type_post_modifier_flags)) {
-            logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS");
+        case krbn_operation_type_post_modifier_flags:
+          if (n != sizeof(krbn_operation_type_post_modifier_flags_struct)) {
+            logger::get_logger().error("invalid size for krbn_operation_type_post_modifier_flags");
           } else {
-            auto p = reinterpret_cast<krbn_operation_type_post_modifier_flags*>(&(buffer_[0]));
+            auto p = reinterpret_cast<krbn_operation_type_post_modifier_flags_struct*>(&(buffer_[0]));
             keyboard_event_output_manager_.post_modifier_flags(p->flags);
           }
           break;
 
-        case KRBN_OPERATION_TYPE_POST_KEY:
-          if (n != sizeof(krbn_operation_type_post_key)) {
-            logger::get_logger().error("invalid size for KRBN_OPERATION_TYPE_POST_KEY");
+        case krbn_operation_type_post_key:
+          if (n != sizeof(krbn_operation_type_post_key_struct)) {
+            logger::get_logger().error("invalid size for krbn_operation_type_post_key");
           } else {
-            auto p = reinterpret_cast<krbn_operation_type_post_key*>(&(buffer_[0]));
+            auto p = reinterpret_cast<krbn_operation_type_post_key_struct*>(&(buffer_[0]));
             keyboard_event_output_manager_.post_key(p->key_code, p->event_type, p->flags);
           }
           break;

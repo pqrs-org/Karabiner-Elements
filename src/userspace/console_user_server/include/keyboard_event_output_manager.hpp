@@ -32,16 +32,16 @@ public:
     bool standard_function_key = false;
     if (system_preferences::get_keyboard_fn_state()) {
       // "Use all F1, F2, etc. keys as standard function keys."
-      standard_function_key = (KRBN_KEY_CODE_F1 <= key_code && key_code <= KRBN_KEY_CODE_F12);
+      standard_function_key = (krbn_key_code_f1 <= key_code && key_code <= krbn_key_code_f12);
     } else {
-      standard_function_key = (KRBN_KEY_CODE_FN_F1 <= key_code && key_code <= KRBN_KEY_CODE_FN_F12);
+      standard_function_key = (krbn_key_code_fn_f1 <= key_code && key_code <= krbn_key_code_fn_f12);
     }
 
     uint8_t new_key_code = 0;
     auto post_key_type = io_hid_post_event_wrapper::post_key_type::key;
     switch (key_code) {
-    case KRBN_KEY_CODE_F1:
-    case KRBN_KEY_CODE_FN_F1:
+    case krbn_key_code_f1:
+    case krbn_key_code_fn_f1:
       if (standard_function_key) {
         new_key_code = 0x7a;
       } else {
@@ -49,8 +49,8 @@ public:
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
       }
       break;
-    case KRBN_KEY_CODE_F2:
-    case KRBN_KEY_CODE_FN_F2:
+    case krbn_key_code_f2:
+    case krbn_key_code_fn_f2:
       if (standard_function_key) {
         new_key_code = 0x78;
       } else {
@@ -58,8 +58,8 @@ public:
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
       }
       break;
-    case KRBN_KEY_CODE_F3:
-    case KRBN_KEY_CODE_FN_F3:
+    case krbn_key_code_f3:
+    case krbn_key_code_fn_f3:
       if (standard_function_key) {
         new_key_code = 0x63;
       } else {
@@ -67,8 +67,8 @@ public:
         new_key_code = 0xa0;
       }
       break;
-    case KRBN_KEY_CODE_F4:
-    case KRBN_KEY_CODE_FN_F4:
+    case krbn_key_code_f4:
+    case krbn_key_code_fn_f4:
       if (standard_function_key) {
         new_key_code = 0x76;
       } else {
@@ -76,8 +76,8 @@ public:
         new_key_code = 0x83;
       }
       break;
-    case KRBN_KEY_CODE_F5:
-    case KRBN_KEY_CODE_FN_F5:
+    case krbn_key_code_f5:
+    case krbn_key_code_fn_f5:
       if (standard_function_key) {
         new_key_code = 0x60;
       } else {
@@ -85,8 +85,8 @@ public:
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
       }
       break;
-    case KRBN_KEY_CODE_F6:
-    case KRBN_KEY_CODE_FN_F6:
+    case krbn_key_code_f6:
+    case krbn_key_code_fn_f6:
       if (standard_function_key) {
         new_key_code = 0x61;
       } else {
@@ -94,8 +94,8 @@ public:
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
       }
       break;
-    case KRBN_KEY_CODE_F7:
-    case KRBN_KEY_CODE_FN_F7:
+    case krbn_key_code_f7:
+    case krbn_key_code_fn_f7:
       if (standard_function_key) {
         new_key_code = 0x62;
       } else {
@@ -103,8 +103,8 @@ public:
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
       }
       break;
-    case KRBN_KEY_CODE_F8:
-    case KRBN_KEY_CODE_FN_F8:
+    case krbn_key_code_f8:
+    case krbn_key_code_fn_f8:
       if (standard_function_key) {
         new_key_code = 0x64;
       } else {
@@ -112,8 +112,8 @@ public:
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
       }
       break;
-    case KRBN_KEY_CODE_F9:
-    case KRBN_KEY_CODE_FN_F9:
+    case krbn_key_code_f9:
+    case krbn_key_code_fn_f9:
       if (standard_function_key) {
         new_key_code = 0x65;
       } else {
@@ -121,8 +121,8 @@ public:
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
       }
       break;
-    case KRBN_KEY_CODE_F10:
-    case KRBN_KEY_CODE_FN_F10:
+    case krbn_key_code_f10:
+    case krbn_key_code_fn_f10:
       if (standard_function_key) {
         new_key_code = 0x6d;
       } else {
@@ -130,8 +130,8 @@ public:
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
       }
       break;
-    case KRBN_KEY_CODE_F11:
-    case KRBN_KEY_CODE_FN_F11:
+    case krbn_key_code_f11:
+    case krbn_key_code_fn_f11:
       if (standard_function_key) {
         new_key_code = 0x67;
       } else {
@@ -139,8 +139,8 @@ public:
         post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
       }
       break;
-    case KRBN_KEY_CODE_F12:
-    case KRBN_KEY_CODE_FN_F12:
+    case krbn_key_code_f12:
+    case krbn_key_code_fn_f12:
       if (standard_function_key) {
         new_key_code = 0x6f;
       } else {
@@ -156,7 +156,7 @@ public:
     io_hid_post_event_wrapper_.post_key(post_key_type, new_key_code, event_type, flags, false);
 
     // set key repeat
-    if (event_type == KRBN_EVENT_TYPE_KEY_DOWN) {
+    if (event_type == krbn_event_type_key_down) {
       bool repeat_target = true;
       if (post_key_type == io_hid_post_event_wrapper::post_key_type::aux_control_button) {
         if (new_key_code == NX_KEYTYPE_PLAY ||

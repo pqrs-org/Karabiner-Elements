@@ -7,72 +7,72 @@
 #define krbn_distributed_notification_console_user_socket_directory_is_ready CFSTR("console_user_socket_directory_is_ready")
 
 enum krbn_operation_type {
-  KRBN_OPERATION_TYPE_NONE,
+  krbn_operation_type_none,
   // console_user_server -> grabber
-  KRBN_OPERATION_TYPE_CONNECT,
+  krbn_operation_type_connect,
   // console_user_server -> grabber
-  KRBN_OPERATION_TYPE_DEFINE_SIMPLE_MODIFICATIONS,
+  krbn_operation_type_define_simple_modifications,
   // grabber -> console_user_server
-  KRBN_OPERATION_TYPE_STOP_KEY_REPEAT,
+  krbn_operation_type_stop_key_repeat,
   // grabber -> console_user_server
-  KRBN_OPERATION_TYPE_POST_MODIFIER_FLAGS,
+  krbn_operation_type_post_modifier_flags,
   // grabber -> console_user_server
-  KRBN_OPERATION_TYPE_POST_KEY,
+  krbn_operation_type_post_key,
 };
 
 enum krbn_event_type {
-  KRBN_EVENT_TYPE_KEY_DOWN,
-  KRBN_EVENT_TYPE_KEY_UP,
+  krbn_event_type_key_down,
+  krbn_event_type_key_up,
 };
 
 enum krbn_key_code {
-  KRBN_KEY_CODE_F1,
-  KRBN_KEY_CODE_F2,
-  KRBN_KEY_CODE_F3,
-  KRBN_KEY_CODE_F4,
-  KRBN_KEY_CODE_F5,
-  KRBN_KEY_CODE_F6,
-  KRBN_KEY_CODE_F7,
-  KRBN_KEY_CODE_F8,
-  KRBN_KEY_CODE_F9,
-  KRBN_KEY_CODE_F10,
-  KRBN_KEY_CODE_F11,
-  KRBN_KEY_CODE_F12,
-  KRBN_KEY_CODE_FN_F1,
-  KRBN_KEY_CODE_FN_F2,
-  KRBN_KEY_CODE_FN_F3,
-  KRBN_KEY_CODE_FN_F4,
-  KRBN_KEY_CODE_FN_F5,
-  KRBN_KEY_CODE_FN_F6,
-  KRBN_KEY_CODE_FN_F7,
-  KRBN_KEY_CODE_FN_F8,
-  KRBN_KEY_CODE_FN_F9,
-  KRBN_KEY_CODE_FN_F10,
-  KRBN_KEY_CODE_FN_F11,
-  KRBN_KEY_CODE_FN_F12,
+  krbn_key_code_f1,
+  krbn_key_code_f2,
+  krbn_key_code_f3,
+  krbn_key_code_f4,
+  krbn_key_code_f5,
+  krbn_key_code_f6,
+  krbn_key_code_f7,
+  krbn_key_code_f8,
+  krbn_key_code_f9,
+  krbn_key_code_f10,
+  krbn_key_code_f11,
+  krbn_key_code_f12,
+  krbn_key_code_fn_f1,
+  krbn_key_code_fn_f2,
+  krbn_key_code_fn_f3,
+  krbn_key_code_fn_f4,
+  krbn_key_code_fn_f5,
+  krbn_key_code_fn_f6,
+  krbn_key_code_fn_f7,
+  krbn_key_code_fn_f8,
+  krbn_key_code_fn_f9,
+  krbn_key_code_fn_f10,
+  krbn_key_code_fn_f11,
+  krbn_key_code_fn_f12,
 };
 
-struct krbn_operation_type_connect {
+struct krbn_operation_type_connect_struct {
   uint8_t operation_type;
   pid_t console_user_server_pid;
 };
 
-struct krbn_operation_type_define_simple_modifications {
+struct krbn_operation_type_define_simple_modifications_struct {
   uint8_t operation_type;
   size_t size;
   uint32_t data[0];
 };
 
-struct krbn_operation_type_stop_key_repeat {
+struct krbn_operation_type_stop_key_repeat_struct {
   uint8_t operation_type;
 };
 
-struct krbn_operation_type_post_modifier_flags {
+struct krbn_operation_type_post_modifier_flags_struct {
   uint8_t operation_type;
   IOOptionBits flags;
 };
 
-struct krbn_operation_type_post_key {
+struct krbn_operation_type_post_key_struct {
   uint8_t operation_type;
   enum krbn_key_code key_code;
   enum krbn_event_type event_type;
