@@ -9,7 +9,7 @@
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
-#include "userspace_defs.h"
+#include "userspace_types.hpp"
 #include "virtual_hid_manager_user_client_method.hpp"
 #include <thread>
 
@@ -51,15 +51,16 @@ public:
     }
   }
 
-  void set_simple_modifications(const uint32_t* _Nullable data, size_t size) {
+  void clear_simple_modifications(void) {
     std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
 
     simple_modifications_.clear();
-    if (size > 0) {
-      for (size_t i = 0; i < size - 1; i += 2) {
-        simple_modifications_[manipulator::key_code(data[i])] = manipulator::key_code(data[i + 1]);
-      }
-    }
+  }
+
+  void add_simple_modification(krbn::key_code from_key_code, krbn::key_code to_key_code) {
+    std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
+
+    simple_modifications_[from_key_code] = to_key_code;
   }
 
 private:
@@ -172,14 +173,14 @@ private:
     case kHIDPage_KeyboardOrKeypad:
       if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
         bool pressed = integer_value;
-        handle_keyboard_event(device, manipulator::key_code(usage), pressed);
+        handle_keyboard_event(device, krbn::key_code(usage), pressed);
       }
       break;
 
     case kHIDPage_AppleVendorTopCase:
       if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
         bool pressed = integer_value;
-        handle_keyboard_event(device, manipulator::key_code::vk_fn_modifier, pressed);
+        handle_keyboard_event(device, krbn::key_code::vk_fn_modifier, pressed);
       }
       break;
 
@@ -188,11 +189,11 @@ private:
     }
   }
 
-  bool handle_modifier_flag_event(manipulator::key_code key_code, bool pressed) {
+  bool handle_modifier_flag_event(krbn::key_code key_code, bool pressed) {
     auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
 
-    auto modifier_flag = manipulator::get_modifier_flag(key_code);
-    if (modifier_flag != manipulator::modifier_flag::zero) {
+    auto modifier_flag = krbn::types::get_modifier_flag(key_code);
+    if (modifier_flag != krbn::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
       // reset modifier_flags state if all keys are released.
@@ -200,7 +201,7 @@ private:
         modifier_flag_manager_.reset();
       }
 
-      if (modifier_flag == manipulator::modifier_flag::fn) {
+      if (modifier_flag == krbn::modifier_flag::fn) {
         console_user_client_.post_modifier_flags(modifier_flag_manager_.get_io_option_bits());
       } else {
         send_keyboard_input_report();
@@ -211,19 +212,19 @@ private:
     return false;
   }
 
-  bool handle_function_key_event(manipulator::key_code key_code, bool pressed) {
-    auto event_type = pressed ? krbn_event_type_key_down : krbn_event_type_key_up;
+  bool handle_function_key_event(krbn::key_code key_code, bool pressed) {
+    auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
 
-    if (manipulator::key_code::vk_f1 <= key_code && key_code <= manipulator::key_code::vk_f12) {
-      auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(manipulator::key_code::vk_f1);
-      console_user_client_.post_key(static_cast<krbn_key_code>(krbn_key_code_f1 + i),
+    if (krbn::key_code::vk_f1 <= key_code && key_code <= krbn::key_code::vk_f12) {
+      auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(krbn::key_code::vk_f1);
+      console_user_client_.post_key(krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_f1) + i),
                                     event_type,
                                     modifier_flag_manager_.get_io_option_bits());
       return true;
     }
-    if (manipulator::key_code::vk_fn_f1 <= key_code && key_code <= manipulator::key_code::vk_fn_f12) {
-      auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(manipulator::key_code::vk_fn_f1);
-      console_user_client_.post_key(static_cast<krbn_key_code>(krbn_key_code_fn_f1 + i),
+    if (krbn::key_code::vk_fn_f1 <= key_code && key_code <= krbn::key_code::vk_fn_f12) {
+      auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(krbn::key_code::vk_fn_f1);
+      console_user_client_.post_key(krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_fn_f1) + i),
                                     event_type,
                                     modifier_flag_manager_.get_io_option_bits());
       return true;
@@ -232,7 +233,7 @@ private:
     return false;
   }
 
-  void handle_keyboard_event(human_interface_device& device, manipulator::key_code key_code, bool pressed) {
+  void handle_keyboard_event(human_interface_device& device, krbn::key_code key_code, bool pressed) {
     // ----------------------------------------
     // modify usage
     if (!pressed) {
@@ -261,25 +262,25 @@ private:
     } else {
       auto k = static_cast<uint32_t>(key_code);
       auto new_key_code = key_code;
-      if (modifier_flag_manager_.pressed(manipulator::modifier_flag::fn)) {
+      if (modifier_flag_manager_.pressed(krbn::modifier_flag::fn)) {
         if (k == kHIDUsage_KeyboardReturnOrEnter) {
-          new_key_code = manipulator::key_code(kHIDUsage_KeypadEnter);
+          new_key_code = krbn::key_code(kHIDUsage_KeypadEnter);
         } else if (k == kHIDUsage_KeyboardDeleteOrBackspace) {
-          new_key_code = manipulator::key_code(kHIDUsage_KeyboardDeleteForward);
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardDeleteForward);
         } else if (k == kHIDUsage_KeyboardRightArrow) {
-          new_key_code = manipulator::key_code(kHIDUsage_KeyboardEnd);
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardEnd);
         } else if (k == kHIDUsage_KeyboardLeftArrow) {
-          new_key_code = manipulator::key_code(kHIDUsage_KeyboardHome);
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardHome);
         } else if (k == kHIDUsage_KeyboardDownArrow) {
-          new_key_code = manipulator::key_code(kHIDUsage_KeyboardPageDown);
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardPageDown);
         } else if (k == kHIDUsage_KeyboardUpArrow) {
-          new_key_code = manipulator::key_code(kHIDUsage_KeyboardPageUp);
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardPageUp);
         } else if (kHIDUsage_KeyboardF1 <= k && k <= kHIDUsage_KeyboardF12) {
-          new_key_code = manipulator::key_code(static_cast<uint32_t>(manipulator::key_code::vk_fn_f1) + k - kHIDUsage_KeyboardF1);
+          new_key_code = krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_fn_f1) + k - kHIDUsage_KeyboardF1);
         }
       } else {
         if (kHIDUsage_KeyboardF1 <= k && k <= kHIDUsage_KeyboardF12) {
-          new_key_code = manipulator::key_code(static_cast<uint32_t>(manipulator::key_code::vk_f1) + k - kHIDUsage_KeyboardF1);
+          new_key_code = krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_f1) + k - kHIDUsage_KeyboardF1);
         }
       }
       if (key_code != new_key_code) {
@@ -357,7 +358,7 @@ private:
   manipulator::modifier_flag_manager modifier_flag_manager_;
   hid_report::keyboard_input last_keyboard_input_report_;
 
-  std::unordered_map<manipulator::key_code, manipulator::key_code> simple_modifications_;
+  std::unordered_map<krbn::key_code, krbn::key_code> simple_modifications_;
   std::mutex simple_modifications_mutex_;
 
   console_user_client console_user_client_;

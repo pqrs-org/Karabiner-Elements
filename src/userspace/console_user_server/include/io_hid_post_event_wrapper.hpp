@@ -6,7 +6,7 @@
 
 #include "iokit_user_client.hpp"
 #include "logger.hpp"
-#include "userspace_defs.h"
+#include "userspace_types.hpp"
 
 class io_hid_post_event_wrapper final {
 public:
@@ -28,7 +28,7 @@ public:
     aux_control_button,
   };
 
-  void post_key(post_key_type type, uint8_t key_code, krbn_event_type event_type, IOOptionBits flags, bool repeat) {
+  void post_key(post_key_type type, uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
     switch (type) {
     case post_key_type::key:
       post_key(key_code, event_type, flags, repeat);
@@ -40,7 +40,7 @@ public:
     }
   }
 
-  void post_key(uint8_t key_code, krbn_event_type event_type, IOOptionBits flags, bool repeat) {
+  void post_key(uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
     NXEventData event;
     memset(&event, 0, sizeof(event));
     event.key.origCharCode = 0;
@@ -52,7 +52,7 @@ public:
     event.key.keyboardType = 0;
 
     IOGPoint loc{0, 0};
-    auto kr = iokit_user_client_.hid_post_event(event_type == krbn_event_type_key_down ? NX_KEYDOWN : NX_KEYUP,
+    auto kr = iokit_user_client_.hid_post_event(event_type == krbn::event_type::key_down ? NX_KEYDOWN : NX_KEYUP,
                                                 loc,
                                                 &event,
                                                 kNXEventDataVersion,
@@ -64,11 +64,11 @@ public:
     }
   }
 
-  void post_aux_control_button(uint8_t key_code, krbn_event_type event_type, IOOptionBits flags, bool repeat) {
+  void post_aux_control_button(uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
     NXEventData event;
     memset(&event, 0, sizeof(event));
     event.compound.subType = NX_SUBTYPE_AUX_CONTROL_BUTTONS;
-    event.compound.misc.L[0] = (key_code << 16) | ((event_type == krbn_event_type_key_down ? NX_KEYDOWN : NX_KEYUP) << 8) | repeat;
+    event.compound.misc.L[0] = (key_code << 16) | ((event_type == krbn::event_type::key_down ? NX_KEYDOWN : NX_KEYUP) << 8) | repeat;
 
     IOGPoint loc{0, 0};
     auto kr = iokit_user_client_.hid_post_event(NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, 0);

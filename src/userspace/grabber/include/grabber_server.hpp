@@ -4,7 +4,7 @@
 #include "device_grabber.hpp"
 #include "local_datagram_server.hpp"
 #include "session.hpp"
-#include "userspace_defs.h"
+#include "userspace_types.hpp"
 #include <vector>
 
 class grabber_server final {
@@ -54,12 +54,12 @@ public:
       std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
 
       if (!ec && n > 0) {
-        switch (buffer_[0]) {
-        case krbn_operation_type_connect:
-          if (n != sizeof(krbn_operation_type_connect_struct)) {
-            logger::get_logger().error("invalid size for krbn_operation_type_connect");
+        switch (krbn::operation_type(buffer_[0])) {
+        case krbn::operation_type::connect:
+          if (n != sizeof(krbn::operation_type_connect_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::connect");
           } else {
-            auto p = reinterpret_cast<krbn_operation_type_connect_struct*>(&(buffer_[0]));
+            auto p = reinterpret_cast<krbn::operation_type_connect_struct*>(&(buffer_[0]));
             auto pid = p->console_user_server_pid;
 
             logger::get_logger().info("grabber_client is connected (pid:{0})", pid);
@@ -87,15 +87,24 @@ public:
           }
           break;
 
-        case krbn_operation_type_define_simple_modifications:
-          if (n < sizeof(krbn_operation_type_define_simple_modifications_struct)) {
-            logger::get_logger().error("invalid size for krbn_operation_type_define_simple_modifications ({0})", n);
+        case krbn::operation_type::clear_simple_modifications:
+          if (device_grabber_) {
+            device_grabber_->clear_simple_modifications();
+          }
+          break;
+
+        case krbn::operation_type::add_simple_modification:
+          if (n < sizeof(krbn::operation_type_add_simple_modification_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::add_simple_modification ({0})", n);
           } else {
-            auto p = reinterpret_cast<krbn_operation_type_define_simple_modifications_struct*>(&(buffer_[0]));
+            auto p = reinterpret_cast<krbn::operation_type_add_simple_modification_struct*>(&(buffer_[0]));
             if (device_grabber_) {
-              device_grabber_->set_simple_modifications(p->data, p->size);
+              device_grabber_->add_simple_modification(p->from_key_code, p->to_key_code);
             }
           }
+          break;
+
+        default:
           break;
         }
       }

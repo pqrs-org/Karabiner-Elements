@@ -5,7 +5,7 @@
 #include "keyboard_event_output_manager.hpp"
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
-#include "userspace_defs.h"
+#include "userspace_types.hpp"
 #include <vector>
 
 class receiver final {
@@ -31,11 +31,9 @@ public:
     grabber_client_ = std::make_unique<grabber_client>();
     grabber_client_->connect();
 
-    const uint32_t buffer[] = {
-        kHIDUsage_KeyboardCapsLock, kHIDUsage_KeyboardDeleteOrBackspace,
-        kHIDUsage_KeyboardEscape, kHIDUsage_KeyboardSpacebar,
-    };
-    grabber_client_->define_simple_modifications(buffer, sizeof(buffer) / sizeof(buffer[0]));
+    grabber_client_->clear_simple_modifications();
+    grabber_client_->add_simple_modification(krbn::key_code(kHIDUsage_KeyboardCapsLock), krbn::key_code(kHIDUsage_KeyboardDeleteOrBackspace));
+    grabber_client_->add_simple_modification(krbn::key_code(kHIDUsage_KeyboardEscape), krbn::key_code(kHIDUsage_KeyboardSpacebar));
 
     exit_loop_ = false;
     thread_ = std::thread([this] { this->worker(); });
@@ -71,25 +69,25 @@ public:
       std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
 
       if (!ec && n > 0) {
-        switch (buffer_[0]) {
-        case krbn_operation_type_stop_key_repeat:
+        switch (krbn::operation_type(buffer_[0])) {
+        case krbn::operation_type::stop_key_repeat:
           keyboard_event_output_manager_.stop_key_repeat();
           break;
 
-        case krbn_operation_type_post_modifier_flags:
-          if (n != sizeof(krbn_operation_type_post_modifier_flags_struct)) {
-            logger::get_logger().error("invalid size for krbn_operation_type_post_modifier_flags");
+        case krbn::operation_type::post_modifier_flags:
+          if (n != sizeof(krbn::operation_type_post_modifier_flags_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::post_modifier_flags");
           } else {
-            auto p = reinterpret_cast<krbn_operation_type_post_modifier_flags_struct*>(&(buffer_[0]));
+            auto p = reinterpret_cast<krbn::operation_type_post_modifier_flags_struct*>(&(buffer_[0]));
             keyboard_event_output_manager_.post_modifier_flags(p->flags);
           }
           break;
 
-        case krbn_operation_type_post_key:
-          if (n != sizeof(krbn_operation_type_post_key_struct)) {
-            logger::get_logger().error("invalid size for krbn_operation_type_post_key");
+        case krbn::operation_type::post_key:
+          if (n != sizeof(krbn::operation_type_post_key_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::post_key");
           } else {
-            auto p = reinterpret_cast<krbn_operation_type_post_key_struct*>(&(buffer_[0]));
+            auto p = reinterpret_cast<krbn::operation_type_post_key_struct*>(&(buffer_[0]));
             keyboard_event_output_manager_.post_key(p->key_code, p->event_type, p->flags);
           }
           break;

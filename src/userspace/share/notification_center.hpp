@@ -1,6 +1,6 @@
 #pragma once
 
-#include "userspace_defs.h"
+#include "userspace_types.hpp"
 
 class notification_center final {
 public:
