@@ -88,7 +88,7 @@ private:
       return;
     }
 
-    hids_[device] = std::make_unique<human_interface_device>(device);
+    hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
 
     logger::get_logger().info("matching device: "

@@ -3,7 +3,6 @@
 #include "boost_defs.hpp"
 
 #include "apple_hid_usage_tables.hpp"
-#include "logger.hpp"
 #include "userspace_types.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
 #include <IOKit/hid/IOHIDElement.h>
@@ -13,6 +12,7 @@
 #include <boost/function.hpp>
 #include <cstdint>
 #include <list>
+#include <spdlog/spdlog.h>
 #include <unordered_map>
 
 class human_interface_device final {
@@ -25,7 +25,9 @@ public:
                                CFIndex integer_value)>
       value_callback;
 
-  human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
+  human_interface_device(spdlog::logger& logger,
+                         IOHIDDeviceRef _Nonnull device) : logger_(logger),
+                                                           device_(device),
                                                            queue_(nullptr),
                                                            grabbed_(false) {
     CFRetain(device_);
@@ -110,7 +112,7 @@ public:
 
     IOReturn r = open(kIOHIDOptionsTypeSeizeDevice);
     if (r != kIOReturnSuccess) {
-      logger::get_logger().error("IOHIDDeviceOpen error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
+      logger_.error("IOHIDDeviceOpen error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
       return;
     }
 
@@ -159,7 +161,7 @@ public:
 
     IOReturn r = close();
     if (r != kIOReturnSuccess) {
-      logger::get_logger().error("IOHIDDeviceClose error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
+      logger_.error("IOHIDDeviceClose error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
       return;
     }
 
@@ -323,6 +325,8 @@ private:
   uint64_t elements_key(uint32_t usage_page, uint32_t usage) {
     return (static_cast<uint64_t>(usage_page) << 32 | usage);
   }
+
+  spdlog::logger& logger_;
 
   IOHIDDeviceRef _Nonnull device_;
   IOHIDQueueRef _Nullable queue_;
