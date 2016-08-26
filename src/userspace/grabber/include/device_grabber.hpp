@@ -82,12 +82,6 @@ private:
       return;
     }
 
-    uint64_t entry_id;
-    if (!iokit_utility::get_registry_entry_id(device, entry_id)) {
-      logger::get_logger().error("get_registry_entry_id is failed");
-      return;
-    }
-
     hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
 
