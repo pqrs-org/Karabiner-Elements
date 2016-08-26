@@ -93,7 +93,7 @@ private:
     }
 
     dev->open();
-    dev->register_input_report_callback(boost::bind(&dump_hid_report::report_callback, this, _1, _2, _3, _4, _5), report_, sizeof(report_));
+    dev->register_report_callback(boost::bind(&dump_hid_report::report_callback, this, _1, _2, _3, _4, _5), report_, sizeof(report_));
     dev->schedule();
   }
 

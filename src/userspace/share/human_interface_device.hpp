@@ -67,8 +67,8 @@ public:
 
   ~human_interface_device(void) {
     // unregister all callbacks.
-    IOHIDDeviceRegisterInputReportCallback(device_, nullptr, 0, nullptr, nullptr);
-    IOHIDQueueRegisterValueAvailableCallback(queue_, nullptr, nullptr);
+    unregister_report_callback();
+    unregister_value_callback();
 
     unschedule();
 
@@ -112,18 +112,49 @@ public:
     IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
   }
 
-  void register_input_report_callback(const report_callback& callback,
-                                      uint8_t* _Nonnull report,
-                                      CFIndex report_size) {
+  void register_report_callback(const report_callback& callback,
+                                uint8_t* _Nonnull report,
+                                CFIndex report_size) {
     report_callback_ = callback;
     IOHIDDeviceRegisterInputReportCallback(device_, report, report_size, static_input_report_callback, this);
   }
 
-  void grab(const value_callback& callback) {
-    if (!device_) {
-      return;
+  void unregister_report_callback(void) {
+    IOHIDDeviceRegisterInputReportCallback(device_, nullptr, 0, nullptr, nullptr);
+    report_callback_.clear();
+  }
+
+  void register_value_callback(const value_callback& callback) {
+    if (!queue_) {
+      const CFIndex depth = 1024;
+      queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
+      if (!queue_) {
+        logger_.error("IOHIDQueueCreate error @ {0}", __PRETTY_FUNCTION__);
+        return;
+      }
+
+      // Add all elements
+      for (const auto& it : elements_) {
+        IOHIDQueueAddElement(queue_, it.second);
+      }
     }
 
+    value_callback_ = callback;
+    IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
+
+    IOHIDQueueStart(queue_);
+  }
+
+  void unregister_value_callback(void) {
+    if (queue_) {
+      IOHIDQueueStop(queue_);
+      IOHIDQueueRegisterValueAvailableCallback(queue_, nullptr, nullptr);
+    }
+    value_callback_.clear();
+  }
+
+  // high-level utility method
+  void grab(const value_callback& callback) {
     if (grabbed_) {
       ungrab();
     }
@@ -134,40 +165,24 @@ public:
       return;
     }
 
-    const CFIndex depth = 1024;
-    queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
-    if (queue_) {
-      // Add all elements
-      for (const auto& it : elements_) {
-        IOHIDQueueAddElement(queue_, it.second);
-      }
-
-      value_callback_ = callback;
-      IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
-
-      IOHIDQueueStart(queue_);
-    }
+    register_value_callback(callback);
 
     schedule();
 
     grabbed_ = true;
   }
 
+  // high-level utility method
   void ungrab(void) {
-    if (!device_) {
-      return;
-    }
-
     if (!grabbed_) {
       return;
     }
 
     unschedule();
 
-    if (queue_) {
-      IOHIDQueueRegisterValueAvailableCallback(queue_, nullptr, nullptr);
-      IOHIDQueueStop(queue_);
+    unregister_value_callback();
 
+    if (queue_) {
       // Remove all elements
       for (const auto& it : elements_) {
         IOHIDQueueRemoveElement(queue_, it.second);
@@ -235,10 +250,6 @@ public:
   }
 
   bool get_long_property(const CFStringRef _Nonnull key, long& value) const {
-    if (!device_) {
-      return false;
-    }
-
     auto property = IOHIDDeviceGetProperty(device_, key);
     if (!property) {
       return false;
@@ -252,10 +263,6 @@ public:
   }
 
   bool get_string_property(const CFStringRef _Nonnull key, std::string& value) const {
-    if (!device_) {
-      return false;
-    }
-
     auto property = IOHIDDeviceGetProperty(device_, key);
     if (!property) {
       return false;
