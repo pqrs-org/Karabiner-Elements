@@ -143,7 +143,6 @@ private:
   }
 
   IOHIDManagerRef _Nullable manager_;
-  uint8_t report_[128];
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 };
 
