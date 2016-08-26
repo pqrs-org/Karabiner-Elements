@@ -25,9 +25,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		341129511D6FD932001E76BB /* apple_hid_usage_tables.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = apple_hid_usage_tables.hpp; path = ../../src/userspace/share/apple_hid_usage_tables.hpp; sourceTree = SOURCE_ROOT; };
+		341129521D6FD947001E76BB /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = ../../src/userspace/share/human_interface_device.hpp; sourceTree = SOURCE_ROOT; };
+		341129531D6FE995001E76BB /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../src/userspace/share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
 		344149111D212A1600C8ECFC /* dump_hid_report */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dump_hid_report; sourceTree = BUILT_PRODUCTS_DIR; };
 		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		345ABFF71D5CE6E0009D1FB4 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../../../src/userspace/share/iokit_utility.hpp; sourceTree = "<group>"; };
+		345ABFF71D5CE6E0009D1FB4 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../../src/userspace/share/iokit_utility.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -74,6 +77,9 @@
 		345ABFF61D5CE6CB009D1FB4 /* share */ = {
 			isa = PBXGroup;
 			children = (
+				341129531D6FE995001E76BB /* boost_defs.hpp */,
+				341129521D6FD947001E76BB /* human_interface_device.hpp */,
+				341129511D6FD932001E76BB /* apple_hid_usage_tables.hpp */,
 				345ABFF71D5CE6E0009D1FB4 /* iokit_utility.hpp */,
 			);
 			name = share;
@@ -154,7 +160,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -187,6 +193,11 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../src/userspace/vendor,
+					/opt/local/include,
+					/usr/local/include,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;

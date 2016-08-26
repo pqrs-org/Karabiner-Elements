@@ -1,4 +1,7 @@
-// OS X headers
+#include "boost_defs.hpp"
+
+#include "human_interface_device.hpp"
+#include "iokit_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -8,11 +11,20 @@
 #include <IOKit/hid/IOHIDValue.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/hidsystem/ev_keymap.h>
+#include <boost/bind.hpp>
+#include <iostream>
 #include <mach/mach_time.h>
 
-#include <iostream>
-
-#include "iokit_utility.hpp"
+class logger {
+public:
+  static spdlog::logger& get_logger(void) {
+    static std::shared_ptr<spdlog::logger> logger;
+    if (!logger) {
+      logger = spdlog::stdout_logger_mt("dump_hid_report", true);
+    }
+    return *logger;
+  }
+};
 
 class dump_hid_report {
 public:
@@ -32,7 +44,7 @@ public:
       IOHIDManagerRegisterDeviceMatchingCallback(manager_, static_device_matching_callback, this);
       IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
 
-      IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+      IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     }
   }
 
@@ -51,30 +63,38 @@ private:
   }
 
   void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-    std::cout << "  " << iokit_utility::get_max_input_report_size(device) << std::endl;
-    std::cout << "  " << iokit_utility::get_vendor_id(device) << std::endl;
-    std::cout << "  " << iokit_utility::get_product_id(device) << std::endl;
-    std::cout << "  " << iokit_utility::get_location_id(device) << std::endl;
-    std::cout << "  " << iokit_utility::get_manufacturer(device) << std::endl;
-    std::cout << "  " << iokit_utility::get_product(device) << std::endl;
-    std::cout << "  " << iokit_utility::get_serial_number(device) << std::endl;
-
-    // Logitech Unifying Receiver sends a lot of null report. We ignore them.
-    if (iokit_utility::get_manufacturer(device) == "Logitech" &&
-        iokit_utility::get_product(device) == "USB Receiver") {
+    if (!device) {
       return;
     }
 
-    IOHIDDeviceOpen(device, kIOHIDOptionsTypeNone);
+    hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
+    auto& dev = hids_[device];
 
-    IOHIDDeviceRegisterInputReportCallback(device,
-                                           report_,
-                                           sizeof(report_),
-                                           static_report_callback,
-                                           this);
+    logger::get_logger().info("matching device: "
+                              "manufacturer:{1}, "
+                              "product:{2}, "
+                              "vendor_id:0x{3:x}, "
+                              "product_id:0x{4:x}, "
+                              "location_id:0x{5:x}, "
+                              "serial_number:{6} "
+                              "@ {0}",
+                              __PRETTY_FUNCTION__,
+                              dev->get_manufacturer(),
+                              dev->get_product(),
+                              dev->get_vendor_id(),
+                              dev->get_product_id(),
+                              dev->get_location_id(),
+                              dev->get_serial_number_string());
 
-    IOHIDDeviceScheduleWithRunLoop(device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    // Logitech Unifying Receiver sends a lot of null report. We ignore them.
+    if (dev->get_manufacturer() == "Logitech" &&
+        dev->get_product() == "USB Receiver") {
+      return;
+    }
+
+    dev->open();
+    dev->register_input_report_callback(boost::bind(&dump_hid_report::report_callback, this, _1, _2, _3, _4, _5), report_, sizeof(report_));
+    dev->schedule();
   }
 
   static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
@@ -91,21 +111,35 @@ private:
   }
 
   void device_removal_callback(IOHIDDeviceRef _Nonnull device) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    if (!device) {
+      return;
+    }
 
-    IOHIDDeviceUnscheduleFromRunLoop(device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    auto it = hids_.find(device);
+    if (it != hids_.end()) {
+      auto& dev = it->second;
+      if (dev) {
+        logger::get_logger().info("removal device: "
+                                  "vendor_id:0x{1:x}, "
+                                  "product_id:0x{2:x}, "
+                                  "location_id:0x{3:x} "
+                                  "@ {0}",
+                                  __PRETTY_FUNCTION__,
+                                  dev->get_vendor_id(),
+                                  dev->get_product_id(),
+                                  dev->get_location_id());
 
-    IOHIDDeviceClose(device, kIOHIDOptionsTypeNone);
+        hids_.erase(it);
+      }
+    }
   }
 
-  static void static_report_callback(void* context,
-                                     IOReturn result,
-                                     void* sender,
-                                     IOHIDReportType type,
-                                     uint32_t report_id,
-                                     uint8_t* report,
-                                     CFIndex report_length) {
-    std::cout << "report_length: " << report_length << std::endl;
+  void report_callback(human_interface_device& device,
+                       IOHIDReportType type,
+                       uint32_t report_id,
+                       uint8_t* report,
+                       CFIndex report_length) {
+    logger::get_logger().info("report_length: {0}", report_length);
     for (CFIndex i = 0; i < report_length; ++i) {
       std::cout << " key[" << i << "]: 0x" << std::hex << static_cast<int>(report[i]) << std::dec << std::endl;
     }
@@ -113,6 +147,7 @@ private:
 
   IOHIDManagerRef _Nullable manager_;
   uint8_t report_[128];
+  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 };
 
 int main(int argc, const char* argv[]) {

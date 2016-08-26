@@ -25,6 +25,13 @@ public:
                                CFIndex integer_value)>
       value_callback;
 
+  typedef boost::function<void(human_interface_device& device,
+                               IOHIDReportType type,
+                               uint32_t report_id,
+                               uint8_t* _Nullable report,
+                               CFIndex report_length)>
+      report_callback;
+
   human_interface_device(spdlog::logger& logger,
                          IOHIDDeviceRef _Nonnull device) : logger_(logger),
                                                            device_(device),
@@ -59,6 +66,10 @@ public:
   }
 
   ~human_interface_device(void) {
+    // unregister all callbacks.
+    IOHIDDeviceRegisterInputReportCallback(device_, nullptr, 0, nullptr, nullptr);
+    IOHIDQueueRegisterValueAvailableCallback(queue_, nullptr, nullptr);
+
     unschedule();
 
     if (grabbed_) {
@@ -101,7 +112,14 @@ public:
     IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
   }
 
-  void grab(value_callback callback) {
+  void register_input_report_callback(const report_callback& callback,
+                                      uint8_t* _Nonnull report,
+                                      CFIndex report_size) {
+    report_callback_ = callback;
+    IOHIDDeviceRegisterInputReportCallback(device_, report, report_size, static_input_report_callback, this);
+  }
+
+  void grab(const value_callback& callback) {
     if (!device_) {
       return;
     }
@@ -322,6 +340,34 @@ private:
     }
   }
 
+  static void static_input_report_callback(void* _Nullable context,
+                                           IOReturn result,
+                                           void* _Nullable sender,
+                                           IOHIDReportType type,
+                                           uint32_t report_id,
+                                           uint8_t* _Nullable report,
+                                           CFIndex report_length) {
+    if (result != kIOReturnSuccess) {
+      return;
+    }
+
+    auto self = static_cast<human_interface_device*>(context);
+    if (!self) {
+      return;
+    }
+
+    self->input_report_callback(type, report_id, report, report_length);
+  }
+
+  void input_report_callback(IOHIDReportType type,
+                             uint32_t report_id,
+                             uint8_t* _Nullable report,
+                             CFIndex report_length) {
+    if (report_callback_) {
+      report_callback_(*this, type, report_id, report, report_length);
+    }
+  }
+
   uint64_t elements_key(uint32_t usage_page, uint32_t usage) {
     return (static_cast<uint64_t>(usage_page) << 32 | usage);
   }
@@ -335,6 +381,7 @@ private:
   bool grabbed_;
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
+  report_callback report_callback_;
 
   std::unordered_map<krbn::key_code, krbn::key_code> simple_changed_keys_;
   std::unordered_map<krbn::key_code, krbn::key_code> fn_changed_keys_;
