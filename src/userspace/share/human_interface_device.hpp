@@ -273,6 +273,16 @@ public:
     return true;
   }
 
+  IOHIDElementRef _Nullable get_element(uint32_t usage_page, uint32_t usage) {
+    auto key = elements_key(usage_page, usage);
+    auto it = elements_.find(key);
+    if (it == elements_.end()) {
+      return nullptr;
+    } else {
+      return it->second;
+    }
+  }
+
   std::unordered_map<krbn::key_code, krbn::key_code>& get_simple_changed_keys(void) {
     return simple_changed_keys_;
   }
