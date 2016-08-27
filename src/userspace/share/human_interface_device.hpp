@@ -42,19 +42,11 @@ public:
     auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone);
     if (elements) {
       for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
-        // Skip unnecessary usages.
+        // add to elements_
         auto element = static_cast<IOHIDElementRef>(const_cast<void*>(CFArrayGetValueAtIndex(elements, i)));
         auto usage_page = IOHIDElementGetUsagePage(element);
         auto usage = IOHIDElementGetUsage(element);
 
-        if (usage_page == kHIDPage_KeyboardOrKeypad) {
-          if (usage < kHIDUsage_KeyboardA ||
-              usage >= kHIDUsage_Keyboard_Reserved) {
-            continue;
-          }
-        }
-
-        // Add to elements_
         auto key = elements_key(usage_page, usage);
         if (elements_.find(key) == elements_.end()) {
           CFRetain(element);
@@ -133,7 +125,7 @@ public:
         return;
       }
 
-      // Add all elements
+      // add elements into queue_.
       for (const auto& it : elements_) {
         IOHIDQueueAddElement(queue_, it.second);
       }
