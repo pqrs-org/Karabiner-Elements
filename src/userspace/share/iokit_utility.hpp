@@ -61,7 +61,8 @@ public:
     return value;
   }
 
-  static CFDictionaryRef _Nonnull create_device_matching_dictionary(uint32_t usage_page, uint32_t usage) {
+  static CFDictionaryRef _Nonnull create_matching_dictionary(CFStringRef _Nonnull usage_page_key, uint32_t usage_page,
+                                                             CFStringRef _Nonnull usage_key, uint32_t usage) {
     auto device_matching_dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     if (!device_matching_dictionary) {
       goto finish;
@@ -75,7 +76,7 @@ public:
       if (!number) {
         goto finish;
       }
-      CFDictionarySetValue(device_matching_dictionary, CFSTR(kIOHIDDeviceUsagePageKey), number);
+      CFDictionarySetValue(device_matching_dictionary, usage_page_key, number);
       CFRelease(number);
     }
 
@@ -87,12 +88,17 @@ public:
       if (!number) {
         goto finish;
       }
-      CFDictionarySetValue(device_matching_dictionary, CFSTR(kIOHIDDeviceUsageKey), number);
+      CFDictionarySetValue(device_matching_dictionary, usage_key, number);
       CFRelease(number);
     }
 
   finish:
     return device_matching_dictionary;
+  }
+
+  static CFDictionaryRef _Nonnull create_device_matching_dictionary(uint32_t usage_page, uint32_t usage) {
+    return create_matching_dictionary(CFSTR(kIOHIDDeviceUsagePageKey), usage_page,
+                                      CFSTR(kIOHIDDeviceUsageKey), usage);
   }
 
   static CFArrayRef _Nullable create_device_matching_dictionaries(const std::vector<std::pair<uint32_t, uint32_t>>& usage_pairs) {
@@ -110,6 +116,11 @@ public:
     }
 
     return device_matching_dictionaries;
+  }
+
+  static CFDictionaryRef _Nonnull create_element_matching_dictionary(uint32_t usage_page, uint32_t usage) {
+    return create_matching_dictionary(CFSTR(kIOHIDElementUsagePageKey), usage_page,
+                                      CFSTR(kIOHIDElementUsageKey), usage);
   }
 
   static bool get_registry_entry_id(IOHIDDeviceRef _Nonnull device, uint64_t& value) {
