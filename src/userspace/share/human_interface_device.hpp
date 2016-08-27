@@ -12,6 +12,7 @@
 #include <boost/function.hpp>
 #include <cstdint>
 #include <list>
+#include <mach/mach_time.h>
 #include <spdlog/spdlog.h>
 #include <unordered_map>
 
@@ -42,7 +43,7 @@ public:
     auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone);
     if (elements) {
       for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
-        // add to elements_
+        // Add to elements_.
         auto element = static_cast<IOHIDElementRef>(const_cast<void*>(CFArrayGetValueAtIndex(elements, i)));
         auto usage_page = IOHIDElementGetUsagePage(element);
         auto usage = IOHIDElementGetUsage(element);
@@ -58,7 +59,7 @@ public:
   }
 
   ~human_interface_device(void) {
-    // unregister all callbacks.
+    // Unregister all callbacks.
     unregister_report_callback();
     unregister_value_callback();
 
@@ -125,7 +126,7 @@ public:
         return;
       }
 
-      // add elements into queue_.
+      // Add elements into queue_.
       for (const auto& it : elements_) {
         IOHIDQueueAddElement(queue_, it.second);
       }
@@ -145,7 +146,7 @@ public:
     value_callback_.clear();
   }
 
-  // high-level utility method
+  // High-level utility method.
   void grab(const value_callback& callback) {
     if (grabbed_) {
       ungrab();
@@ -164,7 +165,7 @@ public:
     grabbed_ = true;
   }
 
-  // high-level utility method
+  // High-level utility method.
   void ungrab(void) {
     if (!grabbed_) {
       return;
@@ -175,7 +176,7 @@ public:
     unregister_value_callback();
 
     if (queue_) {
-      // Remove all elements
+      // Remove all elements.
       for (const auto& it : elements_) {
         IOHIDQueueRemoveElement(queue_, it.second);
       }
@@ -273,7 +274,7 @@ public:
     return true;
   }
 
-  IOHIDElementRef _Nullable get_element(uint32_t usage_page, uint32_t usage) {
+  IOHIDElementRef _Nullable get_element(uint32_t usage_page, uint32_t usage) const {
     auto key = elements_key(usage_page, usage);
     auto it = elements_.find(key);
     if (it == elements_.end()) {
@@ -293,6 +294,57 @@ public:
 
   size_t get_pressed_keys_count(void) const {
     return pressed_key_usages_.size();
+  }
+
+#pragma mark - usage specific utilities
+
+  // This method requires root privilege to use IOHIDDeviceGetValue for kHIDPage_LEDs usage.
+  krbn::led_state get_caps_lock_led_state(void) const {
+    if (auto element = get_element(kHIDPage_LEDs, kHIDUsage_LED_CapsLock)) {
+      auto max = IOHIDElementGetLogicalMax(element);
+
+      IOHIDValueRef value;
+      auto r = IOHIDDeviceGetValue(device_, element, &value);
+      if (r != kIOReturnSuccess) {
+        logger_.error("IOHIDDeviceGetValue error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
+        return krbn::led_state::none;
+      }
+
+      auto integer_value = IOHIDValueGetIntegerValue(value);
+      if (integer_value == max) {
+        return krbn::led_state::on;
+      } else {
+        return krbn::led_state::off;
+      }
+    }
+
+    return krbn::led_state::none;
+  }
+
+  // This method requires root privilege to use IOHIDDeviceSetValue for kHIDPage_LEDs usage.
+  IOReturn set_caps_lock_led_state(krbn::led_state state) {
+    if (state == krbn::led_state::none) {
+      return kIOReturnSuccess;
+    }
+
+    if (auto element = get_element(kHIDPage_LEDs, kHIDUsage_LED_CapsLock)) {
+      CFIndex integer_value = 0;
+      if (state == krbn::led_state::on) {
+        integer_value = IOHIDElementGetLogicalMax(element);
+      } else {
+        integer_value = IOHIDElementGetLogicalMin(element);
+      }
+
+      if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault, element, mach_absolute_time(), integer_value)) {
+        auto r = IOHIDDeviceSetValue(device_, element, value);
+        CFRelease(value);
+        return r;
+      } else {
+        logger_.error("IOHIDValueCreateWithIntegerValue error @ {0}", __PRETTY_FUNCTION__);
+      }
+    }
+
+    return kIOReturnError;
   }
 
 private:
@@ -327,7 +379,7 @@ private:
         auto usage = IOHIDElementGetUsage(element);
         auto integer_value = IOHIDValueGetIntegerValue(value);
 
-        // update pressed_key_usages_
+        // Update pressed_key_usages_.
         if ((usage_page == kHIDPage_KeyboardOrKeypad) ||
             (usage_page == kHIDPage_AppleVendorTopCase && usage == kHIDUsage_AV_TopCase_KeyboardFn)) {
           bool pressed = integer_value;
@@ -339,7 +391,7 @@ private:
           }
         }
 
-        // call value_callback_
+        // Call value_callback_.
         if (value_callback_) {
           value_callback_(*this, value, element, usage_page, usage, integer_value);
         }
@@ -377,7 +429,7 @@ private:
     }
   }
 
-  uint64_t elements_key(uint32_t usage_page, uint32_t usage) {
+  uint64_t elements_key(uint32_t usage_page, uint32_t usage) const {
     return (static_cast<uint64_t>(usage_page) << 32 | usage);
   }
 
