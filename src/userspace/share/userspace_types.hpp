@@ -77,6 +77,12 @@ enum class modifier_flag : uint32_t {
   prepared_modifier_flag_end_
 };
 
+enum class led_state : uint32_t {
+  none,
+  on,
+  off,
+};
+
 class types {
 public:
   static modifier_flag get_modifier_flag(key_code key_code) {
