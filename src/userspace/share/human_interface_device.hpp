@@ -1,7 +1,5 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "apple_hid_usage_tables.hpp"
 #include "userspace_types.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
@@ -9,8 +7,8 @@
 #include <IOKit/hid/IOHIDQueue.h>
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <IOKit/hid/IOHIDValue.h>
-#include <boost/function.hpp>
 #include <cstdint>
+#include <functional>
 #include <list>
 #include <mach/mach_time.h>
 #include <spdlog/spdlog.h>
@@ -18,19 +16,19 @@
 
 class human_interface_device final {
 public:
-  typedef boost::function<void(human_interface_device& device,
-                               IOHIDValueRef _Nonnull value,
-                               IOHIDElementRef _Nonnull element,
-                               uint32_t usage_page,
-                               uint32_t usage,
-                               CFIndex integer_value)>
+  typedef std::function<void(human_interface_device& device,
+                             IOHIDValueRef _Nonnull value,
+                             IOHIDElementRef _Nonnull element,
+                             uint32_t usage_page,
+                             uint32_t usage,
+                             CFIndex integer_value)>
       value_callback;
 
-  typedef boost::function<void(human_interface_device& device,
-                               IOHIDReportType type,
-                               uint32_t report_id,
-                               uint8_t* _Nullable report,
-                               CFIndex report_length)>
+  typedef std::function<void(human_interface_device& device,
+                             IOHIDReportType type,
+                             uint32_t report_id,
+                             uint8_t* _Nullable report,
+                             CFIndex report_length)>
       report_callback;
 
   human_interface_device(spdlog::logger& logger,
@@ -114,7 +112,7 @@ public:
 
   void unregister_report_callback(void) {
     IOHIDDeviceRegisterInputReportCallback(device_, nullptr, 0, nullptr, nullptr);
-    report_callback_.clear();
+    report_callback_ = nullptr;
   }
 
   void register_value_callback(const value_callback& callback) {
@@ -143,7 +141,7 @@ public:
       IOHIDQueueStop(queue_);
       IOHIDQueueRegisterValueAvailableCallback(queue_, nullptr, nullptr);
     }
-    value_callback_.clear();
+    value_callback_ = nullptr;
   }
 
   // High-level utility method.
