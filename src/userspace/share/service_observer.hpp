@@ -64,6 +64,28 @@ public:
     }
   }
 
+  ~service_observer(void) {
+    if (matched_notification_) {
+      IOObjectRelease(matched_notification_);
+      matched_notification_ = IO_OBJECT_NULL;
+    }
+
+    if (terminated_notification_) {
+      IOObjectRelease(terminated_notification_);
+      terminated_notification_ = IO_OBJECT_NULL;
+    }
+
+    if (notification_port_) {
+      if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
+        CFRunLoopRemoveSource(CFRunLoopGetMain(), loop_source, kCFRunLoopDefaultMode);
+      }
+
+      IONotificationPortDestroy(notification_port_);
+      notification_port_ = nullptr;
+    }
+  }
+
+private:
   static void static_matched_callback(void* _Nonnull refcon, io_iterator_t iterator) {
     service_observer* self = static_cast<service_observer*>(refcon);
     if (self->matched_callback_) {
@@ -78,7 +100,6 @@ public:
     }
   }
 
-private:
   spdlog::logger& logger_;
   callback matched_callback_;
   callback terminated_callback_;
