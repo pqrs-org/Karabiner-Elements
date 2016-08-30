@@ -106,7 +106,14 @@ private:
     }
 
     if (dev->get_manufacturer() != "pqrs.org") {
-      dev->grab(std::bind(&device_grabber::value_callback, this, _1, _2, _3, _4, _5, _6));
+      dev->grab(std::bind(&device_grabber::value_callback,
+                          this,
+                          std::placeholders::_1,
+                          std::placeholders::_2,
+                          std::placeholders::_3,
+                          std::placeholders::_4,
+                          std::placeholders::_5,
+                          std::placeholders::_6));
     }
   }
 
