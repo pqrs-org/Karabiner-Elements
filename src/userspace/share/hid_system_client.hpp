@@ -141,20 +141,23 @@ private:
       IOObjectRelease(service);
     }
 
-    if (found) {
-      // Refresh connection.
+    if (!found) {
+      return;
+    }
+
+    // Refresh connection.
+    {
       std::lock_guard<std::mutex> guard(mutex_);
-
       close_connection();
+    }
 
-      io_iterator_t it;
-      auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, matching_dictionary_, &it);
-      if (kr != KERN_SUCCESS) {
-        logger_.error("IOServiceGetMatchingServices error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
-      } else {
-        matched_callback(it);
-        IOObjectRelease(it);
-      }
+    io_iterator_t it;
+    auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, matching_dictionary_, &it);
+    if (kr != KERN_SUCCESS) {
+      logger_.error("IOServiceGetMatchingServices error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+    } else {
+      matched_callback(it);
+      IOObjectRelease(it);
     }
   }
 
