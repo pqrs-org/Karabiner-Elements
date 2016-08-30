@@ -1,13 +1,15 @@
 #pragma once
 
-#include "io_hid_post_event_wrapper.hpp"
+#include "hid_system_client.hpp"
 #include "logger.hpp"
 #include "system_preferences.hpp"
 #include "userspace_types.hpp"
+#include <IOKit/hidsystem/ev_keymap.h>
 
 class keyboard_event_output_manager final {
 public:
-  keyboard_event_output_manager(void) : key_repeat_timer_(0) {}
+  keyboard_event_output_manager(void) : hid_system_client_(logger::get_logger()),
+                                        key_repeat_timer_(0) {}
 
   ~keyboard_event_output_manager(void) {
     stop_key_repeat();
@@ -23,7 +25,7 @@ public:
 
   void post_modifier_flags(IOOptionBits flags) {
     stop_key_repeat();
-    io_hid_post_event_wrapper_.post_modifier_flags(flags);
+    hid_system_client_.post_modifier_flags(flags);
   }
 
   void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags) {
@@ -38,7 +40,7 @@ public:
     }
 
     uint8_t new_key_code = 0;
-    auto post_key_type = io_hid_post_event_wrapper::post_key_type::key;
+    auto post_key_type = hid_system_client::post_key_type::key;
     switch (key_code) {
     case krbn::key_code::vk_f1:
     case krbn::key_code::vk_fn_f1:
@@ -46,7 +48,7 @@ public:
         new_key_code = 0x7a;
       } else {
         new_key_code = NX_KEYTYPE_BRIGHTNESS_DOWN;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     case krbn::key_code::vk_f2:
@@ -55,7 +57,7 @@ public:
         new_key_code = 0x78;
       } else {
         new_key_code = NX_KEYTYPE_BRIGHTNESS_UP;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     case krbn::key_code::vk_f3:
@@ -82,7 +84,7 @@ public:
         new_key_code = 0x60;
       } else {
         new_key_code = NX_KEYTYPE_ILLUMINATION_DOWN;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     case krbn::key_code::vk_f6:
@@ -91,7 +93,7 @@ public:
         new_key_code = 0x61;
       } else {
         new_key_code = NX_KEYTYPE_ILLUMINATION_UP;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     case krbn::key_code::vk_f7:
@@ -100,7 +102,7 @@ public:
         new_key_code = 0x62;
       } else {
         new_key_code = NX_KEYTYPE_PREVIOUS;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     case krbn::key_code::vk_f8:
@@ -109,7 +111,7 @@ public:
         new_key_code = 0x64;
       } else {
         new_key_code = NX_KEYTYPE_PLAY;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     case krbn::key_code::vk_f9:
@@ -118,7 +120,7 @@ public:
         new_key_code = 0x65;
       } else {
         new_key_code = NX_KEYTYPE_NEXT;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     case krbn::key_code::vk_f10:
@@ -127,7 +129,7 @@ public:
         new_key_code = 0x6d;
       } else {
         new_key_code = NX_KEYTYPE_MUTE;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     case krbn::key_code::vk_f11:
@@ -136,7 +138,7 @@ public:
         new_key_code = 0x67;
       } else {
         new_key_code = NX_KEYTYPE_SOUND_DOWN;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     case krbn::key_code::vk_f12:
@@ -145,7 +147,7 @@ public:
         new_key_code = 0x6f;
       } else {
         new_key_code = NX_KEYTYPE_SOUND_UP;
-        post_key_type = io_hid_post_event_wrapper::post_key_type::aux_control_button;
+        post_key_type = hid_system_client::post_key_type::aux_control_button;
       }
       break;
     default:
@@ -156,12 +158,12 @@ public:
     auto initial_key_repeat_milliseconds = system_preferences::get_initial_key_repeat_milliseconds();
     auto key_repeat_milliseconds = system_preferences::get_key_repeat_milliseconds();
 
-    io_hid_post_event_wrapper_.post_key(post_key_type, new_key_code, event_type, flags, false);
+    hid_system_client_.post_key(post_key_type, new_key_code, event_type, flags, false);
 
     // set key repeat
     if (event_type == krbn::event_type::key_down) {
       bool repeat_target = true;
-      if (post_key_type == io_hid_post_event_wrapper::post_key_type::aux_control_button) {
+      if (post_key_type == hid_system_client::post_key_type::aux_control_button) {
         if (new_key_code == NX_KEYTYPE_PLAY ||
             new_key_code == NX_KEYTYPE_MUTE) {
           repeat_target = false;
@@ -178,7 +180,7 @@ public:
                                     key_repeat_milliseconds * NSEC_PER_MSEC,
                                     0);
           dispatch_source_set_event_handler(key_repeat_timer_, ^{
-            io_hid_post_event_wrapper_.post_key(post_key_type, new_key_code, event_type, flags, true);
+            hid_system_client_.post_key(post_key_type, new_key_code, event_type, flags, true);
           });
           dispatch_resume(key_repeat_timer_);
         }
@@ -187,6 +189,6 @@ public:
   }
 
 private:
-  io_hid_post_event_wrapper io_hid_post_event_wrapper_;
+  hid_system_client hid_system_client_;
   dispatch_source_t key_repeat_timer_;
 };

@@ -32,7 +32,7 @@ public:
     grabber_client_->connect();
 
     grabber_client_->clear_simple_modifications();
-    grabber_client_->add_simple_modification(krbn::key_code(kHIDUsage_KeyboardCapsLock), krbn::key_code(kHIDUsage_KeyboardDeleteOrBackspace));
+    //grabber_client_->add_simple_modification(krbn::key_code(kHIDUsage_KeyboardCapsLock), krbn::key_code(kHIDUsage_KeyboardDeleteOrBackspace));
     grabber_client_->add_simple_modification(krbn::key_code(kHIDUsage_KeyboardEscape), krbn::key_code(kHIDUsage_KeyboardSpacebar));
 
     exit_loop_ = false;

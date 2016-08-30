@@ -34,9 +34,9 @@
 		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0031D620E28009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9B61D752C820055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A971D685A4600DD480B /* connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connection_manager.hpp; path = include/connection_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A981D685A4600DD480B /* grabber_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_client.hpp; path = include/grabber_client.hpp; sourceTree = SOURCE_ROOT; };
-		34A88A991D685A4600DD480B /* io_hid_post_event_wrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = io_hid_post_event_wrapper.hpp; path = include/io_hid_post_event_wrapper.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9A1D685A4600DD480B /* keyboard_event_output_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = keyboard_event_output_manager.hpp; path = include/keyboard_event_output_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9B1D685A4600DD480B /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9C1D685A4600DD480B /* receiver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = receiver.hpp; path = include/receiver.hpp; sourceTree = SOURCE_ROOT; };
@@ -93,6 +93,7 @@
 			children = (
 				345AC0051D621651009D1FB4 /* boost_defs.hpp */,
 				341F59CC1D516B1500B441A8 /* constants.hpp */,
+				3492C9B61D752C820055988F /* hid_system_client.hpp */,
 				341F59DA1D54EABD00B441A8 /* iokit_user_client.hpp */,
 				341F59DB1D57789500B441A8 /* iokit_utility.hpp */,
 				34A88AA01D685A5C00DD480B /* karabiner_version.h */,
@@ -119,7 +120,6 @@
 			children = (
 				34A88A971D685A4600DD480B /* connection_manager.hpp */,
 				34A88A981D685A4600DD480B /* grabber_client.hpp */,
-				34A88A991D685A4600DD480B /* io_hid_post_event_wrapper.hpp */,
 				34A88A9A1D685A4600DD480B /* keyboard_event_output_manager.hpp */,
 				34A88A9B1D685A4600DD480B /* logger.hpp */,
 				34A88A9C1D685A4600DD480B /* receiver.hpp */,
