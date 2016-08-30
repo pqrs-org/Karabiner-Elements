@@ -11,7 +11,7 @@ class grabber_server final {
 public:
   grabber_server(void) : exit_loop_(false), grabber_client_pid_monitor_(0) {
     enum {
-      buffer_length = 8 * 1024 * 1024,
+      buffer_length = 1024 * 1024,
     };
     buffer_.resize(buffer_length);
   }
