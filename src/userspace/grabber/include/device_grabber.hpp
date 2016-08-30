@@ -5,17 +5,17 @@
 #include "constants.hpp"
 #include "hid_report.hpp"
 #include "human_interface_device.hpp"
-#include "iokit_user_client.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
 #include "userspace_types.hpp"
+#include "virtual_hid_manager_client.hpp"
 #include "virtual_hid_manager_user_client_method.hpp"
 #include <thread>
 
 class device_grabber final {
 public:
-  device_grabber(void) : iokit_user_client_(logger::get_logger(), "org_pqrs_driver_VirtualHIDManager", kIOHIDServerConnectType),
+  device_grabber(void) : virtual_hid_manager_client_(logger::get_logger()),
                          console_user_client_() {
     logger::get_logger().info(__PRETTY_FUNCTION__);
 
@@ -332,12 +332,9 @@ private:
     if (last_keyboard_input_report_ != report) {
       last_keyboard_input_report_ = report;
 
-      auto kr = iokit_user_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
-                                                      static_cast<const void*>(&report), sizeof(report),
-                                                      nullptr, 0);
-      if (kr != KERN_SUCCESS) {
-        logger::get_logger().error("failed to sent report: 0x{0:x}", kr);
-      }
+      virtual_hid_manager_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
+                                                     static_cast<const void*>(&report), sizeof(report),
+                                                     nullptr, 0);
     }
   }
 
@@ -351,7 +348,7 @@ private:
     return total;
   }
 
-  iokit_user_client iokit_user_client_;
+  virtual_hid_manager_client virtual_hid_manager_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   std::list<uint32_t> pressed_key_usages_;

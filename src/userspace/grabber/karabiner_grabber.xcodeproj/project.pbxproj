@@ -29,13 +29,14 @@
 		341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../share/local_datagram_server.hpp; sourceTree = SOURCE_ROOT; };
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../share/constants.hpp; sourceTree = SOURCE_ROOT; };
 		341F59D11D5244F200B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../share/local_datagram_client.hpp; sourceTree = SOURCE_ROOT; };
-		341F59D91D54EA3300B441A8 /* iokit_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_user_client.hpp; path = ../share/iokit_user_client.hpp; sourceTree = SOURCE_ROOT; };
 		341F59DC1D5778A000B441A8 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../share/iokit_utility.hpp; sourceTree = SOURCE_ROOT; };
 		344149111D212A1600C8ECFC /* karabiner_grabber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner_grabber; sourceTree = BUILT_PRODUCTS_DIR; };
 		3446AA8D1D49A41100337B36 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../share/hid_report.hpp; sourceTree = SOURCE_ROOT; };
 		3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0021D620C8C009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0041D62163F009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9B71D7573EC0055988F /* virtual_hid_manager_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_client.hpp; path = include/virtual_hid_manager_client.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9B81D7574520055988F /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A871D6840C200DD480B /* console_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = console_user_client.hpp; path = include/console_user_client.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A891D6840C200DD480B /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = SOURCE_ROOT; };
@@ -103,13 +104,14 @@
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
 				3446AA8D1D49A41100337B36 /* hid_report.hpp */,
 				34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */,
-				341F59D91D54EA3300B441A8 /* iokit_user_client.hpp */,
 				341F59DC1D5778A000B441A8 /* iokit_utility.hpp */,
 				34A88A941D68446C00DD480B /* karabiner_version.h */,
 				341F59D11D5244F200B441A8 /* local_datagram_client.hpp */,
 				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				345AC0021D620C8C009D1FB4 /* notification_center.hpp */,
+				3492C9B81D7574520055988F /* service_observer.hpp */,
 				34A88AA61D6DF89900DD480B /* userspace_types.hpp */,
+				3492C9B71D7573EC0055988F /* virtual_hid_manager_client.hpp */,
 				3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */,
 			);
 			name = share;

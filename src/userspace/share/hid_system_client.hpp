@@ -175,7 +175,7 @@ private:
     }
 
     auto kr = IOHIDPostEvent(connect_, event_type, location, event_data, event_data_version, event_flags, options);
-    if (KERN_SUCCESS != kr) {
+    if (kr != KERN_SUCCESS) {
       logger_.error("IOHIDPostEvent error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
     }
   }
@@ -188,7 +188,7 @@ private:
 
     bool value;
     auto kr = IOHIDGetModifierLockState(connect_, selector, &value);
-    if (KERN_SUCCESS != kr) {
+    if (kr != KERN_SUCCESS) {
       logger_.error("IOHIDGetModifierLockState error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
     }
 
@@ -202,7 +202,7 @@ private:
     }
 
     auto kr = IOHIDSetModifierLockState(connect_, selector, state);
-    if (KERN_SUCCESS != kr) {
+    if (kr != KERN_SUCCESS) {
       logger_.error("IOHIDSetModifierLockState error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
       return false;
     }
@@ -223,6 +223,7 @@ private:
 
     if (service_) {
       IOObjectRelease(service_);
+      service_ = IO_OBJECT_NULL;
     }
   }
 
