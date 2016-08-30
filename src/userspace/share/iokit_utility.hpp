@@ -1,64 +1,62 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
 #include <IOKit/hid/IOHIDKeys.h>
-
+#include <boost/optional.hpp>
 #include <cstdint>
 #include <string>
 #include <vector>
 
 class iokit_utility {
 public:
-  static bool get_registry_entry_id(io_registry_entry_t registry_entry, uint64_t& value) {
+  static boost::optional<uint64_t> get_registry_entry_id(io_registry_entry_t registry_entry) {
     // Note:
     // IORegistryEntryGetRegistryEntryID returns MACH_SEND_INVALID_DEST in callback of IOHIDManagerRegisterDeviceRemovalCallback.
     // Thus, we cannot use it as a unique id for device matching/removal.
 
+    uint64_t value;
     auto kr = IORegistryEntryGetRegistryEntryID(registry_entry, &value);
-    return (kr == KERN_SUCCESS);
+    if (kr != KERN_SUCCESS) {
+      return boost::none;
+    }
+    return value;
   }
 
-  static bool get_string_property(io_service_t service, CFStringRef _Nonnull key, std::string& value) {
+  static boost::optional<std::string> get_string_property(io_service_t service, CFStringRef _Nonnull key) {
     if (!service) {
-      return false;
+      return boost::none;
     }
 
-    auto property = IORegistryEntrySearchCFProperty(service,
-                                                    kIOServicePlane,
-                                                    key,
-                                                    kCFAllocatorDefault,
-                                                    kIORegistryIterateRecursively | kIORegistryIterateParents);
-    if (!property) {
-      return false;
+    if (auto property = IORegistryEntrySearchCFProperty(service,
+                                                        kIOServicePlane,
+                                                        key,
+                                                        kCFAllocatorDefault,
+                                                        kIORegistryIterateRecursively | kIORegistryIterateParents)) {
+      std::string value;
+      if (auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8)) {
+        value = p;
+      }
+
+      CFRelease(property);
+      return value;
     }
 
-    if (auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8)) {
-      value = p;
-    } else {
-      value.clear();
-    }
-
-    CFRelease(property);
-    return true;
+    return boost::none;
   }
 
-  static std::string get_manufacturer(io_service_t service) {
-    std::string value;
-    get_string_property(service, CFSTR(kIOHIDManufacturerKey), value);
-    return value;
+  static boost::optional<std::string> get_manufacturer(io_service_t service) {
+    return get_string_property(service, CFSTR(kIOHIDManufacturerKey));
   }
 
-  static std::string get_product(io_service_t service) {
-    std::string value;
-    get_string_property(service, CFSTR(kIOHIDProductKey), value);
-    return value;
+  static boost::optional<std::string> get_product(io_service_t service) {
+    return get_string_property(service, CFSTR(kIOHIDProductKey));
   }
 
-  static std::string get_serial_number(io_service_t service) {
-    std::string value;
-    get_string_property(service, CFSTR(kIOHIDSerialNumberKey), value);
-    return value;
+  static boost::optional<std::string> get_serial_number(io_service_t service) {
+    return get_string_property(service, CFSTR(kIOHIDSerialNumberKey));
   }
 
   static CFDictionaryRef _Nonnull create_matching_dictionary(CFStringRef _Nonnull usage_page_key, uint32_t usage_page,
@@ -123,80 +121,71 @@ public:
                                       CFSTR(kIOHIDElementUsageKey), usage);
   }
 
-  static bool get_registry_entry_id(IOHIDDeviceRef _Nonnull device, uint64_t& value) {
-    return get_registry_entry_id(IOHIDDeviceGetService(device), value);
+  static boost::optional<uint64_t> get_registry_entry_id(IOHIDDeviceRef _Nonnull device) {
+    return get_registry_entry_id(IOHIDDeviceGetService(device));
   }
 
-  static bool get_long_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key, long& value) {
+  static boost::optional<long> get_long_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key) {
     auto property = IOHIDDeviceGetProperty(device, key);
     if (!property) {
-      return false;
+      return boost::none;
     }
 
     if (CFNumberGetTypeID() != CFGetTypeID(property)) {
-      return false;
+      return boost::none;
     }
 
-    return CFNumberGetValue(static_cast<CFNumberRef>(property), kCFNumberLongType, &value);
+    long value = 0;
+    if (!CFNumberGetValue(static_cast<CFNumberRef>(property), kCFNumberLongType, &value)) {
+      return boost::none;
+    }
+
+    return value;
   }
 
-  static bool get_string_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key, std::string& value) {
+  static boost::optional<std::string> get_string_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key) {
     auto property = IOHIDDeviceGetProperty(device, key);
     if (!property) {
-      return false;
+      return boost::none;
     }
 
     if (CFStringGetTypeID() != CFGetTypeID(property)) {
-      return false;
+      return boost::none;
     }
 
+    std::string value;
     if (auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8)) {
       value = p;
-    } else {
-      value.clear();
     }
-    return true;
-  }
 
-  static long get_max_input_report_size(IOHIDDeviceRef _Nonnull device) {
-    long value = 0;
-    get_long_property(device, CFSTR(kIOHIDMaxInputReportSizeKey), value);
     return value;
   }
 
-  static long get_vendor_id(IOHIDDeviceRef _Nonnull device) {
-    long value = 0;
-    get_long_property(device, CFSTR(kIOHIDVendorIDKey), value);
-    return value;
+  static boost::optional<long> get_max_input_report_size(IOHIDDeviceRef _Nonnull device) {
+    return get_long_property(device, CFSTR(kIOHIDMaxInputReportSizeKey));
   }
 
-  static long get_product_id(IOHIDDeviceRef _Nonnull device) {
-    long value = 0;
-    get_long_property(device, CFSTR(kIOHIDProductIDKey), value);
-    return value;
+  static boost::optional<long> get_vendor_id(IOHIDDeviceRef _Nonnull device) {
+    return get_long_property(device, CFSTR(kIOHIDVendorIDKey));
   }
 
-  static long get_location_id(IOHIDDeviceRef _Nonnull device) {
-    long value = 0;
-    get_long_property(device, CFSTR(kIOHIDLocationIDKey), value);
-    return value;
+  static boost::optional<long> get_product_id(IOHIDDeviceRef _Nonnull device) {
+    return get_long_property(device, CFSTR(kIOHIDProductIDKey));
   }
 
-  static std::string get_manufacturer(IOHIDDeviceRef _Nonnull device) {
-    std::string value;
-    get_string_property(device, CFSTR(kIOHIDManufacturerKey), value);
-    return value;
+  static boost::optional<long> get_location_id(IOHIDDeviceRef _Nonnull device) {
+    return get_long_property(device, CFSTR(kIOHIDLocationIDKey));
   }
 
-  static std::string get_product(IOHIDDeviceRef _Nonnull device) {
-    std::string value;
-    get_string_property(device, CFSTR(kIOHIDProductKey), value);
-    return value;
+  static boost::optional<std::string> get_manufacturer(IOHIDDeviceRef _Nonnull device) {
+    return get_string_property(device, CFSTR(kIOHIDManufacturerKey));
   }
 
-  static std::string get_serial_number(IOHIDDeviceRef _Nonnull device) {
-    std::string value;
-    get_string_property(device, CFSTR(kIOHIDSerialNumberKey), value);
-    return value;
+  static boost::optional<std::string> get_product(IOHIDDeviceRef _Nonnull device) {
+    return get_string_property(device, CFSTR(kIOHIDProductKey));
+  }
+
+  static boost::optional<std::string> get_serial_number(IOHIDDeviceRef _Nonnull device) {
+    return get_string_property(device, CFSTR(kIOHIDSerialNumberKey));
   }
 };
