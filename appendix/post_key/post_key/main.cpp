@@ -24,6 +24,11 @@ int main(int argc, const char* argv[]) {
     for (;;) {
       std::this_thread::sleep_for(1s);
 
+      auto state = client.get_caps_lock_state();
+      if (state) {
+        std::cout << "caps lock state: " << *state << std::endl;
+      }
+
       std::cout << "mission control" << std::endl;
       client.post_key(0xa0, krbn::event_type::key_down, 0, false);
       client.post_key(0xa0, krbn::event_type::key_up, 0, false);

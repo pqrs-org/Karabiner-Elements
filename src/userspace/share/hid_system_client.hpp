@@ -1,10 +1,13 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include "iokit_utility.hpp"
 #include "service_observer.hpp"
 #include "userspace_types.hpp"
 #include <list>
 #include <memory>
+#include <boost/optional.hpp>
 
 class hid_system_client final {
 public:
@@ -85,6 +88,10 @@ public:
     post_event(NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, 0);
   }
 
+  boost::optional<bool> get_caps_lock_state(void) const {
+    return get_modifier_lock_state(kIOHIDCapsLockState);
+  }
+
 private:
   void matched_callback(io_iterator_t iterator) {
     while (auto service = IOIteratorNext(iterator)) {
@@ -151,6 +158,21 @@ private:
     if (KERN_SUCCESS != kr) {
       logger_.error("IOHIDPostEvent error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
     }
+  }
+
+  boost::optional<bool> get_modifier_lock_state(int selector) const {
+    if (! connect_) {
+      logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
+      return boost::none;
+    }
+
+    bool value;
+    auto kr = IOHIDGetModifierLockState(connect_, selector, &value);
+    if (KERN_SUCCESS != kr) {
+      logger_.error("IOHIDGetModifierLockState error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+    }
+
+    return value;
   }
 
   void close_connection(void) {
