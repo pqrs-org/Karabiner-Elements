@@ -27,6 +27,8 @@ int main(int argc, const char* argv[]) {
       auto state = client.get_caps_lock_state();
       if (state) {
         std::cout << "caps lock state: " << *state << std::endl;
+        client.set_caps_lock_state(!*state);
+        std::cout << "caps lock state toggled" << std::endl;
       }
 
       std::cout << "mission control" << std::endl;

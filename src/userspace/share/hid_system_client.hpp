@@ -5,12 +5,26 @@
 #include "iokit_utility.hpp"
 #include "service_observer.hpp"
 #include "userspace_types.hpp"
+#include <boost/optional.hpp>
 #include <list>
 #include <memory>
-#include <boost/optional.hpp>
 
 class hid_system_client final {
 public:
+  // Note:
+  // OS X shares IOHIDSystem among all input devices even the serial_number of IOHIDSystem is same with the one of the input device.
+  //
+  // Example:
+  //   The matched_callback always contains only one IOHIDSystem even if the following devices are connected.
+  //     * Apple Internal Keyboard / Track
+  //     * HHKB-BT
+  //     * org.pqrs.driver.VirtualHIDKeyboard
+  //
+  //   The IOHIDSystem object's serial_number is one of the connected devices.
+  //
+  //   But the IOHIDSystem object is shared by all input devices.
+  //   Thus, the IOHIDGetModifierLockState returns true if caps lock is on in one device.
+
   hid_system_client(spdlog::logger& logger) : logger_(logger),
                                               service_(IO_OBJECT_NULL),
                                               connect_(IO_OBJECT_NULL) {
@@ -92,6 +106,10 @@ public:
     return get_modifier_lock_state(kIOHIDCapsLockState);
   }
 
+  bool set_caps_lock_state(bool state) {
+    return set_modifier_lock_state(kIOHIDCapsLockState, state);
+  }
+
 private:
   void matched_callback(io_iterator_t iterator) {
     while (auto service = IOIteratorNext(iterator)) {
@@ -108,7 +126,7 @@ private:
           connect_ = IO_OBJECT_NULL;
         }
 
-        logger_.info("IOServiceOpen is succeeded for serial_number:{1} @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_serial_number(service_));
+        logger_.info("IOServiceOpen is succeeded @ {0}", __PRETTY_FUNCTION__);
       }
 
       IOObjectRelease(service);
@@ -120,7 +138,6 @@ private:
 
     while (auto service = IOIteratorNext(iterator)) {
       found = true;
-      logger_.info("terminated_callback for serial_number:{1} @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_serial_number(service));
       IOObjectRelease(service);
     }
 
@@ -161,7 +178,7 @@ private:
   }
 
   boost::optional<bool> get_modifier_lock_state(int selector) const {
-    if (! connect_) {
+    if (!connect_) {
       logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
       return boost::none;
     }
@@ -175,6 +192,21 @@ private:
     return value;
   }
 
+  bool set_modifier_lock_state(int selector, bool state) {
+    if (!connect_) {
+      logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
+      return false;
+    }
+
+    auto kr = IOHIDSetModifierLockState(connect_, selector, state);
+    if (KERN_SUCCESS != kr) {
+      logger_.error("IOHIDSetModifierLockState error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+      return false;
+    }
+
+    return true;
+  }
+
   void close_connection(void) {
     if (connect_) {
       auto kr = IOServiceClose(connect_);
@@ -183,6 +215,8 @@ private:
       }
       connect_ = IO_OBJECT_NULL;
     }
+
+    logger_.info("IOServiceClose is succeeded @ {0}", __PRETTY_FUNCTION__);
 
     if (service_) {
       IOObjectRelease(service_);
