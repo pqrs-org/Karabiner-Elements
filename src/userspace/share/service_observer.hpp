@@ -42,6 +42,7 @@ public:
                                                  &matched_notification_);
       if (kr != kIOReturnSuccess) {
         logger_.error("IOServiceAddMatchingNotification error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+        CFRelease(matching_dictionary);
       } else {
         matched_callback(matched_notification_);
       }
@@ -58,6 +59,7 @@ public:
                                                  &terminated_notification_);
       if (kr != kIOReturnSuccess) {
         logger_.error("IOServiceAddMatchingNotification error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+        CFRelease(matching_dictionary);
       } else {
         terminated_callback(terminated_notification_);
       }
