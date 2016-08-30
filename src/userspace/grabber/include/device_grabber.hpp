@@ -4,6 +4,7 @@
 #include "console_user_client.hpp"
 #include "constants.hpp"
 #include "hid_report.hpp"
+#include "hid_system_client.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
@@ -15,9 +16,12 @@
 
 class device_grabber final {
 public:
-  device_grabber(void) : virtual_hid_manager_client_(logger::get_logger()),
+  device_grabber(void) : hid_system_client_(logger::get_logger()),
+                         virtual_hid_manager_client_(logger::get_logger()),
                          console_user_client_() {
     logger::get_logger().info(__PRETTY_FUNCTION__);
+
+    hid_system_client_.set_caps_lock_state(false);
 
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
@@ -43,6 +47,9 @@ public:
 
   ~device_grabber(void) {
     logger::get_logger().info(__PRETTY_FUNCTION__);
+
+    hid_system_client_.set_caps_lock_state(false);
+    set_caps_lock_led_state(krbn::led_state::off);
 
     if (manager_) {
       IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
@@ -101,11 +108,8 @@ private:
                               dev->get_location_id(),
                               dev->get_serial_number_string());
 
-    if (dev->get_serial_number_string() == "org.pqrs.driver.VirtualHIDKeyboard") {
-      return;
-    }
-
     if (dev->get_manufacturer() != "pqrs.org") {
+      // seize device
       dev->grab(std::bind(&device_grabber::value_callback,
                           this,
                           std::placeholders::_1,
@@ -114,6 +118,14 @@ private:
                           std::placeholders::_4,
                           std::placeholders::_5,
                           std::placeholders::_6));
+
+      // set keyboard led
+      auto caps_lock_state = hid_system_client_.get_caps_lock_state();
+      if (caps_lock_state && *caps_lock_state) {
+        dev->set_caps_lock_led_state(krbn::led_state::on);
+      } else {
+        dev->set_caps_lock_led_state(krbn::led_state::off);
+      }
     }
   }
 
@@ -160,16 +172,6 @@ private:
                       uint32_t usage_page,
                       uint32_t usage,
                       CFIndex integer_value) {
-
-#if 0
-    std::cout << "element" << std::endl
-              << "  usage_page:0x" << std::hex << usage_page << std::endl
-              << "  usage:0x" << std::hex << usage << std::endl
-              << "  type:" << IOHIDElementGetType(element) << std::endl
-              << "  length:" << IOHIDValueGetLength(value) << std::endl
-              << "  integer_value:" << integer_value << std::endl;
-#endif
-
     switch (usage_page) {
     case kHIDPage_KeyboardOrKeypad:
       if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
@@ -305,6 +307,17 @@ private:
       if (pressed) {
         pressed_key_usages_.push_back(usage);
         console_user_client_.stop_key_repeat();
+
+        // manipulate keyboard led
+        if (usage == kHIDUsage_KeyboardCapsLock) {
+          auto state = hid_system_client_.get_caps_lock_state();
+          if (!state || *state) {
+            set_caps_lock_led_state(krbn::led_state::off);
+          } else {
+            set_caps_lock_led_state(krbn::led_state::on);
+          }
+        }
+
       } else {
         pressed_key_usages_.remove(usage);
       }
@@ -341,13 +354,18 @@ private:
   size_t get_all_devices_pressed_keys_count(void) const {
     size_t total = 0;
     for (const auto& it : hids_) {
-      if (it.second) {
-        total += (it.second)->get_pressed_keys_count();
-      }
+      total += (it.second)->get_pressed_keys_count();
     }
     return total;
   }
 
+  void set_caps_lock_led_state(krbn::led_state state) {
+    for (const auto& it : hids_) {
+      (it.second)->set_caps_lock_led_state(state);
+    }
+  }
+
+  hid_system_client hid_system_client_;
   virtual_hid_manager_client virtual_hid_manager_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;

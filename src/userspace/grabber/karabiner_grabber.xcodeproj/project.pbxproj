@@ -37,6 +37,7 @@
 		345AC0041D62163F009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9B71D7573EC0055988F /* virtual_hid_manager_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_client.hpp; path = include/virtual_hid_manager_client.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9B81D7574520055988F /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9B91D757E5D0055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A871D6840C200DD480B /* console_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = console_user_client.hpp; path = include/console_user_client.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A891D6840C200DD480B /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = SOURCE_ROOT; };
@@ -103,6 +104,7 @@
 				345AC0041D62163F009D1FB4 /* boost_defs.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
 				3446AA8D1D49A41100337B36 /* hid_report.hpp */,
+				3492C9B91D757E5D0055988F /* hid_system_client.hpp */,
 				34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */,
 				341F59DC1D5778A000B441A8 /* iokit_utility.hpp */,
 				34A88A941D68446C00DD480B /* karabiner_version.h */,
