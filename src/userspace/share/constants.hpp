@@ -1,6 +1,8 @@
 #pragma once
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <cstdlib>
+#include <string>
 
 class constants final {
 public:
@@ -18,6 +20,20 @@ public:
 
   static const char* get_console_user_socket_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_console_user/receiver";
+  }
+
+  static const char* get_home_dot_karabiner_directory(void) {
+    static std::string directory;
+    if (auto p = std::getenv("HOME")) {
+      directory = p;
+      directory += "/.karabiner.d";
+    }
+
+    if (directory.empty()) {
+      return nullptr;
+    } else {
+      return directory.c_str();
+    }
   }
 
   static CFStringRef get_distributed_notification_observed_object(void) {
