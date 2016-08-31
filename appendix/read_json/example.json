@@ -1,0 +1,24 @@
+{
+    "profiles": [
+        {
+            "name": "Default profile",
+            "selected": true,
+            "simple_modifications": [
+                {
+                    "from": "caps lock",
+                    "to": "delete"
+                },
+                {
+                    "from": "escape",
+                    "to": "space"
+                }
+            ]
+        },
+        {
+            "name": "Empty",
+            "selected": false,
+            "simple_modifications": [
+            ]
+        }
+    ]
+}
