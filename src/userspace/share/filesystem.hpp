@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <sys/stat.h>
+
 class filesystem {
 public:
   static bool is_directory(const std::string& path) {
