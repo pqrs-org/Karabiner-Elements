@@ -293,7 +293,7 @@ private:
     }
 
     // ----------------------------------------
-    // send input events to virtual devices.
+    // Send input events to virtual devices.
     if (handle_modifier_flag_event(key_code, pressed)) {
       console_user_client_.stop_key_repeat();
       return;
@@ -304,25 +304,32 @@ private:
 
     if (static_cast<uint32_t>(key_code) < kHIDUsage_Keyboard_Reserved) {
       auto usage = static_cast<uint32_t>(key_code);
-      if (pressed) {
-        pressed_key_usages_.push_back(usage);
-        console_user_client_.stop_key_repeat();
 
-        // manipulate keyboard led
-        if (usage == kHIDUsage_KeyboardCapsLock) {
+      if (usage == kHIDUsage_KeyboardCapsLock) {
+        // We have to handle caps lock state manually since the VirtualHIDKeyboard might drop caps lock event if the caps lock delay is enabled.
+        // (The drop causes a contradiction of real caps lock state and led state.)
+        if (pressed) {
           auto state = hid_system_client_.get_caps_lock_state();
           if (!state || *state) {
             set_caps_lock_led_state(krbn::led_state::off);
+            hid_system_client_.set_caps_lock_state(false);
           } else {
             set_caps_lock_led_state(krbn::led_state::on);
+            hid_system_client_.set_caps_lock_state(true);
           }
         }
 
       } else {
-        pressed_key_usages_.remove(usage);
-      }
+        // Normal keys
+        if (pressed) {
+          pressed_key_usages_.push_back(usage);
+          console_user_client_.stop_key_repeat();
+        } else {
+          pressed_key_usages_.remove(usage);
+        }
 
-      send_keyboard_input_report();
+        send_keyboard_input_report();
+      }
     }
   }
 
