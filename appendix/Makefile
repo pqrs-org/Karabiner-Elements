@@ -4,6 +4,8 @@ all:
 	$(MAKE) -C dump_hid_value
 	$(MAKE) -C dump_system_preferences
 	$(MAKE) -C eventtap
+	$(MAKE) -C post_key
+	$(MAKE) -C read_json
 
 clean:
 	$(MAKE) -C control_led clean
@@ -11,3 +13,5 @@ clean:
 	$(MAKE) -C dump_hid_value clean
 	$(MAKE) -C dump_system_preferences clean
 	$(MAKE) -C eventtap clean
+	$(MAKE) -C post_key clean
+	$(MAKE) -C read_json clean
