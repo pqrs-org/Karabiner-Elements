@@ -3,7 +3,7 @@
 #include <string>
 #include <sys/stat.h>
 
-class filesystem {
+class filesystem final {
 public:
   static bool is_directory(const std::string& path) {
     struct stat s;

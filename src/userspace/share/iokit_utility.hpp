@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-class iokit_utility {
+class iokit_utility final {
 public:
   static boost::optional<uint64_t> get_registry_entry_id(io_registry_entry_t registry_entry) {
     // Note:

@@ -83,7 +83,7 @@ enum class led_state : uint32_t {
   off,
 };
 
-class types {
+class types final {
 public:
   static modifier_flag get_modifier_flag(key_code key_code) {
     switch (static_cast<uint32_t>(key_code)) {
