@@ -1,6 +1,6 @@
 #pragma once
 
-class ServiceDetector {
+class ServiceDetector final {
 public:
   ServiceDetector(void) : matchedNotifier_(nullptr),
                           terminatedNotifier_(nullptr),

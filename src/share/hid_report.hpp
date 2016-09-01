@@ -3,9 +3,9 @@
 // Do not use <cstring> for kext
 #include <string.h>
 
-class hid_report {
+class hid_report final {
 public:
-  class __attribute__((packed)) keyboard_input {
+  class __attribute__((packed)) keyboard_input final {
   public:
     keyboard_input(void) : modifiers(0), reserved(0), keys{0} {}
     bool operator==(const hid_report::keyboard_input& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
@@ -16,7 +16,7 @@ public:
     uint8_t keys[6];
   };
 
-  class __attribute__((packed)) pointing_input {
+  class __attribute__((packed)) pointing_input final {
   public:
     pointing_input(void) : buttons{0}, x(0), y(0), vertical_wheel(0), horizontal_wheel(0) {}
 

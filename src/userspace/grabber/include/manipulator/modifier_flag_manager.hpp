@@ -1,6 +1,6 @@
 #pragma once
 
-class modifier_flag_manager {
+class modifier_flag_manager final {
 public:
   modifier_flag_manager(void) {
     states_.resize(static_cast<size_t>(krbn::modifier_flag::prepared_modifier_flag_end_));
@@ -121,7 +121,7 @@ public:
   }
 
 private:
-  class state {
+  class state final {
   public:
     state(const std::string& name, const std::string& symbol) : name_(name),
                                                                 symbol_(symbol),

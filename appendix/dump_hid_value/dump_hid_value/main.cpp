@@ -15,7 +15,7 @@
 #include <iostream>
 #include <mach/mach_time.h>
 
-class logger {
+class logger final {
 public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
@@ -26,7 +26,7 @@ public:
   }
 };
 
-class dump_hid_value {
+class dump_hid_value final {
 public:
   dump_hid_value(void) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);

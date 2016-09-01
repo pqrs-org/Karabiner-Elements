@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-class manipulator {
+class manipulator final {
 public:
   enum class manipulator_type : uint32_t {
     keytokey,

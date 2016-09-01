@@ -6,7 +6,7 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-class logger {
+class logger final {
 public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
