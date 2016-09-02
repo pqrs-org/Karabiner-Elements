@@ -5,20 +5,36 @@
             "selected": true,
             "simple_modifications": [
                 {
-                    "from": "caps lock",
+                    "from": "caps_lock",
                     "to": "delete"
                 },
                 {
                     "from": "escape",
                     "to": "space"
                 }
-            ]
+            ],
+            "fn_function_keys": {
+                "f1": "consumer_brightness_down",
+                "f2": "consumer_brightness_up",
+                "f3": "mission_control",
+                "f4": "launchpad",
+                "f5": "consumer_illumination_down",
+                "f6": "consumer_illumination_up";
+                "f7": "consumer_previous",
+                "f8": "consumer_play",
+                "f9": "consumer_next",
+                "f10": "consumer_mute",
+                "f11": "consumer_sound_down",
+                "f12": "consumer_sound_up"
+            },
         },
         {
             "name": "Empty",
             "selected": false,
             "simple_modifications": [
-            ]
+            ],
+            "fn_function_keys": {
+            }
         }
     ]
 }

@@ -1,11 +1,4 @@
-#include "boost_defs.hpp"
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#include <boost/property_tree/json_parser.hpp>
-#pragma clang diagnostic pop
-
+#include "configuration_core.hpp"
 #include <iostream>
 #include <spdlog/spdlog.h>
 
@@ -21,18 +14,6 @@ public:
 };
 
 int main(int argc, const char* argv[]) {
-  boost::property_tree::ptree pt;
-  boost::property_tree::read_json("example.json", pt);
-
-  for (const auto& it : pt.get_child("profiles")) {
-    logger::get_logger().info("profile");
-
-    auto& profile = it.second;
-
-    if (auto name = profile.get_optional<std::string>("name")) {
-      logger::get_logger().info("name {0}", *name);
-    }
-  }
-
+  configuration_core configuration(logger::get_logger());
   return 0;
 }

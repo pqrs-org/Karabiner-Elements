@@ -28,6 +28,8 @@
 		344149111D212A1600C8ECFC /* read_json */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = read_json; sourceTree = BUILT_PRODUCTS_DIR; };
 		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3492C9BA1D763E8B0055988F /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../../src/userspace/share/boost_defs.hpp; sourceTree = "<group>"; };
+		3492C9BD1D78283D0055988F /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../../src/userspace/share/constants.hpp; sourceTree = "<group>"; };
+		3492C9BE1D7828480055988F /* configuration_core.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_core.hpp; path = ../../../src/userspace/share/configuration_core.hpp; sourceTree = "<group>"; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -75,6 +77,8 @@
 			isa = PBXGroup;
 			children = (
 				3492C9BA1D763E8B0055988F /* boost_defs.hpp */,
+				3492C9BE1D7828480055988F /* configuration_core.hpp */,
+				3492C9BD1D78283D0055988F /* constants.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
