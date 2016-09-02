@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "userspace_types.hpp"
 #include "json/json.hpp"
 #include <fstream>
 #include <spdlog/spdlog.h>

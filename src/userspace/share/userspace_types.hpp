@@ -1,9 +1,14 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
+#include <boost/optional.hpp>
+#include <string>
+#include <unordered_map>
 
 namespace krbn {
 enum class operation_type : uint8_t {
@@ -108,6 +113,25 @@ public:
     default:
       return modifier_flag::zero;
     }
+  }
+
+  static const std::unordered_map<std::string, key_code>& get_key_code_map(void) {
+    static std::unordered_map<std::string, key_code> map;
+    if (map.empty()) {
+      map["escape"] = key_code(kHIDUsage_KeyboardEscape);
+      map["delete"] = key_code(kHIDUsage_KeyboardDeleteOrBackspace);
+      map["caps_lock"] = key_code(kHIDUsage_KeyboardCapsLock);
+    }
+    return map;
+  }
+
+  static boost::optional<key_code> get_key_code(const std::string& name) {
+    auto& map = get_key_code_map();
+    auto it = map.find(name);
+    if (it == map.end()) {
+      return boost::none;
+    }
+    return it->second;
   }
 };
 

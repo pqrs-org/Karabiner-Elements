@@ -15,5 +15,10 @@ public:
 
 int main(int argc, const char* argv[]) {
   configuration_core configuration(logger::get_logger());
+
+  if (auto k = krbn::types::get_key_code("caps_lock")) {
+    logger::get_logger().info("caps_lock {0}", static_cast<uint32_t>(*k));
+  }
+
   return 0;
 }
