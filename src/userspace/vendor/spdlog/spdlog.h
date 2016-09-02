@@ -42,6 +42,11 @@ void set_formatter(formatter_ptr f);
 void set_level(level::level_enum log_level);
 
 //
+// Set global error handler
+//
+void set_error_handler(log_err_handler);
+
+//
 // Turn on async mode (off by default) and set the queue size for each async_logger.
 // effective only for loggers created after this call.
 // queue_size: size of queue (must be power of 2):
@@ -66,8 +71,8 @@ void set_sync_mode();
 //
 // Create and register multi/single basic file logger
 //
-std::shared_ptr<logger> basic_logger_mt(const std::string& logger_name, const filename_t& filename,bool force_flush = false);
-std::shared_ptr<logger> basic_logger_st(const std::string& logger_name, const filename_t& filename, bool force_flush = false);
+std::shared_ptr<logger> basic_logger_mt(const std::string& logger_name, const filename_t& filename,bool force_flush = false, bool truncate = false);
+std::shared_ptr<logger> basic_logger_st(const std::string& logger_name, const filename_t& filename, bool force_flush = false, bool truncate = false);
 
 //
 // Create and register multi/single threaded rotating file logger
@@ -93,7 +98,7 @@ std::shared_ptr<logger> stderr_logger_st(const std::string& logger_name, bool co
 //
 // Create and register a syslog logger
 //
-#if defined(__linux__) || defined(__APPLE__)
+#ifdef SPDLOG_ENABLE_SYSLOG
 std::shared_ptr<logger> syslog_logger(const std::string& logger_name, const std::string& ident = "", int syslog_option = 0);
 #endif
 
@@ -108,7 +113,8 @@ std::shared_ptr<logger> create(const std::string& logger_name, const It& sinks_b
 
 
 // Create and register a logger with templated sink type
-// Example: spdlog::create<daily_file_sink_st>("mylog", "dailylog_filename", "txt");
+// Example:
+// spdlog::create<daily_file_sink_st>("mylog", "dailylog_filename", "txt");
 template <typename Sink, typename... Args>
 std::shared_ptr<spdlog::logger> create(const std::string& logger_name, Args...);
 
@@ -116,10 +122,15 @@ std::shared_ptr<spdlog::logger> create(const std::string& logger_name, Args...);
 // Register the given logger with the given name
 void register_logger(std::shared_ptr<logger> logger);
 
+// Apply a user defined function on all registered loggers
+// Example:
+// spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) {l->flush();});
+void apply_all(std::function<void(std::shared_ptr<logger>)> fun);
+
 // Drop the reference to the given logger
 void drop(const std::string &name);
 
-// Drop all references
+// Drop all references from the registry
 void drop_all();
 
 

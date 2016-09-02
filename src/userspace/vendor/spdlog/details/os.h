@@ -38,8 +38,10 @@
 #include <unistd.h>
 #include <chrono>
 
-#else
+#elif __FreeBSD__
+#include <sys/thr.h> //Use thr_self() syscall under FreeBSD to get thread id
 
+#else
 #include <thread>
 
 #endif
@@ -192,35 +194,35 @@ inline bool file_exists(const filename_t& filename)
 //Return file size according to open FILE* object
 inline size_t filesize(FILE *f)
 {
-	if (f == nullptr)
-		throw spdlog_ex("Failed getting file size. fd is null");
+    if (f == nullptr)
+        throw spdlog_ex("Failed getting file size. fd is null");
 #ifdef _WIN32
-	int fd = _fileno(f);
-#if _WIN64 //64 bits		
-	struct _stat64 st;	
-	if (_fstat64(fd, &st) == 0)
-		return st.st_size;
-			
-#else //windows 32 bits		
-	struct _stat st;
-	if (_fstat(fd, &st) == 0)
-		return st.st_size;
+    int fd = _fileno(f);
+#if _WIN64 //64 bits
+    struct _stat64 st;
+    if (_fstat64(fd, &st) == 0)
+        return st.st_size;
+
+#else //windows 32 bits
+    struct _stat st;
+    if (_fstat(fd, &st) == 0)
+        return st.st_size;
 #endif
 
 #else // unix
-	int fd = fileno(f);
-	//64 bits(but not in osx, where fstat64 is deprecated)
-	#if !defined(__FreeBSD__) && !defined(__APPLE__) && (defined(__x86_64__) || defined(__ppc64__))
-	struct stat64 st;
-	if (fstat64(fd, &st) == 0)
-		return st.st_size;	
-#else // unix 32 bits or osx	
-	struct stat st;
-	if (fstat(fd, &st) == 0)
-		return st.st_size;	
+    int fd = fileno(f);
+    //64 bits(but not in osx, where fstat64 is deprecated)
+#if !defined(__FreeBSD__) && !defined(__APPLE__) && (defined(__x86_64__) || defined(__ppc64__))
+    struct stat64 st;
+    if (fstat64(fd, &st) == 0)
+        return st.st_size;
+#else // unix 32 bits or osx
+    struct stat st;
+    if (fstat(fd, &st) == 0)
+        return st.st_size;
 #endif
 #endif
-	throw spdlog_ex("Failed getting file size from fd", errno);
+    throw spdlog_ex("Failed getting file size from fd", errno);
 }
 
 
@@ -248,7 +250,43 @@ inline int utc_minutes_offset(const std::tm& tm = details::os::localtime())
         offset -= tzinfo.StandardBias;
     return offset;
 #else
-    return static_cast<int>(tm.tm_gmtoff / 60);
+
+#if defined(sun) || defined(__sun)
+    // 'tm_gmtoff' field is BSD extension and it's missing on SunOS/Solaris
+    struct helper
+    {
+        static long int calculate_gmt_offset(const std::tm & localtm = details::os::localtime(), const std::tm & gmtm = details::os::gmtime())
+        {
+            int local_year = localtm.tm_year + (1900 - 1);
+            int gmt_year = gmtm.tm_year + (1900 - 1);
+
+            long int days = (
+                                // difference in day of year
+                                localtm.tm_yday - gmtm.tm_yday
+
+                                // + intervening leap days
+                                + ((local_year >> 2) - (gmt_year >> 2))
+                                - (local_year / 100 - gmt_year / 100)
+                                + ((local_year / 100 >> 2) - (gmt_year / 100 >> 2))
+
+                                // + difference in years * 365 */
+                                + (long int)(local_year - gmt_year) * 365
+                            );
+
+            long int hours = (24 * days) + (localtm.tm_hour - gmtm.tm_hour);
+            long int mins = (60 * hours) + (localtm.tm_min - gmtm.tm_min);
+            long int secs = (60 * mins) + (localtm.tm_sec - gmtm.tm_sec);
+
+            return secs;
+        }
+    };
+
+    long int offset_seconds = helper::calculate_gmt_offset(tm);
+#else
+    long int offset_seconds = tm.tm_gmtoff;
+#endif
+
+    return static_cast<int>(offset_seconds / 60);
 #endif
 }
 
@@ -263,9 +301,14 @@ inline size_t thread_id()
 #  define SYS_gettid __NR_gettid
 # endif
     return  static_cast<size_t>(syscall(SYS_gettid));
+#elif __FreeBSD__
+    long tid;
+    thr_self(&tid);
+    return static_cast<size_t>(tid);
 #else //Default to standard C++11 (OSX and other Unix)
     return static_cast<size_t>(std::hash<std::thread::id>()(std::this_thread::get_id()));
 #endif
+
 
 }
 

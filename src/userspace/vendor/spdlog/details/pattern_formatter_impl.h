@@ -26,7 +26,8 @@ namespace details
 class flag_formatter
 {
 public:
-    virtual ~flag_formatter() {}
+    virtual ~flag_formatter()
+    {}
     virtual void format(details::log_msg& msg, const std::tm& tm_time) = 0;
 };
 
@@ -35,7 +36,7 @@ public:
 ///////////////////////////////////////////////////////////////////////
 namespace
 {
-class name_formatter :public flag_formatter
+class name_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm&) override
     {
@@ -45,7 +46,7 @@ class name_formatter :public flag_formatter
 }
 
 // log level appender
-class level_formatter :public flag_formatter
+class level_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm&) override
     {
@@ -54,7 +55,7 @@ class level_formatter :public flag_formatter
 };
 
 // short log level appender
-class short_level_formatter :public flag_formatter
+class short_level_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm&) override
     {
@@ -78,7 +79,7 @@ static int to12h(const tm& t)
 
 //Abbreviated weekday name
 static const std::string days[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-class a_formatter :public flag_formatter
+class a_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -88,7 +89,7 @@ class a_formatter :public flag_formatter
 
 //Full weekday name
 static const std::string full_days[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-class A_formatter :public flag_formatter
+class A_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -98,17 +99,17 @@ class A_formatter :public flag_formatter
 
 //Abbreviated month
 static const std::string  months[] { "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec" };
-class b_formatter :public flag_formatter
+class b_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
-        msg.formatted<< months[tm_time.tm_mon];
+        msg.formatted << months[tm_time.tm_mon];
     }
 };
 
 //Full month name
 static const std::string full_months[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
-class B_formatter :public flag_formatter
+class B_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -133,7 +134,7 @@ static fmt::MemoryWriter& pad_n_join(fmt::MemoryWriter& w, int v1, int v2, int v
 
 
 //Date and time representation (Thu Aug 23 15:35:46 2014)
-class c_formatter :public flag_formatter
+class c_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -144,7 +145,7 @@ class c_formatter :public flag_formatter
 
 
 // year - 2 digit
-class C_formatter :public flag_formatter
+class C_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -155,7 +156,7 @@ class C_formatter :public flag_formatter
 
 
 // Short MM/DD/YY date, equivalent to %m/%d/%y 08/23/01
-class D_formatter :public flag_formatter
+class D_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -165,7 +166,7 @@ class D_formatter :public flag_formatter
 
 
 // year - 4 digit
-class Y_formatter :public flag_formatter
+class Y_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -174,7 +175,7 @@ class Y_formatter :public flag_formatter
 };
 
 // month 1-12
-class m_formatter :public flag_formatter
+class m_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -183,7 +184,7 @@ class m_formatter :public flag_formatter
 };
 
 // day of month 1-31
-class d_formatter :public flag_formatter
+class d_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -192,7 +193,7 @@ class d_formatter :public flag_formatter
 };
 
 // hours in 24 format  0-23
-class H_formatter :public flag_formatter
+class H_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -201,7 +202,7 @@ class H_formatter :public flag_formatter
 };
 
 // hours in 12 format  1-12
-class I_formatter :public flag_formatter
+class I_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -210,7 +211,7 @@ class I_formatter :public flag_formatter
 };
 
 // minutes 0-59
-class M_formatter :public flag_formatter
+class M_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -219,7 +220,7 @@ class M_formatter :public flag_formatter
 };
 
 // seconds 0-59
-class S_formatter :public flag_formatter
+class S_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -228,7 +229,7 @@ class S_formatter :public flag_formatter
 };
 
 // milliseconds
-class e_formatter :public flag_formatter
+class e_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm&) override
     {
@@ -239,7 +240,7 @@ class e_formatter :public flag_formatter
 };
 
 // microseconds
-class f_formatter :public flag_formatter
+class f_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm&) override
     {
@@ -250,7 +251,7 @@ class f_formatter :public flag_formatter
 };
 
 // nanoseconds
-class F_formatter :public flag_formatter
+class F_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm&) override
     {
@@ -261,7 +262,7 @@ class F_formatter :public flag_formatter
 };
 
 // AM/PM
-class p_formatter :public flag_formatter
+class p_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -271,7 +272,7 @@ class p_formatter :public flag_formatter
 
 
 // 12 hour clock 02:55:02 pm
-class r_formatter :public flag_formatter
+class r_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -280,7 +281,7 @@ class r_formatter :public flag_formatter
 };
 
 // 24-hour HH:MM time, equivalent to %H:%M
-class R_formatter :public flag_formatter
+class R_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -289,7 +290,7 @@ class R_formatter :public flag_formatter
 };
 
 // ISO 8601 time format (HH:MM:SS), equivalent to %H:%M:%S
-class T_formatter :public flag_formatter
+class T_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -299,12 +300,13 @@ class T_formatter :public flag_formatter
 
 
 // ISO 8601 offset from UTC in timezone (+-HH:MM)
-class z_formatter :public flag_formatter
+class z_formatter:public flag_formatter
 {
 public:
     const std::chrono::seconds cache_refresh = std::chrono::seconds(5);
 
-    z_formatter() :_last_update(std::chrono::seconds(0)) {}
+    z_formatter():_last_update(std::chrono::seconds(0))
+    {}
     z_formatter(const z_formatter&) = delete;
     z_formatter& operator=(const z_formatter&) = delete;
 
@@ -317,13 +319,21 @@ public:
         // it is very fast (already stored in tm.tm_gmtoff)
         int total_minutes = os::utc_minutes_offset(tm_time);
 #endif
+        bool is_negative = total_minutes < 0;
+        char sign;
+        if (is_negative)
+        {
+            total_minutes = -total_minutes;
+            sign = '-';
+        }
+        else
+        {
+            sign = '+';
+        }
 
         int h = total_minutes / 60;
         int m = total_minutes % 60;
-        if (h >= 0) //minus sign will be printed anyway if negative
-        {
-            msg.formatted << '+';
-        }
+        msg.formatted << sign;
         pad_n_join(msg.formatted, h, m, ':');
     }
 private:
@@ -347,7 +357,7 @@ private:
 
 
 //Thread id
-class t_formatter :public flag_formatter
+class t_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm&) override
     {
@@ -356,7 +366,7 @@ class t_formatter :public flag_formatter
 };
 
 
-class v_formatter :public flag_formatter
+class v_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm&) override
     {
@@ -364,10 +374,10 @@ class v_formatter :public flag_formatter
     }
 };
 
-class ch_formatter :public flag_formatter
+class ch_formatter:public flag_formatter
 {
 public:
-    explicit ch_formatter(char ch) : _ch(ch)
+    explicit ch_formatter(char ch): _ch(ch)
     {}
     void format(details::log_msg& msg, const std::tm&) override
     {
@@ -379,7 +389,7 @@ private:
 
 
 //aggregate user chars to display as is
-class aggregate_formatter :public flag_formatter
+class aggregate_formatter:public flag_formatter
 {
 public:
     aggregate_formatter()
@@ -398,7 +408,7 @@ private:
 
 // Full info formatter
 // pattern: [%Y-%m-%d %H:%M:%S.%e] [%n] [%l] %v
-class full_formatter :public flag_formatter
+class full_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
@@ -429,7 +439,7 @@ class full_formatter :public flag_formatter
                       << fmt::pad(static_cast<unsigned int>(tm_time.tm_sec), 2, '0') << '.'
                       << fmt::pad(static_cast<unsigned int>(millis), 3, '0') << "] ";
 
-//no datetime needed
+        //no datetime needed
 #else
         (void)tm_time;
 #endif
@@ -499,101 +509,101 @@ inline void spdlog::pattern_formatter::handle_flag(char flag)
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::short_level_formatter()));
         break;
 
-    case('t') :
+    case('t'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::t_formatter()));
         break;
 
-    case('v') :
+    case('v'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::v_formatter()));
         break;
 
-    case('a') :
+    case('a'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::a_formatter()));
         break;
 
-    case('A') :
+    case('A'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::A_formatter()));
         break;
 
-    case('b') :
-    case('h') :
+    case('b'):
+    case('h'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::b_formatter()));
         break;
 
-    case('B') :
+    case('B'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::B_formatter()));
         break;
-    case('c') :
+    case('c'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::c_formatter()));
         break;
 
-    case('C') :
+    case('C'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::C_formatter()));
         break;
 
-    case('Y') :
+    case('Y'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::Y_formatter()));
         break;
 
-    case('D') :
-    case('x') :
+    case('D'):
+    case('x'):
 
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::D_formatter()));
         break;
 
-    case('m') :
+    case('m'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::m_formatter()));
         break;
 
-    case('d') :
+    case('d'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::d_formatter()));
         break;
 
-    case('H') :
+    case('H'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::H_formatter()));
         break;
 
-    case('I') :
+    case('I'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::I_formatter()));
         break;
 
-    case('M') :
+    case('M'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::M_formatter()));
         break;
 
-    case('S') :
+    case('S'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::S_formatter()));
         break;
 
-    case('e') :
+    case('e'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::e_formatter()));
         break;
 
-    case('f') :
+    case('f'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::f_formatter()));
         break;
-    case('F') :
+    case('F'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::F_formatter()));
         break;
 
-    case('p') :
+    case('p'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::p_formatter()));
         break;
 
-    case('r') :
+    case('r'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::r_formatter()));
         break;
 
-    case('R') :
+    case('R'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::R_formatter()));
         break;
 
-    case('T') :
-    case('X') :
+    case('T'):
+    case('X'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::T_formatter()));
         break;
 
-    case('z') :
+    case('z'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::z_formatter()));
         break;
 
@@ -611,22 +621,16 @@ inline void spdlog::pattern_formatter::handle_flag(char flag)
 
 inline void spdlog::pattern_formatter::format(details::log_msg& msg)
 {
-    try
-    {
+
 #ifndef SPDLOG_NO_DATETIME
-        auto tm_time = details::os::localtime(log_clock::to_time_t(msg.time));
+    auto tm_time = details::os::localtime(log_clock::to_time_t(msg.time));
 #else
-        std::tm tm_time;
+    std::tm tm_time;
 #endif
-        for (auto &f : _formatters)
-        {
-            f->format(msg, tm_time);
-        }
-        //write eol
-        msg.formatted.write(details::os::eol, details::os::eol_size);
-    }
-    catch(const fmt::FormatError& e)
+    for (auto &f : _formatters)
     {
-        throw spdlog_ex(fmt::format("formatting error while processing format string: {}", e.what()));
+        f->format(msg, tm_time);
     }
+    //write eol
+    msg.formatted.write(details::os::eol, details::os::eol_size);
 }
