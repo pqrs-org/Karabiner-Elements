@@ -218,18 +218,8 @@ private:
   bool handle_function_key_event(krbn::key_code key_code, bool pressed) {
     auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
 
-    if (krbn::key_code::vk_f1 <= key_code && key_code <= krbn::key_code::vk_f12) {
-      auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(krbn::key_code::vk_f1);
-      console_user_client_.post_key(krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_f1) + i),
-                                    event_type,
-                                    modifier_flag_manager_.get_io_option_bits());
-      return true;
-    }
-    if (krbn::key_code::vk_fn_f1 <= key_code && key_code <= krbn::key_code::vk_fn_f12) {
-      auto i = static_cast<uint32_t>(key_code) - static_cast<uint32_t>(krbn::key_code::vk_fn_f1);
-      console_user_client_.post_key(krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_fn_f1) + i),
-                                    event_type,
-                                    modifier_flag_manager_.get_io_option_bits());
+    if (krbn::key_code::vk_function_keys_start_ <= key_code && key_code <= krbn::key_code::vk_function_keys_end_) {
+      console_user_client_.post_key(key_code, event_type, modifier_flag_manager_.get_io_option_bits());
       return true;
     }
 

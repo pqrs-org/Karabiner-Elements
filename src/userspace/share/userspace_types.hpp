@@ -32,6 +32,18 @@ enum class event_type : uint32_t {
 
 enum class key_code : uint32_t {
   // 0x00 - 0xff is usage page
+  f1 = kHIDUsage_KeyboardF1,
+  f2 = kHIDUsage_KeyboardF2,
+  f3 = kHIDUsage_KeyboardF3,
+  f4 = kHIDUsage_KeyboardF4,
+  f5 = kHIDUsage_KeyboardF5,
+  f6 = kHIDUsage_KeyboardF6,
+  f7 = kHIDUsage_KeyboardF7,
+  f8 = kHIDUsage_KeyboardF8,
+  f9 = kHIDUsage_KeyboardF9,
+  f10 = kHIDUsage_KeyboardF10,
+  f11 = kHIDUsage_KeyboardF11,
+  f12 = kHIDUsage_KeyboardF12,
 
   extra_ = 0x1000,
   // static virtual key codes
@@ -40,6 +52,7 @@ enum class key_code : uint32_t {
   vk_fn_modifier = 0x1002,
 
   // virtual key codes
+  vk_function_keys_start_,
   vk_f1,
   vk_f2,
   vk_f3,
@@ -64,6 +77,20 @@ enum class key_code : uint32_t {
   vk_fn_f10,
   vk_fn_f11,
   vk_fn_f12,
+  vk_consumer_brightness_down,
+  vk_consumer_brightness_up,
+  vk_consumer_illumination_down,
+  vk_consumer_illumination_up,
+  vk_consumer_mute,
+  vk_consumer_next,
+  vk_consumer_play,
+  vk_consumer_previous,
+  vk_consumer_sound_down,
+  vk_consumer_sound_up,
+  vk_dashboard,
+  vk_launchpad,
+  vk_mission_control,
+  vk_function_keys_end_,
 };
 
 enum class pointing_button : uint32_t {

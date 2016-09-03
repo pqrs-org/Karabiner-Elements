@@ -16,26 +16,26 @@
 //             "simple_modifications": [
 //                 {
 //                     "from": "caps_lock",
-//                     "to": "delete"
+//                     "to": "delete_or_backspace"
 //                 },
 //                 {
 //                     "from": "escape",
-//                     "to": "space"
+//                     "to": "spacebar"
 //                 }
 //             ],
 //             "fn_function_keys": {
-//                 "f1": "consumer_brightness_down",
-//                 "f2": "consumer_brightness_up",
-//                 "f3": "mission_control",
-//                 "f4": "launchpad",
-//                 "f5": "consumer_illumination_down",
-//                 "f6": "consumer_illumination_up";
-//                 "f7": "consumer_previous",
-//                 "f8": "consumer_play",
-//                 "f9": "consumer_next",
-//                 "f10": "consumer_mute",
-//                 "f11": "consumer_sound_down",
-//                 "f12": "consumer_sound_up"
+//                 "f1":  "vk_consumer_brightness_down",
+//                 "f2":  "vk_consumer_brightness_up",
+//                 "f3":  "vk_mission_control",
+//                 "f4":  "vk_launchpad",
+//                 "f5":  "vk_consumer_illumination_down",
+//                 "f6":  "vk_consumer_illumination_up";
+//                 "f7":  "vk_consumer_previous",
+//                 "f8":  "vk_consumer_play",
+//                 "f9":  "vk_consumer_next",
+//                 "f10": "vk_consumer_mute",
+//                 "f11": "vk_consumer_sound_down",
+//                 "f12": "vk_consumer_sound_up"
 //             },
 //         },
 //         {
