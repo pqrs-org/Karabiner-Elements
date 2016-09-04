@@ -322,6 +322,19 @@ public:
 
           // Extra
           {"fn", key_code::vk_fn_modifier},
+          {"vk_consumer_brightness_down", key_code::vk_consumer_brightness_down},
+          {"vk_consumer_brightness_up", key_code::vk_consumer_brightness_up},
+          {"vk_consumer_illumination_down", key_code::vk_consumer_illumination_down},
+          {"vk_consumer_illumination_up", key_code::vk_consumer_illumination_up},
+          {"vk_consumer_mute", key_code::vk_consumer_mute},
+          {"vk_consumer_next", key_code::vk_consumer_next},
+          {"vk_consumer_play", key_code::vk_consumer_play},
+          {"vk_consumer_previous", key_code::vk_consumer_previous},
+          {"vk_consumer_sound_down", key_code::vk_consumer_sound_down},
+          {"vk_consumer_sound_up", key_code::vk_consumer_sound_up},
+          {"vk_dashboard", key_code::vk_dashboard},
+          {"vk_launchpad", key_code::vk_launchpad},
+          {"vk_mission_control", key_code::vk_mission_control},
       };
       for (const auto& pair : pairs) {
         if (map.find(pair.first) != map.end()) {
