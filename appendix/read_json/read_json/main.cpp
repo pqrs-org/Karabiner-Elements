@@ -14,10 +14,32 @@ public:
 };
 
 int main(int argc, const char* argv[]) {
-  configuration_core configuration(logger::get_logger());
+  {
+    configuration_core configuration(logger::get_logger(), "json/example.json");
 
-  if (auto k = krbn::types::get_key_code("caps_lock")) {
-    logger::get_logger().info("caps_lock {0}", static_cast<uint32_t>(*k));
+    for (const auto& it : configuration.get_current_profile_simple_modifications()) {
+      logger::get_logger().info("from:{0} to:{1}",
+                                static_cast<uint32_t>(it.first),
+                                static_cast<uint32_t>(it.second));
+    }
+  }
+  {
+    configuration_core configuration(logger::get_logger(), "json/broken.json");
+
+    for (const auto& it : configuration.get_current_profile_simple_modifications()) {
+      logger::get_logger().info("from:{0} to:{1}",
+                                static_cast<uint32_t>(it.first),
+                                static_cast<uint32_t>(it.second));
+    }
+  }
+  {
+    configuration_core configuration(logger::get_logger(), "json/invalid_key_code_name.json");
+
+    for (const auto& it : configuration.get_current_profile_simple_modifications()) {
+      logger::get_logger().info("from:{0} to:{1}",
+                                static_cast<uint32_t>(it.first),
+                                static_cast<uint32_t>(it.second));
+    }
   }
 
   return 0;
