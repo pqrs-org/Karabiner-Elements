@@ -111,7 +111,7 @@ public:
   }
 
   void unregister_report_callback(void) {
-    IOHIDDeviceRegisterInputReportCallback(device_, nullptr, 0, nullptr, nullptr);
+    IOHIDDeviceRegisterInputReportCallback(device_, &dummy_report_buffer_, 1, nullptr, nullptr);
     report_callback_ = nullptr;
   }
 
@@ -139,7 +139,8 @@ public:
   void unregister_value_callback(void) {
     if (queue_) {
       IOHIDQueueStop(queue_);
-      IOHIDQueueRegisterValueAvailableCallback(queue_, nullptr, nullptr);
+      // There is not a way to unregister ValueAvailableCallback.
+      // Do not call IOHIDQueueRegisterValueAvailableCallback with nullptr.
     }
     value_callback_ = nullptr;
   }
@@ -441,6 +442,7 @@ private:
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
   report_callback report_callback_;
+  uint8_t dummy_report_buffer_; /* buffer for unregister_report_callback */
 
   std::unordered_map<krbn::key_code, krbn::key_code> simple_changed_keys_;
   std::unordered_map<krbn::key_code, krbn::key_code> fn_changed_keys_;
