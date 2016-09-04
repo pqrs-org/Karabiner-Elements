@@ -1,0 +1,11 @@
+CXXFLAGS = \
+    -I/opt/local/include \
+    -I/usr/local/include \
+    -Wall -Werror \
+    -O2 \
+    -std=c++14 \
+    -fvisibility=hidden \
+    -fvisibility-inlines-hidden
+
+SOURCES=$(wildcard *.cpp)
+OBJECTS=$(patsubst %.cpp,%.o,$(SOURCES))
