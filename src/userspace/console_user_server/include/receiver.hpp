@@ -1,5 +1,6 @@
 #pragma once
 
+#include "configuration_manager.hpp"
 #include "constants.hpp"
 #include "grabber_client.hpp"
 #include "keyboard_event_output_manager.hpp"
