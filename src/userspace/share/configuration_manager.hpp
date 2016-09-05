@@ -1,16 +1,20 @@
 #pragma once
 
 #include "configuration_core.hpp"
+#include "filesystem.hpp"
 #include <CoreServices/CoreServices.h>
 #include <memory>
 
 class configuration_manager final {
 public:
   configuration_manager(spdlog::logger& logger, const std::string& configuration_directory) : logger_(logger),
-                                                                                              configuration_directory_(configuration_directory),
+                                                                                              configuration_directory_(filesystem::realpath(configuration_directory)),
+                                                                                              configuration_core_file_path_(filesystem::realpath(configuration_directory_ + "/karabiner.json")),
                                                                                               path_(nullptr),
                                                                                               paths_(nullptr),
                                                                                               stream_(nullptr) {
+    configuration_core_ = std::make_unique<configuration_core>(logger_, configuration_core_file_path_);
+
     // monitor ~/.karabiner.d
     path_ = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault,
                                             configuration_directory_.c_str(),
@@ -99,22 +103,29 @@ private:
                        const char* event_paths[],
                        const FSEventStreamEventFlags event_flags[],
                        const FSEventStreamEventId event_ids[]) {
-    logger_.info("stream_callback num_events:{0}", num_events);
     for (size_t i = 0; i < num_events; ++i) {
       if (event_flags[i] & kFSEventStreamEventFlagRootChanged) {
-        logger_.info("  root changed");
+        logger_.info("the configuration directory is updated.");
         // re-register stream
         unregister_stream();
         register_stream();
+
       } else {
-        logger_.info("  file changed");
-        logger_.info("  {0}", event_paths[i]);
+        if (configuration_core_file_path_ == event_paths[i]) {
+          logger_.info("karabiner.json is updated.");
+          auto new_ptr = std::make_unique<configuration_core>(logger_, configuration_core_file_path_);
+          if (new_ptr->is_loaded()) {
+            configuration_core_ = std::move(new_ptr);
+            logger_.info("configuration_core_ was reloaded.");
+          }
+        }
       }
     }
   }
 
   spdlog::logger& logger_;
   std::string configuration_directory_;
+  std::string configuration_core_file_path_;
 
   CFStringRef path_;
   CFArrayRef paths_;
