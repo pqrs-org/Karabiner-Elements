@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/tekezo/repo/Karabiner-Elements/src/userspace/console_user_server/karabiner_console_user_server.xcodeproj">
+      location = "self:karabiner_console_user_server.xcodeproj">
    </FileRef>
 </Workspace>
