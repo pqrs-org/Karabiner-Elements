@@ -1,5 +1,4 @@
 all:
-	$(MAKE) -C configuration_manager
 	$(MAKE) -C control_led
 	$(MAKE) -C dump_hid_report
 	$(MAKE) -C dump_hid_value
@@ -8,7 +7,6 @@ all:
 	$(MAKE) -C post_key
 
 clean:
-	$(MAKE) -C configuration_manager clean
 	$(MAKE) -C control_led clean
 	$(MAKE) -C dump_hid_report clean
 	$(MAKE) -C dump_hid_value clean
