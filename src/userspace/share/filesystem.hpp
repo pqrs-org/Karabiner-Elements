@@ -12,4 +12,13 @@ public:
     }
     return false;
   }
+
+  static std::string realpath(const std::string& path) {
+    std::string result;
+    if (auto p = ::realpath(path.c_str(), nullptr)) {
+      result = p;
+      free(p);
+    }
+    return result;
+  }
 };
