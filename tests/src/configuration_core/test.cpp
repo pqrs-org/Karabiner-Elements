@@ -24,6 +24,7 @@ TEST_CASE("valid") {
       std::make_pair(krbn::key_code(41), krbn::key_code(44)),
   };
   REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+  REQUIRE(configuration.is_loaded() == true);
 }
 
 TEST_CASE("broken.json") {
@@ -31,6 +32,7 @@ TEST_CASE("broken.json") {
 
   std::vector<std::pair<krbn::key_code, krbn::key_code>> expected;
   REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+  REQUIRE(configuration.is_loaded() == false);
 }
 
 TEST_CASE("invalid_key_code_name.json") {
@@ -40,4 +42,5 @@ TEST_CASE("invalid_key_code_name.json") {
       std::make_pair(krbn::key_code(41), krbn::key_code(44)),
   };
   REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+  REQUIRE(configuration.is_loaded() == true);
 }

@@ -51,11 +51,12 @@
 
 class configuration_core final {
 public:
-  configuration_core(spdlog::logger& logger, const std::string& file_path) : logger_(logger), file_path_(file_path) {
+  configuration_core(spdlog::logger& logger, const std::string& file_path) : logger_(logger), file_path_(file_path), loaded_(false) {
     std::ifstream input(file_path_);
     if (input) {
       try {
         json_ = nlohmann::json::parse(input);
+        loaded_ = true;
       } catch (std::exception& e) {
         logger_.warn("parse error in {0}: {1}", file_path_, e.what());
       }
@@ -73,6 +74,8 @@ public:
     }
     return file_path;
   }
+
+  bool is_loaded(void) const { return loaded_; }
 
   // std::vector<from,to>
   std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_simple_modifications(void) const {
@@ -153,5 +156,6 @@ private:
   spdlog::logger& logger_;
   std::string file_path_;
 
+  bool loaded_;
   nlohmann::json json_;
 };
