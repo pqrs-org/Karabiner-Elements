@@ -67,7 +67,7 @@ public:
 
   static std::string get_file_path(void) {
     std::string file_path;
-    if (auto p = constants::get_home_dot_karabiner_directory()) {
+    if (auto p = constants::get_configuration_directory()) {
       file_path = p;
       file_path += "/karabiner-elements.json";
     }

@@ -12,7 +12,7 @@ public:
 };
 
 int main(int argc, const char* argv[]) {
-  configuration_manager manager(logger::get_logger(), "/Users/tekezo/repo/Karabiner-Elements/appendix/configuration_manager/dot_karabiner_directory");
+  configuration_manager manager(logger::get_logger(), "dot_karabiner_directory/configuration");
 
   CFRunLoopRun();
 
