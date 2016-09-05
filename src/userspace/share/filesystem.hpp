@@ -21,7 +21,7 @@ public:
     return path.substr(0, pos);
   }
 
-  static void normalize(std::string& path) {
+  static void normalize_file_path(std::string& path) {
     if (path.empty()) {
       path += '.';
       return;
