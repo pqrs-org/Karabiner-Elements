@@ -145,8 +145,13 @@ private:
     logger_.info("configuration_core_ was loaded.");
 
     grabber_client_.clear_simple_modifications();
-    for (const auto& it : configuration_core_->get_current_profile_simple_modifications()) {
-      grabber_client_.add_simple_modification(it.first, it.second);
+    for (const auto& pair : configuration_core_->get_current_profile_simple_modifications()) {
+      grabber_client_.add_simple_modification(pair.first, pair.second);
+    }
+
+    keyboard_event_output_manager_.clear_fn_function_keys();
+    for (const auto& pair : configuration_core_->get_current_profile_fn_function_keys()) {
+      keyboard_event_output_manager_.add_fn_function_key(pair.first, pair.second);
     }
   }
 

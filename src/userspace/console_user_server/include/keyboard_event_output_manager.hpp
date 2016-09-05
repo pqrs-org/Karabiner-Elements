@@ -5,6 +5,7 @@
 #include "system_preferences.hpp"
 #include "userspace_types.hpp"
 #include <IOKit/hidsystem/ev_keymap.h>
+#include <thread>
 #include <unordered_map>
 
 class keyboard_event_output_manager final {
@@ -17,11 +18,15 @@ public:
   }
 
   void clear_fn_function_keys(void) {
+    std::lock_guard<std::mutex> guard(fn_function_keys_mutex_);
+
     fn_function_keys_.clear();
   }
 
-  void add_fn_function_key(const std::string& fn, krbn::key_code key_code) {
-    fn_function_keys_[fn] = key_code;
+  void add_fn_function_key(krbn::key_code from_key_code, krbn::key_code to_key_code) {
+    std::lock_guard<std::mutex> guard(fn_function_keys_mutex_);
+
+    fn_function_keys_[from_key_code] = to_key_code;
   }
 
   void stop_key_repeat(void) {
@@ -44,113 +49,34 @@ public:
     // Change vk_f1 - vk_f12 and vk_fn_f1 - vk_fn_f12 to actual key code.
     // (eg. key_code::f1 or key_code::vk_consumer_brightness_down)
 
-    bool standard_function_key = false;
+    bool is_standard_function_key = false;
     if (system_preferences::get_keyboard_fn_state()) {
       // "Use all F1, F2, etc. keys as standard function keys."
-      standard_function_key = (krbn::key_code::vk_f1 <= key_code && key_code <= krbn::key_code::vk_f12);
+      is_standard_function_key = (krbn::key_code::vk_f1 <= key_code && key_code <= krbn::key_code::vk_f12);
     } else {
-      standard_function_key = (krbn::key_code::vk_fn_f1 <= key_code && key_code <= krbn::key_code::vk_fn_f12);
+      is_standard_function_key = (krbn::key_code::vk_fn_f1 <= key_code && key_code <= krbn::key_code::vk_fn_f12);
     }
 
-    switch (key_code) {
-    case krbn::key_code::vk_f1:
-    case krbn::key_code::vk_fn_f1:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f1;
+    krbn::key_code standard_function_key_code = krbn::key_code::vk_none;
+    if (krbn::key_code::vk_f1 <= key_code && key_code <= krbn::key_code::vk_f12) {
+      standard_function_key_code = krbn::key_code(static_cast<uint32_t>(krbn::key_code::f1) +
+                                                  static_cast<uint32_t>(key_code) - static_cast<uint32_t>(krbn::key_code::vk_f1));
+    } else if (krbn::key_code::vk_fn_f1 <= key_code && key_code <= krbn::key_code::vk_fn_f12) {
+      standard_function_key_code = krbn::key_code(static_cast<uint32_t>(krbn::key_code::f1) +
+                                                  static_cast<uint32_t>(key_code) - static_cast<uint32_t>(krbn::key_code::vk_fn_f1));
+    }
+
+    if (is_standard_function_key) {
+      key_code = standard_function_key_code;
+    } else {
+      std::lock_guard<std::mutex> guard(fn_function_keys_mutex_);
+
+      auto it = fn_function_keys_.find(standard_function_key_code);
+      if (it == fn_function_keys_.end()) {
+        key_code = standard_function_key_code;
       } else {
-        key_code = krbn::key_code::vk_consumer_brightness_down;
+        key_code = it->second;
       }
-      break;
-    case krbn::key_code::vk_f2:
-    case krbn::key_code::vk_fn_f2:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f2;
-      } else {
-        key_code = krbn::key_code::vk_consumer_brightness_up;
-      }
-      break;
-    case krbn::key_code::vk_f3:
-    case krbn::key_code::vk_fn_f3:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f3;
-      } else {
-        key_code = krbn::key_code::vk_mission_control;
-      }
-      break;
-    case krbn::key_code::vk_f4:
-    case krbn::key_code::vk_fn_f4:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f4;
-      } else {
-        key_code = krbn::key_code::vk_launchpad;
-      }
-      break;
-    case krbn::key_code::vk_f5:
-    case krbn::key_code::vk_fn_f5:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f5;
-      } else {
-        key_code = krbn::key_code::vk_consumer_illumination_down;
-      }
-      break;
-    case krbn::key_code::vk_f6:
-    case krbn::key_code::vk_fn_f6:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f6;
-      } else {
-        key_code = krbn::key_code::vk_consumer_illumination_up;
-      }
-      break;
-    case krbn::key_code::vk_f7:
-    case krbn::key_code::vk_fn_f7:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f7;
-      } else {
-        key_code = krbn::key_code::vk_consumer_previous;
-      }
-      break;
-    case krbn::key_code::vk_f8:
-    case krbn::key_code::vk_fn_f8:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f8;
-      } else {
-        key_code = krbn::key_code::vk_consumer_play;
-      }
-      break;
-    case krbn::key_code::vk_f9:
-    case krbn::key_code::vk_fn_f9:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f9;
-      } else {
-        key_code = krbn::key_code::vk_consumer_next;
-      }
-      break;
-    case krbn::key_code::vk_f10:
-    case krbn::key_code::vk_fn_f10:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f10;
-      } else {
-        key_code = krbn::key_code::vk_consumer_mute;
-      }
-      break;
-    case krbn::key_code::vk_f11:
-    case krbn::key_code::vk_fn_f11:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f11;
-      } else {
-        key_code = krbn::key_code::vk_consumer_sound_down;
-      }
-      break;
-    case krbn::key_code::vk_f12:
-    case krbn::key_code::vk_fn_f12:
-      if (standard_function_key) {
-        key_code = krbn::key_code::f12;
-      } else {
-        key_code = krbn::key_code::vk_consumer_sound_up;
-      }
-      break;
-    default:
-      break;
     }
 
     // ----------------------------------------
@@ -284,5 +210,6 @@ public:
 private:
   hid_system_client hid_system_client_;
   dispatch_source_t key_repeat_timer_;
-  std::unordered_map<std::string, krbn::key_code> fn_function_keys_;
+  std::unordered_map<krbn::key_code, krbn::key_code> fn_function_keys_;
+  std::mutex fn_function_keys_mutex_;
 };
