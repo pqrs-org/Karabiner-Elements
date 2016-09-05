@@ -34,7 +34,8 @@ public:
 
     configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger(),
                                                                      constants::get_configuration_directory(),
-                                                                     *grabber_client_);
+                                                                     *grabber_client_,
+                                                                     keyboard_event_output_manager_);
 
     exit_loop_ = false;
     thread_ = std::thread([this] { this->worker(); });

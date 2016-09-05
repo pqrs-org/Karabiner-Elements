@@ -5,6 +5,7 @@
 #include "system_preferences.hpp"
 #include "userspace_types.hpp"
 #include <IOKit/hidsystem/ev_keymap.h>
+#include <unordered_map>
 
 class keyboard_event_output_manager final {
 public:
@@ -13,6 +14,14 @@ public:
 
   ~keyboard_event_output_manager(void) {
     stop_key_repeat();
+  }
+
+  void clear_fn_function_keys(void) {
+    fn_function_keys_.clear();
+  }
+
+  void add_fn_function_key(const std::string& fn, krbn::key_code key_code) {
+    fn_function_keys_[fn] = key_code;
   }
 
   void stop_key_repeat(void) {
@@ -275,4 +284,5 @@ public:
 private:
   hid_system_client hid_system_client_;
   dispatch_source_t key_repeat_timer_;
+  std::unordered_map<std::string, krbn::key_code> fn_function_keys_;
 };

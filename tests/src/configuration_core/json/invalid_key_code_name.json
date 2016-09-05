@@ -3,16 +3,10 @@
         {
             "name": "Default profile",
             "selected": true,
-            "simple_modifications": [
-                {
-                    "from": "caps_lock_2",
-                    "to": "delete_or_backspace"
-                },
-                {
-                    "from": "escape",
-                    "to": "spacebar"
-                }
-            ],
+            "simple_modifications": {
+                "caps_lock_2" : "delete_or_backspace",
+                "escape" : "spacebar"
+            },
             "fn_function_keys": {
                 "f1":  "vk_consumer_brightness_down",
                 "f2":  "vk_consumer_brightness_up",
@@ -30,11 +24,7 @@
         },
         {
             "name": "Empty",
-            "selected": false,
-            "simple_modifications": [
-            ],
-            "fn_function_keys": {
-            }
+            "selected": false
         }
     ]
 }

@@ -13,16 +13,10 @@
 //         {
 //             "name": "Default profile",
 //             "selected": true,
-//             "simple_modifications": [
-//                 {
-//                     "from": "caps_lock",
-//                     "to": "delete_or_backspace"
-//                 },
-//                 {
-//                     "from": "escape",
-//                     "to": "spacebar"
-//                 }
-//             ],
+//             "simple_modifications": {
+//                 "caps_lock": "delete_or_backspace",
+//                 "escape": "spacebar"
+//             },
 //             "fn_function_keys": {
 //                 "f1":  "vk_consumer_brightness_down",
 //                 "f2":  "vk_consumer_brightness_up",
@@ -40,11 +34,7 @@
 //         },
 //         {
 //             "name": "Empty",
-//             "selected": false,
-//             "simple_modifications": [
-//             ],
-//             "fn_function_keys": {
-//             }
+//             "selected": false
 //         }
 //     ]
 // }
@@ -82,10 +72,11 @@ public:
     std::vector<std::pair<krbn::key_code, krbn::key_code>> v;
 
     auto profile = get_current_profile();
-    if (profile["simple_modifications"].is_array()) {
-      for (const auto& it : profile["simple_modifications"]) {
-        std::string from = it["from"];
-        std::string to = it["to"];
+    auto simple_modifications = profile["simple_modifications"];
+    if (simple_modifications.is_object()) {
+      for (auto it = simple_modifications.begin(); it != simple_modifications.end(); ++it) {
+        std::string from = it.key();
+        std::string to = it.value();
 
         auto from_key_code = krbn::types::get_key_code(from);
         if (!from_key_code) {
@@ -126,7 +117,7 @@ private:
     nlohmann::json json;
     json["name"] = "Default profile";
     json["selected"] = true;
-    json["simple_modifications"] = nlohmann::json::array();
+    json["simple_modifications"] = nlohmann::json::object();
     json["fn_function_keys"]["f1"] = "vk_consumer_brightness_down";
     json["fn_function_keys"]["f2"] = "vk_consumer_brightness_up";
     json["fn_function_keys"]["f3"] = "vk_mission_control";
@@ -144,7 +135,7 @@ private:
 
   nlohmann::json get_current_profile(void) const {
     if (json_.is_object() && json_["profiles"].is_array()) {
-      for (auto&& profile : json_["profiles"]) {
+      for (const auto& profile : json_["profiles"]) {
         if (profile.is_object() && profile["selected"]) {
           return profile;
         }
