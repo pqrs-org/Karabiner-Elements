@@ -2,18 +2,25 @@
 
 #include "configuration_core.hpp"
 #include "filesystem.hpp"
+#include "grabber_client.hpp"
 #include <CoreServices/CoreServices.h>
 #include <memory>
 
 class configuration_manager final {
 public:
-  configuration_manager(spdlog::logger& logger, const std::string& configuration_directory) : logger_(logger),
-                                                                                              configuration_directory_(filesystem::realpath(configuration_directory)),
-                                                                                              configuration_core_file_path_(filesystem::realpath(configuration_directory_ + "/karabiner.json")),
-                                                                                              path_(nullptr),
-                                                                                              paths_(nullptr),
-                                                                                              stream_(nullptr) {
-    configuration_core_ = std::make_unique<configuration_core>(logger_, configuration_core_file_path_);
+  configuration_manager(spdlog::logger& logger,
+                        const std::string& configuration_directory,
+                        grabber_client& grabber_client) : logger_(logger),
+                                                          configuration_directory_(configuration_directory),
+                                                          configuration_core_file_path_(configuration_directory_ + "/karabiner.json"),
+                                                          grabber_client_(grabber_client),
+                                                          path_(nullptr),
+                                                          paths_(nullptr),
+                                                          stream_(nullptr) {
+    filesystem::normalize_file_path(configuration_directory_);
+    filesystem::normalize_file_path(configuration_core_file_path_);
+
+    mkdir(configuration_directory_.c_str(), 0700);
 
     // monitor ~/.karabiner.d
     path_ = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault,
@@ -26,6 +33,8 @@ public:
                            nullptr);
 
     register_stream();
+
+    reload_configuration_core();
   }
 
   ~configuration_manager(void) {
@@ -111,21 +120,37 @@ private:
         register_stream();
 
       } else {
-        if (configuration_core_file_path_ == event_paths[i]) {
+        std::string path = event_paths[i];
+        filesystem::normalize_file_path(path);
+
+        if (configuration_core_file_path_ == path) {
           logger_.info("karabiner.json is updated.");
-          auto new_ptr = std::make_unique<configuration_core>(logger_, configuration_core_file_path_);
-          if (new_ptr->is_loaded()) {
-            configuration_core_ = std::move(new_ptr);
-            logger_.info("configuration_core_ was reloaded.");
-          }
+          reload_configuration_core();
         }
       }
+    }
+  }
+
+  void reload_configuration_core(void) {
+    auto new_ptr = std::make_unique<configuration_core>(logger_, configuration_core_file_path_);
+    // skip if karabiner.json is broken.
+    if (configuration_core_ && !new_ptr->is_loaded()) {
+      return;
+    }
+
+    configuration_core_ = std::move(new_ptr);
+    logger_.info("configuration_core_ was loaded.");
+
+    grabber_client_.clear_simple_modifications();
+    for (const auto& it : configuration_core_->get_current_profile_simple_modifications()) {
+      grabber_client_.add_simple_modification(it.first, it.second);
     }
   }
 
   spdlog::logger& logger_;
   std::string configuration_directory_;
   std::string configuration_core_file_path_;
+  grabber_client& grabber_client_;
 
   CFStringRef path_;
   CFArrayRef paths_;

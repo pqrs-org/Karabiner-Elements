@@ -32,9 +32,9 @@ public:
     grabber_client_ = std::make_unique<grabber_client>();
     grabber_client_->connect();
 
-    grabber_client_->clear_simple_modifications();
-    //grabber_client_->add_simple_modification(krbn::key_code(kHIDUsage_KeyboardCapsLock), krbn::key_code(kHIDUsage_KeyboardDeleteOrBackspace));
-    grabber_client_->add_simple_modification(krbn::key_code(kHIDUsage_KeyboardEscape), krbn::key_code(kHIDUsage_KeyboardSpacebar));
+    configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger(),
+                                                                     constants::get_configuration_directory(),
+                                                                     *grabber_client_);
 
     exit_loop_ = false;
     thread_ = std::thread([this] { this->worker(); });
@@ -55,6 +55,7 @@ public:
     exit_loop_ = true;
     thread_.join();
     server_.reset(nullptr);
+    configuration_manager_.reset(nullptr);
     grabber_client_.reset(nullptr);
 
     logger::get_logger().info("receiver is stopped");
@@ -106,6 +107,7 @@ private:
   std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
   std::unique_ptr<grabber_client> grabber_client_;
+  std::unique_ptr<configuration_manager> configuration_manager_;
   std::thread thread_;
   volatile bool exit_loop_;
 
