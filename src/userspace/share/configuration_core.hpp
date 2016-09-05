@@ -69,31 +69,14 @@ public:
 
   // std::vector<from,to>
   std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_simple_modifications(void) const {
-    std::vector<std::pair<krbn::key_code, krbn::key_code>> v;
-
     auto profile = get_current_profile();
-    auto simple_modifications = profile["simple_modifications"];
-    if (simple_modifications.is_object()) {
-      for (auto it = simple_modifications.begin(); it != simple_modifications.end(); ++it) {
-        std::string from = it.key();
-        std::string to = it.value();
+    return get_key_code_pair_from_json_object(profile["simple_modifications"]);
+  }
 
-        auto from_key_code = krbn::types::get_key_code(from);
-        if (!from_key_code) {
-          logger_.warn("unknown key_code:{0} in {1}", from, file_path_);
-          continue;
-        }
-        auto to_key_code = krbn::types::get_key_code(to);
-        if (!to_key_code) {
-          logger_.warn("unknown key_code:{0} in {1}", to, file_path_);
-          continue;
-        }
-
-        v.push_back(std::make_pair(*from_key_code, *to_key_code));
-      }
-    }
-
-    return v;
+  // std::vector<f1,vk_consumer_brightness_down>
+  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_fn_function_keys(void) const {
+    auto profile = get_current_profile();
+    return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
   // Note:
@@ -142,6 +125,33 @@ private:
       }
     }
     return get_default_profile();
+  }
+
+  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_key_code_pair_from_json_object(const nlohmann::json& json) const {
+    std::vector<std::pair<krbn::key_code, krbn::key_code>> v;
+
+    auto profile = get_current_profile();
+    if (json.is_object()) {
+      for (auto it = json.begin(); it != json.end(); ++it) {
+        std::string from = it.key();
+        std::string to = it.value();
+
+        auto from_key_code = krbn::types::get_key_code(from);
+        if (!from_key_code) {
+          logger_.warn("unknown key_code:{0} in {1}", from, file_path_);
+          continue;
+        }
+        auto to_key_code = krbn::types::get_key_code(to);
+        if (!to_key_code) {
+          logger_.warn("unknown key_code:{0} in {1}", to, file_path_);
+          continue;
+        }
+
+        v.push_back(std::make_pair(*from_key_code, *to_key_code));
+      }
+    }
+
+    return v;
   }
 
   spdlog::logger& logger_;
