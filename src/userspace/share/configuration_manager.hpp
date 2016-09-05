@@ -6,14 +6,14 @@
 
 class configuration_manager final {
 public:
-  configuration_manager(spdlog::logger& logger, const std::string& dot_karabiner_directory) : logger_(logger),
-                                                                                              dot_karabiner_directory_(dot_karabiner_directory),
+  configuration_manager(spdlog::logger& logger, const std::string& configuration_directory) : logger_(logger),
+                                                                                              configuration_directory_(configuration_directory),
                                                                                               path_(nullptr),
                                                                                               paths_(nullptr),
                                                                                               stream_(nullptr) {
     // monitor ~/.karabiner.d
     path_ = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault,
-                                            dot_karabiner_directory_.c_str(),
+                                            configuration_directory_.c_str(),
                                             kCFStringEncodingUTF8,
                                             kCFAllocatorDefault);
     paths_ = CFArrayCreate(kCFAllocatorDefault,
@@ -114,7 +114,7 @@ private:
   }
 
   spdlog::logger& logger_;
-  std::string dot_karabiner_directory_;
+  std::string configuration_directory_;
 
   CFStringRef path_;
   CFArrayRef paths_;

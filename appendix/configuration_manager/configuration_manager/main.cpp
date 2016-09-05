@@ -12,9 +12,12 @@ public:
 };
 
 int main(int argc, const char* argv[]) {
-  configuration_manager manager(logger::get_logger(), "dot_karabiner_directory/configuration");
+  if (auto p = realpath("dot_karabiner_directory/configuration", nullptr)) {
+    configuration_manager manager(logger::get_logger(), p);
+    free(p);
 
-  CFRunLoopRun();
+    CFRunLoopRun();
+  }
 
   return 0;
 }
