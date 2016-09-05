@@ -27,6 +27,7 @@
 /* Begin PBXFileReference section */
 		344149111D212A1600C8ECFC /* configuration_manager */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = configuration_manager; sourceTree = BUILT_PRODUCTS_DIR; };
 		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		345A9DE21D7DD23900578F84 /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../../src/userspace/share/filesystem.hpp; sourceTree = "<group>"; };
 		3492C9B31D7491C40055988F /* userspace_types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_types.hpp; path = ../../../src/userspace/share/userspace_types.hpp; sourceTree = "<group>"; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E650211D7CA380001EDE5D /* configuration_core.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_core.hpp; path = ../../../src/userspace/share/configuration_core.hpp; sourceTree = "<group>"; };
@@ -78,6 +79,7 @@
 			children = (
 				34E650211D7CA380001EDE5D /* configuration_core.hpp */,
 				34E650221D7CA380001EDE5D /* configuration_manager.hpp */,
+				345A9DE21D7DD23900578F84 /* filesystem.hpp */,
 				3492C9B31D7491C40055988F /* userspace_types.hpp */,
 			);
 			name = share;
