@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		344149151D212A1600C8ECFC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 344149141D212A1600C8ECFC /* main.cpp */; };
+		34961D5C1D7F231D0070D275 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34961D5B1D7F231D0070D275 /* main.cpp */; };
 		34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34BB0F0A1D22853700372174 /* IOKit.framework */; };
 		34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E9F62E1D2134770007AE90 /* Carbon.framework */; };
 /* End PBXBuildFile section */
@@ -29,8 +29,8 @@
 		341129521D6FD947001E76BB /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = ../../src/userspace/share/human_interface_device.hpp; sourceTree = SOURCE_ROOT; };
 		341129531D6FE995001E76BB /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../src/userspace/share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
 		344149111D212A1600C8ECFC /* dump_hid_value */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dump_hid_value; sourceTree = BUILT_PRODUCTS_DIR; };
-		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		345ABFF71D5CE6E0009D1FB4 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../../src/userspace/share/iokit_utility.hpp; sourceTree = SOURCE_ROOT; };
+		34961D5B1D7F231D0070D275 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -68,7 +68,7 @@
 		344149131D212A1600C8ECFC /* dump_hid_value */ = {
 			isa = PBXGroup;
 			children = (
-				344149141D212A1600C8ECFC /* main.cpp */,
+				34961D5B1D7F231D0070D275 /* main.cpp */,
 				345ABFF61D5CE6CB009D1FB4 /* share */,
 			);
 			path = dump_hid_value;
@@ -149,7 +149,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				344149151D212A1600C8ECFC /* main.cpp in Sources */,
+				34961D5C1D7F231D0070D275 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
