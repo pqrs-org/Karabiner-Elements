@@ -1,18 +1,23 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include "apple_hid_usage_tables.hpp"
+#include "iokit_utility.hpp"
 #include "userspace_types.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
 #include <IOKit/hid/IOHIDElement.h>
 #include <IOKit/hid/IOHIDQueue.h>
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <IOKit/hid/IOHIDValue.h>
+#include <boost/optional.hpp>
 #include <cstdint>
 #include <functional>
 #include <list>
 #include <mach/mach_time.h>
 #include <spdlog/spdlog.h>
 #include <unordered_map>
+#include <vector>
 
 class human_interface_device final {
 public:
@@ -27,7 +32,7 @@ public:
   typedef std::function<void(human_interface_device& device,
                              IOHIDReportType type,
                              uint32_t report_id,
-                             uint8_t* _Nullable report,
+                             uint8_t* _Nonnull report,
                              CFIndex report_length)>
       report_callback;
 
@@ -103,15 +108,19 @@ public:
     IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
   }
 
-  void register_report_callback(const report_callback& callback,
-                                uint8_t* _Nonnull report,
-                                CFIndex report_size) {
+  void register_report_callback(const report_callback& callback) {
     report_callback_ = callback;
-    IOHIDDeviceRegisterInputReportCallback(device_, report, report_size, static_input_report_callback, this);
+
+    if (resize_report_buffer()) {
+      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
+    }
   }
 
   void unregister_report_callback(void) {
-    IOHIDDeviceRegisterInputReportCallback(device_, &dummy_report_buffer_, 1, nullptr, nullptr);
+    if (resize_report_buffer()) {
+      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, nullptr);
+    }
+
     report_callback_ = nullptr;
   }
 
@@ -193,84 +202,36 @@ public:
     grabbed_ = false;
   }
 
-  long get_max_input_report_size(void) const {
-    long value = 0;
-    get_long_property(CFSTR(kIOHIDMaxInputReportSizeKey), value);
-    return value;
+  boost::optional<long> get_max_input_report_size(void) const {
+    return iokit_utility::get_max_input_report_size(device_);
   }
 
-  long get_vendor_id(void) const {
-    long value = 0;
-    get_long_property(CFSTR(kIOHIDVendorIDKey), value);
-    return value;
+  boost::optional<long> get_vendor_id(void) const {
+    return iokit_utility::get_vendor_id(device_);
   }
 
-  long get_product_id(void) const {
-    long value = 0;
-    get_long_property(CFSTR(kIOHIDProductIDKey), value);
-    return value;
+  boost::optional<long> get_product_id(void) const {
+    return iokit_utility::get_product_id(device_);
   }
 
-  long get_location_id(void) const {
-    long value = 0;
-    get_long_property(CFSTR(kIOHIDLocationIDKey), value);
-    return value;
+  boost::optional<long> get_location_id(void) const {
+    return iokit_utility::get_location_id(device_);
   }
 
-  std::string get_manufacturer(void) const {
-    std::string value;
-    get_string_property(CFSTR(kIOHIDManufacturerKey), value);
-    return value;
+  boost::optional<std::string> get_manufacturer(void) const {
+    return iokit_utility::get_manufacturer(device_);
   }
 
-  std::string get_product(void) const {
-    std::string value;
-    get_string_property(CFSTR(kIOHIDProductKey), value);
-    return value;
+  boost::optional<std::string> get_product(void) const {
+    return iokit_utility::get_product(device_);
   }
 
-  std::string get_serial_number_string(void) const {
-    std::string value;
-    get_string_property(CFSTR(kIOHIDSerialNumberKey), value);
-    return value;
+  boost::optional<std::string> get_serial_number(void) const {
+    return iokit_utility::get_serial_number(device_);
   }
 
-  std::string get_transport(void) const {
-    std::string value;
-    get_string_property(CFSTR(kIOHIDTransportKey), value);
-    return value;
-  }
-
-  bool get_long_property(const CFStringRef _Nonnull key, long& value) const {
-    auto property = IOHIDDeviceGetProperty(device_, key);
-    if (!property) {
-      return false;
-    }
-
-    if (CFNumberGetTypeID() != CFGetTypeID(property)) {
-      return false;
-    }
-
-    return CFNumberGetValue(static_cast<CFNumberRef>(property), kCFNumberLongType, &value);
-  }
-
-  bool get_string_property(const CFStringRef _Nonnull key, std::string& value) const {
-    auto property = IOHIDDeviceGetProperty(device_, key);
-    if (!property) {
-      return false;
-    }
-
-    if (CFStringGetTypeID() != CFGetTypeID(property)) {
-      return false;
-    }
-
-    auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8);
-    if (!p) {
-      value.clear();
-    } else {
-      value = p;
-    }
-    return true;
+  boost::optional<std::string> get_transport(void) const {
+    return iokit_utility::get_transport(device_);
   }
 
   IOHIDElementRef _Nullable get_element(uint32_t usage_page, uint32_t usage) const {
@@ -432,6 +393,17 @@ private:
     return (static_cast<uint64_t>(usage_page) << 32 | usage);
   }
 
+  bool resize_report_buffer(void) {
+    auto size = get_max_input_report_size();
+    if (!size) {
+      logger_.error("get_max_input_report_size() error @ {0}", __PRETTY_FUNCTION__);
+      return false;
+    }
+
+    report_buffer_.resize(*size);
+    return true;
+  }
+
   spdlog::logger& logger_;
 
   IOHIDDeviceRef _Nonnull device_;
@@ -442,7 +414,7 @@ private:
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
   report_callback report_callback_;
-  uint8_t dummy_report_buffer_; /* buffer for unregister_report_callback */
+  std::vector<uint8_t> report_buffer_;
 
   std::unordered_map<krbn::key_code, krbn::key_code> simple_changed_keys_;
   std::unordered_map<krbn::key_code, krbn::key_code> fn_changed_keys_;
