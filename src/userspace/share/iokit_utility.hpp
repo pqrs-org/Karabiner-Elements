@@ -188,4 +188,8 @@ public:
   static boost::optional<std::string> get_serial_number(IOHIDDeviceRef _Nonnull device) {
     return get_string_property(device, CFSTR(kIOHIDSerialNumberKey));
   }
+
+  static boost::optional<std::string> get_transport(IOHIDDeviceRef _Nonnull device) {
+    return get_string_property(device, CFSTR(kIOHIDTransportKey));
+  }
 };
