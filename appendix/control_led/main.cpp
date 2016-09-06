@@ -70,6 +70,13 @@ private:
     hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
 
+    auto manufacturer = dev->get_manufacturer();
+    auto product = dev->get_product();
+    auto vendor_id = dev->get_vendor_id();
+    auto product_id = dev->get_product_id();
+    auto location_id = dev->get_location_id();
+    auto serial_number = dev->get_serial_number();
+
     logger::get_logger().info("matching device: "
                               "manufacturer:{1}, "
                               "product:{2}, "
@@ -79,12 +86,12 @@ private:
                               "serial_number:{6} "
                               "@ {0}",
                               __PRETTY_FUNCTION__,
-                              dev->get_manufacturer(),
-                              dev->get_product(),
-                              dev->get_vendor_id(),
-                              dev->get_product_id(),
-                              dev->get_location_id(),
-                              dev->get_serial_number_string());
+                              manufacturer ? *manufacturer : "",
+                              product ? *product : "",
+                              vendor_id ? *vendor_id : 0,
+                              product_id ? *product_id : 0,
+                              location_id ? *location_id : 0,
+                              serial_number ? *serial_number : "");
 
     dev->open();
     dev->schedule();
@@ -102,7 +109,6 @@ private:
         break;
     }
 
-    // toggle led by escape
     if (caps_lock_led_state == krbn::led_state::on) {
       dev->set_caps_lock_led_state(krbn::led_state::off);
     } else {
@@ -132,15 +138,18 @@ private:
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
+        auto vendor_id = dev->get_vendor_id();
+        auto product_id = dev->get_product_id();
+        auto location_id = dev->get_location_id();
         logger::get_logger().info("removal device: "
                                   "vendor_id:0x{1:x}, "
                                   "product_id:0x{2:x}, "
                                   "location_id:0x{3:x} "
                                   "@ {0}",
                                   __PRETTY_FUNCTION__,
-                                  dev->get_vendor_id(),
-                                  dev->get_product_id(),
-                                  dev->get_location_id());
+                                  vendor_id ? *vendor_id : 0,
+                                  product_id ? *product_id : 0,
+                                  location_id ? *location_id : 0);
 
         hids_.erase(it);
       }
