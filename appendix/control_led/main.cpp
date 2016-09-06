@@ -98,15 +98,15 @@ private:
 
     auto caps_lock_led_state = dev->get_caps_lock_led_state();
     switch (caps_lock_led_state) {
-      case krbn::led_state::none:
-        logger::get_logger().info("failed to get caps_lock_led_state.");
-        break;
-      case krbn::led_state::on:
-        logger::get_logger().info("caps_lock_led_state is on.");
-        break;
-      case krbn::led_state::off:
-        logger::get_logger().info("caps_lock_led_state is off.");
-        break;
+    case krbn::led_state::none:
+      logger::get_logger().info("failed to get caps_lock_led_state.");
+      break;
+    case krbn::led_state::on:
+      logger::get_logger().info("caps_lock_led_state is on.");
+      break;
+    case krbn::led_state::off:
+      logger::get_logger().info("caps_lock_led_state is off.");
+      break;
     }
 
     if (caps_lock_led_state == krbn::led_state::on) {
