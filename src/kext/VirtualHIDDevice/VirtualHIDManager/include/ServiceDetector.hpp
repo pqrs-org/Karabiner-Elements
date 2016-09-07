@@ -2,6 +2,8 @@
 
 class ServiceDetector final {
 public:
+  ServiceDetector(const ServiceDetector&) = delete;
+
   ServiceDetector(void) : matchedNotifier_(nullptr),
                           terminatedNotifier_(nullptr),
                           service_(nullptr) {}

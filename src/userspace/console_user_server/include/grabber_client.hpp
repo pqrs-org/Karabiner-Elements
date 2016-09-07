@@ -8,6 +8,8 @@
 
 class grabber_client final {
 public:
+  grabber_client(const grabber_client&) = delete;
+
   grabber_client(void) : client_(constants::get_grabber_socket_file_path()) {}
 
   void connect(void) {

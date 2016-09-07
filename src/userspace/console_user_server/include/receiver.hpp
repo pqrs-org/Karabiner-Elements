@@ -11,6 +11,8 @@
 
 class receiver final {
 public:
+  receiver(const receiver&) = delete;
+
   receiver(void) : exit_loop_(false) {
     enum {
       buffer_length = 8 * 1024,

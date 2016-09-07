@@ -8,6 +8,8 @@
 
 class connection_manager final {
 public:
+  connection_manager(const connection_manager&) = delete;
+
   connection_manager(void) : exit_loop_(false),
                              session_state_(session::state::none),
                              exit_receiver_starter_(true),

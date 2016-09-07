@@ -8,6 +8,8 @@
 
 class local_datagram_client final {
 public:
+  local_datagram_client(const local_datagram_client&) = delete;
+
   local_datagram_client(const char* _Nonnull path) : endpoint_(path),
                                                      io_service_(),
                                                      work_(io_service_),

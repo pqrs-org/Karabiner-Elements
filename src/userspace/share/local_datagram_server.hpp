@@ -7,6 +7,8 @@
 
 class local_datagram_server final {
 public:
+  local_datagram_server(const local_datagram_server&) = delete;
+
   local_datagram_server(const char* _Nonnull path) : endpoint_(path),
                                                      io_service_(),
                                                      socket_(io_service_, endpoint_),

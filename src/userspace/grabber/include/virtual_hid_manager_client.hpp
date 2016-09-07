@@ -4,6 +4,8 @@
 
 class virtual_hid_manager_client final {
 public:
+  virtual_hid_manager_client(const virtual_hid_manager_client&) = delete;
+
   virtual_hid_manager_client(spdlog::logger& logger) : logger_(logger),
                                                        service_(IO_OBJECT_NULL),
                                                        connect_(IO_OBJECT_NULL) {

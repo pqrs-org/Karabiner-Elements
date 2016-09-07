@@ -10,6 +10,8 @@
 
 class keyboard_event_output_manager final {
 public:
+  keyboard_event_output_manager(const keyboard_event_output_manager&) = delete;
+
   keyboard_event_output_manager(void) : hid_system_client_(logger::get_logger()),
                                         key_repeat_timer_(0) {}
 

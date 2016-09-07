@@ -10,6 +10,8 @@ class service_observer final {
 public:
   typedef std::function<void(io_iterator_t iterator)> callback;
 
+  service_observer(const service_observer&) = delete;
+
   service_observer(spdlog::logger& logger,
                    CFDictionaryRef _Nonnull matching_dictionary,
                    const callback& matched_callback,

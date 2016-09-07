@@ -11,6 +11,8 @@
 
 class hid_system_client final {
 public:
+  hid_system_client(const hid_system_client&) = delete;
+
   // Note:
   // OS X shares IOHIDSystem among all input devices even the serial_number of IOHIDSystem is same with the one of the input device.
   //

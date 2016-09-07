@@ -10,6 +10,8 @@
 
 class grabber_server final {
 public:
+  grabber_server(const grabber_server&) = delete;
+
   grabber_server(device_grabber& device_grabber) : device_grabber_(device_grabber),
                                                    exit_loop_(false),
                                                    grabber_client_pid_monitor_(0) {

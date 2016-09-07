@@ -6,6 +6,8 @@
 
 class console_user_client final {
 public:
+  console_user_client(const console_user_client&) = delete;
+
   console_user_client(void) : client_(constants::get_console_user_socket_file_path()) {}
 
   void stop_key_repeat(void) {

@@ -41,6 +41,8 @@
 
 class configuration_core final {
 public:
+  configuration_core(const configuration_core&) = delete;
+
   configuration_core(spdlog::logger& logger, const std::string& file_path) : logger_(logger), file_path_(file_path), loaded_(false) {
     std::ifstream input(file_path_);
     if (input) {

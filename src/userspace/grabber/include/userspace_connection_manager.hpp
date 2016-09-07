@@ -10,6 +10,8 @@
 
 class userspace_connection_manager final {
 public:
+  userspace_connection_manager(const userspace_connection_manager&) = delete;
+
   userspace_connection_manager(device_grabber& device_grabber) : device_grabber_(device_grabber),
                                                                  timer_(0),
                                                                  last_uid_(0),
