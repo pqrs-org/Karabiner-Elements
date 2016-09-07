@@ -69,44 +69,69 @@ public:
   }
 
   void grab_devices(void) {
-    cancel_grab_timer();
-
-    grab_retry_count_ = 0;
-
-    grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-    dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), 0.1 * NSEC_PER_SEC, 0);
-    dispatch_source_set_event_handler(grab_timer_, ^{
-      if (get_all_devices_pressed_keys_count() > 0) {
-        ++grab_retry_count_;
-        if (grab_retry_count_ > 10) {
-          grab_retry_count_ = 0;
-          logger::get_logger().warn("There are pressed down keys in some devices. Please release them.");
-        }
-        return;
-      }
-
-      logger::get_logger().info("grab_devices");
-
-      grabbing_ = true;
-
-      for (auto&& it : hids_) {
-        grab(*(it.second));
-        (it.second)->clear_changed_keys();
-        (it.second)->clear_pressed_keys();
-      }
-
-      pressed_key_usages_.clear();
-      modifier_flag_manager_.reset();
-      hid_system_client_.set_caps_lock_state(false);
-
+    // we run grab_devices and ungrab_devices in the main queue.
+    dispatch_async(dispatch_get_main_queue(), ^{
       cancel_grab_timer();
+
+      // ----------------------------------------
+      // setup grab_timer_
+
+      grab_retry_count_ = 0;
+
+      grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+      dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), 0.1 * NSEC_PER_SEC, 0);
+      dispatch_source_set_event_handler(grab_timer_, ^{
+        if (grabbing_) {
+          return;
+        }
+
+        std::string warning_message;
+
+        if (!virtual_hid_manager_client_.is_connected()) {
+          warning_message = "virtual_hid_manager_client_ is not connected.";
+        }
+        if (get_all_devices_pressed_keys_count() > 0) {
+          warning_message = "There are pressed down keys in some devices. Please release them.";
+        }
+
+        if (!warning_message.empty()) {
+          ++grab_retry_count_;
+          if (grab_retry_count_ > 10) {
+            grab_retry_count_ = 0;
+            logger::get_logger().warn(warning_message);
+          }
+          return;
+        }
+
+        // ----------------------------------------
+        // grab devices
+
+        grabbing_ = true;
+
+        for (auto&& it : hids_) {
+          grab(*(it.second));
+          (it.second)->clear_changed_keys();
+          (it.second)->clear_pressed_keys();
+        }
+
+        pressed_key_usages_.clear();
+        modifier_flag_manager_.reset();
+        hid_system_client_.set_caps_lock_state(false);
+
+        logger::get_logger().info("devices are grabbed");
+
+        cancel_grab_timer();
+      });
+      dispatch_resume(grab_timer_);
     });
-    dispatch_resume(grab_timer_);
   }
 
   void ungrab_devices(void) {
+    // we run grab_devices and ungrab_devices in the main queue.
     dispatch_async(dispatch_get_main_queue(), ^{
-      logger::get_logger().info("ungrab_devices");
+      if (!grabbing_) {
+        return;
+      }
 
       grabbing_ = false;
 
@@ -123,11 +148,15 @@ public:
       hid_system_client_.set_caps_lock_state(false);
 
       // release all keys in VirtualHIDKeyboard.
-      hid_report::keyboard_input report;
-      last_keyboard_input_report_ = report;
-      virtual_hid_manager_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
-                                                     static_cast<const void*>(&report), sizeof(report),
-                                                     nullptr, 0);
+      if (virtual_hid_manager_client_.is_connected()) {
+        hid_report::keyboard_input report;
+        last_keyboard_input_report_ = report;
+        virtual_hid_manager_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
+                                                       static_cast<const void*>(&report), sizeof(report),
+                                                       nullptr, 0);
+      }
+
+      logger::get_logger().info("devices are ungrabbed");
     });
   }
 
@@ -176,7 +205,11 @@ private:
                               location_id ? *location_id : 0,
                               serial_number ? *serial_number : "");
 
-    observe(*dev);
+    if (grabbing_) {
+      grab(*dev);
+    } else {
+      observe(*dev);
+    }
   }
 
   static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
@@ -272,6 +305,13 @@ private:
                       uint32_t usage,
                       CFIndex integer_value) {
     if (!grabbing_) {
+      return;
+    }
+
+    // ungrab devices if VirtualHIDManager is unloaded after device grabbed.
+    if (!virtual_hid_manager_client_.is_connected()) {
+      ungrab_devices();
+      grab_devices();
       return;
     }
 
