@@ -28,6 +28,8 @@ public:
 
 class control_led final {
 public:
+  control_led(const control_led&) = delete;
+
   control_led(void) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {

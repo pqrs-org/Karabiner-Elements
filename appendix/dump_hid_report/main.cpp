@@ -28,6 +28,8 @@ public:
 
 class dump_hid_report final {
 public:
+  dump_hid_report(const dump_hid_report&) = delete;
+
   dump_hid_report(void) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
