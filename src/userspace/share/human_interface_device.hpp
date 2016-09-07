@@ -137,15 +137,13 @@ public:
   void register_report_callback(const report_callback& callback) {
     report_callback_ = callback;
 
-    if (resize_report_buffer()) {
-      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
-    }
+    resize_report_buffer();
+    IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
   }
 
   void unregister_report_callback(void) {
-    if (resize_report_buffer()) {
-      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, nullptr);
-    }
+    resize_report_buffer();
+    IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, nullptr);
 
     report_callback_ = nullptr;
   }
@@ -402,15 +400,13 @@ private:
     return (static_cast<uint64_t>(usage_page) << 32 | usage);
   }
 
-  bool resize_report_buffer(void) {
-    auto size = get_max_input_report_size();
-    if (!size) {
-      logger_.error("get_max_input_report_size() error @ {0}", __PRETTY_FUNCTION__);
-      return false;
+  void resize_report_buffer(void) {
+    size_t buffer_size = 32; // use this provisional value if we cannot get max input report size from device.
+    if (auto size = get_max_input_report_size()) {
+      buffer_size = *size;
     }
 
-    report_buffer_.resize(*size);
-    return true;
+    report_buffer_.resize(buffer_size);
   }
 
   spdlog::logger& logger_;
