@@ -28,10 +28,9 @@ public:
     mkdir(configuration_directory_.c_str(), 0700);
 
     // monitor ~/.karabiner.d
-    path_ = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault,
-                                            configuration_directory_.c_str(),
-                                            kCFStringEncodingUTF8,
-                                            kCFAllocatorDefault);
+    path_ = CFStringCreateWithCString(kCFAllocatorDefault,
+                                      configuration_directory_.c_str(),
+                                      kCFStringEncodingUTF8);
     paths_ = CFArrayCreate(kCFAllocatorDefault,
                            reinterpret_cast<const void**>(&path_),
                            1,
