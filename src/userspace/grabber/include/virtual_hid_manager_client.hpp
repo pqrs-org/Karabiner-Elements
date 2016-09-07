@@ -20,6 +20,10 @@ public:
     close_connection();
   }
 
+  bool is_connected(void) const {
+    return connect_ != IO_OBJECT_NULL;
+  }
+
   void call_struct_method(uint32_t selector,
                           const void* _Nullable input_struct,
                           size_t input_struct_length,
