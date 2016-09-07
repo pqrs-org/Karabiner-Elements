@@ -36,6 +36,8 @@ public:
                              CFIndex report_length)>
       report_callback;
 
+  human_interface_device(const human_interface_device&) = delete;
+
   human_interface_device(spdlog::logger& logger,
                          IOHIDDeviceRef _Nonnull device) : logger_(logger),
                                                            device_(device),
@@ -155,14 +157,31 @@ public:
   }
 
   // High-level utility method.
+  void observe(const value_callback& callback) {
+    auto r = open();
+    if (r != kIOReturnSuccess) {
+      logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
+      return;
+    }
+
+    register_value_callback(callback);
+    schedule();
+  }
+
+  void unobserve(void) {
+    unschedule();
+    unregister_value_callback();
+    close();
+  }
+
   void grab(const value_callback& callback) {
     if (grabbed_) {
       ungrab();
     }
 
-    IOReturn r = open(kIOHIDOptionsTypeSeizeDevice);
+    auto r = open(kIOHIDOptionsTypeSeizeDevice);
     if (r != kIOReturnSuccess) {
-      logger_.error("IOHIDDeviceOpen error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
+      logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
       return;
     }
 
@@ -195,7 +214,7 @@ public:
 
     IOReturn r = close();
     if (r != kIOReturnSuccess) {
-      logger_.error("IOHIDDeviceClose error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
+      logger_.error("IOHIDDeviceClose error: {1} @ {0}", __PRETTY_FUNCTION__, r);
       return;
     }
 
@@ -266,7 +285,7 @@ public:
       IOHIDValueRef value;
       auto r = IOHIDDeviceGetValue(device_, element, &value);
       if (r != kIOReturnSuccess) {
-        logger_.error("IOHIDDeviceGetValue error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, r);
+        logger_.error("IOHIDDeviceGetValue error: {1} @ {0}", __PRETTY_FUNCTION__, r);
         return krbn::led_state::none;
       }
 
