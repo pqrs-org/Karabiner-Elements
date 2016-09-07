@@ -33,6 +33,7 @@ cp src/userspace/console_user_server/build/Release/karabiner_console_user_server
 
 mkdir -p                  "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"
+cp -R files/LaunchAgents  "pkgroot/Library"
 
 # Sign with Developer ID
 bash scripts/codesign.sh "pkgroot"

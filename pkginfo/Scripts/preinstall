@@ -5,7 +5,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
 # ----------------------------------------
 # unload before install
 
-launchctl unload /Library/LaunchDaemons/org.pqrs.Karabiner-Elements.plist
+if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist ]; then
+    launchctl unload /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
+fi
 
 kextunload -b org.pqrs.driver.VirtualHIDManager
 kextunload -b org.pqrs.driver.VirtualHIDKeyboard
@@ -13,7 +15,8 @@ kextunload -b org.pqrs.driver.VirtualHIDPointing
 
 # ----------------------------------------
 # uninstall
-rm -f  '/Library/LaunchDaemons/org.pqrs.Karabiner-Elements.plist'
+rm -f  '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist'
+rm -f  '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist'
 rm -rf '/Library/Application Support/org.pqrs/Karabiner-Elements'
 rm -rf '/Library/Extensions/org.pqrs.driver.VirtualHIDKeyboard.kext'
 rm -rf '/Library/Extensions/org.pqrs.driver.VirtualHIDManager.kext'
