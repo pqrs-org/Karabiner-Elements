@@ -37,7 +37,7 @@
 		3445E0591D801AF7004555F9 = {
 			isa = PBXGroup;
 			children = (
-				3445E0641D801AF7004555F9 /* Karabiner-Elements Preferences Window */,
+				3445E0641D801AF7004555F9 /* PreferencesWindow */,
 				3445E0631D801AF7004555F9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -50,17 +50,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		3445E0641D801AF7004555F9 /* Karabiner-Elements Preferences Window */ = {
+		3445E0641D801AF7004555F9 /* PreferencesWindow */ = {
 			isa = PBXGroup;
 			children = (
 				3445E0651D801AF7004555F9 /* AppDelegate.h */,
 				3445E0661D801AF7004555F9 /* AppDelegate.m */,
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
-				3445E06D1D801AF7004555F9 /* MainMenu.xib */,
 				3445E0701D801AF7004555F9 /* Info.plist */,
+				3445E06D1D801AF7004555F9 /* MainMenu.xib */,
 				3445E0681D801AF7004555F9 /* Supporting Files */,
 			);
-			path = "PreferencesWindow";
+			path = PreferencesWindow;
 			sourceTree = "<group>";
 		};
 		3445E0681D801AF7004555F9 /* Supporting Files */ = {
@@ -104,7 +104,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3445E05D1D801AF7004555F9 /* Build configuration list for PBXProject "Karabiner-Elements" */;
+			buildConfigurationList = 3445E05D1D801AF7004555F9 /* Build configuration list for PBXProject "PreferencesWindow" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -200,7 +200,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = "PreferencesWindow/Info.plist";
+				INFOPLIST_FILE = PreferencesWindow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.pqrs.Karabiner-Elements-Preferences-Window";
 				PRODUCT_NAME = "Karabiner-Elements";
@@ -210,7 +210,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3445E05D1D801AF7004555F9 /* Build configuration list for PBXProject "Karabiner-Elements" */ = {
+		3445E05D1D801AF7004555F9 /* Build configuration list for PBXProject "PreferencesWindow" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3445E0721D801AF7004555F9 /* Release */,
@@ -224,6 +224,7 @@
 				3445E0751D801AF7004555F9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
