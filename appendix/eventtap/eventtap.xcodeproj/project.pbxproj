@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		344149151D212A1600C8ECFC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 344149141D212A1600C8ECFC /* main.cpp */; };
 		34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34BB0F0A1D22853700372174 /* IOKit.framework */; };
 		34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E9F62E1D2134770007AE90 /* Carbon.framework */; };
+		34ECBDF61D7FB80C00F1ED08 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34ECBDF51D7FB80C00F1ED08 /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,13 +26,9 @@
 
 /* Begin PBXFileReference section */
 		344149111D212A1600C8ECFC /* eventtap */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = eventtap; sourceTree = BUILT_PRODUCTS_DIR; };
-		344149141D212A1600C8ECFC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		349115941D2F754500FE93B7 /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = include/human_interface_device.hpp; sourceTree = "<group>"; };
-		3495C67D1D368FF0007CB9E7 /* apple_embedded_keyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = apple_embedded_keyboard.hpp; path = include/apple_embedded_keyboard.hpp; sourceTree = "<group>"; };
-		3495C67E1D368FF0007CB9E7 /* eventtap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = eventtap.hpp; path = include/eventtap.hpp; sourceTree = "<group>"; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		34E450281D2AB18B00C5AC13 /* event_eventtap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_eventtap.hpp; path = include/event_eventtap.hpp; sourceTree = "<group>"; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		34ECBDF51D7FB80C00F1ED08 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,8 +64,7 @@
 		344149131D212A1600C8ECFC /* eventtap */ = {
 			isa = PBXGroup;
 			children = (
-				34E450271D2AB18400C5AC13 /* include */,
-				344149141D212A1600C8ECFC /* main.cpp */,
+				34ECBDF51D7FB80C00F1ED08 /* main.cpp */,
 			);
 			path = eventtap;
 			sourceTree = "<group>";
@@ -81,17 +76,6 @@
 				34E9F62E1D2134770007AE90 /* Carbon.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		34E450271D2AB18400C5AC13 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				3495C67D1D368FF0007CB9E7 /* apple_embedded_keyboard.hpp */,
-				34E450281D2AB18B00C5AC13 /* event_eventtap.hpp */,
-				3495C67E1D368FF0007CB9E7 /* eventtap.hpp */,
-				349115941D2F754500FE93B7 /* human_interface_device.hpp */,
-			);
-			name = include;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,7 +133,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				344149151D212A1600C8ECFC /* main.cpp in Sources */,
+				34ECBDF61D7FB80C00F1ED08 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
