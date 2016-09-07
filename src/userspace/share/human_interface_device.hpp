@@ -50,8 +50,7 @@ public:
     // ----------------------------------------
     // setup elements_
 
-    auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone);
-    if (elements) {
+    if (auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone)) {
       for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
         // Add to elements_.
         auto element = static_cast<IOHIDElementRef>(const_cast<void*>(CFArrayGetValueAtIndex(elements, i)));

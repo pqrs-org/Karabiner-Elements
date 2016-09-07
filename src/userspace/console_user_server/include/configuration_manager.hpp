@@ -9,6 +9,8 @@
 
 class configuration_manager final {
 public:
+  configuration_manager(const configuration_manager&) = delete;
+
   configuration_manager(spdlog::logger& logger,
                         const std::string& configuration_directory,
                         grabber_client& grabber_client,

@@ -59,42 +59,35 @@ public:
     return get_string_property(service, CFSTR(kIOHIDSerialNumberKey));
   }
 
-  static CFDictionaryRef _Nonnull create_matching_dictionary(CFStringRef _Nonnull usage_page_key, uint32_t usage_page,
+  static CFDictionaryRef _Nullable create_matching_dictionary(CFStringRef _Nonnull usage_page_key, uint32_t usage_page,
                                                              CFStringRef _Nonnull usage_key, uint32_t usage) {
-    auto device_matching_dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-    if (!device_matching_dictionary) {
-      goto finish;
-    }
-
-    // usage_page
-    if (!usage_page) {
-      goto finish;
-    } else {
-      auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage_page);
-      if (!number) {
-        goto finish;
+    if (auto device_matching_dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                                                    0,
+                                                                    &kCFTypeDictionaryKeyCallBacks,
+                                                                    &kCFTypeDictionaryValueCallBacks)) {
+      // usage_page
+      if (usage_page) {
+        if (auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage_page)) {
+          CFDictionarySetValue(device_matching_dictionary, usage_page_key, number);
+          CFRelease(number);
+        }
       }
-      CFDictionarySetValue(device_matching_dictionary, usage_page_key, number);
-      CFRelease(number);
-    }
 
-    // usage (The usage is only valid if the usage page is also defined)
-    if (!usage) {
-      goto finish;
-    } else {
-      auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage);
-      if (!number) {
-        goto finish;
+      // usage (The usage is only valid if the usage page is also defined)
+      if (usage) {
+        if (auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage)) {
+          CFDictionarySetValue(device_matching_dictionary, usage_key, number);
+          CFRelease(number);
+        }
       }
-      CFDictionarySetValue(device_matching_dictionary, usage_key, number);
-      CFRelease(number);
+
+      return device_matching_dictionary;
     }
 
-  finish:
-    return device_matching_dictionary;
+    return nullptr;
   }
 
-  static CFDictionaryRef _Nonnull create_device_matching_dictionary(uint32_t usage_page, uint32_t usage) {
+  static CFDictionaryRef _Nullable create_device_matching_dictionary(uint32_t usage_page, uint32_t usage) {
     return create_matching_dictionary(CFSTR(kIOHIDDeviceUsagePageKey), usage_page,
                                       CFSTR(kIOHIDDeviceUsageKey), usage);
   }
@@ -106,8 +99,7 @@ public:
     }
 
     for (const auto& usage_pair : usage_pairs) {
-      auto device_matching_dictionary = create_device_matching_dictionary(usage_pair.first, usage_pair.second);
-      if (device_matching_dictionary) {
+      if (auto device_matching_dictionary = create_device_matching_dictionary(usage_pair.first, usage_pair.second)) {
         CFArrayAppendValue(device_matching_dictionaries, device_matching_dictionary);
         CFRelease(device_matching_dictionary);
       }
@@ -116,7 +108,7 @@ public:
     return device_matching_dictionaries;
   }
 
-  static CFDictionaryRef _Nonnull create_element_matching_dictionary(uint32_t usage_page, uint32_t usage) {
+  static CFDictionaryRef _Nullable create_element_matching_dictionary(uint32_t usage_page, uint32_t usage) {
     return create_matching_dictionary(CFSTR(kIOHIDElementUsagePageKey), usage_page,
                                       CFSTR(kIOHIDElementUsageKey), usage);
   }
