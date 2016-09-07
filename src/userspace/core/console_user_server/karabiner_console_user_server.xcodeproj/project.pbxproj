@@ -25,18 +25,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../share/local_datagram_server.hpp; sourceTree = SOURCE_ROOT; };
-		341F59CC1D516B1500B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../share/constants.hpp; sourceTree = SOURCE_ROOT; };
-		341F59D51D535D2500B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../share/local_datagram_client.hpp; sourceTree = SOURCE_ROOT; };
-		341F59DB1D57789500B441A8 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../share/iokit_utility.hpp; sourceTree = SOURCE_ROOT; };
+		341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../../share/local_datagram_server.hpp; sourceTree = SOURCE_ROOT; };
+		341F59CC1D516B1500B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = SOURCE_ROOT; };
+		341F59D51D535D2500B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../../share/local_datagram_client.hpp; sourceTree = SOURCE_ROOT; };
+		341F59DB1D57789500B441A8 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../../share/iokit_utility.hpp; sourceTree = SOURCE_ROOT; };
 		344149111D212A1600C8ECFC /* karabiner_console_user_server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner_console_user_server; sourceTree = BUILT_PRODUCTS_DIR; };
 		345A9DE31D7DD6E600578F84 /* configuration_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_manager.hpp; path = include/configuration_manager.hpp; sourceTree = SOURCE_ROOT; };
-		345A9DE41D7DD7A200578F84 /* configuration_core.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_core.hpp; path = ../share/configuration_core.hpp; sourceTree = SOURCE_ROOT; };
-		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
-		345AC0031D620E28009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
-		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
-		3492C9B61D752C820055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
-		3492C9BC1D772D8B0055988F /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
+		345A9DE41D7DD7A200578F84 /* configuration_core.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_core.hpp; path = ../../share/configuration_core.hpp; sourceTree = SOURCE_ROOT; };
+		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
+		345AC0031D620E28009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
+		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9B61D752C820055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../../share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9BC1D772D8B0055988F /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A971D685A4600DD480B /* connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connection_manager.hpp; path = include/connection_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A981D685A4600DD480B /* grabber_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_client.hpp; path = include/grabber_client.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9A1D685A4600DD480B /* keyboard_event_output_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = keyboard_event_output_manager.hpp; path = include/keyboard_event_output_manager.hpp; sourceTree = SOURCE_ROOT; };
@@ -44,8 +44,8 @@
 		34A88A9C1D685A4600DD480B /* receiver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = receiver.hpp; path = include/receiver.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9D1D685A4600DD480B /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9E1D685A5000DD480B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
-		34A88AA01D685A5C00DD480B /* karabiner_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = karabiner_version.h; path = ../../share/karabiner_version.h; sourceTree = SOURCE_ROOT; };
-		34A88AA71D6DF8E300DD480B /* userspace_types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_types.hpp; path = ../share/userspace_types.hpp; sourceTree = SOURCE_ROOT; };
+		34A88AA01D685A5C00DD480B /* karabiner_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = karabiner_version.h; path = ../../../share/karabiner_version.h; sourceTree = SOURCE_ROOT; };
+		34A88AA71D6DF8E300DD480B /* userspace_types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_types.hpp; path = ../../share/userspace_types.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -232,7 +232,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					../vendor,
+					../../vendor,
 					/opt/local/include,
 					/usr/local/include,
 				);
