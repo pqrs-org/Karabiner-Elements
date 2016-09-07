@@ -28,7 +28,7 @@ done
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
-cp src/userspace/grabber/build/Release/karabiner_grabber "$basedir"
+cp src/userspace/core/grabber/build/Release/karabiner_grabber "$basedir"
 cp src/userspace/core/console_user_server/build/Release/karabiner_console_user_server "$basedir"
 
 mkdir -p                  "pkgroot/Library"
