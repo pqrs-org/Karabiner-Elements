@@ -122,7 +122,7 @@ private:
 
         auto kr = IOServiceOpen(service_, mach_task_self(), kIOHIDParamConnectType, &connect_);
         if (kr != KERN_SUCCESS) {
-          logger_.error("IOServiceOpen error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+          logger_.error("IOServiceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
           connect_ = IO_OBJECT_NULL;
         }
 
@@ -154,7 +154,7 @@ private:
     io_iterator_t it;
     auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, matching_dictionary_, &it);
     if (kr != KERN_SUCCESS) {
-      logger_.error("IOServiceGetMatchingServices error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+      logger_.error("IOServiceGetMatchingServices error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
     } else {
       matched_callback(it);
       IOObjectRelease(it);
@@ -176,7 +176,7 @@ private:
 
     auto kr = IOHIDPostEvent(connect_, event_type, location, event_data, event_data_version, event_flags, options);
     if (kr != KERN_SUCCESS) {
-      logger_.error("IOHIDPostEvent error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+      logger_.error("IOHIDPostEvent error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
     }
   }
 
@@ -189,7 +189,7 @@ private:
     bool value;
     auto kr = IOHIDGetModifierLockState(connect_, selector, &value);
     if (kr != KERN_SUCCESS) {
-      logger_.error("IOHIDGetModifierLockState error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+      logger_.error("IOHIDGetModifierLockState error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
     }
 
     return value;
@@ -203,7 +203,7 @@ private:
 
     auto kr = IOHIDSetModifierLockState(connect_, selector, state);
     if (kr != KERN_SUCCESS) {
-      logger_.error("IOHIDSetModifierLockState error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+      logger_.error("IOHIDSetModifierLockState error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
       return false;
     }
 
@@ -214,7 +214,7 @@ private:
     if (connect_) {
       auto kr = IOServiceClose(connect_);
       if (kr != kIOReturnSuccess) {
-        logger_.error("IOConnectRelease error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+        logger_.error("IOConnectRelease error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
       }
       connect_ = IO_OBJECT_NULL;
     }
