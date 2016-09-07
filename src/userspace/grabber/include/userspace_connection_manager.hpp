@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "device_grabber.hpp"
 #include "grabber_server.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
@@ -9,7 +10,10 @@
 
 class userspace_connection_manager final {
 public:
-  userspace_connection_manager(void) : timer_(0), last_uid_(0) {
+  userspace_connection_manager(device_grabber& device_grabber) : device_grabber_(device_grabber),
+                                                                 timer_(0),
+                                                                 last_uid_(0),
+                                                                 grabber_server_(device_grabber_) {
     prepare_socket_directory(0);
     grabber_server_.stop();
 
@@ -57,6 +61,7 @@ public:
   }
 
 private:
+  device_grabber& device_grabber_;
   dispatch_source_t timer_;
   uid_t last_uid_;
 

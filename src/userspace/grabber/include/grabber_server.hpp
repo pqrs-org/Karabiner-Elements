@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "device_grabber.hpp"
+#include "device_grabber.hpp"
 #include "local_datagram_server.hpp"
 #include "session.hpp"
 #include "userspace_types.hpp"
@@ -9,7 +10,9 @@
 
 class grabber_server final {
 public:
-  grabber_server(void) : exit_loop_(false), grabber_client_pid_monitor_(0) {
+  grabber_server(device_grabber& device_grabber) : device_grabber_(device_grabber),
+                                                   exit_loop_(false),
+                                                   grabber_client_pid_monitor_(0) {
     enum {
       buffer_length = 1024 * 1024,
     };
@@ -41,7 +44,7 @@ public:
 
     server_.reset(nullptr);
     release_grabber_client_pid_monitor();
-    device_grabber_.reset(nullptr);
+    device_grabber_.ungrab_devices();
   }
 
   void worker(void) {
@@ -64,8 +67,7 @@ public:
 
             logger::get_logger().info("grabber_client is connected (pid:{0})", pid);
 
-            device_grabber_.reset(nullptr);
-            device_grabber_ = std::make_unique<device_grabber>();
+            device_grabber_.grab_devices();
 
             // monitor the last process
             release_grabber_client_pid_monitor();
@@ -79,7 +81,7 @@ public:
               dispatch_source_set_event_handler(grabber_client_pid_monitor_, ^{
                 logger::get_logger().info("grabber_client is exited (pid:{0})", pid);
 
-                device_grabber_.reset(nullptr);
+                device_grabber_.ungrab_devices();
                 release_grabber_client_pid_monitor();
               });
               dispatch_resume(grabber_client_pid_monitor_);
@@ -88,9 +90,7 @@ public:
           break;
 
         case krbn::operation_type::clear_simple_modifications:
-          if (device_grabber_) {
-            device_grabber_->clear_simple_modifications();
-          }
+          device_grabber_.clear_simple_modifications();
           break;
 
         case krbn::operation_type::add_simple_modification:
@@ -98,9 +98,7 @@ public:
             logger::get_logger().error("invalid size for krbn::operation_type::add_simple_modification ({0})", n);
           } else {
             auto p = reinterpret_cast<krbn::operation_type_add_simple_modification_struct*>(&(buffer_[0]));
-            if (device_grabber_) {
-              device_grabber_->add_simple_modification(p->from_key_code, p->to_key_code);
-            }
+            device_grabber_.add_simple_modification(p->from_key_code, p->to_key_code);
           }
           break;
 
@@ -120,12 +118,12 @@ private:
     }
   }
 
+  device_grabber& device_grabber_;
+
   std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
   std::thread thread_;
   volatile bool exit_loop_;
-
-  std::unique_ptr<device_grabber> device_grabber_;
 
   dispatch_source_t grabber_client_pid_monitor_;
 };

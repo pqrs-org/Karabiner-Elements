@@ -19,7 +19,9 @@ int main(int argc, const char* argv[]) {
   system("/sbin/kextload /Library/Extensions/org.pqrs.driver.VirtualHIDPointing.kext");
   system("/sbin/kextload /Library/Extensions/org.pqrs.driver.VirtualHIDManager.kext");
 
-  userspace_connection_manager connection_manager;
+  device_grabber device_grabber;
+  userspace_connection_manager connection_manager(device_grabber);
+
   CFRunLoopRun();
 
   return 0;

@@ -34,7 +34,7 @@ public:
 
     auto kr = IOConnectCallStructMethod(connect_, selector, input_struct, input_struct_length, output_struct, output_struct_length);
     if (kr != KERN_SUCCESS) {
-      logger_.error("IOConnectCallStructMethod error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+      logger_.error("IOConnectCallStructMethod error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
     }
   }
 
@@ -50,7 +50,7 @@ private:
 
         auto kr = IOServiceOpen(service_, mach_task_self(), kIOHIDServerConnectType, &connect_);
         if (kr != KERN_SUCCESS) {
-          logger_.error("IOServiceOpen error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+          logger_.error("IOServiceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
           connect_ = IO_OBJECT_NULL;
         }
 
@@ -75,7 +75,7 @@ private:
     if (connect_) {
       auto kr = IOServiceClose(connect_);
       if (kr != kIOReturnSuccess) {
-        logger_.error("IOConnectRelease error: 0x{1:x} @ {0}", __PRETTY_FUNCTION__, kr);
+        logger_.error("IOConnectRelease error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
       }
       connect_ = IO_OBJECT_NULL;
     }

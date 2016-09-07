@@ -16,13 +16,14 @@
 
 class device_grabber final {
 public:
+  device_grabber(const device_grabber&) = delete;
+
   device_grabber(void) : hid_system_client_(logger::get_logger()),
                          virtual_hid_manager_client_(logger::get_logger()),
+                         grab_timer_(0),
+                         grab_retry_count_(0),
+                         grabbing_(false),
                          console_user_client_() {
-    logger::get_logger().info(__PRETTY_FUNCTION__);
-
-    hid_system_client_.set_caps_lock_state(false);
-
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
@@ -46,10 +47,7 @@ public:
   }
 
   ~device_grabber(void) {
-    logger::get_logger().info(__PRETTY_FUNCTION__);
-
-    hid_system_client_.set_caps_lock_state(false);
-    set_caps_lock_led_state(krbn::led_state::off);
+    cancel_grab_timer();
 
     if (manager_) {
       IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
@@ -68,6 +66,69 @@ public:
     std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
 
     simple_modifications_[from_key_code] = to_key_code;
+  }
+
+  void grab_devices(void) {
+    cancel_grab_timer();
+
+    grab_retry_count_ = 0;
+
+    grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), 0.1 * NSEC_PER_SEC, 0);
+    dispatch_source_set_event_handler(grab_timer_, ^{
+      if (get_all_devices_pressed_keys_count() > 0) {
+        ++grab_retry_count_;
+        if (grab_retry_count_ > 10) {
+          grab_retry_count_ = 0;
+          logger::get_logger().warn("There are pressed down keys in some devices. Please release them.");
+        }
+        return;
+      }
+
+      logger::get_logger().info("grab_devices");
+
+      grabbing_ = true;
+
+      for (auto&& it : hids_) {
+        grab(*(it.second));
+        (it.second)->clear_changed_keys();
+        (it.second)->clear_pressed_keys();
+      }
+
+      pressed_key_usages_.clear();
+      modifier_flag_manager_.reset();
+      hid_system_client_.set_caps_lock_state(false);
+
+      cancel_grab_timer();
+    });
+    dispatch_resume(grab_timer_);
+  }
+
+  void ungrab_devices(void) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      logger::get_logger().info("ungrab_devices");
+
+      grabbing_ = false;
+
+      cancel_grab_timer();
+
+      for (auto&& it : hids_) {
+        ungrab(*(it.second));
+        (it.second)->clear_changed_keys();
+        (it.second)->clear_pressed_keys();
+      }
+
+      pressed_key_usages_.clear();
+      modifier_flag_manager_.reset();
+      hid_system_client_.set_caps_lock_state(false);
+
+      // release all keys in VirtualHIDKeyboard.
+      hid_report::keyboard_input report;
+      last_keyboard_input_report_ = report;
+      virtual_hid_manager_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
+                                                     static_cast<const void*>(&report), sizeof(report),
+                                                     nullptr, 0);
+    });
   }
 
 private:
@@ -92,41 +153,30 @@ private:
     hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
 
+    auto manufacturer = dev->get_manufacturer();
+    auto product = dev->get_product();
+    auto vendor_id = dev->get_vendor_id();
+    auto product_id = dev->get_product_id();
+    auto location_id = dev->get_location_id();
+    auto serial_number = dev->get_serial_number();
+
     logger::get_logger().info("matching device: "
                               "manufacturer:{1}, "
                               "product:{2}, "
-                              "vendor_id:0x{3:x}, "
-                              "product_id:0x{4:x}, "
-                              "location_id:0x{5:x}, "
+                              "vendor_id:{3:#x}, "
+                              "product_id:{4:#x}, "
+                              "location_id:{5:#x}, "
                               "serial_number:{6} "
                               "@ {0}",
                               __PRETTY_FUNCTION__,
-                              dev->get_manufacturer(),
-                              dev->get_product(),
-                              dev->get_vendor_id(),
-                              dev->get_product_id(),
-                              dev->get_location_id(),
-                              dev->get_serial_number_string());
+                              manufacturer ? *manufacturer : "",
+                              product ? *product : "",
+                              vendor_id ? *vendor_id : 0,
+                              product_id ? *product_id : 0,
+                              location_id ? *location_id : 0,
+                              serial_number ? *serial_number : "");
 
-    if (dev->get_manufacturer() != "pqrs.org") {
-      // seize device
-      dev->grab(std::bind(&device_grabber::value_callback,
-                          this,
-                          std::placeholders::_1,
-                          std::placeholders::_2,
-                          std::placeholders::_3,
-                          std::placeholders::_4,
-                          std::placeholders::_5,
-                          std::placeholders::_6));
-
-      // set keyboard led
-      auto caps_lock_state = hid_system_client_.get_caps_lock_state();
-      if (caps_lock_state && *caps_lock_state) {
-        dev->set_caps_lock_led_state(krbn::led_state::on);
-      } else {
-        dev->set_caps_lock_led_state(krbn::led_state::off);
-      }
-    }
+    observe(*dev);
   }
 
   static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
@@ -151,19 +201,68 @@ private:
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
+        auto vendor_id = dev->get_vendor_id();
+        auto product_id = dev->get_product_id();
+        auto location_id = dev->get_location_id();
         logger::get_logger().info("removal device: "
-                                  "vendor_id:0x{1:x}, "
-                                  "product_id:0x{2:x}, "
-                                  "location_id:0x{3:x} "
+                                  "vendor_id:{1:#x}, "
+                                  "product_id:{2:#x}, "
+                                  "location_id:{3:#x} "
                                   "@ {0}",
                                   __PRETTY_FUNCTION__,
-                                  dev->get_vendor_id(),
-                                  dev->get_product_id(),
-                                  dev->get_location_id());
+                                  vendor_id ? *vendor_id : 0,
+                                  product_id ? *product_id : 0,
+                                  location_id ? *location_id : 0);
 
         hids_.erase(it);
       }
     }
+  }
+
+  void observe(human_interface_device& hid) {
+    human_interface_device::value_callback callback;
+    hid.observe(callback);
+  }
+
+  void unobserve(human_interface_device& hid) {
+    hid.unobserve();
+  }
+
+  void grab(human_interface_device& hid) {
+    auto manufacturer = hid.get_manufacturer();
+    if (manufacturer && *manufacturer == "pqrs.org") {
+      return;
+    }
+
+    unobserve(hid);
+
+    // seize device
+    hid.grab(std::bind(&device_grabber::value_callback,
+                       this,
+                       std::placeholders::_1,
+                       std::placeholders::_2,
+                       std::placeholders::_3,
+                       std::placeholders::_4,
+                       std::placeholders::_5,
+                       std::placeholders::_6));
+
+    // set keyboard led
+    auto caps_lock_state = hid_system_client_.get_caps_lock_state();
+    if (caps_lock_state && *caps_lock_state) {
+      hid.set_caps_lock_led_state(krbn::led_state::on);
+    } else {
+      hid.set_caps_lock_led_state(krbn::led_state::off);
+    }
+  }
+
+  void ungrab(human_interface_device& hid) {
+    auto manufacturer = hid.get_manufacturer();
+    if (manufacturer && *manufacturer == "pqrs.org") {
+      return;
+    }
+
+    hid.ungrab();
+    observe(hid);
   }
 
   void value_callback(human_interface_device& device,
@@ -172,6 +271,10 @@ private:
                       uint32_t usage_page,
                       uint32_t usage,
                       CFIndex integer_value) {
+    if (!grabbing_) {
+      return;
+    }
+
     switch (usage_page) {
     case kHIDPage_KeyboardOrKeypad:
       if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
@@ -362,10 +465,21 @@ private:
     }
   }
 
+  void cancel_grab_timer(void) {
+    if (grab_timer_) {
+      dispatch_source_cancel(grab_timer_);
+      dispatch_release(grab_timer_);
+      grab_timer_ = 0;
+    }
+  }
+
   hid_system_client hid_system_client_;
   virtual_hid_manager_client virtual_hid_manager_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
+  dispatch_source_t _Nullable grab_timer_;
+  size_t grab_retry_count_;
+  bool grabbing_;
   std::list<uint32_t> pressed_key_usages_;
 
   manipulator::modifier_flag_manager modifier_flag_manager_;
