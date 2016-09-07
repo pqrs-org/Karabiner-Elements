@@ -41,9 +41,14 @@ public:
   human_interface_device(spdlog::logger& logger,
                          IOHIDDeviceRef _Nonnull device) : logger_(logger),
                                                            device_(device),
-                                                           queue_(nullptr),
-                                                           grabbed_(false) {
+                                                           queue_(nullptr) {
+    // ----------------------------------------
+    // retain device_
+
     CFRetain(device_);
+
+    // ----------------------------------------
+    // setup elements_
 
     auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone);
     if (elements) {
@@ -61,29 +66,48 @@ public:
       }
       CFRelease(elements);
     }
+
+    // ----------------------------------------
+    // setup queue_
+
+    const CFIndex depth = 1024;
+    queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
+    if (!queue_) {
+      logger_.error("IOHIDQueueCreate error @ {0}", __PRETTY_FUNCTION__);
+    } else {
+      // Add elements into queue_.
+      for (const auto& it : elements_) {
+        IOHIDQueueAddElement(queue_, it.second);
+      }
+      IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
+    }
   }
 
   ~human_interface_device(void) {
     // Unregister all callbacks.
+    unschedule();
     unregister_report_callback();
     unregister_value_callback();
+    close();
 
-    unschedule();
-
-    if (grabbed_) {
-      ungrab();
-    } else {
-      close();
-    }
+    // ----------------------------------------
+    // release queue_
 
     if (queue_) {
       CFRelease(queue_);
+      queue_ = nullptr;
     }
+
+    // ----------------------------------------
+    // release elements_
 
     for (const auto& it : elements_) {
       CFRelease(it.second);
     }
     elements_.clear();
+
+    // ----------------------------------------
+    // release device_
 
     CFRelease(device_);
   }
@@ -127,31 +151,15 @@ public:
   }
 
   void register_value_callback(const value_callback& callback) {
-    if (!queue_) {
-      const CFIndex depth = 1024;
-      queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
-      if (!queue_) {
-        logger_.error("IOHIDQueueCreate error @ {0}", __PRETTY_FUNCTION__);
-        return;
-      }
-
-      // Add elements into queue_.
-      for (const auto& it : elements_) {
-        IOHIDQueueAddElement(queue_, it.second);
-      }
-    }
-
     value_callback_ = callback;
-    IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
-
-    IOHIDQueueStart(queue_);
+    if (queue_) {
+      IOHIDQueueStart(queue_);
+    }
   }
 
   void unregister_value_callback(void) {
     if (queue_) {
       IOHIDQueueStop(queue_);
-      // There is not a way to unregister ValueAvailableCallback.
-      // Do not call IOHIDQueueRegisterValueAvailableCallback with nullptr.
     }
     value_callback_ = nullptr;
   }
@@ -168,17 +176,15 @@ public:
     schedule();
   }
 
+  // High-level utility method.
   void unobserve(void) {
     unschedule();
     unregister_value_callback();
     close();
   }
 
+  // High-level utility method.
   void grab(const value_callback& callback) {
-    if (grabbed_) {
-      ungrab();
-    }
-
     auto r = open(kIOHIDOptionsTypeSeizeDevice);
     if (r != kIOReturnSuccess) {
       logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
@@ -186,39 +192,14 @@ public:
     }
 
     register_value_callback(callback);
-
     schedule();
-
-    grabbed_ = true;
   }
 
   // High-level utility method.
   void ungrab(void) {
-    if (!grabbed_) {
-      return;
-    }
-
     unschedule();
-
     unregister_value_callback();
-
-    if (queue_) {
-      // Remove all elements.
-      for (const auto& it : elements_) {
-        IOHIDQueueRemoveElement(queue_, it.second);
-      }
-
-      CFRelease(queue_);
-      queue_ = nullptr;
-    }
-
-    IOReturn r = close();
-    if (r != kIOReturnSuccess) {
-      logger_.error("IOHIDDeviceClose error: {1} @ {0}", __PRETTY_FUNCTION__, r);
-      return;
-    }
-
-    grabbed_ = false;
+    close();
   }
 
   boost::optional<long> get_max_input_report_size(void) const {
@@ -271,8 +252,17 @@ public:
     return fn_changed_keys_;
   }
 
+  void clear_changed_keys(void) {
+    simple_changed_keys_.clear();
+    fn_changed_keys_.clear();
+  }
+
   size_t get_pressed_keys_count(void) const {
     return pressed_key_usages_.size();
+  }
+
+  void clear_pressed_keys(void) {
+    pressed_key_usages_.clear();
   }
 
 #pragma mark - usage specific utilities
@@ -429,7 +419,6 @@ private:
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
-  bool grabbed_;
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
   report_callback report_callback_;
