@@ -19,7 +19,7 @@ open('| ./dump_key_code_map/build/Release/dump_key_code_map') do |f|
   key_code_map = JSON.parse(f.read)
 end
 
-open('IOHIDUsageTables.h') do |f|
+open('vendor/IOHIDUsageTables.h') do |f|
   is_target = false
   count = 0
   while l = f.gets
