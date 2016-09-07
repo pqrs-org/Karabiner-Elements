@@ -80,9 +80,9 @@ private:
     logger::get_logger().info("matching device: "
                               "manufacturer:{1}, "
                               "product:{2}, "
-                              "vendor_id:0x{3:x}, "
-                              "product_id:0x{4:x}, "
-                              "location_id:0x{5:x}, "
+                              "vendor_id:{3:#x}, "
+                              "product_id:{4:#x}, "
+                              "location_id:{5:#x}, "
                               "serial_number:{6} "
                               "@ {0}",
                               __PRETTY_FUNCTION__,
@@ -142,9 +142,9 @@ private:
         auto product_id = dev->get_product_id();
         auto location_id = dev->get_location_id();
         logger::get_logger().info("removal device: "
-                                  "vendor_id:0x{1:x}, "
-                                  "product_id:0x{2:x}, "
-                                  "location_id:0x{3:x} "
+                                  "vendor_id:{1:#x}, "
+                                  "product_id:{2:#x}, "
+                                  "location_id:{3:#x} "
                                   "@ {0}",
                                   __PRETTY_FUNCTION__,
                                   vendor_id ? *vendor_id : 0,
