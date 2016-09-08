@@ -35,6 +35,12 @@ The highest layer is IOHIDQueue which provides us the HID values.
 It requires posting HID events.<br />
 The IOHIKeyboard processes the reports by passing reports to `handleReport`.
 
+However, this method is not enough polite.
+Calling the `handleReport` method directly causes a problem that OS X ignores `EnableSecureEventInput`.
+So we have to reject this approach.
+
+(Is there another way to push input report to virtual device...?)
+
 ## IOKit device value
 
 It requires posting HID events.<br />
