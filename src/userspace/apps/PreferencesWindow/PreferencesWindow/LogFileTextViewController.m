@@ -29,7 +29,7 @@
       @strongify(self);
       if (!self) return;
 
-      self.currentTime.stringValue = [NSString stringWithFormat:@"Current Time: %@", [formatter stringFromDate:[NSDate date]]];
+      self.currentTime.stringValue = [formatter stringFromDate:[NSDate date]];
 
       NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
       NSDate* fileModificationDate = [attributes fileModificationDate];

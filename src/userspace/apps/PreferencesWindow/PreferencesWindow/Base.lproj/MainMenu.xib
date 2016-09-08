@@ -19,13 +19,13 @@
         </customObject>
         <customObject id="Dgl-Py-BWv" customClass="LogFileTextViewController">
             <connections>
-                <outlet property="currentTime" destination="Nx7-wi-GX7" id="ymI-TX-8qO"/>
+                <outlet property="currentTime" destination="ps3-gC-A4S" id="Lbv-FS-1JU"/>
                 <outlet property="textView" destination="vyq-xs-cqF" id="w2u-ge-mVT"/>
             </connections>
         </customObject>
         <customObject id="wKd-bU-aLe" customClass="LogFileTextViewController">
             <connections>
-                <outlet property="currentTime" destination="KcB-Mj-XJC" id="CT4-23-B35"/>
+                <outlet property="currentTime" destination="WXq-hw-PS5" id="1cb-f1-Tq3"/>
                 <outlet property="textView" destination="FCD-qq-ne2" id="JaP-FC-B88"/>
             </connections>
         </customObject>
@@ -399,9 +399,9 @@ This function is not implemented yet.</string>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jGV-Pr-8As">
-                                            <rect key="frame" x="15" y="413" width="224" height="17"/>
+                                            <rect key="frame" x="15" y="413" width="207" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="/var/log/karabiner/grabber_log.txt" id="zEn-bG-kO2">
-                                                <font key="font" metaFont="systemBold"/>
+                                                <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -435,9 +435,17 @@ This function is not implemented yet.</string>
                                             </scroller>
                                         </scrollView>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Nx7-wi-GX7">
-                                            <rect key="frame" x="25" y="228" width="80" height="14"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Current Time: " id="lSA-Nw-fks">
+                                            <rect key="frame" x="25" y="228" width="77" height="14"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Current Time:" id="lSA-Nw-fks">
                                                 <font key="font" metaFont="system" size="11"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ps3-gC-A4S">
+                                            <rect key="frame" x="103" y="228" width="134" height="14"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="yyyy-mm-dd hh:mm:ss" id="Qd0-1l-8FU">
+                                                <font key="font" metaFont="systemBold" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -449,9 +457,9 @@ This function is not implemented yet.</string>
                                             <font key="titleFont" metaFont="system"/>
                                         </box>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="O5H-Qe-BvI">
-                                            <rect key="frame" x="15" y="194" width="302" height="17"/>
+                                            <rect key="frame" x="15" y="194" width="280" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="~/.karabiner.d/log/console_user_server_log.txt" id="byo-Qj-XKk">
-                                                <font key="font" metaFont="systemBold"/>
+                                                <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -492,13 +500,24 @@ This function is not implemented yet.</string>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WXq-hw-PS5">
+                                            <rect key="frame" x="106" y="8" width="134" height="14"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="yyyy-mm-dd hh:mm:ss" id="Sjj-XD-36W">
+                                                <font key="font" metaFont="systemBold" size="11"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="WXq-hw-PS5" firstAttribute="leading" secondItem="KcB-Mj-XJC" secondAttribute="trailing" constant="5" id="34R-yE-6Jm"/>
                                         <constraint firstItem="T7K-bf-5ph" firstAttribute="top" secondItem="jGV-Pr-8As" secondAttribute="bottom" constant="8" id="57D-eF-zQX"/>
+                                        <constraint firstItem="ps3-gC-A4S" firstAttribute="centerY" secondItem="Nx7-wi-GX7" secondAttribute="centerY" id="6r4-nu-1Id"/>
                                         <constraint firstAttribute="bottom" secondItem="KcB-Mj-XJC" secondAttribute="bottom" constant="8" id="9fl-NL-2T8"/>
                                         <constraint firstItem="vrs-Ny-6rk" firstAttribute="leading" secondItem="T7K-bf-5ph" secondAttribute="leading" id="9vb-Ll-rLL"/>
                                         <constraint firstItem="T7K-bf-5ph" firstAttribute="leading" secondItem="jGV-Pr-8As" secondAttribute="leading" constant="10" id="B2i-ih-YSP"/>
                                         <constraint firstItem="zKB-Tb-c4C" firstAttribute="centerY" secondItem="Osp-HS-cfM" secondAttribute="centerY" id="E2m-Ui-PoA"/>
+                                        <constraint firstItem="ps3-gC-A4S" firstAttribute="leading" secondItem="Nx7-wi-GX7" secondAttribute="trailing" constant="5" id="Jhn-eK-G4Q"/>
                                         <constraint firstItem="vrs-Ny-6rk" firstAttribute="trailing" secondItem="T7K-bf-5ph" secondAttribute="trailing" id="MrM-rI-Ya3"/>
                                         <constraint firstItem="zKB-Tb-c4C" firstAttribute="top" secondItem="Nx7-wi-GX7" secondAttribute="bottom" constant="8" id="N6J-64-1Bz"/>
                                         <constraint firstItem="jGV-Pr-8As" firstAttribute="leading" secondItem="Osp-HS-cfM" secondAttribute="leading" constant="17" id="T1F-di-n5c"/>
@@ -507,6 +526,7 @@ This function is not implemented yet.</string>
                                         <constraint firstItem="Nx7-wi-GX7" firstAttribute="leading" secondItem="T7K-bf-5ph" secondAttribute="leading" id="UUM-xg-4UN"/>
                                         <constraint firstItem="O5H-Qe-BvI" firstAttribute="top" secondItem="zKB-Tb-c4C" secondAttribute="bottom" constant="8" id="clL-wO-uu9"/>
                                         <constraint firstAttribute="trailing" secondItem="T7K-bf-5ph" secondAttribute="trailing" constant="17" id="fPU-8f-5mV"/>
+                                        <constraint firstItem="WXq-hw-PS5" firstAttribute="centerY" secondItem="KcB-Mj-XJC" secondAttribute="centerY" id="gfG-Bk-hT4"/>
                                         <constraint firstItem="vrs-Ny-6rk" firstAttribute="top" secondItem="O5H-Qe-BvI" secondAttribute="bottom" constant="8" id="hEP-e7-oFj"/>
                                         <constraint firstAttribute="trailing" secondItem="zKB-Tb-c4C" secondAttribute="trailing" constant="17" id="qBT-by-lRg"/>
                                         <constraint firstItem="jGV-Pr-8As" firstAttribute="top" secondItem="Osp-HS-cfM" secondAttribute="top" constant="8" id="qcj-rf-Vtf"/>
