@@ -20,7 +20,7 @@ public:
 
         if (filesystem::is_directory(log_directory)) {
           std::string log_file_path = log_directory + "/karabiner_console_user_server_log";
-          logger = spdlog::rotating_logger_mt("karabiner_console_user_server", log_file_path.c_str(), 5 * 1024 * 1024, 3, true);
+          logger = spdlog::rotating_logger_mt("karabiner_console_user_server", log_file_path.c_str(), 1024 * 1024, 3, true);
         }
       }
 
