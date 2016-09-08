@@ -558,8 +558,8 @@ public:
     if (map.empty()) {
       map[krbn::key_code(kHIDUsage_KeyboardPower)] = NX_POWER_KEY;
       map[krbn::key_code(kHIDUsage_KeyboardMute)] = NX_KEYTYPE_MUTE;
-      map[krbn::key_code(kHIDUsage_KeyboardVolumeUp)] = NX_KEYTYPE_SOUND_DOWN;
-      map[krbn::key_code(kHIDUsage_KeyboardVolumeDown)] = NX_KEYTYPE_SOUND_UP;
+      map[krbn::key_code(kHIDUsage_KeyboardVolumeUp)] = NX_KEYTYPE_SOUND_UP;
+      map[krbn::key_code(kHIDUsage_KeyboardVolumeDown)] = NX_KEYTYPE_SOUND_DOWN;
 
       map[krbn::key_code::vk_consumer_brightness_down] = NX_KEYTYPE_BRIGHTNESS_DOWN;
       map[krbn::key_code::vk_consumer_brightness_up] = NX_KEYTYPE_BRIGHTNESS_UP;
