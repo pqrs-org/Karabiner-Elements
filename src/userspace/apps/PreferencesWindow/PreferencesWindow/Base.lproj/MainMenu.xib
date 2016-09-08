@@ -324,9 +324,21 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9Ub-kd-yPy">
+                                            <rect key="frame" x="11" y="10" width="209" height="32"/>
+                                            <buttonCell key="cell" type="push" title="Quit Karabiner-Elements" bezelStyle="rounded" image="NSStopProgressFreestandingTemplate" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DMD-gs-Fc2">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="quitWithConfirmation:" target="5ke-qB-Wr5" id="Z2I-rE-DWi"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="9Ub-kd-yPy" secondAttribute="bottom" constant="17" id="1YG-lr-JOU"/>
                                         <constraint firstItem="0WE-kI-jqf" firstAttribute="centerX" secondItem="aYZ-Ew-w2F" secondAttribute="centerX" id="B4f-Mh-jz2"/>
+                                        <constraint firstItem="9Ub-kd-yPy" firstAttribute="leading" secondItem="aYZ-Ew-w2F" secondAttribute="leading" constant="17" id="T3K-25-0xX"/>
                                         <constraint firstItem="0WE-kI-jqf" firstAttribute="centerY" secondItem="aYZ-Ew-w2F" secondAttribute="centerY" id="sp3-ft-eJq"/>
                                     </constraints>
                                 </view>
@@ -516,4 +528,7 @@ This function is not implemented yet.</string>
             </view>
         </window>
     </objects>
+    <resources>
+        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
+    </resources>
 </document>
