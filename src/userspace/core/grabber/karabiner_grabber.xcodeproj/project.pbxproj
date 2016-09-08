@@ -35,6 +35,7 @@
 		3446AA8E1D49A41100337B36 /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0021D620C8C009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0041D62163F009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
+		3469EB701D814F140005D30D /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9B71D7573EC0055988F /* virtual_hid_manager_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_client.hpp; path = include/virtual_hid_manager_client.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9B81D7574520055988F /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9B91D757E5D0055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../../share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
@@ -103,6 +104,7 @@
 				34EED7101D6FA38400399AD1 /* apple_hid_usage_tables.hpp */,
 				345AC0041D62163F009D1FB4 /* boost_defs.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
+				3469EB701D814F140005D30D /* filesystem.hpp */,
 				3446AA8D1D49A41100337B36 /* hid_report.hpp */,
 				3492C9B91D757E5D0055988F /* hid_system_client.hpp */,
 				34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */,
