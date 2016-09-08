@@ -35,6 +35,9 @@ mkdir -p                  "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"
 cp -R files/LaunchAgents  "pkgroot/Library"
 
+mkdir -p "pkgroot/Applications"
+cp -R "src/userspace/apps/PreferencesWindow/build/Release/Karabiner-Elements.app" "pkgroot/Applications"
+
 # Sign with Developer ID
 bash scripts/codesign.sh "pkgroot"
 
