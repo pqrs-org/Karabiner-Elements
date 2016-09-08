@@ -353,15 +353,15 @@ Please modify karabiner.json by a text editor at the moment.</string>
                             </tabViewItem>
                             <tabViewItem label="Devices" identifier="" id="q5f-7C-sYB">
                                 <view key="view" id="gJ5-jW-uKl">
-                                    <rect key="frame" x="10" y="33" width="554" height="298"/>
+                                    <rect key="frame" x="10" y="33" width="754" height="298"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KlF-v6-jdq">
-                                            <rect key="frame" x="24" y="132" width="507" height="34"/>
+                                            <rect key="frame" x="124" y="132" width="507" height="34"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="7Wl-CU-gNm">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">You will be able to confirm the connected device status and choose target devices.
-This function is not provided at the moment.</string>
+This function is not implemented yet.</string>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
