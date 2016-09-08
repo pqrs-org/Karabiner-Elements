@@ -78,6 +78,9 @@ public:
   // std::vector<f1,vk_consumer_brightness_down>
   std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_fn_function_keys(void) const {
     auto profile = get_current_profile();
+    if (!profile["fn_function_keys"].is_object()) {
+      profile = get_default_profile();
+    }
     return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
