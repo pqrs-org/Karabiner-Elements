@@ -32,7 +32,6 @@
 
       if (self.fileModificationDate == nil ||
           ![self.fileModificationDate isEqualToDate:fileModificationDate]) {
-        NSLog(@"%@ updated", filePath);
         self.fileModificationDate = fileModificationDate;
         self.textView.string = [NSString stringWithContentsOfFile:filePath
                                                          encoding:NSUTF8StringEncoding
