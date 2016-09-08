@@ -27,9 +27,9 @@
 //                 "f7":  "vk_consumer_previous",
 //                 "f8":  "vk_consumer_play",
 //                 "f9":  "vk_consumer_next",
-//                 "f10": "vk_consumer_mute",
-//                 "f11": "vk_consumer_sound_down",
-//                 "f12": "vk_consumer_sound_up"
+//                 "f10": "mute",
+//                 "f11": "volume_down",
+//                 "f12": "volume_up"
 //             }
 //         },
 //         {
@@ -115,9 +115,9 @@ private:
     json["fn_function_keys"]["f7"] = "vk_consumer_previous";
     json["fn_function_keys"]["f8"] = "vk_consumer_play";
     json["fn_function_keys"]["f9"] = "vk_consumer_next";
-    json["fn_function_keys"]["f10"] = "vk_consumer_mute";
-    json["fn_function_keys"]["f11"] = "vk_consumer_sound_down";
-    json["fn_function_keys"]["f12"] = "vk_consumer_sound_up";
+    json["fn_function_keys"]["f10"] = "mute";
+    json["fn_function_keys"]["f11"] = "volume_down";
+    json["fn_function_keys"]["f12"] = "volume_up";
     return json;
   }
 

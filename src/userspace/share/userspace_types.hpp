@@ -45,6 +45,9 @@ enum class key_code : uint32_t {
   f10 = kHIDUsage_KeyboardF10,
   f11 = kHIDUsage_KeyboardF11,
   f12 = kHIDUsage_KeyboardF12,
+  mute = kHIDUsage_KeyboardMute,
+  volume_up = kHIDUsage_KeyboardVolumeUp,
+  volume_down = kHIDUsage_KeyboardVolumeDown,
 
   extra_ = 0x1000,
   // static virtual key codes
@@ -82,12 +85,9 @@ enum class key_code : uint32_t {
   vk_consumer_brightness_up,
   vk_consumer_illumination_down,
   vk_consumer_illumination_up,
-  vk_consumer_mute,
   vk_consumer_next,
   vk_consumer_play,
   vk_consumer_previous,
-  vk_consumer_sound_down,
-  vk_consumer_sound_up,
   vk_dashboard,
   vk_launchpad,
   vk_mission_control,
@@ -328,12 +328,9 @@ public:
           {"vk_consumer_brightness_up", key_code::vk_consumer_brightness_up},
           {"vk_consumer_illumination_down", key_code::vk_consumer_illumination_down},
           {"vk_consumer_illumination_up", key_code::vk_consumer_illumination_up},
-          {"vk_consumer_mute", key_code::vk_consumer_mute},
           {"vk_consumer_next", key_code::vk_consumer_next},
           {"vk_consumer_play", key_code::vk_consumer_play},
           {"vk_consumer_previous", key_code::vk_consumer_previous},
-          {"vk_consumer_sound_down", key_code::vk_consumer_sound_down},
-          {"vk_consumer_sound_up", key_code::vk_consumer_sound_up},
           {"vk_dashboard", key_code::vk_dashboard},
           {"vk_launchpad", key_code::vk_launchpad},
           {"vk_mission_control", key_code::vk_mission_control},
@@ -360,7 +357,7 @@ public:
   }
 
   // hid usage -> mac key code
-  const std::unordered_map<krbn::key_code, uint8_t>& get_mac_key_map(void) {
+  static const std::unordered_map<krbn::key_code, uint8_t>& get_mac_key_map(void) {
     static std::unordered_map<krbn::key_code, uint8_t> map;
     if (map.empty()) {
       map[krbn::key_code(kHIDUsage_KeyboardA)] = 0x0;
@@ -548,6 +545,10 @@ public:
       // map[krbn::key_code(kHIDUsage_KeyboardRightShift)]   => get_modifier_flag
       // map[krbn::key_code(kHIDUsage_KeyboardRightAlt)]     => get_modifier_flag
       // map[krbn::key_code(kHIDUsage_KeyboardRightGUI)]     => get_modifier_flag
+
+      map[krbn::key_code::vk_dashboard] = 0x82;
+      map[krbn::key_code::vk_launchpad] = 0x83;
+      map[krbn::key_code::vk_mission_control] = 0xa0;
     }
     return map;
   }
@@ -564,12 +565,9 @@ public:
       map[krbn::key_code::vk_consumer_brightness_up] = NX_KEYTYPE_BRIGHTNESS_UP;
       map[krbn::key_code::vk_consumer_illumination_down] = NX_KEYTYPE_ILLUMINATION_DOWN;
       map[krbn::key_code::vk_consumer_illumination_up] = NX_KEYTYPE_ILLUMINATION_UP;
-      map[krbn::key_code::vk_consumer_previous] = NX_KEYTYPE_PREVIOUS;
-      map[krbn::key_code::vk_consumer_play] = NX_KEYTYPE_PLAY;
       map[krbn::key_code::vk_consumer_next] = NX_KEYTYPE_NEXT;
-      map[krbn::key_code::vk_consumer_mute] = NX_KEYTYPE_MUTE;
-      map[krbn::key_code::vk_consumer_sound_down] = NX_KEYTYPE_SOUND_DOWN;
-      map[krbn::key_code::vk_consumer_sound_up] = NX_KEYTYPE_SOUND_UP;
+      map[krbn::key_code::vk_consumer_play] = NX_KEYTYPE_PLAY;
+      map[krbn::key_code::vk_consumer_previous] = NX_KEYTYPE_PREVIOUS;
     }
     return map;
   }

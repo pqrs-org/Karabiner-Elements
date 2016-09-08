@@ -17,9 +17,9 @@
                 "f7":  "vk_consumer_previous",
                 "f8":  "vk_consumer_play",
                 "f9":  "vk_consumer_next",
-                "f10": "vk_consumer_mute",
-                "f11": "vk_consumer_sound_down",
-                "f12": "vk_consumer_sound_up"
+                "f10": "mute",
+                "f11": "volume_down",
+                "f12": "volume_up"
             }
         },
         {
