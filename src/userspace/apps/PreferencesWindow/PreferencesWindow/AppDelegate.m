@@ -13,4 +13,13 @@
   [self.preferencesWindowController setup];
 }
 
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)theApplication {
+  return YES;
+}
+
+- (BOOL)applicationShouldHandleReopen:(NSApplication*)theApplication hasVisibleWindows:(BOOL)flag {
+  [self.preferencesWindowController show];
+  return YES;
+}
+
 @end

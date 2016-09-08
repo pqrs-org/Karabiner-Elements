@@ -4,6 +4,7 @@
 @interface LogFileTextViewController ()
 
 @property(unsafe_unretained) IBOutlet NSTextView* textView;
+@property(weak) IBOutlet NSTextField* currentTime;
 @property dispatch_source_t timer;
 @property NSDate* fileModificationDate;
 
@@ -17,12 +18,18 @@
 
   self.timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
   if (self.timer) {
-    dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC, 0);
+    dispatch_source_set_timer(self.timer, DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC, 0);
+
+    NSDateFormatter* formatter = [NSDateFormatter new];
+    formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
 
     @weakify(self);
     dispatch_source_set_event_handler(self.timer, ^{
       @strongify(self);
       if (!self) return;
+
+      self.currentTime.stringValue = [NSString stringWithFormat:@"Current Time: %@", [formatter stringFromDate:[NSDate date]]];
 
       NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
       NSDate* fileModificationDate = [attributes fileModificationDate];

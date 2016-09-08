@@ -11,8 +11,8 @@
 @implementation PreferencesWindowController
 
 - (void)setup {
-  [self.grabberLogFileTextViewController monitor:@"/var/log/karabiner_grabber_log.txt"];
-  [self.consoleUserServerLogFileTextViewController monitor:[NSString stringWithFormat:@"%@/.karabiner.d/log/karabiner_console_user_server_log.txt", NSHomeDirectory()]];
+  [self.grabberLogFileTextViewController monitor:@"/var/log/karabiner/grabber_log.txt"];
+  [self.consoleUserServerLogFileTextViewController monitor:[NSString stringWithFormat:@"%@/.karabiner.d/log/console_user_server_log.txt", NSHomeDirectory()]];
 }
 
 - (void)show {
