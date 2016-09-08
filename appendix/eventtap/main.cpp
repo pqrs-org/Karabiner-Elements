@@ -1,5 +1,6 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 namespace {
 CFMachPortRef eventtap_;
@@ -19,7 +20,23 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
 }
 }
 
+class logger final {
+public:
+  static spdlog::logger& get_logger(void) {
+    static std::shared_ptr<spdlog::logger> logger;
+    if (!logger) {
+      logger = spdlog::stdout_logger_mt("eventtap", true);
+    }
+    return *logger;
+  }
+};
+
 int main(int argc, const char* argv[]) {
+  if (getuid() != 0) {
+    logger::get_logger().error("eventtap requires root privilege to use kCGHIDEventTap.");
+    return 0;
+  }
+
   eventtap_ = CGEventTapCreate(kCGHIDEventTap,
                                kCGHeadInsertEventTap,
                                kCGEventTapOptionDefault,
