@@ -1,26 +1,16 @@
-//
-//  AppDelegate.m
-//  Karabiner-Elements Preferences Window
-//
-//  Created by Takayama Fumihiko on 9/7/16.
-//
-//
-
 #import "AppDelegate.h"
+#import "PreferencesWindowController.h"
 
 @interface AppDelegate ()
 
-@property(weak) IBOutlet NSWindow *window;
+@property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
+
 @end
 
 @implementation AppDelegate
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-  // Insert code here to initialize your application
-}
-
-- (void)applicationWillTerminate:(NSNotification *)aNotification {
-  // Insert code here to tear down your application
+- (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
+  [self.preferencesWindowController setup];
 }
 
 @end

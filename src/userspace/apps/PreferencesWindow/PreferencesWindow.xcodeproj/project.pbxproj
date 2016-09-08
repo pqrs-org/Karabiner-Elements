@@ -11,6 +11,8 @@
 		3445E06A1D801AF7004555F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0691D801AF7004555F9 /* main.m */; };
 		3445E06C1D801AF7004555F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06B1D801AF7004555F9 /* Assets.xcassets */; };
 		3445E06F1D801AF7004555F9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06D1D801AF7004555F9 /* MainMenu.xib */; };
+		3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB691D8061E40005D30D /* PreferencesWindowController.m */; };
+		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +23,11 @@
 		3445E06B1D801AF7004555F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3445E06E1D801AF7004555F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		3445E0701D801AF7004555F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3469EB681D8061E40005D30D /* PreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesWindowController.h; sourceTree = "<group>"; };
+		3469EB691D8061E40005D30D /* PreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesWindowController.m; sourceTree = "<group>"; };
+		3469EB6C1D806AEA0005D30D /* weakify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = weakify.h; path = ../../share/weakify.h; sourceTree = "<group>"; };
+		3469EB6D1D8127980005D30D /* LogFileTextViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogFileTextViewController.h; sourceTree = "<group>"; };
+		3469EB6E1D8127980005D30D /* LogFileTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogFileTextViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +64,12 @@
 				3445E0661D801AF7004555F9 /* AppDelegate.m */,
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
 				3445E0701D801AF7004555F9 /* Info.plist */,
+				3469EB6D1D8127980005D30D /* LogFileTextViewController.h */,
+				3469EB6E1D8127980005D30D /* LogFileTextViewController.m */,
 				3445E06D1D801AF7004555F9 /* MainMenu.xib */,
+				3469EB681D8061E40005D30D /* PreferencesWindowController.h */,
+				3469EB691D8061E40005D30D /* PreferencesWindowController.m */,
+				3469EB6B1D806AD60005D30D /* share */,
 				3445E0681D801AF7004555F9 /* Supporting Files */,
 			);
 			path = PreferencesWindow;
@@ -69,6 +81,14 @@
 				3445E0691D801AF7004555F9 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		3469EB6B1D806AD60005D30D /* share */ = {
+			isa = PBXGroup;
+			children = (
+				3469EB6C1D806AEA0005D30D /* weakify.h */,
+			);
+			name = share;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,7 +159,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,
+				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

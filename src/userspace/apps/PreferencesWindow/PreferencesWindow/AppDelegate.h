@@ -1,12 +1,6 @@
-//
-//  AppDelegate.h
-//  Karabiner-Elements Preferences Window
-//
-//  Created by Takayama Fumihiko on 9/7/16.
-//
-//
+// -*- Mode: objc -*-
 
-#import <Cocoa/Cocoa.h>
+@import Cocoa;
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
