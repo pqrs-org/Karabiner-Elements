@@ -67,6 +67,7 @@ public:
       standard_function_key_code = krbn::key_code(static_cast<uint32_t>(krbn::key_code::f1) +
                                                   static_cast<uint32_t>(key_code) - static_cast<uint32_t>(krbn::key_code::vk_fn_f1));
     }
+    // standard_function_key_code is in (krbn::key_code::f1 ... krbn::key_code::f12) or krbn::key_code::vk_none.
 
     if (is_standard_function_key) {
       key_code = standard_function_key_code;
