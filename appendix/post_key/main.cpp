@@ -24,11 +24,12 @@ int main(int argc, const char* argv[]) {
     for (;;) {
       std::this_thread::sleep_for(1s);
 
-      auto state = client.get_caps_lock_state();
-      if (state) {
-        std::cout << "caps lock state: " << *state << std::endl;
-        client.set_caps_lock_state(!*state);
-        std::cout << "caps lock state toggled" << std::endl;
+      std::cout << "shift" << std::endl;
+      if (auto key_code = krbn::types::get_key_code("left_shift")) {
+        if (auto mac_key = krbn::types::get_mac_key(*key_code)) {
+          client.post_modifier_flags(*mac_key, NX_SHIFTMASK);
+          client.post_modifier_flags(*mac_key, 0);
+        }
       }
 
       std::cout << "mission control" << std::endl;

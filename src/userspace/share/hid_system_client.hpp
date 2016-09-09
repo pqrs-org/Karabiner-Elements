@@ -49,12 +49,12 @@ public:
     }
   }
 
-  void post_modifier_flags(IOOptionBits flags) {
-    NXEventData event;
-    memset(&event, 0, sizeof(event));
+  void post_modifier_flags(uint8_t key_code, IOOptionBits flags) {
+    NXEventData event{0};
+    event.key.keyCode = key_code;
 
-    IOGPoint loc{0, 0};
-    post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
+    IOGPoint loc{0};
+    post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags | NX_NONCOALSESCEDMASK, kIOHIDSetGlobalEventFlags);
   }
 
   enum class post_key_type {

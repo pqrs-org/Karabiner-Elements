@@ -84,7 +84,7 @@ public:
             logger::get_logger().error("invalid size for krbn::operation_type::post_modifier_flags");
           } else {
             auto p = reinterpret_cast<krbn::operation_type_post_modifier_flags_struct*>(&(buffer_[0]));
-            keyboard_event_output_manager_.post_modifier_flags(p->flags);
+            keyboard_event_output_manager_.post_modifier_flags(p->key_code, p->flags);
           }
           break;
 

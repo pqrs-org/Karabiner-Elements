@@ -42,9 +42,13 @@ public:
     }
   }
 
-  void post_modifier_flags(IOOptionBits flags) {
+  void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
     stop_key_repeat();
-    hid_system_client_.post_modifier_flags(flags);
+    if (auto mac_key = krbn::types::get_mac_key(key_code)) {
+      hid_system_client_.post_modifier_flags(*mac_key, flags);
+    } else {
+      logger::get_logger().error("unsupported key_code {1:#x} @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(key_code));
+    }
   }
 
   void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags) {

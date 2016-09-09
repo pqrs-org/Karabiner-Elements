@@ -348,7 +348,7 @@ private:
       }
 
       if (modifier_flag == krbn::modifier_flag::fn) {
-        console_user_client_.post_modifier_flags(modifier_flag_manager_.get_io_option_bits());
+        console_user_client_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
       } else {
         send_keyboard_input_report();
       }
