@@ -537,15 +537,16 @@ public:
       // map[krbn::key_code(kHIDUsage_KeyboardCrSelOrProps)]      => mac ignores this key
       // map[krbn::key_code(kHIDUsage_KeyboardExSel)]             => mac ignores this key
 
-      // map[krbn::key_code(kHIDUsage_KeyboardLeftControl)]  => get_modifier_flag
-      // map[krbn::key_code(kHIDUsage_KeyboardLeftShift)]    => get_modifier_flag
-      // map[krbn::key_code(kHIDUsage_KeyboardLeftAlt)]      => get_modifier_flag
-      // map[krbn::key_code(kHIDUsage_KeyboardLeftGUI)]      => get_modifier_flag
-      // map[krbn::key_code(kHIDUsage_KeyboardRightControl)] => get_modifier_flag
-      // map[krbn::key_code(kHIDUsage_KeyboardRightShift)]   => get_modifier_flag
-      // map[krbn::key_code(kHIDUsage_KeyboardRightAlt)]     => get_modifier_flag
-      // map[krbn::key_code(kHIDUsage_KeyboardRightGUI)]     => get_modifier_flag
+      map[krbn::key_code(kHIDUsage_KeyboardLeftControl)] = 0x3b;
+      map[krbn::key_code(kHIDUsage_KeyboardLeftShift)] = 0x38;
+      map[krbn::key_code(kHIDUsage_KeyboardLeftAlt)] = 0x3a;
+      map[krbn::key_code(kHIDUsage_KeyboardLeftGUI)] = 0x37;
+      map[krbn::key_code(kHIDUsage_KeyboardRightControl)] = 0x3e;
+      map[krbn::key_code(kHIDUsage_KeyboardRightShift)] = 0x3c;
+      map[krbn::key_code(kHIDUsage_KeyboardRightAlt)] = 0x3d;
+      map[krbn::key_code(kHIDUsage_KeyboardRightGUI)] = 0x36;
 
+      map[krbn::key_code::vk_fn_modifier] = 0x3f;
       map[krbn::key_code::vk_dashboard] = 0x82;
       map[krbn::key_code::vk_launchpad] = 0x83;
       map[krbn::key_code::vk_mission_control] = 0xa0;
