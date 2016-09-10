@@ -30,22 +30,20 @@ The highest layer is IOHIDQueue which provides us the HID values.
 
 # The difference of event posting methods
 
-## IOKit device report
+## IOKit device report in kext
 
 It requires posting HID events.<br />
 The IOHIKeyboard processes the reports by passing reports to `handleReport`.
 
 However, this method is not enough polite.
 Calling the `handleReport` method directly causes a problem that OS X ignores `EnableSecureEventInput`.
-So we have to reject this approach.
+So we have to reject this approach for security reason.
 
-(Is there another way to push input report to virtual device...?)
-
-## IOKit device value
+## IOKit device value in kext
 
 It requires posting HID events.<br />
 
-## IOKit call IOHIKeyboard::dispatchKeyboardEvent
+## IOKit call IOHIKeyboard::dispatchKeyboardEvent in kext
 
 It requires posting mac events.<br />
 
