@@ -143,7 +143,7 @@ public:
       }
 
       if (repeat_target) {
-        key_repeat_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+        key_repeat_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, dispatch_get_main_queue());
         if (!key_repeat_timer_) {
           logger::get_logger().error("failed to dispatch_source_create");
         } else {
