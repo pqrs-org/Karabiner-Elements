@@ -1,7 +1,7 @@
 CONFIGURATION = Release
 
 all:
-	make -C ../../../share
+	make -C ../../share
 	xcodebuild -alltargets -configuration $(CONFIGURATION) build
 
 clean:
@@ -16,5 +16,5 @@ xcode:
 	open *.xcodeproj
 
 install: all
-	sudo install -m 755 ./build/Release/karabiner_console_user_server '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_console_user_server'
-	-sudo killall karabiner_console_user_server
+	sudo install -m 755 ./build/Release/karabiner_grabber '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_grabber'
+	sudo killall karabiner_grabber

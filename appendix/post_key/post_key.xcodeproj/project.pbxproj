@@ -26,10 +26,10 @@
 
 /* Begin PBXFileReference section */
 		344149111D212A1600C8ECFC /* post_key */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = post_key; sourceTree = BUILT_PRODUCTS_DIR; };
-		3492C9B01D745A680055988F /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../src/userspace/share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
-		3492C9B21D748B6B0055988F /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../../src/userspace/share/iokit_utility.hpp; sourceTree = SOURCE_ROOT; };
-		3492C9B31D7491C40055988F /* userspace_types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_types.hpp; path = ../../src/userspace/share/userspace_types.hpp; sourceTree = SOURCE_ROOT; };
-		3492C9B51D7526AD0055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../../src/userspace/share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9B01D745A680055988F /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../src/share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9B21D748B6B0055988F /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../../src/share/iokit_utility.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9B31D7491C40055988F /* userspace_types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_types.hpp; path = ../../src/share/userspace_types.hpp; sourceTree = SOURCE_ROOT; };
+		3492C9B51D7526AD0055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../../src/share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		34ECBDF91D7FB8E500F1ED08 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
@@ -194,7 +194,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					../../src/userspace/vendor,
+					../../src/vendor,
 					/opt/local/include,
 					/usr/local/include,
 				);

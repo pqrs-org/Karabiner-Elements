@@ -21,15 +21,15 @@ mkdir -p pkgroot
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
-cp src/userspace/core/grabber/build/Release/karabiner_grabber "$basedir"
-cp src/userspace/core/console_user_server/build/Release/karabiner_console_user_server "$basedir"
+cp src/core/grabber/build/Release/karabiner_grabber "$basedir"
+cp src/core/console_user_server/build/Release/karabiner_console_user_server "$basedir"
 
 mkdir -p                  "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"
 cp -R files/LaunchAgents  "pkgroot/Library"
 
 mkdir -p "pkgroot/Applications"
-cp -R "src/userspace/apps/PreferencesWindow/build/Release/Karabiner-Elements.app" "pkgroot/Applications"
+cp -R "src/apps/PreferencesWindow/build/Release/Karabiner-Elements.app" "pkgroot/Applications"
 
 # Sign with Developer ID
 bash scripts/codesign.sh "pkgroot"

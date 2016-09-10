@@ -178,7 +178,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					../../src/userspace/vendor,
+					../../src/vendor,
 					/opt/local/include,
 					/usr/local/include,
 				);

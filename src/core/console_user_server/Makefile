@@ -1,8 +1,7 @@
-#CONFIGURATION = Debug
 CONFIGURATION = Release
 
 all:
-	../../../../scripts/setversion.sh
+	make -C ../../share
 	xcodebuild -alltargets -configuration $(CONFIGURATION) build
 
 clean:
@@ -16,5 +15,6 @@ clean:
 xcode:
 	open *.xcodeproj
 
-run:
-	open "./build/Release/Karabiner-Elements.app"
+install: all
+	sudo install -m 755 ./build/Release/karabiner_console_user_server '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_console_user_server'
+	-sudo killall karabiner_console_user_server
