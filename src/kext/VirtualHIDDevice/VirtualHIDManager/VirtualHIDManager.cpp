@@ -8,6 +8,9 @@ bool org_pqrs_driver_VirtualHIDManager::init(OSDictionary* dict) {
     return false;
   }
 
+  virtualHIDKeyboardDetector_ = new ServiceDetector();
+  virtualHIDPointingDetector_ = new ServiceDetector();
+
   if (auto serialNumber = OSString::withCString("org.pqrs.driver.VirtualHIDManager")) {
     setProperty(kIOHIDSerialNumberKey, serialNumber);
     serialNumber->release();
@@ -16,13 +19,30 @@ bool org_pqrs_driver_VirtualHIDManager::init(OSDictionary* dict) {
   return true;
 }
 
+void org_pqrs_driver_VirtualHIDManager::free(void) {
+  if (virtualHIDKeyboardDetector_) {
+    delete virtualHIDKeyboardDetector_;
+    virtualHIDKeyboardDetector_ = nullptr;
+  }
+  if (virtualHIDPointingDetector_) {
+    delete virtualHIDPointingDetector_;
+    virtualHIDPointingDetector_ = nullptr;
+  }
+
+  super::free();
+}
+
 bool org_pqrs_driver_VirtualHIDManager::start(IOService* provider) {
   if (!super::start(provider)) {
     return false;
   }
 
-  virtualHIDKeyboardDetector_.setNotifier("org_pqrs_driver_VirtualHIDKeyboard");
-  virtualHIDPointingDetector_.setNotifier("org_pqrs_driver_VirtualHIDPointing");
+  if (virtualHIDKeyboardDetector_) {
+    virtualHIDKeyboardDetector_->setNotifier("org_pqrs_driver_VirtualHIDKeyboard");
+  }
+  if (virtualHIDPointingDetector_) {
+    virtualHIDPointingDetector_->setNotifier("org_pqrs_driver_VirtualHIDPointing");
+  }
 
   // Publish ourselves so clients can find us
   //
@@ -35,6 +55,10 @@ bool org_pqrs_driver_VirtualHIDManager::start(IOService* provider) {
 }
 
 void org_pqrs_driver_VirtualHIDManager::stop(IOService* provider) {
-  virtualHIDKeyboardDetector_.unsetNotifier();
-  virtualHIDPointingDetector_.unsetNotifier();
+  if (virtualHIDKeyboardDetector_) {
+    virtualHIDKeyboardDetector_->unsetNotifier();
+  }
+  if (virtualHIDPointingDetector_) {
+    virtualHIDPointingDetector_->unsetNotifier();
+  }
 }

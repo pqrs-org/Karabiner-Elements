@@ -13,20 +13,27 @@ class org_pqrs_driver_VirtualHIDManager final : public IOService {
 
 public:
   virtual bool init(OSDictionary* dictionary = 0) override;
+  virtual void free(void) override;
   virtual bool start(IOService* provider) override;
   virtual void stop(IOService* provider) override;
 
   org_pqrs_driver_VirtualHIDKeyboard* getVirtualHIDKeyboard(void) {
-    return OSDynamicCast(org_pqrs_driver_VirtualHIDKeyboard, virtualHIDKeyboardDetector_.getService());
+    if (!virtualHIDKeyboardDetector_) {
+      return nullptr;
+    }
+    return OSDynamicCast(org_pqrs_driver_VirtualHIDKeyboard, virtualHIDKeyboardDetector_->getService());
   }
 
   org_pqrs_driver_VirtualHIDPointing* getVirtualHIDPointing(void) {
-    return OSDynamicCast(org_pqrs_driver_VirtualHIDPointing, virtualHIDPointingDetector_.getService());
+    if (!virtualHIDPointingDetector_) {
+      return nullptr;
+    }
+    return OSDynamicCast(org_pqrs_driver_VirtualHIDPointing, virtualHIDPointingDetector_->getService());
   }
 
 private:
 #include "include/ServiceDetector.hpp"
 
-  ServiceDetector virtualHIDKeyboardDetector_;
-  ServiceDetector virtualHIDPointingDetector_;
+  ServiceDetector* virtualHIDKeyboardDetector_;
+  ServiceDetector* virtualHIDPointingDetector_;
 };
