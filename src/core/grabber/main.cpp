@@ -1,5 +1,5 @@
+#include "connection_manager.hpp"
 #include "karabiner_version.h"
-#include "userspace_connection_manager.hpp"
 #include <iostream>
 #include <unistd.h>
 
@@ -15,7 +15,7 @@ int main(int argc, const char* argv[]) {
   logger::get_logger().info("version {0}", karabiner_version);
 
   device_grabber device_grabber;
-  userspace_connection_manager connection_manager(device_grabber);
+  connection_manager connection_manager(device_grabber);
 
   CFRunLoopRun();
 

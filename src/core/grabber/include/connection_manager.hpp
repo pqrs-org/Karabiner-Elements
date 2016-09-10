@@ -8,14 +8,14 @@
 #include "session.hpp"
 #include <sys/stat.h>
 
-class userspace_connection_manager final {
+class connection_manager final {
 public:
-  userspace_connection_manager(const userspace_connection_manager&) = delete;
+  connection_manager(const connection_manager&) = delete;
 
-  userspace_connection_manager(device_grabber& device_grabber) : device_grabber_(device_grabber),
-                                                                 timer_(0),
-                                                                 last_uid_(0),
-                                                                 grabber_server_(device_grabber_) {
+  connection_manager(device_grabber& device_grabber) : device_grabber_(device_grabber),
+                                                       timer_(0),
+                                                       last_uid_(0),
+                                                       grabber_server_(device_grabber_) {
     prepare_socket_directory(0);
     grabber_server_.stop();
 
