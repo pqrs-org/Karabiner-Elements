@@ -1,8 +1,8 @@
 include ../Makefile.common
 
 CXXFLAGS += \
-	-I../../../src/userspace/share \
-	-I../../../src/userspace/vendor
+	-I../../../src/share \
+	-I../../../src/vendor
 
 include ../Makefile.rules
 

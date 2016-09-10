@@ -5,7 +5,7 @@
 #include "hid_system_client.hpp"
 #include "logger.hpp"
 #include "system_preferences.hpp"
-#include "userspace_types.hpp"
+#include "types.hpp"
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <boost/optional.hpp>
 #include <thread>

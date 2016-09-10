@@ -4,7 +4,7 @@
 
 #include "apple_hid_usage_tables.hpp"
 #include "iokit_utility.hpp"
-#include "userspace_types.hpp"
+#include "types.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
 #include <IOKit/hid/IOHIDElement.h>
 #include <IOKit/hid/IOHIDQueue.h>

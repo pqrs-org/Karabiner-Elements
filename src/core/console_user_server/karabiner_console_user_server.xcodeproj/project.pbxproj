@@ -45,7 +45,7 @@
 		34A88A9D1D685A4600DD480B /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9E1D685A5000DD480B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
 		34A88AA01D685A5C00DD480B /* karabiner_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = karabiner_version.h; path = ../../share/karabiner_version.h; sourceTree = SOURCE_ROOT; };
-		34A88AA71D6DF8E300DD480B /* userspace_types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = userspace_types.hpp; path = ../../share/userspace_types.hpp; sourceTree = SOURCE_ROOT; };
+		34A88AA71D6DF8E300DD480B /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../../share/types.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -105,7 +105,7 @@
 				341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */,
 				345AC0031D620E28009D1FB4 /* notification_center.hpp */,
 				345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */,
-				34A88AA71D6DF8E300DD480B /* userspace_types.hpp */,
+				34A88AA71D6DF8E300DD480B /* types.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";

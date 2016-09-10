@@ -8,7 +8,7 @@
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
-#include "userspace_types.hpp"
+#include "types.hpp"
 #include <thread>
 
 class device_grabber final {

@@ -2,7 +2,7 @@
 
 require 'json'
 
-print "Checking userspace_types.hpp...\n"
+print "Checking types.hpp...\n"
 
 class String
   def to_snake()

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
-#include "userspace_types.hpp"
+#include "types.hpp"
 
 class notification_center final {
 public:

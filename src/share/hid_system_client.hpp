@@ -4,7 +4,7 @@
 
 #include "iokit_utility.hpp"
 #include "service_observer.hpp"
-#include "userspace_types.hpp"
+#include "types.hpp"
 #include <boost/optional.hpp>
 #include <list>
 #include <memory>

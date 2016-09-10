@@ -6,7 +6,7 @@
 #include "keyboard_event_output_manager.hpp"
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
-#include "userspace_types.hpp"
+#include "types.hpp"
 #include <vector>
 
 class receiver final {
