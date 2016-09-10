@@ -37,6 +37,10 @@ public:
       terminatedNotifier_->remove();
       terminatedNotifier_ = nullptr;
     }
+
+    if (services_) {
+      services_->flushCollection();
+    }
   }
 
   IOService* getService(void) {
