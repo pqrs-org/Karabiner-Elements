@@ -3,15 +3,12 @@
 #include "apple_hid_usage_tables.hpp"
 #include "console_user_client.hpp"
 #include "constants.hpp"
-#include "hid_report.hpp"
 #include "hid_system_client.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
 #include "userspace_types.hpp"
-#include "virtual_hid_manager_client.hpp"
-#include "virtual_hid_manager_user_client_method.hpp"
 #include <thread>
 
 class device_grabber final {
@@ -19,10 +16,9 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(void) : hid_system_client_(logger::get_logger()),
-                         virtual_hid_manager_client_(logger::get_logger()),
                          grab_timer_(0),
                          grab_retry_count_(0),
-                         grabbing_(false),
+                         grabbed_(false),
                          console_user_client_() {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
@@ -81,15 +77,12 @@ public:
       grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
       dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), 0.1 * NSEC_PER_SEC, 0);
       dispatch_source_set_event_handler(grab_timer_, ^{
-        if (grabbing_) {
+        if (grabbed_) {
           return;
         }
 
         std::string warning_message;
 
-        if (!virtual_hid_manager_client_.is_connected()) {
-          warning_message = "virtual_hid_manager_client_ is not connected.";
-        }
         if (get_all_devices_pressed_keys_count() > 0) {
           warning_message = "There are pressed down keys in some devices. Please release them.";
         }
@@ -106,7 +99,7 @@ public:
         // ----------------------------------------
         // grab devices
 
-        grabbing_ = true;
+        grabbed_ = true;
 
         for (auto&& it : hids_) {
           grab(*(it.second));
@@ -114,7 +107,6 @@ public:
           (it.second)->clear_pressed_keys();
         }
 
-        pressed_key_usages_.clear();
         modifier_flag_manager_.reset();
         hid_system_client_.set_caps_lock_state(false);
 
@@ -129,11 +121,11 @@ public:
   void ungrab_devices(void) {
     // we run grab_devices and ungrab_devices in the main queue.
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (!grabbing_) {
+      if (!grabbed_) {
         return;
       }
 
-      grabbing_ = false;
+      grabbed_ = false;
 
       cancel_grab_timer();
 
@@ -143,18 +135,9 @@ public:
         (it.second)->clear_pressed_keys();
       }
 
-      pressed_key_usages_.clear();
       modifier_flag_manager_.reset();
       hid_system_client_.set_caps_lock_state(false);
-
-      // release all keys in VirtualHIDKeyboard.
-      if (virtual_hid_manager_client_.is_connected()) {
-        hid_report::keyboard_input report;
-        last_keyboard_input_report_ = report;
-        virtual_hid_manager_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
-                                                       static_cast<const void*>(&report), sizeof(report),
-                                                       nullptr, 0);
-      }
+      console_user_client_.stop_key_repeat();
 
       logger::get_logger().info("devices are ungrabbed");
     });
@@ -205,7 +188,7 @@ private:
                               location_id ? *location_id : 0,
                               serial_number ? *serial_number : "");
 
-    if (grabbing_) {
+    if (grabbed_) {
       grab(*dev);
     } else {
       observe(*dev);
@@ -304,14 +287,7 @@ private:
                       uint32_t usage_page,
                       uint32_t usage,
                       CFIndex integer_value) {
-    if (!grabbing_) {
-      return;
-    }
-
-    // ungrab devices if VirtualHIDManager is unloaded after device grabbed.
-    if (!virtual_hid_manager_client_.is_connected()) {
-      ungrab_devices();
-      grab_devices();
+    if (!grabbed_) {
       return;
     }
 
@@ -333,40 +309,6 @@ private:
     default:
       break;
     }
-  }
-
-  bool handle_modifier_flag_event(krbn::key_code key_code, bool pressed) {
-    auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
-
-    auto modifier_flag = krbn::types::get_modifier_flag(key_code);
-    if (modifier_flag != krbn::modifier_flag::zero) {
-      modifier_flag_manager_.manipulate(modifier_flag, operation);
-
-      // reset modifier_flags state if all keys are released.
-      if (get_all_devices_pressed_keys_count() == 0) {
-        modifier_flag_manager_.reset();
-      }
-
-      if (modifier_flag == krbn::modifier_flag::fn) {
-        console_user_client_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
-      } else {
-        send_keyboard_input_report();
-      }
-      return true;
-    }
-
-    return false;
-  }
-
-  bool handle_function_key_event(krbn::key_code key_code, bool pressed) {
-    auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
-
-    if (krbn::key_code::vk_function_keys_start_ <= key_code && key_code <= krbn::key_code::vk_function_keys_end_) {
-      console_user_client_.post_key(key_code, event_type, modifier_flag_manager_.get_io_option_bits());
-      return true;
-    }
-
-    return false;
   }
 
   void handle_keyboard_event(human_interface_device& device, krbn::key_code key_code, bool pressed) {
@@ -426,69 +368,53 @@ private:
     }
 
     // ----------------------------------------
-    // Send input events to virtual devices.
-    if (handle_modifier_flag_event(key_code, pressed)) {
+    // Post input events
+
+    if (post_modifier_flag_event(key_code, pressed) ||
+        post_caps_lock_event(key_code, pressed)) {
       console_user_client_.stop_key_repeat();
       return;
     }
-    if (handle_function_key_event(key_code, pressed)) {
-      return;
-    }
 
-    if (static_cast<uint32_t>(key_code) < kHIDUsage_Keyboard_Reserved) {
-      auto usage = static_cast<uint32_t>(key_code);
-
-      if (usage == kHIDUsage_KeyboardCapsLock) {
-        // We have to handle caps lock state manually since the VirtualHIDKeyboard might drop caps lock event if the caps lock delay is enabled.
-        // (The drop causes a contradiction of real caps lock state and led state.)
-        if (pressed) {
-          auto state = hid_system_client_.get_caps_lock_state();
-          if (!state || *state) {
-            set_caps_lock_led_state(krbn::led_state::off);
-            hid_system_client_.set_caps_lock_state(false);
-          } else {
-            set_caps_lock_led_state(krbn::led_state::on);
-            hid_system_client_.set_caps_lock_state(true);
-          }
-        }
-
-      } else {
-        // Normal keys
-        if (pressed) {
-          pressed_key_usages_.push_back(usage);
-          console_user_client_.stop_key_repeat();
-        } else {
-          pressed_key_usages_.remove(usage);
-        }
-
-        send_keyboard_input_report();
-      }
-    }
+    auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
+    console_user_client_.post_key(key_code, event_type, modifier_flag_manager_.get_io_option_bits());
   }
 
-  void send_keyboard_input_report(void) {
-    // make report
-    hid_report::keyboard_input report;
-    report.modifiers = modifier_flag_manager_.get_hid_report_bits();
+  bool post_modifier_flag_event(krbn::key_code key_code, bool pressed) {
+    auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
 
-    while (pressed_key_usages_.size() > sizeof(report.keys)) {
-      pressed_key_usages_.pop_front();
+    auto modifier_flag = krbn::types::get_modifier_flag(key_code);
+    if (modifier_flag != krbn::modifier_flag::zero) {
+      modifier_flag_manager_.manipulate(modifier_flag, operation);
+
+      // reset modifier_flags state if all keys are released.
+      if (get_all_devices_pressed_keys_count() == 0) {
+        modifier_flag_manager_.reset();
+      }
+
+      console_user_client_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
+      return true;
     }
 
-    int i = 0;
-    for (const auto& u : pressed_key_usages_) {
-      report.keys[i] = u;
-      ++i;
+    return false;
+  }
+
+  bool post_caps_lock_event(krbn::key_code key_code, bool pressed) {
+    if (key_code != krbn::key_code(kHIDUsage_KeyboardCapsLock)) {
+      return false;
     }
 
-    // send new report only if it is changed from last report.
-    if (last_keyboard_input_report_ != report) {
-      last_keyboard_input_report_ = report;
-
-      virtual_hid_manager_client_.call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
-                                                     static_cast<const void*>(&report), sizeof(report),
-                                                     nullptr, 0);
+    if (pressed) {
+      auto state = hid_system_client_.get_caps_lock_state();
+      if (!state || *state) {
+        set_caps_lock_led_state(krbn::led_state::off);
+        hid_system_client_.set_caps_lock_state(false);
+      } else {
+        set_caps_lock_led_state(krbn::led_state::on);
+        hid_system_client_.set_caps_lock_state(true);
+      }
     }
+    return true;
   }
 
   size_t get_all_devices_pressed_keys_count(void) const {
@@ -514,16 +440,13 @@ private:
   }
 
   hid_system_client hid_system_client_;
-  virtual_hid_manager_client virtual_hid_manager_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   dispatch_source_t _Nullable grab_timer_;
   size_t grab_retry_count_;
-  bool grabbing_;
-  std::list<uint32_t> pressed_key_usages_;
+  bool grabbed_;
 
   manipulator::modifier_flag_manager modifier_flag_manager_;
-  hid_report::keyboard_input last_keyboard_input_report_;
 
   std::unordered_map<krbn::key_code, krbn::key_code> simple_modifications_;
   std::mutex simple_modifications_mutex_;

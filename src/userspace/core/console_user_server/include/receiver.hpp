@@ -26,6 +26,8 @@ public:
       return;
     }
 
+    keyboard_event_output_manager_.stop_key_repeat();
+
     const char* path = constants::get_console_user_socket_file_path();
     unlink(path);
     server_ = std::make_unique<local_datagram_server>(path);
@@ -57,9 +59,11 @@ public:
 
     exit_loop_ = true;
     thread_.join();
-    server_.reset(nullptr);
     configuration_manager_.reset(nullptr);
     grabber_client_.reset(nullptr);
+    server_.reset(nullptr);
+
+    keyboard_event_output_manager_.stop_key_repeat();
 
     logger::get_logger().info("receiver is stopped");
   }

@@ -14,17 +14,10 @@ if [ ${PIPESTATUS[0]} -ne 0 ]; then
 fi
 
 # --------------------------------------------------
-# https://developer.apple.com/library/mac/documentation/Darwin/Conceptual/KEXTConcept/KEXTConceptPackaging/packaging_tutorial.html
 echo "Copy Files"
 
 rm -rf pkgroot
 mkdir -p pkgroot
-
-basedir="pkgroot//Library/Extensions"
-mkdir -p "$basedir"
-for kext in VirtualHIDKeyboard.kext VirtualHIDManager.kext VirtualHIDPointing.kext; do
-    cp -R src/kext/VirtualHIDDevice/build/Release/$kext "$basedir/org.pqrs.driver.$kext"
-done
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"

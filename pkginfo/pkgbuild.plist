@@ -3,21 +3,7 @@
 <plist version="1.0">
   <array>
     <dict>
-      <key>RootRelativeBundlePath</key>      <string>Library/Extensions/org.pqrs.driver.VirtualHIDKeyboard.kext</string>
-      <key>BundleHasStrictIdentifier</key>   <false/>
-      <key>BundleIsRelocatable</key>         <false/>
-      <key>BundleIsVersionChecked</key>      <false/>
-      <key>BundleOverwriteAction</key>       <string>upgrade</string>
-    </dict>
-    <dict>
-      <key>RootRelativeBundlePath</key>      <string>Library/Extensions/org.pqrs.driver.VirtualHIDManager.kext</string>
-      <key>BundleHasStrictIdentifier</key>   <false/>
-      <key>BundleIsRelocatable</key>         <false/>
-      <key>BundleIsVersionChecked</key>      <false/>
-      <key>BundleOverwriteAction</key>       <string>upgrade</string>
-    </dict>
-    <dict>
-      <key>RootRelativeBundlePath</key>      <string>Library/Extensions/org.pqrs.driver.VirtualHIDPointing.kext</string>
+      <key>RootRelativeBundlePath</key>      <string>Applications/Karabiner-Elements.app</string>
       <key>BundleHasStrictIdentifier</key>   <false/>
       <key>BundleIsRelocatable</key>         <false/>
       <key>BundleIsVersionChecked</key>      <false/>
