@@ -56,9 +56,6 @@ It requires posting mac events.<br />
 `IOHIDPostEvent` will be failed if the process is not running in the current session user.
 (The root user is also forbidden.)
 
-Calling `IOHIDPostEvent` from userspace has very large delay.
-We cannot use it since we cannot achieve the flawless key repeat.
-
 ## CGEventCreate
 
 It requires posting mac events.<br />
