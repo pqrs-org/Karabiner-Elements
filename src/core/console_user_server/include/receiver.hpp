@@ -14,9 +14,7 @@ public:
   receiver(const receiver&) = delete;
 
   receiver(void) : exit_loop_(false) {
-    enum {
-      buffer_length = 8 * 1024,
-    };
+    const size_t buffer_length = 8 * 1024;
     buffer_.resize(buffer_length);
   }
 
