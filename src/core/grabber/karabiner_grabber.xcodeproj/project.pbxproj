@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3411F57D1D84FD9400C4ED1E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3411F57C1D84FD9400C4ED1E /* Security.framework */; };
 		34A88A961D6858D300DD480B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34A88A951D6858D300DD480B /* main.cpp */; };
 		34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34BB0F0A1D22853700372174 /* IOKit.framework */; };
 		34E420611D5042240022F821 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E420601D5042240022F821 /* SystemConfiguration.framework */; };
@@ -26,6 +27,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3411F57B1D84FB9900C4ED1E /* codesign.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = codesign.hpp; path = ../../share/codesign.hpp; sourceTree = SOURCE_ROOT; };
+		3411F57C1D84FD9400C4ED1E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../../share/local_datagram_server.hpp; sourceTree = SOURCE_ROOT; };
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = SOURCE_ROOT; };
 		341F59D11D5244F200B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../../share/local_datagram_client.hpp; sourceTree = SOURCE_ROOT; };
@@ -59,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3411F57D1D84FD9400C4ED1E /* Security.framework in Frameworks */,
 				34E420611D5042240022F821 /* SystemConfiguration.framework in Frameworks */,
 				34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */,
 				34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */,
@@ -100,6 +104,7 @@
 			children = (
 				34EED7101D6FA38400399AD1 /* apple_hid_usage_tables.hpp */,
 				345AC0041D62163F009D1FB4 /* boost_defs.hpp */,
+				3411F57B1D84FB9900C4ED1E /* codesign.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
 				3469EB701D814F140005D30D /* filesystem.hpp */,
 				3492C9B91D757E5D0055988F /* hid_system_client.hpp */,
@@ -126,6 +131,7 @@
 		34BB0F0C1D22853D00372174 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3411F57C1D84FD9400C4ED1E /* Security.framework */,
 				34E420601D5042240022F821 /* SystemConfiguration.framework */,
 				34BB0F0A1D22853700372174 /* IOKit.framework */,
 				34E9F62E1D2134770007AE90 /* Carbon.framework */,

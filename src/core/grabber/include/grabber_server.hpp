@@ -1,5 +1,6 @@
 #pragma once
 
+#include "codesign.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
 #include "device_grabber.hpp"
@@ -15,9 +16,14 @@ public:
   grabber_server(device_grabber& device_grabber) : device_grabber_(device_grabber),
                                                    exit_loop_(false),
                                                    grabber_client_pid_monitor_(0) {
-    enum {
-      buffer_length = 1024 * 1024,
-    };
+    codesign_common_name_ = codesign::get_common_name_of_process(getpid());
+    if (codesign_common_name_) {
+      logger::get_logger().info("This process is signed with {1} @ {0}", __PRETTY_FUNCTION__, *codesign_common_name_);
+    } else {
+      logger::get_logger().warn("This process is not signed.");
+    }
+
+    const size_t buffer_length = 1024 * 1024;
     buffer_.resize(buffer_length);
   }
 
@@ -67,26 +73,46 @@ public:
             auto p = reinterpret_cast<krbn::operation_type_connect_struct*>(&(buffer_[0]));
             auto pid = p->console_user_server_pid;
 
-            logger::get_logger().info("grabber_client is connected (pid:{0})", pid);
+            bool verified_client = false;
 
-            device_grabber_.grab_devices();
-
-            // monitor the last process
-            release_grabber_client_pid_monitor();
-            grabber_client_pid_monitor_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC,
-                                                                 p->console_user_server_pid,
-                                                                 DISPATCH_PROC_EXIT,
-                                                                 dispatch_get_main_queue());
-            if (!grabber_client_pid_monitor_) {
-              logger::get_logger().error("{0}: failed to dispatch_source_create", __PRETTY_FUNCTION__);
+            if (!codesign_common_name_) {
+              verified_client = true;
             } else {
-              dispatch_source_set_event_handler(grabber_client_pid_monitor_, ^{
-                logger::get_logger().info("grabber_client is exited (pid:{0})", pid);
+              auto client_common_name = codesign::get_common_name_of_process(pid);
+              if (client_common_name) {
+                logger::get_logger().info("A client is signed with {1} @ {0}", __PRETTY_FUNCTION__, *client_common_name);
+                if (*codesign_common_name_ == *client_common_name) {
+                  verified_client = true;
+                }
+              } else {
+                logger::get_logger().warn("A client is not signed.");
+              }
+            }
 
-                device_grabber_.ungrab_devices();
-                release_grabber_client_pid_monitor();
-              });
-              dispatch_resume(grabber_client_pid_monitor_);
+            if (!verified_client) {
+              logger::get_logger().error("A unverified client was rejected.");
+            } else {
+              logger::get_logger().info("grabber_client is connected (pid:{0})", pid);
+
+              device_grabber_.grab_devices();
+
+              // monitor the last process
+              release_grabber_client_pid_monitor();
+              grabber_client_pid_monitor_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC,
+                                                                   p->console_user_server_pid,
+                                                                   DISPATCH_PROC_EXIT,
+                                                                   dispatch_get_main_queue());
+              if (!grabber_client_pid_monitor_) {
+                logger::get_logger().error("{0}: failed to dispatch_source_create", __PRETTY_FUNCTION__);
+              } else {
+                dispatch_source_set_event_handler(grabber_client_pid_monitor_, ^{
+                  logger::get_logger().info("grabber_client is exited (pid:{0})", pid);
+
+                  device_grabber_.ungrab_devices();
+                  release_grabber_client_pid_monitor();
+                });
+                dispatch_resume(grabber_client_pid_monitor_);
+              }
             }
           }
           break;
@@ -121,6 +147,8 @@ private:
   }
 
   device_grabber& device_grabber_;
+
+  boost::optional<std::string> codesign_common_name_;
 
   std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
