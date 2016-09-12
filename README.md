@@ -11,6 +11,8 @@ Karabiner-Elements works fine except Preferences GUI.
 
 You can download the latest Karabiner-Elements from https://pqrs.org/latest/karabiner-elements-latest.dmg
 
+[Usage](usage/README.md)
+
 
 ## How to build
 
