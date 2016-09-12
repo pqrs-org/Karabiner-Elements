@@ -60,8 +60,8 @@ The configuration file is located in `~/.karabiner.d/configuration/karabiner.jso
 
 * [Change caps lock to delete](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_caps_lock_to_delete.json)
 * [Change caps lock to escape](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_caps_lock_to_escape.json)
-* [Swap caps lock to delete](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/swap_caps_lock_and_delete.json)
-* [Swap caps lock to escape](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/swap_caps_lock_and_escape.json)
+* [Swap caps lock and delete](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/swap_caps_lock_and_delete.json)
+* [Swap caps lock and escape](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/swap_caps_lock_and_escape.json)
 
 If you want change caps lock to delete key, execute the following commands in Terminal.
 
@@ -69,6 +69,30 @@ If you want change caps lock to delete key, execute the following commands in Te
 mkdir -p ~/.karabiner.d/configuration/
 cd ~/.karabiner.d/configuration/
 curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/change_caps_lock_to_delete.json
+```
+
+### change caps lock to escape
+
+```shell
+mkdir -p ~/.karabiner.d/configuration/
+cd ~/.karabiner.d/configuration/
+curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/change_caps_lock_to_escape.json
+```
+
+### swap caps lock and delete
+
+```shell
+mkdir -p ~/.karabiner.d/configuration/
+cd ~/.karabiner.d/configuration/
+curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/swap_caps_lock_and_delete.json
+```
+
+### swap caps lock and escape
+
+```shell
+mkdir -p ~/.karabiner.d/configuration/
+cd ~/.karabiner.d/configuration/
+curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/swap_caps_lock_and_escape.json
 ```
 
 
