@@ -29,3 +29,6 @@ You can quit Karabiner-Elements by the Quit Karabiner-Elements button.
 
 # Uninstall Karabiner-Elements
 
+You can uninstall Karabiner-Elements from Misc tab.
+
+<img src="img/uninstall.png" width="400">
