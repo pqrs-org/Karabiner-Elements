@@ -53,3 +53,8 @@ The configuration file is located in `~/.karabiner.d/configuration/karabiner.jso
     ]
 }
 ```
+
+## Typical configuration files
+
+* [Change caps lock to delete](../examples/change_caps_lock_to_delete.json)
+
