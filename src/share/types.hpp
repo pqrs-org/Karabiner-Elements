@@ -322,6 +322,17 @@ public:
           {"right_alt", key_code(kHIDUsage_KeyboardRightAlt)},
           {"right_gui", key_code(kHIDUsage_KeyboardRightGUI)},
 
+          // Aliases
+          {"left_option", key_code(kHIDUsage_KeyboardLeftAlt)},
+          {"left_command", key_code(kHIDUsage_KeyboardLeftGUI)},
+          {"right_option", key_code(kHIDUsage_KeyboardRightAlt)},
+          {"right_command", key_code(kHIDUsage_KeyboardRightGUI)},
+          {"japanese_eisuu", key_code(kHIDUsage_KeyboardLANG2)},
+          {"japanese_kana", key_code(kHIDUsage_KeyboardLANG1)},
+          {"japanese_pc_nfer", key_code(kHIDUsage_KeyboardInternational5)},
+          {"japanese_pc_xfer", key_code(kHIDUsage_KeyboardInternational4)},
+          {"japanese_pc_katakana", key_code(kHIDUsage_KeyboardInternational2)},
+
           // Extra
           {"fn", key_code::vk_fn_modifier},
           {"vk_consumer_brightness_down", key_code::vk_consumer_brightness_down},
