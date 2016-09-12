@@ -7,11 +7,9 @@ Karabiner-Elements is the subset of the next generation Karabiner for macOS Sier
 
 ## Project Status
 
-Karabiner-Elements is an early prototyping stage.
-Do not use Karabiner-Elements on your machine at the moment.
+Karabiner-Elements works fine except Preferences GUI.
 
-Please use Karabiner on OS X 10.11.
-https://pqrs.org/osx/karabiner/
+You can download the latest Karabiner-Elements from https://pqrs.org/latest/karabiner-elements-latest.dmg
 
 
 ## How to build
