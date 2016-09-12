@@ -40,6 +40,8 @@ At the moment, you have to edit the configuration file by hand.
 
 The configuration file is located in `~/.karabiner.d/configuration/karabiner.json`
 
+## An example of karabiner.json
+
 ```json
 {
     "profiles": [
@@ -56,5 +58,7 @@ The configuration file is located in `~/.karabiner.d/configuration/karabiner.jso
 
 ## Typical configuration files
 
-* [Change caps lock to delete](../examples/change_caps_lock_to_delete.json)
-
+* [Change caps lock to delete](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_caps_lock_to_delete.json)
+* [Change caps lock to escape](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_caps_lock_to_escape.json)
+* [Swap caps lock to delete](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/swap_caps_lock_and_delete.json)
+* [Swap caps lock to escape](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/swap_caps_lock_and_escape.json)
