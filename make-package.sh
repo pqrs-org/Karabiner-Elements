@@ -41,7 +41,7 @@ cp -R files/LaunchAgents  "pkgroot/Library"
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"
 cp -R "src/apps/PreferencesWindow/build/Release/Karabiner-Elements.app" "$basedir"
-cp -R "src/apps/PreferencesWindow/build/Release/Karabiner-EventViewer.app" "$basedir"
+cp -R "src/apps/EventViewer/build/Release/Karabiner-EventViewer.app" "$basedir"
 
 # Sign with Developer ID
 bash scripts/codesign.sh "pkgroot"
