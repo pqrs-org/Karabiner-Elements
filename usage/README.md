@@ -2,6 +2,7 @@
 * [Open Karabiner-Elements](#open-karabiner-elements)
 * [Quit Karabiner-Elements](#quit-karabiner-elements)
 * [Uninstall Karabiner-Elements](#uninstall-karabiner-elements)
+* [Change Key](#change-key)
 
 # Installation
 
@@ -32,3 +33,23 @@ You can quit Karabiner-Elements by the Quit Karabiner-Elements button.
 You can uninstall Karabiner-Elements from Misc tab.
 
 <img src="img/uninstall.png" width="400">
+
+# Change Key
+
+At the moment, you have to edit the configuration file by hand.
+
+The configuration file is located in `~/.karabiner.d/configuration/karabiner.json`
+
+```json
+{
+    "profiles": [
+        {
+            "name": "Default profile",
+            "selected": true,
+            "simple_modifications": {
+                "caps_lock": "delete"
+            }
+        }
+    ]
+}
+```
