@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
@@ -365,28 +364,6 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Devices" identifier="" id="q5f-7C-sYB">
-                                <view key="view" id="gJ5-jW-uKl">
-                                    <rect key="frame" x="10" y="33" width="754" height="438"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KlF-v6-jdq">
-                                            <rect key="frame" x="124" y="202" width="507" height="34"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="7Wl-CU-gNm">
-                                                <font key="font" metaFont="system"/>
-                                                <string key="title">You will be able to confirm the connected device status and choose target devices.
-This function is not implemented yet.</string>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="KlF-v6-jdq" firstAttribute="centerY" secondItem="gJ5-jW-uKl" secondAttribute="centerY" id="LCv-Sy-hy6"/>
-                                        <constraint firstItem="KlF-v6-jdq" firstAttribute="centerX" secondItem="gJ5-jW-uKl" secondAttribute="centerX" id="eaX-Td-nHy"/>
-                                    </constraints>
-                                </view>
-                            </tabViewItem>
                             <tabViewItem label="Misc" identifier="" id="fzE-23-c8B">
                                 <view key="view" id="oZ9-PG-xey">
                                     <rect key="frame" x="10" y="33" width="754" height="438"/>
@@ -437,7 +414,7 @@ This function is not implemented yet.</string>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Nx7-wi-GX7">
                                             <rect key="frame" x="25" y="228" width="77" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Current Time:" id="lSA-Nw-fks">
-                                                <font key="font" metaFont="system" size="11"/>
+                                                <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -445,7 +422,7 @@ This function is not implemented yet.</string>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ps3-gC-A4S">
                                             <rect key="frame" x="103" y="228" width="134" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="yyyy-mm-dd hh:mm:ss" id="Qd0-1l-8FU">
-                                                <font key="font" metaFont="systemBold" size="11"/>
+                                                <font key="font" metaFont="smallSystemBold"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -495,7 +472,7 @@ This function is not implemented yet.</string>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KcB-Mj-XJC">
                                             <rect key="frame" x="25" y="8" width="80" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Current Time: " id="Vyq-qv-rb5">
-                                                <font key="font" metaFont="system" size="11"/>
+                                                <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -503,7 +480,7 @@ This function is not implemented yet.</string>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WXq-hw-PS5">
                                             <rect key="frame" x="106" y="8" width="134" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="yyyy-mm-dd hh:mm:ss" id="Sjj-XD-36W">
-                                                <font key="font" metaFont="systemBold" size="11"/>
+                                                <font key="font" metaFont="smallSystemBold"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
