@@ -60,7 +60,7 @@ check_value('GCC_WARN_UNUSED_LABEL', 'YES')
 check_value('GCC_WARN_UNUSED_VALUE', 'YES')
 check_value('GCC_WARN_UNUSED_VARIABLE', 'YES')
 check_value('CLANG_ENABLE_OBJC_ARC', 'YES')
-check_value('MACOSX_DEPLOYMENT_TARGET', '10.9')
+check_value('MACOSX_DEPLOYMENT_TARGET', '10.10')
 check_value('RUN_CLANG_STATIC_ANALYZER', 'YES')
 check_value('SDKROOT', 'macosx')
 
