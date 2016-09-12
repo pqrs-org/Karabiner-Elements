@@ -71,6 +71,10 @@ public:
     return CFSTR("org.pqrs.karabiner");
   }
 
+  static CFStringRef get_distributed_notification_grabber_is_launched(void) {
+    return CFSTR("grabber_is_launched");
+  }
+
   static CFStringRef get_distributed_notification_console_user_socket_directory_is_ready(void) {
     return CFSTR("console_user_socket_directory_is_ready");
   }
