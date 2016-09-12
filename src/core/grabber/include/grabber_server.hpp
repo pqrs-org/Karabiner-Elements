@@ -3,8 +3,8 @@
 #include "codesign.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
-#include "device_grabber.hpp"
 #include "local_datagram_server.hpp"
+#include "process_monitor.hpp"
 #include "session.hpp"
 #include "types.hpp"
 #include <vector>
@@ -14,8 +14,7 @@ public:
   grabber_server(const grabber_server&) = delete;
 
   grabber_server(device_grabber& device_grabber) : device_grabber_(device_grabber),
-                                                   exit_loop_(false),
-                                                   grabber_client_pid_monitor_(0) {
+                                                   exit_loop_(false) {
     codesign_common_name_ = codesign::get_common_name_of_process(getpid());
     if (codesign_common_name_) {
       logger::get_logger().info("This process is signed with {1} @ {0}", __PRETTY_FUNCTION__, *codesign_common_name_);
@@ -51,7 +50,7 @@ public:
     }
 
     server_.reset(nullptr);
-    release_grabber_client_pid_monitor();
+    console_user_server_process_monitor_.reset(nullptr);
     device_grabber_.ungrab_devices();
   }
 
@@ -99,22 +98,10 @@ public:
               device_grabber_.grab_devices();
 
               // monitor the last process
-              release_grabber_client_pid_monitor();
-              grabber_client_pid_monitor_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC,
-                                                                   p->console_user_server_pid,
-                                                                   DISPATCH_PROC_EXIT,
-                                                                   dispatch_get_main_queue());
-              if (!grabber_client_pid_monitor_) {
-                logger::get_logger().error("{0}: failed to dispatch_source_create", __PRETTY_FUNCTION__);
-              } else {
-                dispatch_source_set_event_handler(grabber_client_pid_monitor_, ^{
-                  logger::get_logger().info("grabber_client is exited (pid:{0})", pid);
-
-                  device_grabber_.ungrab_devices();
-                  release_grabber_client_pid_monitor();
-                });
-                dispatch_resume(grabber_client_pid_monitor_);
-              }
+              console_user_server_process_monitor_ = nullptr;
+              console_user_server_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
+                                                                                       p->console_user_server_pid,
+                                                                                       std::bind(&grabber_server::console_user_server_exit_callback, this));
             }
           }
           break;
@@ -140,12 +127,8 @@ public:
   }
 
 private:
-  void release_grabber_client_pid_monitor(void) {
-    if (grabber_client_pid_monitor_) {
-      dispatch_source_cancel(grabber_client_pid_monitor_);
-      dispatch_release(grabber_client_pid_monitor_);
-      grabber_client_pid_monitor_ = 0;
-    }
+  void console_user_server_exit_callback(void) {
+    device_grabber_.ungrab_devices();
   }
 
   device_grabber& device_grabber_;
@@ -157,5 +140,5 @@ private:
   std::thread thread_;
   volatile bool exit_loop_;
 
-  dispatch_source_t grabber_client_pid_monitor_;
+  std::unique_ptr<process_monitor> console_user_server_process_monitor_;
 };
