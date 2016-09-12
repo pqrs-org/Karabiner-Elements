@@ -1,3 +1,8 @@
+* [Installation](#installation)
+* [Open Karabiner-Elements](#open-karabiner-elements)
+* [Quit Karabiner-Elements](#quit-karabiner-elements)
+* [Uninstall Karabiner-Elements](#uninstall-karabiner-elements)
+
 # Installation
 
 Download Karabiner-Elements package from https://pqrs.org/latest/karabiner-elements-latest.dmg
@@ -21,3 +26,6 @@ The preferences window will be opened.
 You can quit Karabiner-Elements by the Quit Karabiner-Elements button.
 
 <img src="img/quit.png" width="400">
+
+# Uninstall Karabiner-Elements
+
