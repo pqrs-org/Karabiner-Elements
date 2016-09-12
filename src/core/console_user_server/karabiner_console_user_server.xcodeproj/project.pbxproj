@@ -35,6 +35,7 @@
 		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0031D620E28009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
+		347113151D871EC1001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_monitor.hpp; path = ../../share/process_monitor.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9B61D752C820055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../../share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9BC1D772D8B0055988F /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A971D685A4600DD480B /* connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connection_manager.hpp; path = include/connection_manager.hpp; sourceTree = SOURCE_ROOT; };
@@ -104,6 +105,7 @@
 				341F59D51D535D2500B441A8 /* local_datagram_client.hpp */,
 				341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */,
 				345AC0031D620E28009D1FB4 /* notification_center.hpp */,
+				347113151D871EC1001AC60D /* process_monitor.hpp */,
 				345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */,
 				34A88AA71D6DF8E300DD480B /* types.hpp */,
 			);

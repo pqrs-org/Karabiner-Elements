@@ -6,6 +6,7 @@
 #include "keyboard_event_output_manager.hpp"
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
+#include "process_monitor.hpp"
 #include "types.hpp"
 #include <vector>
 
@@ -57,6 +58,7 @@ public:
 
     exit_loop_ = true;
     thread_.join();
+    grabber_process_monitor_.reset(nullptr);
     configuration_manager_.reset(nullptr);
     grabber_client_.reset(nullptr);
     server_.reset(nullptr);
@@ -83,6 +85,11 @@ public:
           } else {
             auto p = reinterpret_cast<krbn::operation_type_connect_ack_struct*>(&(buffer_[0]));
             logger::get_logger().info("connect_ack karabiner_grabber pid:{0}", p->grabber_pid);
+
+            grabber_process_monitor_ = nullptr;
+            grabber_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
+                                                                         p->grabber_pid,
+                                                                         std::bind(&receiver::grabber_exit_callback, this));
           }
           break;
 
@@ -118,6 +125,10 @@ public:
   }
 
 private:
+  void grabber_exit_callback(void) {
+    keyboard_event_output_manager_.stop_key_repeat();
+  }
+
   std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
   std::unique_ptr<grabber_client> grabber_client_;
@@ -126,4 +137,6 @@ private:
   volatile bool exit_loop_;
 
   keyboard_event_output_manager keyboard_event_output_manager_;
+
+  std::unique_ptr<process_monitor> grabber_process_monitor_;
 };
