@@ -18,11 +18,3 @@ unless /^org\.pqrs\./ =~ hash['CFBundleIdentifier'] then
   print "CFBundleIdentifier may be invalid. '#{hash['CFBundleIdentifier']}'\n"
   exit 1
 end
-
-iconfile = hash['CFBundleIconFile']
-if iconfile.nil? or (not /icns$/ =~ iconfile) then
-  unless ARGV.include?('CFBundleIconFile')
-    print "CFBundleIconFile is invalid. #{iconfile}\n"
-    exit 1
-  end
-end
