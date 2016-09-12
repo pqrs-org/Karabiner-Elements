@@ -96,7 +96,8 @@ But `karabiner_grabber` does not use it in order to reduce the device dependancy
 
 ### Apple devices reports
 
-Apple keyboards does not use generic HID keyboard report descriptor.
+Apple keyboards does not use generic HID keyboard report descriptor.<br />
+Thus, we have to handle them by separate way.
 
 #### Generic HID keyboard report descriptor
 
