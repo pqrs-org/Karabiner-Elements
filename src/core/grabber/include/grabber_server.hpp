@@ -94,6 +94,8 @@ public:
             } else {
               logger::get_logger().info("grabber_client is connected (pid:{0})", pid);
 
+              device_grabber_.post_connect_ack();
+
               device_grabber_.grab_devices();
 
               // monitor the last process

@@ -143,6 +143,10 @@ public:
     });
   }
 
+  void post_connect_ack(void) {
+    console_user_client_.connect_ack();
+  }
+
 private:
   static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
     if (result != kIOReturnSuccess) {

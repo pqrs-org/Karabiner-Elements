@@ -10,6 +10,12 @@ public:
 
   console_user_client(void) : client_(constants::get_console_user_socket_file_path()) {}
 
+  void connect_ack(void) {
+    krbn::operation_type_connect_ack_struct s;
+    s.grabber_pid = getpid();
+    client_.send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
   void stop_key_repeat(void) {
     krbn::operation_type_stop_key_repeat_struct s;
     client_.send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));

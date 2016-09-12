@@ -21,6 +21,7 @@ enum class operation_type : uint8_t {
   clear_simple_modifications,
   add_simple_modification,
   // grabber -> console_user_server
+  connect_ack,
   stop_key_repeat,
   post_modifier_flags,
   post_key,
@@ -599,6 +600,13 @@ struct operation_type_connect_struct {
 
   const operation_type operation_type;
   pid_t console_user_server_pid;
+};
+
+struct operation_type_connect_ack_struct {
+  operation_type_connect_ack_struct(void) : operation_type(operation_type::connect_ack) {}
+
+  const operation_type operation_type;
+  pid_t grabber_pid;
 };
 
 struct operation_type_clear_simple_modifications_struct {
