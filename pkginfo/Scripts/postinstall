@@ -8,6 +8,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
 killall karabiner_grabber
 killall karabiner_console_user_server
 
-launchctl load -w /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
+launchctl bootstrap system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
+launchctl enable system/org.pqrs.karabiner.karabiner_grabber
 
 exit 0

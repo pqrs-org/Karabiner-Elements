@@ -44,13 +44,27 @@
 }
 
 - (void)launchctlConsoleUserServer:(BOOL)load {
-  NSTask* task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
-                                          arguments:@[
-                                            load ? @"load" : @"unload",
-                                            @"-w",
-                                            @"/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist",
-                                          ]];
-  [task waitUntilExit];
+  uid_t uid = getuid();
+  NSString* domainTarget = [NSString stringWithFormat:@"gui/%d", uid];
+  NSString* serviceTarget = [NSString stringWithFormat:@"gui/%d/org.pqrs.karabiner.karabiner_console_user_server", uid];
+  NSString* plistFilePath = @"/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist";
+
+  if (load) {
+    NSTask* task = nil;
+
+    task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
+                                    arguments:@[ @"bootstrap", domainTarget, plistFilePath ]];
+    [task waitUntilExit];
+
+    task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
+                                    arguments:@[ @"enable", serviceTarget, plistFilePath ]];
+    [task waitUntilExit];
+
+  } else {
+    NSTask* task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
+                                            arguments:@[ @"bootout", domainTarget, plistFilePath ]];
+    [task waitUntilExit];
+  }
 }
 
 @end

@@ -6,7 +6,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
 # unload before install
 
 if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist ]; then
-    launchctl unload /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
+    launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
 fi
 
 # ----------------------------------------

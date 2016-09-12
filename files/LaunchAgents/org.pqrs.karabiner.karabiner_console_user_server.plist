@@ -4,7 +4,6 @@
   <dict>
     <key>Label</key>             <string>org.pqrs.karabiner.karabiner_console_user_server</string>
     <key>Disabled</key>          <true/>
-    <key>RunAtLoad</key>         <true/>
     <key>KeepAlive</key>         <true/>
 
     <key>ProgramArguments</key>

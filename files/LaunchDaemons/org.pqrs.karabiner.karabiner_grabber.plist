@@ -4,7 +4,6 @@
   <dict>
     <key>Label</key>             <string>org.pqrs.karabiner.karabiner_grabber</string>
     <key>Disabled</key>          <false/>
-    <key>RunAtLoad</key>         <true/>
     <key>KeepAlive</key>         <true/>
 
     <key>ProgramArguments</key>
