@@ -14,6 +14,9 @@
 		3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB691D8061E40005D30D /* PreferencesWindowController.m */; };
 		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
 		347112ED1D86E619001AC60D /* UpdaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112EC1D86E619001AC60D /* UpdaterController.m */; };
+		347112F11D87010A001AC60D /* Relauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112F01D87010A001AC60D /* Relauncher.m */; };
+		347113101D870D74001AC60D /* libkrbn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3471130F1D870D74001AC60D /* libkrbn.a */; };
+		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +34,11 @@
 		3469EB6E1D8127980005D30D /* LogFileTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogFileTextViewController.m; sourceTree = "<group>"; };
 		347112EB1D86E619001AC60D /* UpdaterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdaterController.h; sourceTree = "<group>"; };
 		347112EC1D86E619001AC60D /* UpdaterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdaterController.m; sourceTree = "<group>"; };
+		347112EF1D87010A001AC60D /* Relauncher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Relauncher.h; path = ../../share/Relauncher.h; sourceTree = "<group>"; };
+		347112F01D87010A001AC60D /* Relauncher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Relauncher.m; path = ../../share/Relauncher.m; sourceTree = "<group>"; };
+		3471130F1D870D74001AC60D /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
+		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
+		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "../../../../../../../usr/lib/libc++.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +46,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				347113101D870D74001AC60D /* libkrbn.a in Frameworks */,
+				347113131D870F5F001AC60D /* libc++.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +57,7 @@
 		3445E0591D801AF7004555F9 = {
 			isa = PBXGroup;
 			children = (
+				347113121D870F5F001AC60D /* libc++.dylib */,
 				3445E0641D801AF7004555F9 /* PreferencesWindow */,
 				3445E0631D801AF7004555F9 /* Products */,
 			);
@@ -83,6 +94,8 @@
 		3445E0681D801AF7004555F9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				347113111D870E87001AC60D /* libkrbn.h */,
+				3471130F1D870D74001AC60D /* libkrbn.a */,
 				3445E0691D801AF7004555F9 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -91,6 +104,8 @@
 		3469EB6B1D806AD60005D30D /* share */ = {
 			isa = PBXGroup;
 			children = (
+				347112EF1D87010A001AC60D /* Relauncher.h */,
+				347112F01D87010A001AC60D /* Relauncher.m */,
 				3469EB6C1D806AEA0005D30D /* weakify.h */,
 			);
 			name = share;
@@ -166,6 +181,7 @@
 			files = (
 				347112ED1D86E619001AC60D /* UpdaterController.m in Sources */,
 				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
+				347112F11D87010A001AC60D /* Relauncher.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,
 				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
@@ -226,6 +242,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = ../lib/libkrbn/build/Release;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
