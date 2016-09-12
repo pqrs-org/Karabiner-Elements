@@ -13,6 +13,7 @@
 		3445E06F1D801AF7004555F9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06D1D801AF7004555F9 /* MainMenu.xib */; };
 		3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB691D8061E40005D30D /* PreferencesWindowController.m */; };
 		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
+		347112ED1D86E619001AC60D /* UpdaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112EC1D86E619001AC60D /* UpdaterController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,8 @@
 		3469EB6C1D806AEA0005D30D /* weakify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = weakify.h; path = ../../share/weakify.h; sourceTree = "<group>"; };
 		3469EB6D1D8127980005D30D /* LogFileTextViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogFileTextViewController.h; sourceTree = "<group>"; };
 		3469EB6E1D8127980005D30D /* LogFileTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogFileTextViewController.m; sourceTree = "<group>"; };
+		347112EB1D86E619001AC60D /* UpdaterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdaterController.h; sourceTree = "<group>"; };
+		347112EC1D86E619001AC60D /* UpdaterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdaterController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +74,8 @@
 				3469EB691D8061E40005D30D /* PreferencesWindowController.m */,
 				3469EB6B1D806AD60005D30D /* share */,
 				3445E0681D801AF7004555F9 /* Supporting Files */,
+				347112EB1D86E619001AC60D /* UpdaterController.h */,
+				347112EC1D86E619001AC60D /* UpdaterController.m */,
 			);
 			path = PreferencesWindow;
 			sourceTree = "<group>";
@@ -159,6 +164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				347112ED1D86E619001AC60D /* UpdaterController.m in Sources */,
 				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,
 				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,

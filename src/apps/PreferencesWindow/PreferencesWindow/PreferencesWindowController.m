@@ -1,16 +1,20 @@
 #import "PreferencesWindowController.h"
 #import "LogFileTextViewController.h"
+#import "UpdaterController.h"
 
 @interface PreferencesWindowController ()
 
-@property(weak) IBOutlet LogFileTextViewController* grabberLogFileTextViewController;
 @property(weak) IBOutlet LogFileTextViewController* consoleUserServerLogFileTextViewController;
+@property(weak) IBOutlet LogFileTextViewController* grabberLogFileTextViewController;
+@property(weak) IBOutlet NSTextField* versionLabel;
 
 @end
 
 @implementation PreferencesWindowController
 
 - (void)setup {
+  self.versionLabel.stringValue = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
+
   [self.grabberLogFileTextViewController monitor:@"/var/log/karabiner/grabber_log.txt"];
   [self.consoleUserServerLogFileTextViewController monitor:[NSString stringWithFormat:@"%@/.karabiner.d/log/console_user_server_log.txt", NSHomeDirectory()]];
 
@@ -22,8 +26,16 @@
   [NSApp activateIgnoringOtherApps:YES];
 }
 
+- (IBAction)checkForUpdatesStableOnly:(id)sender {
+  [UpdaterController checkForUpdatesStableOnly];
+}
+
+- (IBAction)checkForUpdatesWithBetaVersion:(id)sender {
+  [UpdaterController checkForUpdatesWithBetaVersion];
+}
+
 - (IBAction)launchUninstaller:(id)sender {
-  NSString* path = @"/Library/Application Support/org.pqrs/Seil/uninstaller.applescript";
+  NSString* path = @"/Library/Application Support/org.pqrs/Karabiner-Elements/uninstaller.applescript";
   [[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil] executeAndReturnError:nil];
 }
 

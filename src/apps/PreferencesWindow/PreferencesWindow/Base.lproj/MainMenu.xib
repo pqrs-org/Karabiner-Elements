@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -32,6 +33,7 @@
             <connections>
                 <outlet property="consoleUserServerLogFileTextViewController" destination="wKd-bU-aLe" id="0HF-x6-hSp"/>
                 <outlet property="grabberLogFileTextViewController" destination="Dgl-Py-BWv" id="UrC-nq-BS8"/>
+                <outlet property="versionLabel" destination="sau-jf-Dqb" id="maD-61-nBB"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="rSZ-Ih-Gbv"/>
             </connections>
         </customObject>
@@ -368,6 +370,139 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                 <view key="view" id="oZ9-PG-xey">
                                     <rect key="frame" x="10" y="33" width="754" height="438"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DOX-q0-HoN">
+                                            <rect key="frame" x="15" y="413" width="175" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Karabiner-Elements version:" id="Xg6-y2-MuI">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sau-jf-Dqb">
+                                            <rect key="frame" x="191" y="413" width="37" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="XEU-p8-QQc">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <box title="Update" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="3j8-8U-bBH">
+                                            <rect key="frame" x="14" y="350" width="726" height="53"/>
+                                            <view key="contentView" id="Blg-HH-9LH">
+                                                <rect key="frame" x="1" y="1" width="724" height="37"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hA8-fr-71n">
+                                                        <rect key="frame" x="11" y="1" width="152" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Check for updates" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="iDW-FG-uaL">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="checkForUpdatesStableOnly:" target="5ke-qB-Wr5" id="dlN-aA-8f7"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lRS-BL-uVJ">
+                                                        <rect key="frame" x="530" y="1" width="183" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Check for beta updates" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mbv-qj-mvU">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="checkForUpdatesWithBetaVersion:" target="5ke-qB-Wr5" id="ed9-jh-unc"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="hA8-fr-71n" firstAttribute="top" secondItem="Blg-HH-9LH" secondAttribute="top" constant="8" id="1es-cH-bxk"/>
+                                                    <constraint firstItem="hA8-fr-71n" firstAttribute="leading" secondItem="Blg-HH-9LH" secondAttribute="leading" constant="17" id="Qwl-Qb-Tu3"/>
+                                                    <constraint firstAttribute="bottom" secondItem="hA8-fr-71n" secondAttribute="bottom" constant="8" id="eD1-M3-Z4B"/>
+                                                    <constraint firstItem="lRS-BL-uVJ" firstAttribute="centerY" secondItem="hA8-fr-71n" secondAttribute="centerY" id="sdT-P1-Flj"/>
+                                                    <constraint firstAttribute="trailing" secondItem="lRS-BL-uVJ" secondAttribute="trailing" constant="17" id="tKe-5W-FJd"/>
+                                                </constraints>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </box>
+                                        <box title="Uninstall" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="bRw-jJ-vdo">
+                                            <rect key="frame" x="14" y="281" width="726" height="53"/>
+                                            <view key="contentView" id="E8s-vq-cpp">
+                                                <rect key="frame" x="1" y="1" width="724" height="37"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CzP-aW-AzB">
+                                                        <rect key="frame" x="11" y="1" width="151" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Launch uninstaller" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Sr0-va-jSj">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="launchUninstaller:" target="5ke-qB-Wr5" id="9JG-jF-1nr"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="CzP-aW-AzB" firstAttribute="top" secondItem="E8s-vq-cpp" secondAttribute="top" constant="8" id="CTi-pL-zAa"/>
+                                                    <constraint firstAttribute="bottom" secondItem="CzP-aW-AzB" secondAttribute="bottom" constant="8" id="DK3-Jj-alQ"/>
+                                                    <constraint firstItem="CzP-aW-AzB" firstAttribute="leading" secondItem="E8s-vq-cpp" secondAttribute="leading" constant="17" id="pb6-oj-hqP"/>
+                                                </constraints>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </box>
+                                        <box title="Web Sites" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-Lc-pSo">
+                                            <rect key="frame" x="14" y="212" width="726" height="53"/>
+                                            <view key="contentView" id="ibU-6J-Zdv">
+                                                <rect key="frame" x="1" y="1" width="724" height="37"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="i87-Pa-TZD">
+                                                        <rect key="frame" x="11" y="1" width="341" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="https://github.com/tekezo/Karabiner-Elements" bezelStyle="rounded" image="NSFollowLinkFreestandingTemplate" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PWa-pr-xeD">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="openURL:" target="5ke-qB-Wr5" id="uc3-fc-YLl"/>
+                                                        </connections>
+                                                    </button>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="c8u-qB-WbK">
+                                                        <rect key="frame" x="349" y="10" width="88" height="17"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(source code)" id="pmQ-71-PVZ">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="c8u-qB-WbK" firstAttribute="leading" secondItem="i87-Pa-TZD" secondAttribute="trailing" constant="5" id="9Za-AM-3cr"/>
+                                                    <constraint firstItem="c8u-qB-WbK" firstAttribute="centerY" secondItem="i87-Pa-TZD" secondAttribute="centerY" id="DMo-op-9v5"/>
+                                                    <constraint firstItem="i87-Pa-TZD" firstAttribute="top" secondItem="ibU-6J-Zdv" secondAttribute="top" constant="8" id="kuW-cn-ejw"/>
+                                                    <constraint firstAttribute="bottom" secondItem="i87-Pa-TZD" secondAttribute="bottom" constant="8" id="slT-g9-UVV"/>
+                                                    <constraint firstItem="i87-Pa-TZD" firstAttribute="leading" secondItem="ibU-6J-Zdv" secondAttribute="leading" constant="17" id="v22-0C-Bcp"/>
+                                                </constraints>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </box>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" constant="17" id="0eo-bc-F4Z"/>
+                                        <constraint firstItem="sau-jf-Dqb" firstAttribute="leading" secondItem="DOX-q0-HoN" secondAttribute="trailing" constant="5" id="Fyg-bc-bgi"/>
+                                        <constraint firstItem="3j8-8U-bBH" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="17" id="G3Y-Zf-g9c"/>
+                                        <constraint firstItem="ZAS-Lc-pSo" firstAttribute="top" secondItem="bRw-jJ-vdo" secondAttribute="bottom" constant="20" id="GKw-1j-4yw"/>
+                                        <constraint firstItem="sau-jf-Dqb" firstAttribute="centerY" secondItem="DOX-q0-HoN" secondAttribute="centerY" id="KYg-f5-u1g"/>
+                                        <constraint firstItem="DOX-q0-HoN" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="17" id="Okn-qw-iEx"/>
+                                        <constraint firstItem="DOX-q0-HoN" firstAttribute="top" secondItem="oZ9-PG-xey" secondAttribute="top" constant="8" id="Qji-lS-jHg"/>
+                                        <constraint firstItem="ZAS-Lc-pSo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="aQo-bz-os7"/>
+                                        <constraint firstItem="bRw-jJ-vdo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="cu0-mY-LNc"/>
+                                        <constraint firstItem="bRw-jJ-vdo" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="fV2-yM-QGE"/>
+                                        <constraint firstItem="ZAS-Lc-pSo" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="hgp-AD-qmh"/>
+                                        <constraint firstItem="bRw-jJ-vdo" firstAttribute="top" secondItem="3j8-8U-bBH" secondAttribute="bottom" constant="20" id="otG-Wg-M9X"/>
+                                        <constraint firstItem="3j8-8U-bBH" firstAttribute="top" secondItem="DOX-q0-HoN" secondAttribute="bottom" constant="10" id="zkN-OQ-f0K"/>
+                                    </constraints>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Logs" identifier="" id="0dg-UV-jta">
@@ -526,6 +661,7 @@ Please modify karabiner.json by a text editor at the moment.</string>
         </window>
     </objects>
     <resources>
+        <image name="NSFollowLinkFreestandingTemplate" width="14" height="14"/>
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
     </resources>
 </document>
