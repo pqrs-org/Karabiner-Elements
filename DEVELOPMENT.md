@@ -2,10 +2,10 @@
 
 * `karabiner_grabber`
   * Run with root privilege.
-  * Seize the input devices and post events to `karabiner_console_user_server`.
+  * Seize the input devices and modify events then post events to `karabiner_console_user_server`.
 * `karabiner_console_user_server`
   * Run with console user privilege.
-  * Receive input events from `karabiner_grabber` and then modify events and post them to IOHIDSystem.
+  * Receive input events from `karabiner_grabber` and post them to IOHIDSystem.
 
 ## About security
 
@@ -14,7 +14,6 @@
 If a cracked `karabiner_console_user_server` is connected, the input events will be leaked.
 To avoid this problem, `karabiner_grabber` checks the codesign certificate of `karabiner_console_user_server`.
 If the both process are not signed with the same certificate, `karabiner_grabber` does not send events to `karabiner_console_user_server`.
-
 
 ## program sequence
 
@@ -27,6 +26,10 @@ If the both process are not signed with the same certificate, `karabiner_grabber
 7. Send `KRBN_OPERATION_TYPE_CONNECT` to grabber from console_user_server.
 8. grabber connects to console_user_server.
 9. grabber seizes input devices.
+
+## Other notes
+
+We have to modify events in `karabiner_grabber` because the caps lock handling requires root privilege.
 
 --------------------------------------------------------------------------------
 
