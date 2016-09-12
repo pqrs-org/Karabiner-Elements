@@ -47,7 +47,7 @@
 		34CA6979174FB72900EC8EFB /* KeyResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyResponder.h; path = Classes/KeyResponder.h; sourceTree = "<group>"; };
 		34CA697A174FB72900EC8EFB /* KeyResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KeyResponder.m; path = Classes/KeyResponder.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* EventViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EventViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* Karabiner-EventViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Karabiner-EventViewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +105,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* EventViewer.app */,
+				8D1107320486CEB800E47090 /* Karabiner-EventViewer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -178,7 +178,7 @@
 			name = EventViewer;
 			productInstallPath = "$(HOME)/Applications";
 			productName = EventViewer;
-			productReference = 8D1107320486CEB800E47090 /* EventViewer.app */;
+			productReference = 8D1107320486CEB800E47090 /* Karabiner-EventViewer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -270,8 +270,8 @@
 				GCC_PREFIX_HEADER = EventViewer_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.pqrs.Karabiner.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = EventViewer;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.pqrs.Karabiner-EventViewer";
+				PRODUCT_NAME = "Karabiner-EventViewer";
 			};
 			name = Release;
 		};
