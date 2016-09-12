@@ -38,10 +38,10 @@
   // So that Sparkle gives priority to a preference over Info.plist,
   // we overwrite SUFeedURL here.
   if (includingBetaVersions) {
-    return @"https://pqrs.org/osx/karabiner/files/appcast-devel.xml";
+    return @"https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast-devel.xml";
   }
 
-  return @"https://pqrs.org/osx/karabiner/files/appcast.xml";
+  return @"https://pqrs.org/osx/karabiner/files/karabiner-elements-appcast.xml";
 }
 
 - (void)checkForUpdatesInBackground {
