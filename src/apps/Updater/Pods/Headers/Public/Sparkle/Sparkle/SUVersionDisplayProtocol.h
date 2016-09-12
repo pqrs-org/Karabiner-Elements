@@ -1,0 +1,1 @@
+../../../../Sparkle/Sparkle.framework/Versions/A/Headers/SUVersionDisplayProtocol.h
