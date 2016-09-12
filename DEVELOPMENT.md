@@ -90,9 +90,9 @@ It requires posting mac events.<br />
 We can get hid reports from devices via `IOHIDDeviceRegisterInputReportCallback`.<br />
 The hid report contains a list of pressed keys, so it seems suitable information to observe.
 
-But `karabiner_grabber` does not use it to reduce device dependancy.
+But `karabiner_grabber` does not use it in order to reduce the device dependancy.
 
-## The limitation of `device reports`
+## The limitation of device reports
 
 ### Apple devices reports
 
