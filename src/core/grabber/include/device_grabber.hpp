@@ -147,6 +147,12 @@ public:
     console_user_client_.connect_ack();
   }
 
+  void set_caps_lock_led_state(krbn::led_state state) {
+    for (const auto& it : hids_) {
+      (it.second)->set_caps_lock_led_state(state);
+    }
+  }
+
 private:
   static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
     if (result != kIOReturnSuccess) {
@@ -427,12 +433,6 @@ private:
       total += (it.second)->get_pressed_keys_count();
     }
     return total;
-  }
-
-  void set_caps_lock_led_state(krbn::led_state state) {
-    for (const auto& it : hids_) {
-      (it.second)->set_caps_lock_led_state(state);
-    }
   }
 
   void cancel_grab_timer(void) {

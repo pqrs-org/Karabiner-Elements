@@ -106,6 +106,19 @@ public:
           }
           break;
 
+        case krbn::operation_type::set_caps_lock_led_state:
+          if (n < sizeof(krbn::operation_type_set_caps_lock_led_state_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::set_caps_lock_led_state ({0})", n);
+          } else {
+            auto p = reinterpret_cast<krbn::operation_type_set_caps_lock_led_state_struct*>(&(buffer_[0]));
+            // bind variables
+            auto led_state = p->led_state;
+            dispatch_async(dispatch_get_main_queue(), ^{
+              device_grabber_.set_caps_lock_led_state(led_state);
+            });
+          }
+          break;
+
         case krbn::operation_type::clear_simple_modifications:
           device_grabber_.clear_simple_modifications();
           break;

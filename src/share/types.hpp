@@ -20,6 +20,7 @@ enum class operation_type : uint8_t {
   connect,
   clear_simple_modifications,
   add_simple_modification,
+  set_caps_lock_led_state,
   // grabber -> console_user_server
   connect_ack,
   stop_key_repeat,
@@ -114,7 +115,6 @@ enum class modifier_flag : uint32_t {
 };
 
 enum class led_state : uint32_t {
-  none,
   on,
   off,
 };
@@ -621,6 +621,13 @@ struct operation_type_add_simple_modification_struct {
   const operation_type operation_type;
   key_code from_key_code;
   key_code to_key_code;
+};
+
+struct operation_type_set_caps_lock_led_state_struct {
+  operation_type_set_caps_lock_led_state_struct(void) : operation_type(operation_type::set_caps_lock_led_state) {}
+
+  const operation_type operation_type;
+  led_state led_state;
 };
 
 struct operation_type_stop_key_repeat_struct {

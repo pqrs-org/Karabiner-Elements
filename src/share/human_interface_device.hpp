@@ -265,7 +265,7 @@ public:
 #pragma mark - usage specific utilities
 
   // This method requires root privilege to use IOHIDDeviceGetValue for kHIDPage_LEDs usage.
-  krbn::led_state get_caps_lock_led_state(void) const {
+  boost::optional<krbn::led_state> get_caps_lock_led_state(void) const {
     if (auto element = get_element(kHIDPage_LEDs, kHIDUsage_LED_CapsLock)) {
       auto max = IOHIDElementGetLogicalMax(element);
 
@@ -273,7 +273,7 @@ public:
       auto r = IOHIDDeviceGetValue(device_, element, &value);
       if (r != kIOReturnSuccess) {
         logger_.error("IOHIDDeviceGetValue error: {1} @ {0}", __PRETTY_FUNCTION__, r);
-        return krbn::led_state::none;
+        return boost::none;
       }
 
       auto integer_value = IOHIDValueGetIntegerValue(value);
@@ -284,15 +284,11 @@ public:
       }
     }
 
-    return krbn::led_state::none;
+    return boost::none;
   }
 
   // This method requires root privilege to use IOHIDDeviceSetValue for kHIDPage_LEDs usage.
   IOReturn set_caps_lock_led_state(krbn::led_state state) {
-    if (state == krbn::led_state::none) {
-      return kIOReturnSuccess;
-    }
-
     if (auto element = get_element(kHIDPage_LEDs, kHIDUsage_LED_CapsLock)) {
       CFIndex integer_value = 0;
       if (state == krbn::led_state::on) {

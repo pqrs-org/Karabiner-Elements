@@ -30,6 +30,12 @@ public:
     client_.send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
+  void set_caps_lock_led_state(krbn::led_state led_state) {
+    krbn::operation_type_set_caps_lock_led_state_struct s;
+    s.led_state = led_state;
+    client_.send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
 private:
   local_datagram_client client_;
 };
