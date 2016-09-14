@@ -1,12 +1,17 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
+#include <CoreFoundation/CoreFoundation.h>
+#include <boost/optional.hpp>
+
 class system_preferences final {
 public:
   class values {
   public:
-    values(void) : keyboard_fn_state_(get_keyboard_fn_state()),
-                   initial_key_repeat_milliseconds_(get_initial_key_repeat_milliseconds()),
-                   key_repeat_milliseconds_(get_key_repeat_milliseconds()) {
+    values(void) : keyboard_fn_state_(system_preferences::get_keyboard_fn_state()),
+                   initial_key_repeat_milliseconds_(system_preferences::get_initial_key_repeat_milliseconds()),
+                   key_repeat_milliseconds_(system_preferences::get_key_repeat_milliseconds()) {
     }
 
     bool get_keyboard_fn_state(void) const { return keyboard_fn_state_; }

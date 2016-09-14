@@ -1,13 +1,20 @@
 // OS X headers
-#include <CoreFoundation/CoreFoundation.h>
-
+#include "system_preferences_monitor.hpp"
 #include <iostream>
 
-#include "system_preferences.hpp"
+namespace {
+void system_preferences_values_updated_callback(const system_preferences::values& values) {
+  std::cout << "system_preferences_values_updated_callback:" << std::endl;
+  std::cout << "  com.apple.keyboard.fnState: " << values.get_keyboard_fn_state() << std::endl;
+  std::cout << "  InitialKeyRepeat: " << values.get_initial_key_repeat_milliseconds() << std::endl;
+  std::cout << "  KeyRepeat: " << values.get_key_repeat_milliseconds() << std::endl;
+}
+}
 
 int main(int argc, const char* argv[]) {
-  std::cout << "com.apple.keyboard.fnState: " << system_preferences::get_keyboard_fn_state() << std::endl;
-  std::cout << "InitialKeyRepeat: " << system_preferences::get_initial_key_repeat_milliseconds() << std::endl;
-  std::cout << "KeyRepeat: " << system_preferences::get_key_repeat_milliseconds() << std::endl;
+  system_preferences_monitor monitor(system_preferences_values_updated_callback);
+
+  CFRunLoopRun();
+
   return 0;
 }

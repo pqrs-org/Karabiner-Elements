@@ -25,9 +25,7 @@ public:
 
 private:
   void worker(void) {
-    while (exit_loop_) {
-      using namespace std::chrono_literals;
-
+    while (!exit_loop_) {
       system_preferences::values v;
       if (values_ != v) {
         values_ = v;
@@ -36,6 +34,7 @@ private:
         }
       }
 
+      using namespace std::chrono_literals;
       std::this_thread::sleep_for(1s);
     }
   }

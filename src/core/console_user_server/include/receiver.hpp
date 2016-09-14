@@ -36,6 +36,9 @@ public:
     grabber_client_ = std::make_unique<grabber_client>();
     grabber_client_->connect();
 
+    system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
+        std::bind(&receiver::system_preferences_values_updated_callback, this, std::placeholders::_1));
+
     configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger(),
                                                                      constants::get_configuration_directory(),
                                                                      *grabber_client_,
@@ -62,6 +65,7 @@ public:
     grabber_process_monitor_.reset(nullptr);
     configuration_manager_.reset(nullptr);
     grabber_client_.reset(nullptr);
+    system_preferences_monitor_.reset(nullptr);
     server_.reset(nullptr);
 
     keyboard_event_output_manager_.stop_key_repeat();
@@ -128,6 +132,10 @@ public:
 private:
   void grabber_exit_callback(void) {
     keyboard_event_output_manager_.stop_key_repeat();
+  }
+
+  void system_preferences_values_updated_callback(const system_preferences::values& values) {
+    logger::get_logger().info("system_preferences_values_updated_callback");
   }
 
   std::vector<uint8_t> buffer_;
