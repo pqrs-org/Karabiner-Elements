@@ -25,23 +25,22 @@ public:
     } else {
       dispatch_source_set_timer(timer_, dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), 1.0 * NSEC_PER_SEC, 0);
       dispatch_source_set_event_handler(timer_, ^{
-        uid_t uid = 0;
-        session::get_current_console_user_id(uid);
+        if (auto uid = session::get_current_console_user_id()) {
+          if (last_uid_ != *uid) {
+            last_uid_ = *uid;
+            logger::get_logger().info("current_console_user_id: {0}", *uid);
 
-        if (last_uid_ != uid) {
-          last_uid_ = uid;
-          logger::get_logger().info("current_console_user_id: {0}", uid);
+            // set up grabber_server before prepare_socket_directory
+            // in order to guarantee that the grabber_server is ready if console_user_server can make their receiver socket.
+            grabber_server_.stop();
+            grabber_server_.start();
+            prepare_socket_directory(*uid);
+            // unlink old socket.
+            unlink(constants::get_console_user_socket_file_path());
 
-          // set up grabber_server before prepare_socket_directory
-          // in order to guarantee that the grabber_server is ready if console_user_server can make their receiver socket.
-          grabber_server_.stop();
-          grabber_server_.start();
-          prepare_socket_directory(uid);
-          // unlink old socket.
-          unlink(constants::get_console_user_socket_file_path());
-
-          logger::get_logger().info("console_user_socket_directory_is_ready for {0}", uid);
-          notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_console_user_socket_directory_is_ready());
+            logger::get_logger().info("console_user_socket_directory_is_ready for {0}", *uid);
+            notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_console_user_socket_directory_is_ready());
+          }
         }
       });
 

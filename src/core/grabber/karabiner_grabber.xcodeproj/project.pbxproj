@@ -44,7 +44,7 @@
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A891D6840C200DD480B /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A8C1D6840C200DD480B /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = SOURCE_ROOT; };
-		34A88A8F1D6840C200DD480B /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = include/session.hpp; sourceTree = SOURCE_ROOT; };
+		34A88A8F1D6840C200DD480B /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = ../../share/session.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A901D6840C200DD480B /* connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connection_manager.hpp; path = include/connection_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A941D68446C00DD480B /* karabiner_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = karabiner_version.h; path = ../../share/karabiner_version.h; sourceTree = SOURCE_ROOT; };
 		34A88A951D6858D300DD480B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
@@ -117,6 +117,7 @@
 				345AC0021D620C8C009D1FB4 /* notification_center.hpp */,
 				347113141D871C6C001AC60D /* process_monitor.hpp */,
 				3492C9B81D7574520055988F /* service_observer.hpp */,
+				34A88A8F1D6840C200DD480B /* session.hpp */,
 				34A88AA61D6DF89900DD480B /* types.hpp */,
 			);
 			name = share;
@@ -150,7 +151,6 @@
 				34A88A8C1D6840C200DD480B /* logger.hpp */,
 				34A88AA31D69C84900DD480B /* manipulator */,
 				34A88AA21D69B66200DD480B /* manipulator.hpp */,
-				34A88A8F1D6840C200DD480B /* session.hpp */,
 				34A88A901D6840C200DD480B /* connection_manager.hpp */,
 			);
 			name = include;
