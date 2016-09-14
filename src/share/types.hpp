@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "system_preferences.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDUsageTables.h>
@@ -18,6 +19,7 @@ enum class operation_type : uint8_t {
   none,
   // console_user_server -> grabber
   connect,
+  system_preferences_values_updated,
   clear_simple_modifications,
   add_simple_modification,
   set_caps_lock_led_state,
@@ -600,6 +602,13 @@ struct operation_type_connect_struct {
 
   const operation_type operation_type;
   pid_t console_user_server_pid;
+};
+
+struct operation_type_system_preferences_values_updated_struct {
+  operation_type_system_preferences_values_updated_struct(void) : operation_type(operation_type::system_preferences_values_updated) {}
+
+  const operation_type operation_type;
+  system_preferences::values values;
 };
 
 struct operation_type_connect_ack_struct {

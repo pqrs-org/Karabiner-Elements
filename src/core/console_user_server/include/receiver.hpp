@@ -135,7 +135,9 @@ private:
   }
 
   void system_preferences_values_updated_callback(const system_preferences::values& values) {
-    logger::get_logger().info("system_preferences_values_updated_callback");
+    if (grabber_client_) {
+      grabber_client_->system_preferences_values_updated(values);
+    }
   }
 
   std::vector<uint8_t> buffer_;

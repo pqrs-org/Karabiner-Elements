@@ -18,6 +18,12 @@ public:
     client_.send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
+  void system_preferences_values_updated(const system_preferences::values values) {
+    krbn::operation_type_system_preferences_values_updated_struct s;
+    s.values = values;
+    client_.send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
   void clear_simple_modifications(void) {
     krbn::operation_type_clear_simple_modifications_struct s;
     client_.send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));

@@ -106,6 +106,14 @@ private:
           }
           break;
 
+        case krbn::operation_type::system_preferences_values_updated:
+          if (n < sizeof(krbn::operation_type_system_preferences_values_updated_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::system_preferences_values_updated ({0})", n);
+          } else {
+            logger::get_logger().info("system_preferences_values_updated");
+          }
+          break;
+
         case krbn::operation_type::set_caps_lock_led_state:
           if (n < sizeof(krbn::operation_type_set_caps_lock_led_state_struct)) {
             logger::get_logger().error("invalid size for krbn::operation_type::set_caps_lock_led_state ({0})", n);
