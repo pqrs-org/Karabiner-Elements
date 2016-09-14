@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		349950631D89000B004FE466 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 349950621D89000B004FE466 /* SystemConfiguration.framework */; };
 		34A88A9F1D685A5000DD480B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34A88A9E1D685A5000DD480B /* main.cpp */; };
 		34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34BB0F0A1D22853700372174 /* IOKit.framework */; };
 		34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E9F62E1D2134770007AE90 /* Carbon.framework */; };
@@ -38,6 +39,7 @@
 		347113151D871EC1001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_monitor.hpp; path = ../../share/process_monitor.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9B61D752C820055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../../share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9BC1D772D8B0055988F /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
+		349950621D89000B004FE466 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		34A88A981D685A4600DD480B /* grabber_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_client.hpp; path = include/grabber_client.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9A1D685A4600DD480B /* keyboard_event_output_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = keyboard_event_output_manager.hpp; path = include/keyboard_event_output_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9B1D685A4600DD480B /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = SOURCE_ROOT; };
@@ -55,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				349950631D89000B004FE466 /* SystemConfiguration.framework in Frameworks */,
 				34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */,
 				34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */,
 			);
@@ -115,6 +118,7 @@
 		34BB0F0C1D22853D00372174 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				349950621D89000B004FE466 /* SystemConfiguration.framework */,
 				34BB0F0A1D22853700372174 /* IOKit.framework */,
 				34E9F62E1D2134770007AE90 /* Carbon.framework */,
 			);
