@@ -84,11 +84,11 @@ private:
   }
 
   std::thread thread_;
-  volatile bool exit_loop_;
-  volatile bool is_session_active_;
+  std::atomic<bool> exit_loop_;
+  std::atomic<bool> is_session_active_;
 
   std::thread receiver_starter_thread_;
-  volatile bool exit_receiver_starter_;
+  std::atomic<bool> exit_receiver_starter_;
   receiver receiver_;
 
   dispatch_source_t sigusr1_source_;

@@ -158,7 +158,7 @@ private:
   std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
   std::thread thread_;
-  volatile bool exit_loop_;
+  std::atomic<bool> exit_loop_;
 
   std::unique_ptr<process_monitor> console_user_server_process_monitor_;
 };

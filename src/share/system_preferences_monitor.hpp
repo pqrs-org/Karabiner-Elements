@@ -43,5 +43,5 @@ private:
 
   system_preferences::values values_;
   std::thread thread_;
-  volatile bool exit_loop_;
+  std::atomic<bool> exit_loop_;
 };

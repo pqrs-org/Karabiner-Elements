@@ -146,7 +146,7 @@ private:
   std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<configuration_manager> configuration_manager_;
   std::thread thread_;
-  volatile bool exit_loop_;
+  std::atomic<bool> exit_loop_;
 
   keyboard_event_output_manager keyboard_event_output_manager_;
 

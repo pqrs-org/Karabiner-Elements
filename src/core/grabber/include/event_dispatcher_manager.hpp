@@ -47,5 +47,5 @@ private:
   }
 
   std::thread thread_;
-  volatile pid_t pid_;
+  std::atomic<pid_t> pid_;
 };
