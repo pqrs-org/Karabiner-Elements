@@ -7,6 +7,7 @@
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
 #include "process_monitor.hpp"
+#include "system_preferences_monitor.hpp"
 #include "types.hpp"
 #include <vector>
 
@@ -132,6 +133,7 @@ private:
   std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
   std::unique_ptr<grabber_client> grabber_client_;
+  std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<configuration_manager> configuration_manager_;
   std::thread thread_;
   volatile bool exit_loop_;
