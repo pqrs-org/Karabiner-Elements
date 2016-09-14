@@ -2,6 +2,30 @@
 
 class system_preferences final {
 public:
+  class values {
+  public:
+    values(void) : keyboard_fn_state_(get_keyboard_fn_state()),
+                   initial_key_repeat_milliseconds_(get_initial_key_repeat_milliseconds()),
+                   key_repeat_milliseconds_(get_key_repeat_milliseconds()) {
+    }
+
+    bool get_keyboard_fn_state(void) const { return keyboard_fn_state_; }
+    long get_initial_key_repeat_milliseconds(void) const { return initial_key_repeat_milliseconds_; }
+    long get_key_repeat_milliseconds(void) const { return key_repeat_milliseconds_; }
+
+    bool operator==(const system_preferences::values& other) const {
+      return keyboard_fn_state_ == other.keyboard_fn_state_ &&
+             initial_key_repeat_milliseconds_ == other.initial_key_repeat_milliseconds_ &&
+             key_repeat_milliseconds_ == other.key_repeat_milliseconds_;
+    }
+    bool operator!=(const system_preferences::values& other) const { return !(*this == other); }
+
+  private:
+    bool keyboard_fn_state_;
+    long initial_key_repeat_milliseconds_;
+    long key_repeat_milliseconds_;
+  };
+
   static bool get_long_property(CFStringRef _Nonnull key, CFStringRef _Nonnull application_id, long& value) {
     bool success = false;
     if (auto v = CFPreferencesCopyAppValue(key, application_id)) {
