@@ -11,7 +11,7 @@ public:
   connection_manager(const connection_manager&) = delete;
 
   connection_manager(void) : exit_loop_(false),
-                             session_state_(session::state::none),
+                             is_session_active_(false),
                              exit_receiver_starter_(true),
                              sigusr1_source_(0) {
     thread_ = std::thread([this] { this->worker(); });
@@ -34,19 +34,20 @@ public:
 private:
   void worker(void) {
     while (!exit_loop_) {
-      auto state = session::get_state();
-      if (session_state_ != state) {
-        session_state_ = state;
+      if (auto is_active = session::is_active()) {
+        if (is_session_active_ != *is_active) {
+          is_session_active_ = *is_active;
 
-        exit_receiver_starter_ = true;
-        if (receiver_starter_thread_.joinable()) {
-          receiver_starter_thread_.join();
-        }
-        receiver_.stop();
+          exit_receiver_starter_ = true;
+          if (receiver_starter_thread_.joinable()) {
+            receiver_starter_thread_.join();
+          }
+          receiver_.stop();
 
-        if (session_state_ == session::state::active) {
-          exit_receiver_starter_ = false;
-          receiver_starter_thread_ = std::thread([this] { this->receiver_starter_worker(); });
+          if (is_session_active_) {
+            exit_receiver_starter_ = false;
+            receiver_starter_thread_ = std::thread([this] { this->receiver_starter_worker(); });
+          }
         }
       }
 
@@ -79,12 +80,12 @@ private:
   void console_user_socket_directory_is_ready_callback(void) {
     logger::get_logger().info("connection_manager::console_user_socket_directory_is_ready_callback");
     // restart receiver.
-    session_state_ = session::state::none;
+    is_session_active_ = false;
   }
 
   std::thread thread_;
   volatile bool exit_loop_;
-  volatile session::state session_state_;
+  volatile bool is_session_active_;
 
   std::thread receiver_starter_thread_;
   volatile bool exit_receiver_starter_;
