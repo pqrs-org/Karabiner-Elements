@@ -68,6 +68,7 @@ public:
     logger::get_logger().info("receiver is stopped");
   }
 
+private:
   void worker(void) {
     if (!server_) {
       return;
@@ -124,7 +125,6 @@ public:
     keyboard_event_output_manager_.stop_key_repeat();
   }
 
-private:
   void grabber_exit_callback(void) {
     keyboard_event_output_manager_.stop_key_repeat();
   }
