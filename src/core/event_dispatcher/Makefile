@@ -17,4 +17,4 @@ xcode:
 
 install: all
 	sudo install -m 755 ./build/Release/karabiner_event_dispatcher '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_event_dispatcher'
-	-sudo killall karabiner_event_dispatcher
+	-sudo killall karabiner_grabber
