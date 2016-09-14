@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "device_grabber.hpp"
+#include "event_dispatcher_manager.hpp"
 #include "grabber_server.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
@@ -29,6 +30,9 @@ public:
           if (last_uid_ != *uid) {
             last_uid_ = *uid;
             logger::get_logger().info("current_console_user_id: {0}", *uid);
+
+            event_dispatcher_manager_ = nullptr;
+            event_dispatcher_manager_ = std::make_unique<event_dispatcher_manager>();
 
             // set up grabber_server before prepare_socket_directory
             // in order to guarantee that the grabber_server is ready if console_user_server can make their receiver socket.
@@ -66,5 +70,6 @@ private:
   dispatch_source_t timer_;
   uid_t last_uid_;
 
+  std::unique_ptr<event_dispatcher_manager> event_dispatcher_manager_;
   grabber_server grabber_server_;
 };

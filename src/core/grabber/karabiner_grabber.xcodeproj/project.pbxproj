@@ -40,6 +40,7 @@
 		347113141D871C6C001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_monitor.hpp; path = ../../share/process_monitor.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9B81D7574520055988F /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9B91D757E5D0055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../../share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
+		349950641D891BCF004FE466 /* event_dispatcher_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_dispatcher_manager.hpp; path = include/event_dispatcher_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A871D6840C200DD480B /* console_user_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = console_user_client.hpp; path = include/console_user_client.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A891D6840C200DD480B /* grabber_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_server.hpp; path = include/grabber_server.hpp; sourceTree = SOURCE_ROOT; };
@@ -145,13 +146,14 @@
 		34E450271D2AB18400C5AC13 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				34A88A901D6840C200DD480B /* connection_manager.hpp */,
 				34A88A871D6840C200DD480B /* console_user_client.hpp */,
 				34A88A881D6840C200DD480B /* device_grabber.hpp */,
+				349950641D891BCF004FE466 /* event_dispatcher_manager.hpp */,
 				34A88A891D6840C200DD480B /* grabber_server.hpp */,
 				34A88A8C1D6840C200DD480B /* logger.hpp */,
 				34A88AA31D69C84900DD480B /* manipulator */,
 				34A88AA21D69B66200DD480B /* manipulator.hpp */,
-				34A88A901D6840C200DD480B /* connection_manager.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";

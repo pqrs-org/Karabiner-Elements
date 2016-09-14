@@ -53,6 +53,7 @@ public:
     device_grabber_.ungrab_devices();
   }
 
+private:
   void worker(void) {
     if (!server_) {
       return;
@@ -138,7 +139,6 @@ public:
     }
   }
 
-private:
   void console_user_server_exit_callback(void) {
     device_grabber_.ungrab_devices();
   }
