@@ -9,6 +9,9 @@
 class event_dispatcher_manager final {
 public:
   event_dispatcher_manager(void) : pid_(0) {
+    // kill orphan karabiner_event_dispatcher
+    system("/usr/bin/killall karabiner_event_dispatcher");
+
     thread_ = std::thread([this] { this->worker(); });
   }
 
@@ -17,9 +20,6 @@ public:
       kill(pid_, SIGTERM);
     }
     thread_.join();
-
-    // kill orphan karabiner_event_dispatcher
-    system("/usr/bin/killall karabiner_event_dispatcher");
   }
 
 private:
