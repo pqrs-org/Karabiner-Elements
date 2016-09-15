@@ -17,7 +17,9 @@
 namespace krbn {
 enum class operation_type : uint8_t {
   none,
+  // event_dispatcher,console_user_server -> grabber
   connect,
+  // grabber -> event_dispatcher,console_user_server
   connect_ack,
   // console_user_server -> grabber
   system_preferences_values_updated,
