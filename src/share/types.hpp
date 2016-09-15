@@ -28,7 +28,10 @@ enum class operation_type : uint8_t {
   stop_key_repeat,
   post_modifier_flags,
   post_key,
+  // event_dispatcher -> grabber
+  event_dispatcher_connect,
   // grabber -> event_dispatcher
+  event_dispatcher_connect_ack,
   dispatch_modifier_flags,
   dispatch_key_event,
 };

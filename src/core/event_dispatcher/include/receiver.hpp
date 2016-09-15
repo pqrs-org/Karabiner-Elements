@@ -1,12 +1,10 @@
 #pragma once
 
-#include "configuration_manager.hpp"
 #include "constants.hpp"
 #include "grabber_client.hpp"
-#include "keyboard_event_output_manager.hpp"
+#include "hid_system_client.hpp"
 #include "local_datagram_server.hpp"
 #include "logger.hpp"
-#include "process_monitor.hpp"
 #include "types.hpp"
 #include <vector>
 
@@ -14,31 +12,20 @@ class receiver final {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(void) : exit_loop_(false) {
-    const size_t buffer_length = 8 * 1024;
-    buffer_.resize(buffer_length);
-  }
-
-  void start(void) {
-    if (server_) {
-      logger::get_logger().error("receiver is already running");
-      return;
-    }
-
-    keyboard_event_output_manager_.stop_key_repeat();
-
-    const char* path = constants::get_console_user_socket_file_path();
-    unlink(path);
-    server_ = std::make_unique<local_datagram_server>(path);
-    chmod(path, 0600);
-
+  receiver(void) : exit_loop_(false),
+                   hid_system_client_(logger::get_logger()) {
+    // Ensure that grabber is running.
     grabber_client_ = std::make_unique<grabber_client>();
     grabber_client_->connect();
 
-    configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger(),
-                                                                     constants::get_configuration_directory(),
-                                                                     *grabber_client_,
-                                                                     keyboard_event_output_manager_);
+    const size_t buffer_length = 8 * 1024;
+    buffer_.resize(buffer_length);
+
+    mkdir(constants::get_socket_directory(), 0755);
+    const char* path = constants::get_event_dispatcher_socket_file_path();
+    unlink(path);
+    server_ = std::make_unique<local_datagram_server>(path);
+    chmod(path, 0600);
 
     exit_loop_ = false;
     thread_ = std::thread([this] { this->worker(); });
@@ -46,24 +33,16 @@ public:
     logger::get_logger().info("receiver is started");
   }
 
-  void stop(void) {
-    unlink(constants::get_console_user_socket_file_path());
-
-    if (!thread_.joinable()) {
-      return;
-    }
-    if (!server_) {
-      return;
-    }
+  ~receiver(void) {
+    unlink(constants::get_event_dispatcher_socket_file_path());
 
     exit_loop_ = true;
-    thread_.join();
-    grabber_process_monitor_.reset(nullptr);
-    configuration_manager_.reset(nullptr);
-    grabber_client_.reset(nullptr);
-    server_.reset(nullptr);
+    if (thread_.joinable()) {
+      thread_.join();
+    }
 
-    keyboard_event_output_manager_.stop_key_repeat();
+    grabber_client_ = nullptr;
+    server_ = nullptr;
 
     logger::get_logger().info("receiver is stopped");
   }
@@ -86,33 +65,19 @@ private:
           } else {
             auto p = reinterpret_cast<krbn::operation_type_connect_ack_struct*>(&(buffer_[0]));
             logger::get_logger().info("connect_ack karabiner_grabber pid:{0}", p->grabber_pid);
-
-            grabber_process_monitor_ = nullptr;
-            grabber_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
-                                                                         p->grabber_pid,
-                                                                         std::bind(&receiver::grabber_exit_callback, this));
           }
           break;
 
-        case krbn::operation_type::stop_key_repeat:
-          keyboard_event_output_manager_.stop_key_repeat();
-          break;
-
-        case krbn::operation_type::post_modifier_flags:
-          if (n != sizeof(krbn::operation_type_post_modifier_flags_struct)) {
-            logger::get_logger().error("invalid size for krbn::operation_type::post_modifier_flags");
+        case krbn::operation_type::dispatch_modifier_flags:
+          if (n != sizeof(krbn::operation_type_dispatch_modifier_flags_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::dispatch_modifier_flags");
           } else {
-            auto p = reinterpret_cast<krbn::operation_type_post_modifier_flags_struct*>(&(buffer_[0]));
-            keyboard_event_output_manager_.post_modifier_flags(p->key_code, p->flags);
-          }
-          break;
-
-        case krbn::operation_type::post_key:
-          if (n != sizeof(krbn::operation_type_post_key_struct)) {
-            logger::get_logger().error("invalid size for krbn::operation_type::post_key");
-          } else {
-            auto p = reinterpret_cast<krbn::operation_type_post_key_struct*>(&(buffer_[0]));
-            keyboard_event_output_manager_.post_key(p->key_code, p->event_type, p->flags);
+            auto p = reinterpret_cast<krbn::operation_type_dispatch_modifier_flags_struct*>(&(buffer_[0]));
+            if (auto mac_key = krbn::types::get_mac_key(p->key_code)) {
+              hid_system_client_.post_modifier_flags(*mac_key, p->flags);
+            } else {
+              logger::get_logger().error("unsupported key_code {1:#x} @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(p->key_code));
+            }
           }
           break;
 
@@ -121,22 +86,13 @@ private:
         }
       }
     }
-
-    keyboard_event_output_manager_.stop_key_repeat();
-  }
-
-  void grabber_exit_callback(void) {
-    keyboard_event_output_manager_.stop_key_repeat();
   }
 
   std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
   std::unique_ptr<grabber_client> grabber_client_;
-  std::unique_ptr<configuration_manager> configuration_manager_;
   std::thread thread_;
   std::atomic<bool> exit_loop_;
 
-  keyboard_event_output_manager keyboard_event_output_manager_;
-
-  std::unique_ptr<process_monitor> grabber_process_monitor_;
+  hid_system_client hid_system_client_;
 };

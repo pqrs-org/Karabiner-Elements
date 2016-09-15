@@ -1,10 +1,26 @@
 #include "constants.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
+#include "receiver.hpp"
 #include "session.hpp"
+#include <chrono>
+#include <thread>
 
 int main(int argc, const char* argv[]) {
   logger::get_logger().info("version {0}", karabiner_version);
+
+  // ----------------------------------------
+  signal(SIGUSR1, SIG_IGN);
+  signal(SIGUSR2, SIG_IGN);
+
+  while (true) {
+    try {
+      receiver receiver;
+      break;
+    } catch (...) {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+  }
 
   // ----------------------------------------
   if (getuid() != 0) {
@@ -22,10 +38,6 @@ int main(int argc, const char* argv[]) {
     logger::get_logger().error("setuid error @ {0}", __PRETTY_FUNCTION__);
     return 1;
   }
-
-  // ----------------------------------------
-  signal(SIGUSR1, SIG_IGN);
-  signal(SIGUSR2, SIG_IGN);
 
   CFRunLoopRun();
   return 0;
