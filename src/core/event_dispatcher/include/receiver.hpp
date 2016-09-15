@@ -68,11 +68,11 @@ private:
           }
           break;
 
-        case krbn::operation_type::dispatch_modifier_flags:
-          if (n != sizeof(krbn::operation_type_dispatch_modifier_flags_struct)) {
-            logger::get_logger().error("invalid size for krbn::operation_type::dispatch_modifier_flags");
+        case krbn::operation_type::post_modifier_flags:
+          if (n != sizeof(krbn::operation_type_post_modifier_flags_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::post_modifier_flags");
           } else {
-            auto p = reinterpret_cast<krbn::operation_type_dispatch_modifier_flags_struct*>(&(buffer_[0]));
+            auto p = reinterpret_cast<krbn::operation_type_post_modifier_flags_struct*>(&(buffer_[0]));
             if (auto mac_key = krbn::types::get_mac_key(p->key_code)) {
               hid_system_client_.post_modifier_flags(*mac_key, p->flags);
             } else {

@@ -13,12 +13,12 @@ class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(device_grabber& device_grabber) : device_grabber_(device_grabber),
+  connection_manager(event_dispatcher_manager& event_dispatcher_manager,
+                     device_grabber& device_grabber) : event_dispatcher_manager_(event_dispatcher_manager),
+                                                       device_grabber_(device_grabber),
                                                        timer_(0),
-                                                       last_uid_(0),
-                                                       grabber_server_(device_grabber_) {
+                                                       last_uid_(0) {
     prepare_socket_directory(0);
-    grabber_server_.stop();
 
     timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
     if (!timer_) {
@@ -31,13 +31,9 @@ public:
             last_uid_ = *uid;
             logger::get_logger().info("current_console_user_id: {0}", *uid);
 
-            event_dispatcher_manager_ = nullptr;
-            event_dispatcher_manager_ = std::make_unique<event_dispatcher_manager>();
+            grabber_server_ = nullptr;
+            grabber_server_ = std::make_unique<grabber_server>(event_dispatcher_manager_, device_grabber_);
 
-            // set up grabber_server before prepare_socket_directory
-            // in order to guarantee that the grabber_server is ready if console_user_server can make their receiver socket.
-            grabber_server_.stop();
-            grabber_server_.start();
             prepare_socket_directory(*uid);
             // unlink old socket.
             unlink(constants::get_console_user_socket_file_path());
@@ -52,6 +48,11 @@ public:
     }
   }
 
+  ~connection_manager(void) {
+    grabber_server_ = nullptr;
+  }
+
+private:
   void prepare_socket_directory(uid_t uid) {
     // make directories.
     mkdir(constants::get_socket_directory(), 0755);
@@ -65,11 +66,10 @@ public:
     chown(constants::get_console_user_socket_directory(), uid, 0);
   }
 
-private:
+  event_dispatcher_manager& event_dispatcher_manager_;
   device_grabber& device_grabber_;
   dispatch_source_t timer_;
   uid_t last_uid_;
 
-  std::unique_ptr<event_dispatcher_manager> event_dispatcher_manager_;
-  grabber_server grabber_server_;
+  std::unique_ptr<grabber_server> grabber_server_;
 };

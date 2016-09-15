@@ -3,6 +3,7 @@
 #include "apple_hid_usage_tables.hpp"
 #include "console_user_client.hpp"
 #include "constants.hpp"
+#include "event_dispatcher_manager.hpp"
 #include "event_manipulator.hpp"
 #include "hid_system_client.hpp"
 #include "human_interface_device.hpp"
@@ -16,11 +17,12 @@ class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(void) : hid_system_client_(logger::get_logger()),
-                         grab_timer_(0),
-                         grab_retry_count_(0),
-                         grabbed_(false),
-                         console_user_client_() {
+  device_grabber(event_dispatcher_manager& event_dispatcher_manager) : event_dispatcher_manager_(event_dispatcher_manager),
+                                                                       hid_system_client_(logger::get_logger()),
+                                                                       grab_timer_(0),
+                                                                       grab_retry_count_(0),
+                                                                       grabbed_(false),
+                                                                       console_user_client_() {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
@@ -403,7 +405,7 @@ private:
         modifier_flag_manager_.reset();
       }
 
-      console_user_client_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
+      event_dispatcher_manager_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
       return true;
     }
 
@@ -444,6 +446,7 @@ private:
     }
   }
 
+  event_dispatcher_manager& event_dispatcher_manager_;
   hid_system_client hid_system_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;

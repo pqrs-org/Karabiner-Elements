@@ -7,10 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3411F57D1D84FD9400C4ED1E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3411F57C1D84FD9400C4ED1E /* Security.framework */; };
 		34A88A961D6858D300DD480B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34A88A951D6858D300DD480B /* main.cpp */; };
 		34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34BB0F0A1D22853700372174 /* IOKit.framework */; };
-		34E420611D5042240022F821 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E420601D5042240022F821 /* SystemConfiguration.framework */; };
+		34DA289B1D8B02160029E37D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E420601D5042240022F821 /* SystemConfiguration.framework */; };
 		34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E9F62E1D2134770007AE90 /* Carbon.framework */; };
 /* End PBXBuildFile section */
 
@@ -66,8 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3411F57D1D84FD9400C4ED1E /* Security.framework in Frameworks */,
-				34E420611D5042240022F821 /* SystemConfiguration.framework in Frameworks */,
+				34DA289B1D8B02160029E37D /* SystemConfiguration.framework in Frameworks */,
 				34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */,
 				34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */,
 			);

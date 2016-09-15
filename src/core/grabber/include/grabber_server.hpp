@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "device_grabber.hpp"
+#include "event_dispatcher_manager.hpp"
 #include "local_datagram_server.hpp"
 #include "process_monitor.hpp"
 #include "session.hpp"
@@ -12,13 +13,13 @@ class grabber_server final {
 public:
   grabber_server(const grabber_server&) = delete;
 
-  grabber_server(device_grabber& device_grabber) : device_grabber_(device_grabber),
+  grabber_server(event_dispatcher_manager& event_dispatcher_manager,
+                 device_grabber& device_grabber) : event_dispatcher_manager_(event_dispatcher_manager),
+                                                   device_grabber_(device_grabber),
                                                    exit_loop_(false) {
     const size_t buffer_length = 1024 * 1024;
     buffer_.resize(buffer_length);
-  }
 
-  void start(void) {
     const char* path = constants::get_grabber_socket_file_path();
     unlink(path);
     server_ = std::make_unique<local_datagram_server>(path);
@@ -32,7 +33,7 @@ public:
     thread_ = std::thread([this] { this->worker(); });
   }
 
-  void stop(void) {
+  ~grabber_server(void) {
     unlink(constants::get_grabber_socket_file_path());
 
     exit_loop_ = true;
@@ -40,8 +41,8 @@ public:
       thread_.join();
     }
 
-    server_.reset(nullptr);
-    console_user_server_process_monitor_.reset(nullptr);
+    server_ = nullptr;
+    console_user_server_process_monitor_ = nullptr;
     device_grabber_.ungrab_devices();
   }
 
@@ -66,12 +67,13 @@ private:
             switch (p->connect_from) {
             case krbn::connect_from::event_dispatcher:
               logger::get_logger().info("karabiner_event_dispatcher is connected (pid:{0})", p->pid);
+              event_dispatcher_manager_.create_event_dispatcher_client();
               break;
+
             case krbn::connect_from::console_user_server:
               logger::get_logger().info("karabiner_grabber is connected (pid:{0})", p->pid);
 
               device_grabber_.post_connect_ack();
-
               device_grabber_.grab_devices();
 
               // monitor the last process
@@ -130,6 +132,7 @@ private:
     device_grabber_.ungrab_devices();
   }
 
+  event_dispatcher_manager& event_dispatcher_manager_;
   device_grabber& device_grabber_;
 
   std::vector<uint8_t> buffer_;

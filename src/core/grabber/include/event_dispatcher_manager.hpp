@@ -2,7 +2,9 @@
 
 #include "constants.hpp"
 #include "logger.hpp"
+#include "types.hpp"
 #include <cstdlib>
+#include <memory>
 #include <thread>
 #include <unistd.h>
 
@@ -21,6 +23,38 @@ public:
       kill(pid_, SIGTERM);
     }
     thread_.join();
+  }
+
+  void relaunch(void) {
+    if (pid_ > 0) {
+      kill(pid_, SIGTERM);
+    }
+  }
+
+  void create_event_dispatcher_client(void) {
+    std::lock_guard<std::mutex> guard(client_mutex_);
+
+    client_ = nullptr;
+    try {
+      client_ = std::make_unique<local_datagram_client>(constants::get_event_dispatcher_socket_file_path());
+    } catch (...) {
+      client_ = nullptr;
+    }
+  }
+
+  void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
+    std::lock_guard<std::mutex> guard(client_mutex_);
+
+    if (client_) {
+      try {
+        krbn::operation_type_post_modifier_flags_struct s;
+        s.key_code = key_code;
+        s.flags = flags;
+        client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+      } catch (...) {
+        client_ = nullptr;
+      }
+    }
   }
 
 private:
@@ -47,12 +81,21 @@ private:
         waitpid(pid, &status, 0);
         pid_ = 0;
         logger::get_logger().info("karabiner_event_dispatcher is terminated. (pid:{0})", pid);
+
+        // release client_
+        {
+          std::lock_guard<std::mutex> guard(client_mutex_);
+          client_ = nullptr;
+        }
       }
     }
   }
 
   std::thread thread_;
   std::atomic<bool> exit_loop_;
+
+  std::unique_ptr<local_datagram_client> client_;
+  std::mutex client_mutex_;
 
   std::atomic<pid_t> pid_;
 };
