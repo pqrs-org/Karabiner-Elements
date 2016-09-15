@@ -37,6 +37,7 @@ public:
     grabber_client_->connect();
 
     system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
+        logger::get_logger(),
         std::bind(&receiver::system_preferences_values_updated_callback, this, std::placeholders::_1));
 
     configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger(),

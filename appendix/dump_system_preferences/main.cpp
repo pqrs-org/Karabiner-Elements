@@ -2,6 +2,17 @@
 #include "system_preferences_monitor.hpp"
 #include <iostream>
 
+class logger final {
+public:
+  static spdlog::logger& get_logger(void) {
+    static std::shared_ptr<spdlog::logger> logger;
+    if (!logger) {
+      logger = spdlog::stdout_logger_mt("dump_system_preferences", true);
+    }
+    return *logger;
+  }
+};
+
 namespace {
 void system_preferences_values_updated_callback(const system_preferences::values& values) {
   std::cout << "system_preferences_values_updated_callback:" << std::endl;
@@ -12,7 +23,7 @@ void system_preferences_values_updated_callback(const system_preferences::values
 }
 
 int main(int argc, const char* argv[]) {
-  system_preferences_monitor monitor(system_preferences_values_updated_callback);
+  system_preferences_monitor monitor(logger::get_logger(), system_preferences_values_updated_callback);
 
   CFRunLoopRun();
 
