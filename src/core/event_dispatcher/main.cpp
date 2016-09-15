@@ -5,6 +5,7 @@
 #include "session.hpp"
 #include <chrono>
 #include <thread>
+#include <memory>
 
 int main(int argc, const char* argv[]) {
   logger::get_logger().info("version {0}", karabiner_version);
@@ -13,9 +14,11 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
 
+  std::unique_ptr<receiver> r;
+
   while (true) {
     try {
-      receiver receiver;
+      r = std::make_unique<receiver>();
       break;
     } catch (...) {
       std::this_thread::sleep_for(std::chrono::seconds(1));
