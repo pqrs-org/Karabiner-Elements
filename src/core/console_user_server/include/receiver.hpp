@@ -34,7 +34,7 @@ public:
     chmod(path, 0600);
 
     grabber_client_ = std::make_unique<grabber_client>();
-    grabber_client_->connect();
+    grabber_client_->connect(krbn::connect_from::console_user_server);
 
     system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
         logger::get_logger(),
@@ -90,11 +90,11 @@ public:
             logger::get_logger().error("invalid size for krbn::operation_type::connect_ack");
           } else {
             auto p = reinterpret_cast<krbn::operation_type_connect_ack_struct*>(&(buffer_[0]));
-            logger::get_logger().info("connect_ack karabiner_grabber pid:{0}", p->grabber_pid);
+            logger::get_logger().info("connect_ack karabiner_grabber pid:{0}", p->pid);
 
             grabber_process_monitor_ = nullptr;
             grabber_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
-                                                                         p->grabber_pid,
+                                                                         p->pid,
                                                                          std::bind(&receiver::grabber_exit_callback, this));
           }
           break;

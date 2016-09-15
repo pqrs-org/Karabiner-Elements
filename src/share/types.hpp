@@ -17,23 +17,26 @@
 namespace krbn {
 enum class operation_type : uint8_t {
   none,
-  // console_user_server -> grabber
   connect,
+  connect_ack,
+  // console_user_server -> grabber
   system_preferences_values_updated,
   clear_simple_modifications,
   add_simple_modification,
   set_caps_lock_led_state,
   // grabber -> console_user_server
-  connect_ack,
   stop_key_repeat,
   post_modifier_flags,
   post_key,
   // event_dispatcher -> grabber
-  event_dispatcher_connect,
   // grabber -> event_dispatcher
-  event_dispatcher_connect_ack,
   dispatch_modifier_flags,
   dispatch_key_event,
+};
+
+enum class connect_from : uint8_t {
+  event_dispatcher,
+  console_user_server,
 };
 
 enum class event_type : uint32_t {
@@ -607,7 +610,14 @@ struct operation_type_connect_struct {
   operation_type_connect_struct(void) : operation_type(operation_type::connect) {}
 
   const operation_type operation_type;
-  pid_t console_user_server_pid;
+  connect_from connect_from;
+};
+
+struct operation_type_connect_ack_struct {
+  operation_type_connect_ack_struct(void) : operation_type(operation_type::connect_ack) {}
+
+  const operation_type operation_type;
+  pid_t pid;
 };
 
 struct operation_type_system_preferences_values_updated_struct {
@@ -615,13 +625,6 @@ struct operation_type_system_preferences_values_updated_struct {
 
   const operation_type operation_type;
   system_preferences::values values;
-};
-
-struct operation_type_connect_ack_struct {
-  operation_type_connect_ack_struct(void) : operation_type(operation_type::connect_ack) {}
-
-  const operation_type operation_type;
-  pid_t grabber_pid;
 };
 
 struct operation_type_clear_simple_modifications_struct {

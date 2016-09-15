@@ -16,7 +16,7 @@ public:
                    hid_system_client_(logger::get_logger()) {
     // Ensure that grabber is running.
     grabber_client_ = std::make_unique<grabber_client>();
-    grabber_client_->connect();
+    grabber_client_->connect(krbn::connect_from::event_dispatcher);
 
     const size_t buffer_length = 8 * 1024;
     buffer_.resize(buffer_length);
@@ -64,7 +64,7 @@ private:
             logger::get_logger().error("invalid size for krbn::operation_type::connect_ack");
           } else {
             auto p = reinterpret_cast<krbn::operation_type_connect_ack_struct*>(&(buffer_[0]));
-            logger::get_logger().info("connect_ack karabiner_grabber pid:{0}", p->grabber_pid);
+            logger::get_logger().info("connect_ack karabiner_grabber pid:{0}", p->pid);
           }
           break;
 
