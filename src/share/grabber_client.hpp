@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "local_datagram_client.hpp"
 #include "types.hpp"
+#include <unistd.h>
 #include <vector>
 
 class grabber_client final {
@@ -14,6 +15,7 @@ public:
   void connect(krbn::connect_from connect_from) {
     krbn::operation_type_connect_struct s;
     s.connect_from = connect_from;
+    s.pid = getpid();
     client_.send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 

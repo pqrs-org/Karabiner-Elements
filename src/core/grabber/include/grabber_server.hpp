@@ -1,6 +1,5 @@
 #pragma once
 
-#include "codesign.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
 #include "local_datagram_server.hpp"
@@ -15,13 +14,6 @@ public:
 
   grabber_server(device_grabber& device_grabber) : device_grabber_(device_grabber),
                                                    exit_loop_(false) {
-    codesign_common_name_ = codesign::get_common_name_of_process(getpid());
-    if (codesign_common_name_) {
-      logger::get_logger().info("This process is signed with {1} @ {0}", __PRETTY_FUNCTION__, *codesign_common_name_);
-    } else {
-      logger::get_logger().warn("This process is not signed.");
-    }
-
     const size_t buffer_length = 1024 * 1024;
     buffer_.resize(buffer_length);
   }
@@ -70,28 +62,13 @@ private:
             logger::get_logger().error("invalid size for krbn::operation_type::connect");
           } else {
             auto p = reinterpret_cast<krbn::operation_type_connect_struct*>(&(buffer_[0]));
-            auto pid = p->console_user_server_pid;
 
-            bool verified_client = false;
-
-            if (!codesign_common_name_) {
-              verified_client = true;
-            } else {
-              auto client_common_name = codesign::get_common_name_of_process(pid);
-              if (client_common_name) {
-                logger::get_logger().info("A client is signed with {1} @ {0}", __PRETTY_FUNCTION__, *client_common_name);
-                if (*codesign_common_name_ == *client_common_name) {
-                  verified_client = true;
-                }
-              } else {
-                logger::get_logger().warn("A client is not signed.");
-              }
-            }
-
-            if (!verified_client) {
-              logger::get_logger().error("A unverified client was rejected.");
-            } else {
-              logger::get_logger().info("grabber_client is connected (pid:{0})", pid);
+            switch (p->connect_from) {
+            case krbn::connect_from::event_dispatcher:
+              logger::get_logger().info("karabiner_event_dispatcher is connected (pid:{0})", p->pid);
+              break;
+            case krbn::connect_from::console_user_server:
+              logger::get_logger().info("karabiner_grabber is connected (pid:{0})", p->pid);
 
               device_grabber_.post_connect_ack();
 
@@ -100,8 +77,10 @@ private:
               // monitor the last process
               console_user_server_process_monitor_ = nullptr;
               console_user_server_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
-                                                                                       p->console_user_server_pid,
+                                                                                       p->pid,
                                                                                        std::bind(&grabber_server::console_user_server_exit_callback, this));
+
+              break;
             }
           }
           break;
@@ -152,8 +131,6 @@ private:
   }
 
   device_grabber& device_grabber_;
-
-  boost::optional<std::string> codesign_common_name_;
 
   std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;

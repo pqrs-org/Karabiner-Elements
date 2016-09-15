@@ -613,6 +613,7 @@ struct operation_type_connect_struct {
 
   const operation_type operation_type;
   connect_from connect_from;
+  pid_t pid;
 };
 
 struct operation_type_connect_ack_struct {

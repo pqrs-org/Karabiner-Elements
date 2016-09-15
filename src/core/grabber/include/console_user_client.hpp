@@ -12,7 +12,7 @@ public:
 
   void connect_ack(void) {
     krbn::operation_type_connect_ack_struct s;
-    s.grabber_pid = getpid();
+    s.pid = getpid();
     client_.send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
