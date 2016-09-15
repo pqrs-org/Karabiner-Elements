@@ -42,6 +42,12 @@ public:
     }
   }
 
+  bool is_connected(void) {
+    std::lock_guard<std::mutex> guard(client_mutex_);
+
+    return (client_.get() != nullptr);
+  }
+
   void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
     std::lock_guard<std::mutex> guard(client_mutex_);
 

@@ -12,6 +12,7 @@
 #include "manipulator.hpp"
 #include "types.hpp"
 #include <thread>
+#include <time.h>
 
 class device_grabber final {
 public:
@@ -68,6 +69,8 @@ public:
   }
 
   void grab_devices(void) {
+    auto __block last_warning_message_time = ::time(nullptr) - 1;
+
     // we run grab_devices and ungrab_devices in the main queue.
     dispatch_async(dispatch_get_main_queue(), ^{
       cancel_grab_timer();
@@ -84,19 +87,23 @@ public:
           return;
         }
 
-        std::string warning_message;
+        const char* warning_message = nullptr;
+
+        if (!event_dispatcher_manager_.is_connected()) {
+          warning_message = "karabiner_event_dispatcher is not ready. Please wait for a while.";
+        }
 
         if (get_all_devices_pressed_keys_count() > 0) {
           warning_message = "There are pressed down keys in some devices. Please release them.";
         }
 
-        if (!warning_message.empty()) {
-          ++grab_retry_count_;
-          if (grab_retry_count_ > 10) {
-            grab_retry_count_ = 0;
+        if (warning_message) {
+          auto time = ::time(nullptr);
+          if (last_warning_message_time != time) {
+            last_warning_message_time = time;
             logger::get_logger().warn(warning_message);
+            return;
           }
-          return;
         }
 
         // ----------------------------------------
