@@ -3,6 +3,7 @@
 #include "apple_hid_usage_tables.hpp"
 #include "console_user_client.hpp"
 #include "constants.hpp"
+#include "event_manipulator.hpp"
 #include "hid_system_client.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
