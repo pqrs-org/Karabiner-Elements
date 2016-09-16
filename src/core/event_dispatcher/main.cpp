@@ -32,10 +32,14 @@ int main(int argc, const char* argv[]) {
   }
 
   // ----------------------------------------
-  auto uid = session::get_current_console_user_id();
-  if (!uid) {
-    logger::get_logger().error("session::get_current_console_user_id() error @ {0}", __PRETTY_FUNCTION__);
-    return 1;
+  boost::optional<uid_t> uid;
+  while (true) {
+    uid = session::get_current_console_user_id();
+    if (uid) {
+      break;
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
   if (setuid(*uid) != 0) {
