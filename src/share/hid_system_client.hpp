@@ -50,10 +50,10 @@ public:
   }
 
   void post_modifier_flags(uint8_t key_code, IOOptionBits flags) {
-    NXEventData event{0};
+    NXEventData event{};
     event.key.keyCode = key_code;
 
-    IOGPoint loc{0};
+    IOGPoint loc{};
     post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
   }
 
@@ -75,8 +75,7 @@ public:
   }
 
   void post_key(uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
-    NXEventData event;
-    memset(&event, 0, sizeof(event));
+    NXEventData event{};
     event.key.origCharCode = 0;
     event.key.repeat = repeat;
     event.key.charSet = NX_ASCIISET;
@@ -85,7 +84,7 @@ public:
     event.key.origCharSet = NX_ASCIISET;
     event.key.keyboardType = 0;
 
-    IOGPoint loc{0, 0};
+    IOGPoint loc{};
     post_event(event_type == krbn::event_type::key_down ? NX_KEYDOWN : NX_KEYUP,
                loc,
                &event,
@@ -95,12 +94,11 @@ public:
   }
 
   void post_aux_control_button(uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
-    NXEventData event;
-    memset(&event, 0, sizeof(event));
+    NXEventData event{};
     event.compound.subType = NX_SUBTYPE_AUX_CONTROL_BUTTONS;
     event.compound.misc.L[0] = (key_code << 16) | ((event_type == krbn::event_type::key_down ? NX_KEYDOWN : NX_KEYUP) << 8) | repeat;
 
-    IOGPoint loc{0, 0};
+    IOGPoint loc{};
     post_event(NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
   }
 
