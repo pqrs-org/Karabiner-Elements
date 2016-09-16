@@ -41,11 +41,18 @@ public:
   human_interface_device(spdlog::logger& logger,
                          IOHIDDeviceRef _Nonnull device) : logger_(logger),
                                                            device_(device),
+                                                           registry_entry_id_(0),
                                                            queue_(nullptr) {
     // ----------------------------------------
     // retain device_
 
     CFRetain(device_);
+
+    if (auto registry_entry_id = iokit_utility::get_registry_entry_id(device_)) {
+      registry_entry_id_ = *registry_entry_id;
+    } else {
+      logger::get_logger().error("iokit_utility::get_registry_entry_id error @ {0}", __PRETTY_FUNCTION__);
+    }
 
     // ----------------------------------------
     // setup elements_
@@ -110,6 +117,8 @@ public:
 
     CFRelease(device_);
   }
+
+  uint64_t get_registry_entry_id(void) const { return registry_entry_id_; }
 
   IOReturn open(IOOptionBits options = kIOHIDOptionsTypeNone) {
     return IOHIDDeviceOpen(device_, options);
@@ -407,6 +416,7 @@ private:
   spdlog::logger& logger_;
 
   IOHIDDeviceRef _Nonnull device_;
+  uint64_t registry_entry_id_;
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
