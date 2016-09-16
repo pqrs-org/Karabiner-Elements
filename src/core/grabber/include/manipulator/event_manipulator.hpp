@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "event_dispatcher_manager.hpp"
 #include "logger.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
@@ -22,6 +23,10 @@ public:
   ~event_manipulator(void) {
     stop_key_repeat();
     dispatch_release(key_repeat_queue_);
+  }
+
+  bool is_ready(void) {
+    return event_dispatcher_manager_.is_connected();
   }
 
   void clear_fn_function_keys(void) {
@@ -46,11 +51,7 @@ public:
 
   void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
     stop_key_repeat();
-    if (auto mac_key = krbn::types::get_mac_key(key_code)) {
-      //      hid_system_client_.post_modifier_flags(*mac_key, flags);
-    } else {
-      logger::get_logger().error("unsupported key_code {1:#x} @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(key_code));
-    }
+    event_dispatcher_manager_.post_modifier_flags(key_code, flags);
   }
 
   void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags) {
@@ -180,6 +181,8 @@ private:
     krbn::key_code from_key_code_;
     krbn::key_code to_key_code_;
   };
+
+  event_dispatcher_manager event_dispatcher_manager_;
 
   dispatch_queue_t key_repeat_queue_;
   dispatch_source_t key_repeat_timer_;
