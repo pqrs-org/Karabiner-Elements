@@ -104,6 +104,15 @@ private:
           }
           break;
 
+        case krbn::operation_type::dispatch_key_event:
+          if (n != sizeof(krbn::operation_type_dispatch_key_event_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::dispatch_key_event");
+          } else {
+            auto p = reinterpret_cast<krbn::operation_type_dispatch_key_event_struct*>(&(buffer_[0]));
+            hid_system_client_.post_key(p->key_code, p->event_type, p->flags, p->repeat);
+          }
+          break;
+
         default:
           break;
         }

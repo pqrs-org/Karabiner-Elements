@@ -684,8 +684,9 @@ struct operation_type_dispatch_key_event_struct {
   operation_type_dispatch_key_event_struct(void) : operation_type(operation_type::dispatch_key_event) {}
 
   const operation_type operation_type;
-  key_code key_code;
+  uint8_t key_code;
   event_type event_type;
   IOOptionBits flags;
+  bool repeat;
 };
 }
