@@ -391,7 +391,7 @@ private:
     // Post input events
 
     if (post_modifier_flag_event(key_code, pressed) ||
-        post_caps_lock_event(key_code, pressed)) {
+        post_caps_lock_key(key_code, pressed)) {
       console_user_client_.stop_key_repeat();
       return;
     }
@@ -419,20 +419,13 @@ private:
     return false;
   }
 
-  bool post_caps_lock_event(krbn::key_code key_code, bool pressed) {
+  bool post_caps_lock_key(krbn::key_code key_code, bool pressed) {
     if (key_code != krbn::key_code(kHIDUsage_KeyboardCapsLock)) {
       return false;
     }
 
     if (pressed) {
-      auto state = hid_system_client_.get_caps_lock_state();
-      if (!state || *state) {
-        set_caps_lock_led_state(krbn::led_state::off);
-        hid_system_client_.set_caps_lock_state(false);
-      } else {
-        set_caps_lock_led_state(krbn::led_state::on);
-        hid_system_client_.set_caps_lock_state(true);
-      }
+      event_dispatcher_manager_.post_caps_lock_key();
     }
     return true;
   }

@@ -25,13 +25,14 @@ enum class operation_type : uint8_t {
   system_preferences_values_updated,
   clear_simple_modifications,
   add_simple_modification,
-  set_caps_lock_led_state,
   // grabber -> console_user_server
   stop_key_repeat,
   post_key,
   // event_dispatcher -> grabber
+  set_caps_lock_led_state,
   // grabber -> event_dispatcher
   post_modifier_flags,
+  post_caps_lock_key,
   dispatch_key_event,
 };
 
@@ -662,6 +663,12 @@ struct operation_type_post_modifier_flags_struct {
   const operation_type operation_type;
   key_code key_code;
   IOOptionBits flags;
+};
+
+struct operation_type_post_caps_lock_key_struct {
+  operation_type_post_caps_lock_key_struct(void) : operation_type(operation_type::post_caps_lock_key) {}
+
+  const operation_type operation_type;
 };
 
 struct operation_type_post_key_struct {

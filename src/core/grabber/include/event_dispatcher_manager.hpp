@@ -63,6 +63,19 @@ public:
     }
   }
 
+  void post_caps_lock_key(void) {
+    std::lock_guard<std::mutex> guard(client_mutex_);
+
+    if (client_) {
+      try {
+        krbn::operation_type_post_caps_lock_key_struct s;
+        client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+      } catch (...) {
+        client_ = nullptr;
+      }
+    }
+  }
+
 private:
   void worker(void) {
     while (!exit_loop_) {

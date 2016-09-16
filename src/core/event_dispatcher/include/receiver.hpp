@@ -81,6 +81,29 @@ private:
           }
           break;
 
+        case krbn::operation_type::post_caps_lock_key:
+          if (n != sizeof(krbn::operation_type_post_caps_lock_key_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::post_caps_lock_key");
+          } else {
+            auto state = hid_system_client_.get_caps_lock_state();
+            if (!state) {
+              logger::get_logger().error("hid_system_client_.get_caps_lock_state error @ {0}", __PRETTY_FUNCTION__);
+            } else {
+              if (*state) {
+                hid_system_client_.set_caps_lock_state(false);
+                if (grabber_client_) {
+                  grabber_client_->set_caps_lock_led_state(krbn::led_state::off);
+                }
+              } else {
+                hid_system_client_.set_caps_lock_state(true);
+                if (grabber_client_) {
+                  grabber_client_->set_caps_lock_led_state(krbn::led_state::on);
+                }
+              }
+            }
+          }
+          break;
+
         default:
           break;
         }
