@@ -12,6 +12,7 @@ int main(int argc, const char* argv[]) {
     exit(1);
   }
 
+  // ----------------------------------------
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
 
