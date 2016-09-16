@@ -26,7 +26,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3411F57B1D84FB9900C4ED1E /* codesign.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = codesign.hpp; path = ../../share/codesign.hpp; sourceTree = SOURCE_ROOT; };
 		3411F57C1D84FD9400C4ED1E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../../share/local_datagram_server.hpp; sourceTree = SOURCE_ROOT; };
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = SOURCE_ROOT; };
@@ -106,7 +105,6 @@
 			children = (
 				34EED7101D6FA38400399AD1 /* apple_hid_usage_tables.hpp */,
 				345AC0041D62163F009D1FB4 /* boost_defs.hpp */,
-				3411F57B1D84FB9900C4ED1E /* codesign.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
 				3469EB701D814F140005D30D /* filesystem.hpp */,
 				3492C9B91D757E5D0055988F /* hid_system_client.hpp */,
