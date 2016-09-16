@@ -102,7 +102,7 @@ public:
     post_event(NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
   }
 
-  boost::optional<bool> get_caps_lock_state(void) const {
+  boost::optional<bool> get_caps_lock_state(void) {
     return get_modifier_lock_state(kIOHIDCapsLockState);
   }
 
@@ -113,7 +113,7 @@ public:
 private:
   void matched_callback(io_iterator_t iterator) {
     while (auto service = IOIteratorNext(iterator)) {
-      std::lock_guard<std::mutex> guard(mutex_);
+      std::lock_guard<std::mutex> guard(connect_mutex_);
 
       // Use first matched service.
       if (!service_) {
@@ -145,11 +145,10 @@ private:
       return;
     }
 
+    // ----------------------------------------
     // Refresh connection.
-    {
-      std::lock_guard<std::mutex> guard(mutex_);
-      close_connection();
-    }
+
+    close_connection();
 
     io_iterator_t it;
     auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, matching_dictionary_, &it);
@@ -167,7 +166,7 @@ private:
                   UInt32 event_data_version,
                   IOOptionBits event_flags,
                   IOOptionBits options) {
-    std::lock_guard<std::mutex> guard(mutex_);
+    std::lock_guard<std::mutex> guard(connect_mutex_);
 
     if (!connect_) {
       logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
@@ -180,7 +179,9 @@ private:
     }
   }
 
-  boost::optional<bool> get_modifier_lock_state(int selector) const {
+  boost::optional<bool> get_modifier_lock_state(int selector) {
+    std::lock_guard<std::mutex> guard(connect_mutex_);
+
     if (!connect_) {
       logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
       return boost::none;
@@ -196,6 +197,8 @@ private:
   }
 
   bool set_modifier_lock_state(int selector, bool state) {
+    std::lock_guard<std::mutex> guard(connect_mutex_);
+
     if (!connect_) {
       logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
       return false;
@@ -211,6 +214,8 @@ private:
   }
 
   void close_connection(void) {
+    std::lock_guard<std::mutex> guard(connect_mutex_);
+
     if (connect_) {
       auto kr = IOServiceClose(connect_);
       if (kr != kIOReturnSuccess) {
@@ -233,5 +238,5 @@ private:
   CFMutableDictionaryRef _Nullable matching_dictionary_;
   io_service_t service_;
   io_connect_t connect_;
-  std::mutex mutex_;
+  std::mutex connect_mutex_;
 };
