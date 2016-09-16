@@ -54,7 +54,7 @@ public:
     event.key.keyCode = key_code;
 
     IOGPoint loc{0};
-    post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags | NX_NONCOALSESCEDMASK, kIOHIDSetGlobalEventFlags);
+    post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
   }
 
   enum class post_key_type {
@@ -91,7 +91,7 @@ public:
                &event,
                kNXEventDataVersion,
                flags,
-               0);
+               kIOHIDSetGlobalEventFlags);
   }
 
   void post_aux_control_button(uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
@@ -101,7 +101,7 @@ public:
     event.compound.misc.L[0] = (key_code << 16) | ((event_type == krbn::event_type::key_down ? NX_KEYDOWN : NX_KEYUP) << 8) | repeat;
 
     IOGPoint loc{0, 0};
-    post_event(NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, 0);
+    post_event(NX_SYSDEFINED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
   }
 
   boost::optional<bool> get_caps_lock_state(void) const {
