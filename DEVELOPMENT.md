@@ -18,7 +18,7 @@
 And they seizes devices even in Secure Keyboard Entry.
 
 They are communicating by using unix domain sockets.
-To avoid the data leaks, the unix domain socket of `karabiner_event_dispatcher` is owned by root user and forbid access from normal privilege user.
+To avoid the data leaks, the unix domain socket of `karabiner_event_dispatcher` is owned by root user and forbid access from normal privilege users.
 
 ## program sequence
 
