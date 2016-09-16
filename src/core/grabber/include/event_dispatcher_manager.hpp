@@ -11,9 +11,6 @@
 class event_dispatcher_manager final {
 public:
   event_dispatcher_manager(void) : exit_loop_(false), pid_(0) {
-    // kill orphan karabiner_event_dispatcher
-    system("/usr/bin/killall karabiner_event_dispatcher");
-
     thread_ = std::thread([this] { this->worker(); });
   }
 
@@ -79,6 +76,9 @@ public:
 private:
   void worker(void) {
     while (!exit_loop_) {
+      // kill orphan karabiner_event_dispatcher
+      system("/usr/bin/killall karabiner_event_dispatcher");
+
       std::this_thread::sleep_for(std::chrono::seconds(1));
 
       auto pid = fork();
