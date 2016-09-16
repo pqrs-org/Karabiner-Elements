@@ -2,34 +2,52 @@
 
 * `karabiner_grabber`
   * Run with root privilege.
-  * Seize the input devices and modify events then post events to `karabiner_console_user_server`.
+  * Seize the input devices and modify events then post events to `karabiner_event_dispatcher`.
+* `karabiner_event_dispatcher`
+  * Launch with root privilege. And then change uid to console user.
+  * Receive input events from `karabiner_grabber` and post them to IOHIDSystem.
 * `karabiner_console_user_server`
   * Run with console user privilege.
-  * Receive input events from `karabiner_grabber` and post them to IOHIDSystem.
+  * Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
+  * Monitor a karabiner configuration file and notify changes to `karabiner_grabber`.
+  * `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
 
 ## About security
 
-`karabiner_grabber` and `karabiner_console_user_server` are connected by unix domain socket.
+`karabiner_grabber` and `karabiner_event_dispatcher` treat very sensitive data (input events from device).
+And they seizes devices even in Secure Keyboard Entry.
 
-If a cracked `karabiner_console_user_server` is connected, the input events will be leaked.
-To avoid this problem, `karabiner_grabber` checks the codesign certificate of `karabiner_console_user_server`.
-If the both process are not signed with the same certificate, `karabiner_grabber` does not send events to `karabiner_console_user_server`.
+They are communicating by using unix domain sockets.
+To avoid the data leaks, the unix domain socket of `karabiner_event_dispatcher` is owned by root user and forbid access from normal privilege user.
 
 ## program sequence
 
+### start up
+
+`karabiner_grabber`
+
 1. Run `karabiner_grabber`.
-2. Open grabber server unix domain socket.
-3. Polling session state in grabber.
-4. When session state is changed, grabber change the unix domain socket owner to console user.
-5. Run `karabiner_console_user_server`.
-6. Try to open console_user_server unix domain socket.
-7. Send `KRBN_OPERATION_TYPE_CONNECT` to grabber from console_user_server.
-8. grabber connects to console_user_server.
-9. grabber seizes input devices.
+2. `karabiner_grabber` launches `karabiner_event_dispatcher`.
+3. `karabiner_grabber` opens grabber server unix domain socket.
+4. `karabiner_grabber` start polling the session state.
+5. When session state is changed, `karabiner_grabber` changes the unix domain socket owner to console user.
+
+`karabiner_event_dispatcher`
+
+1. `karabiner_event_dispatcher` provides a unix domain socket for `karabiner_grabber`.
+2. `karabiner_event_dispatcher` makes a connection to `karabiner_grabber`.
+3. `karabiner_event_dispatcher` changes their uid to the console user.
+
+### device grabbing
+
+1. Run `karabiner_console_user_server`.
+2. Try to open console_user_server unix domain socket.
+3. grabber seizes input devices.
 
 ## Other notes
 
-We have to modify events in `karabiner_grabber` because the caps lock handling requires root privilege.
+IOHIDSystem requires the process is running with the console user privilege.
+Thus, `karabiner_grabber` cannot send events to IOHIDSystem directly.
 
 --------------------------------------------------------------------------------
 
