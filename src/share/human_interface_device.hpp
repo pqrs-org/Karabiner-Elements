@@ -51,7 +51,7 @@ public:
     if (auto registry_entry_id = iokit_utility::get_registry_entry_id(device_)) {
       registry_entry_id_ = *registry_entry_id;
     } else {
-      logger::get_logger().error("iokit_utility::get_registry_entry_id error @ {0}", __PRETTY_FUNCTION__);
+      logger_.error("iokit_utility::get_registry_entry_id error @ {0}", __PRETTY_FUNCTION__);
     }
 
     // ----------------------------------------
