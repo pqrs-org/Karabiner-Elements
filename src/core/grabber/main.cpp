@@ -18,7 +18,7 @@ int main(int argc, const char* argv[]) {
 
   logger::get_logger().info("version {0}", karabiner_version);
 
-  std::unique_ptr<event_manipulator> event_manipulator_ptr = std::make_unique<event_manipulator>();
+  std::unique_ptr<manipulator::event_manipulator> event_manipulator_ptr = std::make_unique<manipulator::event_manipulator>();
   std::unique_ptr<device_grabber> device_grabber_ptr = std::make_unique<device_grabber>(*event_manipulator_ptr);
   connection_manager connection_manager(*event_manipulator_ptr, *device_grabber_ptr);
 

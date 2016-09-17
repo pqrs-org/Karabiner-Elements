@@ -4,6 +4,8 @@
 
 #include "event_dispatcher_manager.hpp"
 #include "logger.hpp"
+#include "manipulator.hpp"
+#include "modifier_flag_manager.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
 #include <IOKit/hidsystem/ev_keymap.h>
@@ -12,6 +14,7 @@
 #include <thread>
 #include <unordered_map>
 
+namespace manipulator {
 class event_manipulator final {
 public:
   event_manipulator(const event_manipulator&) = delete;
@@ -44,6 +47,109 @@ public:
   void create_event_dispatcher_client(void) {
     event_dispatcher_manager_.create_event_dispatcher_client();
   }
+
+  void handle_keyboard_event(device_registry_entry_id device_registry_entry_id, krbn::key_code key_code, bool pressed) {
+#if 0
+    // ----------------------------------------
+    // modify usage
+    if (!pressed) {
+      auto it = device.get_simple_changed_keys().find(key_code);
+      if (it != device.get_simple_changed_keys().end()) {
+        key_code = it->second;
+        device.get_simple_changed_keys().erase(it);
+      }
+    } else {
+      std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
+
+      auto it = simple_modifications_.find(key_code);
+      if (it != simple_modifications_.end()) {
+        (device.get_simple_changed_keys())[key_code] = it->second;
+        key_code = it->second;
+      }
+    }
+
+    // modify fn+arrow, function keys
+    if (!pressed) {
+      auto it = device.get_fn_changed_keys().find(key_code);
+      if (it != device.get_fn_changed_keys().end()) {
+        key_code = it->second;
+        device.get_fn_changed_keys().erase(it);
+      }
+    } else {
+      auto k = static_cast<uint32_t>(key_code);
+      auto new_key_code = key_code;
+      if (modifier_flag_manager_.pressed(krbn::modifier_flag::fn)) {
+        if (k == kHIDUsage_KeyboardReturnOrEnter) {
+          new_key_code = krbn::key_code(kHIDUsage_KeypadEnter);
+        } else if (k == kHIDUsage_KeyboardDeleteOrBackspace) {
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardDeleteForward);
+        } else if (k == kHIDUsage_KeyboardRightArrow) {
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardEnd);
+        } else if (k == kHIDUsage_KeyboardLeftArrow) {
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardHome);
+        } else if (k == kHIDUsage_KeyboardDownArrow) {
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardPageDown);
+        } else if (k == kHIDUsage_KeyboardUpArrow) {
+          new_key_code = krbn::key_code(kHIDUsage_KeyboardPageUp);
+        } else if (kHIDUsage_KeyboardF1 <= k && k <= kHIDUsage_KeyboardF12) {
+          new_key_code = krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_fn_f1) + k - kHIDUsage_KeyboardF1);
+        }
+      } else {
+        if (kHIDUsage_KeyboardF1 <= k && k <= kHIDUsage_KeyboardF12) {
+          new_key_code = krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_f1) + k - kHIDUsage_KeyboardF1);
+        }
+      }
+      if (key_code != new_key_code) {
+        (device.get_fn_changed_keys())[key_code] = new_key_code;
+        key_code = new_key_code;
+      }
+    }
+
+    // ----------------------------------------
+    // Post input events
+
+    if (post_modifier_flag_event(key_code, pressed) ||
+        post_caps_lock_key(key_code, pressed)) {
+      console_user_client_.stop_key_repeat();
+      return;
+    }
+
+    auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
+    console_user_client_.post_key(key_code, event_type, modifier_flag_manager_.get_io_option_bits());
+#endif
+  }
+
+#if 0
+  bool post_modifier_flag_event2(krbn::key_code key_code, bool pressed) {
+    auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
+
+    auto modifier_flag = krbn::types::get_modifier_flag(key_code);
+    if (modifier_flag != krbn::modifier_flag::zero) {
+      modifier_flag_manager_.manipulate(modifier_flag, operation);
+
+      // reset modifier_flags state if all keys are released.
+      if (get_all_devices_pressed_keys_count() == 0) {
+        modifier_flag_manager_.reset();
+      }
+
+      event_manipulator_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
+      return true;
+    }
+
+    return false;
+  }
+
+  bool post_caps_lock_key2(krbn::key_code key_code, bool pressed) {
+    if (key_code != krbn::key_code(kHIDUsage_KeyboardCapsLock)) {
+      return false;
+    }
+
+    if (pressed) {
+      event_manipulator_.post_caps_lock_key();
+    }
+    return true;
+  }
+#endif
 
   void stop_key_repeat(void) {
     if (key_repeat_timer_) {
@@ -174,19 +280,19 @@ public:
 private:
   class manipulated_key final {
   public:
-    manipulated_key(uint64_t device_registry_entry_id,
+    manipulated_key(device_registry_entry_id device_registry_entry_id,
                     krbn::key_code from_key_code,
                     krbn::key_code to_key_code) : device_registry_entry_id_(device_registry_entry_id),
                                                   from_key_code_(from_key_code),
                                                   to_key_code_(to_key_code) {
     }
 
-    uint64_t get_device_registry_entry_id(void) const { return device_registry_entry_id_; }
+    device_registry_entry_id get_device_registry_entry_id(void) const { return device_registry_entry_id_; }
     krbn::key_code get_from_key_code(void) const { return from_key_code_; }
     krbn::key_code get_to_key_code(void) const { return to_key_code_; }
 
   private:
-    uint64_t device_registry_entry_id_;
+    device_registry_entry_id device_registry_entry_id_;
     krbn::key_code from_key_code_;
     krbn::key_code to_key_code_;
   };
@@ -202,3 +308,4 @@ private:
 
   std::list<manipulated_key> manipulated_keys_;
 };
+}

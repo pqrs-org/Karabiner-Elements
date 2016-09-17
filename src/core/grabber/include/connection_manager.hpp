@@ -13,7 +13,7 @@ class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(event_manipulator& event_manipulator,
+  connection_manager(manipulator::event_manipulator& event_manipulator,
                      device_grabber& device_grabber) : event_manipulator_(event_manipulator),
                                                        device_grabber_(device_grabber),
                                                        timer_(0),
@@ -66,7 +66,7 @@ private:
     chown(constants::get_console_user_socket_directory(), uid, 0);
   }
 
-  event_manipulator& event_manipulator_;
+  manipulator::event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
   dispatch_source_t timer_;
   uid_t last_uid_;

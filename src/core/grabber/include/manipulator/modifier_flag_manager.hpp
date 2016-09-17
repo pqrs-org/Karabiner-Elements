@@ -1,5 +1,9 @@
 #pragma once
 
+#include "types.hpp"
+#include <vector>
+
+namespace manipulator {
 class modifier_flag_manager final {
 public:
   modifier_flag_manager(void) {
@@ -152,3 +156,4 @@ private:
 
   std::vector<std::unique_ptr<state>> states_;
 };
+}

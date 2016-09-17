@@ -17,12 +17,12 @@ class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
-                                                         hid_system_client_(logger::get_logger()),
-                                                         grab_timer_(0),
-                                                         grab_retry_count_(0),
-                                                         grabbed_(false),
-                                                         console_user_client_() {
+  device_grabber(manipulator::event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
+                                                                      hid_system_client_(logger::get_logger()),
+                                                                      grab_timer_(0),
+                                                                      grab_retry_count_(0),
+                                                                      grabbed_(false),
+                                                                      console_user_client_() {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
@@ -312,123 +312,26 @@ private:
       return;
     }
 
+    auto device_registry_entry_id = manipulator::device_registry_entry_id(device.get_registry_entry_id());
+
     switch (usage_page) {
     case kHIDPage_KeyboardOrKeypad:
       if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
         bool pressed = integer_value;
-        handle_keyboard_event(device, krbn::key_code(usage), pressed);
+        event_manipulator_.handle_keyboard_event(device_registry_entry_id, krbn::key_code(usage), pressed);
       }
       break;
 
     case kHIDPage_AppleVendorTopCase:
       if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
         bool pressed = integer_value;
-        handle_keyboard_event(device, krbn::key_code::vk_fn_modifier, pressed);
+        event_manipulator_.handle_keyboard_event(device_registry_entry_id, krbn::key_code::vk_fn_modifier, pressed);
       }
       break;
 
     default:
       break;
     }
-  }
-
-  void handle_keyboard_event(human_interface_device& device, krbn::key_code key_code, bool pressed) {
-    // ----------------------------------------
-    // modify usage
-    if (!pressed) {
-      auto it = device.get_simple_changed_keys().find(key_code);
-      if (it != device.get_simple_changed_keys().end()) {
-        key_code = it->second;
-        device.get_simple_changed_keys().erase(it);
-      }
-    } else {
-      std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
-
-      auto it = simple_modifications_.find(key_code);
-      if (it != simple_modifications_.end()) {
-        (device.get_simple_changed_keys())[key_code] = it->second;
-        key_code = it->second;
-      }
-    }
-
-    // modify fn+arrow, function keys
-    if (!pressed) {
-      auto it = device.get_fn_changed_keys().find(key_code);
-      if (it != device.get_fn_changed_keys().end()) {
-        key_code = it->second;
-        device.get_fn_changed_keys().erase(it);
-      }
-    } else {
-      auto k = static_cast<uint32_t>(key_code);
-      auto new_key_code = key_code;
-      if (modifier_flag_manager_.pressed(krbn::modifier_flag::fn)) {
-        if (k == kHIDUsage_KeyboardReturnOrEnter) {
-          new_key_code = krbn::key_code(kHIDUsage_KeypadEnter);
-        } else if (k == kHIDUsage_KeyboardDeleteOrBackspace) {
-          new_key_code = krbn::key_code(kHIDUsage_KeyboardDeleteForward);
-        } else if (k == kHIDUsage_KeyboardRightArrow) {
-          new_key_code = krbn::key_code(kHIDUsage_KeyboardEnd);
-        } else if (k == kHIDUsage_KeyboardLeftArrow) {
-          new_key_code = krbn::key_code(kHIDUsage_KeyboardHome);
-        } else if (k == kHIDUsage_KeyboardDownArrow) {
-          new_key_code = krbn::key_code(kHIDUsage_KeyboardPageDown);
-        } else if (k == kHIDUsage_KeyboardUpArrow) {
-          new_key_code = krbn::key_code(kHIDUsage_KeyboardPageUp);
-        } else if (kHIDUsage_KeyboardF1 <= k && k <= kHIDUsage_KeyboardF12) {
-          new_key_code = krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_fn_f1) + k - kHIDUsage_KeyboardF1);
-        }
-      } else {
-        if (kHIDUsage_KeyboardF1 <= k && k <= kHIDUsage_KeyboardF12) {
-          new_key_code = krbn::key_code(static_cast<uint32_t>(krbn::key_code::vk_f1) + k - kHIDUsage_KeyboardF1);
-        }
-      }
-      if (key_code != new_key_code) {
-        (device.get_fn_changed_keys())[key_code] = new_key_code;
-        key_code = new_key_code;
-      }
-    }
-
-    // ----------------------------------------
-    // Post input events
-
-    if (post_modifier_flag_event(key_code, pressed) ||
-        post_caps_lock_key(key_code, pressed)) {
-      console_user_client_.stop_key_repeat();
-      return;
-    }
-
-    auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
-    console_user_client_.post_key(key_code, event_type, modifier_flag_manager_.get_io_option_bits());
-  }
-
-  bool post_modifier_flag_event(krbn::key_code key_code, bool pressed) {
-    auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
-
-    auto modifier_flag = krbn::types::get_modifier_flag(key_code);
-    if (modifier_flag != krbn::modifier_flag::zero) {
-      modifier_flag_manager_.manipulate(modifier_flag, operation);
-
-      // reset modifier_flags state if all keys are released.
-      if (get_all_devices_pressed_keys_count() == 0) {
-        modifier_flag_manager_.reset();
-      }
-
-      event_manipulator_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
-      return true;
-    }
-
-    return false;
-  }
-
-  bool post_caps_lock_key(krbn::key_code key_code, bool pressed) {
-    if (key_code != krbn::key_code(kHIDUsage_KeyboardCapsLock)) {
-      return false;
-    }
-
-    if (pressed) {
-      event_manipulator_.post_caps_lock_key();
-    }
-    return true;
   }
 
   size_t get_all_devices_pressed_keys_count(void) const {
@@ -447,7 +350,7 @@ private:
     }
   }
 
-  event_manipulator& event_manipulator_;
+  manipulator::event_manipulator& event_manipulator_;
   hid_system_client hid_system_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;

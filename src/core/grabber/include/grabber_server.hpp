@@ -13,7 +13,7 @@ class grabber_server final {
 public:
   grabber_server(const grabber_server&) = delete;
 
-  grabber_server(event_manipulator& event_manipulator,
+  grabber_server(manipulator::event_manipulator& event_manipulator,
                  device_grabber& device_grabber) : event_manipulator_(event_manipulator),
                                                    device_grabber_(device_grabber),
                                                    exit_loop_(false) {
@@ -132,7 +132,7 @@ private:
     device_grabber_.ungrab_devices();
   }
 
-  event_manipulator& event_manipulator_;
+  manipulator::event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
 
   std::vector<uint8_t> buffer_;

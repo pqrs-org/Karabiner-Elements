@@ -8,6 +8,7 @@
 #include <thread>
 #include <unistd.h>
 
+namespace manipulator {
 class event_dispatcher_manager final {
 public:
   event_dispatcher_manager(void) : exit_loop_(false), pid_(0) {
@@ -126,3 +127,4 @@ private:
 
   std::atomic<pid_t> pid_;
 };
+}
