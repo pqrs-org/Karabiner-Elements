@@ -12,8 +12,7 @@ public:
 
   connection_manager(void) : exit_loop_(false),
                              is_session_active_(false),
-                             exit_receiver_starter_(true),
-                             sigusr1_source_(0) {
+                             exit_receiver_starter_(true) {
     thread_ = std::thread([this] { this->worker(); });
 
     notification_center::observe_distributed_notification(this,
@@ -90,6 +89,4 @@ private:
   std::thread receiver_starter_thread_;
   std::atomic<bool> exit_receiver_starter_;
   receiver receiver_;
-
-  dispatch_source_t sigusr1_source_;
 };
