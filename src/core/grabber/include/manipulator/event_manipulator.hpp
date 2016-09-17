@@ -34,8 +34,21 @@ public:
 
   void reset(void) {
     stop_key_repeat();
+    manipulated_keys_.clear();
     modifier_flag_manager_.reset();
     event_dispatcher_manager_.set_caps_lock_state(false);
+  }
+
+  void clear_simple_modifications(void) {
+    std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
+
+    simple_modifications_.clear();
+  }
+
+  void add_simple_modification(krbn::key_code from_key_code, krbn::key_code to_key_code) {
+    std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
+
+    simple_modifications_[from_key_code] = to_key_code;
   }
 
   void clear_fn_function_keys(void) {
@@ -55,25 +68,24 @@ public:
   }
 
   void handle_keyboard_event(device_registry_entry_id device_registry_entry_id, krbn::key_code key_code, bool pressed) {
-#if 0
     // ----------------------------------------
     // modify usage
     if (!pressed) {
-      auto it = device.get_simple_changed_keys().find(key_code);
-      if (it != device.get_simple_changed_keys().end()) {
-        key_code = it->second;
-        device.get_simple_changed_keys().erase(it);
+      if (auto to_key_code = manipulated_keys_.find(device_registry_entry_id, key_code)) {
+        key_code = *to_key_code;
+        manipulated_keys_.remove(device_registry_entry_id, key_code);
       }
     } else {
       std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
 
       auto it = simple_modifications_.find(key_code);
       if (it != simple_modifications_.end()) {
-        (device.get_simple_changed_keys())[key_code] = it->second;
+        manipulated_keys_.add(device_registry_entry_id, key_code, it->second);
         key_code = it->second;
       }
     }
 
+#if 0
     // modify fn+arrow, function keys
     if (!pressed) {
       auto it = device.get_fn_changed_keys().find(key_code);
@@ -288,35 +300,68 @@ public:
   }
 
 private:
-  class manipulated_key final {
+  class manipulated_keys final {
   public:
-    manipulated_key(device_registry_entry_id device_registry_entry_id,
-                    krbn::key_code from_key_code,
-                    krbn::key_code to_key_code) : device_registry_entry_id_(device_registry_entry_id),
-                                                  from_key_code_(from_key_code),
-                                                  to_key_code_(to_key_code) {
+    void clear(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
+      manipulated_keys_.clear();
     }
 
-    device_registry_entry_id get_device_registry_entry_id(void) const { return device_registry_entry_id_; }
-    krbn::key_code get_from_key_code(void) const { return from_key_code_; }
-    krbn::key_code get_to_key_code(void) const { return to_key_code_; }
+    void add(device_registry_entry_id device_registry_entry_id,
+             krbn::key_code from_key_code,
+             krbn::key_code to_key_code) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
+      manipulated_keys_.push_back(manipulated_key(device_registry_entry_id, from_key_code, to_key_code));
+    }
+
+    boost::optional<krbn::key_code> find(device_registry_entry_id device_registry_entry_id,
+                                         krbn::key_code from_key_code) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
+      for (const auto& v : manipulated_keys_) {
+        if (v.get_device_registry_entry_id() == device_registry_entry_id &&
+            v.get_from_key_code() == from_key_code) {
+          return v.get_to_key_code();
+        }
+      }
+      return boost::none;
+    }
+
+    void remove(device_registry_entry_id device_registry_entry_id,
+                krbn::key_code from_key_code) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
+      manipulated_keys_.remove_if([&](const manipulated_key& v) {
+        return v.get_device_registry_entry_id() == device_registry_entry_id &&
+               v.get_from_key_code() == from_key_code;
+      });
+    }
 
   private:
-    device_registry_entry_id device_registry_entry_id_;
-    krbn::key_code from_key_code_;
-    krbn::key_code to_key_code_;
-  };
-
-  boost::optional<krbn::key_code> find_manipulated_key(device_registry_entry_id device_registry_entry_id,
-                                                       krbn::key_code from_key_code) {
-    for (const auto& v : manipulated_keys_) {
-      if (v.get_device_registry_entry_id() == device_registry_entry_id &&
-          v.get_from_key_code() == from_key_code) {
-        return v.get_to_key_code();
+    class manipulated_key final {
+    public:
+      manipulated_key(device_registry_entry_id device_registry_entry_id,
+                      krbn::key_code from_key_code,
+                      krbn::key_code to_key_code) : device_registry_entry_id_(device_registry_entry_id),
+                                                    from_key_code_(from_key_code),
+                                                    to_key_code_(to_key_code) {
       }
-    }
-    return boost::none;
-  }
+
+      device_registry_entry_id get_device_registry_entry_id(void) const { return device_registry_entry_id_; }
+      krbn::key_code get_from_key_code(void) const { return from_key_code_; }
+      krbn::key_code get_to_key_code(void) const { return to_key_code_; }
+
+    private:
+      device_registry_entry_id device_registry_entry_id_;
+      krbn::key_code from_key_code_;
+      krbn::key_code to_key_code_;
+    };
+
+    std::list<manipulated_key> manipulated_keys_;
+    std::mutex mutex_;
+  };
 
   event_dispatcher_manager event_dispatcher_manager_;
   modifier_flag_manager modifier_flag_manager_;
@@ -325,9 +370,13 @@ private:
   dispatch_source_t key_repeat_timer_;
 
   boost::optional<krbn::key_code> key_repeat_key_code_;
+
+  std::unordered_map<krbn::key_code, krbn::key_code> simple_modifications_;
+  std::mutex simple_modifications_mutex_;
+
   std::unordered_map<krbn::key_code, krbn::key_code> fn_function_keys_;
   std::mutex fn_function_keys_mutex_;
 
-  std::list<manipulated_key> manipulated_keys_;
+  manipulated_keys manipulated_keys_;
 };
 }

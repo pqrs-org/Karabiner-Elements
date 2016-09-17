@@ -54,18 +54,6 @@ public:
     }
   }
 
-  void clear_simple_modifications(void) {
-    std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
-
-    simple_modifications_.clear();
-  }
-
-  void add_simple_modification(krbn::key_code from_key_code, krbn::key_code to_key_code) {
-    std::lock_guard<std::mutex> guard(simple_modifications_mutex_);
-
-    simple_modifications_[from_key_code] = to_key_code;
-  }
-
   void grab_devices(void) {
     auto __block last_warning_message_time = ::time(nullptr) - 1;
 
@@ -349,9 +337,6 @@ private:
   dispatch_source_t _Nullable grab_timer_;
   size_t grab_retry_count_;
   bool grabbed_;
-
-  std::unordered_map<krbn::key_code, krbn::key_code> simple_modifications_;
-  std::mutex simple_modifications_mutex_;
 
   console_user_client console_user_client_;
 };

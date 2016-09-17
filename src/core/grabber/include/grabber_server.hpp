@@ -44,6 +44,8 @@ public:
     server_ = nullptr;
     console_user_server_process_monitor_ = nullptr;
     device_grabber_.ungrab_devices();
+    event_manipulator_.clear_simple_modifications();
+    event_manipulator_.clear_fn_function_keys();
   }
 
 private:
@@ -109,7 +111,7 @@ private:
           break;
 
         case krbn::operation_type::clear_simple_modifications:
-          device_grabber_.clear_simple_modifications();
+          event_manipulator_.clear_simple_modifications();
           break;
 
         case krbn::operation_type::add_simple_modification:
@@ -117,7 +119,7 @@ private:
             logger::get_logger().error("invalid size for krbn::operation_type::add_simple_modification ({0})", n);
           } else {
             auto p = reinterpret_cast<krbn::operation_type_add_simple_modification_struct*>(&(buffer_[0]));
-            device_grabber_.add_simple_modification(p->from_key_code, p->to_key_code);
+            event_manipulator_.add_simple_modification(p->from_key_code, p->to_key_code);
           }
           break;
 
