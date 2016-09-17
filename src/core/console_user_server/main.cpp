@@ -1,7 +1,7 @@
 #include "connection_manager.hpp"
+#include "constants.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
-#include "constants.hpp"
 
 int main(int argc, const char* argv[]) {
   signal(SIGUSR1, SIG_IGN);

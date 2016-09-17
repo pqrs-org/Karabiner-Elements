@@ -4,8 +4,8 @@
 #include "receiver.hpp"
 #include "session.hpp"
 #include <chrono>
-#include <thread>
 #include <memory>
+#include <thread>
 
 int main(int argc, const char* argv[]) {
   if (getuid() != 0) {
