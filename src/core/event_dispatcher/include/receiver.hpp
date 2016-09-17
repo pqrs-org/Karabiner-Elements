@@ -81,9 +81,9 @@ private:
           }
           break;
 
-        case krbn::operation_type::post_caps_lock_key:
-          if (n != sizeof(krbn::operation_type_post_caps_lock_key_struct)) {
-            logger::get_logger().error("invalid size for krbn::operation_type::post_caps_lock_key");
+        case krbn::operation_type::toggle_caps_lock_state:
+          if (n != sizeof(krbn::operation_type_toggle_caps_lock_state_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::toggle_caps_lock_state");
           } else {
             auto state = hid_system_client_.get_caps_lock_state();
             if (!state) {
@@ -99,6 +99,33 @@ private:
                 if (grabber_client_) {
                   grabber_client_->set_caps_lock_led_state(krbn::led_state::on);
                 }
+              }
+            }
+          }
+          break;
+
+        case krbn::operation_type::set_caps_lock_state:
+          if (n != sizeof(krbn::operation_type_set_caps_lock_state_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::set_caps_lock_state");
+          } else {
+            auto p = reinterpret_cast<krbn::operation_type_set_caps_lock_state_struct*>(&(buffer_[0]));
+            hid_system_client_.set_caps_lock_state(p->state);
+            if (grabber_client_) {
+              grabber_client_->set_caps_lock_led_state(p->state ? krbn::led_state::on : krbn::led_state::off);
+            }
+          }
+          break;
+
+        case krbn::operation_type::refresh_caps_lock_led:
+          if (n != sizeof(krbn::operation_type_refresh_caps_lock_led_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::refresh_caps_lock_led");
+          } else {
+            auto state = hid_system_client_.get_caps_lock_state();
+            if (!state) {
+              logger::get_logger().error("hid_system_client_.get_caps_lock_state error @ {0}", __PRETTY_FUNCTION__);
+            } else {
+              if (grabber_client_) {
+                grabber_client_->set_caps_lock_led_state(*state ? krbn::led_state::on : krbn::led_state::off);
               }
             }
           }

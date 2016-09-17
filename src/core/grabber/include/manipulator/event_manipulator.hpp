@@ -32,6 +32,12 @@ public:
     return event_dispatcher_manager_.is_connected();
   }
 
+  void reset(void) {
+    stop_key_repeat();
+    modifier_flag_manager_.reset();
+    event_dispatcher_manager_.set_caps_lock_state(false);
+  }
+
   void clear_fn_function_keys(void) {
     std::lock_guard<std::mutex> guard(fn_function_keys_mutex_);
 
@@ -109,7 +115,7 @@ public:
     // Post input events
 
     if (post_modifier_flag_event(key_code, pressed) ||
-        post_caps_lock_key(key_code, pressed)) {
+        toggle_caps_lock_state(key_code, pressed)) {
       console_user_client_.stop_key_repeat();
       return;
     }
@@ -164,9 +170,13 @@ public:
     event_dispatcher_manager_.post_modifier_flags(key_code, flags);
   }
 
-  void post_caps_lock_key(void) {
+  void toggle_caps_lock_state(void) {
     stop_key_repeat();
-    event_dispatcher_manager_.post_caps_lock_key();
+    event_dispatcher_manager_.toggle_caps_lock_state();
+  }
+
+  void refresh_caps_lock_led(void) {
+    event_dispatcher_manager_.refresh_caps_lock_led();
   }
 
   void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags) {
@@ -297,7 +307,19 @@ private:
     krbn::key_code to_key_code_;
   };
 
+  boost::optional<krbn::key_code> find_manipulated_key(device_registry_entry_id device_registry_entry_id,
+                                                       krbn::key_code from_key_code) {
+    for (const auto& v : manipulated_keys_) {
+      if (v.get_device_registry_entry_id() == device_registry_entry_id &&
+          v.get_from_key_code() == from_key_code) {
+        return v.get_to_key_code();
+      }
+    }
+    return boost::none;
+  }
+
   event_dispatcher_manager event_dispatcher_manager_;
+  modifier_flag_manager modifier_flag_manager_;
 
   dispatch_queue_t key_repeat_queue_;
   dispatch_source_t key_repeat_timer_;

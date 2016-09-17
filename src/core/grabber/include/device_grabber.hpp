@@ -4,12 +4,12 @@
 #include "console_user_client.hpp"
 #include "constants.hpp"
 #include "event_manipulator.hpp"
-#include "hid_system_client.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
 #include "types.hpp"
+#include <IOKit/hid/IOHIDManager.h>
 #include <thread>
 #include <time.h>
 
@@ -18,7 +18,6 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(manipulator::event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
-                                                                      hid_system_client_(logger::get_logger()),
                                                                       grab_timer_(0),
                                                                       grab_retry_count_(0),
                                                                       grabbed_(false),
@@ -116,8 +115,7 @@ public:
           (it.second)->clear_pressed_keys();
         }
 
-        modifier_flag_manager_.reset();
-        hid_system_client_.set_caps_lock_state(false);
+        event_manipulator_.reset();
 
         logger::get_logger().info("devices are grabbed");
 
@@ -144,9 +142,7 @@ public:
         (it.second)->clear_pressed_keys();
       }
 
-      modifier_flag_manager_.reset();
-      hid_system_client_.set_caps_lock_state(false);
-      console_user_client_.stop_key_repeat();
+      event_manipulator_.reset();
 
       logger::get_logger().info("devices are ungrabbed");
     });
@@ -254,6 +250,8 @@ private:
         hids_.erase(it);
       }
     }
+
+    event_manipulator_.stop_key_repeat();
   }
 
   void observe(human_interface_device& hid) {
@@ -284,12 +282,7 @@ private:
                        std::placeholders::_6));
 
     // set keyboard led
-    auto caps_lock_state = hid_system_client_.get_caps_lock_state();
-    if (caps_lock_state && *caps_lock_state) {
-      hid.set_caps_lock_led_state(krbn::led_state::on);
-    } else {
-      hid.set_caps_lock_led_state(krbn::led_state::off);
-    }
+    event_manipulator_.refresh_caps_lock_led();
   }
 
   void ungrab(human_interface_device& hid) {
@@ -351,14 +344,11 @@ private:
   }
 
   manipulator::event_manipulator& event_manipulator_;
-  hid_system_client hid_system_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   dispatch_source_t _Nullable grab_timer_;
   size_t grab_retry_count_;
   bool grabbed_;
-
-  manipulator::modifier_flag_manager modifier_flag_manager_;
 
   std::unordered_map<krbn::key_code, krbn::key_code> simple_modifications_;
   std::mutex simple_modifications_mutex_;
