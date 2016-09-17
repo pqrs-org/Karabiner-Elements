@@ -41,6 +41,10 @@ public:
     fn_function_keys_[from_key_code] = to_key_code;
   }
 
+  void create_event_dispatcher_client(void) {
+    event_dispatcher_manager_.create_event_dispatcher_client();
+  }
+
   void stop_key_repeat(void) {
     if (key_repeat_timer_) {
       dispatch_source_cancel(key_repeat_timer_);
@@ -52,6 +56,11 @@ public:
   void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
     stop_key_repeat();
     event_dispatcher_manager_.post_modifier_flags(key_code, flags);
+  }
+
+  void post_caps_lock_key(void) {
+    stop_key_repeat();
+    event_dispatcher_manager_.post_caps_lock_key();
   }
 
   void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags) {

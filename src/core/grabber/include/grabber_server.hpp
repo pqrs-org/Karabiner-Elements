@@ -2,7 +2,7 @@
 
 #include "constants.hpp"
 #include "device_grabber.hpp"
-#include "event_dispatcher_manager.hpp"
+#include "event_manipulator.hpp"
 #include "local_datagram_server.hpp"
 #include "process_monitor.hpp"
 #include "session.hpp"
@@ -13,8 +13,8 @@ class grabber_server final {
 public:
   grabber_server(const grabber_server&) = delete;
 
-  grabber_server(event_dispatcher_manager& event_dispatcher_manager,
-                 device_grabber& device_grabber) : event_dispatcher_manager_(event_dispatcher_manager),
+  grabber_server(event_manipulator& event_manipulator,
+                 device_grabber& device_grabber) : event_manipulator_(event_manipulator),
                                                    device_grabber_(device_grabber),
                                                    exit_loop_(false) {
     const size_t buffer_length = 1024 * 1024;
@@ -67,7 +67,7 @@ private:
             switch (p->connect_from) {
             case krbn::connect_from::event_dispatcher:
               logger::get_logger().info("karabiner_event_dispatcher is connected (pid:{0})", p->pid);
-              event_dispatcher_manager_.create_event_dispatcher_client();
+              event_manipulator_.create_event_dispatcher_client();
               break;
 
             case krbn::connect_from::console_user_server:
@@ -132,7 +132,7 @@ private:
     device_grabber_.ungrab_devices();
   }
 
-  event_dispatcher_manager& event_dispatcher_manager_;
+  event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
 
   std::vector<uint8_t> buffer_;

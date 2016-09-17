@@ -18,12 +18,12 @@ class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(event_dispatcher_manager& event_dispatcher_manager) : event_dispatcher_manager_(event_dispatcher_manager),
-                                                                       hid_system_client_(logger::get_logger()),
-                                                                       grab_timer_(0),
-                                                                       grab_retry_count_(0),
-                                                                       grabbed_(false),
-                                                                       console_user_client_() {
+  device_grabber(event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
+                                                         hid_system_client_(logger::get_logger()),
+                                                         grab_timer_(0),
+                                                         grab_retry_count_(0),
+                                                         grabbed_(false),
+                                                         console_user_client_() {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
@@ -89,8 +89,8 @@ public:
 
         const char* warning_message = nullptr;
 
-        if (!event_dispatcher_manager_.is_connected()) {
-          warning_message = "karabiner_event_dispatcher is not ready. Please wait for a while.";
+        if (!event_manipulator_.is_ready()) {
+          warning_message = "event_manipulator_ is not ready. Please wait for a while.";
         }
 
         if (get_all_devices_pressed_keys_count() > 0) {
@@ -199,6 +199,7 @@ private:
                               "product_id:{4:#x}, "
                               "location_id:{5:#x}, "
                               "serial_number:{6} "
+                              "registry_entry_id:{7} "
                               "@ {0}",
                               __PRETTY_FUNCTION__,
                               manufacturer ? *manufacturer : "",
@@ -206,7 +207,8 @@ private:
                               vendor_id ? *vendor_id : 0,
                               product_id ? *product_id : 0,
                               location_id ? *location_id : 0,
-                              serial_number ? *serial_number : "");
+                              serial_number ? *serial_number : "",
+                              dev->get_registry_entry_id());
 
     if (grabbed_) {
       grab(*dev);
@@ -412,7 +414,7 @@ private:
         modifier_flag_manager_.reset();
       }
 
-      event_dispatcher_manager_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
+      event_manipulator_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
       return true;
     }
 
@@ -425,7 +427,7 @@ private:
     }
 
     if (pressed) {
-      event_dispatcher_manager_.post_caps_lock_key();
+      event_manipulator_.post_caps_lock_key();
     }
     return true;
   }
@@ -446,7 +448,7 @@ private:
     }
   }
 
-  event_dispatcher_manager& event_dispatcher_manager_;
+  event_manipulator& event_manipulator_;
   hid_system_client hid_system_client_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;

@@ -2,7 +2,7 @@
 
 #include "constants.hpp"
 #include "device_grabber.hpp"
-#include "event_dispatcher_manager.hpp"
+#include "event_manipulator.hpp"
 #include "grabber_server.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
@@ -13,8 +13,8 @@ class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(event_dispatcher_manager& event_dispatcher_manager,
-                     device_grabber& device_grabber) : event_dispatcher_manager_(event_dispatcher_manager),
+  connection_manager(event_manipulator& event_manipulator,
+                     device_grabber& device_grabber) : event_manipulator_(event_manipulator),
                                                        device_grabber_(device_grabber),
                                                        timer_(0),
                                                        last_uid_(0) {
@@ -32,7 +32,7 @@ public:
             logger::get_logger().info("current_console_user_id: {0}", *uid);
 
             grabber_server_ = nullptr;
-            grabber_server_ = std::make_unique<grabber_server>(event_dispatcher_manager_, device_grabber_);
+            grabber_server_ = std::make_unique<grabber_server>(event_manipulator_, device_grabber_);
 
             prepare_socket_directory(*uid);
             // unlink old socket.
@@ -66,7 +66,7 @@ private:
     chown(constants::get_console_user_socket_directory(), uid, 0);
   }
 
-  event_dispatcher_manager& event_dispatcher_manager_;
+  event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
   dispatch_source_t timer_;
   uid_t last_uid_;
