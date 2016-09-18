@@ -19,24 +19,8 @@ class event_manipulator final {
 public:
   event_manipulator(const event_manipulator&) = delete;
 
-  event_manipulator(void) : key_repeat_queue_(dispatch_queue_create(nullptr, nullptr)),
-                            key_repeat_timer_(0) {
-    key_repeat_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, key_repeat_queue_);
-    if (!key_repeat_timer_) {
-      logger::get_logger().error("failed to dispatch_source_create");
-    }
-  }
-
-  ~event_manipulator(void) {
-    stop_key_repeat();
-
-    if (key_repeat_timer_) {
-      dispatch_source_cancel(key_repeat_timer_);
-      dispatch_release(key_repeat_timer_);
-      key_repeat_timer_ = 0;
-    }
-
-    dispatch_release(key_repeat_queue_);
+  event_manipulator(void) : event_dispatcher_manager_(),
+                            key_repeat_manager_(event_dispatcher_manager_) {
   }
 
   bool is_ready(void) {
@@ -44,7 +28,7 @@ public:
   }
 
   void reset(void) {
-    stop_key_repeat();
+    key_repeat_manager_.stop();
     manipulated_keys_.clear();
     manipulated_fn_keys_.clear();
     modifier_flag_manager_.reset();
@@ -83,50 +67,52 @@ public:
     event_dispatcher_manager_.create_event_dispatcher_client();
   }
 
-  void handle_keyboard_event(device_registry_entry_id device_registry_entry_id, krbn::key_code key_code, bool pressed) {
+  void handle_keyboard_event(device_registry_entry_id device_registry_entry_id, krbn::key_code from_key_code, bool pressed) {
+    krbn::key_code to_key_code = from_key_code;
+
     // ----------------------------------------
     // modify keys
     if (!pressed) {
-      if (auto to_key_code = manipulated_keys_.find(device_registry_entry_id, key_code)) {
-        manipulated_keys_.remove(device_registry_entry_id, key_code);
-        key_code = *to_key_code;
+      if (auto key_code = manipulated_keys_.find(device_registry_entry_id, from_key_code)) {
+        to_key_code = *key_code;
+        manipulated_keys_.remove(device_registry_entry_id, from_key_code);
       }
     } else {
-      if (auto to_key_code = simple_modifications_.get(key_code)) {
-        manipulated_keys_.add(device_registry_entry_id, key_code, *to_key_code);
-        key_code = *to_key_code;
+      if (auto key_code = simple_modifications_.get(from_key_code)) {
+        to_key_code = *key_code;
+        manipulated_keys_.add(device_registry_entry_id, from_key_code, to_key_code);
       }
     }
 
     // ----------------------------------------
     // modify fn+arrow, function keys
     if (!pressed) {
-      if (auto to_key_code = manipulated_fn_keys_.find(device_registry_entry_id, key_code)) {
-        manipulated_fn_keys_.remove(device_registry_entry_id, key_code);
-        key_code = *to_key_code;
+      if (auto key_code = manipulated_fn_keys_.find(device_registry_entry_id, to_key_code)) {
+        to_key_code = *key_code;
+        manipulated_fn_keys_.remove(device_registry_entry_id, to_key_code);
       }
     } else {
-      boost::optional<krbn::key_code> to_key_code;
+      boost::optional<krbn::key_code> key_code;
 
       if (modifier_flag_manager_.pressed(krbn::modifier_flag::fn)) {
-        switch (key_code) {
+        switch (to_key_code) {
         case krbn::key_code::return_or_enter:
-          to_key_code = krbn::key_code::keypad_enter;
+          key_code = krbn::key_code::keypad_enter;
           break;
         case krbn::key_code::delete_or_backspace:
-          to_key_code = krbn::key_code::delete_forward;
+          key_code = krbn::key_code::delete_forward;
           break;
         case krbn::key_code::right_arrow:
-          to_key_code = krbn::key_code::end;
+          key_code = krbn::key_code::end;
           break;
         case krbn::key_code::left_arrow:
-          to_key_code = krbn::key_code::home;
+          key_code = krbn::key_code::home;
           break;
         case krbn::key_code::down_arrow:
-          to_key_code = krbn::key_code::page_down;
+          key_code = krbn::key_code::page_down;
           break;
         case krbn::key_code::up_arrow:
-          to_key_code = krbn::key_code::page_up;
+          key_code = krbn::key_code::page_up;
           break;
         default:
           break;
@@ -135,7 +121,7 @@ public:
 
       // f1-f12
       {
-        auto key_code_value = static_cast<uint32_t>(key_code);
+        auto key_code_value = static_cast<uint32_t>(to_key_code);
         if (kHIDUsage_KeyboardF1 <= key_code_value && key_code_value <= kHIDUsage_KeyboardF12) {
           bool keyboard_fn_state = false;
           {
@@ -148,45 +134,40 @@ public:
           if ((fn_pressed && !keyboard_fn_state) ||
               (!fn_pressed && keyboard_fn_state)) {
             // change f1-f12 keys to media controls
-            if (auto k = fn_function_keys_.get(key_code)) {
-              to_key_code = *k;
+            if (auto k = fn_function_keys_.get(to_key_code)) {
+              key_code = *k;
             }
           }
         }
       }
 
-      if (to_key_code) {
-        manipulated_fn_keys_.add(device_registry_entry_id, key_code, *to_key_code);
-        key_code = *to_key_code;
+      if (key_code) {
+        manipulated_fn_keys_.add(device_registry_entry_id, to_key_code, *key_code);
+        to_key_code = *key_code;
       }
     }
 
     // ----------------------------------------
     // Post input events to karabiner_event_dispatcher
 
-    if (post_modifier_flag_event(key_code, pressed)) {
-      stop_key_repeat();
+    if (post_modifier_flag_event(to_key_code, pressed)) {
+      key_repeat_manager_.stop();
       return;
     }
 
-    if (key_code == krbn::key_code::caps_lock) {
+    if (to_key_code == krbn::key_code::caps_lock) {
       if (pressed) {
         toggle_caps_lock_state();
-        stop_key_repeat();
+        key_repeat_manager_.stop();
       }
       return;
     }
 
-    post_key(key_code, pressed);
+    post_key(from_key_code, to_key_code, pressed);
   }
 
   void stop_key_repeat(void) {
-    if (key_repeat_key_code_) {
-      key_repeat_key_code_ = boost::none;
-      if (key_repeat_timer_) {
-        dispatch_suspend(key_repeat_timer_);
-      }
-    }
+    key_repeat_manager_.stop();
   }
 
   void refresh_caps_lock_led(void) {
@@ -287,6 +268,78 @@ private:
     std::mutex mutex_;
   };
 
+  class key_repeat_manager final {
+  public:
+    key_repeat_manager(event_dispatcher_manager& event_dispatcher_manager) : event_dispatcher_manager_(event_dispatcher_manager),
+                                                                             queue_(dispatch_queue_create(nullptr, nullptr)),
+                                                                             timer_(dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, queue_)) {
+    }
+
+    ~key_repeat_manager(void) {
+      if (timer_) {
+        dispatch_source_cancel(timer_);
+        dispatch_release(timer_);
+        timer_ = 0;
+      }
+
+      dispatch_release(queue_);
+    }
+
+    void stop(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
+      if (from_key_code_) {
+        from_key_code_ = boost::none;
+        if (timer_) {
+          dispatch_suspend(timer_);
+        }
+      }
+    }
+
+    void start(krbn::key_code from_key_code, krbn::key_code to_key_code, bool pressed, IOOptionBits flags,
+               long initial_key_repeat_milliseconds, long key_repeat_milliseconds) {
+      // stop key repeat before post key.
+      if (pressed) {
+        stop();
+      } else {
+        if (from_key_code_ && *from_key_code_ == from_key_code) {
+          stop();
+        }
+      }
+
+      // set key repeat
+      if (pressed) {
+        if (to_key_code == krbn::key_code::mute ||
+            to_key_code == krbn::key_code::vk_consumer_play) {
+          return;
+        }
+
+        if (timer_) {
+          std::lock_guard<std::mutex> guard(mutex_);
+
+          dispatch_source_set_timer(timer_,
+                                    dispatch_time(DISPATCH_TIME_NOW, initial_key_repeat_milliseconds * NSEC_PER_MSEC),
+                                    key_repeat_milliseconds * NSEC_PER_MSEC,
+                                    0);
+          dispatch_source_set_event_handler(timer_, ^{
+            event_dispatcher_manager_.post_key(to_key_code, krbn::event_type::key_down, flags, true);
+          });
+          dispatch_resume(timer_);
+          from_key_code_ = from_key_code;
+        }
+      }
+    }
+
+  private:
+    event_dispatcher_manager& event_dispatcher_manager_;
+
+    dispatch_queue_t queue_;
+    dispatch_source_t timer_;
+
+    boost::optional<krbn::key_code> from_key_code_;
+    std::mutex mutex_;
+  };
+
   bool post_modifier_flag_event(krbn::key_code key_code, bool pressed) {
     auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
 
@@ -310,7 +363,11 @@ private:
     }
   }
 
-  void post_key(krbn::key_code key_code, bool pressed) {
+  void post_key(krbn::key_code from_key_code, krbn::key_code to_key_code, bool pressed) {
+    auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
+    auto flags = modifier_flag_manager_.get_io_option_bits();
+    event_dispatcher_manager_.post_key(to_key_code, event_type, flags, false);
+
     long initial_key_repeat_milliseconds = 0;
     long key_repeat_milliseconds = 0;
     {
@@ -319,53 +376,16 @@ private:
       key_repeat_milliseconds = system_preferences_values_.get_key_repeat_milliseconds();
     }
 
-    // stop key repeat before post key.
-    if (pressed) {
-      stop_key_repeat();
-    } else {
-      if (key_repeat_key_code_ && *key_repeat_key_code_ == key_code) {
-        stop_key_repeat();
-      }
-    }
-
-    auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
-    auto flags = modifier_flag_manager_.get_io_option_bits();
-    event_dispatcher_manager_.post_key(key_code, event_type, flags, false);
-
-    // set key repeat
-    if (pressed) {
-      bool repeat_target = true;
-      if (key_code == krbn::key_code::mute ||
-          key_code == krbn::key_code::vk_consumer_play) {
-        repeat_target = false;
-      }
-
-      if (repeat_target) {
-        if (key_repeat_timer_) {
-          dispatch_source_set_timer(key_repeat_timer_,
-                                    dispatch_time(DISPATCH_TIME_NOW, initial_key_repeat_milliseconds * NSEC_PER_MSEC),
-                                    key_repeat_milliseconds * NSEC_PER_MSEC,
-                                    0);
-          dispatch_source_set_event_handler(key_repeat_timer_, ^{
-            event_dispatcher_manager_.post_key(key_code, event_type, flags, true);
-          });
-          dispatch_resume(key_repeat_timer_);
-          key_repeat_key_code_ = key_code;
-        }
-      }
-    }
+    key_repeat_manager_.start(from_key_code, to_key_code, pressed, flags,
+                              initial_key_repeat_milliseconds, key_repeat_milliseconds);
   }
 
   event_dispatcher_manager event_dispatcher_manager_;
   modifier_flag_manager modifier_flag_manager_;
+  key_repeat_manager key_repeat_manager_;
 
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;
-
-  dispatch_queue_t key_repeat_queue_;
-  dispatch_source_t key_repeat_timer_;
-
-  boost::optional<krbn::key_code> key_repeat_key_code_;
 
   simple_modifications simple_modifications_;
   simple_modifications fn_function_keys_;
