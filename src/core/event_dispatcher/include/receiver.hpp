@@ -59,19 +59,6 @@ private:
 
       if (!ec && n > 0) {
         switch (krbn::operation_type(buffer_[0])) {
-        case krbn::operation_type::post_modifier_flags:
-          if (n != sizeof(krbn::operation_type_post_modifier_flags_struct)) {
-            logger::get_logger().error("invalid size for krbn::operation_type::post_modifier_flags");
-          } else {
-            auto p = reinterpret_cast<krbn::operation_type_post_modifier_flags_struct*>(&(buffer_[0]));
-            if (auto mac_key = krbn::types::get_mac_key(p->key_code)) {
-              hid_system_client_.post_modifier_flags(*mac_key, p->flags);
-            } else {
-              logger::get_logger().error("unsupported key_code {1:#x} @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(p->key_code));
-            }
-          }
-          break;
-
         case krbn::operation_type::set_caps_lock_state:
           if (n != sizeof(krbn::operation_type_set_caps_lock_state_struct)) {
             logger::get_logger().error("invalid size for krbn::operation_type::set_caps_lock_state");

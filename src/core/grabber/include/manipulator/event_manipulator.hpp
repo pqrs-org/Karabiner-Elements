@@ -342,7 +342,9 @@ private:
     if (modifier_flag != krbn::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
-      event_dispatcher_manager_.post_modifier_flags(key_code, modifier_flag_manager_.get_io_option_bits());
+      auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
+      auto flags = modifier_flag_manager_.get_io_option_bits();
+      event_dispatcher_manager_.post_key(key_code, event_type, flags, false);
       return true;
     }
 

@@ -28,7 +28,6 @@ enum class operation_type : uint8_t {
   // event_dispatcher -> grabber
   set_caps_lock_led_state,
   // grabber -> event_dispatcher
-  post_modifier_flags,
   set_caps_lock_state,
   refresh_caps_lock_led,
   post_key,
@@ -655,14 +654,6 @@ struct operation_type_set_caps_lock_led_state_struct {
 
   const operation_type operation_type;
   led_state led_state;
-};
-
-struct operation_type_post_modifier_flags_struct {
-  operation_type_post_modifier_flags_struct(void) : operation_type(operation_type::post_modifier_flags) {}
-
-  const operation_type operation_type;
-  key_code key_code;
-  IOOptionBits flags;
 };
 
 struct operation_type_set_caps_lock_state_struct {
