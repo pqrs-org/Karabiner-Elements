@@ -24,32 +24,34 @@ public:
     } else {
       dispatch_source_set_timer(timer_, dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), 1 * NSEC_PER_SEC, 0);
       dispatch_source_set_event_handler(timer_, ^{
-        try {
-          if (auto is_active = session::is_active()) {
-            std::lock_guard<std::mutex> guard(mutex_);
+        if (auto is_active = session::is_active()) {
+          if (*is_active) {
+            try {
+              std::lock_guard<std::mutex> guard(mutex_);
 
-            if (!grabber_client_) {
-              grabber_client_ = std::make_unique<grabber_client>();
-              grabber_client_->connect(krbn::connect_from::console_user_server);
-              logger::get_logger().info("grabber_client_ is connected");
+              if (!grabber_client_) {
+                grabber_client_ = std::make_unique<grabber_client>();
+                grabber_client_->connect(krbn::connect_from::console_user_server);
+                logger::get_logger().info("grabber_client_ is connected");
+              }
+
+              if (!system_preferences_monitor_) {
+                system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
+                    logger::get_logger(),
+                    std::bind(&connection_manager::system_preferences_values_updated_callback, this, std::placeholders::_1));
+              }
+
+              if (!configuration_manager_) {
+                configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger(),
+                                                                                 constants::get_configuration_directory(),
+                                                                                 *grabber_client_);
+              }
+
+              return;
+            } catch (std::exception& ex) {
+              logger::get_logger().warn(ex.what());
             }
-
-            if (!system_preferences_monitor_) {
-              system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
-                  logger::get_logger(),
-                  std::bind(&connection_manager::system_preferences_values_updated_callback, this, std::placeholders::_1));
-            }
-
-            if (!configuration_manager_) {
-              configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger(),
-                                                                               constants::get_configuration_directory(),
-                                                                               *grabber_client_);
-            }
-
-            return;
           }
-        } catch (std::exception &ex) {
-          logger::get_logger().warn(ex.what());
         }
 
         release();

@@ -2,7 +2,6 @@
 
 #include "boost_defs.hpp"
 
-#include "logger.hpp"
 #include <ApplicationServices/ApplicationServices.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 #include <boost/optional.hpp>

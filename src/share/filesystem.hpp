@@ -18,6 +18,14 @@ public:
     return false;
   }
 
+  static bool is_owned(const std::string& path, uid_t uid) {
+    struct stat s;
+    if (stat(path.c_str(), &s) == 0) {
+      return s.st_uid == uid;
+    }
+    return false;
+  }
+
   static std::string dirname(const std::string& path) {
     size_t pos = get_dirname_position(path);
     if (pos == 0) {

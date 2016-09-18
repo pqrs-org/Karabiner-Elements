@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include "local_datagram_client.hpp"
+#include "session.hpp"
 #include "types.hpp"
 #include <unistd.h>
 #include <vector>
@@ -12,8 +13,18 @@ public:
   grabber_client(const grabber_client&) = delete;
 
   grabber_client(void) {
+    // Check socket file existance
     if (!filesystem::exists(constants::get_grabber_socket_file_path())) {
       throw std::runtime_error("grabber socket is not found");
+    }
+
+    // Check socket file permission
+    if (auto current_console_user_id = session::get_current_console_user_id()) {
+      if (!filesystem::is_owned(constants::get_grabber_socket_file_path(), *current_console_user_id)) {
+        throw std::runtime_error("grabber socket is not writable");
+      }
+    } else {
+      throw std::runtime_error("session::get_current_console_user_id error");
     }
 
     client_ = std::make_unique<local_datagram_client>(constants::get_grabber_socket_file_path());
