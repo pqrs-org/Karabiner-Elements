@@ -16,11 +16,12 @@ public:
   connection_manager(manipulator::event_manipulator& event_manipulator,
                      device_grabber& device_grabber) : event_manipulator_(event_manipulator),
                                                        device_grabber_(device_grabber),
+                                                       queue_(dispatch_queue_create(nullptr, nullptr)),
                                                        timer_(0),
                                                        last_uid_(0) {
     prepare_socket_directory(0);
 
-    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
     if (!timer_) {
       logger::get_logger().error("failed to dispatch_source_create");
     } else {
@@ -45,6 +46,8 @@ public:
 
   ~connection_manager(void) {
     receiver_ = nullptr;
+
+    dispatch_release(queue_);
   }
 
 private:
@@ -57,7 +60,10 @@ private:
 
   manipulator::event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
+
+  dispatch_queue_t queue_;
   dispatch_source_t timer_;
+
   uid_t last_uid_;
 
   std::unique_ptr<receiver> receiver_;
