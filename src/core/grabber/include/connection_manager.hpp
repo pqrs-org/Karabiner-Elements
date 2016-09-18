@@ -19,8 +19,6 @@ public:
                                                        queue_(dispatch_queue_create(nullptr, nullptr)),
                                                        timer_(0),
                                                        last_uid_(0) {
-    prepare_socket_directory(0);
-
     timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
     if (!timer_) {
       logger::get_logger().error("failed to dispatch_source_create");
@@ -34,8 +32,6 @@ public:
 
             receiver_ = nullptr;
             receiver_ = std::make_unique<receiver>(event_manipulator_, device_grabber_);
-
-            prepare_socket_directory(*uid);
           }
         }
       });
@@ -51,13 +47,6 @@ public:
   }
 
 private:
-  void prepare_socket_directory(uid_t uid) {
-    // make directories.
-    mkdir(constants::get_socket_directory(), 0755);
-    chown(constants::get_socket_directory(), 0, 0);
-    chmod(constants::get_socket_directory(), 0755);
-  }
-
   manipulator::event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
 

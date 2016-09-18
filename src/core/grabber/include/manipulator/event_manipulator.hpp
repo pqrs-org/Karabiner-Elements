@@ -271,16 +271,11 @@ private:
   class key_repeat_manager final {
   public:
     key_repeat_manager(event_dispatcher_manager& event_dispatcher_manager) : event_dispatcher_manager_(event_dispatcher_manager),
-                                                                             queue_(dispatch_queue_create(nullptr, nullptr)),
-                                                                             timer_(dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, queue_)) {
+                                                                             queue_(dispatch_queue_create(nullptr, nullptr)) {
     }
 
     ~key_repeat_manager(void) {
-      if (timer_) {
-        dispatch_source_cancel(timer_);
-        dispatch_release(timer_);
-        timer_ = 0;
-      }
+      stop();
 
       dispatch_release(queue_);
     }
@@ -288,11 +283,10 @@ private:
     void stop(void) {
       std::lock_guard<std::mutex> guard(mutex_);
 
-      if (from_key_code_) {
-        from_key_code_ = boost::none;
-        if (timer_) {
-          dispatch_suspend(timer_);
-        }
+      if (timer_) {
+        dispatch_source_cancel(timer_);
+        dispatch_release(timer_);
+        timer_ = 0;
       }
     }
 
@@ -314,6 +308,7 @@ private:
           return;
         }
 
+        timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, queue_);
         if (timer_) {
           std::lock_guard<std::mutex> guard(mutex_);
 
