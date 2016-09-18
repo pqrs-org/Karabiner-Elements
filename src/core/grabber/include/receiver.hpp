@@ -122,6 +122,19 @@ private:
           }
           break;
 
+        case krbn::operation_type::clear_fn_function_keys:
+          event_manipulator_.clear_fn_function_keys();
+          break;
+
+        case krbn::operation_type::add_fn_function_key:
+          if (n < sizeof(krbn::operation_type_add_fn_function_key_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::add_fn_function_key ({0})", n);
+          } else {
+            auto p = reinterpret_cast<krbn::operation_type_add_fn_function_key_struct*>(&(buffer_[0]));
+            event_manipulator_.add_fn_function_key(p->from_key_code, p->to_key_code);
+          }
+          break;
+
         default:
           break;
         }

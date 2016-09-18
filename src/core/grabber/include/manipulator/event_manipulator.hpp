@@ -131,8 +131,8 @@ public:
 
           bool fn_pressed = modifier_flag_manager_.pressed(krbn::modifier_flag::fn);
 
-          if ((fn_pressed && !keyboard_fn_state) ||
-              (!fn_pressed && keyboard_fn_state)) {
+          if ((fn_pressed && keyboard_fn_state) ||
+              (!fn_pressed && !keyboard_fn_state)) {
             // change f1-f12 keys to media controls
             if (auto k = fn_function_keys_.get(to_key_code)) {
               key_code = *k;
