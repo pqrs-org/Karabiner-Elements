@@ -14,6 +14,10 @@ public:
 
   connection_manager(void) : queue_(dispatch_queue_create(nullptr, nullptr)),
                              timer_(0) {
+    notification_center::observe_distributed_notification(this,
+                                                          static_grabber_is_launched_callback,
+                                                          constants::get_distributed_notification_grabber_is_launched());
+
     timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
     if (!timer_) {
       logger::get_logger().error("dispatch_source_create error @ {0}", __PRETTY_FUNCTION__);
@@ -27,6 +31,7 @@ public:
             if (!grabber_client_) {
               grabber_client_ = std::make_unique<grabber_client>();
               grabber_client_->connect(krbn::connect_from::console_user_server);
+              logger::get_logger().info("grabber_client_ is connected");
             }
 
             if (!system_preferences_monitor_) {
@@ -46,13 +51,7 @@ public:
         } catch (...) {
         }
 
-        {
-          std::lock_guard<std::mutex> guard(mutex_);
-
-          configuration_manager_ = nullptr;
-          system_preferences_monitor_ = nullptr;
-          grabber_client_ = nullptr;
-        }
+        release();
       });
       dispatch_resume(timer_);
     }
@@ -65,10 +64,34 @@ public:
       timer_ = 0;
     }
 
+    release();
+
     dispatch_release(queue_);
   }
 
 private:
+  void release(void) {
+    std::lock_guard<std::mutex> guard(mutex_);
+
+    configuration_manager_ = nullptr;
+    system_preferences_monitor_ = nullptr;
+    grabber_client_ = nullptr;
+  }
+
+  static void static_grabber_is_launched_callback(CFNotificationCenterRef center,
+                                                  void* observer,
+                                                  CFStringRef notification_name,
+                                                  const void* observed_object,
+                                                  CFDictionaryRef user_info) {
+    auto self = static_cast<connection_manager*>(observer);
+    self->grabber_is_launched_callback();
+  }
+
+  void grabber_is_launched_callback(void) {
+    logger::get_logger().info("connection_manager::grabber_is_launched_callback");
+    release();
+  }
+
   void system_preferences_values_updated_callback(const system_preferences::values& values) {
     std::lock_guard<std::mutex> guard(mutex_);
 
