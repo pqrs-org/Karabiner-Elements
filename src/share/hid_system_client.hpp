@@ -85,7 +85,7 @@ public:
       return;
     }
 
-    logger::get_logger().warn("key_code:{1:#x} is unsupported key @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(key_code));
+    logger_.warn("key_code:{1:#x} is unsupported key @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(key_code));
   }
 
   void post_key(uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
