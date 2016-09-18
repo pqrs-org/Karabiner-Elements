@@ -19,14 +19,12 @@ enum class operation_type : uint8_t {
   none,
   // event_dispatcher,console_user_server -> grabber
   connect,
-  // grabber -> event_dispatcher,console_user_server
-  connect_ack,
   // console_user_server -> grabber
   system_preferences_values_updated,
   clear_simple_modifications,
   add_simple_modification,
-  // grabber -> console_user_server
-  stop_key_repeat,
+  clear_fn_function_keys,
+  add_fn_function_key,
   // event_dispatcher -> grabber
   set_caps_lock_led_state,
   // grabber -> event_dispatcher
@@ -617,13 +615,6 @@ struct operation_type_connect_struct {
   pid_t pid;
 };
 
-struct operation_type_connect_ack_struct {
-  operation_type_connect_ack_struct(void) : operation_type(operation_type::connect_ack) {}
-
-  const operation_type operation_type;
-  pid_t pid;
-};
-
 struct operation_type_system_preferences_values_updated_struct {
   operation_type_system_preferences_values_updated_struct(void) : operation_type(operation_type::system_preferences_values_updated) {}
 
@@ -645,17 +636,25 @@ struct operation_type_add_simple_modification_struct {
   key_code to_key_code;
 };
 
+struct operation_type_clear_fn_function_keys_struct {
+  operation_type_clear_fn_function_keys_struct(void) : operation_type(operation_type::clear_fn_function_keys) {}
+
+  const operation_type operation_type;
+};
+
+struct operation_type_add_fn_function_key_struct {
+  operation_type_add_fn_function_key_struct(void) : operation_type(operation_type::add_fn_function_key) {}
+
+  const operation_type operation_type;
+  key_code from_key_code;
+  key_code to_key_code;
+};
+
 struct operation_type_set_caps_lock_led_state_struct {
   operation_type_set_caps_lock_led_state_struct(void) : operation_type(operation_type::set_caps_lock_led_state) {}
 
   const operation_type operation_type;
   led_state led_state;
-};
-
-struct operation_type_stop_key_repeat_struct {
-  operation_type_stop_key_repeat_struct(void) : operation_type(operation_type::stop_key_repeat) {}
-
-  const operation_type operation_type;
 };
 
 struct operation_type_post_modifier_flags_struct {
