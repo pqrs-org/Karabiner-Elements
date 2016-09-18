@@ -59,15 +59,6 @@ private:
 
       if (!ec && n > 0) {
         switch (krbn::operation_type(buffer_[0])) {
-        case krbn::operation_type::connect_ack:
-          if (n != sizeof(krbn::operation_type_connect_ack_struct)) {
-            logger::get_logger().error("invalid size for krbn::operation_type::connect_ack");
-          } else {
-            auto p = reinterpret_cast<krbn::operation_type_connect_ack_struct*>(&(buffer_[0]));
-            logger::get_logger().info("connect_ack karabiner_grabber pid:{0}", p->pid);
-          }
-          break;
-
         case krbn::operation_type::post_modifier_flags:
           if (n != sizeof(krbn::operation_type_post_modifier_flags_struct)) {
             logger::get_logger().error("invalid size for krbn::operation_type::post_modifier_flags");
