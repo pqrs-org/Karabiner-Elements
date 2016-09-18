@@ -17,8 +17,8 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(manipulator::event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
+                                                                      queue_(dispatch_queue_create(nullptr, nullptr)),
                                                                       grab_timer_(0),
-                                                                      grab_retry_count_(0),
                                                                       grabbed_(false) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
@@ -50,87 +50,93 @@ public:
       CFRelease(manager_);
       manager_ = nullptr;
     }
+
+    dispatch_release(queue_);
   }
 
   void grab_devices(void) {
     auto __block last_warning_message_time = ::time(nullptr) - 1;
 
-    // we run grab_devices and ungrab_devices in the main queue.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      cancel_grab_timer();
+    cancel_grab_timer();
 
-      // ----------------------------------------
-      // setup grab_timer_
+    // ----------------------------------------
+    // setup grab_timer_
 
-      grab_retry_count_ = 0;
+    std::lock_guard<std::mutex> guard(grab_timer_mutex_);
 
-      grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-      dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), 0.1 * NSEC_PER_SEC, 0);
-      dispatch_source_set_event_handler(grab_timer_, ^{
-        if (grabbed_) {
+    grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
+    dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), 0.1 * NSEC_PER_SEC, 0);
+    dispatch_source_set_event_handler(grab_timer_, ^{
+      if (grabbed_) {
+        return;
+      }
+
+      const char* warning_message = nullptr;
+
+      if (!event_manipulator_.is_ready()) {
+        warning_message = "event_manipulator_ is not ready. Please wait for a while.";
+      }
+
+      if (get_all_devices_pressed_keys_count() > 0) {
+        warning_message = "There are pressed down keys in some devices. Please release them.";
+      }
+
+      if (warning_message) {
+        auto time = ::time(nullptr);
+        if (last_warning_message_time != time) {
+          last_warning_message_time = time;
+          logger::get_logger().warn(warning_message);
           return;
         }
+      }
 
-        const char* warning_message = nullptr;
+      // ----------------------------------------
+      // grab devices
 
-        if (!event_manipulator_.is_ready()) {
-          warning_message = "event_manipulator_ is not ready. Please wait for a while.";
-        }
+      grabbed_ = true;
 
-        if (get_all_devices_pressed_keys_count() > 0) {
-          warning_message = "There are pressed down keys in some devices. Please release them.";
-        }
-
-        if (warning_message) {
-          auto time = ::time(nullptr);
-          if (last_warning_message_time != time) {
-            last_warning_message_time = time;
-            logger::get_logger().warn(warning_message);
-            return;
-          }
-        }
-
-        // ----------------------------------------
-        // grab devices
-
-        grabbed_ = true;
+      {
+        std::lock_guard<std::mutex> hids_guard(hids_mutex_);
 
         for (auto&& it : hids_) {
           grab(*(it.second));
         }
-
-        event_manipulator_.reset();
-
-        logger::get_logger().info("devices are grabbed");
-
-        cancel_grab_timer();
-      });
-      dispatch_resume(grab_timer_);
-    });
-  }
-
-  void ungrab_devices(void) {
-    // we run grab_devices and ungrab_devices in the main queue.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (!grabbed_) {
-        return;
-      }
-
-      grabbed_ = false;
-
-      cancel_grab_timer();
-
-      for (auto&& it : hids_) {
-        ungrab(*(it.second));
       }
 
       event_manipulator_.reset();
 
-      logger::get_logger().info("devices are ungrabbed");
+      logger::get_logger().info("devices are grabbed");
+
+      cancel_grab_timer();
     });
+    dispatch_resume(grab_timer_);
+  }
+
+  void ungrab_devices(void) {
+    if (!grabbed_) {
+      return;
+    }
+
+    grabbed_ = false;
+
+    cancel_grab_timer();
+
+    {
+      std::lock_guard<std::mutex> guard(hids_mutex_);
+
+      for (auto&& it : hids_) {
+        ungrab(*(it.second));
+      }
+    }
+
+    event_manipulator_.reset();
+
+    logger::get_logger().info("devices are ungrabbed");
   }
 
   void set_caps_lock_led_state(krbn::led_state state) {
+    std::lock_guard<std::mutex> guard(hids_mutex_);
+
     for (const auto& it : hids_) {
       (it.second)->set_caps_lock_led_state(state);
     }
@@ -155,8 +161,7 @@ private:
       return;
     }
 
-    hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
-    auto& dev = hids_[device];
+    auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
 
     auto manufacturer = dev->get_manufacturer();
     auto product = dev->get_product();
@@ -188,6 +193,12 @@ private:
     } else {
       observe(*dev);
     }
+
+    {
+      std::lock_guard<std::mutex> guard(hids_mutex_);
+
+      hids_[device] = std::move(dev);
+    }
   }
 
   static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
@@ -208,24 +219,28 @@ private:
       return;
     }
 
-    auto it = hids_.find(device);
-    if (it != hids_.end()) {
-      auto& dev = it->second;
-      if (dev) {
-        auto vendor_id = dev->get_vendor_id();
-        auto product_id = dev->get_product_id();
-        auto location_id = dev->get_location_id();
-        logger::get_logger().info("removal device: "
-                                  "vendor_id:{1:#x}, "
-                                  "product_id:{2:#x}, "
-                                  "location_id:{3:#x} "
-                                  "@ {0}",
-                                  __PRETTY_FUNCTION__,
-                                  vendor_id ? *vendor_id : 0,
-                                  product_id ? *product_id : 0,
-                                  location_id ? *location_id : 0);
+    {
+      std::lock_guard<std::mutex> guard(hids_mutex_);
 
-        hids_.erase(it);
+      auto it = hids_.find(device);
+      if (it != hids_.end()) {
+        auto& dev = it->second;
+        if (dev) {
+          auto vendor_id = dev->get_vendor_id();
+          auto product_id = dev->get_product_id();
+          auto location_id = dev->get_location_id();
+          logger::get_logger().info("removal device: "
+                                    "vendor_id:{1:#x}, "
+                                    "product_id:{2:#x}, "
+                                    "location_id:{3:#x} "
+                                    "@ {0}",
+                                    __PRETTY_FUNCTION__,
+                                    vendor_id ? *vendor_id : 0,
+                                    product_id ? *product_id : 0,
+                                    location_id ? *location_id : 0);
+
+          hids_.erase(it);
+        }
       }
     }
 
@@ -310,7 +325,9 @@ private:
     }
   }
 
-  size_t get_all_devices_pressed_keys_count(void) const {
+  size_t get_all_devices_pressed_keys_count(void) {
+    std::lock_guard<std::mutex> guard(hids_mutex_);
+
     size_t total = 0;
     for (const auto& it : hids_) {
       total += (it.second)->get_pressed_keys_count();
@@ -319,6 +336,8 @@ private:
   }
 
   void cancel_grab_timer(void) {
+    std::lock_guard<std::mutex> guard(grab_timer_mutex_);
+
     if (grab_timer_) {
       dispatch_source_cancel(grab_timer_);
       dispatch_release(grab_timer_);
@@ -328,8 +347,13 @@ private:
 
   manipulator::event_manipulator& event_manipulator_;
   IOHIDManagerRef _Nullable manager_;
+
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
+  std::mutex hids_mutex_;
+
+  dispatch_queue_t _Nonnull queue_;
   dispatch_source_t _Nullable grab_timer_;
-  size_t grab_retry_count_;
-  bool grabbed_;
+  std::mutex grab_timer_mutex_;
+
+  std::atomic<bool> grabbed_;
 };

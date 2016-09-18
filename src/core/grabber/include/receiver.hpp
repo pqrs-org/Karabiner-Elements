@@ -105,9 +105,7 @@ private:
             auto p = reinterpret_cast<krbn::operation_type_set_caps_lock_led_state_struct*>(&(buffer_[0]));
             // bind variables
             auto led_state = p->led_state;
-            dispatch_async(dispatch_get_main_queue(), ^{
-              device_grabber_.set_caps_lock_led_state(led_state);
-            });
+            device_grabber_.set_caps_lock_led_state(led_state);
           }
           break;
 
