@@ -3,7 +3,6 @@
 #include "configuration_core.hpp"
 #include "filesystem.hpp"
 #include "grabber_client.hpp"
-#include "keyboard_event_output_manager.hpp"
 #include <CoreServices/CoreServices.h>
 #include <memory>
 
@@ -13,15 +12,13 @@ public:
 
   configuration_manager(spdlog::logger& logger,
                         const std::string& configuration_directory,
-                        grabber_client& grabber_client,
-                        keyboard_event_output_manager& keyboard_event_output_manager) : logger_(logger),
-                                                                                        configuration_directory_(configuration_directory),
-                                                                                        configuration_core_file_path_(configuration_directory_ + "/karabiner.json"),
-                                                                                        grabber_client_(grabber_client),
-                                                                                        keyboard_event_output_manager_(keyboard_event_output_manager),
-                                                                                        path_(nullptr),
-                                                                                        paths_(nullptr),
-                                                                                        stream_(nullptr) {
+                        grabber_client& grabber_client) : logger_(logger),
+                                                          configuration_directory_(configuration_directory),
+                                                          configuration_core_file_path_(configuration_directory_ + "/karabiner.json"),
+                                                          grabber_client_(grabber_client),
+                                                          path_(nullptr),
+                                                          paths_(nullptr),
+                                                          stream_(nullptr) {
     filesystem::normalize_file_path(configuration_directory_);
     filesystem::normalize_file_path(configuration_core_file_path_);
 
@@ -150,9 +147,9 @@ private:
       grabber_client_.add_simple_modification(pair.first, pair.second);
     }
 
-    keyboard_event_output_manager_.clear_fn_function_keys();
+    grabber_client_.clear_fn_function_keys();
     for (const auto& pair : configuration_core_->get_current_profile_fn_function_keys()) {
-      keyboard_event_output_manager_.add_fn_function_key(pair.first, pair.second);
+      grabber_client_.add_fn_function_key(pair.first, pair.second);
     }
   }
 
@@ -160,7 +157,6 @@ private:
   std::string configuration_directory_;
   std::string configuration_core_file_path_;
   grabber_client& grabber_client_;
-  keyboard_event_output_manager& keyboard_event_output_manager_;
 
   CFStringRef path_;
   CFArrayRef paths_;
