@@ -36,8 +36,6 @@
 		345AC0041D62163F009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
 		3469EB701D814F140005D30D /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
 		347113141D871C6C001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_monitor.hpp; path = ../../share/process_monitor.hpp; sourceTree = SOURCE_ROOT; };
-		3492C9B81D7574520055988F /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
-		3492C9B91D757E5D0055988F /* hid_system_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_system_client.hpp; path = ../../share/hid_system_client.hpp; sourceTree = SOURCE_ROOT; };
 		349950641D891BCF004FE466 /* event_dispatcher_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_dispatcher_manager.hpp; path = include/manipulator/event_dispatcher_manager.hpp; sourceTree = SOURCE_ROOT; };
 		349950681D89A25D004FE466 /* event_manipulator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_manipulator.hpp; path = include/manipulator/event_manipulator.hpp; sourceTree = SOURCE_ROOT; };
 		349950691D89A2EF004FE466 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
@@ -106,7 +104,6 @@
 				345AC0041D62163F009D1FB4 /* boost_defs.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
 				3469EB701D814F140005D30D /* filesystem.hpp */,
-				3492C9B91D757E5D0055988F /* hid_system_client.hpp */,
 				34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */,
 				341F59DC1D5778A000B441A8 /* iokit_utility.hpp */,
 				34A88A941D68446C00DD480B /* karabiner_version.h */,
@@ -114,7 +111,6 @@
 				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				345AC0021D620C8C009D1FB4 /* notification_center.hpp */,
 				347113141D871C6C001AC60D /* process_monitor.hpp */,
-				3492C9B81D7574520055988F /* service_observer.hpp */,
 				34A88A8F1D6840C200DD480B /* session.hpp */,
 				349950691D89A2EF004FE466 /* system_preferences.hpp */,
 				34A88AA61D6DF89900DD480B /* types.hpp */,

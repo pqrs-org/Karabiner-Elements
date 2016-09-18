@@ -21,10 +21,21 @@ public:
 
   event_manipulator(void) : key_repeat_queue_(dispatch_queue_create(nullptr, nullptr)),
                             key_repeat_timer_(0) {
+    key_repeat_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, key_repeat_queue_);
+    if (!key_repeat_timer_) {
+      logger::get_logger().error("failed to dispatch_source_create");
+    }
   }
 
   ~event_manipulator(void) {
     stop_key_repeat();
+
+    if (key_repeat_timer_) {
+      dispatch_source_cancel(key_repeat_timer_);
+      dispatch_release(key_repeat_timer_);
+      key_repeat_timer_ = 0;
+    }
+
     dispatch_release(key_repeat_queue_);
   }
 
@@ -151,8 +162,10 @@ public:
     }
 
     if (key_code == krbn::key_code::caps_lock) {
-      toggle_caps_lock_state();
-      stop_key_repeat();
+      if (pressed) {
+        toggle_caps_lock_state();
+        stop_key_repeat();
+      }
       return;
     }
 
@@ -160,10 +173,11 @@ public:
   }
 
   void stop_key_repeat(void) {
-    if (key_repeat_timer_) {
-      dispatch_source_cancel(key_repeat_timer_);
-      dispatch_release(key_repeat_timer_);
-      key_repeat_timer_ = 0;
+    if (key_repeat_key_code_) {
+      key_repeat_key_code_ = boost::none;
+      if (key_repeat_timer_) {
+        dispatch_suspend(key_repeat_timer_);
+      }
     }
   }
 
@@ -314,10 +328,7 @@ private:
       }
 
       if (repeat_target) {
-        key_repeat_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, key_repeat_queue_);
-        if (!key_repeat_timer_) {
-          logger::get_logger().error("failed to dispatch_source_create");
-        } else {
+        if (key_repeat_timer_) {
           dispatch_source_set_timer(key_repeat_timer_,
                                     dispatch_time(DISPATCH_TIME_NOW, initial_key_repeat_milliseconds * NSEC_PER_MSEC),
                                     key_repeat_milliseconds * NSEC_PER_MSEC,
