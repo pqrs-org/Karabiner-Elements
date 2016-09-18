@@ -99,6 +99,7 @@ public:
         std::lock_guard<std::mutex> hids_guard(hids_mutex_);
 
         for (auto&& it : hids_) {
+          unobserve(*(it.second));
           grab(*(it.second));
         }
       }
@@ -126,6 +127,7 @@ public:
 
       for (auto&& it : hids_) {
         ungrab(*(it.second));
+        observe(*(it.second));
       }
     }
 
@@ -262,8 +264,6 @@ private:
       return;
     }
 
-    unobserve(hid);
-
     // seize device
     hid.grab(std::bind(&device_grabber::value_callback,
                        this,
@@ -285,7 +285,6 @@ private:
     }
 
     hid.ungrab();
-    observe(hid);
   }
 
   void value_callback(human_interface_device& device,
