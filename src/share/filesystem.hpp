@@ -5,6 +5,11 @@
 
 class filesystem final {
 public:
+  static bool exists(const std::string& path) {
+    struct stat s;
+    return (stat(path.c_str(), &s) == 0);
+  }
+
   static bool is_directory(const std::string& path) {
     struct stat s;
     if (stat(path.c_str(), &s) == 0) {

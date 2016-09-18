@@ -48,7 +48,8 @@ public:
 
             return;
           }
-        } catch (...) {
+        } catch (std::exception &ex) {
+          logger::get_logger().warn(ex.what());
         }
 
         release();
