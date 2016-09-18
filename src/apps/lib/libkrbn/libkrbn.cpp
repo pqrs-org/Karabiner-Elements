@@ -50,18 +50,3 @@ const char* libkrbn_get_distributed_notification_grabber_is_launched(void) {
 
   return &(result[0]);
 }
-
-const char* libkrbn_get_distributed_notification_console_user_socket_directory_is_ready(void) {
-  static std::mutex mutex;
-  static bool once = false;
-  static std::vector<char> result;
-
-  std::lock_guard<std::mutex> guard(mutex);
-
-  if (!once) {
-    once = true;
-    libkrbn::cfstring_to_cstring(result, constants::get_distributed_notification_console_user_socket_directory_is_ready());
-  }
-
-  return &(result[0]);
-}

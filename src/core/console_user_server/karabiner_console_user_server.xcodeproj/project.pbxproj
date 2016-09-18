@@ -42,7 +42,6 @@
 		34A88A971D685A4600DD480B /* connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connection_manager.hpp; path = include/connection_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A981D685A4600DD480B /* grabber_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_client.hpp; path = ../../share/grabber_client.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9B1D685A4600DD480B /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = include/logger.hpp; sourceTree = SOURCE_ROOT; };
-		34A88A9C1D685A4600DD480B /* receiver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = receiver.hpp; path = include/receiver.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9D1D685A4600DD480B /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = session.hpp; path = ../../share/session.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A9E1D685A5000DD480B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
 		34A88AA01D685A5C00DD480B /* karabiner_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = karabiner_version.h; path = ../../share/karabiner_version.h; sourceTree = SOURCE_ROOT; };
@@ -129,7 +128,6 @@
 			children = (
 				34A88A971D685A4600DD480B /* connection_manager.hpp */,
 				34A88A9B1D685A4600DD480B /* logger.hpp */,
-				34A88A9C1D685A4600DD480B /* receiver.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";

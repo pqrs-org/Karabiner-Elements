@@ -35,11 +35,6 @@ public:
             grabber_server_ = std::make_unique<grabber_server>(event_manipulator_, device_grabber_);
 
             prepare_socket_directory(*uid);
-            // unlink old socket.
-            unlink(constants::get_console_user_socket_file_path());
-
-            logger::get_logger().info("console_user_socket_directory_is_ready for {0}", *uid);
-            notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_console_user_socket_directory_is_ready());
           }
         }
       });
@@ -56,14 +51,8 @@ private:
   void prepare_socket_directory(uid_t uid) {
     // make directories.
     mkdir(constants::get_socket_directory(), 0755);
-    mkdir(constants::get_console_user_socket_directory(), 0700);
-
-    // chmod,chown directories.
-    chmod(constants::get_socket_directory(), 0755);
     chown(constants::get_socket_directory(), 0, 0);
-
-    chmod(constants::get_console_user_socket_directory(), 0700);
-    chown(constants::get_console_user_socket_directory(), uid, 0);
+    chmod(constants::get_socket_directory(), 0755);
   }
 
   manipulator::event_manipulator& event_manipulator_;

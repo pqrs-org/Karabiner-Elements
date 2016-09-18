@@ -23,14 +23,6 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_event_dispatcher_receiver";
   }
 
-  static const char* get_console_user_socket_directory(void) {
-    return "/Library/Application Support/org.pqrs/tmp/karabiner_console_user";
-  }
-
-  static const char* get_console_user_socket_file_path(void) {
-    return "/Library/Application Support/org.pqrs/tmp/karabiner_console_user/receiver";
-  }
-
   static const char* get_home_dot_karabiner_directory(void) {
     static std::mutex mutex;
     static bool once = false;
@@ -81,9 +73,5 @@ public:
 
   static CFStringRef get_distributed_notification_grabber_is_launched(void) {
     return CFSTR("grabber_is_launched");
-  }
-
-  static CFStringRef get_distributed_notification_console_user_socket_directory_is_ready(void) {
-    return CFSTR("console_user_socket_directory_is_ready");
   }
 };
