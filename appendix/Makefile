@@ -6,6 +6,7 @@ all:
 	$(MAKE) -C dump_system_preferences
 	$(MAKE) -C eventtap
 	$(MAKE) -C post_key
+	$(MAKE) -C session
 
 clean:
 	$(MAKE) -C codesign clean
@@ -15,3 +16,4 @@ clean:
 	$(MAKE) -C dump_system_preferences clean
 	$(MAKE) -C eventtap clean
 	$(MAKE) -C post_key clean
+	$(MAKE) -C session clean
