@@ -9,14 +9,14 @@
 #include "types.hpp"
 #include <vector>
 
-class grabber_server final {
+class receiver final {
 public:
-  grabber_server(const grabber_server&) = delete;
+  receiver(const receiver&) = delete;
 
-  grabber_server(manipulator::event_manipulator& event_manipulator,
-                 device_grabber& device_grabber) : event_manipulator_(event_manipulator),
-                                                   device_grabber_(device_grabber),
-                                                   exit_loop_(false) {
+  receiver(manipulator::event_manipulator& event_manipulator,
+           device_grabber& device_grabber) : event_manipulator_(event_manipulator),
+                                             device_grabber_(device_grabber),
+                                             exit_loop_(false) {
     const size_t buffer_length = 1024 * 1024;
     buffer_.resize(buffer_length);
 
@@ -33,7 +33,7 @@ public:
     thread_ = std::thread([this] { this->worker(); });
   }
 
-  ~grabber_server(void) {
+  ~receiver(void) {
     unlink(constants::get_grabber_socket_file_path());
 
     exit_loop_ = true;
@@ -81,7 +81,7 @@ private:
               console_user_server_process_monitor_ = nullptr;
               console_user_server_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
                                                                                        p->pid,
-                                                                                       std::bind(&grabber_server::console_user_server_exit_callback, this));
+                                                                                       std::bind(&receiver::console_user_server_exit_callback, this));
 
               break;
             }

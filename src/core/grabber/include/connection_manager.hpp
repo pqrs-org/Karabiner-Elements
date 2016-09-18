@@ -3,9 +3,9 @@
 #include "constants.hpp"
 #include "device_grabber.hpp"
 #include "event_manipulator.hpp"
-#include "grabber_server.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
+#include "receiver.hpp"
 #include "session.hpp"
 #include <sys/stat.h>
 
@@ -31,8 +31,8 @@ public:
             last_uid_ = *uid;
             logger::get_logger().info("current_console_user_id: {0}", *uid);
 
-            grabber_server_ = nullptr;
-            grabber_server_ = std::make_unique<grabber_server>(event_manipulator_, device_grabber_);
+            receiver_ = nullptr;
+            receiver_ = std::make_unique<receiver>(event_manipulator_, device_grabber_);
 
             prepare_socket_directory(*uid);
           }
@@ -44,7 +44,7 @@ public:
   }
 
   ~connection_manager(void) {
-    grabber_server_ = nullptr;
+    receiver_ = nullptr;
   }
 
 private:
@@ -60,5 +60,5 @@ private:
   dispatch_source_t timer_;
   uid_t last_uid_;
 
-  std::unique_ptr<grabber_server> grabber_server_;
+  std::unique_ptr<receiver> receiver_;
 };
