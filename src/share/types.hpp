@@ -29,7 +29,6 @@ enum class operation_type : uint8_t {
   set_caps_lock_led_state,
   // grabber -> event_dispatcher
   post_modifier_flags,
-  toggle_caps_lock_state,
   set_caps_lock_state,
   refresh_caps_lock_led,
   post_key,
@@ -105,6 +104,7 @@ enum class pointing_button : uint32_t {
 enum class modifier_flag : uint32_t {
   zero,
   none,
+  caps_lock,
   left_control,
   left_shift,
   left_option,
@@ -663,12 +663,6 @@ struct operation_type_post_modifier_flags_struct {
   const operation_type operation_type;
   key_code key_code;
   IOOptionBits flags;
-};
-
-struct operation_type_toggle_caps_lock_state_struct {
-  operation_type_toggle_caps_lock_state_struct(void) : operation_type(operation_type::toggle_caps_lock_state) {}
-
-  const operation_type operation_type;
 };
 
 struct operation_type_set_caps_lock_state_struct {

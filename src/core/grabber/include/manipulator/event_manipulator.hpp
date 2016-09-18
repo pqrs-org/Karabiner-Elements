@@ -48,11 +48,13 @@ public:
     manipulated_keys_.clear();
     manipulated_fn_keys_.clear();
     modifier_flag_manager_.reset();
+    modifier_flag_manager_.unlock();
     event_dispatcher_manager_.set_caps_lock_state(false);
   }
 
   void reset_modifier_flag_state(void) {
     modifier_flag_manager_.reset();
+    // Do not call modifier_flag_manager_.unlock() here.
   }
 
   void clear_simple_modifications(void) {
@@ -294,7 +296,12 @@ private:
   }
 
   void toggle_caps_lock_state(void) {
-    event_dispatcher_manager_.toggle_caps_lock_state();
+    modifier_flag_manager_.manipulate(krbn::modifier_flag::caps_lock, modifier_flag_manager::operation::toggle_lock);
+    if (modifier_flag_manager_.pressed(krbn::modifier_flag::caps_lock)) {
+      event_dispatcher_manager_.set_caps_lock_state(true);
+    } else {
+      event_dispatcher_manager_.set_caps_lock_state(false);
+    }
   }
 
   void post_key(krbn::key_code key_code, bool pressed) {

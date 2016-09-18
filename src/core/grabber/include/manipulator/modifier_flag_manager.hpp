@@ -9,6 +9,7 @@ public:
   modifier_flag_manager(void) {
     states_.resize(static_cast<size_t>(krbn::modifier_flag::prepared_modifier_flag_end_));
 
+    states_[static_cast<size_t>(krbn::modifier_flag::caps_lock)] = std::make_unique<state>("caps lock", "⇪");
     states_[static_cast<size_t>(krbn::modifier_flag::left_control)] = std::make_unique<state>("control", "⌃");
     states_[static_cast<size_t>(krbn::modifier_flag::left_shift)] = std::make_unique<state>("shift", "⇧");
     states_[static_cast<size_t>(krbn::modifier_flag::left_option)] = std::make_unique<state>("option", "⌥");
@@ -28,9 +29,20 @@ public:
     }
   }
 
+  void unlock(void) {
+    for (const auto& s : states_) {
+      if (s) {
+        s->unlock();
+      }
+    }
+  }
+
   enum class operation {
     increase,
     decrease,
+    lock,
+    unlock,
+    toggle_lock,
   };
 
   void manipulate(krbn::modifier_flag k, operation operation) {
@@ -42,6 +54,15 @@ public:
         break;
       case operation::decrease:
         states_[i]->decrease();
+        break;
+      case operation::lock:
+        states_[i]->lock();
+        break;
+      case operation::unlock:
+        states_[i]->unlock();
+        break;
+      case operation::toggle_lock:
+        states_[i]->toggle_lock();
         break;
       }
     }
@@ -102,6 +123,9 @@ public:
 
   IOOptionBits get_io_option_bits(void) const {
     IOOptionBits bits = 0;
+    if (pressed(krbn::modifier_flag::caps_lock)) {
+      bits |= NX_ALPHASHIFTMASK;
+    }
     if (pressed(krbn::modifier_flag::left_control) ||
         pressed(krbn::modifier_flag::right_control)) {
       bits |= NX_CONTROLMASK;
@@ -129,12 +153,13 @@ private:
   public:
     state(const std::string& name, const std::string& symbol) : name_(name),
                                                                 symbol_(symbol),
-                                                                count_(0) {}
+                                                                count_(0),
+                                                                lock_count_(0) {}
 
     const std::string& get_name(void) const { return name_; }
     const std::string& get_symbol(void) const { return symbol_; }
 
-    bool pressed(void) const { return count_ > 0; }
+    bool pressed(void) const { return (count_ + lock_count_) > 0; }
 
     void reset(void) {
       count_ = 0;
@@ -148,10 +173,23 @@ private:
       --count_;
     }
 
+    void lock(void) {
+      lock_count_ = 1;
+    }
+
+    void unlock(void) {
+      lock_count_ = 0;
+    }
+
+    void toggle_lock(void) {
+      lock_count_ = lock_count_ == 0 ? 1 : 0;
+    }
+
   private:
     std::string name_;
     std::string symbol_;
     int count_;
+    int lock_count_;
   };
 
   std::vector<std::unique_ptr<state>> states_;

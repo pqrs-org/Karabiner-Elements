@@ -67,22 +67,6 @@ public:
     }
   }
 
-  void toggle_caps_lock_state(void) {
-    std::lock_guard<std::mutex> guard(client_mutex_);
-
-    if (!client_) {
-      logger::get_logger().error("client_ is not ready @ {0}", __PRETTY_FUNCTION__);
-      return;
-    }
-
-    try {
-      krbn::operation_type_toggle_caps_lock_state_struct s;
-      client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
-    } catch (...) {
-      client_ = nullptr;
-    }
-  }
-
   void set_caps_lock_state(bool state) {
     std::lock_guard<std::mutex> guard(client_mutex_);
 
