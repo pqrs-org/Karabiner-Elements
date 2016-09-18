@@ -57,23 +57,6 @@ public:
     post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
   }
 
-  enum class post_key_type {
-    key,
-    aux_control_button,
-  };
-
-  void post_key(post_key_type type, uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
-    switch (type) {
-    case post_key_type::key:
-      post_key(key_code, event_type, flags, repeat);
-      break;
-
-    case post_key_type::aux_control_button:
-      post_aux_control_button(key_code, event_type, flags, repeat);
-      break;
-    }
-  }
-
   void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
     if (auto key = krbn::types::get_mac_aux_control_button(key_code)) {
       post_aux_control_button(*key, event_type, flags, repeat);
