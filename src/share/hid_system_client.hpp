@@ -74,6 +74,20 @@ public:
     }
   }
 
+  void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
+    if (auto key = krbn::types::get_mac_aux_control_button(key_code)) {
+      post_aux_control_button(*key, event_type, flags, repeat);
+      return;
+    }
+
+    if (auto key = krbn::types::get_mac_key(key_code)) {
+      post_key(*key, event_type, flags, repeat);
+      return;
+    }
+
+    logger::get_logger().warn("key_code:{1:#x} is unsupported key @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(key_code));
+  }
+
   void post_key(uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
     NXEventData event{};
     event.key.origCharCode = 0;

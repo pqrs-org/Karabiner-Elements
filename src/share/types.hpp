@@ -27,7 +27,6 @@ enum class operation_type : uint8_t {
   add_simple_modification,
   // grabber -> console_user_server
   stop_key_repeat,
-  post_key,
   // event_dispatcher -> grabber
   set_caps_lock_led_state,
   // grabber -> event_dispatcher
@@ -35,7 +34,7 @@ enum class operation_type : uint8_t {
   toggle_caps_lock_state,
   set_caps_lock_state,
   refresh_caps_lock_led,
-  dispatch_key_event,
+  post_key,
 };
 
 enum class connect_from : uint8_t {
@@ -49,7 +48,11 @@ enum class event_type : uint32_t {
 };
 
 enum class key_code : uint32_t {
-  // 0x00 - 0xff is usage page
+  // 0x00 - 0xff are usage pages
+  return_or_enter = kHIDUsage_KeyboardReturnOrEnter,
+  delete_or_backspace = kHIDUsage_KeyboardDeleteOrBackspace,
+  caps_lock = kHIDUsage_KeyboardCapsLock,
+
   f1 = kHIDUsage_KeyboardF1,
   f2 = kHIDUsage_KeyboardF2,
   f3 = kHIDUsage_KeyboardF3,
@@ -62,42 +65,30 @@ enum class key_code : uint32_t {
   f10 = kHIDUsage_KeyboardF10,
   f11 = kHIDUsage_KeyboardF11,
   f12 = kHIDUsage_KeyboardF12,
+
+  right_arrow = kHIDUsage_KeyboardRightArrow,
+  left_arrow = kHIDUsage_KeyboardLeftArrow,
+  down_arrow = kHIDUsage_KeyboardDownArrow,
+  up_arrow = kHIDUsage_KeyboardUpArrow,
+
+  home = kHIDUsage_KeyboardHome,
+  page_up = kHIDUsage_KeyboardPageUp,
+  delete_forward = kHIDUsage_KeyboardDeleteForward,
+  end = kHIDUsage_KeyboardEnd,
+  page_down = kHIDUsage_KeyboardPageDown,
+  keypad_enter = kHIDUsage_KeypadEnter,
+
   mute = kHIDUsage_KeyboardMute,
   volume_up = kHIDUsage_KeyboardVolumeUp,
   volume_down = kHIDUsage_KeyboardVolumeDown,
 
+  // 0x1000 - are karabiner own virtual key codes
   extra_ = 0x1000,
-  // static virtual key codes
-  // (Do not change their values since these virtual key codes may be in user preferences.)
-  vk_none = 0x1001,
-  vk_fn_modifier = 0x1002,
+  // predefined virtual modifier flags
+  vk_none,
+  vk_fn_modifier,
 
   // virtual key codes
-  vk_function_keys_start_,
-  vk_f1,
-  vk_f2,
-  vk_f3,
-  vk_f4,
-  vk_f5,
-  vk_f6,
-  vk_f7,
-  vk_f8,
-  vk_f9,
-  vk_f10,
-  vk_f11,
-  vk_f12,
-  vk_fn_f1,
-  vk_fn_f2,
-  vk_fn_f3,
-  vk_fn_f4,
-  vk_fn_f5,
-  vk_fn_f6,
-  vk_fn_f7,
-  vk_fn_f8,
-  vk_fn_f9,
-  vk_fn_f10,
-  vk_fn_f11,
-  vk_fn_f12,
   vk_consumer_brightness_down,
   vk_consumer_brightness_up,
   vk_consumer_illumination_down,
@@ -108,7 +99,6 @@ enum class key_code : uint32_t {
   vk_dashboard,
   vk_launchpad,
   vk_mission_control,
-  vk_function_keys_end_,
 };
 
 enum class pointing_button : uint32_t {
@@ -608,6 +598,15 @@ public:
     }
     return map;
   }
+
+  static boost::optional<uint8_t> get_mac_aux_control_button(key_code key_code) {
+    auto& map = get_mac_aux_control_button_map();
+    auto it = map.find(key_code);
+    if (it == map.end()) {
+      return boost::none;
+    }
+    return it->second;
+  }
 };
 
 struct operation_type_connect_struct {
@@ -691,15 +690,6 @@ struct operation_type_post_key_struct {
 
   const operation_type operation_type;
   key_code key_code;
-  event_type event_type;
-  IOOptionBits flags;
-};
-
-struct operation_type_dispatch_key_event_struct {
-  operation_type_dispatch_key_event_struct(void) : operation_type(operation_type::dispatch_key_event) {}
-
-  const operation_type operation_type;
-  uint8_t key_code;
   event_type event_type;
   IOOptionBits flags;
   bool repeat;

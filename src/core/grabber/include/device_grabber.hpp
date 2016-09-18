@@ -99,8 +99,6 @@ public:
 
         for (auto&& it : hids_) {
           grab(*(it.second));
-          (it.second)->clear_changed_keys();
-          (it.second)->clear_pressed_keys();
         }
 
         event_manipulator_.reset();
@@ -126,8 +124,6 @@ public:
 
       for (auto&& it : hids_) {
         ungrab(*(it.second));
-        (it.second)->clear_changed_keys();
-        (it.second)->clear_pressed_keys();
       }
 
       event_manipulator_.reset();
@@ -312,6 +308,11 @@ private:
 
     default:
       break;
+    }
+
+    // reset modifier_flags state if all keys are released.
+    if (get_all_devices_pressed_keys_count() == 0) {
+      event_manipulator_.reset_modifier_flag_state();
     }
   }
 

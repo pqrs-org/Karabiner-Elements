@@ -250,19 +250,6 @@ public:
     }
   }
 
-  std::unordered_map<krbn::key_code, krbn::key_code>& get_simple_changed_keys(void) {
-    return simple_changed_keys_;
-  }
-
-  std::unordered_map<krbn::key_code, krbn::key_code>& get_fn_changed_keys(void) {
-    return fn_changed_keys_;
-  }
-
-  void clear_changed_keys(void) {
-    simple_changed_keys_.clear();
-    fn_changed_keys_.clear();
-  }
-
   size_t get_pressed_keys_count(void) const {
     return pressed_key_usages_.size();
   }
@@ -424,7 +411,4 @@ private:
   value_callback value_callback_;
   report_callback report_callback_;
   std::vector<uint8_t> report_buffer_;
-
-  std::unordered_map<krbn::key_code, krbn::key_code> simple_changed_keys_;
-  std::unordered_map<krbn::key_code, krbn::key_code> fn_changed_keys_;
 };
