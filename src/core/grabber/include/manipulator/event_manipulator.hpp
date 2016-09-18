@@ -57,6 +57,12 @@ public:
     // Do not call modifier_flag_manager_.unlock() here.
   }
 
+  void set_system_preferences_values(const system_preferences::values& values) {
+    std::lock_guard<std::mutex> guard(system_preferences_values_mutex_);
+
+    system_preferences_values_ = values;
+  }
+
   void clear_simple_modifications(void) {
     simple_modifications_.clear();
   }

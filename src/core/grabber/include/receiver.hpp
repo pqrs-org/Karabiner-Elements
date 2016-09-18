@@ -92,6 +92,8 @@ private:
           if (n < sizeof(krbn::operation_type_system_preferences_values_updated_struct)) {
             logger::get_logger().error("invalid size for krbn::operation_type::system_preferences_values_updated ({0})", n);
           } else {
+            auto p = reinterpret_cast<krbn::operation_type_system_preferences_values_updated_struct*>(&(buffer_[0]));
+            event_manipulator_.set_system_preferences_values(p->values);
             logger::get_logger().info("system_preferences_values_updated");
           }
           break;
