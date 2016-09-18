@@ -74,13 +74,13 @@ public:
     // modify keys
     if (!pressed) {
       if (auto key_code = manipulated_keys_.find(device_registry_entry_id, from_key_code)) {
-        to_key_code = *key_code;
         manipulated_keys_.remove(device_registry_entry_id, from_key_code);
+        to_key_code = *key_code;
       }
     } else {
       if (auto key_code = simple_modifications_.get(from_key_code)) {
+        manipulated_keys_.add(device_registry_entry_id, from_key_code, *key_code);
         to_key_code = *key_code;
-        manipulated_keys_.add(device_registry_entry_id, from_key_code, to_key_code);
       }
     }
 
@@ -88,8 +88,8 @@ public:
     // modify fn+arrow, function keys
     if (!pressed) {
       if (auto key_code = manipulated_fn_keys_.find(device_registry_entry_id, to_key_code)) {
-        to_key_code = *key_code;
         manipulated_fn_keys_.remove(device_registry_entry_id, to_key_code);
+        to_key_code = *key_code;
       }
     } else {
       boost::optional<krbn::key_code> key_code;
