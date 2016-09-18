@@ -1,7 +1,6 @@
 #pragma once
 
 #include "apple_hid_usage_tables.hpp"
-#include "console_user_client.hpp"
 #include "constants.hpp"
 #include "event_manipulator.hpp"
 #include "human_interface_device.hpp"
@@ -20,8 +19,7 @@ public:
   device_grabber(manipulator::event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
                                                                       grab_timer_(0),
                                                                       grab_retry_count_(0),
-                                                                      grabbed_(false),
-                                                                      console_user_client_() {
+                                                                      grabbed_(false) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
@@ -130,10 +128,6 @@ public:
 
       logger::get_logger().info("devices are ungrabbed");
     });
-  }
-
-  void post_connect_ack(void) {
-    console_user_client_.connect_ack();
   }
 
   void set_caps_lock_led_state(krbn::led_state state) {
@@ -338,6 +332,4 @@ private:
   dispatch_source_t _Nullable grab_timer_;
   size_t grab_retry_count_;
   bool grabbed_;
-
-  console_user_client console_user_client_;
 };

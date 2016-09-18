@@ -75,7 +75,6 @@ private:
             case krbn::connect_from::console_user_server:
               logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
-              device_grabber_.post_connect_ack();
               device_grabber_.grab_devices();
 
               // monitor the last process

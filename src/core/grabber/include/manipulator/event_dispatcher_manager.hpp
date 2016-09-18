@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "local_datagram_client.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <cstdlib>
