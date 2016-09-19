@@ -9,6 +9,10 @@ if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist ]; then
     launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
 fi
 
+kextunload -b org.pqrs.driver.VirtualHIDManager
+kextunload -b org.pqrs.driver.VirtualHIDKeyboard
+kextunload -b org.pqrs.driver.VirtualHIDPointing
+
 # ----------------------------------------
 # uninstall
 rm -f  '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist'
