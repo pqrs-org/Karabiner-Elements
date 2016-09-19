@@ -285,7 +285,8 @@ private:
   class key_repeat_manager final {
   public:
     key_repeat_manager(event_dispatcher_manager& event_dispatcher_manager) : event_dispatcher_manager_(event_dispatcher_manager),
-                                                                             queue_(dispatch_queue_create(nullptr, nullptr)) {
+                                                                             queue_(dispatch_queue_create(nullptr, nullptr)),
+                                                                             timer_(0) {
     }
 
     ~key_repeat_manager(void) {
