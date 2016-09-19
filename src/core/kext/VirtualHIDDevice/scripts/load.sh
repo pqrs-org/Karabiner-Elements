@@ -12,7 +12,7 @@ for kext in VirtualHIDKeyboard.kext VirtualHIDManager.kext VirtualHIDPointing.ke
     cp -R "build/Release/$kext" $targetdir
 done
 
-bash ../../../scripts/codesign.sh $targetdir
+bash ../../../../scripts/codesign.sh $targetdir
 sudo chown -R root:wheel $targetdir
 
 for kext in VirtualHIDKeyboard.kext VirtualHIDManager.kext VirtualHIDPointing.kext; do
