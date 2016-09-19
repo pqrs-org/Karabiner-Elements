@@ -51,6 +51,10 @@ public:
     virtual_hid_manager_client_.post_keyboard_input_report(report);
   }
 
+  void relaunch_event_dispatcher(void) {
+    event_dispatcher_manager_.relaunch();
+  }
+
   void set_system_preferences_values(const system_preferences::values& values) {
     std::lock_guard<std::mutex> guard(system_preferences_values_mutex_);
 
