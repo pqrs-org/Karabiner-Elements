@@ -24,3 +24,20 @@ System requirements:
 * Boost 1.61.0+ (header-only) http://www.boost.org/
 
 Please install Boost into `/opt/local/include/boost`. (eg. `/opt/local/include/boost/version.hpp`)
+
+### Step 1: Getting source code
+
+Clone the source from github.
+
+```
+git clone --depth 1 https://github.com/tekezo/Karabiner-Elements.git
+```
+
+### Step 2: Building a package
+
+```
+cd Karabiner-Elements
+make
+```
+
+The `make` script will create a redistributable **Karabiner-Elements-VERSION.dmg** in the current directory.
