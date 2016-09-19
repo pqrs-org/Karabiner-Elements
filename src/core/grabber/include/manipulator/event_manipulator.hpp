@@ -160,16 +160,16 @@ public:
     // ----------------------------------------
     // Post input events to karabiner_event_dispatcher
 
-    if (post_modifier_flag_event(to_key_code, pressed)) {
-      key_repeat_manager_.stop();
-      return;
-    }
-
     if (to_key_code == krbn::key_code::caps_lock) {
       if (pressed) {
         toggle_caps_lock_state();
         key_repeat_manager_.stop();
       }
+      return;
+    }
+
+    if (post_modifier_flag_event(to_key_code, pressed)) {
+      key_repeat_manager_.stop();
       return;
     }
 
@@ -352,9 +352,21 @@ private:
     if (modifier_flag != krbn::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
+      // We have to post modifier key event via event_dispatcher for some apps (Microsoft Remote Desktop)
       auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
       auto flags = modifier_flag_manager_.get_io_option_bits();
       event_dispatcher_manager_.post_key(key_code, event_type, flags, false);
+
+      // We have to post modifier key event via virtual device driver for mouse events.
+      //
+      // Note:
+      // Unproperly usage of virtual device driver causes a security issue.
+      // Please read DEVELOPER.md > IOKit device report in kext.
+      //
+      hid_report::keyboard_input report;
+      report.modifiers = modifier_flag_manager_.get_hid_report_bits();
+      virtual_hid_manager_client_.post_keyboard_input_report(report);
+
       return true;
     }
 

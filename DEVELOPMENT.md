@@ -86,7 +86,6 @@ the mouse click event will be treated as click without any modifier flags. (not 
 
 We have to send modifier event via virtual device driver.
 
-
 ## IOKit device report in kext
 
 It requires posting HID events.<br />
