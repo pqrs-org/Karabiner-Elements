@@ -38,7 +38,7 @@
 		347112F01D87010A001AC60D /* Relauncher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Relauncher.m; path = ../../share/Relauncher.m; sourceTree = "<group>"; };
 		3471130F1D870D74001AC60D /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
 		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
-		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "../../../../../../../usr/lib/libc++.dylib"; sourceTree = "<group>"; };
+		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +57,6 @@
 		3445E0591D801AF7004555F9 = {
 			isa = PBXGroup;
 			children = (
-				347113121D870F5F001AC60D /* libc++.dylib */,
 				3445E0641D801AF7004555F9 /* PreferencesWindow */,
 				3445E0631D801AF7004555F9 /* Products */,
 			);
@@ -94,6 +93,7 @@
 		3445E0681D801AF7004555F9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				347113121D870F5F001AC60D /* libc++.dylib */,
 				347113111D870E87001AC60D /* libkrbn.h */,
 				3471130F1D870D74001AC60D /* libkrbn.a */,
 				3445E0691D801AF7004555F9 /* main.m */,
