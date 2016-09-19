@@ -1,6 +1,8 @@
 #pragma once
 
+#include "hid_report.hpp"
 #include "service_observer.hpp"
+#include "virtual_hid_manager_user_client_method.hpp"
 
 class virtual_hid_manager_client final {
 public:
@@ -42,6 +44,12 @@ public:
     if (kr != KERN_SUCCESS) {
       logger_.error("IOConnectCallStructMethod error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
     }
+  }
+
+  void post_keyboard_input_report(const hid_report::keyboard_input& report) {
+    call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::keyboard_input_report),
+                       static_cast<const void*>(&report), sizeof(report),
+                       nullptr, 0);
   }
 
 private:

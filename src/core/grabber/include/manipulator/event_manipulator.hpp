@@ -21,25 +21,34 @@ public:
   event_manipulator(const event_manipulator&) = delete;
 
   event_manipulator(void) : event_dispatcher_manager_(),
+                            virtual_hid_manager_client_(logger::get_logger()),
                             key_repeat_manager_(event_dispatcher_manager_) {
   }
 
   bool is_ready(void) {
-    return event_dispatcher_manager_.is_connected();
+    return virtual_hid_manager_client_.is_connected() &&
+           event_dispatcher_manager_.is_connected();
   }
 
   void reset(void) {
     key_repeat_manager_.stop();
+
     manipulated_keys_.clear();
     manipulated_fn_keys_.clear();
+
     modifier_flag_manager_.reset();
     modifier_flag_manager_.unlock();
+    hid_report::keyboard_input report;
+    virtual_hid_manager_client_.post_keyboard_input_report(report);
+
     event_dispatcher_manager_.set_caps_lock_state(false);
   }
 
   void reset_modifier_flag_state(void) {
     modifier_flag_manager_.reset();
     // Do not call modifier_flag_manager_.unlock() here.
+    hid_report::keyboard_input report;
+    virtual_hid_manager_client_.post_keyboard_input_report(report);
   }
 
   void set_system_preferences_values(const system_preferences::values& values) {
@@ -379,6 +388,7 @@ private:
   }
 
   event_dispatcher_manager event_dispatcher_manager_;
+  virtual_hid_manager_client virtual_hid_manager_client_;
   modifier_flag_manager modifier_flag_manager_;
   key_repeat_manager key_repeat_manager_;
 

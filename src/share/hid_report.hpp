@@ -18,7 +18,7 @@ public:
 
   class __attribute__((packed)) pointing_input final {
   public:
-    pointing_input(void) : buttons{0}, x(0), y(0), vertical_wheel(0), horizontal_wheel(0) {}
+    pointing_input(void) : buttons{}, x(0), y(0), vertical_wheel(0), horizontal_wheel(0) {}
 
     uint8_t buttons[4]; // 32 bits for each button (32 buttons)
     uint8_t x;
