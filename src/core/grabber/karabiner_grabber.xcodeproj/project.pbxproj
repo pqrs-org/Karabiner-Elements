@@ -50,6 +50,8 @@
 		34A88AA41D69C85600DD480B /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/manipulator/modifier_flag_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88AA61D6DF89900DD480B /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../../share/types.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		34DA28A21D8FC4410029E37D /* virtual_hid_manager_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_client.hpp; path = include/virtual_hid_manager_client.hpp; sourceTree = SOURCE_ROOT; };
+		34DA28A31D8FC8BE0029E37D /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
 		34E420601D5042240022F821 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		34EED7101D6FA38400399AD1 /* apple_hid_usage_tables.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = apple_hid_usage_tables.hpp; path = ../../share/apple_hid_usage_tables.hpp; sourceTree = SOURCE_ROOT; };
@@ -111,6 +113,7 @@
 				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				345AC0021D620C8C009D1FB4 /* notification_center.hpp */,
 				347113141D871C6C001AC60D /* process_monitor.hpp */,
+				34DA28A31D8FC8BE0029E37D /* service_observer.hpp */,
 				34A88A8F1D6840C200DD480B /* session.hpp */,
 				349950691D89A2EF004FE466 /* system_preferences.hpp */,
 				34A88AA61D6DF89900DD480B /* types.hpp */,
@@ -148,6 +151,7 @@
 				34A88AA31D69C84900DD480B /* manipulator */,
 				34A88AA21D69B66200DD480B /* manipulator.hpp */,
 				34A88A891D6840C200DD480B /* receiver.hpp */,
+				34DA28A21D8FC4410029E37D /* virtual_hid_manager_client.hpp */,
 			);
 			name = include;
 			sourceTree = "<group>";

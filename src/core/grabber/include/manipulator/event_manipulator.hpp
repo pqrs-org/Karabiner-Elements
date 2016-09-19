@@ -8,6 +8,7 @@
 #include "modifier_flag_manager.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
+#include "virtual_hid_manager_client.hpp"
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <boost/optional.hpp>
 #include <list>
