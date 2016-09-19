@@ -62,24 +62,15 @@
   NSString* plistFilePath = @"/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist";
 
   if (load) {
-    NSTask* task = nil;
+    // If plistFilePath is already bootstrapped and disabled, launchctl bootstrap will fail until it is enabled again.
+    // So we should enable it first, and then bootstrap and enable it.
 
-    task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
-                                    arguments:@[ @"bootstrap", domainTarget, plistFilePath ]];
-    [task waitUntilExit];
-
-    task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
-                                    arguments:@[ @"enable", serviceTarget, plistFilePath ]];
-    [task waitUntilExit];
-
-    task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
-                                    arguments:@[ @"kickstart", serviceTarget, plistFilePath ]];
-    [task waitUntilExit];
+    system([[NSString stringWithFormat:@"/bin/launchctl enable %@", serviceTarget] UTF8String]);
+    system([[NSString stringWithFormat:@"/bin/launchctl bootstrap %@ %@", domainTarget, plistFilePath] UTF8String]);
+    system([[NSString stringWithFormat:@"/bin/launchctl enable %@", serviceTarget] UTF8String]);
 
   } else {
-    NSTask* task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
-                                            arguments:@[ @"bootout", domainTarget, plistFilePath ]];
-    [task waitUntilExit];
+    system([[NSString stringWithFormat:@"/bin/launchctl bootout %@ %@", domainTarget, plistFilePath] UTF8String]);
   }
 }
 
