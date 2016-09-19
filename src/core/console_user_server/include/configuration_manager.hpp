@@ -1,6 +1,7 @@
 #pragma once
 
 #include "configuration_core.hpp"
+#include "file_monitor.hpp"
 #include "filesystem.hpp"
 #include "grabber_client.hpp"
 #include <CoreServices/CoreServices.h>

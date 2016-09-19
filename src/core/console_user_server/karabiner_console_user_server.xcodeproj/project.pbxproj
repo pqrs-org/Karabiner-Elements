@@ -49,6 +49,7 @@
 		34A88AA71D6DF8E300DD480B /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../../share/types.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34DA289F1D8E94FB0029E37D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		34DA28A11D8FA4A40029E37D /* file_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_monitor.hpp; path = ../../share/file_monitor.hpp; sourceTree = SOURCE_ROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -100,6 +101,7 @@
 				345A9DE41D7DD7A200578F84 /* configuration_core.hpp */,
 				345A9DE31D7DD6E600578F84 /* configuration_manager.hpp */,
 				341F59CC1D516B1500B441A8 /* constants.hpp */,
+				34DA28A11D8FA4A40029E37D /* file_monitor.hpp */,
 				3492C9BC1D772D8B0055988F /* filesystem.hpp */,
 				34A88A981D685A4600DD480B /* grabber_client.hpp */,
 				3492C9B61D752C820055988F /* hid_system_client.hpp */,
