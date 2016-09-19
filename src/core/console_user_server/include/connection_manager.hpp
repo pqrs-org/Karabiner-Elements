@@ -43,7 +43,6 @@ public:
 
               if (!configuration_manager_) {
                 configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger(),
-                                                                                 constants::get_configuration_directory(),
                                                                                  *grabber_client_);
               }
 
