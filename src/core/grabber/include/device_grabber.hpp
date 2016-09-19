@@ -86,8 +86,8 @@ public:
         if (last_warning_message_time != time) {
           last_warning_message_time = time;
           logger::get_logger().warn(warning_message);
-          return;
         }
+        return;
       }
 
       // ----------------------------------------
