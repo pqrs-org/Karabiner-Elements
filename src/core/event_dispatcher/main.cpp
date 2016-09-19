@@ -17,6 +17,8 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
 
+  chmod("/var/log/karabiner/event_dispatcher_log.txt", 0644);
+
   logger::get_logger().info("version {0}", karabiner_version);
 
   // ----------------------------------------
