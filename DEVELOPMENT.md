@@ -80,6 +80,12 @@ It requires posting mac events.<br />
 
 karabiner_console_user_server uses this method.
 
+However, there is a limitation that the mouse events will ignore modifier flags by IOHIDPostEvent.
+For example, even if we pressed the command key (and the NX_COMMANDMASK is sent by IOHIDPostEvent),
+the mouse click event will be treated as click without any modifier flags. (not command+click)
+
+We have to send modifier event via virtual device driver.
+
 
 ## IOKit device report in kext
 
@@ -89,6 +95,9 @@ The IOHIKeyboard processes the reports by passing reports to `handleReport`.
 However, this method is not enough polite.
 Calling the `handleReport` method directly causes a problem that OS X ignores `EnableSecureEventInput`.
 So we have to reject this approach for security reason.
+
+Due to the limitation of IOHIDPostEvent, we use the virtual device driver for only modifier flags.
+
 
 ## IOKit device value in kext
 
