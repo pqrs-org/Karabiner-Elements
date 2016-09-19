@@ -72,6 +72,10 @@
                                     arguments:@[ @"enable", serviceTarget, plistFilePath ]];
     [task waitUntilExit];
 
+    task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
+                                    arguments:@[ @"kickstart", serviceTarget, plistFilePath ]];
+    [task waitUntilExit];
+
   } else {
     NSTask* task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
                                             arguments:@[ @"bootout", domainTarget, plistFilePath ]];
