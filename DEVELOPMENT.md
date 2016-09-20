@@ -2,10 +2,10 @@
 
 * `karabiner_grabber`
   * Run with root privilege.
-  * Seize the input devices and modify events then post events to `karabiner_event_dispatcher`.
+  * Seize the input devices and modify events then post events using CGEventPost or `karabiner_event_dispatcher`.
 * `karabiner_event_dispatcher`
   * Launch with root privilege. And then change uid to console user.
-  * Receive input events from `karabiner_grabber` and post them to IOHIDSystem.
+  * Receive media control events from `karabiner_grabber` and post them to IOHIDSystem.
 * `karabiner_console_user_server`
   * Run with console user privilege.
   * Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
@@ -71,6 +71,13 @@ You can confirm this behavior in `appendix/eventtap`.
 
 # The difference of event posting methods
 
+## CGEventPost
+
+It requires posting mac events.<br />
+
+`karabiner_grabber` uses this method to post generic key events.
+
+
 ## IOHIDPostEvent
 
 It requires posting mac events.<br />
@@ -78,7 +85,7 @@ It requires posting mac events.<br />
 `IOHIDPostEvent` will be failed if the process is not running in the current session user.
 (The root user is also forbidden.)
 
-karabiner_console_user_server uses this method.
+`karabiner_event_dispatcher` uses this method.
 
 However, there is a limitation that the mouse events will ignore modifier flags by IOHIDPostEvent.
 For example, even if we pressed the command key (and the NX_COMMANDMASK is sent by IOHIDPostEvent),
@@ -107,10 +114,6 @@ We have to make a complete set of virtual devices to post the IOHIDValue.
 
 It requires posting mac events.<br />
 We have to make a complete set of virtual devices to post the IOHIDValue.
-
-## CGEventCreate
-
-It requires posting mac events.<br />
 
 --------------------------------------------------------------------------------
 
