@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.hpp"
+#include <CoreGraphics/CoreGraphics.h>
 #include <vector>
 
 namespace manipulator {
@@ -146,6 +147,39 @@ public:
       bits |= NX_SECONDARYFNMASK;
     }
     return bits;
+  }
+
+  CGEventFlags get_cg_event_flags(CGEventFlags original_flags) const {
+    original_flags = static_cast<CGEventFlags>(original_flags & ~(kCGEventFlagMaskAlphaShift |
+                                                                  kCGEventFlagMaskControl |
+                                                                  kCGEventFlagMaskShift |
+                                                                  kCGEventFlagMaskAlternate |
+                                                                  kCGEventFlagMaskCommand |
+                                                                  kCGEventFlagMaskSecondaryFn));
+
+    if (pressed(krbn::modifier_flag::caps_lock)) {
+      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskAlphaShift);
+    }
+    if (pressed(krbn::modifier_flag::left_control) ||
+        pressed(krbn::modifier_flag::right_control)) {
+      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskControl);
+    }
+    if (pressed(krbn::modifier_flag::left_shift) ||
+        pressed(krbn::modifier_flag::right_shift)) {
+      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskShift);
+    }
+    if (pressed(krbn::modifier_flag::left_option) ||
+        pressed(krbn::modifier_flag::right_option)) {
+      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskAlternate);
+    }
+    if (pressed(krbn::modifier_flag::left_command) ||
+        pressed(krbn::modifier_flag::right_command)) {
+      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskCommand);
+    }
+    if (pressed(krbn::modifier_flag::fn)) {
+      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskSecondaryFn);
+    }
+    return original_flags;
   }
 
 private:
