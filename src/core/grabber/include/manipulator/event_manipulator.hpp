@@ -22,12 +22,22 @@ public:
 
   event_manipulator(void) : event_dispatcher_manager_(),
                             virtual_hid_manager_client_(logger::get_logger()),
-                            key_repeat_manager_(event_dispatcher_manager_) {
+                            event_source_(CGEventSourceCreate(kCGEventSourceStateHIDSystemState)),
+                            modifier_flag_manager_(),
+                            key_repeat_manager_(*this) {
+  }
+
+  ~event_manipulator(void) {
+    if (event_source_) {
+      CFRelease(event_source_);
+      event_source_ = nullptr;
+    }
   }
 
   bool is_ready(void) {
     return virtual_hid_manager_client_.is_connected() &&
-           event_dispatcher_manager_.is_connected();
+           event_dispatcher_manager_.is_connected() &&
+           event_source_ != nullptr;
   }
 
   void reset(void) {
@@ -178,6 +188,18 @@ public:
     }
 
     post_key(from_key_code, to_key_code, pressed);
+
+    // set key repeat
+    long initial_key_repeat_milliseconds = 0;
+    long key_repeat_milliseconds = 0;
+    {
+      std::lock_guard<std::mutex> guard(system_preferences_values_mutex_);
+      initial_key_repeat_milliseconds = system_preferences_values_.get_initial_key_repeat_milliseconds();
+      key_repeat_milliseconds = system_preferences_values_.get_key_repeat_milliseconds();
+    }
+
+    key_repeat_manager_.start(from_key_code, to_key_code, pressed,
+                              initial_key_repeat_milliseconds, key_repeat_milliseconds);
   }
 
   void stop_key_repeat(void) {
@@ -284,9 +306,9 @@ private:
 
   class key_repeat_manager final {
   public:
-    key_repeat_manager(event_dispatcher_manager& event_dispatcher_manager) : event_dispatcher_manager_(event_dispatcher_manager),
-                                                                             queue_(dispatch_queue_create(nullptr, nullptr)),
-                                                                             timer_(0) {
+    key_repeat_manager(event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
+                                                               queue_(dispatch_queue_create(nullptr, nullptr)),
+                                                               timer_(0) {
     }
 
     ~key_repeat_manager(void) {
@@ -305,7 +327,7 @@ private:
       }
     }
 
-    void start(krbn::key_code from_key_code, krbn::key_code to_key_code, bool pressed, IOOptionBits flags,
+    void start(krbn::key_code from_key_code, krbn::key_code to_key_code, bool pressed,
                long initial_key_repeat_milliseconds, long key_repeat_milliseconds) {
       // stop key repeat before post key.
       if (pressed) {
@@ -332,7 +354,7 @@ private:
                                     key_repeat_milliseconds * NSEC_PER_MSEC,
                                     0);
           dispatch_source_set_event_handler(timer_, ^{
-            event_dispatcher_manager_.post_key(to_key_code, krbn::event_type::key_down, flags, true);
+            event_manipulator_.post_key(from_key_code, to_key_code, pressed);
           });
           dispatch_resume(timer_);
           from_key_code_ = from_key_code;
@@ -341,7 +363,7 @@ private:
     }
 
   private:
-    event_dispatcher_manager& event_dispatcher_manager_;
+    event_manipulator& event_manipulator_;
 
     dispatch_queue_t queue_;
     dispatch_source_t timer_;
@@ -357,10 +379,16 @@ private:
     if (modifier_flag != krbn::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
-      // We have to post modifier key event via event_dispatcher for some apps (Microsoft Remote Desktop)
-      auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
-      auto flags = modifier_flag_manager_.get_io_option_bits();
-      event_dispatcher_manager_.post_key(key_code, event_type, flags, false);
+      // We have to post modifier key event via CGEventPost for some apps (Microsoft Remote Desktop)
+      if (event_source_) {
+        if (auto cg_key = krbn::types::get_cg_key(key_code)) {
+          if (auto event = CGEventCreateKeyboardEvent(event_source_, static_cast<CGKeyCode>(*cg_key), pressed)) {
+            CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event)));
+            CGEventPost(kCGHIDEventTap, event);
+            CFRelease(event);
+          }
+        }
+      }
 
       // We have to post modifier key event via virtual device driver for mouse events.
       //
@@ -388,25 +416,26 @@ private:
   }
 
   void post_key(krbn::key_code from_key_code, krbn::key_code to_key_code, bool pressed) {
-    auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
-    auto flags = modifier_flag_manager_.get_io_option_bits();
-    event_dispatcher_manager_.post_key(to_key_code, event_type, flags, false);
-
-    long initial_key_repeat_milliseconds = 0;
-    long key_repeat_milliseconds = 0;
-    {
-      std::lock_guard<std::mutex> guard(system_preferences_values_mutex_);
-      initial_key_repeat_milliseconds = system_preferences_values_.get_initial_key_repeat_milliseconds();
-      key_repeat_milliseconds = system_preferences_values_.get_key_repeat_milliseconds();
+    if (event_source_) {
+      if (auto cg_key = krbn::types::get_cg_key(to_key_code)) {
+        if (auto event = CGEventCreateKeyboardEvent(event_source_, static_cast<CGKeyCode>(*cg_key), pressed)) {
+          CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event)));
+          CGEventPost(kCGHIDEventTap, event);
+          CFRelease(event);
+        }
+      }
+      if (auto hid_aux_control_button = krbn::types::get_hid_aux_control_button(to_key_code)) {
+        auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
+        auto flags = modifier_flag_manager_.get_io_option_bits();
+        event_dispatcher_manager_.post_key(to_key_code, event_type, flags, false);
+      }
     }
-
-    key_repeat_manager_.start(from_key_code, to_key_code, pressed, flags,
-                              initial_key_repeat_milliseconds, key_repeat_milliseconds);
   }
 
   event_dispatcher_manager event_dispatcher_manager_;
   virtual_hid_manager_client virtual_hid_manager_client_;
   modifier_flag_manager modifier_flag_manager_;
+  CGEventSourceRef event_source_;
   key_repeat_manager key_repeat_manager_;
 
   system_preferences::values system_preferences_values_;

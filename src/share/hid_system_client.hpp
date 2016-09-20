@@ -63,7 +63,7 @@ public:
       return;
     }
 
-    if (auto key = krbn::types::get_mac_key(key_code)) {
+    if (auto key = krbn::types::get_cg_key(key_code)) {
       post_key(*key, event_type, flags, repeat);
       return;
     }

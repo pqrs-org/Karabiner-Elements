@@ -4,6 +4,7 @@
 
 #include "system_preferences.hpp"
 #include <CoreFoundation/CoreFoundation.h>
+#include <CoreGraphics/CoreGraphics.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
@@ -371,8 +372,8 @@ public:
   }
 
   // hid usage -> mac key code
-  static const std::unordered_map<key_code, uint8_t>& get_mac_key_map(void) {
-    static std::unordered_map<key_code, uint8_t> map;
+  static const std::unordered_map<key_code, CGKeyCode>& get_cg_key_map(void) {
+    static std::unordered_map<key_code, CGKeyCode> map;
     if (map.empty()) {
       map[key_code(kHIDUsage_KeyboardA)] = 0x0;
       map[key_code(kHIDUsage_KeyboardB)] = 0xb;
@@ -480,7 +481,7 @@ public:
       map[key_code(kHIDUsage_KeyboardNonUSBackslash)] = 0xa;
       map[key_code(kHIDUsage_KeyboardApplication)] = 0x6e;
 
-      // map[key_code(kHIDUsage_KeyboardPower)] => get_mac_aux_control_button_map
+      // map[key_code(kHIDUsage_KeyboardPower)] => get_hid_aux_control_button_map
 
       map[key_code(kHIDUsage_KeypadEqualSign)] = 0x51;
 
@@ -508,9 +509,9 @@ public:
       // map[key_code(kHIDUsage_KeyboardCopy)] = mac ignores this key
       // map[key_code(kHIDUsage_KeyboardPaste)] = mac ignores this key
       // map[key_code(kHIDUsage_KeyboardFind)] = mac ignores this key
-      // map[key_code(kHIDUsage_KeyboardMute)] => get_mac_aux_control_button_map
-      // map[key_code(kHIDUsage_KeyboardVolumeUp)] => get_mac_aux_control_button_map
-      // map[key_code(kHIDUsage_KeyboardVolumeDown)] => get_mac_aux_control_button_map
+      // map[key_code(kHIDUsage_KeyboardMute)] => get_hid_aux_control_button_map
+      // map[key_code(kHIDUsage_KeyboardVolumeUp)] => get_hid_aux_control_button_map
+      // map[key_code(kHIDUsage_KeyboardVolumeDown)] => get_hid_aux_control_button_map
 
       // map[key_code(kHIDUsage_KeyboardLockingCapsLock)] => mac ignores this key
       // map[key_code(kHIDUsage_KeyboardLockingNumLock)] => ??
@@ -568,8 +569,8 @@ public:
     return map;
   }
 
-  static boost::optional<uint8_t> get_mac_key(key_code key_code) {
-    auto& map = get_mac_key_map();
+  static boost::optional<CGKeyCode> get_cg_key(key_code key_code) {
+    auto& map = get_cg_key_map();
     auto it = map.find(key_code);
     if (it == map.end()) {
       return boost::none;
@@ -577,7 +578,7 @@ public:
     return it->second;
   }
 
-  static const std::unordered_map<key_code, uint8_t>& get_mac_aux_control_button_map(void) {
+  static const std::unordered_map<key_code, uint8_t>& get_hid_aux_control_button_map(void) {
     static std::unordered_map<key_code, uint8_t> map;
     if (map.empty()) {
       map[key_code(kHIDUsage_KeyboardPower)] = NX_POWER_KEY;
@@ -596,8 +597,8 @@ public:
     return map;
   }
 
-  static boost::optional<uint8_t> get_mac_aux_control_button(key_code key_code) {
-    auto& map = get_mac_aux_control_button_map();
+  static boost::optional<uint8_t> get_hid_aux_control_button(key_code key_code) {
+    auto& map = get_hid_aux_control_button_map();
     auto it = map.find(key_code);
     if (it == map.end()) {
       return boost::none;

@@ -26,7 +26,7 @@ int main(int argc, const char* argv[]) {
 
       std::cout << "shift" << std::endl;
       if (auto key_code = krbn::types::get_key_code("left_shift")) {
-        if (auto mac_key = krbn::types::get_mac_key(*key_code)) {
+        if (auto cg_key = krbn::types::get_mac_key(*cg_code)) {
           client.post_modifier_flags(*mac_key, NX_SHIFTMASK);
           client.post_modifier_flags(*mac_key, 0);
         }
