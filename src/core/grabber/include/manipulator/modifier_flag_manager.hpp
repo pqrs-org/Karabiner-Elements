@@ -149,13 +149,8 @@ public:
     return bits;
   }
 
-  CGEventFlags get_cg_event_flags(CGEventFlags original_flags) const {
-    original_flags = static_cast<CGEventFlags>(original_flags & ~(kCGEventFlagMaskAlphaShift |
-                                                                  kCGEventFlagMaskControl |
-                                                                  kCGEventFlagMaskShift |
-                                                                  kCGEventFlagMaskAlternate |
-                                                                  kCGEventFlagMaskCommand |
-                                                                  kCGEventFlagMaskSecondaryFn));
+  CGEventFlags get_cg_event_flags(krbn::key_code key_code, CGEventFlags original_flags) const {
+    original_flags = static_cast<CGEventFlags>(original_flags & ~(kCGEventFlagMaskAlphaShift | kCGEventFlagMaskControl | kCGEventFlagMaskShift | kCGEventFlagMaskAlternate | kCGEventFlagMaskCommand | kCGEventFlagMaskNumericPad | kCGEventFlagMaskSecondaryFn));
 
     if (pressed(krbn::modifier_flag::caps_lock)) {
       original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskAlphaShift);
@@ -179,6 +174,43 @@ public:
     if (pressed(krbn::modifier_flag::fn)) {
       original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskSecondaryFn);
     }
+
+    // Add kCGEventFlagMaskNumericPad, kCGEventFlagMaskSecondaryFn by key_code
+    // Note:
+    //   Microsoft Remote Client will fail to treat shift-arrow keys unless these flags.
+    switch (key_code) {
+    case krbn::key_code::keypad_slash:
+    case krbn::key_code::keypad_asterisk:
+    case krbn::key_code::keypad_hyphen:
+    case krbn::key_code::keypad_plus:
+    case krbn::key_code::keypad_enter:
+    case krbn::key_code::keypad_1:
+    case krbn::key_code::keypad_2:
+    case krbn::key_code::keypad_3:
+    case krbn::key_code::keypad_4:
+    case krbn::key_code::keypad_5:
+    case krbn::key_code::keypad_6:
+    case krbn::key_code::keypad_7:
+    case krbn::key_code::keypad_8:
+    case krbn::key_code::keypad_9:
+    case krbn::key_code::keypad_0:
+    case krbn::key_code::keypad_period:
+    case krbn::key_code::keypad_equal_sign:
+    case krbn::key_code::keypad_comma:
+      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskNumericPad);
+      break;
+
+    case krbn::key_code::right_arrow:
+    case krbn::key_code::left_arrow:
+    case krbn::key_code::down_arrow:
+    case krbn::key_code::up_arrow:
+      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskNumericPad | kCGEventFlagMaskSecondaryFn);
+      break;
+
+    default:
+      break;
+    }
+
     return original_flags;
   }
 

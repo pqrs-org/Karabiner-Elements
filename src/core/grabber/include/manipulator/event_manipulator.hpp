@@ -383,7 +383,7 @@ private:
       if (event_source_) {
         if (auto cg_key = krbn::types::get_cg_key(key_code)) {
           if (auto event = CGEventCreateKeyboardEvent(event_source_, static_cast<CGKeyCode>(*cg_key), pressed)) {
-            CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event)));
+            CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(key_code, CGEventGetFlags(event)));
             CGEventPost(kCGHIDEventTap, event);
             CFRelease(event);
           }
@@ -419,7 +419,7 @@ private:
     if (event_source_) {
       if (auto cg_key = krbn::types::get_cg_key(to_key_code)) {
         if (auto event = CGEventCreateKeyboardEvent(event_source_, static_cast<CGKeyCode>(*cg_key), pressed)) {
-          CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event)));
+          CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(to_key_code, CGEventGetFlags(event)));
           CGEventPost(kCGHIDEventTap, event);
           CFRelease(event);
         }
