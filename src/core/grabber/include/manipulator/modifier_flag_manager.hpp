@@ -150,29 +150,29 @@ public:
   }
 
   CGEventFlags get_cg_event_flags(krbn::key_code key_code, CGEventFlags original_flags) const {
-    original_flags = static_cast<CGEventFlags>(original_flags & ~(kCGEventFlagMaskAlphaShift | kCGEventFlagMaskControl | kCGEventFlagMaskShift | kCGEventFlagMaskAlternate | kCGEventFlagMaskCommand | kCGEventFlagMaskNumericPad | kCGEventFlagMaskSecondaryFn));
+    original_flags = CGEventFlags(original_flags & ~(kCGEventFlagMaskAlphaShift | kCGEventFlagMaskControl | kCGEventFlagMaskShift | kCGEventFlagMaskAlternate | kCGEventFlagMaskCommand | kCGEventFlagMaskNumericPad | kCGEventFlagMaskSecondaryFn));
 
     if (pressed(krbn::modifier_flag::caps_lock)) {
-      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskAlphaShift);
+      original_flags = CGEventFlags(original_flags | kCGEventFlagMaskAlphaShift);
     }
     if (pressed(krbn::modifier_flag::left_control) ||
         pressed(krbn::modifier_flag::right_control)) {
-      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskControl);
+      original_flags = CGEventFlags(original_flags | kCGEventFlagMaskControl);
     }
     if (pressed(krbn::modifier_flag::left_shift) ||
         pressed(krbn::modifier_flag::right_shift)) {
-      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskShift);
+      original_flags = CGEventFlags(original_flags | kCGEventFlagMaskShift);
     }
     if (pressed(krbn::modifier_flag::left_option) ||
         pressed(krbn::modifier_flag::right_option)) {
-      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskAlternate);
+      original_flags = CGEventFlags(original_flags | kCGEventFlagMaskAlternate);
     }
     if (pressed(krbn::modifier_flag::left_command) ||
         pressed(krbn::modifier_flag::right_command)) {
-      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskCommand);
+      original_flags = CGEventFlags(original_flags | kCGEventFlagMaskCommand);
     }
     if (pressed(krbn::modifier_flag::fn)) {
-      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskSecondaryFn);
+      original_flags = CGEventFlags(original_flags | kCGEventFlagMaskSecondaryFn);
     }
 
     // Add kCGEventFlagMaskNumericPad, kCGEventFlagMaskSecondaryFn by key_code.
@@ -199,14 +199,14 @@ public:
     case krbn::key_code::keypad_period:
     case krbn::key_code::keypad_equal_sign:
     case krbn::key_code::keypad_comma:
-      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskNumericPad);
+      original_flags = CGEventFlags(original_flags | kCGEventFlagMaskNumericPad);
       break;
 
     case krbn::key_code::right_arrow:
     case krbn::key_code::left_arrow:
     case krbn::key_code::down_arrow:
     case krbn::key_code::up_arrow:
-      original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskNumericPad | kCGEventFlagMaskSecondaryFn);
+      original_flags = CGEventFlags(original_flags | kCGEventFlagMaskNumericPad | kCGEventFlagMaskSecondaryFn);
       break;
 
     default:
