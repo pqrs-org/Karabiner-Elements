@@ -100,4 +100,4 @@ curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Ele
 
 The keys (eg. "caps_lock") are defined in types.hpp.
 
-https://github.com/tekezo/Karabiner-Elements/blob/master/src/share/types.hpp#L156-L348
+https://github.com/tekezo/Karabiner-Elements/blob/master/src/share/types.hpp#L177-L369
