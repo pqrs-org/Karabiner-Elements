@@ -58,7 +58,7 @@ Thus, `karabiner_grabber` cannot send events to IOHIDSystem directly.
 IOKit allows you to read raw HID input events from kernel.<br />
 The highest layer is IOHIDQueue which provides us the HID values.
 
-karabiner_grabber uses this method.
+`karabiner_grabber` uses this method.
 
 ## CGEventTapCreate
 
@@ -66,6 +66,9 @@ karabiner_grabber uses this method.
 It does not work with Secure Keyboard Entry even if we use `kCGHIDEventTap` and root privillege.<br />
 Thus, it does not work in Terminal.<br />
 You can confirm this behavior in `appendix/eventtap`.
+
+However, we should modify mouse event's modifier flags manually.
+Thus, `karabiner_grabber` uses this method to modify mouse events.
 
 --------------------------------------------------------------------------------
 
@@ -80,8 +83,8 @@ It requires posting coregraphics events.<br />
 However, there is a limitation that the mouse events will ignore modifier flags by CGEventPost.
 For example, even if we pressed the command key (and the kCGEventFlagMaskCommand is sent by CGEventPost),
 the mouse click event will be treated as click without any modifier flags. (not command+click)
-
-We have to send modifier event via virtual device driver.
+Thus, we should manage the mouse event's modifier flags manually.
+`karabiner_grabber` uses CGEventTapCreate to modify mouse events.
 
 ## IOHIDPostEvent
 
@@ -95,8 +98,9 @@ It requires posting coregraphics events.<br />
 However, there is a limitation that the mouse events will ignore modifier flags by IOHIDPostEvent.
 For example, even if we pressed the command key (and the NX_COMMANDMASK is sent by IOHIDPostEvent),
 the mouse click event will be treated as click without any modifier flags. (not command+click)
+Thus, we should manage the mouse event's modifier flags manually.
+`karabiner_grabber` uses CGEventTapCreate to modify mouse events.
 
-We have to send modifier event via virtual device driver.
 
 ## IOKit device report in kext
 
@@ -107,8 +111,6 @@ However, this method is not enough polite.
 Calling the `handleReport` method directly causes a problem that OS X ignores `EnableSecureEventInput`.
 (The normal privillege EventTap can observe all events even in Secure Keyboard Entry.)
 So we have to reject this approach for security reason.
-
-Due to the limitation of IOHIDPostEvent, we use the virtual device driver for only modifier flags.
 
 ## IOKit device value in kext
 
