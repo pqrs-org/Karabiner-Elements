@@ -6,6 +6,8 @@ namespace {
 CFMachPortRef eventtap_;
 
 CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void* refcon) {
+  std::cout << "CGEventGetFlags 0x" << std::hex << CGEventGetFlags(event) << std::dec << std::endl;
+
   switch (type) {
   case kCGEventKeyDown:
     std::cout << "kCGEventKeyDown" << std::endl;
@@ -40,13 +42,21 @@ int main(int argc, const char* argv[]) {
   eventtap_ = CGEventTapCreate(kCGHIDEventTap,
                                kCGHeadInsertEventTap,
                                kCGEventTapOptionDefault,
-                               CGEventMaskBit(kCGEventKeyDown) | CGEventMaskBit(kCGEventKeyUp),
+                               CGEventMaskBit(kCGEventLeftMouseDown) |
+                               CGEventMaskBit(kCGEventLeftMouseUp) |
+                               CGEventMaskBit(kCGEventRightMouseDown) |
+                               CGEventMaskBit(kCGEventRightMouseUp) |
+                               CGEventMaskBit(kCGEventMouseMoved) |
+                               CGEventMaskBit(kCGEventLeftMouseDragged) |
+                               CGEventMaskBit(kCGEventRightMouseDragged) |
+                               CGEventMaskBit(kCGEventKeyDown) |
+                               CGEventMaskBit(kCGEventKeyUp),
                                callback,
                                nullptr);
 
   auto run_loop_source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventtap_, 0);
   CFRunLoopAddSource(CFRunLoopGetCurrent(), run_loop_source, kCFRunLoopCommonModes);
-  CGEventTapEnable(eventtap_, 1);
+  CGEventTapEnable(eventtap_, true);
   CFRelease(run_loop_source);
 
   CFRunLoopRun();
