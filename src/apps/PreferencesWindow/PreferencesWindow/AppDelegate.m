@@ -21,6 +21,8 @@
                                                           name:[NSString stringWithUTF8String:libkrbn_get_distributed_notification_grabber_is_launched()]
                                                         object:nil
                                             suspensionBehavior:NSNotificationSuspensionBehaviorDeliverImmediately];
+
+  system("open '/Library/Application Support/org.pqrs/Karabiner-Elements/updater/Karabiner-Elements.app'");
 }
 
 - (void)dealloc {
