@@ -73,14 +73,14 @@ You can confirm this behavior in `appendix/eventtap`.
 
 ## CGEventPost
 
-It requires posting mac events.<br />
+It requires posting coregraphics events.<br />
 
 `karabiner_grabber` uses this method to post generic key events.
 
 
 ## IOHIDPostEvent
 
-It requires posting mac events.<br />
+It requires posting coregraphics events.<br />
 
 `IOHIDPostEvent` will be failed if the process is not running in the current session user.
 (The root user is also forbidden.)
@@ -112,7 +112,7 @@ We have to make a complete set of virtual devices to post the IOHIDValue.
 
 ## IOKit call IOHIKeyboard::dispatchKeyboardEvent in kext
 
-It requires posting mac events.<br />
+It requires posting coregraphics events.<br />
 We have to make a complete set of virtual devices to post the IOHIDValue.
 
 --------------------------------------------------------------------------------
