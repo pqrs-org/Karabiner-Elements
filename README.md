@@ -13,6 +13,11 @@ You can download the latest Karabiner-Elements from https://pqrs.org/latest/kara
 
 [Usage](usage/README.md)
 
+## Features
+
+* Simple key modification (change keys to another keys)
+* Support Secure Keyboard Entry (eg. Terminal, Password prompt)
+* Modifier flags sharing with all connected keyboards.
 
 ## How to build
 
