@@ -179,6 +179,7 @@ public:
     //
     // Note:
     //   Microsoft Remote Client will fail to treat shift-arrow keys unless these flags.
+    //   Alfred will fail f16 key as trigger key unless fn flag.
 
     switch (key_code) {
     case krbn::key_code::keypad_slash:
@@ -207,6 +208,33 @@ public:
     case krbn::key_code::down_arrow:
     case krbn::key_code::up_arrow:
       original_flags = CGEventFlags(original_flags | kCGEventFlagMaskNumericPad | kCGEventFlagMaskSecondaryFn);
+      break;
+
+    case krbn::key_code::f1:
+    case krbn::key_code::f2:
+    case krbn::key_code::f3:
+    case krbn::key_code::f4:
+    case krbn::key_code::f5:
+    case krbn::key_code::f6:
+    case krbn::key_code::f7:
+    case krbn::key_code::f8:
+    case krbn::key_code::f9:
+    case krbn::key_code::f10:
+    case krbn::key_code::f11:
+    case krbn::key_code::f12:
+    case krbn::key_code::f13:
+    case krbn::key_code::f14:
+    case krbn::key_code::f15:
+    case krbn::key_code::f16:
+    case krbn::key_code::f17:
+    case krbn::key_code::f18:
+    case krbn::key_code::f19:
+    case krbn::key_code::f20:
+    case krbn::key_code::f21:
+    case krbn::key_code::f22:
+    case krbn::key_code::f23:
+    case krbn::key_code::f24:
+      original_flags = CGEventFlags(original_flags | kCGEventFlagMaskSecondaryFn);
       break;
 
     default:
