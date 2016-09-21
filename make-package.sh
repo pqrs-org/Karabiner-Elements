@@ -29,7 +29,7 @@ basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements"
 mkdir -p "$basedir"
 cp src/scripts/uninstaller.applescript "$basedir"
 cp src/scripts/uninstall.sh "$basedir"
-cp pkginfo/Scripts/preinstall "$basedir/uninstall_core.sh"
+cp src/scripts/uninstall_core.sh "$basedir/uninstall_core.sh"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
