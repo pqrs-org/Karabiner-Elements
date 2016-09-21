@@ -149,7 +149,7 @@ public:
     return bits;
   }
 
-  CGEventFlags get_cg_event_flags(krbn::key_code key_code, CGEventFlags original_flags) const {
+  CGEventFlags get_cg_event_flags(CGEventFlags original_flags, krbn::key_code key_code) const {
     original_flags = CGEventFlags(original_flags & ~(kCGEventFlagMaskAlphaShift | kCGEventFlagMaskControl | kCGEventFlagMaskShift | kCGEventFlagMaskAlternate | kCGEventFlagMaskCommand | kCGEventFlagMaskNumericPad | kCGEventFlagMaskSecondaryFn));
 
     if (pressed(krbn::modifier_flag::caps_lock)) {

@@ -12,6 +12,8 @@
 namespace manipulator {
 class event_dispatcher_manager final {
 public:
+  event_dispatcher_manager(const event_dispatcher_manager&) = delete;
+
   event_dispatcher_manager(void) : exit_loop_(false), pid_(0) {
     thread_ = std::thread([this] { this->worker(); });
   }

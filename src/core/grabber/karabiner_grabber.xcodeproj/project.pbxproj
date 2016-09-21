@@ -50,6 +50,7 @@
 		34A88AA41D69C85600DD480B /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/manipulator/modifier_flag_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88AA61D6DF89900DD480B /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../../share/types.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_tap_manager.hpp; path = include/manipulator/event_tap_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34DA28A21D8FC4410029E37D /* virtual_hid_manager_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_client.hpp; path = ../../share/virtual_hid_manager_client.hpp; sourceTree = SOURCE_ROOT; };
 		34DA28A31D8FC8BE0029E37D /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
 		34DA28A41D8FC96D0029E37D /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = SOURCE_ROOT; };
@@ -131,6 +132,7 @@
 			children = (
 				349950641D891BCF004FE466 /* event_dispatcher_manager.hpp */,
 				349950681D89A25D004FE466 /* event_manipulator.hpp */,
+				34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */,
 				34A88AA41D69C85600DD480B /* modifier_flag_manager.hpp */,
 			);
 			name = manipulator;

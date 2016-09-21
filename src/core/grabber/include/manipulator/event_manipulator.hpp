@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "event_dispatcher_manager.hpp"
+#include "event_tap_manager.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
 #include "modifier_flag_manager.hpp"
@@ -28,6 +29,8 @@ public:
   }
 
   ~event_manipulator(void) {
+    event_tap_manager_ = nullptr;
+
     if (event_source_) {
       CFRelease(event_source_);
       event_source_ = nullptr;
@@ -40,6 +43,14 @@ public:
            event_source_ != nullptr;
   }
 
+  void grab_mouse_events(void) {
+    event_tap_manager_ = std::make_unique<event_tap_manager>(modifier_flag_manager_);
+  }
+
+  void ungrab_mouse_events(void) {
+    event_tap_manager_ = nullptr;
+  }
+
   void reset(void) {
     key_repeat_manager_.stop();
 
@@ -48,8 +59,6 @@ public:
 
     modifier_flag_manager_.reset();
     modifier_flag_manager_.unlock();
-    hid_report::keyboard_input report;
-    virtual_hid_manager_client_.post_keyboard_input_report(report);
 
     event_dispatcher_manager_.set_caps_lock_state(false);
   }
@@ -57,8 +66,6 @@ public:
   void reset_modifier_flag_state(void) {
     modifier_flag_manager_.reset();
     // Do not call modifier_flag_manager_.unlock() here.
-    hid_report::keyboard_input report;
-    virtual_hid_manager_client_.post_keyboard_input_report(report);
   }
 
   void relaunch_event_dispatcher(void) {
@@ -213,6 +220,11 @@ public:
 private:
   class manipulated_keys final {
   public:
+    manipulated_keys(const manipulated_keys&) = delete;
+
+    manipulated_keys(void) {
+    }
+
     void clear(void) {
       std::lock_guard<std::mutex> guard(mutex_);
 
@@ -276,6 +288,11 @@ private:
 
   class simple_modifications final {
   public:
+    simple_modifications(const simple_modifications&) = delete;
+
+    simple_modifications(void) {
+    }
+
     void clear(void) {
       std::lock_guard<std::mutex> guard(mutex_);
 
@@ -306,6 +323,8 @@ private:
 
   class key_repeat_manager final {
   public:
+    key_repeat_manager(const key_repeat_manager&) = delete;
+
     key_repeat_manager(event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
                                                                queue_(dispatch_queue_create(nullptr, nullptr)),
                                                                timer_(0) {
@@ -383,22 +402,12 @@ private:
       if (event_source_) {
         if (auto cg_key = krbn::types::get_cg_key(key_code)) {
           if (auto event = CGEventCreateKeyboardEvent(event_source_, static_cast<CGKeyCode>(*cg_key), pressed)) {
-            CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(key_code, CGEventGetFlags(event)));
+            CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event), key_code));
             CGEventPost(kCGHIDEventTap, event);
             CFRelease(event);
           }
         }
       }
-
-      // We have to post modifier key event via virtual device driver for mouse events.
-      //
-      // Note:
-      // Unproperly usage of virtual device driver causes a security issue.
-      // Please read DEVELOPER.md > IOKit device report in kext.
-      //
-      hid_report::keyboard_input report;
-      report.modifiers = modifier_flag_manager_.get_hid_report_bits();
-      virtual_hid_manager_client_.post_keyboard_input_report(report);
 
       return true;
     }
@@ -419,7 +428,7 @@ private:
     if (event_source_) {
       if (auto cg_key = krbn::types::get_cg_key(to_key_code)) {
         if (auto event = CGEventCreateKeyboardEvent(event_source_, static_cast<CGKeyCode>(*cg_key), pressed)) {
-          CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(to_key_code, CGEventGetFlags(event)));
+          CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event), to_key_code));
           CGEventPost(kCGHIDEventTap, event);
           CFRelease(event);
         }
@@ -437,6 +446,7 @@ private:
   modifier_flag_manager modifier_flag_manager_;
   CGEventSourceRef event_source_;
   key_repeat_manager key_repeat_manager_;
+  std::unique_ptr<event_tap_manager> event_tap_manager_;
 
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;

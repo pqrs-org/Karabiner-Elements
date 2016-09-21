@@ -105,6 +105,7 @@ public:
       }
 
       event_manipulator_.reset();
+      event_manipulator_.grab_mouse_events();
 
       logger::get_logger().info("devices are grabbed");
 
@@ -131,6 +132,7 @@ public:
       }
     }
 
+    event_manipulator_.ungrab_mouse_events();
     event_manipulator_.reset();
 
     logger::get_logger().info("devices are ungrabbed");
