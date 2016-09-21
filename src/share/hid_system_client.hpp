@@ -58,12 +58,12 @@ public:
   }
 
   void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
-    if (auto key = krbn::types::get_hid_aux_control_button(key_code)) {
+    if (auto key = krbn::types::get_hid_system_aux_control_button(key_code)) {
       post_aux_control_button(*key, event_type, flags, repeat);
       return;
     }
 
-    if (auto key = krbn::types::get_cg_key(key_code)) {
+    if (auto key = krbn::types::get_hid_system_key(key_code)) {
       post_key(*key, event_type, flags, repeat);
       return;
     }
