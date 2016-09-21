@@ -77,6 +77,11 @@ It requires posting coregraphics events.<br />
 
 `karabiner_grabber` uses this method to post generic key events.
 
+However, there is a limitation that the mouse events will ignore modifier flags by CGEventPost.
+For example, even if we pressed the command key (and the kCGEventFlagMaskCommand is sent by CGEventPost),
+the mouse click event will be treated as click without any modifier flags. (not command+click)
+
+We have to send modifier event via virtual device driver.
 
 ## IOHIDPostEvent
 
@@ -100,10 +105,10 @@ The IOHIKeyboard processes the reports by passing reports to `handleReport`.
 
 However, this method is not enough polite.
 Calling the `handleReport` method directly causes a problem that OS X ignores `EnableSecureEventInput`.
+(The normal privillege EventTap can observe all events even in Secure Keyboard Entry.)
 So we have to reject this approach for security reason.
 
 Due to the limitation of IOHIDPostEvent, we use the virtual device driver for only modifier flags.
-
 
 ## IOKit device value in kext
 
