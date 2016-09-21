@@ -175,9 +175,11 @@ public:
       original_flags = static_cast<CGEventFlags>(original_flags | kCGEventFlagMaskSecondaryFn);
     }
 
-    // Add kCGEventFlagMaskNumericPad, kCGEventFlagMaskSecondaryFn by key_code
+    // Add kCGEventFlagMaskNumericPad, kCGEventFlagMaskSecondaryFn by key_code.
+    //
     // Note:
     //   Microsoft Remote Client will fail to treat shift-arrow keys unless these flags.
+
     switch (key_code) {
     case krbn::key_code::keypad_slash:
     case krbn::key_code::keypad_asterisk:
