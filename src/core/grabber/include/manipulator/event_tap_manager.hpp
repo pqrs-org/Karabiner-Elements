@@ -72,7 +72,9 @@ private:
   }
 
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
-    CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event), krbn::key_code::vk_none));
+    if (event) {
+      CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event), krbn::key_code::vk_none));
+    }
     return event;
   }
 
