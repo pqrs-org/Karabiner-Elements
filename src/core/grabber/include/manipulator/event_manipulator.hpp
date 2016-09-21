@@ -9,7 +9,6 @@
 #include "modifier_flag_manager.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
-#include "virtual_hid_manager_client.hpp"
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <boost/optional.hpp>
 #include <list>
@@ -22,7 +21,6 @@ public:
   event_manipulator(const event_manipulator&) = delete;
 
   event_manipulator(void) : event_dispatcher_manager_(),
-                            virtual_hid_manager_client_(logger::get_logger()),
                             event_source_(CGEventSourceCreate(kCGEventSourceStateHIDSystemState)),
                             modifier_flag_manager_(),
                             key_repeat_manager_(*this) {
@@ -38,8 +36,7 @@ public:
   }
 
   bool is_ready(void) {
-    return virtual_hid_manager_client_.is_connected() &&
-           event_dispatcher_manager_.is_connected() &&
+    return event_dispatcher_manager_.is_connected() &&
            event_source_ != nullptr;
   }
 
@@ -442,7 +439,6 @@ private:
   }
 
   event_dispatcher_manager event_dispatcher_manager_;
-  virtual_hid_manager_client virtual_hid_manager_client_;
   modifier_flag_manager modifier_flag_manager_;
   CGEventSourceRef event_source_;
   key_repeat_manager key_repeat_manager_;
