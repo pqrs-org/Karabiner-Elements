@@ -71,17 +71,17 @@ public:
         return;
       }
 
-      const char* warning_message = nullptr;
+      std::string warning_message;
 
       if (!event_manipulator_.is_ready()) {
         warning_message = "event_manipulator_ is not ready. Please wait for a while.";
       }
 
-      if (get_all_devices_pressed_keys_count() > 0) {
-        warning_message = "There are pressed down keys in some devices. Please release them.";
+      if (auto product_name = get_key_pressed_device_product_name()) {
+        warning_message = std::string("There are pressed down keys in ") + *product_name + ". Please release them.";
       }
 
-      if (warning_message) {
+      if (!warning_message.empty()) {
         auto time = ::time(nullptr);
         if (last_warning_message_time != time) {
           last_warning_message_time = time;
@@ -324,6 +324,22 @@ private:
     if (get_all_devices_pressed_keys_count() == 0) {
       event_manipulator_.reset_modifier_flag_state();
     }
+  }
+
+  boost::optional<std::string> get_key_pressed_device_product_name(void) {
+    std::lock_guard<std::mutex> guard(hids_mutex_);
+
+    for (const auto& it : hids_) {
+      if ((it.second)->get_pressed_keys_count() > 0) {
+        if (auto product = (it.second)->get_product()) {
+          return *product;
+        } else {
+          return std::string("(no product name)");
+        }
+      }
+    }
+
+    return boost::none;
   }
 
   size_t get_all_devices_pressed_keys_count(void) {
