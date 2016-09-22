@@ -1,0 +1,15 @@
+{
+    "profiles": [
+        {
+            "name": "Default profile",
+            "selected": true,
+            "simple_modifications": {
+                "left_command": "left_control",
+                "right_command": "right_control",
+                "left_option": "left_command",
+                "right_option": "right_command",
+                "left_control": "left_option"
+            }
+        }
+    ]
+}
