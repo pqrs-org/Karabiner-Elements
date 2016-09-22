@@ -31,19 +31,21 @@
 
       self.currentTime.stringValue = [formatter stringFromDate:[NSDate date]];
 
-      NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-      NSDate* fileModificationDate = [attributes fileModificationDate];
-      if (!fileModificationDate) {
-        return;
-      }
+      if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+        NSDate* fileModificationDate = [attributes fileModificationDate];
+        if (!fileModificationDate) {
+          return;
+        }
 
-      if (self.fileModificationDate == nil ||
-          ![self.fileModificationDate isEqualToDate:fileModificationDate]) {
-        self.fileModificationDate = fileModificationDate;
-        self.textView.string = [NSString stringWithContentsOfFile:filePath
-                                                         encoding:NSUTF8StringEncoding
-                                                            error:nil];
-        [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
+        if (self.fileModificationDate == nil ||
+            ![self.fileModificationDate isEqualToDate:fileModificationDate]) {
+          self.fileModificationDate = fileModificationDate;
+          self.textView.string = [NSString stringWithContentsOfFile:filePath
+                                                           encoding:NSUTF8StringEncoding
+                                                              error:nil];
+          [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
+        }
       }
     });
     dispatch_resume(self.timer);
