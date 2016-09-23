@@ -570,7 +570,7 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                         </box>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="O5H-Qe-BvI">
                                             <rect key="frame" x="15" y="194" width="280" height="17"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="~/.karabiner.d/log/console_user_server_log.txt" id="byo-Qj-XKk">
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="~/Library/Logs/Karabiner-Elements/console_user_server_log.txt" id="byo-Qj-XKk">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

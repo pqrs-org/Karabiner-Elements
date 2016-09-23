@@ -16,7 +16,9 @@
   self.versionLabel.stringValue = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
 
   [self.grabberLogFileTextViewController monitor:@"/var/log/karabiner/grabber_log.txt"];
-  [self.consoleUserServerLogFileTextViewController monitor:[NSString stringWithFormat:@"%@/.karabiner.d/log/console_user_server_log.txt", NSHomeDirectory()]];
+  NSString* logPath = [NSString stringWithFormat:@"%@/Library/Logs/Karabiner-Elements/console_user_server_log.txt",
+                       NSHomeDirectory()];
+  [self.consoleUserServerLogFileTextViewController monitor:logPath];
 
   [self launchctlConsoleUserServer:YES];
 }
