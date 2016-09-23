@@ -316,11 +316,19 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0WE-kI-jqf">
-                                            <rect key="frame" x="193" y="202" width="368" height="34"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="uVC-62-ghX">
+                                            <rect key="frame" x="182" y="134" width="392" height="170"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" id="uVC-62-ghX">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">You will be able to change keys in this pane.
-Please modify karabiner.json by a text editor at the moment.</string>
+Please modify karabiner.json by a text editor at the moment.
+
+To modify karabiner.json, open terminal.
+Then, write these commands and press Enter in the given order:
+
+1. mkdir -p ~/.karabiner.d/configuration/
+2. cd ~/.karabiner.d/configuration/
+3. touch karabiner.json
+4. open karabiner.json</string>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
