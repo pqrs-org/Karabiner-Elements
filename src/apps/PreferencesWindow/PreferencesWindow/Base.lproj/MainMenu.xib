@@ -312,15 +312,15 @@
                         <tabViewItems>
                             <tabViewItem label="Simple Modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="554" height="298"/>
+                                    <rect key="frame" x="10" y="33" width="754" height="438"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0WE-kI-jqf">
-                                            <rect key="frame" x="193" y="202" width="368" height="34"/>
+                                            <rect key="frame" x="102" y="202" width="551" height="34"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="uVC-62-ghX">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">You will be able to change keys in this pane.
-Please modify karabiner.json by a text editor at the moment.</string>
+Please modify  ~/.config/karabiner-elements/karabiner.json by a text editor at the moment.</string>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -350,11 +350,11 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="srp-gY-aJd">
-                                            <rect key="frame" x="170" y="202" width="414" height="34"/>
+                                            <rect key="frame" x="102" y="202" width="551" height="34"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="2O9-UT-lW5">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">You will be able to map media controls to function keys in this pane.
-Please modify karabiner.json by a text editor at the moment.</string>
+Please modify  ~/.config/karabiner-elements/karabiner.json by a text editor at the moment.</string>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -570,7 +570,7 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                         </box>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="O5H-Qe-BvI">
                                             <rect key="frame" x="15" y="194" width="280" height="17"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="~/.karabiner.d/log/console_user_server_log.txt" id="byo-Qj-XKk">
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="~/Library/Logs/Karabiner-Elements/console_user_server_log.txt" id="byo-Qj-XKk">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

@@ -55,13 +55,12 @@ private:
     context.info = this;
 
     // kFSEventStreamCreateFlagWatchRoot and kFSEventStreamCreateFlagFileEvents are required in the following case.
-    // (When directory == ~/.karabiner.d/configuration, file == ~/.karabiner.d/configuration/xxx.json)
+    // (When directory == ~/.config/karabiner-elements, file == ~/.config/karabiner-elements/xxx.json)
     //
-    // $ mkdir ~/.karabiner.d/configuration
-    // $ touch ~/.karabiner.d/configuration/xxx.json
-    // $ mv ~/.karabiner.d/configuration ~/.karabiner.d/configuration.back
-    // $ ln -s ~/file-synchronisation-service/karabiner.d/configuration ~/.karabiner.d/
-    // $ touch ~/.karabiner.d/configuration/xxx.json
+    // $ mkdir ~/.config/karabiner-elements
+    // $ touch ~/.config/karabiner-elements/xxx.json
+    // $ mv ~/.config/karabiner-elements ~/.config/karabiner-elements.back
+    // $ touch ~/.config/karabiner-elements/xxx.json
 
     auto flags = FSEventStreamCreateFlags(0);
     flags |= kFSEventStreamCreateFlagWatchRoot;

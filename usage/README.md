@@ -38,7 +38,7 @@ You can uninstall Karabiner-Elements from Misc tab.
 
 At the moment, you have to edit the configuration file by hand.
 
-The configuration file is located in `~/.karabiner.d/configuration/karabiner.json`
+The configuration file is located in `~/.config/karabiner-elements/karabiner.json`
 
 ## An example of karabiner.json
 
@@ -67,32 +67,32 @@ The configuration file is located in `~/.karabiner.d/configuration/karabiner.jso
 If you want change caps lock to delete key, execute the following commands in Terminal.
 
 ```shell
-mkdir -p ~/.karabiner.d/configuration/
-cd ~/.karabiner.d/configuration/
+mkdir -p ~/.config/karabiner-elements/
+cd ~/.config/karabiner-elements/
 curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/change_caps_lock_to_delete.json
 ```
 
 ### change caps lock to escape
 
 ```shell
-mkdir -p ~/.karabiner.d/configuration/
-cd ~/.karabiner.d/configuration/
+mkdir -p ~/.config/karabiner-elements/
+cd ~/.config/karabiner-elements/
 curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/change_caps_lock_to_escape.json
 ```
 
 ### swap caps lock and delete
 
 ```shell
-mkdir -p ~/.karabiner.d/configuration/
-cd ~/.karabiner.d/configuration/
+mkdir -p ~/.config/karabiner-elements/
+cd ~/.config/karabiner-elements/
 curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/swap_caps_lock_and_delete.json
 ```
 
 ### swap caps lock and escape
 
 ```shell
-mkdir -p ~/.karabiner.d/configuration/
-cd ~/.karabiner.d/configuration/
+mkdir -p ~/.config/karabiner-elements/
+cd ~/.config/karabiner-elements/
 curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/swap_caps_lock_and_escape.json
 ```
 
