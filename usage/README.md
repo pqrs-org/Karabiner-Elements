@@ -92,7 +92,17 @@ Lets say, in addition to Caps Lock mapping, we want to map left Command `⌘ ` k
 }
 ```
 
+## The key definition
+
+You need key definitions to map keys. For example you should know Caps Lock `⇪ ` key is `caps_lock`.
+
+The keys (eg. "caps_lock") are defined in types.hpp.
+
+https://github.com/tekezo/Karabiner-Elements/blob/master/src/share/types.hpp#L177-L369
+
 ## Typical configuration files
+
+Following are few configuration files that will help you get started. Use them as it is or mix the rules as per your need.
 
 * [Change caps lock to delete](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_caps_lock_to_delete.json)
 * [Change caps lock to escape](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_caps_lock_to_escape.json)
@@ -101,41 +111,3 @@ Lets say, in addition to Caps Lock mapping, we want to map left Command `⌘ ` k
 * [Change section key `§` with accent key ``` ` ```](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_section_key_to_accent_key.json)
 * [Change menu key `≣` with Option (alt) `⌥` key](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_menu_key_to_option_key.json)
 
-If you want change caps lock to delete key, execute the following commands in Terminal.
-
-```shell
-mkdir -p ~/.karabiner.d/configuration/
-cd ~/.karabiner.d/configuration/
-curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/change_caps_lock_to_delete.json
-```
-
-### change caps lock to escape
-
-```shell
-mkdir -p ~/.karabiner.d/configuration/
-cd ~/.karabiner.d/configuration/
-curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/change_caps_lock_to_escape.json
-```
-
-### swap caps lock and delete
-
-```shell
-mkdir -p ~/.karabiner.d/configuration/
-cd ~/.karabiner.d/configuration/
-curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/swap_caps_lock_and_delete.json
-```
-
-### swap caps lock and escape
-
-```shell
-mkdir -p ~/.karabiner.d/configuration/
-cd ~/.karabiner.d/configuration/
-curl -L -o karabiner.json https://raw.githubusercontent.com/tekezo/Karabiner-Elements/master/examples/swap_caps_lock_and_escape.json
-```
-
-
-## The key definition
-
-The keys (eg. "caps_lock") are defined in types.hpp.
-
-https://github.com/tekezo/Karabiner-Elements/blob/master/src/share/types.hpp#L177-L369
