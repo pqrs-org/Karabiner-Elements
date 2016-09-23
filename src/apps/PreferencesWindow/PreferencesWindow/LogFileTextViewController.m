@@ -33,6 +33,10 @@
 
       if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+        if (!attributes) {
+          return;
+        }
+
         NSDate* fileModificationDate = [attributes fileModificationDate];
         if (!fileModificationDate) {
           return;
@@ -41,9 +45,14 @@
         if (self.fileModificationDate == nil ||
             ![self.fileModificationDate isEqualToDate:fileModificationDate]) {
           self.fileModificationDate = fileModificationDate;
-          self.textView.string = [NSString stringWithContentsOfFile:filePath
-                                                           encoding:NSUTF8StringEncoding
-                                                              error:nil];
+          NSString* contents = [NSString stringWithContentsOfFile:filePath
+                                                         encoding:NSUTF8StringEncoding
+                                                            error:nil];
+          if (!contents) {
+            return;
+          }
+
+          self.textView.string = contents;
           [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
         }
       }
