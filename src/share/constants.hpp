@@ -23,7 +23,7 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_event_dispatcher_receiver";
   }
 
-  static const char* get_home_dot_karabiner_directory(void) {
+  static const char* get_configuration_directory(void) {
     static std::mutex mutex;
     static bool once = false;
     static std::string directory;
@@ -34,7 +34,7 @@ public:
       once = true;
       if (auto p = std::getenv("HOME")) {
         directory = p;
-        directory += "/.karabiner.d";
+        directory += "/.config/karabiner-elements";
       }
     }
 
@@ -45,7 +45,7 @@ public:
     }
   }
 
-  static const char* get_configuration_directory(void) {
+  static const char* get_logging_directory(void) {
     static std::mutex mutex;
     static bool once = false;
     static std::string directory;
@@ -54,9 +54,9 @@ public:
 
     if (!once) {
       once = true;
-      if (auto p = get_home_dot_karabiner_directory()) {
+      if (auto p = std::getenv("HOME")) {
         directory = p;
-        directory += "/configuration";
+        directory += "/Library/Logs/Karabiner-Elements";
       }
     }
 

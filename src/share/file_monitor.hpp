@@ -60,7 +60,6 @@ private:
     // $ mkdir ~/.config/karabiner-elements
     // $ touch ~/.config/karabiner-elements/xxx.json
     // $ mv ~/.config/karabiner-elements ~/.config/karabiner-elements.back
-    // $ ln -s ~/file-synchronisation-service/karabiner.d/configuration ~/.karabiner.d/
     // $ touch ~/.config/karabiner-elements/xxx.json
 
     auto flags = FSEventStreamCreateFlags(0);

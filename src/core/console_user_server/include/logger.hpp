@@ -11,11 +11,8 @@ public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
-      if (auto p = constants::get_home_dot_karabiner_directory()) {
+      if (auto p = constants::get_logging_directory()) {
         std::string log_directory = p;
-        mkdir(log_directory.c_str(), 0700);
-
-        log_directory += "/log/";
         mkdir(log_directory.c_str(), 0700);
 
         if (filesystem::is_directory(log_directory)) {
