@@ -34,13 +34,30 @@ You can uninstall Karabiner-Elements from Misc tab.
 
 <img src="img/uninstall.png" width="400">
 
-# Change Key
+# How to configure Karabiner-Elements
 
 At the moment, you have to edit the configuration file by hand.
 
 The configuration file is located in `~/.karabiner.d/configuration/karabiner.json`
 
+You have to create this file manually.
+
+## How to create karabiner.json
+
+Open your terminal and issues these commands in the give order.
+
+1. `mkdir -p ~/.karabiner.d/configuration/`
+2. `cd ~/.karabiner.d/configuration/`
+3. `touch karabiner.json`
+4. `open karabiner.json`
+
+This should open `karabiner.json` in your default text editor.
+
 ## An example of karabiner.json
+
+`karabiner.json` uses `json` syntax. If you are not familiar with it, it may help to [read on it](http://www.w3schools.com/json/) before hand.
+
+Following is an example configuration. It maps Caps Lock `⇪ ` key to Delete `⌫ ` key.
 
 ```json
 {
@@ -50,6 +67,25 @@ The configuration file is located in `~/.karabiner.d/configuration/karabiner.jso
             "selected": true,
             "simple_modifications": {
                 "caps_lock": "delete"
+            }
+        }
+    ]
+}
+```
+
+All maping rules must be placed between `"simple_modifications": {` and `}`. Rules are separated by comma.
+
+Lets say, in addition to Caps Lock mapping, we want to map left Command `⌘ ` key to Control `⌃ ` key, we will add new rule under `caps_lock` rule.
+
+```json
+{
+    "profiles": [
+        {
+            "name": "Default profile",
+            "selected": true,
+            "simple_modifications": {
+                "caps_lock": "delete",
+                "left_command": "left_control"
             }
         }
     ]
