@@ -32,7 +32,10 @@ public:
 
     if (!once) {
       once = true;
-      if (auto p = std::getenv("HOME")) {
+      if (auto x = std::getenv("XDG_CONFIG_HOME")) {
+        directory = x;
+        directory += "/karabiner-elements";
+      } else if (auto p = std::getenv("HOME")) {
         directory = p;
         directory += "/.config/karabiner-elements";
       }
