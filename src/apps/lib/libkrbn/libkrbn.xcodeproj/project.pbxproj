@@ -10,6 +10,9 @@
 		347113051D8704B7001AC60D /* libkrbn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 347113031D8704B7001AC60D /* libkrbn.cpp */; };
 		347113081D870834001AC60D /* libkrbn.h in Headers */ = {isa = PBXBuildFile; fileRef = 347113071D870834001AC60D /* libkrbn.h */; };
 		3471130C1D87092D001AC60D /* constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3471130B1D87092D001AC60D /* constants.hpp */; };
+		34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */; };
+		34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC701D9663EC004C61E1 /* log_monitor.hpp */; };
+		34CFEC731D9663F6004C61E1 /* spdlog_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -17,6 +20,9 @@
 		347113031D8704B7001AC60D /* libkrbn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn.cpp; sourceTree = "<group>"; };
 		347113071D870834001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libkrbn.h; sourceTree = "<group>"; };
 		3471130B1D87092D001AC60D /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../../share/constants.hpp; sourceTree = "<group>"; };
+		34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_monitor.hpp; path = ../../../share/file_monitor.hpp; sourceTree = "<group>"; };
+		34CFEC701D9663EC004C61E1 /* log_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = log_monitor.hpp; path = ../../../share/log_monitor.hpp; sourceTree = "<group>"; };
+		34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = spdlog_utility.hpp; path = ../../../share/spdlog_utility.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +66,9 @@
 			isa = PBXGroup;
 			children = (
 				3471130B1D87092D001AC60D /* constants.hpp */,
+				34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */,
+				34CFEC701D9663EC004C61E1 /* log_monitor.hpp */,
+				34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -72,7 +81,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				3471130C1D87092D001AC60D /* constants.hpp in Headers */,
+				34CFEC731D9663F6004C61E1 /* spdlog_utility.hpp in Headers */,
 				347113081D870834001AC60D /* libkrbn.h in Headers */,
+				34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */,
+				34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,6 +190,11 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../../vendor,
+					/opt/local/include,
+					/usr/local/include,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;

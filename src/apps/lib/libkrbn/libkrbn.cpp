@@ -1,5 +1,6 @@
 #include "libkrbn.h"
 #include "constants.hpp"
+#include "log_monitor.hpp"
 #include <thread>
 #include <vector>
 
