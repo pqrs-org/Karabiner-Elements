@@ -17,10 +17,6 @@ public:
          }) {
       add_lines(file_path);
     }
-
-    for (const auto& it : lines_) {
-      std::cout << it.second << std::endl;
-    }
   }
 
 private:
