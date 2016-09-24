@@ -6,7 +6,7 @@
 #include <boost/optional.hpp>
 #include <iomanip>
 
-class spdlog_utility {
+class spdlog_utility final {
 public:
   static boost::optional<uint64_t> get_sort_key(const std::string& line) {
     // line == "[2016-09-22 20:18:37.649] [grabber] [info] version 0.90.36"
