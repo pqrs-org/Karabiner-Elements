@@ -4,7 +4,7 @@
 #include "filesystem.hpp"
 #include "spdlog_utility.hpp"
 #include <fstream>
-#include <list>
+#include <vector>
 #include <spdlog/spdlog.h>
 #include <thread>
 
@@ -68,7 +68,7 @@ public:
     dispatch_release(queue_);
   }
 
-  const std::list<std::pair<uint64_t, std::string>>& get_initial_lines(void) const {
+  const std::vector<std::pair<uint64_t, std::string>>& get_initial_lines(void) const {
     return initial_lines_;
   }
 
@@ -82,7 +82,7 @@ private:
       if (add_initial_line(line)) {
         const size_t max_initial_lines = 250;
         while (initial_lines_.size() > max_initial_lines) {
-          initial_lines_.pop_front();
+          initial_lines_.erase(initial_lines_.begin());
         }
       }
       read_position = stream.tellg();
@@ -161,7 +161,7 @@ private:
   dispatch_queue_t queue_;
   dispatch_source_t timer_;
 
-  std::list<std::pair<uint64_t, std::string>> initial_lines_;
+  std::vector<std::pair<uint64_t, std::string>> initial_lines_;
   std::unordered_map<std::string, std::streampos> read_position_;
   std::vector<std::string> files_;
 };
