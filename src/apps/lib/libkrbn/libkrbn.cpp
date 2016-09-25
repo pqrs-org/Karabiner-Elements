@@ -1,6 +1,7 @@
 #include "libkrbn.h"
 #include "constants.hpp"
 #include "log_monitor.hpp"
+#include <iostream>
 #include <spdlog/spdlog.h>
 #include <thread>
 #include <vector>
@@ -69,7 +70,7 @@ class libkrbn_log_monitor_class {
 public:
   libkrbn_log_monitor_class(const libkrbn_log_monitor_class&) = delete;
 
-  libkrbn_log_monitor_class(libkrbn_log_monitor_callback callback) : callback_(callback) {
+  libkrbn_log_monitor_class(libkrbn_log_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
     std::vector<std::string> targets = {
         "/var/log/karabiner/grabber_log",
         "/var/log/karabiner/event_dispatcher_log",
@@ -87,24 +88,29 @@ public:
     return log_monitor_->get_initial_lines();
   }
 
+  void start(void) {
+    log_monitor_->start();
+  }
+
 private:
   void cpp_callback(const std::string& line) {
     if (callback_) {
-      callback_(line.c_str());
+      callback_(line.c_str(), refcon_);
     }
   }
 
   libkrbn_log_monitor_callback callback_;
+  void* refcon_;
 
   std::unique_ptr<log_monitor> log_monitor_;
 };
 
-bool libkrbn_log_monitor_initialize(libkrbn_log_monitor** out, libkrbn_log_monitor_callback callback) {
+bool libkrbn_log_monitor_initialize(libkrbn_log_monitor** out, libkrbn_log_monitor_callback callback, void* refcon) {
   if (!out) return false;
   // return if already initialized.
   if (*out) return false;
 
-  *out = reinterpret_cast<libkrbn_log_monitor*>(new libkrbn_log_monitor_class(callback));
+  *out = reinterpret_cast<libkrbn_log_monitor*>(new libkrbn_log_monitor_class(callback, refcon));
   return true;
 }
 
@@ -137,4 +143,13 @@ const char* libkrbn_log_monitor_initial_line(libkrbn_log_monitor* p, size_t inde
   }
 
   return initial_lines[index].second.c_str();
+}
+
+void libkrbn_log_monitor_start(libkrbn_log_monitor* p) {
+  auto log_monitor = reinterpret_cast<libkrbn_log_monitor_class*>(p);
+  if (!log_monitor) {
+    return;
+  }
+
+  log_monitor->start();
 }
