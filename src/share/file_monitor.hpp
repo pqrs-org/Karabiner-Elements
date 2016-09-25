@@ -29,11 +29,7 @@ public:
           CFArrayAppendValue(directories_, directory);
           CFRelease(directory);
 
-          for (const auto& file : target.second) {
-            auto f = file;
-            filesystem::normalize_file_path(f);
-            files_.push_back(f);
-          }
+          files_ = target.second;
         }
       }
       register_stream();
@@ -121,13 +117,17 @@ private:
         register_stream();
 
       } else {
-        std::string path = event_paths[i];
-        filesystem::normalize_file_path(path);
+        // FSEvent passes realpathed file path to callback.
+        // Thus, we have to compare realpathed file paths.
 
-        for (const auto& file : files_) {
-          if (file == path) {
-            if (callback_) {
-              callback_(path);
+        if (auto event_path = filesystem::realpath(event_paths[i])) {
+          for (const auto& file : files_) {
+            if (auto path = filesystem::realpath(file)) {
+              if (*event_path == *path) {
+                if (callback_) {
+                  callback_(*event_path);
+                }
+              }
             }
           }
         }
