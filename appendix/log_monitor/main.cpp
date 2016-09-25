@@ -15,8 +15,25 @@ public:
   }
 };
 
+namespace {
+  void new_log_line_callback(const std::string& line) {
+    std::cout << line << std::endl;
+  }
+}
+
 int main(int argc, const char* argv[]) {
-  log_monitor d;
+  std::vector<std::string> targets = {
+    "/var/log/karabiner/grabber_log",
+    "/var/log/karabiner/event_dispatcher_log",
+  };
+  log_monitor d(logger::get_logger(), targets, new_log_line_callback);
+
+#if 0
+  for (const auto& it : d.get_initial_lines()) {
+    std::cout << it.second << std::endl;
+  }
+#endif
+
   CFRunLoopRun();
   return 0;
 }
