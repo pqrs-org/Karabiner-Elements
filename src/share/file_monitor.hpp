@@ -117,7 +117,7 @@ private:
         register_stream();
 
       } else {
-        // FSEvent passes realpathed file path to callback.
+        // FSEvents passes realpathed file path to callback.
         // Thus, we have to compare realpathed file paths.
 
         if (auto event_path = filesystem::realpath(event_paths[i])) {
