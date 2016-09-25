@@ -37,12 +37,17 @@ public:
           }
         }
       });
-
       dispatch_resume(timer_);
     }
   }
 
   ~connection_manager(void) {
+    if (timer_) {
+      dispatch_source_cancel(timer_);
+      dispatch_release(timer_);
+      timer_ = 0;
+    }
+
     receiver_ = nullptr;
 
     dispatch_release(queue_);
