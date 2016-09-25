@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "filesystem.hpp"
+#include <boost/optional/optional_io.hpp>
 
 TEST_CASE("dirname") {
   REQUIRE(filesystem::dirname("/usr/bin/ls") == "/usr/bin");
@@ -121,4 +122,15 @@ TEST_CASE("normalize_file_path") {
   file_path = "a/../..////../b/c";
   filesystem::normalize_file_path(file_path);
   REQUIRE(file_path == "../../b/c");
+}
+
+TEST_CASE("realpath") {
+  auto actual = filesystem::realpath("/bin/ls");
+  REQUIRE(*actual == "/bin/ls");
+
+  actual = filesystem::realpath("/var/log/not_found");
+  REQUIRE(actual == boost::none);
+
+  actual = filesystem::realpath("/var/log/system.log");
+  REQUIRE(*actual == "/private/var/log/system.log");
 }

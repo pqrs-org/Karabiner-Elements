@@ -1,5 +1,9 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
+#include <array>
+#include <boost/optional.hpp>
 #include <string>
 #include <sys/stat.h>
 
@@ -80,6 +84,14 @@ public:
     }
 
     path.resize(dest);
+  }
+
+  static boost::optional<std::string> realpath(const std::string& path) {
+    std::array<char, PATH_MAX> resolved_path;
+    if (!::realpath(path.c_str(), &(resolved_path[0]))) {
+      return boost::none;
+    }
+    return std::string(&(resolved_path[0]));
   }
 
 private:
