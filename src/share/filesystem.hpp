@@ -14,6 +14,14 @@ public:
     return (stat(path.c_str(), &s) == 0);
   }
 
+  static boost::optional<off_t> file_size(const std::string& path) {
+    struct stat s;
+    if (stat(path.c_str(), &s) != 0) {
+      return boost::none;
+    }
+    return s.st_size;
+  }
+
   static bool is_directory(const std::string& path) {
     struct stat s;
     if (stat(path.c_str(), &s) == 0) {
