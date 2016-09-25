@@ -4,8 +4,7 @@
 
 @interface PreferencesWindowController ()
 
-@property(weak) IBOutlet LogFileTextViewController* consoleUserServerLogFileTextViewController;
-@property(weak) IBOutlet LogFileTextViewController* grabberLogFileTextViewController;
+@property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
 @property(weak) IBOutlet NSTextField* versionLabel;
 
 @end
@@ -15,8 +14,7 @@
 - (void)setup {
   self.versionLabel.stringValue = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
 
-  [self.grabberLogFileTextViewController monitor:@"/var/log/karabiner/grabber_log.txt"];
-  [self.consoleUserServerLogFileTextViewController monitor:[NSString stringWithFormat:@"%@/.karabiner.d/log/console_user_server_log.txt", NSHomeDirectory()]];
+  [self.logFileTextViewController monitor];
 
   [self launchctlConsoleUserServer:YES];
 }

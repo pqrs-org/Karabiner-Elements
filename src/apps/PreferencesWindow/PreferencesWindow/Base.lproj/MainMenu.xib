@@ -17,22 +17,15 @@
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
             </connections>
         </customObject>
-        <customObject id="Dgl-Py-BWv" customClass="LogFileTextViewController">
-            <connections>
-                <outlet property="currentTime" destination="ps3-gC-A4S" id="Lbv-FS-1JU"/>
-                <outlet property="textView" destination="vyq-xs-cqF" id="w2u-ge-mVT"/>
-            </connections>
-        </customObject>
         <customObject id="wKd-bU-aLe" customClass="LogFileTextViewController">
             <connections>
                 <outlet property="currentTime" destination="WXq-hw-PS5" id="1cb-f1-Tq3"/>
-                <outlet property="textView" destination="FCD-qq-ne2" id="JaP-FC-B88"/>
+                <outlet property="textView" destination="vyq-xs-cqF" id="y0H-dx-CaG"/>
             </connections>
         </customObject>
         <customObject id="5ke-qB-Wr5" customClass="PreferencesWindowController">
             <connections>
-                <outlet property="consoleUserServerLogFileTextViewController" destination="wKd-bU-aLe" id="0HF-x6-hSp"/>
-                <outlet property="grabberLogFileTextViewController" destination="Dgl-Py-BWv" id="UrC-nq-BS8"/>
+                <outlet property="logFileTextViewController" destination="wKd-bU-aLe" id="432-Fh-vee"/>
                 <outlet property="versionLabel" destination="sau-jf-Dqb" id="maD-61-nBB"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="rSZ-Ih-Gbv"/>
             </connections>
@@ -316,7 +309,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0WE-kI-jqf">
-                                            <rect key="frame" x="182" y="134" width="392" height="170"/>
+                                            <rect key="frame" x="181" y="134" width="392" height="170"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" id="uVC-62-ghX">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">You will be able to change keys in this pane.
@@ -513,33 +506,25 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Logs" identifier="" id="0dg-UV-jta">
+                            <tabViewItem label="Log" identifier="" id="0dg-UV-jta">
                                 <view key="view" id="Osp-HS-cfM">
                                     <rect key="frame" x="10" y="33" width="754" height="438"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jGV-Pr-8As">
-                                            <rect key="frame" x="15" y="413" width="207" height="17"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="/var/log/karabiner/grabber_log.txt" id="zEn-bG-kO2">
-                                                <font key="font" metaFont="system"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
                                         <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T7K-bf-5ph">
-                                            <rect key="frame" x="27" y="250" width="710" height="155"/>
+                                            <rect key="frame" x="17" y="48" width="720" height="382"/>
                                             <clipView key="contentView" id="h3K-SC-sFn">
-                                                <rect key="frame" x="1" y="1" width="693" height="153"/>
+                                                <rect key="frame" x="1" y="1" width="703" height="380"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textView importsGraphics="NO" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="vyq-xs-cqF">
-                                                        <rect key="frame" x="0.0" y="0.0" width="693" height="153"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="703" height="380"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <size key="minSize" width="693" height="153"/>
+                                                        <size key="minSize" width="703" height="380"/>
                                                         <size key="maxSize" width="710" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                        <size key="minSize" width="693" height="153"/>
+                                                        <size key="minSize" width="703" height="380"/>
                                                         <size key="maxSize" width="710" height="10000000"/>
                                                     </textView>
                                                 </subviews>
@@ -550,109 +535,36 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="wFw-Pp-emO">
-                                                <rect key="frame" x="694" y="1" width="15" height="153"/>
+                                                <rect key="frame" x="704" y="1" width="15" height="380"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Nx7-wi-GX7">
-                                            <rect key="frame" x="25" y="228" width="77" height="14"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Current Time:" id="lSA-Nw-fks">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ps3-gC-A4S">
-                                            <rect key="frame" x="103" y="228" width="134" height="14"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="yyyy-mm-dd hh:mm:ss" id="Qd0-1l-8FU">
-                                                <font key="font" metaFont="smallSystemBold"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="zKB-Tb-c4C">
-                                            <rect key="frame" x="17" y="217" width="720" height="5"/>
-                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                            <font key="titleFont" metaFont="system"/>
-                                        </box>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="O5H-Qe-BvI">
-                                            <rect key="frame" x="15" y="194" width="280" height="17"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="~/.karabiner.d/log/console_user_server_log.txt" id="byo-Qj-XKk">
-                                                <font key="font" metaFont="system"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vrs-Ny-6rk">
-                                            <rect key="frame" x="27" y="30" width="710" height="156"/>
-                                            <clipView key="contentView" id="SBi-tZ-7q3">
-                                                <rect key="frame" x="1" y="1" width="693" height="154"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                <subviews>
-                                                    <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" continuousSpellChecking="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="FCD-qq-ne2">
-                                                        <rect key="frame" x="0.0" y="0.0" width="693" height="154"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <size key="minSize" width="693" height="154"/>
-                                                        <size key="maxSize" width="710" height="10000000"/>
-                                                        <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                        <size key="minSize" width="693" height="154"/>
-                                                        <size key="maxSize" width="710" height="10000000"/>
-                                                    </textView>
-                                                </subviews>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="Lqt-is-Avm">
-                                                <rect key="frame" x="-100" y="-100" width="87" height="18"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                            </scroller>
-                                            <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="yN1-4F-vN2">
-                                                <rect key="frame" x="694" y="1" width="15" height="154"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                            </scroller>
-                                        </scrollView>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KcB-Mj-XJC">
-                                            <rect key="frame" x="25" y="8" width="80" height="14"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Current Time: " id="Vyq-qv-rb5">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WXq-hw-PS5">
-                                            <rect key="frame" x="106" y="8" width="134" height="14"/>
+                                            <rect key="frame" x="15" y="8" width="134" height="14"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="yyyy-mm-dd hh:mm:ss" id="Sjj-XD-36W">
                                                 <font key="font" metaFont="smallSystemBold"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KcB-Mj-XJC">
+                                            <rect key="frame" x="15" y="27" width="68" height="11"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Current Time: " id="Vyq-qv-rb5">
+                                                <font key="font" metaFont="miniSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="WXq-hw-PS5" firstAttribute="leading" secondItem="KcB-Mj-XJC" secondAttribute="trailing" constant="5" id="34R-yE-6Jm"/>
-                                        <constraint firstItem="T7K-bf-5ph" firstAttribute="top" secondItem="jGV-Pr-8As" secondAttribute="bottom" constant="8" id="57D-eF-zQX"/>
-                                        <constraint firstItem="ps3-gC-A4S" firstAttribute="centerY" secondItem="Nx7-wi-GX7" secondAttribute="centerY" id="6r4-nu-1Id"/>
-                                        <constraint firstAttribute="bottom" secondItem="KcB-Mj-XJC" secondAttribute="bottom" constant="8" id="9fl-NL-2T8"/>
-                                        <constraint firstItem="vrs-Ny-6rk" firstAttribute="leading" secondItem="T7K-bf-5ph" secondAttribute="leading" id="9vb-Ll-rLL"/>
-                                        <constraint firstItem="T7K-bf-5ph" firstAttribute="leading" secondItem="jGV-Pr-8As" secondAttribute="leading" constant="10" id="B2i-ih-YSP"/>
-                                        <constraint firstItem="zKB-Tb-c4C" firstAttribute="centerY" secondItem="Osp-HS-cfM" secondAttribute="centerY" id="E2m-Ui-PoA"/>
-                                        <constraint firstItem="ps3-gC-A4S" firstAttribute="leading" secondItem="Nx7-wi-GX7" secondAttribute="trailing" constant="5" id="Jhn-eK-G4Q"/>
-                                        <constraint firstItem="vrs-Ny-6rk" firstAttribute="trailing" secondItem="T7K-bf-5ph" secondAttribute="trailing" id="MrM-rI-Ya3"/>
-                                        <constraint firstItem="zKB-Tb-c4C" firstAttribute="top" secondItem="Nx7-wi-GX7" secondAttribute="bottom" constant="8" id="N6J-64-1Bz"/>
-                                        <constraint firstItem="jGV-Pr-8As" firstAttribute="leading" secondItem="Osp-HS-cfM" secondAttribute="leading" constant="17" id="T1F-di-n5c"/>
-                                        <constraint firstItem="KcB-Mj-XJC" firstAttribute="top" secondItem="vrs-Ny-6rk" secondAttribute="bottom" constant="8" id="T2J-F9-tZh"/>
-                                        <constraint firstItem="O5H-Qe-BvI" firstAttribute="leading" secondItem="jGV-Pr-8As" secondAttribute="leading" id="TEz-EM-uWT"/>
-                                        <constraint firstItem="Nx7-wi-GX7" firstAttribute="leading" secondItem="T7K-bf-5ph" secondAttribute="leading" id="UUM-xg-4UN"/>
-                                        <constraint firstItem="O5H-Qe-BvI" firstAttribute="top" secondItem="zKB-Tb-c4C" secondAttribute="bottom" constant="8" id="clL-wO-uu9"/>
+                                        <constraint firstItem="T7K-bf-5ph" firstAttribute="top" secondItem="Osp-HS-cfM" secondAttribute="top" constant="8" id="0ZV-dO-DkB"/>
+                                        <constraint firstAttribute="bottom" secondItem="WXq-hw-PS5" secondAttribute="bottom" constant="8" id="7tR-Cc-DNi"/>
+                                        <constraint firstItem="KcB-Mj-XJC" firstAttribute="top" secondItem="T7K-bf-5ph" secondAttribute="bottom" constant="10" id="DrT-cH-Y6H"/>
+                                        <constraint firstItem="WXq-hw-PS5" firstAttribute="top" secondItem="KcB-Mj-XJC" secondAttribute="bottom" constant="5" id="FS0-d2-SQj"/>
+                                        <constraint firstItem="KcB-Mj-XJC" firstAttribute="leading" secondItem="T7K-bf-5ph" secondAttribute="leading" id="Yaf-on-hqN"/>
+                                        <constraint firstItem="WXq-hw-PS5" firstAttribute="leading" secondItem="KcB-Mj-XJC" secondAttribute="leading" id="dbe-ii-MdQ"/>
                                         <constraint firstAttribute="trailing" secondItem="T7K-bf-5ph" secondAttribute="trailing" constant="17" id="fPU-8f-5mV"/>
-                                        <constraint firstItem="WXq-hw-PS5" firstAttribute="centerY" secondItem="KcB-Mj-XJC" secondAttribute="centerY" id="gfG-Bk-hT4"/>
-                                        <constraint firstItem="vrs-Ny-6rk" firstAttribute="top" secondItem="O5H-Qe-BvI" secondAttribute="bottom" constant="8" id="hEP-e7-oFj"/>
-                                        <constraint firstAttribute="trailing" secondItem="zKB-Tb-c4C" secondAttribute="trailing" constant="17" id="qBT-by-lRg"/>
-                                        <constraint firstItem="jGV-Pr-8As" firstAttribute="top" secondItem="Osp-HS-cfM" secondAttribute="top" constant="8" id="qcj-rf-Vtf"/>
-                                        <constraint firstItem="KcB-Mj-XJC" firstAttribute="leading" secondItem="vrs-Ny-6rk" secondAttribute="leading" id="sgE-uH-7fA"/>
-                                        <constraint firstItem="Nx7-wi-GX7" firstAttribute="top" secondItem="T7K-bf-5ph" secondAttribute="bottom" constant="8" id="whf-Vh-YRl"/>
-                                        <constraint firstItem="zKB-Tb-c4C" firstAttribute="leading" secondItem="Osp-HS-cfM" secondAttribute="leading" constant="17" id="yhn-VN-ymx"/>
+                                        <constraint firstItem="T7K-bf-5ph" firstAttribute="leading" secondItem="Osp-HS-cfM" secondAttribute="leading" constant="17" id="zpE-Zs-Xci"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>

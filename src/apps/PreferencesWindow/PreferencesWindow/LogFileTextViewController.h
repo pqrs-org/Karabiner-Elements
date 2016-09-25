@@ -4,6 +4,6 @@
 
 @interface LogFileTextViewController : NSObject
 
-- (void)monitor:(NSString*)filePath;
+- (void)monitor;
 
 @end
