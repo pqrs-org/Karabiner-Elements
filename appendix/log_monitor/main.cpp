@@ -26,13 +26,15 @@ int main(int argc, const char* argv[]) {
     "/var/log/karabiner/grabber_log",
     "/var/log/karabiner/event_dispatcher_log",
   };
-  log_monitor d(logger::get_logger(), targets, new_log_line_callback);
+  log_monitor monitor(logger::get_logger(), targets, new_log_line_callback);
 
 #if 1
-  for (const auto& it : d.get_initial_lines()) {
+  for (const auto& it : monitor.get_initial_lines()) {
     std::cout << it.second << std::endl;
   }
 #endif
+
+  monitor.start();
 
   CFRunLoopRun();
   return 0;

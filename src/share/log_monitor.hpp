@@ -4,9 +4,9 @@
 #include "filesystem.hpp"
 #include "spdlog_utility.hpp"
 #include <fstream>
-#include <vector>
 #include <spdlog/spdlog.h>
 #include <thread>
+#include <vector>
 
 class log_monitor final {
 public:
@@ -24,7 +24,6 @@ public:
               const new_log_line_callback& callback) : logger_(logger),
                                                        callback_(callback),
                                                        queue_(dispatch_queue_create(nullptr, nullptr)) {
-    // ----------------------------------------
     // setup initial_lines_
 
     for (const auto& target : targets) {
@@ -33,10 +32,19 @@ public:
 
       files_.push_back(target + ".txt");
     }
+  }
 
-    // ----------------------------------------
-    // setup timer_
+  ~log_monitor(void) {
+    if (timer_) {
+      dispatch_source_cancel(timer_);
+      dispatch_release(timer_);
+      timer_ = 0;
+    }
 
+    dispatch_release(queue_);
+  }
+
+  void start(void) {
     timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
     if (!timer_) {
       logger_.error("failed to dispatch_source_create @ {0}", __PRETTY_FUNCTION__);
@@ -56,16 +64,6 @@ public:
       });
       dispatch_resume(timer_);
     }
-  }
-
-  ~log_monitor(void) {
-    if (timer_) {
-      dispatch_source_cancel(timer_);
-      dispatch_release(timer_);
-      timer_ = 0;
-    }
-
-    dispatch_release(queue_);
   }
 
   const std::vector<std::pair<uint64_t, std::string>>& get_initial_lines(void) const {
