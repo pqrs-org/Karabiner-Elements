@@ -28,7 +28,7 @@ int main(int argc, const char* argv[]) {
   };
   log_monitor d(logger::get_logger(), targets, new_log_line_callback);
 
-#if 0
+#if 1
   for (const auto& it : d.get_initial_lines()) {
     std::cout << it.second << std::endl;
   }
