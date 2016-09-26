@@ -66,7 +66,7 @@ Following is an example configuration. It maps Caps Lock `⇪ ` key to Delete `�
             "name": "Default profile",
             "selected": true,
             "simple_modifications": {
-                "caps_lock": "delete"
+                "caps_lock": "delete_or_backspace"
             }
         }
     ]
@@ -84,7 +84,7 @@ Lets say, in addition to Caps Lock mapping, we want to map left Command `⌘ ` k
             "name": "Default profile",
             "selected": true,
             "simple_modifications": {
-                "caps_lock": "delete",
+                "caps_lock": "delete_or_backspace",
                 "left_command": "left_control"
             }
         }
