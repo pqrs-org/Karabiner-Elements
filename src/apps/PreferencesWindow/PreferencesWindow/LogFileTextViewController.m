@@ -22,9 +22,6 @@ static void log_updated_callback(const char* line, void* refcon) {
 @implementation LogFileTextViewController
 
 - (void)monitor {
-  self.textView.editable = NO;
-  self.textView.richText = NO;
-
   // ----------------------------------------
   // setup libkrbn_log_monitor
 
