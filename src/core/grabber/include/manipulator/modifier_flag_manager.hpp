@@ -2,6 +2,7 @@
 
 #include "types.hpp"
 #include <CoreGraphics/CoreGraphics.h>
+#include <thread>
 #include <vector>
 
 namespace manipulator {
@@ -255,29 +256,45 @@ private:
     const std::string& get_name(void) const { return name_; }
     const std::string& get_symbol(void) const { return symbol_; }
 
-    bool pressed(void) const { return (count_ + lock_count_) > 0; }
+    bool pressed(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
+      return (count_ + lock_count_) > 0;
+    }
 
     void reset(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
       count_ = 0;
     }
 
     void increase(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
       ++count_;
     }
 
     void decrease(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
       --count_;
     }
 
     void lock(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
       lock_count_ = 1;
     }
 
     void unlock(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
       lock_count_ = 0;
     }
 
     void toggle_lock(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
       lock_count_ = lock_count_ == 0 ? 1 : 0;
     }
 
@@ -286,6 +303,8 @@ private:
     std::string symbol_;
     int count_;
     int lock_count_;
+
+    std::mutex mutex_;
   };
 
   std::vector<std::unique_ptr<state>> states_;
