@@ -522,10 +522,10 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <size key="minSize" width="703" height="380"/>
-                                                        <size key="maxSize" width="710" height="10000000"/>
+                                                        <size key="maxSize" width="720" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <size key="minSize" width="703" height="380"/>
-                                                        <size key="maxSize" width="710" height="10000000"/>
+                                                        <size key="maxSize" width="720" height="10000000"/>
                                                     </textView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

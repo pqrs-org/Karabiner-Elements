@@ -39,8 +39,10 @@ static void log_updated_callback(const char* line, void* refcon) {
     for (size_t i = 0; i < size; ++i) {
       const char* line = libkrbn_log_monitor_initial_line(self.libkrbn_log_monitor, i);
       if (line) {
-        [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:[self logLineString:line]]];
-        [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
+        [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:[self logLineString:line]
+                                                                                          attributes:[self stringAttributes]]];
+        [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
+                                                                                          attributes:[self stringAttributes]]];
       }
     }
   }
@@ -95,12 +97,20 @@ static void log_updated_callback(const char* line, void* refcon) {
     if (!self) return;
 
     [self.textView.textStorage beginEditing];
-    [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:lineString]];
-    [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
+    [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:lineString
+                                                                                      attributes:[self stringAttributes]]];
+    [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
+                                                                                      attributes:[self stringAttributes]]];
     [self.textView.textStorage endEditing];
 
     [self scrollToBottom];
   });
+}
+
+- (NSDictionary*)stringAttributes {
+  return @{
+    NSFontAttributeName : [NSFont fontWithName:@"Menlo" size:11],
+  };
 }
 
 - (void)scrollToBottom {
