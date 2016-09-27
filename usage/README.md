@@ -158,3 +158,5 @@ This will give you following mapping,
 |       Danish |      > |     § |
 |       Danish |      $ |     < |
 |       Danish |      < |     $ |
+|       German |      ^ |     < |
+|       German |      < |     ^ |
