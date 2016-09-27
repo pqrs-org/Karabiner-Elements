@@ -16,15 +16,15 @@ public:
 };
 
 namespace {
-  void new_log_line_callback(const std::string& line) {
-    std::cout << line << std::endl;
-  }
+void new_log_line_callback(const std::string& line) {
+  std::cout << line << std::endl;
+}
 }
 
 int main(int argc, const char* argv[]) {
   std::vector<std::string> targets = {
-    "/var/log/karabiner/grabber_log",
-    "/var/log/karabiner/event_dispatcher_log",
+      "/var/log/karabiner/grabber_log",
+      "/var/log/karabiner/event_dispatcher_log",
   };
   log_monitor monitor(logger::get_logger(), targets, new_log_line_callback);
 

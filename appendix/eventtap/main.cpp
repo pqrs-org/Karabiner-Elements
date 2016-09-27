@@ -43,14 +43,14 @@ int main(int argc, const char* argv[]) {
                                kCGHeadInsertEventTap,
                                kCGEventTapOptionDefault,
                                CGEventMaskBit(kCGEventLeftMouseDown) |
-                               CGEventMaskBit(kCGEventLeftMouseUp) |
-                               CGEventMaskBit(kCGEventRightMouseDown) |
-                               CGEventMaskBit(kCGEventRightMouseUp) |
-                               CGEventMaskBit(kCGEventMouseMoved) |
-                               CGEventMaskBit(kCGEventLeftMouseDragged) |
-                               CGEventMaskBit(kCGEventRightMouseDragged) |
-                               CGEventMaskBit(kCGEventKeyDown) |
-                               CGEventMaskBit(kCGEventKeyUp),
+                                   CGEventMaskBit(kCGEventLeftMouseUp) |
+                                   CGEventMaskBit(kCGEventRightMouseDown) |
+                                   CGEventMaskBit(kCGEventRightMouseUp) |
+                                   CGEventMaskBit(kCGEventMouseMoved) |
+                                   CGEventMaskBit(kCGEventLeftMouseDragged) |
+                                   CGEventMaskBit(kCGEventRightMouseDragged) |
+                                   CGEventMaskBit(kCGEventKeyDown) |
+                                   CGEventMaskBit(kCGEventKeyUp),
                                callback,
                                nullptr);
 
