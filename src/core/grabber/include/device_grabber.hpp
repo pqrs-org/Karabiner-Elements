@@ -169,28 +169,9 @@ private:
       return;
     }
 
-    auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
+    iokit_utility::log_matching_device(logger::get_logger(), device);
 
-    logger::get_logger().info("matching device:");
-    if (auto manufacturer = dev->get_manufacturer()) {
-      logger::get_logger().info("  manufacturer: {0}", *manufacturer);
-    }
-    if (auto product = dev->get_product()) {
-      logger::get_logger().info("  product: {0}", *product);
-    }
-    if (auto vendor_id = dev->get_vendor_id()) {
-      logger::get_logger().info("  vendor_id: {0:#x}", *vendor_id);
-    }
-    if (auto product_id = dev->get_product_id()) {
-      logger::get_logger().info("  product_id: {0:#x}", *product_id);
-    }
-    if (auto location_id = dev->get_location_id()) {
-      logger::get_logger().info("  location_id: {0:#x}", *location_id);
-    }
-    if (auto serial_number = dev->get_serial_number()) {
-      logger::get_logger().info("  serial_number: {0}", *serial_number);
-    }
-    logger::get_logger().info("  registry_entry_id: {0}", dev->get_registry_entry_id());
+    auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
 
     // ----------------------------------------
 
@@ -229,6 +210,8 @@ private:
       return;
     }
 
+    iokit_utility::log_removal_device(logger::get_logger(), device);
+
     {
       std::lock_guard<std::mutex> guard(hids_mutex_);
 
@@ -236,17 +219,6 @@ private:
       if (it != hids_.end()) {
         auto& dev = it->second;
         if (dev) {
-          logger::get_logger().info("removal device:");
-          if (auto vendor_id = dev->get_vendor_id()) {
-            logger::get_logger().info("  vendor_id: {0:#x}", *vendor_id);
-          }
-          if (auto product_id = dev->get_product_id()) {
-            logger::get_logger().info("  product_id: {0:#x}", *product_id);
-          }
-          if (auto location_id = dev->get_location_id()) {
-            logger::get_logger().info("  location_id: {0:#x}", *location_id);
-          }
-
           hids_.erase(it);
         }
       }

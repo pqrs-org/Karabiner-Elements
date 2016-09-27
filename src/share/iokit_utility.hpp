@@ -7,6 +7,7 @@
 #include <IOKit/hid/IOHIDKeys.h>
 #include <boost/optional.hpp>
 #include <cstdint>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
 
@@ -183,5 +184,45 @@ public:
 
   static boost::optional<std::string> get_transport(IOHIDDeviceRef _Nonnull device) {
     return get_string_property(device, CFSTR(kIOHIDTransportKey));
+  }
+
+  static void log_matching_device(spdlog::logger& logger,
+                                  IOHIDDeviceRef _Nonnull device) {
+    logger.info("matching device:");
+    if (auto manufacturer = get_manufacturer(device)) {
+      logger.info("  manufacturer: {0}", *manufacturer);
+    }
+    if (auto product = get_product(device)) {
+      logger.info("  product: {0}", *product);
+    }
+    if (auto vendor_id = get_vendor_id(device)) {
+      logger.info("  vendor_id: {0:#x}", *vendor_id);
+    }
+    if (auto product_id = get_product_id(device)) {
+      logger.info("  product_id: {0:#x}", *product_id);
+    }
+    if (auto location_id = get_location_id(device)) {
+      logger.info("  location_id: {0:#x}", *location_id);
+    }
+    if (auto serial_number = get_serial_number(device)) {
+      logger.info("  serial_number: {0}", *serial_number);
+    }
+    if (auto registry_entry_id = get_registry_entry_id(device)) {
+      logger.info("  registry_entry_id: {0}", *registry_entry_id);
+    }
+  }
+
+  static void log_removal_device(spdlog::logger& logger,
+                                 IOHIDDeviceRef _Nonnull device) {
+    logger.info("removal device:");
+    if (auto vendor_id = get_vendor_id(device)) {
+      logger.info("  vendor_id: {0:#x}", *vendor_id);
+    }
+    if (auto product_id = get_product_id(device)) {
+      logger.info("  product_id: {0:#x}", *product_id);
+    }
+    if (auto location_id = get_location_id(device)) {
+      logger.info("  location_id: {0:#x}", *location_id);
+    }
   }
 };
