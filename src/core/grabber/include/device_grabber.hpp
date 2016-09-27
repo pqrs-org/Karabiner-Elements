@@ -179,13 +179,13 @@ private:
       logger::get_logger().info("  product: {0}", *product);
     }
     if (auto vendor_id = dev->get_vendor_id()) {
-      logger::get_logger().info("  vendor_id: {0}", *vendor_id);
+      logger::get_logger().info("  vendor_id: {0:#x}", *vendor_id);
     }
     if (auto product_id = dev->get_product_id()) {
-      logger::get_logger().info("  product_id: {0}", *product_id);
+      logger::get_logger().info("  product_id: {0:#x}", *product_id);
     }
     if (auto location_id = dev->get_location_id()) {
-      logger::get_logger().info("  location_id: {0}", *location_id);
+      logger::get_logger().info("  location_id: {0:#x}", *location_id);
     }
     if (auto serial_number = dev->get_serial_number()) {
       logger::get_logger().info("  serial_number: {0}", *serial_number);
@@ -238,13 +238,13 @@ private:
         if (dev) {
           logger::get_logger().info("removal device:");
           if (auto vendor_id = dev->get_vendor_id()) {
-            logger::get_logger().info("  vendor_id: {0}", *vendor_id);
+            logger::get_logger().info("  vendor_id: {0:#x}", *vendor_id);
           }
           if (auto product_id = dev->get_product_id()) {
-            logger::get_logger().info("  product_id: {0}", *product_id);
+            logger::get_logger().info("  product_id: {0:#x}", *product_id);
           }
           if (auto location_id = dev->get_location_id()) {
-            logger::get_logger().info("  location_id: {0}", *location_id);
+            logger::get_logger().info("  location_id: {0:#x}", *location_id);
           }
 
           hids_.erase(it);
