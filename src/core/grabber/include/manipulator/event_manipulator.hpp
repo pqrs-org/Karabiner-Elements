@@ -9,6 +9,7 @@
 #include "modifier_flag_manager.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
+#include "virtual_hid_manager_client.hpp"
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <boost/optional.hpp>
 #include <list>
@@ -22,6 +23,7 @@ public:
 
   event_manipulator(void) : event_dispatcher_manager_(),
                             event_source_(CGEventSourceCreate(kCGEventSourceStateHIDSystemState)),
+                            virtual_hid_manager_client_(logger::get_logger()),
                             modifier_flag_manager_(),
                             key_repeat_manager_(*this) {
   }
@@ -37,7 +39,8 @@ public:
 
   bool is_ready(void) {
     return event_dispatcher_manager_.is_connected() &&
-           event_source_ != nullptr;
+           event_source_ != nullptr &&
+           virtual_hid_manager_client_.is_connected();
   }
 
   void grab_mouse_events(void) {
@@ -446,6 +449,7 @@ private:
   event_dispatcher_manager event_dispatcher_manager_;
   modifier_flag_manager modifier_flag_manager_;
   CGEventSourceRef event_source_;
+  virtual_hid_manager_client virtual_hid_manager_client_;
   key_repeat_manager key_repeat_manager_;
   std::unique_ptr<event_tap_manager> event_tap_manager_;
 
