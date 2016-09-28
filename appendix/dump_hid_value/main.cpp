@@ -114,6 +114,31 @@ private:
                       uint32_t usage_page,
                       uint32_t usage,
                       CFIndex integer_value) {
+    if (usage_page == kHIDPage_Button) {
+      std::cout << "Button: " << std::dec << usage << " (" << integer_value << ")" << std::endl;
+      return;
+    }
+    if (usage_page == kHIDPage_GenericDesktop && usage == kHIDUsage_GD_X) {
+      std::cout << "Pointing X: " << std::dec << integer_value << std::endl;
+      return;
+    }
+    if (usage_page == kHIDPage_GenericDesktop && usage == kHIDUsage_GD_Y) {
+      std::cout << "Pointing Y: " << std::dec << integer_value << std::endl;
+      return;
+    }
+    if (usage_page == kHIDPage_GenericDesktop && usage == kHIDUsage_GD_Y) {
+      std::cout << "Pointing Z: " << std::dec << integer_value << std::endl;
+      return;
+    }
+    if (usage_page == kHIDPage_GenericDesktop && usage == kHIDUsage_GD_Wheel) {
+      std::cout << "Wheel: " << std::dec << integer_value << std::endl;
+      return;
+    }
+    if (usage_page == kHIDPage_Consumer && usage == kHIDUsage_Csmr_ACPan) {
+      std::cout << "Horizontal Wheel: " << std::dec << integer_value << std::endl;
+      return;
+    }
+
     std::cout << "element" << std::endl
               << "  usage_page:0x" << std::hex << usage_page << std::endl
               << "  usage:0x" << std::hex << usage << std::endl
