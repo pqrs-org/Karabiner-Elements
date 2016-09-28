@@ -76,15 +76,6 @@ private:
     hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
 
-    // Logitech Unifying Receiver sends a lot of null report. We ignore them.
-    if (auto manufacturer = iokit_utility::get_manufacturer(device)) {
-      if (auto product = iokit_utility::get_product(device)) {
-        if (*manufacturer == "Logitech" && *product == "USB Receiver") {
-          return;
-        }
-      }
-    }
-
     dev->open();
     dev->register_report_callback(boost::bind(&dump_hid_report::report_callback, this, _1, _2, _3, _4, _5));
     dev->schedule();
@@ -124,9 +115,21 @@ private:
                        uint32_t report_id,
                        uint8_t* report,
                        CFIndex report_length) {
+    // Logitech Unifying Receiver sends a lot of null report. We ignore them.
+    if (auto manufacturer = device.get_manufacturer()) {
+      if (auto product = device.get_product()) {
+        if (*manufacturer == "Logitech" && *product == "USB Receiver") {
+          if (report_id == 0) {
+            return;
+          }
+        }
+      }
+    }
+
     logger::get_logger().info("report_length: {0}", report_length);
+    std::cout << "  report_id: " << std::dec << report_id << std::endl;
     for (CFIndex i = 0; i < report_length; ++i) {
-      std::cout << " key[" << i << "]: 0x" << std::hex << static_cast<int>(report[i]) << std::dec << std::endl;
+      std::cout << "  key[" << i << "]: 0x" << std::hex << static_cast<int>(report[i]) << std::dec << std::endl;
     }
   }
 
