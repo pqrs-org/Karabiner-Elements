@@ -388,7 +388,7 @@ private:
   }
 
   uint64_t elements_key(uint32_t usage_page, uint32_t usage) const {
-    return (static_cast<uint64_t>(usage_page) << 32 | usage);
+    return ((static_cast<uint64_t>(usage_page) << 32) | usage);
   }
 
   void resize_report_buffer(void) {
