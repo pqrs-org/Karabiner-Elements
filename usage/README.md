@@ -127,6 +127,10 @@ Arabic Keyboard
 
 <img src="img/keyboard-arabic.png" width="600">
 
+German Keyboard
+
+<img src="img/keyboard-german.jpg" width="600">
+
 Most users swap `§` with whatever key is right next to shift `⇧ ` key.
 
 Following is sample configuration that swaps those two keys.
