@@ -339,7 +339,8 @@ private:
 
         // Update pressed_key_usages_.
         if ((usage_page == kHIDPage_KeyboardOrKeypad) ||
-            (usage_page == kHIDPage_AppleVendorTopCase && usage == kHIDUsage_AV_TopCase_KeyboardFn)) {
+            (usage_page == kHIDPage_AppleVendorTopCase && usage == kHIDUsage_AV_TopCase_KeyboardFn) ||
+            (usage_page == kHIDPage_Button)) {
           bool pressed = integer_value;
           uint64_t u = (static_cast<uint64_t>(usage_page) << 32) | usage;
           if (pressed) {
