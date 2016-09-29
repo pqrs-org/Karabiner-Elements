@@ -129,6 +129,53 @@ enum class key_code : uint32_t {
 };
 
 enum class pointing_button : uint32_t {
+  zero,
+
+  button1,
+  button2,
+  button3,
+  button4,
+  button5,
+  button6,
+  button7,
+  button8,
+
+  button9,
+  button10,
+  button11,
+  button12,
+  button13,
+  button14,
+  button15,
+  button16,
+
+  button17,
+  button18,
+  button19,
+  button20,
+  button21,
+  button22,
+  button23,
+  button24,
+
+  button25,
+  button26,
+  button27,
+  button28,
+  button29,
+  button30,
+  button31,
+  button32,
+
+  end_,
+};
+
+enum class pointing_event : uint32_t {
+  button,
+  x,
+  y,
+  vertical_wheel,
+  horizontal_wheel,
 };
 
 enum class modifier_flag : uint32_t {
