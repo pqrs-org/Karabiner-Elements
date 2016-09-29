@@ -7,6 +7,7 @@
 #include "logger.hpp"
 #include "manipulator.hpp"
 #include "modifier_flag_manager.hpp"
+#include "pointing_button_manager.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
 #include "virtual_hid_manager_client.hpp"
@@ -24,7 +25,6 @@ public:
   event_manipulator(void) : event_dispatcher_manager_(),
                             event_source_(CGEventSourceCreate(kCGEventSourceStateHIDSystemState)),
                             virtual_hid_manager_client_(logger::get_logger()),
-                            modifier_flag_manager_(),
                             key_repeat_manager_(*this) {
   }
 
@@ -61,11 +61,18 @@ public:
     modifier_flag_manager_.unlock();
 
     event_dispatcher_manager_.set_caps_lock_state(false);
+
+    hid_report::pointing_input report;
+    virtual_hid_manager_client_.post_pointing_input_report(report);
   }
 
   void reset_modifier_flag_state(void) {
     modifier_flag_manager_.reset();
     // Do not call modifier_flag_manager_.unlock() here.
+  }
+
+  void reset_pointing_button_state(void) {
+    pointing_button_manager_.reset();
   }
 
   void relaunch_event_dispatcher(void) {
@@ -207,6 +214,50 @@ public:
 
     key_repeat_manager_.start(from_key_code, to_key_code, pressed,
                               initial_key_repeat_milliseconds, key_repeat_milliseconds);
+  }
+
+  void handle_pointing_event(device_registry_entry_id device_registry_entry_id,
+                             krbn::pointing_event pointing_event,
+                             boost::optional<krbn::pointing_button> pointing_button,
+                             CFIndex integer_value) {
+    hid_report::pointing_input report;
+
+    switch (pointing_event) {
+    case krbn::pointing_event::button:
+      if (pointing_button && *pointing_button != krbn::pointing_button::zero) {
+        logger::get_logger().info("button: {0}", static_cast<uint32_t>(*pointing_button));
+        pointing_button_manager_.manipulate(*pointing_button,
+                                            integer_value ? pointing_button_manager::operation::increase : pointing_button_manager::operation::decrease);
+      }
+      break;
+
+    case krbn::pointing_event::x:
+      report.x = integer_value;
+      break;
+
+    case krbn::pointing_event::y:
+      report.y = integer_value;
+      break;
+
+    case krbn::pointing_event::vertical_wheel:
+      report.vertical_wheel = integer_value;
+      break;
+
+    case krbn::pointing_event::horizontal_wheel:
+      report.horizontal_wheel = integer_value;
+      break;
+
+    default:
+      break;
+    }
+
+    auto bits = pointing_button_manager_.get_hid_report_bits();
+    report.buttons[0] = (bits >> 0) & 0xff;
+    report.buttons[1] = (bits >> 8) & 0xff;
+    report.buttons[2] = (bits >> 16) & 0xff;
+    report.buttons[3] = (bits >> 24) & 0xff;
+
+    virtual_hid_manager_client_.post_pointing_input_report(report);
   }
 
   void stop_key_repeat(void) {
@@ -448,6 +499,7 @@ private:
 
   event_dispatcher_manager event_dispatcher_manager_;
   modifier_flag_manager modifier_flag_manager_;
+  pointing_button_manager pointing_button_manager_;
   CGEventSourceRef event_source_;
   virtual_hid_manager_client virtual_hid_manager_client_;
   key_repeat_manager key_repeat_manager_;
