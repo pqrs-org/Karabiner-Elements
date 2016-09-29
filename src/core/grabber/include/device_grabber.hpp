@@ -165,10 +165,6 @@ private:
       return;
     }
 
-    if (!is_target_device(device)) {
-      return;
-    }
-
     iokit_utility::log_matching_device(logger::get_logger(), device);
 
     auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
@@ -206,10 +202,6 @@ private:
       return;
     }
 
-    if (!is_target_device(device)) {
-      return;
-    }
-
     iokit_utility::log_removal_device(logger::get_logger(), device);
 
     {
@@ -227,21 +219,22 @@ private:
     event_manipulator_.stop_key_repeat();
   }
 
-  bool is_target_device(IOHIDDeviceRef _Nonnull device) {
-    // Skip devices which have keyboard and mouse usage.
-    if (IOHIDDeviceConformsTo(device, kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer) ||
-        IOHIDDeviceConformsTo(device, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse)) {
-      return false;
-    }
-    return true;
-  }
-
   void observe(human_interface_device& hid) {
+    auto manufacturer = hid.get_manufacturer();
+    if (manufacturer && *manufacturer == "pqrs.org") {
+      return;
+    }
+
     human_interface_device::value_callback callback;
     hid.observe(callback);
   }
 
   void unobserve(human_interface_device& hid) {
+    auto manufacturer = hid.get_manufacturer();
+    if (manufacturer && *manufacturer == "pqrs.org") {
+      return;
+    }
+
     hid.unobserve();
   }
 
@@ -301,6 +294,43 @@ private:
       }
       break;
 
+    case kHIDPage_Button:
+      event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                               krbn::pointing_event::button,
+                                               krbn::pointing_button(usage),
+                                               integer_value);
+      break;
+
+    case kHIDPage_GenericDesktop:
+      if (usage == kHIDUsage_GD_X) {
+        event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                 krbn::pointing_event::x,
+                                                 boost::none,
+                                                 integer_value);
+      }
+      if (usage == kHIDUsage_GD_Y) {
+        event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                 krbn::pointing_event::y,
+                                                 boost::none,
+                                                 integer_value);
+      }
+      if (usage == kHIDUsage_GD_Wheel) {
+        event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                 krbn::pointing_event::vertical_wheel,
+                                                 boost::none,
+                                                 integer_value);
+      }
+      break;
+
+    case kHIDPage_Consumer:
+      if (usage == kHIDUsage_Csmr_ACPan) {
+        event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                 krbn::pointing_event::horizontal_wheel,
+                                                 boost::none,
+                                                 integer_value);
+      }
+      break;
+
     default:
       break;
     }
@@ -308,6 +338,7 @@ private:
     // reset modifier_flags state if all keys are released.
     if (get_all_devices_pressed_keys_count() == 0) {
       event_manipulator_.reset_modifier_flag_state();
+      event_manipulator_.reset_pointing_button_state();
     }
   }
 
