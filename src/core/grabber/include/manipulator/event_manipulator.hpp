@@ -62,6 +62,7 @@ public:
 
     event_dispatcher_manager_.set_caps_lock_state(false);
 
+    pointing_button_manager_.reset();
     hid_report::pointing_input report;
     virtual_hid_manager_client_.post_pointing_input_report(report);
   }
@@ -72,7 +73,12 @@ public:
   }
 
   void reset_pointing_button_state(void) {
+    auto bits = pointing_button_manager_.get_hid_report_bits();
     pointing_button_manager_.reset();
+    if (bits) {
+      hid_report::pointing_input report;
+      virtual_hid_manager_client_.post_pointing_input_report(report);
+    }
   }
 
   void relaunch_event_dispatcher(void) {
@@ -225,7 +231,6 @@ public:
     switch (pointing_event) {
     case krbn::pointing_event::button:
       if (pointing_button && *pointing_button != krbn::pointing_button::zero) {
-        logger::get_logger().info("button: {0}", static_cast<uint32_t>(*pointing_button));
         pointing_button_manager_.manipulate(*pointing_button,
                                             integer_value ? pointing_button_manager::operation::increase : pointing_button_manager::operation::decrease);
       }
