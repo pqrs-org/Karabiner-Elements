@@ -182,6 +182,12 @@ private:
 
       hids_[device] = std::move(dev);
     }
+
+    if (is_pointing_device_connected()) {
+      event_manipulator_.create_virtual_hid_manager_client();
+    } else {
+      event_manipulator_.release_virtual_hid_manager_client();
+    }
   }
 
   static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
@@ -214,6 +220,12 @@ private:
           hids_.erase(it);
         }
       }
+    }
+
+    if (is_pointing_device_connected()) {
+      event_manipulator_.create_virtual_hid_manager_client();
+    } else {
+      event_manipulator_.release_virtual_hid_manager_client();
     }
 
     event_manipulator_.stop_key_repeat();
@@ -366,6 +378,28 @@ private:
       total += (it.second)->get_pressed_keys_count();
     }
     return total;
+  }
+
+  bool is_keyboard_connected(void) {
+    std::lock_guard<std::mutex> guard(hids_mutex_);
+
+    for (const auto& it : hids_) {
+      if ((it.second)->is_keyboard()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool is_pointing_device_connected(void) {
+    std::lock_guard<std::mutex> guard(hids_mutex_);
+
+    for (const auto& it : hids_) {
+      if ((it.second)->is_pointing_device()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void cancel_grab_timer(void) {
