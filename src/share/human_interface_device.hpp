@@ -305,6 +305,15 @@ public:
     return kIOReturnError;
   }
 
+  bool is_keyboard(void) {
+    return IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
+  }
+
+  bool is_pointing_device(void) {
+    return IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer) ||
+           IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
+  }
+
 private:
   static void static_queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
     if (result != kIOReturnSuccess) {
