@@ -24,7 +24,6 @@ public:
 
   event_manipulator(void) : event_dispatcher_manager_(),
                             event_source_(CGEventSourceCreate(kCGEventSourceStateHIDSystemState)),
-                            virtual_hid_manager_client_(logger::get_logger()),
                             key_repeat_manager_(*this) {
   }
 
@@ -39,8 +38,7 @@ public:
 
   bool is_ready(void) {
     return event_dispatcher_manager_.is_connected() &&
-           event_source_ != nullptr &&
-           virtual_hid_manager_client_.is_connected();
+           event_source_ != nullptr;
   }
 
   void grab_mouse_events(void) {
@@ -63,8 +61,16 @@ public:
     event_dispatcher_manager_.set_caps_lock_state(false);
 
     pointing_button_manager_.reset();
-    pqrs::karabiner_virtualhiddevice::hid_report::pointing_input report;
-    virtual_hid_manager_client_.post_pointing_input_report(report);
+    {
+      std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
+
+      if (virtual_hid_manager_client_) {
+        pqrs::karabiner_virtualhiddevice::hid_report::pointing_input report;
+        virtual_hid_manager_client_->post_pointing_input_report(report);
+      }
+
+      virtual_hid_manager_client_ = nullptr;
+    }
   }
 
   void reset_modifier_flag_state(void) {
@@ -75,9 +81,13 @@ public:
   void reset_pointing_button_state(void) {
     auto bits = pointing_button_manager_.get_hid_report_bits();
     pointing_button_manager_.reset();
-    if (bits) {
-      pqrs::karabiner_virtualhiddevice::hid_report::pointing_input report;
-      virtual_hid_manager_client_.post_pointing_input_report(report);
+    {
+      std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
+
+      if (bits && virtual_hid_manager_client_) {
+        pqrs::karabiner_virtualhiddevice::hid_report::pointing_input report;
+        virtual_hid_manager_client_->post_pointing_input_report(report);
+      }
     }
   }
 
@@ -109,6 +119,20 @@ public:
 
   void create_event_dispatcher_client(void) {
     event_dispatcher_manager_.create_event_dispatcher_client();
+  }
+
+  void create_virtual_hid_manager_client(void) {
+    std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
+
+    if (!virtual_hid_manager_client_) {
+      virtual_hid_manager_client_ = std::make_unique<virtual_hid_manager_client>(logger::get_logger());
+    }
+  }
+
+  void release_virtual_hid_manager_client(void) {
+    std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
+
+    virtual_hid_manager_client_ = nullptr;
   }
 
   void handle_keyboard_event(device_registry_entry_id device_registry_entry_id, krbn::key_code from_key_code, bool pressed) {
@@ -262,7 +286,13 @@ public:
     report.buttons[2] = (bits >> 16) & 0xff;
     report.buttons[3] = (bits >> 24) & 0xff;
 
-    virtual_hid_manager_client_.post_pointing_input_report(report);
+    {
+      std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
+
+      if (virtual_hid_manager_client_) {
+        virtual_hid_manager_client_->post_pointing_input_report(report);
+      }
+    }
   }
 
   void stop_key_repeat(void) {
@@ -506,9 +536,11 @@ private:
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
   CGEventSourceRef event_source_;
-  virtual_hid_manager_client virtual_hid_manager_client_;
   key_repeat_manager key_repeat_manager_;
   std::unique_ptr<event_tap_manager> event_tap_manager_;
+
+  std::unique_ptr<virtual_hid_manager_client> virtual_hid_manager_client_;
+  std::mutex virtual_hid_manager_client_mutex_;
 
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;
