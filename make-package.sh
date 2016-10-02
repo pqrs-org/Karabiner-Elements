@@ -21,9 +21,7 @@ mkdir -p pkgroot
 
 basedir="pkgroot/Library/Extensions"
 mkdir -p "$basedir"
-for kext in VirtualHIDManager.kext VirtualHIDPointing.kext; do
-    cp -R "src/core/kext/VirtualHIDDevice/build/Release/$kext" "$basedir/org.pqrs.driver.$kext"
-done
+cp -R "src/vendor/Karabiner-VirtualHIDDevice/dist/org.pqrs.driver.VirtualHIDManager.kext" "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements"
 mkdir -p "$basedir"

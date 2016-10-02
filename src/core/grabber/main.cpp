@@ -19,7 +19,6 @@ int main(int argc, const char* argv[]) {
   logger::get_logger().info("version {0}", karabiner_version);
 
   // load kexts
-  system("/sbin/kextload /Library/Extensions/org.pqrs.driver.VirtualHIDPointing.kext");
   system("/sbin/kextload /Library/Extensions/org.pqrs.driver.VirtualHIDManager.kext");
 
   // make socket directory.

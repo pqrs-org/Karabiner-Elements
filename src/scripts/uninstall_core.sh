@@ -10,7 +10,6 @@ if [ /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist ]; then
 fi
 
 kextunload -b org.pqrs.driver.VirtualHIDManager
-kextunload -b org.pqrs.driver.VirtualHIDPointing
 
 # ----------------------------------------
 # uninstall
@@ -20,6 +19,5 @@ rm -rf '/Applications/Karabiner-Elements.app'
 rm -rf '/Applications/Karabiner-EventViewer.app'
 rm -rf '/Library/Application Support/org.pqrs/Karabiner-Elements'
 rm -rf '/Library/Extensions/org.pqrs.driver.VirtualHIDManager.kext'
-rm -rf '/Library/Extensions/org.pqrs.driver.VirtualHIDPointing.kext'
 
 exit 0

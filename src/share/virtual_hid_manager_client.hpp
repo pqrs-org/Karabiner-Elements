@@ -1,8 +1,7 @@
 #pragma once
 
-#include "hid_report.hpp"
+#include "Karabiner-VirtualHIDDevice/include/karabiner_virtualhiddevice.hpp"
 #include "service_observer.hpp"
-#include "virtual_hid_manager_user_client_method.hpp"
 
 class virtual_hid_manager_client final {
 public:
@@ -46,8 +45,8 @@ public:
     }
   }
 
-  void post_pointing_input_report(const hid_report::pointing_input& report) {
-    call_struct_method(static_cast<uint32_t>(virtual_hid_manager_user_client_method::pointing_input_report),
+  void post_pointing_input_report(const pqrs::karabiner_virtualhiddevice::hid_report::pointing_input& report) {
+    call_struct_method(static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::pointing_input_report),
                        static_cast<const void*>(&report), sizeof(report),
                        nullptr, 0);
   }

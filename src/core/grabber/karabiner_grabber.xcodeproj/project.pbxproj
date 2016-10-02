@@ -37,7 +37,6 @@
 		3469EB701D814F140005D30D /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
 		347113141D871C6C001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_monitor.hpp; path = ../../share/process_monitor.hpp; sourceTree = SOURCE_ROOT; };
 		348FC00A1D9B76830083F98F /* virtual_hid_manager_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_client.hpp; path = ../../share/virtual_hid_manager_client.hpp; sourceTree = SOURCE_ROOT; };
-		348FC00B1D9B76830083F98F /* virtual_hid_manager_user_client_method.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_manager_user_client_method.hpp; path = ../../share/virtual_hid_manager_user_client_method.hpp; sourceTree = SOURCE_ROOT; };
 		349950641D891BCF004FE466 /* event_dispatcher_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_dispatcher_manager.hpp; path = include/manipulator/event_dispatcher_manager.hpp; sourceTree = SOURCE_ROOT; };
 		349950681D89A25D004FE466 /* event_manipulator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_manipulator.hpp; path = include/manipulator/event_manipulator.hpp; sourceTree = SOURCE_ROOT; };
 		349950691D89A2EF004FE466 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
@@ -53,7 +52,6 @@
 		34A88AA61D6DF89900DD480B /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../../share/types.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_tap_manager.hpp; path = include/manipulator/event_tap_manager.hpp; sourceTree = SOURCE_ROOT; };
-		34D2FC831D9C027300168D20 /* hid_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hid_report.hpp; path = ../../share/hid_report.hpp; sourceTree = SOURCE_ROOT; };
 		34D2FC841D9C120F00168D20 /* pointing_button_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pointing_button_manager.hpp; path = include/manipulator/pointing_button_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34DA28A31D8FC8BE0029E37D /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
 		34E420601D5042240022F821 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -110,7 +108,6 @@
 				345AC0041D62163F009D1FB4 /* boost_defs.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
 				3469EB701D814F140005D30D /* filesystem.hpp */,
-				34D2FC831D9C027300168D20 /* hid_report.hpp */,
 				34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */,
 				341F59DC1D5778A000B441A8 /* iokit_utility.hpp */,
 				34A88A941D68446C00DD480B /* karabiner_version.h */,
@@ -123,7 +120,6 @@
 				349950691D89A2EF004FE466 /* system_preferences.hpp */,
 				34A88AA61D6DF89900DD480B /* types.hpp */,
 				348FC00A1D9B76830083F98F /* virtual_hid_manager_client.hpp */,
-				348FC00B1D9B76830083F98F /* virtual_hid_manager_user_client_method.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";

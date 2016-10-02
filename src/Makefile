@@ -5,7 +5,6 @@ all:
 	$(MAKE) -C core/console_user_server
 	$(MAKE) -C core/event_dispatcher
 	$(MAKE) -C core/grabber
-	$(MAKE) -C core/kext/VirtualHIDDevice
 
 clean:
 	$(MAKE) -C apps/EventViewer clean
@@ -14,4 +13,3 @@ clean:
 	$(MAKE) -C core/console_user_server clean
 	$(MAKE) -C core/event_dispatcher clean
 	$(MAKE) -C core/grabber clean
-	$(MAKE) -C core/kext/VirtualHIDDevice clean
