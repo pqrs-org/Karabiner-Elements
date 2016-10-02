@@ -1,0 +1,6 @@
+BasedOnStyle: LLVM
+ColumnLimit: 0
+DerivePointerBinding: true
+AllowShortIfStatementsOnASingleLine: true
+AllowShortBlocksOnASingleLine: true
+PointerAlignment: Left
