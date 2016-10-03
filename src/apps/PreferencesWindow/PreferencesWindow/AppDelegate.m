@@ -1,4 +1,5 @@
 #import "AppDelegate.h"
+#import "ConfigurationManager.h"
 #import "PreferencesWindowController.h"
 #import "Relauncher.h"
 #include "libkrbn.h"
@@ -6,6 +7,7 @@
 @interface AppDelegate ()
 
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
+@property(weak) IBOutlet ConfigurationManager* configurationManager;
 
 @end
 
@@ -14,6 +16,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
+  [self.configurationManager setup];
   [self.preferencesWindowController setup];
 
   [[NSDistributedNotificationCenter defaultCenter] addObserver:self

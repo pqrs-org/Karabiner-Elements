@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -12,8 +12,10 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="gHg-lq-U6a" customClass="ConfigurationManager"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
+                <outlet property="configurationManager" destination="gHg-lq-U6a" id="1k4-2u-8fe"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
             </connections>
         </customObject>
@@ -305,7 +307,7 @@
                         <tabViewItems>
                             <tabViewItem label="Simple Modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="554" height="298"/>
+                                    <rect key="frame" x="10" y="33" width="754" height="438"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0WE-kI-jqf">
@@ -388,7 +390,7 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <box title="Update" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="3j8-8U-bBH">
+                                        <box borderType="line" title="Update" translatesAutoresizingMaskIntoConstraints="NO" id="3j8-8U-bBH">
                                             <rect key="frame" x="14" y="350" width="726" height="53"/>
                                             <view key="contentView" id="Blg-HH-9LH">
                                                 <rect key="frame" x="1" y="1" width="724" height="37"/>
@@ -423,10 +425,8 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                                     <constraint firstAttribute="trailing" secondItem="lRS-BL-uVJ" secondAttribute="trailing" constant="17" id="tKe-5W-FJd"/>
                                                 </constraints>
                                             </view>
-                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </box>
-                                        <box title="Uninstall" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="bRw-jJ-vdo">
+                                        <box borderType="line" title="Uninstall" translatesAutoresizingMaskIntoConstraints="NO" id="bRw-jJ-vdo">
                                             <rect key="frame" x="14" y="281" width="726" height="53"/>
                                             <view key="contentView" id="E8s-vq-cpp">
                                                 <rect key="frame" x="1" y="1" width="724" height="37"/>
@@ -449,10 +449,8 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                                     <constraint firstItem="CzP-aW-AzB" firstAttribute="leading" secondItem="E8s-vq-cpp" secondAttribute="leading" constant="17" id="pb6-oj-hqP"/>
                                                 </constraints>
                                             </view>
-                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </box>
-                                        <box title="Web Sites" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-Lc-pSo">
+                                        <box borderType="line" title="Web Sites" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-Lc-pSo">
                                             <rect key="frame" x="14" y="212" width="726" height="53"/>
                                             <view key="contentView" id="ibU-6J-Zdv">
                                                 <rect key="frame" x="1" y="1" width="724" height="37"/>
@@ -485,8 +483,6 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                                     <constraint firstItem="i87-Pa-TZD" firstAttribute="leading" secondItem="ibU-6J-Zdv" secondAttribute="leading" constant="17" id="v22-0C-Bcp"/>
                                                 </constraints>
                                             </view>
-                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </box>
                                     </subviews>
                                     <constraints>
@@ -517,15 +513,13 @@ Please modify karabiner.json by a text editor at the moment.</string>
                                                 <rect key="frame" x="1" y="1" width="703" height="380"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" verticallyResizable="YES" id="vyq-xs-cqF">
+                                                    <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" id="vyq-xs-cqF">
                                                         <rect key="frame" x="0.0" y="0.0" width="703" height="380"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <size key="minSize" width="703" height="380"/>
                                                         <size key="maxSize" width="720" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                        <size key="minSize" width="703" height="380"/>
-                                                        <size key="maxSize" width="720" height="10000000"/>
                                                     </textView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
