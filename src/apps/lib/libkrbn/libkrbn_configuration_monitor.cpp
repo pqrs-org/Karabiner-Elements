@@ -3,6 +3,7 @@
 #include "libkrbn.h"
 #include "libkrbn.hpp"
 
+namespace {
 class libkrbn_configuration_monitor_class {
 public:
   libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
@@ -35,6 +36,7 @@ private:
 
   std::unique_ptr<file_monitor> file_monitor_;
 };
+}
 
 bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor** out, libkrbn_configuration_monitor_callback callback, void* refcon) {
   if (!out) return false;

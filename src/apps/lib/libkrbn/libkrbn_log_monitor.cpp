@@ -3,6 +3,7 @@
 #include "libkrbn.hpp"
 #include "log_monitor.hpp"
 
+namespace {
 class libkrbn_log_monitor_class {
 public:
   libkrbn_log_monitor_class(const libkrbn_log_monitor_class&) = delete;
@@ -41,6 +42,7 @@ private:
 
   std::unique_ptr<log_monitor> log_monitor_;
 };
+}
 
 bool libkrbn_log_monitor_initialize(libkrbn_log_monitor** out, libkrbn_log_monitor_callback callback, void* refcon) {
   if (!out) return false;
