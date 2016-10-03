@@ -2,8 +2,10 @@
 
 #include "boost_defs.hpp"
 
+BEGIN_BOOST_INCLUDE
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+END_BOOST_INCLUDE
 
 class local_datagram_server final {
 public:
