@@ -1,0 +1,12 @@
+{
+    "profiles": [
+        {
+            "name": "Default profile",
+            "selected": true,
+            "simple_modifications": {
+                "non_us_backslash": "grave_accent_and_tilde",
+                "grave_accent_and_tilde" : "non_us_backslash"
+            }
+        }
+    ]
+}
