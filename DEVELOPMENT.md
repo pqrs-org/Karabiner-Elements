@@ -5,7 +5,7 @@
   * Seize the input devices and modify events then post events using `karabiner_event_dispatcher`.
 * `karabiner_event_dispatcher`
   * Launch with root privilege. And then change uid to console user.
-  * Receive media control events from `karabiner_grabber` and post them to IOHIDSystem.
+  * Receive key events from `karabiner_grabber` and post them to IOHIDSystem.
 * `karabiner_console_user_server`
   * Run with console user privilege.
   * Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
