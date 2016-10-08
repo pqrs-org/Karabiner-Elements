@@ -6,25 +6,21 @@
 
 # Installation
 
-Download Karabiner-Elements package from https://pqrs.org/latest/karabiner-elements-latest.dmg
-
-Open dmg file and then open the installer.
-
-Karabiner-Elements and Karabiner-EventViewer will be installed into Launchpad.
+1. Download the Karabiner-Elements package from [here](https://pqrs.org/latest/karabiner-elements-latest.dmg).
+2. Open the dmg file and then open the installer.
+3. Karabiner-Elements and Karabiner-EventViewer will be installed into Launchpad.
 
 <img src="img/installed.png" width="400">
 
 # Open Karabiner-Elements
 
-Open Karabiner-Elements from Launchpad.
-
-The preferences window will be opened.
+Open Karabiner-Elements from Launchpad. The preferences window will be opened.
 
 <img src="img/preferences.png" width="400">
 
 # Quit Karabiner-Elements
 
-You can quit Karabiner-Elements by the Quit Karabiner-Elements button.
+You can quit Karabiner-Elements by pressing the "Quit Karabiner-Elements" button in the preferences window.
 
 <img src="img/quit.png" width="400">
 
@@ -36,15 +32,11 @@ You can uninstall Karabiner-Elements from Misc tab.
 
 # How to configure Karabiner-Elements
 
-At the moment, you have to edit the configuration file by hand.
+At the moment, you have to edit the configuration file by hand. The configuration file is located in `~/.karabiner.d/configuration/karabiner.json`. You have to create this file manually.
 
-The configuration file is located in `~/.karabiner.d/configuration/karabiner.json`
+## How to create `karabiner.json`
 
-You have to create this file manually.
-
-## How to create karabiner.json
-
-Open your terminal and issues these commands in the give order.
+Open your terminal and issues these commands in the given order:
 
 1. `mkdir -p ~/.karabiner.d/configuration/`
 2. `cd ~/.karabiner.d/configuration/`
@@ -53,11 +45,11 @@ Open your terminal and issues these commands in the give order.
 
 This should open `karabiner.json` in your default text editor.
 
-## An example of karabiner.json
+## An example `karabiner.json`
 
-`karabiner.json` uses `json` syntax. If you are not familiar with it, it may help to [read on it](http://www.w3schools.com/json/) before hand.
+`karabiner.json` uses the `json` syntax. If you are not familiar with it, it may help to [read up on it](http://www.w3schools.com/json/) beforehand.
 
-Following is an example configuration. It maps Caps Lock `⇪ ` key to Delete `⌫ ` key.
+The following is an example configuration. It maps Caps Lock `⇪` key to Delete `⌫` key.
 
 ```json
 {
@@ -73,9 +65,9 @@ Following is an example configuration. It maps Caps Lock `⇪ ` key to Delete `�
 }
 ```
 
-All maping rules must be placed between `"simple_modifications": {` and `}`. Rules are separated by comma.
+All mapping rules must be placed between `"simple_modifications": {` and `}`. Rules are separated by a comma.
 
-Lets say, in addition to Caps Lock mapping, we want to map left Command `⌘ ` key to Control `⌃ ` key, we will add new rule under `caps_lock` rule.
+Let's say, in addition to Caps Lock mapping, we want to map left Command `⌘` key to Control `⌃` key. To do this, we can add new rule under the `caps_lock` rule.
 
 ```json
 {
@@ -94,15 +86,11 @@ Lets say, in addition to Caps Lock mapping, we want to map left Command `⌘ ` k
 
 ## The key definition
 
-You need key definitions to map keys. For example you should know Caps Lock `⇪ ` key is `caps_lock`.
-
-The keys (eg. "caps_lock") are defined in types.hpp.
-
-https://github.com/tekezo/Karabiner-Elements/blob/master/src/share/types.hpp#L177-L369
+You need key definitions to map keys. For example you should know Caps Lock `⇪` key is `caps_lock`. Keys (e.g. "caps_lock") are defined in [`types.hpp`](https://github.com/tekezo/Karabiner-Elements/blob/master/src/share/types.hpp#L177-L369).
 
 ## Typical configuration files
 
-Following are few configuration files that will help you get started. Use them as it is or mix the rules as per your need.
+Following are few configuration files that will help you get started. You can use them as-is or mix the rules as per your need.
 
 * [Change caps lock to delete](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_caps_lock_to_delete.json)
 * [Change caps lock to escape](https://github.com/tekezo/Karabiner-Elements/blob/master/examples/change_caps_lock_to_escape.json)
@@ -115,25 +103,23 @@ Following are few configuration files that will help you get started. Use them a
 
 Most non US keyboards have a `§` key paired with `±` or `$` or something else.
 
-UK Keyboard
+### UK Keyboard
 
-<img src="img/keyboard-uk.jpg" width="600">
+<img src="img/keyboard-uk.png" width="600">
 
-Danish Keyboard
+### Danish Keyboard
 
-<img src="img/keyboard-danish.jpg" width="600">
+<img src="img/keyboard-danish.png" width="600">
 
-Arabic Keyboard
+### Arabic Keyboard
 
 <img src="img/keyboard-arabic.png" width="600">
 
-German Keyboard
+### German Keyboard
 
-<img src="img/keyboard-german.jpg" width="600">
+<img src="img/keyboard-german.png" width="600">
 
-Most users swap `§` with whatever key is right next to shift `⇧ ` key.
-
-Following is sample configuration that swaps those two keys.
+Most users swap `§` with whatever key is right next to shift `⇧ ` key. The following is sample configuration that swaps those two keys.
 
 ```json
 {
@@ -150,7 +136,7 @@ Following is sample configuration that swaps those two keys.
 }
 ```
 
-This will give you following mapping,
+This will give you following mapping:
 
 |     Keyboard | Before | After |
 |        ----- |   ---- |  ---- |
