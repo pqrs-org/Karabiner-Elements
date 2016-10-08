@@ -123,30 +123,107 @@ public:
     return bits;
   }
 
-  IOOptionBits get_io_option_bits(void) const {
-    IOOptionBits bits = 0;
+  IOOptionBits get_io_option_bits(krbn::key_code key_code) const {
+    // OS X requires to set NX_NONCOALSESCEDMASK.
+    IOOptionBits bits = NX_NONCOALSESCEDMASK;
+
     if (pressed(krbn::modifier_flag::caps_lock)) {
       bits |= NX_ALPHASHIFTMASK;
     }
-    if (pressed(krbn::modifier_flag::left_control) ||
-        pressed(krbn::modifier_flag::right_control)) {
-      bits |= NX_CONTROLMASK;
+    if (pressed(krbn::modifier_flag::left_control)) {
+      bits |= NX_CONTROLMASK | NX_DEVICELCTLKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::left_shift) ||
-        pressed(krbn::modifier_flag::right_shift)) {
-      bits |= NX_SHIFTMASK;
+    if (pressed(krbn::modifier_flag::right_control)) {
+      bits |= NX_CONTROLMASK | NX_DEVICERCTLKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::left_option) ||
-        pressed(krbn::modifier_flag::right_option)) {
-      bits |= NX_ALTERNATEMASK;
+    if (pressed(krbn::modifier_flag::left_shift)) {
+      bits |= NX_SHIFTMASK | NX_DEVICELSHIFTKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::left_command) ||
-        pressed(krbn::modifier_flag::right_command)) {
-      bits |= NX_COMMANDMASK;
+    if (pressed(krbn::modifier_flag::right_shift)) {
+      bits |= NX_SHIFTMASK | NX_DEVICERSHIFTKEYMASK;
+    }
+    if (pressed(krbn::modifier_flag::left_option)) {
+      bits |= NX_ALTERNATEMASK | NX_DEVICELALTKEYMASK;
+    }
+    if (pressed(krbn::modifier_flag::right_option)) {
+      bits |= NX_ALTERNATEMASK | NX_DEVICERALTKEYMASK;
+    }
+    if (pressed(krbn::modifier_flag::left_command)) {
+      bits |= NX_COMMANDMASK | NX_DEVICELCMDKEYMASK;
+    }
+    if (pressed(krbn::modifier_flag::right_command)) {
+      bits |= NX_COMMANDMASK | NX_DEVICERCMDKEYMASK;
     }
     if (pressed(krbn::modifier_flag::fn)) {
       bits |= NX_SECONDARYFNMASK;
     }
+
+    // Add NX_NUMERICPADMASK, NX_SECONDARYFNMASK by key_code.
+    //
+    // Note:
+    //   Microsoft Remote Client will fail to treat shift-arrow keys unless these flags.
+    //   Alfred will fail f16 key as trigger key unless fn flag.
+
+    switch (key_code) {
+    case krbn::key_code::keypad_slash:
+    case krbn::key_code::keypad_asterisk:
+    case krbn::key_code::keypad_hyphen:
+    case krbn::key_code::keypad_plus:
+    case krbn::key_code::keypad_enter:
+    case krbn::key_code::keypad_1:
+    case krbn::key_code::keypad_2:
+    case krbn::key_code::keypad_3:
+    case krbn::key_code::keypad_4:
+    case krbn::key_code::keypad_5:
+    case krbn::key_code::keypad_6:
+    case krbn::key_code::keypad_7:
+    case krbn::key_code::keypad_8:
+    case krbn::key_code::keypad_9:
+    case krbn::key_code::keypad_0:
+    case krbn::key_code::keypad_period:
+    case krbn::key_code::keypad_equal_sign:
+    case krbn::key_code::keypad_comma:
+      bits |= NX_NUMERICPADMASK;
+      break;
+
+    case krbn::key_code::right_arrow:
+    case krbn::key_code::left_arrow:
+    case krbn::key_code::down_arrow:
+    case krbn::key_code::up_arrow:
+      bits |= NX_NUMERICPADMASK | NX_SECONDARYFNMASK;
+      break;
+
+    case krbn::key_code::f1:
+    case krbn::key_code::f2:
+    case krbn::key_code::f3:
+    case krbn::key_code::f4:
+    case krbn::key_code::f5:
+    case krbn::key_code::f6:
+    case krbn::key_code::f7:
+    case krbn::key_code::f8:
+    case krbn::key_code::f9:
+    case krbn::key_code::f10:
+    case krbn::key_code::f11:
+    case krbn::key_code::f12:
+    case krbn::key_code::f13:
+    case krbn::key_code::f14:
+    case krbn::key_code::f15:
+    case krbn::key_code::f16:
+    case krbn::key_code::f17:
+    case krbn::key_code::f18:
+    case krbn::key_code::f19:
+    case krbn::key_code::f20:
+    case krbn::key_code::f21:
+    case krbn::key_code::f22:
+    case krbn::key_code::f23:
+    case krbn::key_code::f24:
+      bits |= NX_SECONDARYFNMASK;
+      break;
+
+    default:
+      break;
+    }
+
     return bits;
   }
 

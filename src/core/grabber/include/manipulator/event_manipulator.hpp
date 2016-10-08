@@ -525,7 +525,7 @@ private:
         auto hid_system_aux_control_button = krbn::types::get_hid_system_aux_control_button(to_key_code);
         if (hid_system_key || hid_system_aux_control_button) {
           auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
-          auto flags = modifier_flag_manager_.get_io_option_bits();
+          auto flags = modifier_flag_manager_.get_io_option_bits(to_key_code);
           event_dispatcher_manager_.post_key(to_key_code, event_type, flags, repeat);
         }
       }
