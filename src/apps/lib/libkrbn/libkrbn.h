@@ -10,7 +10,7 @@ const char* libkrbn_get_distributed_notification_observed_object(void);
 const char* libkrbn_get_distributed_notification_grabber_is_launched(void);
 
 typedef void libkrbn_configuration_monitor;
-typedef void (*libkrbn_configuration_monitor_callback)(const char* file_path, void* refcon);
+typedef void (*libkrbn_configuration_monitor_callback)(const char* current_profile_json, void* refcon);
 bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor** out, libkrbn_configuration_monitor_callback callback, void* refcon);
 void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor** out);
 

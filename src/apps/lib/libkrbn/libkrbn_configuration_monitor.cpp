@@ -1,3 +1,4 @@
+#include "configuration_core.hpp"
 #include "constants.hpp"
 #include "file_monitor.hpp"
 #include "libkrbn.h"
@@ -27,7 +28,8 @@ public:
 private:
   void cpp_callback(const std::string& file_path) {
     if (callback_) {
-      callback_(file_path.c_str(), refcon_);
+      configuration_core configuration_core(libkrbn::get_logger(), file_path);
+      callback_(configuration_core.get_current_profile_json().c_str(), refcon_);
     }
   }
 
