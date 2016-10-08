@@ -1,4 +1,5 @@
 all:
+	$(MAKE) -C cg_post_event
 	$(MAKE) -C codesign
 	$(MAKE) -C control_led
 	$(MAKE) -C dump_hid_report
@@ -9,6 +10,7 @@ all:
 	$(MAKE) -C session
 
 clean:
+	$(MAKE) -C cg_post_event clean
 	$(MAKE) -C codesign clean
 	$(MAKE) -C control_led clean
 	$(MAKE) -C dump_hid_report clean
