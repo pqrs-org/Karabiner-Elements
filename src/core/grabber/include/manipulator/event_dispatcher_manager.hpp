@@ -84,6 +84,24 @@ public:
     }
   }
 
+  void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
+    std::lock_guard<std::mutex> guard(client_mutex_);
+
+    if (!client_) {
+      logger::get_logger().error("client_ is not ready @ {0}", __PRETTY_FUNCTION__);
+      return;
+    }
+
+    try {
+      krbn::operation_type_post_modifier_flags_struct s;
+      s.key_code = key_code;
+      s.flags = flags;
+      client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+    } catch (...) {
+      client_ = nullptr;
+    }
+  }
+
   void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
     std::lock_guard<std::mutex> guard(client_mutex_);
 

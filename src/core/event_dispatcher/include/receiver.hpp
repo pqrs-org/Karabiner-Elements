@@ -86,6 +86,15 @@ private:
           }
           break;
 
+        case krbn::operation_type::post_modifier_flags:
+          if (n != sizeof(krbn::operation_type_post_modifier_flags_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::post_modifier_flags");
+          } else {
+            auto p = reinterpret_cast<krbn::operation_type_post_modifier_flags_struct*>(&(buffer_[0]));
+            hid_system_client_.post_modifier_flags(p->key_code, p->flags);
+          }
+          break;
+
         case krbn::operation_type::post_key:
           if (n != sizeof(krbn::operation_type_post_key_struct)) {
             logger::get_logger().error("invalid size for krbn::operation_type::post_key");
