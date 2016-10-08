@@ -50,7 +50,7 @@ public:
   }
 
   void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
-    if (auto key = krbn::types::get_cg_key(key_code)) {
+    if (auto key = krbn::types::get_hid_system_key(key_code)) {
       NXEventData event{};
       event.key.keyCode = *key;
 

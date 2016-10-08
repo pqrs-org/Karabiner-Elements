@@ -486,13 +486,8 @@ private:
 
       // We have to post modifier key event via CGEventPost for some apps (Microsoft Remote Desktop)
       if (event_source_) {
-        if (auto cg_key = krbn::types::get_cg_key(key_code)) {
-          if (auto event = CGEventCreateKeyboardEvent(event_source_, static_cast<CGKeyCode>(*cg_key), pressed)) {
-            CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event), key_code));
-            CGEventPost(kCGHIDEventTap, event);
-            CFRelease(event);
-          }
-        }
+        auto flags = modifier_flag_manager_.get_io_option_bits(key_code);
+        event_dispatcher_manager_.post_modifier_flags(key_code, flags);
       }
 
       return true;
@@ -512,22 +507,12 @@ private:
 
   void post_key(krbn::key_code from_key_code, krbn::key_code to_key_code, bool pressed, bool repeat) {
     if (event_source_) {
-      if (auto cg_key = krbn::types::get_cg_key(to_key_code)) {
-        if (auto event = CGEventCreateKeyboardEvent(event_source_, static_cast<CGKeyCode>(*cg_key), pressed)) {
-          CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags(CGEventGetFlags(event), to_key_code));
-          CGEventSetIntegerValueField(event, kCGKeyboardEventAutorepeat, repeat);
-          CGEventPost(kCGHIDEventTap, event);
-          CFRelease(event);
-        }
-
-      } else {
-        auto hid_system_key = krbn::types::get_hid_system_key(to_key_code);
-        auto hid_system_aux_control_button = krbn::types::get_hid_system_aux_control_button(to_key_code);
-        if (hid_system_key || hid_system_aux_control_button) {
-          auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
-          auto flags = modifier_flag_manager_.get_io_option_bits(to_key_code);
-          event_dispatcher_manager_.post_key(to_key_code, event_type, flags, repeat);
-        }
+      auto hid_system_key = krbn::types::get_hid_system_key(to_key_code);
+      auto hid_system_aux_control_button = krbn::types::get_hid_system_aux_control_button(to_key_code);
+      if (hid_system_key || hid_system_aux_control_button) {
+        auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
+        auto flags = modifier_flag_manager_.get_io_option_bits(to_key_code);
+        event_dispatcher_manager_.post_key(to_key_code, event_type, flags, repeat);
       }
     }
   }
