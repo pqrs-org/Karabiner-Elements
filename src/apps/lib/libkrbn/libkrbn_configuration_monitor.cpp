@@ -20,9 +20,7 @@ public:
                                                    targets,
                                                    std::bind(&libkrbn_configuration_monitor_class::cpp_callback, this, std::placeholders::_1));
 
-    if (callback) {
-      callback(configuration_core_file_path.c_str(), refcon_);
-    }
+    cpp_callback(configuration_core_file_path);
   }
 
 private:
