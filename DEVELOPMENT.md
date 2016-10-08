@@ -2,7 +2,7 @@
 
 * `karabiner_grabber`
   * Run with root privilege.
-  * Seize the input devices and modify events then post events using CGEventPost or `karabiner_event_dispatcher`.
+  * Seize the input devices and modify events then post events using `karabiner_event_dispatcher`.
 * `karabiner_event_dispatcher`
   * Launch with root privilege. And then change uid to console user.
   * Receive media control events from `karabiner_grabber` and post them to IOHIDSystem.
