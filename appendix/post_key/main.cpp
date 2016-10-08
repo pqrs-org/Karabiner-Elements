@@ -26,10 +26,8 @@ int main(int argc, const char* argv[]) {
 
       std::cout << "shift" << std::endl;
       if (auto key_code = krbn::types::get_key_code("left_shift")) {
-        if (auto cg_key = krbn::types::get_cg_key(*key_code)) {
-          client.post_modifier_flags(*cg_key, NX_SHIFTMASK);
-          client.post_modifier_flags(*cg_key, 0);
-        }
+        client.post_modifier_flags(*key_code, NX_SHIFTMASK | NX_DEVICELSHIFTKEYMASK);
+        client.post_modifier_flags(*key_code, 0);
       }
 
       std::cout << "mission control" << std::endl;

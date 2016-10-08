@@ -49,12 +49,18 @@ public:
     }
   }
 
-  void post_modifier_flags(uint8_t key_code, IOOptionBits flags) {
-    NXEventData event{};
-    event.key.keyCode = key_code;
+  void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
+    if (auto key = krbn::types::get_cg_key(key_code)) {
+      NXEventData event{};
+      event.key.keyCode = *key;
 
-    IOGPoint loc{};
-    post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
+      IOGPoint loc{};
+      post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
+
+      return;
+    }
+
+    logger_.warn("key_code:{1:#x} is unsupported key @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(key_code));
   }
 
   void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
