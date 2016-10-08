@@ -32,6 +32,11 @@
                 <outlet property="window" destination="QvC-M9-y7g" id="rSZ-Ih-Gbv"/>
             </connections>
         </customObject>
+        <customObject id="fgK-SD-L1B" customClass="SimpleModificationsTableViewDataSource">
+            <connections>
+                <outlet property="configurationManager" destination="gHg-lq-U6a" id="pcv-lp-ogR"/>
+            </connections>
+        </customObject>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
             <items>
                 <menuItem title="Karabiner-Elements" id="1Xt-HY-uBw">
