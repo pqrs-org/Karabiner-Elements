@@ -2,7 +2,6 @@
 * [Open Karabiner-Elements](#open-karabiner-elements)
 * [Quit Karabiner-Elements](#quit-karabiner-elements)
 * [Uninstall Karabiner-Elements](#uninstall-karabiner-elements)
-* [Change Key](#change-key)
 * [How to configure Karabiner-Elements](#how-to-configure-karabiner-elements)
 
 # Installation
