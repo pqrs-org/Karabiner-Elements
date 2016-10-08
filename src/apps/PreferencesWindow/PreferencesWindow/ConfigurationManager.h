@@ -4,6 +4,8 @@
 
 @interface ConfigurationManager : NSObject
 
+@property(copy, readonly) NSDictionary* currentProfile;
+
 - (void)setup;
 
 @end
