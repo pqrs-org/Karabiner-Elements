@@ -84,6 +84,10 @@ public:
     return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
+  std::string get_current_profile_json(void) const {
+    return get_current_profile().dump();
+  }
+
   // Note:
   // Be careful calling `save` method.
   // If the configuration file is corrupted temporarily (user editing the configuration file in editor),
