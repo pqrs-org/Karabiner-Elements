@@ -10,12 +10,7 @@
 @implementation SimpleModificationsTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  NSDictionary* currentProfile = self.configurationManager.currentProfile;
-  if (currentProfile) {
-    NSDictionary* simple_modifications = currentProfile[@"simple_modifications"];
-    return simple_modifications.count;
-  }
-  return 0;
+  return self.configurationManager.configurationCoreModel.simpleModifications.count;
 }
 
 @end

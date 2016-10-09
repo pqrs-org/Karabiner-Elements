@@ -6,6 +6,7 @@
 
 @property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
 @property(weak) IBOutlet NSTextField* versionLabel;
+@property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 
 @end
 
@@ -14,6 +15,7 @@
 - (void)setup {
   self.versionLabel.stringValue = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
 
+  [self.simpleModificationsTableView reloadData];
   [self.logFileTextViewController monitor];
 
   [self launchctlConsoleUserServer:YES];

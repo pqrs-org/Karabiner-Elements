@@ -1,10 +1,11 @@
 #import "ConfigurationManager.h"
+#import "ConfigurationCoreModel.h"
 #include "libkrbn.h"
 
 @interface ConfigurationManager ()
 
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
-@property(copy, readwrite) NSDictionary* currentProfile;
+@property(copy, readwrite) ConfigurationCoreModel* configurationCoreModel;
 
 - (void)loadJsonString:(const char*)currentProfileJsonString;
 
@@ -52,7 +53,7 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
     return;
   }
 
-  self.currentProfile = jsonObject;
+  self.configurationCoreModel = [[ConfigurationCoreModel alloc] initWithProfile:jsonObject];
 }
 
 @end
