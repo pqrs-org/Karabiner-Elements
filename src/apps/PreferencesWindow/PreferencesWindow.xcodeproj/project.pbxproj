@@ -13,6 +13,8 @@
 		3445E06F1D801AF7004555F9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06D1D801AF7004555F9 /* MainMenu.xib */; };
 		345F95371DA2AC78002854B8 /* ConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95361DA2AC78002854B8 /* ConfigurationManager.m */; };
 		345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */; };
+		345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */; };
+		345F95481DAA5DA1002854B8 /* ConfigurationCoreModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95471DAA5DA1002854B8 /* ConfigurationCoreModel.m */; };
 		3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB691D8061E40005D30D /* PreferencesWindowController.m */; };
 		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
 		347112ED1D86E619001AC60D /* UpdaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112EC1D86E619001AC60D /* UpdaterController.m */; };
@@ -33,6 +35,10 @@
 		345F95361DA2AC78002854B8 /* ConfigurationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationManager.m; sourceTree = "<group>"; };
 		345F953E1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewDataSource.h; sourceTree = "<group>"; };
 		345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewDataSource.m; sourceTree = "<group>"; };
+		345F95431DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewDelegate.h; sourceTree = "<group>"; };
+		345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewDelegate.m; sourceTree = "<group>"; };
+		345F95461DAA5DA1002854B8 /* ConfigurationCoreModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationCoreModel.h; sourceTree = "<group>"; };
+		345F95471DAA5DA1002854B8 /* ConfigurationCoreModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationCoreModel.m; sourceTree = "<group>"; };
 		3469EB681D8061E40005D30D /* PreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesWindowController.h; sourceTree = "<group>"; };
 		3469EB691D8061E40005D30D /* PreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesWindowController.m; sourceTree = "<group>"; };
 		3469EB6C1D806AEA0005D30D /* weakify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = weakify.h; path = ../../share/weakify.h; sourceTree = "<group>"; };
@@ -82,6 +88,8 @@
 				3445E0651D801AF7004555F9 /* AppDelegate.h */,
 				3445E0661D801AF7004555F9 /* AppDelegate.m */,
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
+				345F95461DAA5DA1002854B8 /* ConfigurationCoreModel.h */,
+				345F95471DAA5DA1002854B8 /* ConfigurationCoreModel.m */,
 				345F95351DA2AC78002854B8 /* ConfigurationManager.h */,
 				345F95361DA2AC78002854B8 /* ConfigurationManager.m */,
 				3445E0701D801AF7004555F9 /* Info.plist */,
@@ -93,6 +101,8 @@
 				3469EB6B1D806AD60005D30D /* share */,
 				345F953E1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.h */,
 				345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */,
+				345F95431DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.h */,
+				345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */,
 				3445E0681D801AF7004555F9 /* Supporting Files */,
 				347112EB1D86E619001AC60D /* UpdaterController.h */,
 				347112EC1D86E619001AC60D /* UpdaterController.m */,
@@ -191,12 +201,14 @@
 			files = (
 				347112ED1D86E619001AC60D /* UpdaterController.m in Sources */,
 				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
+				345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */,
 				347112F11D87010A001AC60D /* Relauncher.m in Sources */,
 				345F95371DA2AC78002854B8 /* ConfigurationManager.m in Sources */,
 				345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,
 				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
+				345F95481DAA5DA1002854B8 /* ConfigurationCoreModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
