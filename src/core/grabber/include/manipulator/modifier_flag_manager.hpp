@@ -228,33 +228,8 @@ public:
   }
 
   CGEventFlags get_cg_event_flags_for_mouse_events(void) const {
-    // OS X requires to set kCGEventFlagMaskNonCoalesced
-    CGEventFlags flags = kCGEventFlagMaskNonCoalesced;
-
-    if (pressed(krbn::modifier_flag::caps_lock)) {
-      flags = CGEventFlags(flags | kCGEventFlagMaskAlphaShift);
-    }
-    if (pressed(krbn::modifier_flag::left_control) ||
-        pressed(krbn::modifier_flag::right_control)) {
-      flags = CGEventFlags(flags | kCGEventFlagMaskControl);
-    }
-    if (pressed(krbn::modifier_flag::left_shift) ||
-        pressed(krbn::modifier_flag::right_shift)) {
-      flags = CGEventFlags(flags | kCGEventFlagMaskShift);
-    }
-    if (pressed(krbn::modifier_flag::left_option) ||
-        pressed(krbn::modifier_flag::right_option)) {
-      flags = CGEventFlags(flags | kCGEventFlagMaskAlternate);
-    }
-    if (pressed(krbn::modifier_flag::left_command) ||
-        pressed(krbn::modifier_flag::right_command)) {
-      flags = CGEventFlags(flags | kCGEventFlagMaskCommand);
-    }
-    if (pressed(krbn::modifier_flag::fn)) {
-      flags = CGEventFlags(flags | kCGEventFlagMaskSecondaryFn);
-    }
-
-    return flags;
+    // The CGEventFlags and IOOptionBits are same for now.
+    return get_io_option_bits(krbn::key_code::vk_none);
   }
 
 private:
