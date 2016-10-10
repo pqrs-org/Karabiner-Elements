@@ -1,0 +1,416 @@
+[{
+    "category": "modifiers",
+    "children": [{
+        "name": "caps_lock"
+    }, {
+        "name": "left_control"
+    }, {
+        "name": "left_shift"
+    }, {
+        "name": "left_option"
+    }, {
+        "name": "left_command"
+    }, {
+        "name": "right_control"
+    }, {
+        "name": "right_shift"
+    }, {
+        "name": "right_option"
+    }, {
+        "name": "right_command"
+    }, {
+        "name": "fn"
+    }]
+}, {
+    "category": "letters",
+    "children": [{
+        "name": "a"
+    }, {
+        "name": "b"
+    }, {
+        "name": "c"
+    }, {
+        "name": "d"
+    }, {
+        "name": "e"
+    }, {
+        "name": "f"
+    }, {
+        "name": "g"
+    }, {
+        "name": "h"
+    }, {
+        "name": "i"
+    }, {
+        "name": "j"
+    }, {
+        "name": "k"
+    }, {
+        "name": "l"
+    }, {
+        "name": "m"
+    }, {
+        "name": "n"
+    }, {
+        "name": "o"
+    }, {
+        "name": "p"
+    }, {
+        "name": "q"
+    }, {
+        "name": "r"
+    }, {
+        "name": "s"
+    }, {
+        "name": "t"
+    }, {
+        "name": "u"
+    }, {
+        "name": "v"
+    }, {
+        "name": "w"
+    }, {
+        "name": "x"
+    }, {
+        "name": "y"
+    }, {
+        "name": "z"
+    }]
+}, {
+    "category": "numbers",
+    "children": [{
+        "name": "1"
+    }, {
+        "name": "2"
+    }, {
+        "name": "3"
+    }, {
+        "name": "4"
+    }, {
+        "name": "5"
+    }, {
+        "name": "6"
+    }, {
+        "name": "7"
+    }, {
+        "name": "8"
+    }, {
+        "name": "9"
+    }, {
+        "name": "0"
+    }]
+}, {
+    "category": "controls and symbols",
+    "children": [{
+        "name": "return_or_enter"
+    }, {
+        "name": "escape"
+    }, {
+        "name": "delete_or_backspace"
+    }, {
+        "name": "delete_forward"
+    }, {
+        "name": "tab"
+    }, {
+        "name": "spacebar"
+    }, {
+        "name": "hyphen"
+    }, {
+        "name": "equal_sign"
+    }, {
+        "name": "open_bracket"
+    }, {
+        "name": "close_bracket"
+    }, {
+        "name": "backslash"
+    }, {
+        "name": "non_us_pound"
+    }, {
+        "name": "semicolon"
+    }, {
+        "name": "quote"
+    }, {
+        "name": "grave_accent_and_tilde"
+    }, {
+        "name": "comma"
+    }, {
+        "name": "period"
+    }, {
+        "name": "slash"
+    }, {
+        "name": "non_us_backslash"
+    }, {
+        "name": "power"
+    }, {
+        "name": "help"
+    }]
+}, {
+    "category": "arrow keys",
+    "children": [{
+        "name": "up_arrow"
+    }, {
+        "name": "down_arrow"
+    }, {
+        "name": "left_arrow"
+    }, {
+        "name": "right_arrow"
+    }, {
+        "name": "page_up"
+    }, {
+        "name": "page_down"
+    }, {
+        "name": "home"
+    }, {
+        "name": "end"
+    }]
+}, {
+    "category": "function keys",
+    "children": [{
+        "name": "f1"
+    }, {
+        "name": "f2"
+    }, {
+        "name": "f3"
+    }, {
+        "name": "f4"
+    }, {
+        "name": "f5"
+    }, {
+        "name": "f6"
+    }, {
+        "name": "f7"
+    }, {
+        "name": "f8"
+    }, {
+        "name": "f9"
+    }, {
+        "name": "f10"
+    }, {
+        "name": "f11"
+    }, {
+        "name": "f12"
+    }, {
+        "name": "f13"
+    }, {
+        "name": "f14"
+    }, {
+        "name": "f15"
+    }, {
+        "name": "f16"
+    }, {
+        "name": "f17"
+    }, {
+        "name": "f18"
+    }, {
+        "name": "f19"
+    }, {
+        "name": "f20"
+    }, {
+        "name": "f21"
+    }, {
+        "name": "f22"
+    }, {
+        "name": "f23"
+    }, {
+        "name": "f24"
+    }]
+}, {
+    "category": "media controls",
+    "children": [{
+        "name": "vk_consumer_brightness_down"
+    }, {
+        "name": "vk_consumer_brightness_up"
+    }, {
+        "name": "vk_mission_control"
+    }, {
+        "name": "vk_launchpad"
+    }, {
+        "name": "vk_dashboard"
+    }, {
+        "name": "vk_consumer_illumination_down"
+    }, {
+        "name": "vk_consumer_illumination_up"
+    }, {
+        "name": "vk_consumer_next"
+    }, {
+        "name": "vk_consumer_play"
+    }, {
+        "name": "vk_consumer_previous"
+    }, {
+        "name": "mute"
+    }, {
+        "name": "volume_up"
+    }, {
+        "name": "volume_down"
+    }]
+}, {
+    "category": "keypad keys",
+    "children": [{
+        "name": "keypad_num_lock"
+    }, {
+        "name": "keypad_slash"
+    }, {
+        "name": "keypad_asterisk"
+    }, {
+        "name": "keypad_hyphen"
+    }, {
+        "name": "keypad_plus"
+    }, {
+        "name": "keypad_enter"
+    }, {
+        "name": "keypad_1"
+    }, {
+        "name": "keypad_2"
+    }, {
+        "name": "keypad_3"
+    }, {
+        "name": "keypad_4"
+    }, {
+        "name": "keypad_5"
+    }, {
+        "name": "keypad_6"
+    }, {
+        "name": "keypad_7"
+    }, {
+        "name": "keypad_8"
+    }, {
+        "name": "keypad_9"
+    }, {
+        "name": "keypad_0"
+    }, {
+        "name": "keypad_period"
+    }, {
+        "name": "keypad_equal_sign"
+    }, {
+        "name": "keypad_comma"
+    }]
+}, {
+    "category": "keys in pc keyboards",
+    "children": [{
+        "name": "print_screen"
+    }, {
+        "name": "scroll_lock"
+    }, {
+        "name": "pause"
+    }, {
+        "name": "insert"
+    }, {
+        "name": "application"
+    }, {
+        "name": "execute"
+    }, {
+        "name": "menu"
+    }, {
+        "name": "select"
+    }, {
+        "name": "stop"
+    }, {
+        "name": "again"
+    }, {
+        "name": "undo"
+    }, {
+        "name": "cut"
+    }, {
+        "name": "copy"
+    }, {
+        "name": "paste"
+    }, {
+        "name": "find"
+    }]
+}, {
+    "category": "international keys",
+    "children": [{
+        "name": "international1"
+    }, {
+        "name": "international2"
+    }, {
+        "name": "international3"
+    }, {
+        "name": "international4"
+    }, {
+        "name": "international5"
+    }, {
+        "name": "international6"
+    }, {
+        "name": "international7"
+    }, {
+        "name": "international8"
+    }, {
+        "name": "international9"
+    }, {
+        "name": "lang1"
+    }, {
+        "name": "lang2"
+    }, {
+        "name": "lang3"
+    }, {
+        "name": "lang4"
+    }, {
+        "name": "lang5"
+    }, {
+        "name": "lang6"
+    }, {
+        "name": "lang7"
+    }, {
+        "name": "lang8"
+    }, {
+        "name": "lang9"
+    }]
+}, {
+    "category": "japanese",
+    "children": [{
+        "name": "japanese_eisuu"
+    }, {
+        "name": "japanese_kana"
+    }, {
+        "name": "japanese_pc_nfer"
+    }, {
+        "name": "japanese_pc_xfer"
+    }, {
+        "name": "japanese_pc_katakana"
+    }]
+}, {
+    "name": "vk_none"
+}, {
+    "category": "others"
+}, {
+    "name": "keypad_equal_sign_as400"
+}, {
+    "name": "locking_caps_lock"
+}, {
+    "name": "locking_num_lock"
+}, {
+    "name": "locking_scroll_lock"
+}, {
+    "name": "alternate_erase"
+}, {
+    "name": "sys_req_or_attention"
+}, {
+    "name": "cancel"
+}, {
+    "name": "clear"
+}, {
+    "name": "prior"
+}, {
+    "name": "return"
+}, {
+    "name": "separator"
+}, {
+    "name": "out"
+}, {
+    "name": "oper"
+}, {
+    "name": "clear_or_again"
+}, {
+    "name": "cr_sel_or_props"
+}, {
+    "name": "ex_sel"
+}, {
+    "name": "left_alt"
+}, {
+    "name": "left_gui"
+}, {
+    "name": "right_alt"
+}, {
+    "name": "right_gui"
+}]
