@@ -49,7 +49,7 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
                                                              options:0
                                                                error:&error];
   if (error) {
-    NSLog(@"JSONObjectWithStream error @ loadJsonFile: %@", error);
+    NSLog(@"JSONObjectWithData error @ loadJsonFile: %@", error);
     return;
   }
 
