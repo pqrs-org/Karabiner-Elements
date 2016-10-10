@@ -1,5 +1,7 @@
 #import "ConfigurationManager.h"
 #import "ConfigurationCoreModel.h"
+#import "JsonUtility.h"
+#import "NotificationKeys.h"
 #include "libkrbn.h"
 
 @interface ConfigurationManager ()
@@ -14,6 +16,7 @@
 static void configuration_file_updated_callback(const char* currentProfileJsonString, void* refcon) {
   ConfigurationManager* manager = (__bridge ConfigurationManager*)(refcon);
   [manager loadJsonString:currentProfileJsonString];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kConfigurationIsLoaded object:nil];
 }
 
 @implementation ConfigurationManager
@@ -34,26 +37,48 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
 }
 
 - (void)loadJsonString:(const char*)currentProfileJsonString {
-  if (!currentProfileJsonString) {
-    NSLog(@"currentProfileJsonString is null @ loadJsonString");
-    return;
+  NSDictionary* jsonObject = [JsonUtility loadCString:currentProfileJsonString];
+  if (jsonObject) {
+    self.configurationCoreModel = [[ConfigurationCoreModel alloc] initWithProfile:jsonObject];
+  }
+}
+
+- (void)save {
+  NSString* filePath = [NSString stringWithUTF8String:libkrbn_get_configuration_core_file_path()];
+  NSDictionary* jsonObject = [JsonUtility loadFile:filePath];
+  if (!jsonObject) {
+    jsonObject = @{};
+  }
+  NSMutableDictionary* mutableJsonObject = [NSMutableDictionary dictionaryWithDictionary:jsonObject];
+
+  if (!mutableJsonObject[@"profiles"]) {
+    mutableJsonObject[@"profiles"] = @[];
+  }
+  NSMutableArray* mutableProfiles = [NSMutableArray arrayWithArray:mutableJsonObject[@"profiles"]];
+  NSInteger __block selectedProfileIndex = -1;
+  [mutableProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL* stop) {
+    if (obj[@"selected"] && [obj[@"selected"] boolValue]) {
+      selectedProfileIndex = (NSInteger)(index);
+      *stop = YES;
+    }
+  }];
+  if (selectedProfileIndex == -1) {
+    [mutableProfiles addObject:@{
+      @"name" : @"Default profile",
+      @"selected" : @(YES),
+    }];
+    selectedProfileIndex = mutableProfiles.count - 1;
   }
 
-  // Do not include the last '\0' to data. (set length == strlen)
-  NSData* data = [NSData dataWithBytesNoCopy:(void*)(currentProfileJsonString)
-                                      length:strlen(currentProfileJsonString)
-                                freeWhenDone:NO];
+  NSMutableDictionary* mutableProfile = [NSMutableDictionary dictionaryWithDictionary:mutableProfiles[selectedProfileIndex]];
+  mutableProfile[@"simple_modifications"] = self.configurationCoreModel.simpleModificationsDictionary;
+  mutableProfile[@"fn_function_keys"] = self.configurationCoreModel.fnFunctionKeysDictionary;
 
-  NSError* error = nil;
-  NSDictionary* jsonObject = [NSJSONSerialization JSONObjectWithData:data
-                                                             options:0
-                                                               error:&error];
-  if (error) {
-    NSLog(@"JSONObjectWithData error @ loadJsonFile: %@", error);
-    return;
-  }
+  mutableProfiles[selectedProfileIndex] = mutableProfile;
 
-  self.configurationCoreModel = [[ConfigurationCoreModel alloc] initWithProfile:jsonObject];
+  mutableJsonObject[@"profiles"] = mutableProfiles;
+
+  [JsonUtility saveJsonToFile:mutableJsonObject filePath:filePath];
 }
 
 @end

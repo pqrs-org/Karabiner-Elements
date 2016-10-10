@@ -9,4 +9,6 @@
 
 - (void)setup;
 
+- (void)save;
+
 @end

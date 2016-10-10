@@ -3,6 +3,7 @@
 @interface ConfigurationCoreModel ()
 
 @property(copy, readwrite) NSArray<NSDictionary*>* simpleModifications;
+@property(copy, readwrite) NSArray<NSDictionary*>* fnFunctionKeys;
 
 @end
 
@@ -12,19 +13,72 @@
   self = [super init];
 
   if (self) {
-    NSMutableArray<NSDictionary*>* simpleModifications = [NSMutableArray new];
-
-    for (NSString* key in [[profile[@"simple_modifications"] allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]) {
-      [simpleModifications addObject:@{
-        @"from" : key,
-        @"to" : profile[@"simple_modifications"][key],
-      }];
-    }
-
-    self.simpleModifications = simpleModifications;
+    _simpleModifications = [self simpleModificationsDictionaryToArray:profile[@"simple_modifications"]];
+    _fnFunctionKeys = [self simpleModificationsDictionaryToArray:profile[@"fn_function_keys"]];
   }
 
   return self;
+}
+
+- (NSArray*)simpleModificationsDictionaryToArray:(NSDictionary*)dictionary {
+  NSMutableArray<NSDictionary*>* array = [NSMutableArray new];
+
+  for (NSString* key in [[dictionary allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]) {
+    [array addObject:@{
+      @"from" : key,
+      @"to" : dictionary[key],
+    }];
+  }
+
+  return array;
+}
+
+- (void)addSimpleModification {
+  NSMutableArray* simpleModifications = [NSMutableArray arrayWithArray:self.simpleModifications];
+  [simpleModifications addObject:@{
+    @"from" : @"",
+    @"to" : @"",
+  }];
+  self.simpleModifications = simpleModifications;
+}
+
+- (void)removeSimpleModification:(NSUInteger)index {
+  if (index < self.simpleModifications.count) {
+    NSMutableArray* simpleModifications = [NSMutableArray arrayWithArray:self.simpleModifications];
+    [simpleModifications removeObjectAtIndex:index];
+    self.simpleModifications = simpleModifications;
+  }
+}
+
+- (void)replaceSimpleModification:(NSUInteger)index from:(NSString*)from to:(NSString*)to {
+  if (index < self.simpleModifications.count && from && to) {
+    NSMutableArray* simpleModifications = [NSMutableArray arrayWithArray:self.simpleModifications];
+    simpleModifications[index] = @{
+      @"from" : from,
+      @"to" : to,
+    };
+    self.simpleModifications = simpleModifications;
+  }
+}
+
+- (NSDictionary*)simpleModificationsArrayToDictionary:(NSArray*)array {
+  NSMutableDictionary* dictionary = [NSMutableDictionary new];
+  for (NSDictionary* d in array) {
+    NSString* from = d[@"from"];
+    NSString* to = d[@"to"];
+    if (from && to && !dictionary[from]) {
+      dictionary[from] = to;
+    }
+  }
+  return dictionary;
+}
+
+- (NSDictionary*)simpleModificationsDictionary {
+  return [self simpleModificationsArrayToDictionary:self.simpleModifications];
+}
+
+- (NSDictionary*)fnFunctionKeysDictionary {
+  return [self simpleModificationsArrayToDictionary:self.fnFunctionKeys];
 }
 
 #pragma mark - NSCoping
@@ -33,6 +87,7 @@
   ConfigurationCoreModel* obj = [[[self class] allocWithZone:zone] init];
   if (obj) {
     obj.simpleModifications = [self.simpleModifications copyWithZone:zone];
+    obj.fnFunctionKeys = [self.fnFunctionKeys copyWithZone:zone];
   }
   return obj;
 }

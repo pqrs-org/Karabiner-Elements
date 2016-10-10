@@ -1,4 +1,5 @@
 #import "SimpleModificationsMenuManager.h"
+#import "JsonUtility.h"
 
 @interface SimpleModificationsMenuManager ()
 
@@ -47,12 +48,14 @@
         NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                       action:NULL
                                                keyEquivalent:@""];
+        item.representedObject = name;
         [self.fromMenu addItem:item];
       }
       {
         NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                       action:NULL
                                                keyEquivalent:@""];
+        item.representedObject = name;
         [self.toMenu addItem:item];
       }
     }
@@ -66,24 +69,15 @@
     return;
   }
 
-  NSInputStream* stream = [NSInputStream inputStreamWithFileAtPath:jsonFilePath];
-  [stream open];
-  NSError* error = nil;
-  NSArray* jsonObject = [NSJSONSerialization JSONObjectWithStream:stream
-                                                          options:0
-                                                            error:&error];
-  [stream close];
+  NSArray* jsonObject = [JsonUtility loadFile:jsonFilePath];
+  if (jsonObject) {
+    self.fromMenu = [NSMenu new];
+    self.fromMenu.autoenablesItems = NO;
+    self.toMenu = [NSMenu new];
+    self.toMenu.autoenablesItems = NO;
 
-  if (error) {
-    NSLog(@"JSONObjectWithStream error @ loadJsonFile: %@", error);
+    [self buildMenu:jsonObject];
   }
-
-  self.fromMenu = [NSMenu new];
-  self.fromMenu.autoenablesItems = NO;
-  self.toMenu = [NSMenu new];
-  self.toMenu.autoenablesItems = NO;
-
-  [self buildMenu:jsonObject];
 }
 
 @end

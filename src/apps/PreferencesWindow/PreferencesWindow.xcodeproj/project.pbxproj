@@ -18,6 +18,8 @@
 		345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F954A1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m */; };
 		345F954E1DAB8EC2002854B8 /* simple_modifications.json in Resources */ = {isa = PBXBuildFile; fileRef = 345F954D1DAB8EC2002854B8 /* simple_modifications.json */; };
 		345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95501DABAF7A002854B8 /* SimpleModificationsTableCellView.m */; };
+		345F95541DABE746002854B8 /* SimpleModificationsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95531DABE746002854B8 /* SimpleModificationsTableViewController.m */; };
+		345F95571DABFA29002854B8 /* JsonUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95561DABFA29002854B8 /* JsonUtility.m */; };
 		3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB691D8061E40005D30D /* PreferencesWindowController.m */; };
 		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
 		347112ED1D86E619001AC60D /* UpdaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112EC1D86E619001AC60D /* UpdaterController.m */; };
@@ -47,6 +49,11 @@
 		345F954D1DAB8EC2002854B8 /* simple_modifications.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = simple_modifications.json; path = Resources/simple_modifications.json; sourceTree = "<group>"; };
 		345F954F1DABAF7A002854B8 /* SimpleModificationsTableCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableCellView.h; sourceTree = "<group>"; };
 		345F95501DABAF7A002854B8 /* SimpleModificationsTableCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableCellView.m; sourceTree = "<group>"; };
+		345F95521DABE746002854B8 /* SimpleModificationsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewController.h; sourceTree = "<group>"; };
+		345F95531DABE746002854B8 /* SimpleModificationsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewController.m; sourceTree = "<group>"; };
+		345F95551DABFA29002854B8 /* JsonUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonUtility.h; sourceTree = "<group>"; };
+		345F95561DABFA29002854B8 /* JsonUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JsonUtility.m; sourceTree = "<group>"; };
+		345F95581DAC111B002854B8 /* NotificationKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationKeys.h; sourceTree = "<group>"; };
 		3469EB681D8061E40005D30D /* PreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesWindowController.h; sourceTree = "<group>"; };
 		3469EB691D8061E40005D30D /* PreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesWindowController.m; sourceTree = "<group>"; };
 		3469EB6C1D806AEA0005D30D /* weakify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = weakify.h; path = ../../share/weakify.h; sourceTree = "<group>"; };
@@ -101,9 +108,12 @@
 				345F95351DA2AC78002854B8 /* ConfigurationManager.h */,
 				345F95361DA2AC78002854B8 /* ConfigurationManager.m */,
 				3445E0701D801AF7004555F9 /* Info.plist */,
+				345F95551DABFA29002854B8 /* JsonUtility.h */,
+				345F95561DABFA29002854B8 /* JsonUtility.m */,
 				3469EB6D1D8127980005D30D /* LogFileTextViewController.h */,
 				3469EB6E1D8127980005D30D /* LogFileTextViewController.m */,
 				3445E06D1D801AF7004555F9 /* MainMenu.xib */,
+				345F95581DAC111B002854B8 /* NotificationKeys.h */,
 				3469EB681D8061E40005D30D /* PreferencesWindowController.h */,
 				3469EB691D8061E40005D30D /* PreferencesWindowController.m */,
 				345F954C1DAB8EB7002854B8 /* Resources */,
@@ -112,6 +122,8 @@
 				345F954A1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m */,
 				345F954F1DABAF7A002854B8 /* SimpleModificationsTableCellView.h */,
 				345F95501DABAF7A002854B8 /* SimpleModificationsTableCellView.m */,
+				345F95521DABE746002854B8 /* SimpleModificationsTableViewController.h */,
+				345F95531DABE746002854B8 /* SimpleModificationsTableViewController.m */,
 				345F953E1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.h */,
 				345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */,
 				345F95431DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.h */,
@@ -221,6 +233,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				345F95571DABFA29002854B8 /* JsonUtility.m in Sources */,
+				345F95541DABE746002854B8 /* SimpleModificationsTableViewController.m in Sources */,
 				345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */,
 				347112ED1D86E619001AC60D /* UpdaterController.m in Sources */,
 				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
