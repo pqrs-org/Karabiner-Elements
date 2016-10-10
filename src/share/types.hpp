@@ -416,6 +416,7 @@ public:
 
           // Extra
           {"fn", key_code::vk_fn_modifier},
+          {"vk_none", key_code::vk_none},
           {"vk_consumer_brightness_down", key_code::vk_consumer_brightness_down},
           {"vk_consumer_brightness_up", key_code::vk_consumer_brightness_up},
           {"vk_consumer_illumination_down", key_code::vk_consumer_illumination_down},
