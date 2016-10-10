@@ -70,13 +70,13 @@ public:
   bool is_loaded(void) const { return loaded_; }
 
   // std::vector<from,to>
-  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_simple_modifications(void) const {
+  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_simple_modifications(void) {
     auto profile = get_current_profile();
     return get_key_code_pair_from_json_object(profile["simple_modifications"]);
   }
 
   // std::vector<f1,vk_consumer_brightness_down>
-  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_fn_function_keys(void) const {
+  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_fn_function_keys(void) {
     auto profile = get_current_profile();
     if (!profile["fn_function_keys"].is_object()) {
       profile = get_default_profile();
@@ -84,7 +84,7 @@ public:
     return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
-  std::string get_current_profile_json(void) const {
+  std::string get_current_profile_json(void) {
     return get_current_profile().dump();
   }
 
@@ -125,7 +125,9 @@ private:
     return json;
   }
 
-  nlohmann::json get_current_profile(void) const {
+  // This method is not read-only. (Do not add const keyword)
+  // The json_["profiles"] will change json_ object if json_ does not have "profiles" key.
+  nlohmann::json get_current_profile(void) {
     if (json_.is_object() && json_["profiles"].is_array()) {
       for (const auto& profile : json_["profiles"]) {
         if (profile.is_object() && profile["selected"]) {
@@ -136,7 +138,7 @@ private:
     return get_default_profile();
   }
 
-  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_key_code_pair_from_json_object(const nlohmann::json& json) const {
+  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_key_code_pair_from_json_object(const nlohmann::json& json) {
     std::vector<std::pair<krbn::key_code, krbn::key_code>> v;
 
     auto profile = get_current_profile();
