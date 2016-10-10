@@ -9,45 +9,51 @@
 
 @implementation SimpleModificationsMenuManager
 
-- (void)buildMenu:(NSArray*)array fromMenu:(NSMenu*)fromMenu toMenu:(NSMenu*)toMenu {
+- (void)buildMenu:(NSArray*)array {
   [array enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL* stop) {
     NSString* category = obj[@"category"];
     NSArray* children = obj[@"children"];
     NSString* name = obj[@"name"];
 
     if (category && children) {
-      NSMenu* fromSubmenu = [NSMenu new];
-      NSMenu* toSubmenu = [NSMenu new];
-
-      [self buildMenu:children fromMenu:fromSubmenu toMenu:toSubmenu];
+      [self.fromMenu addItem:[NSMenuItem separatorItem]];
+      [self.toMenu addItem:[NSMenuItem separatorItem]];
 
       {
         NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:category
                                                       action:NULL
                                                keyEquivalent:@""];
-        item.submenu = fromSubmenu;
-        [fromMenu addItem:item];
+        [self.fromMenu addItem:item];
+        item.enabled = NO;
       }
       {
         NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:category
                                                       action:NULL
                                                keyEquivalent:@""];
-        item.submenu = toSubmenu;
-        [toMenu addItem:item];
+        [self.toMenu addItem:item];
+        item.enabled = NO;
       }
+
+      [self buildMenu:children];
 
     } else if (name) {
+      NSString* label = obj[@"label"];
+      if (!label) {
+        label = name;
+      }
+      label = [NSString stringWithFormat:@"  %@", label];
+
       {
-        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:name
+        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                       action:NULL
                                                keyEquivalent:@""];
-        [fromMenu addItem:item];
+        [self.fromMenu addItem:item];
       }
       {
-        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:name
+        NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                       action:NULL
                                                keyEquivalent:@""];
-        [toMenu addItem:item];
+        [self.toMenu addItem:item];
       }
     }
   }];
@@ -73,9 +79,11 @@
   }
 
   self.fromMenu = [NSMenu new];
+  self.fromMenu.autoenablesItems = NO;
   self.toMenu = [NSMenu new];
+  self.toMenu.autoenablesItems = NO;
 
-  [self buildMenu:jsonObject fromMenu:self.fromMenu toMenu:self.toMenu];
+  [self buildMenu:jsonObject];
 }
 
 @end
