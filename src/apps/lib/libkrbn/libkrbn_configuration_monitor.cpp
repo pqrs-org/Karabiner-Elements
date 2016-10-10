@@ -10,7 +10,7 @@ public:
   libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
 
   libkrbn_configuration_monitor_class(libkrbn_configuration_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    auto configuration_core_file_path = std::string(constants::get_configuration_directory()) + "/karabiner.json";
+    auto configuration_core_file_path = constants::get_configuration_core_file_path();
 
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
         {constants::get_configuration_directory(), {configuration_core_file_path}},

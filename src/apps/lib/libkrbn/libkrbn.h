@@ -8,6 +8,7 @@ extern "C" {
 
 const char* libkrbn_get_distributed_notification_observed_object(void);
 const char* libkrbn_get_distributed_notification_grabber_is_launched(void);
+const char* libkrbn_get_configuration_core_file_path(void);
 
 typedef void libkrbn_configuration_monitor;
 typedef void (*libkrbn_configuration_monitor_callback)(const char* current_profile_json, void* refcon);

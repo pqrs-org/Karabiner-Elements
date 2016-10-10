@@ -32,3 +32,7 @@ const char* libkrbn_get_distributed_notification_grabber_is_launched(void) {
 
   return &(result[0]);
 }
+
+const char* libkrbn_get_configuration_core_file_path(void) {
+  return constants::get_configuration_core_file_path();
+}

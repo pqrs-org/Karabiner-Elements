@@ -67,6 +67,28 @@ public:
     }
   }
 
+  static const char* get_configuration_core_file_path(void) {
+    static std::mutex mutex;
+    static bool once = false;
+    static std::string file_path;
+
+    std::lock_guard<std::mutex> guard(mutex);
+
+    if (!once) {
+      once = true;
+      if (auto p = get_configuration_directory()) {
+        file_path = p;
+        file_path += "/karabiner.json";
+      }
+    }
+
+    if (file_path.empty()) {
+      return nullptr;
+    } else {
+      return file_path.c_str();
+    }
+  }
+
   static CFStringRef get_distributed_notification_observed_object(void) {
     return CFSTR("org.pqrs.karabiner");
   }

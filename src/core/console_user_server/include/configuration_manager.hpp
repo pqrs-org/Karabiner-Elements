@@ -17,7 +17,7 @@ public:
                                                           grabber_client_(grabber_client) {
     mkdir(constants::get_configuration_directory(), 0700);
 
-    auto configuration_core_file_path = std::string(constants::get_configuration_directory()) + "/karabiner.json";
+    auto configuration_core_file_path = constants::get_configuration_core_file_path();
 
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
         {constants::get_configuration_directory(), {configuration_core_file_path}},
