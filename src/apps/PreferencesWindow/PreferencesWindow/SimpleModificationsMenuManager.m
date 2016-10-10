@@ -44,14 +44,14 @@
       }
       label = [NSString stringWithFormat:@"  %@", label];
 
-      {
+      if (!obj[@"not_from"]) {
         NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                       action:NULL
                                                keyEquivalent:@""];
         item.representedObject = name;
         [self.fromMenu addItem:item];
       }
-      {
+      if (!obj[@"not_to"]) {
         NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                       action:NULL
                                                keyEquivalent:@""];

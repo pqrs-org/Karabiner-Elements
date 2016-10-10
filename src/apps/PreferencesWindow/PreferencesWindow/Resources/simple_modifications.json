@@ -1,5 +1,5 @@
 [{
-    "category": "modifiers",
+    "category": "Modifier keys",
     "children": [{
         "name": "caps_lock"
     }, {
@@ -22,7 +22,7 @@
         "name": "fn"
     }]
 }, {
-    "category": "letters",
+    "category": "Letter keys",
     "children": [{
         "name": "a"
     }, {
@@ -77,7 +77,7 @@
         "name": "z"
     }]
 }, {
-    "category": "numbers",
+    "category": "Number keys",
     "children": [{
         "name": "1"
     }, {
@@ -100,7 +100,7 @@
         "name": "0"
     }]
 }, {
-    "category": "controls and symbols",
+    "category": "Controls and symbols",
     "children": [{
         "name": "return_or_enter"
     }, {
@@ -145,7 +145,7 @@
         "name": "help"
     }]
 }, {
-    "category": "arrow keys",
+    "category": "Arrow keys",
     "children": [{
         "name": "up_arrow"
     }, {
@@ -164,7 +164,7 @@
         "name": "end"
     }]
 }, {
-    "category": "function keys",
+    "category": "Function keys",
     "children": [{
         "name": "f1"
     }, {
@@ -215,27 +215,37 @@
         "name": "f24"
     }]
 }, {
-    "category": "media controls",
+    "category": "Media controls",
     "children": [{
-        "name": "vk_consumer_brightness_down"
+        "name": "vk_consumer_brightness_down",
+        "not_from": true
     }, {
-        "name": "vk_consumer_brightness_up"
+        "name": "vk_consumer_brightness_up",
+        "not_from": true
     }, {
-        "name": "vk_mission_control"
+        "name": "vk_mission_control",
+        "not_from": true
     }, {
-        "name": "vk_launchpad"
+        "name": "vk_launchpad",
+        "not_from": true
     }, {
-        "name": "vk_dashboard"
+        "name": "vk_dashboard",
+        "not_from": true
     }, {
-        "name": "vk_consumer_illumination_down"
+        "name": "vk_consumer_illumination_down",
+        "not_from": true
     }, {
-        "name": "vk_consumer_illumination_up"
+        "name": "vk_consumer_illumination_up",
+        "not_from": true
     }, {
-        "name": "vk_consumer_next"
+        "name": "vk_consumer_next",
+        "not_from": true
     }, {
-        "name": "vk_consumer_play"
+        "name": "vk_consumer_play",
+        "not_from": true
     }, {
-        "name": "vk_consumer_previous"
+        "name": "vk_consumer_previous",
+        "not_from": true
     }, {
         "name": "mute"
     }, {
@@ -244,7 +254,7 @@
         "name": "volume_down"
     }]
 }, {
-    "category": "keypad keys",
+    "category": "Keypad keys",
     "children": [{
         "name": "keypad_num_lock"
     }, {
@@ -285,7 +295,7 @@
         "name": "keypad_comma"
     }]
 }, {
-    "category": "keys in pc keyboards",
+    "category": "Keys in pc keyboards",
     "children": [{
         "name": "print_screen"
     }, {
@@ -318,7 +328,7 @@
         "name": "find"
     }]
 }, {
-    "category": "international keys",
+    "category": "International keys",
     "children": [{
         "name": "international1"
     }, {
@@ -375,10 +385,14 @@
         "label": "PCキーボードのかなキー"
     }]
 }, {
-    "name": "vk_none",
-    "label": "disable this key"
+    "category": "Virtual Keys",
+    "children": [{
+        "name": "vk_none",
+        "label": "disable this key",
+        "not_from": true
+    }]
 }, {
-    "category": "others",
+    "category": "Others",
     "children": [{
         "name": "keypad_equal_sign_as400"
     }, {
