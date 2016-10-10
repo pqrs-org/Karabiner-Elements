@@ -78,9 +78,6 @@ public:
   // std::vector<f1,vk_consumer_brightness_down>
   std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_fn_function_keys(void) {
     auto profile = get_current_profile();
-    if (!profile["fn_function_keys"].is_object()) {
-      profile = get_default_profile();
-    }
     return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
@@ -125,12 +122,16 @@ private:
     return json;
   }
 
-  // This method is not read-only. (Do not add const keyword)
-  // The json_["profiles"] will change json_ object if json_ does not have "profiles" key.
   nlohmann::json get_current_profile(void) {
     if (json_.is_object() && json_["profiles"].is_array()) {
-      for (const auto& profile : json_["profiles"]) {
+      for (auto&& profile : json_["profiles"]) {
         if (profile.is_object() && profile["selected"]) {
+          // Use default value if fn_function_keys is not set.
+          if (!profile["fn_function_keys"].is_object()) {
+            auto default_profile = get_default_profile();
+            profile["fn_function_keys"] = default_profile["fn_function_keys"];
+          }
+
           return profile;
         }
       }
