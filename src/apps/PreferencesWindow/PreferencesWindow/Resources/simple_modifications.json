@@ -357,60 +357,67 @@
         "name": "lang9"
     }]
 }, {
-    "category": "japanese",
+    "category": "Japanese",
     "children": [{
-        "name": "japanese_eisuu"
+        "name": "japanese_eisuu",
+        "label": "英数キー"
     }, {
-        "name": "japanese_kana"
+        "name": "japanese_kana",
+        "label": "かなキー"
     }, {
-        "name": "japanese_pc_nfer"
+        "name": "japanese_pc_nfer",
+        "label": "PCキーボードの無変換キー"
     }, {
-        "name": "japanese_pc_xfer"
+        "name": "japanese_pc_xfer",
+        "label": "PCキーボードの変換キー"
     }, {
-        "name": "japanese_pc_katakana"
+        "name": "japanese_pc_katakana",
+        "label": "PCキーボードのかなキー"
     }]
 }, {
-    "name": "vk_none"
+    "name": "vk_none",
+    "label": "disable this key"
 }, {
-    "category": "others"
-}, {
-    "name": "keypad_equal_sign_as400"
-}, {
-    "name": "locking_caps_lock"
-}, {
-    "name": "locking_num_lock"
-}, {
-    "name": "locking_scroll_lock"
-}, {
-    "name": "alternate_erase"
-}, {
-    "name": "sys_req_or_attention"
-}, {
-    "name": "cancel"
-}, {
-    "name": "clear"
-}, {
-    "name": "prior"
-}, {
-    "name": "return"
-}, {
-    "name": "separator"
-}, {
-    "name": "out"
-}, {
-    "name": "oper"
-}, {
-    "name": "clear_or_again"
-}, {
-    "name": "cr_sel_or_props"
-}, {
-    "name": "ex_sel"
-}, {
-    "name": "left_alt"
-}, {
-    "name": "left_gui"
-}, {
-    "name": "right_alt"
-}, {
-    "name": "right_gui"
+    "category": "others",
+    "children": [{
+        "name": "keypad_equal_sign_as400"
+    }, {
+        "name": "locking_caps_lock"
+    }, {
+        "name": "locking_num_lock"
+    }, {
+        "name": "locking_scroll_lock"
+    }, {
+        "name": "alternate_erase"
+    }, {
+        "name": "sys_req_or_attention"
+    }, {
+        "name": "cancel"
+    }, {
+        "name": "clear"
+    }, {
+        "name": "prior"
+    }, {
+        "name": "return"
+    }, {
+        "name": "separator"
+    }, {
+        "name": "out"
+    }, {
+        "name": "oper"
+    }, {
+        "name": "clear_or_again"
+    }, {
+        "name": "cr_sel_or_props"
+    }, {
+        "name": "ex_sel"
+    }, {
+        "name": "left_alt"
+    }, {
+        "name": "left_gui"
+    }, {
+        "name": "right_alt"
+    }, {
+        "name": "right_gui"
+    }]
 }]
