@@ -66,7 +66,9 @@
   for (NSDictionary* d in array) {
     NSString* from = d[@"from"];
     NSString* to = d[@"to"];
-    if (from && to && !dictionary[from]) {
+    if (from && ![from isEqualToString:@""] &&
+        to && ![to isEqualToString:@""] &&
+        !dictionary[from]) {
       dictionary[from] = to;
     }
   }
