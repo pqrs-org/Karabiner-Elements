@@ -32,7 +32,18 @@ You can uninstall Karabiner-Elements from Misc tab.
 
 # How to configure Karabiner-Elements
 
-At the moment, you have to edit the configuration file by hand. The configuration file is located in `~/.karabiner.d/configuration/karabiner.json`. You have to create this file manually.
+You can add key modification configurations from Preferences.
+
+<img src="img/simple_modifications1.png" width="400">
+
+<img src="img/simple_modifications2.png" width="400">
+
+# Learn about `karabiner.json`
+
+Karabiner-Elements configuration will be saved to `~/.karabiner.d/configuration/karabiner.json`.
+
+You don't need to care about this file for normal usage.
+We describe about `karabiner.json` for advanced usage.
 
 ## How to create `karabiner.json`
 
