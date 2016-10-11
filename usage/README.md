@@ -45,17 +45,6 @@ Karabiner-Elements configuration will be saved to `~/.karabiner.d/configuration/
 You don't need to care about this file for normal usage.
 We describe about `karabiner.json` for advanced usage.
 
-## How to create `karabiner.json`
-
-Open your terminal and issues these commands in the given order:
-
-1. `mkdir -p ~/.karabiner.d/configuration/`
-2. `cd ~/.karabiner.d/configuration/`
-3. `touch karabiner.json`
-4. `open karabiner.json`
-
-This should open `karabiner.json` in your default text editor.
-
 ## An example `karabiner.json`
 
 `karabiner.json` uses the `json` syntax. If you are not familiar with it, it may help to [read up on it](http://www.w3schools.com/json/) beforehand.
