@@ -22,6 +22,77 @@
         "name": "fn"
     }]
 }, {
+    "category": "Controls and symbols",
+    "children": [{
+        "name": "return_or_enter"
+    }, {
+        "name": "escape"
+    }, {
+        "name": "delete_or_backspace"
+    }, {
+        "name": "delete_forward"
+    }, {
+        "name": "tab"
+    }, {
+        "name": "spacebar"
+    }, {
+        "name": "hyphen",
+        "label": "hyphen (-)"
+    }, {
+        "name": "equal_sign",
+        "label": "equal_sign (=)"
+    }, {
+        "name": "open_bracket",
+        "label": "open_bracket ["
+    }, {
+        "name": "close_bracket",
+        "label": "close_bracket ]"
+    }, {
+        "name": "backslash",
+        "label": "backslash (\\)"
+    }, {
+        "name": "non_us_pound"
+    }, {
+        "name": "semicolon",
+        "label": "semicolon (;)"
+    }, {
+        "name": "quote",
+        "label": "quote (')"
+    }, {
+        "name": "grave_accent_and_tilde",
+        "label": "grave_accent_and_tilde (`)"
+    }, {
+        "name": "comma",
+        "label": "comma (,)"
+    }, {
+        "name": "period",
+        "label": "period (.)"
+    }, {
+        "name": "slash",
+        "label": "slash (/)"
+    }, {
+        "name": "non_us_backslash"
+    }]
+}, {
+    "category": "Arrow keys",
+    "children": [{
+        "name": "up_arrow"
+    }, {
+        "name": "down_arrow"
+    }, {
+        "name": "left_arrow"
+    }, {
+        "name": "right_arrow"
+    }, {
+        "name": "page_up"
+    }, {
+        "name": "page_down"
+    }, {
+        "name": "home"
+    }, {
+        "name": "end"
+    }]
+}, {
     "category": "Letter keys",
     "children": [{
         "name": "a"
@@ -100,70 +171,6 @@
         "name": "0"
     }]
 }, {
-    "category": "Controls and symbols",
-    "children": [{
-        "name": "return_or_enter"
-    }, {
-        "name": "escape"
-    }, {
-        "name": "delete_or_backspace"
-    }, {
-        "name": "delete_forward"
-    }, {
-        "name": "tab"
-    }, {
-        "name": "spacebar"
-    }, {
-        "name": "hyphen"
-    }, {
-        "name": "equal_sign"
-    }, {
-        "name": "open_bracket"
-    }, {
-        "name": "close_bracket"
-    }, {
-        "name": "backslash"
-    }, {
-        "name": "non_us_pound"
-    }, {
-        "name": "semicolon"
-    }, {
-        "name": "quote"
-    }, {
-        "name": "grave_accent_and_tilde"
-    }, {
-        "name": "comma"
-    }, {
-        "name": "period"
-    }, {
-        "name": "slash"
-    }, {
-        "name": "non_us_backslash"
-    }, {
-        "name": "power"
-    }, {
-        "name": "help"
-    }]
-}, {
-    "category": "Arrow keys",
-    "children": [{
-        "name": "up_arrow"
-    }, {
-        "name": "down_arrow"
-    }, {
-        "name": "left_arrow"
-    }, {
-        "name": "right_arrow"
-    }, {
-        "name": "page_up"
-    }, {
-        "name": "page_down"
-    }, {
-        "name": "home"
-    }, {
-        "name": "end"
-    }]
-}, {
     "category": "Function keys",
     "children": [{
         "name": "f1"
@@ -206,13 +213,17 @@
     }, {
         "name": "f20"
     }, {
-        "name": "f21"
+        "name": "f21",
+        "not_to": true
     }, {
-        "name": "f22"
+        "name": "f22",
+        "not_to": true
     }, {
-        "name": "f23"
+        "name": "f23",
+        "not_to": true
     }, {
-        "name": "f24"
+        "name": "f24",
+        "not_to": true
     }]
 }, {
     "category": "Media controls",
@@ -295,6 +306,13 @@
         "name": "keypad_comma"
     }]
 }, {
+    "category": "Virtual Keys",
+    "children": [{
+        "name": "vk_none",
+        "label": "vk_none (disable this key)",
+        "not_from": true
+    }]
+}, {
     "category": "Keys in pc keyboards",
     "children": [{
         "name": "print_screen"
@@ -307,64 +325,92 @@
     }, {
         "name": "application"
     }, {
-        "name": "execute"
+        "name": "help"
     }, {
-        "name": "menu"
+        "name": "power"
     }, {
-        "name": "select"
+        "name": "execute",
+        "not_to": true
     }, {
-        "name": "stop"
+        "name": "menu",
+        "not_to": true
     }, {
-        "name": "again"
+        "name": "select",
+        "not_to": true
     }, {
-        "name": "undo"
+        "name": "stop",
+        "not_to": true
     }, {
-        "name": "cut"
+        "name": "again",
+        "not_to": true
     }, {
-        "name": "copy"
+        "name": "undo",
+        "not_to": true
     }, {
-        "name": "paste"
+        "name": "cut",
+        "not_to": true
     }, {
-        "name": "find"
+        "name": "copy",
+        "not_to": true
+    }, {
+        "name": "paste",
+        "not_to": true
+    }, {
+        "name": "find",
+        "not_to": true
     }]
 }, {
     "category": "International keys",
     "children": [{
         "name": "international1"
     }, {
-        "name": "international2"
+        "name": "international2",
+        "not_to": true
     }, {
         "name": "international3"
     }, {
-        "name": "international4"
+        "name": "international4",
+        "not_to": true
     }, {
-        "name": "international5"
+        "name": "international5",
+        "not_to": true
     }, {
-        "name": "international6"
+        "name": "international6",
+        "not_to": true
     }, {
-        "name": "international7"
+        "name": "international7",
+        "not_to": true
     }, {
-        "name": "international8"
+        "name": "international8",
+        "not_to": true
     }, {
-        "name": "international9"
+        "name": "international9",
+        "not_to": true
     }, {
         "name": "lang1"
     }, {
         "name": "lang2"
     }, {
-        "name": "lang3"
+        "name": "lang3",
+        "not_to": true
     }, {
-        "name": "lang4"
+        "name": "lang4",
+        "not_to": true
     }, {
-        "name": "lang5"
+        "name": "lang5",
+        "not_to": true
     }, {
-        "name": "lang6"
+        "name": "lang6",
+        "not_to": true
     }, {
-        "name": "lang7"
+        "name": "lang7",
+        "not_to": true
     }, {
-        "name": "lang8"
+        "name": "lang8",
+        "not_to": true
     }, {
-        "name": "lang9"
+        "name": "lang9",
+        "not_to": true
     }]
 }, {
     "category": "Japanese",
@@ -376,62 +422,79 @@
         "label": "かなキー"
     }, {
         "name": "japanese_pc_nfer",
-        "label": "PCキーボードの無変換キー"
+        "label": "PCキーボードの無変換キー",
+        "not_to": true
     }, {
         "name": "japanese_pc_xfer",
-        "label": "PCキーボードの変換キー"
+        "label": "PCキーボードの変換キー",
+        "not_to": true
     }, {
         "name": "japanese_pc_katakana",
-        "label": "PCキーボードのかなキー"
-    }]
-}, {
-    "category": "Virtual Keys",
-    "children": [{
-        "name": "vk_none",
-        "label": "disable this key",
-        "not_from": true
+        "label": "PCキーボードのかなキー",
+        "not_to": true
     }]
 }, {
     "category": "Others",
     "children": [{
-        "name": "keypad_equal_sign_as400"
+        "name": "keypad_equal_sign_as400",
+        "not_to": true
     }, {
-        "name": "locking_caps_lock"
+        "name": "locking_caps_lock",
+        "not_to": true
     }, {
-        "name": "locking_num_lock"
+        "name": "locking_num_lock",
+        "not_to": true
     }, {
-        "name": "locking_scroll_lock"
+        "name": "locking_scroll_lock",
+        "not_to": true
     }, {
-        "name": "alternate_erase"
+        "name": "alternate_erase",
+        "not_to": true
     }, {
-        "name": "sys_req_or_attention"
+        "name": "sys_req_or_attention",
+        "not_to": true
     }, {
-        "name": "cancel"
+        "name": "cancel",
+        "not_to": true
     }, {
-        "name": "clear"
+        "name": "clear",
+        "not_to": true
     }, {
-        "name": "prior"
+        "name": "prior",
+        "not_to": true
     }, {
-        "name": "return"
+        "name": "return",
+        "label": "rarely used return (HID usage 0x9e)",
+        "not_to": true
     }, {
-        "name": "separator"
+        "name": "separator",
+        "not_to": true
     }, {
-        "name": "out"
+        "name": "out",
+        "not_to": true
     }, {
-        "name": "oper"
+        "name": "oper",
+        "not_to": true
     }, {
-        "name": "clear_or_again"
+        "name": "clear_or_again",
+        "not_to": true
     }, {
-        "name": "cr_sel_or_props"
+        "name": "cr_sel_or_props",
+        "not_to": true
     }, {
-        "name": "ex_sel"
+        "name": "ex_sel",
+        "not_to": true
     }, {
-        "name": "left_alt"
+        "name": "left_alt",
+        "label": "left_alt (equal to `left_option`)"
     }, {
-        "name": "left_gui"
+        "name": "left_gui",
+        "label": "left_gui (equal to `left_command`)"
     }, {
-        "name": "right_alt"
+        "name": "right_alt",
+        "label": "right_alt (equal to `right_option`)"
     }, {
-        "name": "right_gui"
+        "name": "right_gui",
+        "label": "right_gui (equal to `right_command`)"
     }]
 }]
