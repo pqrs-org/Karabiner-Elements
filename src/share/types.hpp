@@ -559,7 +559,7 @@ public:
       map[key_code(kHIDUsage_KeyboardNonUSBackslash)] = 0xa;
       map[key_code(kHIDUsage_KeyboardApplication)] = 0x6e;
 
-      // map[key_code(kHIDUsage_KeyboardPower)] => get_hid_aux_control_button_map
+      // map[key_code(kHIDUsage_KeyboardPower)] => get_hid_system_aux_control_button_map
 
       map[key_code(kHIDUsage_KeypadEqualSign)] = 0x51;
 
@@ -587,9 +587,9 @@ public:
       // map[key_code(kHIDUsage_KeyboardCopy)] = mac ignores this key
       // map[key_code(kHIDUsage_KeyboardPaste)] = mac ignores this key
       // map[key_code(kHIDUsage_KeyboardFind)] = mac ignores this key
-      // map[key_code(kHIDUsage_KeyboardMute)] => get_hid_aux_control_button_map
-      // map[key_code(kHIDUsage_KeyboardVolumeUp)] => get_hid_aux_control_button_map
-      // map[key_code(kHIDUsage_KeyboardVolumeDown)] => get_hid_aux_control_button_map
+      // map[key_code(kHIDUsage_KeyboardMute)] => get_hid_system_aux_control_button_map
+      // map[key_code(kHIDUsage_KeyboardVolumeUp)] => get_hid_system_aux_control_button_map
+      // map[key_code(kHIDUsage_KeyboardVolumeDown)] => get_hid_system_aux_control_button_map
 
       // map[key_code(kHIDUsage_KeyboardLockingCapsLock)] => mac ignores this key
       // map[key_code(kHIDUsage_KeyboardLockingNumLock)] => ??
