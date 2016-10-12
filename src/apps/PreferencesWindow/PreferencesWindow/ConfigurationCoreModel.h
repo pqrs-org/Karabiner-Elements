@@ -15,4 +15,6 @@
 - (void)removeSimpleModification:(NSUInteger)index;
 - (void)replaceSimpleModification:(NSUInteger)index from:(NSString*)from to:(NSString*)to;
 
+- (void)replaceFnFunctionKey:(NSString*)from to:(NSString*)to;
+
 @end

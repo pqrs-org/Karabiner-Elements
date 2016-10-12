@@ -26,6 +26,9 @@
 		347112F11D87010A001AC60D /* Relauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112F01D87010A001AC60D /* Relauncher.m */; };
 		347113101D870D74001AC60D /* libkrbn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3471130F1D870D74001AC60D /* libkrbn.a */; };
 		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
+		34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */; };
+		34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */; };
+		34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +69,12 @@
 		3471130F1D870D74001AC60D /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
 		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
+		34EEEEEA1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDataSource.h; sourceTree = "<group>"; };
+		34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FnFunctionKeysTableViewDataSource.m; sourceTree = "<group>"; };
+		34EEEEED1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDelegate.h; sourceTree = "<group>"; };
+		34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FnFunctionKeysTableViewDelegate.m; sourceTree = "<group>"; };
+		34EEEEF11DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewController.h; sourceTree = "<group>"; };
+		34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FnFunctionKeysTableViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +116,12 @@
 				345F95471DAA5DA1002854B8 /* ConfigurationCoreModel.m */,
 				345F95351DA2AC78002854B8 /* ConfigurationManager.h */,
 				345F95361DA2AC78002854B8 /* ConfigurationManager.m */,
+				34EEEEF11DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.h */,
+				34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */,
+				34EEEEEA1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.h */,
+				34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */,
+				34EEEEED1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.h */,
+				34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */,
 				3445E0701D801AF7004555F9 /* Info.plist */,
 				345F95551DABFA29002854B8 /* JsonUtility.h */,
 				345F95561DABFA29002854B8 /* JsonUtility.m */,
@@ -233,11 +248,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */,
 				345F95571DABFA29002854B8 /* JsonUtility.m in Sources */,
 				345F95541DABE746002854B8 /* SimpleModificationsTableViewController.m in Sources */,
 				345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */,
 				347112ED1D86E619001AC60D /* UpdaterController.m in Sources */,
+				34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */,
 				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
+				34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */,
 				345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */,
 				347112F11D87010A001AC60D /* Relauncher.m in Sources */,
 				345F95371DA2AC78002854B8 /* ConfigurationManager.m in Sources */,

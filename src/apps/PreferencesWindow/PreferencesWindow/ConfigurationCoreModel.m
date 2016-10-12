@@ -23,7 +23,7 @@
 - (NSArray*)simpleModificationsDictionaryToArray:(NSDictionary*)dictionary {
   NSMutableArray<NSDictionary*>* array = [NSMutableArray new];
 
-  for (NSString* key in [[dictionary allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]) {
+  for (NSString* key in [[dictionary allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]) {
     [array addObject:@{
       @"from" : key,
       @"to" : dictionary[key],
@@ -59,6 +59,20 @@
     };
     self.simpleModifications = simpleModifications;
   }
+}
+
+- (void)replaceFnFunctionKey:(NSString*)from to:(NSString*)to {
+  NSMutableArray* fnFunctionKeys = [NSMutableArray arrayWithArray:self.fnFunctionKeys];
+  [fnFunctionKeys enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL* stop) {
+    if ([obj[@"from"] isEqualToString:from]) {
+      fnFunctionKeys[index] = @{
+        @"from" : from,
+        @"to" : to,
+      };
+      *stop = YES;
+    }
+  }];
+  self.fnFunctionKeys = fnFunctionKeys;
 }
 
 - (NSDictionary*)simpleModificationsArrayToDictionary:(NSArray*)array {

@@ -1,4 +1,5 @@
 #import "PreferencesWindowController.h"
+#import "FnFunctionKeysTableViewController.h"
 #import "LogFileTextViewController.h"
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableViewController.h"
@@ -6,6 +7,7 @@
 
 @interface PreferencesWindowController ()
 
+@property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 @property(weak) IBOutlet NSTextField* versionLabel;
@@ -19,6 +21,7 @@
 - (void)setup {
   [self.simpleModificationsMenuManager setup];
   [self.simpleModificationsTableViewController setup];
+  [self.fnFunctionKeysTableViewController setup];
 
   self.versionLabel.stringValue = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
 
