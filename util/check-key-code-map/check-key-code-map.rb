@@ -97,8 +97,10 @@ def check_simple_modifications(simple_modifications, key_code_map)
       if v["hid_system_key"].nil? and v["hid_system_aux_control_button"].nil? then
         # this key should be not_to
         if value["not_to"].nil? then
-          print "Error: `#{value["name"]}` should be not_to\n"
-          exit 1
+          if value["name"] != "vk_none" then
+            print "Error: `#{value["name"]}` should be not_to\n"
+            exit 1
+          end
         end
       else
         # this key should not be not_to
