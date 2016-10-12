@@ -19,6 +19,8 @@ open('| ./dump_key_code_map/build/Release/dump_key_code_map') do |f|
   key_code_map = JSON.parse(f.read)
 end
 
+# check IOHIDUsageTables.h
+
 open('vendor/IOHIDUsageTables.h') do |f|
   is_target = false
   count = 0
@@ -69,5 +71,48 @@ open('vendor/IOHIDUsageTables.h') do |f|
       end
     end
   end
+  print "\n"
+  print "\n"
+end
+
+# check simple_modifications.json
+
+print "check simple_modifications.json"
+
+def check_simple_modifications(simple_modifications, key_code_map)
+  simple_modifications.each do |value|
+    unless value["children"].nil? then
+      check_simple_modifications(value["children"], key_code_map)
+    end
+    unless value["name"].nil? then
+      print '.'
+
+      v = key_code_map[value["name"]]
+
+      if v.nil? then
+        print "Error: Unknown name `#{value["name"]}`\n"
+        exit 1
+      end
+
+      if v["hid_system_key"].nil? and v["hid_system_aux_control_button"].nil? then
+        # this key should be not_to
+        if value["not_to"].nil? then
+          print "Error: `#{value["name"]}` should be not_to\n"
+          exit 1
+        end
+      else
+        # this key should not be not_to
+        unless value["not_to"].nil? then
+          print "Error: `#{value["name"]}` should not be not_to\n"
+          exit 1
+        end
+      end
+    end
+  end
+end
+
+open('../../src/apps/PreferencesWindow/PreferencesWindow/Resources/simple_modifications.json') do |f|
+  simple_modifications = JSON.parse(f.read)
+  check_simple_modifications(simple_modifications, key_code_map)
   print "\n"
 end
