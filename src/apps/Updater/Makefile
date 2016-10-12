@@ -23,7 +23,7 @@ xcode:
 	open *.xcworkspace
 
 run: all
-	open "./build/Release/Karabiner.app"
+	open "./build/Release/Karabiner-Elements.app"
 
 podupdate:
 	pod update
