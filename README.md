@@ -26,7 +26,7 @@ System requirements:
 * OS X 10.11+
 * Xcode 8+
 * Command Line Tools for Xcode
-* Boost 1.61.0+ (header-only) http://www.boost.org/
+* Boost 1.61.0+ (header-only) http://www.boost.org/ (brew install boost)
 
 Please install Boost into `/opt/local/include/boost`. (eg. `/opt/local/include/boost/version.hpp`)
 
