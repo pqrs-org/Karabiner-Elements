@@ -8,10 +8,10 @@ all: gitclean
 
 install:
 	bash ./src/scripts/unload.sh
-	sudo rm -rf /Library/Extensions/org.pqrs.driver.VirtualHIDManager.kext
-	bash ./scripts/setpermissions.sh dist
-	sudo cp -R dist/org.pqrs.driver.VirtualHIDManager.kext /Library/Extensions
-	sudo kextload /Library/Extensions/org.pqrs.driver.VirtualHIDManager.kext
+	sudo rm -rf /tmp/org.pqrs.driver.VirtualHIDDevice
+	sudo mkdir -p /tmp/org.pqrs.driver.VirtualHIDDevice
+	sudo cp -R dist/org.pqrs.driver.VirtualHIDManager.kext /tmp/org.pqrs.driver.VirtualHIDDevice
+	sudo kextload /tmp/org.pqrs.driver.VirtualHIDDevice/org.pqrs.driver.VirtualHIDManager.kext
 
 clean:
 	make -C src clean

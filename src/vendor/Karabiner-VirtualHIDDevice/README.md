@@ -28,7 +28,7 @@ cd Karabiner-VirtualHIDDevice
 make
 ```
 
-The `make` script will create a redistributable kexts into `dist` directory.
+The `make` script will create a redistributable kext into `dist` directory.
 
 ## Example
 
