@@ -13,7 +13,8 @@ public:
       mkdir(log_directory, 0755);
 
       if (filesystem::is_directory(log_directory)) {
-        logger = spdlog::rotating_logger_mt("grabber", "/var/log/karabiner/grabber_log", 256 * 1024, 3, true);
+        logger = spdlog::rotating_logger_mt("grabber", "/var/log/karabiner/grabber_log", 256 * 1024, 3);
+        logger->flush_on(spdlog::level::info);
       }
 
       if (!logger) {
