@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filesystem.hpp"
+#include "spdlog_utility.hpp"
 #include <memory>
 #include <spdlog/spdlog.h>
 
@@ -15,6 +16,7 @@ public:
       if (filesystem::is_directory(log_directory)) {
         logger = spdlog::rotating_logger_mt("grabber", "/var/log/karabiner/grabber_log", 256 * 1024, 3);
         logger->flush_on(spdlog::level::info);
+        logger->set_pattern(spdlog_utility::get_pattern());
       }
 
       if (!logger) {
