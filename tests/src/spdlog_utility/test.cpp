@@ -8,9 +8,9 @@
 
 TEST_CASE("get_timestamp_number") {
   {
-    auto actual = spdlog_utility::get_sort_key("[2016-09-22 20:18:37.649] [grabber] [info] version 0.90.36");
+    auto actual = spdlog_utility::get_sort_key("[2016-10-15 00:09:47.283] [info] [grabber] version 0.90.50");
     REQUIRE(actual != boost::none);
-    REQUIRE(*actual == 20160922201837649);
+    REQUIRE(*actual == 20161015000947283);
   }
   {
     auto actual = spdlog_utility::get_sort_key("[]");
