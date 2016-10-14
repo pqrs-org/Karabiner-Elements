@@ -449,6 +449,23 @@ public:
     return it->second;
   }
 
+  static boost::optional<key_code> get_key_code(uint32_t usage_page, uint32_t usage) {
+    switch (usage_page) {
+    case kHIDPage_KeyboardOrKeypad:
+      if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
+        return krbn::key_code(usage);
+      }
+      break;
+
+    case kHIDPage_AppleVendorTopCase:
+      if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
+        return krbn::key_code::vk_fn_modifier;
+      }
+      break;
+    }
+    return boost::none;
+  }
+
   // hid usage -> CoreGraphics key code
   static const std::unordered_map<key_code, uint8_t>& get_hid_system_key_map(void) {
     static std::unordered_map<key_code, uint8_t> map;
