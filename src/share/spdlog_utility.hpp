@@ -8,8 +8,12 @@
 
 class spdlog_utility final {
 public:
+  static std::string get_pattern(void) {
+    return "[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v";
+  }
+
   static boost::optional<uint64_t> get_sort_key(const std::string& line) {
-    // line == "[2016-09-22 20:18:37.649] [grabber] [info] version 0.90.36"
+    // line == "[2016-09-22 20:18:37.649] [info] [grabber] version 0.90.36"
     // return 20160922201837649
 
     // We can parse time strictly by using boost::posix_time::time_from_string.
