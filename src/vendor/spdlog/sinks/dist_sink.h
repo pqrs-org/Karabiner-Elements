@@ -36,9 +36,13 @@ protected:
     void _sink_it(const details::log_msg& msg) override
     {
         for (auto &sink : _sinks)
-            sink->log(msg);
+        {
+            if( sink->should_log( msg.level))
+            {
+                sink->log(msg);
+            }
+        }
     }
-
 
 public:
     void flush() override

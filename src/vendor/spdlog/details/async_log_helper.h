@@ -133,7 +133,7 @@ public:
 
     void set_formatter(formatter_ptr);
 
-    void flush();
+    void flush(bool wait_for_q);
 
 
 private:
@@ -249,12 +249,12 @@ inline void spdlog::details::async_log_helper::push_msg(details::async_log_helpe
 
 }
 
-//wait for the queue be empty and request flush from its sinks
-inline void spdlog::details::async_log_helper::flush()
+// optionally wait for the queue be empty and request flush from the sinks
+inline void spdlog::details::async_log_helper::flush(bool wait_for_q)
 {
-    wait_empty_q();
     push_msg(async_msg(async_msg_type::flush));
-    wait_empty_q(); //make sure the above flush message was processed
+    if(wait_for_q)
+        wait_empty_q(); //return only make after the above flush message was processed
 }
 
 inline void spdlog::details::async_log_helper::worker_loop()
@@ -304,7 +304,12 @@ inline bool spdlog::details::async_log_helper::process_next_msg(log_clock::time_
             incoming_async_msg.fill_log_msg(incoming_log_msg);
             _formatter->format(incoming_log_msg);
             for (auto &s : _sinks)
-                s->log(incoming_log_msg);
+            {
+                if(s->should_log( incoming_log_msg.level))
+                {
+                    s->log(incoming_log_msg);
+                }
+            }
         }
         return true;
     }
@@ -317,7 +322,6 @@ inline bool spdlog::details::async_log_helper::process_next_msg(log_clock::time_
         handle_flush_interval(now, last_flush);
         sleep_or_yield(now, last_pop);
         return !_terminate_requested;
-
     }
 }
 

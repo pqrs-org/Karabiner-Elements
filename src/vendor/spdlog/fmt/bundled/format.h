@@ -1308,19 +1308,25 @@ struct Conditional<false, T, F>
 };
 
 // For bcc32 which doesn't understand ! in template arguments.
-template<bool>
+template <bool>
 struct Not
 {
     enum { value = 0 };
 };
 
-template<>
+template <>
 struct Not<false>
 {
     enum { value = 1 };
 };
 
-template<typename T, T> struct LConvCheck
+template <typename T>
+struct False
+{
+    enum { value = 0 };
+};
+
+template <typename T, T> struct LConvCheck
 {
     LConvCheck(int) {}
 };
@@ -1338,6 +1344,36 @@ inline StringRef thousands_sep(
 inline fmt::StringRef thousands_sep(...)
 {
     return "";
+}
+
+#define FMT_CONCAT(a, b) a##b
+
+#if FMT_GCC_VERSION >= 407
+# define FMT_UNUSED __attribute__((unused))
+#else
+# define FMT_UNUSED
+#endif
+
+#ifndef FMT_USE_STATIC_ASSERT
+# define FMT_USE_STATIC_ASSERT 0
+#endif
+
+#if FMT_USE_STATIC_ASSERT || FMT_HAS_FEATURE(cxx_static_assert) || \
+  (FMT_GCC_VERSION >= 403 && FMT_HAS_GXX_CXX11) || _MSC_VER >= 1600
+# define FMT_STATIC_ASSERT(cond, message) static_assert(cond, message)
+#else
+# define FMT_CONCAT_(a, b) FMT_CONCAT(a, b)
+# define FMT_STATIC_ASSERT(cond, message) \
+  typedef int FMT_CONCAT_(Assert, __LINE__)[(cond) ? 1 : -1] FMT_UNUSED
+#endif
+
+template <typename Formatter, typename Char, typename T>
+void format_arg(Formatter &, const Char *, const T &)
+{
+    FMT_STATIC_ASSERT(False<T>::value,
+                      "Cannot format argument. To enable the use of ostream "
+                      "operator<< include fmt/ostream.h. Otherwise provide "
+                      "an overload of format_arg.");
 }
 
 // Makes an Arg object from any type.
@@ -1387,9 +1423,9 @@ private:
     static void format_custom_arg(
         void *formatter, const void *arg, void *format_str_ptr)
     {
-        format(*static_cast<Formatter*>(formatter),
-               *static_cast<const Char**>(format_str_ptr),
-               *static_cast<const T*>(arg));
+        format_arg(*static_cast<Formatter*>(formatter),
+                   *static_cast<const Char**>(format_str_ptr),
+                   *static_cast<const T*>(arg));
     }
 
 public:
@@ -1461,7 +1497,9 @@ public:
 
     FMT_MAKE_VALUE(char *, string.value, CSTRING)
     FMT_MAKE_VALUE(const char *, string.value, CSTRING)
+    FMT_MAKE_VALUE(signed char *, sstring.value, CSTRING)
     FMT_MAKE_VALUE(const signed char *, sstring.value, CSTRING)
+    FMT_MAKE_VALUE(unsigned char *, ustring.value, CSTRING)
     FMT_MAKE_VALUE(const unsigned char *, ustring.value, CSTRING)
     FMT_MAKE_STR_VALUE(const std::string &, STRING)
     FMT_MAKE_STR_VALUE(StringRef, STRING)
@@ -3260,7 +3298,10 @@ void BasicWriter<Char>::write_int(T value, Spec spec)
     case 'n':
     {
         unsigned num_digits = internal::count_digits(abs_value);
-        fmt::StringRef sep = internal::thousands_sep(std::localeconv());
+        fmt::StringRef sep = "";
+#ifndef ANDROID
+        sep = internal::thousands_sep(std::localeconv());
+#endif
         unsigned size = static_cast<unsigned>(
                             num_digits + sep.size() * ((num_digits - 1) / 3));
         CharPtr p = prepare_int_buffer(size, spec, prefix, prefix_size) + 1;
@@ -3871,7 +3912,6 @@ void arg(WStringRef, const internal::NamedArg<Char>&) FMT_DELETED_OR_UNDEFINED;
 #define FMT_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...) N
 #define FMT_RSEQ_N() 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 
-#define FMT_CONCAT(a, b) a##b
 #define FMT_FOR_EACH_(N, f, ...) \
   FMT_EXPAND(FMT_CONCAT(FMT_FOR_EACH, N)(f, __VA_ARGS__))
 #define FMT_FOR_EACH(f, ...) \
