@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "apple_hid_usage_tables.hpp"
 #include "system_preferences.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
