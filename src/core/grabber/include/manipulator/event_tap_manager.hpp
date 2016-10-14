@@ -73,6 +73,7 @@ private:
 
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
     if (type == kCGEventTapDisabledByTimeout) {
+      logger::get_logger().info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
       CGEventTapEnable(event_tap_, true);
     } else if (event) {
       CGEventSetFlags(event, modifier_flag_manager_.get_cg_event_flags_for_mouse_events());
