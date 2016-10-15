@@ -346,6 +346,33 @@ private:
         auto usage = IOHIDElementGetUsage(element);
         auto integer_value = IOHIDValueGetIntegerValue(value);
 
+        // Update repeating_key_
+        if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
+          bool pressed = integer_value;
+          if (pressed) {
+            if (krbn::types::get_modifier_flag(*key_code) != krbn::modifier_flag::zero) {
+              // The pressed key is a modifier key.
+              repeating_key_ = boost::none;
+            } else {
+              repeating_key_ = *key_code;
+            }
+          } else {
+            if (repeating_key_ && *repeating_key_ == *key_code) {
+              repeating_key_ = boost::none;
+            }
+          }
+        }
+
+        // Update pressed_buttons_
+        if (auto pointing_button = krbn::types::get_pointing_button(usage_page, usage)) {
+          bool pressed = integer_value;
+          if (pressed) {
+            pressed_buttons_.push_back(*pointing_button);
+          } else {
+            pressed_buttons_.remove(*pointing_button);
+          }
+        }
+
         // Update pressed_key_usages_.
         if ((usage_page == kHIDPage_KeyboardOrKeypad) ||
             (usage_page == kHIDPage_AppleVendorTopCase && usage == kHIDUsage_AV_TopCase_KeyboardFn) ||
@@ -417,6 +444,8 @@ private:
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
+  boost::optional<krbn::key_code> repeating_key_;
+  std::list<krbn::pointing_button> pressed_buttons_;
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
   report_callback report_callback_;
