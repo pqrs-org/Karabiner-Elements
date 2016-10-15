@@ -701,6 +701,13 @@ public:
     }
     return it->second;
   }
+
+  static boost::optional<pointing_button> get_pointing_button(uint32_t usage_page, uint32_t usage) {
+    if (usage_page == kHIDPage_Button) {
+      return krbn::pointing_button(usage);
+    }
+    return boost::none;
+  }
 };
 
 struct operation_type_connect_struct {
