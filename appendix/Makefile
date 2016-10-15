@@ -1,4 +1,5 @@
 all:
+	$(MAKE) -C cg_event_set_flags
 	$(MAKE) -C cg_post_event
 	$(MAKE) -C codesign
 	$(MAKE) -C control_led
@@ -10,6 +11,7 @@ all:
 	$(MAKE) -C session
 
 clean:
+	$(MAKE) -C cg_event_set_flags clean
 	$(MAKE) -C cg_post_event clean
 	$(MAKE) -C codesign clean
 	$(MAKE) -C control_led clean
