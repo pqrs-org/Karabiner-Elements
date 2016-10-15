@@ -291,60 +291,51 @@ private:
 
     auto device_registry_entry_id = manipulator::device_registry_entry_id(device.get_registry_entry_id());
 
-    switch (usage_page) {
-    case kHIDPage_KeyboardOrKeypad:
-      if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
-        bool pressed = integer_value;
-        event_manipulator_.handle_keyboard_event(device_registry_entry_id, krbn::key_code(usage), pressed);
-      }
-      break;
+    if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
+      bool pressed = integer_value;
+      event_manipulator_.handle_keyboard_event(device_registry_entry_id, *key_code, pressed);
 
-    case kHIDPage_AppleVendorTopCase:
-      if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
-        bool pressed = integer_value;
-        event_manipulator_.handle_keyboard_event(device_registry_entry_id, krbn::key_code::vk_fn_modifier, pressed);
-      }
-      break;
-
-    case kHIDPage_Button:
+    } else if (auto pointing_button = krbn::types::get_pointing_button(usage_page, usage)) {
       event_manipulator_.handle_pointing_event(device_registry_entry_id,
                                                krbn::pointing_event::button,
-                                               krbn::pointing_button(usage),
+                                               *pointing_button,
                                                integer_value);
-      break;
 
-    case kHIDPage_GenericDesktop:
-      if (usage == kHIDUsage_GD_X) {
-        event_manipulator_.handle_pointing_event(device_registry_entry_id,
-                                                 krbn::pointing_event::x,
-                                                 boost::none,
-                                                 integer_value);
-      }
-      if (usage == kHIDUsage_GD_Y) {
-        event_manipulator_.handle_pointing_event(device_registry_entry_id,
-                                                 krbn::pointing_event::y,
-                                                 boost::none,
-                                                 integer_value);
-      }
-      if (usage == kHIDUsage_GD_Wheel) {
-        event_manipulator_.handle_pointing_event(device_registry_entry_id,
-                                                 krbn::pointing_event::vertical_wheel,
-                                                 boost::none,
-                                                 integer_value);
-      }
-      break;
+    } else {
+      switch (usage_page) {
+      case kHIDPage_GenericDesktop:
+        if (usage == kHIDUsage_GD_X) {
+          event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                   krbn::pointing_event::x,
+                                                   boost::none,
+                                                   integer_value);
+        }
+        if (usage == kHIDUsage_GD_Y) {
+          event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                   krbn::pointing_event::y,
+                                                   boost::none,
+                                                   integer_value);
+        }
+        if (usage == kHIDUsage_GD_Wheel) {
+          event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                   krbn::pointing_event::vertical_wheel,
+                                                   boost::none,
+                                                   integer_value);
+        }
+        break;
 
-    case kHIDPage_Consumer:
-      if (usage == kHIDUsage_Csmr_ACPan) {
-        event_manipulator_.handle_pointing_event(device_registry_entry_id,
-                                                 krbn::pointing_event::horizontal_wheel,
-                                                 boost::none,
-                                                 integer_value);
-      }
-      break;
+      case kHIDPage_Consumer:
+        if (usage == kHIDUsage_Csmr_ACPan) {
+          event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                   krbn::pointing_event::horizontal_wheel,
+                                                   boost::none,
+                                                   integer_value);
+        }
+        break;
 
-    default:
-      break;
+      default:
+        break;
+      }
     }
 
     // reset modifier_flags state if all keys are released.
