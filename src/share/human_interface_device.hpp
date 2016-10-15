@@ -258,6 +258,28 @@ public:
     pressed_key_usages_.clear();
   }
 
+  bool is_grabbable(std::string& warning_message) {
+    if (repeating_key_) {
+      // We should not grab the device while a key is repeating since we cannot stop the key repeating.
+      // (To stop the key repeating, we have to send a hid report to the device. But we cannot do it.)
+
+      auto product_name = get_product();
+      warning_message = std::string("We cannot grab ") + (product_name ? *product_name : "(no product name)") + " while a key is repeating.";
+      return false;
+    }
+
+    if (!pressed_buttons_.empty()) {
+      // We should not grab the device while a button is pressed since we cannot release the button.
+      // (To release the button, we have to send a hid report to the device. But we cannot do it.)
+
+      auto product_name = get_product();
+      warning_message = std::string("We cannot grab ") + (product_name ? *product_name : "(no product name)") + " while mouse buttons are pressed.";
+      return false;
+    }
+
+    return true;
+  }
+
 #pragma mark - usage specific utilities
 
   // This method requires root privilege to use IOHIDDeviceGetValue for kHIDPage_LEDs usage.
