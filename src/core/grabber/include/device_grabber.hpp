@@ -19,6 +19,7 @@ public:
   device_grabber(manipulator::event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
                                                                       queue_(dispatch_queue_create(nullptr, nullptr)),
                                                                       grab_timer_(0),
+                                                                      mode_(mode::observing),
                                                                       grabbed_(false) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
@@ -43,7 +44,7 @@ public:
   }
 
   ~device_grabber(void) {
-    cancel_grab_timer();
+    ungrab_devices();
 
     if (manager_) {
       IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
@@ -55,6 +56,10 @@ public:
   }
 
   void grab_devices(void) {
+    std::lock_guard<std::mutex> guard(grab_mutex_);
+
+    mode_ = mode::grabbing;
+
     auto __block last_warning_message_time = ::time(nullptr) - 1;
 
     cancel_grab_timer();
@@ -62,11 +67,11 @@ public:
     // ----------------------------------------
     // setup grab_timer_
 
-    std::lock_guard<std::mutex> guard(grab_timer_mutex_);
-
     grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
     dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), 0.1 * NSEC_PER_SEC, 0);
     dispatch_source_set_event_handler(grab_timer_, ^{
+      std::lock_guard<std::mutex> grab_guard(grab_mutex_);
+
       if (grabbed_) {
         return;
       }
@@ -114,7 +119,7 @@ public:
       event_manipulator_.reset();
       event_manipulator_.grab_mouse_events();
 
-      logger::get_logger().info("devices are grabbed");
+      logger::get_logger().info("Connected devices are grabbed");
 
       cancel_grab_timer();
     });
@@ -122,6 +127,10 @@ public:
   }
 
   void ungrab_devices(void) {
+    std::lock_guard<std::mutex> guard(grab_mutex_);
+
+    mode_ = mode::observing;
+
     if (!grabbed_) {
       return;
     }
@@ -131,7 +140,7 @@ public:
     cancel_grab_timer();
 
     {
-      std::lock_guard<std::mutex> guard(hids_mutex_);
+      std::lock_guard<std::mutex> hids_guard(hids_mutex_);
 
       for (auto&& it : hids_) {
         ungrab(*(it.second));
@@ -142,7 +151,7 @@ public:
     event_manipulator_.ungrab_mouse_events();
     event_manipulator_.reset();
 
-    logger::get_logger().info("devices are ungrabbed");
+    logger::get_logger().info("Connected devices are ungrabbed");
   }
 
   void set_caps_lock_led_state(krbn::led_state state) {
@@ -154,6 +163,11 @@ public:
   }
 
 private:
+  enum class mode {
+    observing,
+    grabbing,
+  };
+
   static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
     if (result != kIOReturnSuccess) {
       return;
@@ -385,8 +399,6 @@ private:
   }
 
   void cancel_grab_timer(void) {
-    std::lock_guard<std::mutex> guard(grab_timer_mutex_);
-
     if (grab_timer_) {
       dispatch_source_cancel(grab_timer_);
       dispatch_release(grab_timer_);
@@ -402,7 +414,7 @@ private:
 
   dispatch_queue_t _Nonnull queue_;
   dispatch_source_t _Nullable grab_timer_;
-  std::mutex grab_timer_mutex_;
-
+  std::mutex grab_mutex_;
+  std::atomic<mode> mode_;
   std::atomic<bool> grabbed_;
 };
