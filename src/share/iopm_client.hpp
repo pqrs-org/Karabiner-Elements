@@ -1,0 +1,104 @@
+#pragma once
+
+#include <IOKit/IOKitLib.h>
+#include <IOKit/IOMessage.h>
+#include <IOKit/pwr_mgt/IOPMLib.h>
+#include <spdlog/spdlog.h>
+
+class iopm_client final {
+public:
+  typedef std::function<void(uint32_t message_type)> system_power_event_callback;
+
+  iopm_client(const iopm_client&) = delete;
+
+  iopm_client(spdlog::logger& logger,
+              const system_power_event_callback& system_power_event_callback) : logger_(logger),
+                                                                                system_power_event_callback_(system_power_event_callback),
+                                                                                notification_port_(nullptr),
+                                                                                notifier_(IO_OBJECT_NULL),
+                                                                                connect_(IO_OBJECT_NULL) {
+    auto connect = IORegisterForSystemPower(this, &notification_port_, static_callback, &notifier_);
+    if (connect == MACH_PORT_NULL) {
+      logger_.error("IORegisterForSystemPower error @ {0}", __PRETTY_FUNCTION__);
+
+    } else {
+      if (auto run_loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
+        CFRunLoopAddSource(CFRunLoopGetMain(), run_loop_source, kCFRunLoopCommonModes);
+      }
+    }
+  }
+
+  ~iopm_client(void) {
+    if (notifier_) {
+      auto kr = IODeregisterForSystemPower(&notifier_);
+      if (kr != kIOReturnSuccess) {
+        logger_.error("IODeregisterForSystemPower error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+      }
+    }
+    if (notification_port_) {
+      IONotificationPortDestroy(notification_port_);
+    }
+    if (connect_) {
+      auto kr = IOServiceClose(connect_);
+      if (kr != kIOReturnSuccess) {
+        logger_.error("IOServiceClose error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+      }
+      connect_ = IO_OBJECT_NULL;
+    }
+  }
+
+private:
+  static void static_callback(void* refcon, io_service_t service, uint32_t message_type, void* message_argument) {
+    iopm_client* self = static_cast<iopm_client*>(refcon);
+    if (self) {
+      self->callback(service, message_type, message_argument);
+    }
+  }
+
+  void callback(io_service_t service, uint32_t message_type, void* message_argument) {
+    switch (message_type) {
+    case kIOMessageSystemWillSleep:
+      logger_.info("iopm_client::callback kIOMessageSystemWillSleep");
+      if (connect_) {
+        auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
+        if (kr != kIOReturnSuccess) {
+          logger_.error("IOAllowPowerChange error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        }
+      }
+      break;
+
+    case kIOMessageSystemWillPowerOn:
+      logger_.info("iopm_client::callback kIOMessageSystemWillPowerOn");
+      break;
+
+    case kIOMessageSystemHasPoweredOn:
+      logger_.info("iopm_client::callback kIOMessageSystemHasPoweredOn");
+      break;
+
+    case kIOMessageCanSystemSleep:
+      logger_.info("iopm_client::callback kIOMessageCanSystemSleep");
+      if (connect_) {
+        auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
+        if (kr != kIOReturnSuccess) {
+          logger_.error("IOAllowPowerChange error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        }
+      }
+      break;
+
+    case kIOMessageSystemWillNotSleep:
+      logger_.info("iopm_client::callback kIOMessageSystemWillNotSleep");
+      break;
+    }
+
+    if (system_power_event_callback_) {
+      system_power_event_callback_(message_type);
+    }
+  }
+
+  spdlog::logger& logger_;
+  system_power_event_callback system_power_event_callback_;
+
+  IONotificationPortRef notification_port_;
+  io_object_t notifier_;
+  io_connect_t connect_;
+};
