@@ -1,5 +1,5 @@
 #include "types.hpp"
-#include "json/json.hpp"
+#include <json/json.hpp>
 
 int main(int argc, const char* argv[]) {
   nlohmann::json json;

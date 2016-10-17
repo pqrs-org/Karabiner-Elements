@@ -2,8 +2,8 @@
 
 #include "constants.hpp"
 #include "types.hpp"
-#include "json/json.hpp"
 #include <fstream>
+#include <json/json.hpp>
 #include <spdlog/spdlog.h>
 
 // Example:

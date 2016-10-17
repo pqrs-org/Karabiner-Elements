@@ -10,6 +10,8 @@
 #include "manipulator.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
+#include <fstream>
+#include <json/json.hpp>
 #include <thread>
 #include <time.h>
 
@@ -258,6 +260,8 @@ private:
       hids_[device] = std::move(dev);
     }
 
+    output_devices_json();
+
     if (is_pointing_device_connected()) {
       event_manipulator_.create_virtual_hid_manager_client();
     } else {
@@ -296,6 +300,8 @@ private:
         }
       }
     }
+
+    output_devices_json();
 
     if (is_pointing_device_connected()) {
       event_manipulator_.create_virtual_hid_manager_client();
@@ -450,6 +456,39 @@ private:
       }
     }
     return false;
+  }
+
+  void output_devices_json(void) {
+    std::lock_guard<std::mutex> guard(hids_mutex_);
+
+    nlohmann::json json;
+    json["devices"] = nlohmann::json::array();
+
+    for (const auto& it : hids_) {
+      nlohmann::json j({});
+      if (auto vendor_id = (it.second)->get_vendor_id()) {
+        j["vendor_id"] = *vendor_id;
+      }
+      if (auto product_id = (it.second)->get_product_id()) {
+        j["product_id"] = *product_id;
+      }
+      if (auto manufacturer = (it.second)->get_manufacturer()) {
+        j["manipulator"] = *manufacturer;
+      }
+      if (auto product = (it.second)->get_product()) {
+        j["product"] = *product;
+      }
+
+      if (!j.empty()) {
+        json["devices"].push_back(j);
+      }
+    }
+
+    std::ofstream stream(constants::get_devices_json_file_path());
+    if (stream) {
+      stream << std::setw(4) << json << std::endl;
+      chmod(constants::get_devices_json_file_path(), 0644);
+    }
   }
 
   void cancel_grab_timer(void) {

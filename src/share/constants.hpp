@@ -23,6 +23,10 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_event_dispatcher_receiver";
   }
 
+  static const char* get_devices_json_file_path(void) {
+    return "/Library/Application Support/org.pqrs/tmp/devices.json";
+  }
+
   static const char* get_home_dot_karabiner_directory(void) {
     static std::mutex mutex;
     static bool once = false;
