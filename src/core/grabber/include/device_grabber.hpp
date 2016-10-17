@@ -209,16 +209,16 @@ private:
 
   void iopm_client_callback(uint32_t message_type) {
     switch (message_type) {
-      case kIOMessageSystemWillSleep:
-        suspend();
-        break;
+    case kIOMessageSystemWillSleep:
+      suspend();
+      break;
 
-      case kIOMessageSystemWillPowerOn:
-        resume();
-        break;
+    case kIOMessageSystemWillPowerOn:
+      resume();
+      break;
 
-      default:
-        break;
+    default:
+      break;
     }
   }
 
