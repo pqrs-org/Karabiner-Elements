@@ -62,10 +62,12 @@ public:
     dispatch_release(queue_);
   }
 
-  void grab_devices(void) {
+  void grab_devices(bool change_mode = true) {
     std::lock_guard<std::mutex> guard(grab_mutex_);
 
-    mode_ = mode::grabbing;
+    if (change_mode) {
+      mode_ = mode::grabbing;
+    }
 
     auto __block last_warning_message_time = ::time(nullptr) - 1;
 
@@ -133,10 +135,12 @@ public:
     dispatch_resume(grab_timer_);
   }
 
-  void ungrab_devices(void) {
+  void ungrab_devices(bool change_mode = true) {
     std::lock_guard<std::mutex> guard(grab_mutex_);
 
-    mode_ = mode::observing;
+    if (change_mode) {
+      mode_ = mode::observing;
+    }
 
     if (!grabbed_) {
       return;
@@ -170,7 +174,7 @@ public:
       suspended_ = true;
 
       if (mode_ == mode::grabbing) {
-        ungrab_devices();
+        ungrab_devices(false);
       }
     }
   }
@@ -184,7 +188,7 @@ public:
       suspended_ = false;
 
       if (mode_ == mode::grabbing) {
-        grab_devices();
+        grab_devices(false);
       }
     }
   }
