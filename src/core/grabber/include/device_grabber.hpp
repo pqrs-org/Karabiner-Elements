@@ -8,6 +8,7 @@
 #include "iopm_client.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
+#include "spdlog_utility.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
 #include <fstream>
@@ -24,6 +25,7 @@ public:
                                                                       grab_timer_(0),
                                                                       mode_(mode::observing),
                                                                       grabbed_(false),
+                                                                      is_grabbable_callback_log_reducer_(logger::get_logger()),
                                                                       suspended_(false) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
@@ -89,11 +91,7 @@ public:
 
       std::string warning_message;
 
-      if (!event_manipulator_.is_ready()) {
-        warning_message = "event_manipulator_ is not ready. Please wait for a while.";
-      }
-
-      if (warning_message.empty()) {
+      {
         std::string is_grabbable_warning_message;
         std::lock_guard<std::mutex> hids_guard(hids_mutex_);
         for (const auto& it : hids_) {
@@ -245,6 +243,7 @@ private:
     iokit_utility::log_matching_device(logger::get_logger(), device);
 
     auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
+    dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
 
     // ----------------------------------------
 
@@ -426,6 +425,14 @@ private:
     }
   }
 
+  bool is_grabbable_callback(human_interface_device& device) {
+    if (!event_manipulator_.is_ready()) {
+      is_grabbable_callback_log_reducer_.warn("event_manipulator_ is not ready. Please wait for a while.");
+      return false;
+    }
+    return true;
+  }
+
   size_t get_all_devices_pressed_keys_count(void) {
     std::lock_guard<std::mutex> guard(hids_mutex_);
 
@@ -511,6 +518,8 @@ private:
   std::mutex grab_mutex_;
   std::atomic<mode> mode_;
   std::atomic<bool> grabbed_;
+
+  spdlog_utility::log_reducer is_grabbable_callback_log_reducer_;
 
   std::mutex suspend_mutex_;
   bool suspended_;

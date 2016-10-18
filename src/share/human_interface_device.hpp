@@ -36,6 +36,8 @@ public:
                              CFIndex report_length)>
       report_callback;
 
+  typedef std::function<bool(human_interface_device& device)> is_grabbable_callback;
+
   human_interface_device(const human_interface_device&) = delete;
 
   human_interface_device(spdlog::logger& logger,
@@ -258,6 +260,10 @@ public:
     pressed_key_usages_.clear();
   }
 
+  void set_is_grabbable_callback(const is_grabbable_callback& callback) {
+    is_grabbable_callback_ = callback;
+  }
+
   bool is_grabbable(std::string& warning_message) {
     if (repeating_key_) {
       // We should not grab the device while a key is repeating since we cannot stop the key repeating.
@@ -275,6 +281,12 @@ public:
       auto product_name = get_product();
       warning_message = std::string("We cannot grab ") + (product_name ? *product_name : "(no product name)") + " while mouse buttons are pressed.";
       return false;
+    }
+
+    if (is_grabbable_callback_) {
+      if (!is_grabbable_callback_(*this)) {
+        return false;
+      }
     }
 
     return true;
@@ -471,5 +483,6 @@ private:
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
   report_callback report_callback_;
+  is_grabbable_callback is_grabbable_callback_;
   std::vector<uint8_t> report_buffer_;
 };
