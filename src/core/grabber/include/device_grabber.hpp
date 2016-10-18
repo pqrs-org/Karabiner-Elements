@@ -462,7 +462,7 @@ private:
     std::lock_guard<std::mutex> guard(hids_mutex_);
 
     nlohmann::json json;
-    json["devices"] = nlohmann::json::array();
+    json = nlohmann::json::array();
 
     for (const auto& it : hids_) {
       nlohmann::json j({});
@@ -480,7 +480,7 @@ private:
       }
 
       if (!j.empty()) {
-        json["devices"].push_back(j);
+        json.push_back(j);
       }
     }
 
