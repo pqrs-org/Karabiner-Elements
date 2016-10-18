@@ -82,7 +82,7 @@ public:
     return false;
   }
 
-  bool pressed(const std::vector<krbn::modifier_flag>& modifier_flags) {
+  bool pressed(const std::vector<krbn::modifier_flag>& modifier_flags) const {
     // return true if all modifier flags are pressed.
     for (const auto& m : modifier_flags) {
       if (!pressed(m)) {
