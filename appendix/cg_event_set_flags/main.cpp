@@ -52,6 +52,8 @@ int main(int argc, const char* argv[]) {
       std::cout << "You can exit by right click." << std::endl;
       std::cout << std::endl;
       std::cout << std::endl;
+
+      CFRelease(run_loop_source);
     }
   }
 
