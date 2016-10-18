@@ -4,6 +4,7 @@
 
 #include "apple_hid_usage_tables.hpp"
 #include "iokit_utility.hpp"
+#include "spdlog_utility.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
 #include <IOKit/hid/IOHIDElement.h>
@@ -44,7 +45,8 @@ public:
                          IOHIDDeviceRef _Nonnull device) : logger_(logger),
                                                            device_(device),
                                                            registry_entry_id_(0),
-                                                           queue_(nullptr) {
+                                                           queue_(nullptr),
+                                                           is_grabbable_log_reducer_(logger) {
     // ----------------------------------------
     // retain device_
 
@@ -285,13 +287,12 @@ public:
     is_grabbable_callback_ = callback;
   }
 
-  bool is_grabbable(std::string& warning_message) {
+  bool is_grabbable(void) {
     if (repeating_key_) {
       // We should not grab the device while a key is repeating since we cannot stop the key repeating.
       // (To stop the key repeating, we have to send a hid report to the device. But we cannot do it.)
 
-      auto product_name = get_product();
-      warning_message = std::string("We cannot grab ") + (product_name ? *product_name : "(no product name)") + " while a key is repeating.";
+      is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while a key is repeating.");
       return false;
     }
 
@@ -299,8 +300,7 @@ public:
       // We should not grab the device while a button is pressed since we cannot release the button.
       // (To release the button, we have to send a hid report to the device. But we cannot do it.)
 
-      auto product_name = get_product();
-      warning_message = std::string("We cannot grab ") + (product_name ? *product_name : "(no product name)") + " while mouse buttons are pressed.";
+      is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while mouse buttons are pressed.");
       return false;
     }
 
@@ -504,6 +504,8 @@ private:
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
   report_callback report_callback_;
-  is_grabbable_callback is_grabbable_callback_;
   std::vector<uint8_t> report_buffer_;
+
+  is_grabbable_callback is_grabbable_callback_;
+  spdlog_utility::log_reducer is_grabbable_log_reducer_;
 };

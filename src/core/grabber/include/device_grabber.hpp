@@ -73,8 +73,6 @@ public:
       mode_ = mode::grabbing;
     }
 
-    auto __block last_warning_message_time = ::time(nullptr) - 1;
-
     cancel_grab_timer();
 
     // ----------------------------------------
@@ -89,26 +87,13 @@ public:
         return;
       }
 
-      std::string warning_message;
-
       {
-        std::string is_grabbable_warning_message;
         std::lock_guard<std::mutex> hids_guard(hids_mutex_);
         for (const auto& it : hids_) {
-          if (!(it.second)->is_grabbable(is_grabbable_warning_message)) {
-            warning_message = is_grabbable_warning_message.empty() ? "Some devices are not grabbable." : is_grabbable_warning_message;
-            break;
+          if (!(it.second)->is_grabbable()) {
+            return;
           }
         }
-      }
-
-      if (!warning_message.empty()) {
-        auto time = ::time(nullptr);
-        if (last_warning_message_time != time) {
-          last_warning_message_time = time;
-          logger::get_logger().warn(warning_message);
-        }
-        return;
       }
 
       // ----------------------------------------
