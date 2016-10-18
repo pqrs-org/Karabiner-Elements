@@ -5,6 +5,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 #include <iomanip>
+#include <spdlog/spdlog.h>
 
 class spdlog_utility final {
 public:
@@ -82,4 +83,40 @@ public:
     }
     return boost::none;
   }
+
+  class log_reducer final {
+  public:
+    log_reducer(const log_reducer&) = delete;
+
+    log_reducer(spdlog::logger& logger) : logger_(logger), time_(0) {}
+
+    void info(const std::string& message) {
+      auto t = time(nullptr);
+      if (time_ != t) {
+        time_ = t;
+        logger_.info(message);
+      }
+    }
+
+    void warn(const std::string& message) {
+      auto t = time(nullptr);
+      if (time_ != t) {
+        time_ = t;
+        logger_.warn(message);
+      }
+    }
+
+    void error(const std::string& message) {
+      auto t = time(nullptr);
+      if (time_ != t) {
+        time_ = t;
+        logger_.error(message);
+      }
+    }
+
+  private:
+    spdlog::logger& logger_;
+
+    time_t time_;
+  };
 };
