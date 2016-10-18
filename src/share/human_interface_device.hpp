@@ -242,6 +242,27 @@ public:
     return iokit_utility::get_transport(device_);
   }
 
+  std::string get_name_for_log(void) const {
+    if (auto product_name = get_product()) {
+      return *product_name;
+    }
+    if (auto vendor_id = get_vendor_id()) {
+      if (auto product_id = get_product_id()) {
+        std::stringstream stream;
+        stream << std::hex
+               << "(vendor_id:0x" << *vendor_id
+               << ", product_id:0x" << *product_id
+               << ")"
+               << std::dec;
+        return stream.str();
+      }
+    }
+
+    std::stringstream stream;
+    stream << "(registry_entry_id:" << registry_entry_id_ << ")";
+    return stream.str();
+  }
+
   IOHIDElementRef _Nullable get_element(uint32_t usage_page, uint32_t usage) const {
     auto key = elements_key(usage_page, usage);
     auto it = elements_.find(key);
