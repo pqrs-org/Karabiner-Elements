@@ -19,6 +19,11 @@ public:
 
     dispatch_queue_t _Nonnull get(void) { return queue_; }
 
+    std::string get_label(void) {
+      auto p = dispatch_queue_get_label(queue_);
+      return p ? p : "";
+    }
+
   private:
     dispatch_queue_t _Nonnull queue_;
   };
