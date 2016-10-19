@@ -1,5 +1,6 @@
 #pragma once
 
+#include "thread_utility.hpp"
 #include <dispatch/dispatch.h>
 #include <sstream>
 #include <string>
@@ -27,6 +28,14 @@ public:
   private:
     dispatch_queue_t _Nonnull queue_;
   };
+
+  static void dispatch_sync_in_main_queue(void (^_Nonnull block)(void)) {
+    if (thread_utility::is_main_thread()) {
+      block();
+    } else {
+      dispatch_sync(dispatch_get_main_queue(), block);
+    }
+  }
 
 private:
   static std::string get_next_queue_label(void) {
