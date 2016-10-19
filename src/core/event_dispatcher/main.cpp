@@ -3,6 +3,7 @@
 #include "logger.hpp"
 #include "receiver.hpp"
 #include "session.hpp"
+#include "thread_utility.hpp"
 #include <chrono>
 #include <memory>
 #include <thread>
@@ -16,6 +17,7 @@ int main(int argc, const char* argv[]) {
   // ----------------------------------------
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
+  thread_utility::register_main_thread();
 
   chmod("/var/log/karabiner/event_dispatcher_log.txt", 0644);
 

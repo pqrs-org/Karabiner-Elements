@@ -3,6 +3,7 @@
 #include "event_manipulator.hpp"
 #include "karabiner_version.h"
 #include "notification_center.hpp"
+#include "thread_utility.hpp"
 #include <iostream>
 #include <unistd.h>
 
@@ -15,6 +16,7 @@ int main(int argc, const char* argv[]) {
   // ----------------------------------------
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
+  thread_utility::register_main_thread();
 
   logger::get_logger().info("version {0}", karabiner_version);
 
