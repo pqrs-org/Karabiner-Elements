@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gcd_utility.hpp"
 #include <spdlog/spdlog.h>
 
 class process_monitor final {
@@ -10,9 +11,8 @@ public:
                   pid_t pid,
                   const exit_callback& exit_callback) : logger_(logger),
                                                         exit_callback_(exit_callback),
-                                                        queue_(dispatch_queue_create(nullptr, nullptr)),
                                                         monitor_(0) {
-    monitor_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, pid, DISPATCH_PROC_EXIT, queue_);
+    monitor_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, pid, DISPATCH_PROC_EXIT, queue_.get());
     if (!monitor_) {
       logger_.error("failed to dispatch_source_create @ {0}", __PRETTY_FUNCTION__);
     } else {
@@ -31,8 +31,6 @@ public:
 
   ~process_monitor(void) {
     release();
-
-    dispatch_release(queue_);
   }
 
 private:
@@ -47,6 +45,6 @@ private:
   spdlog::logger& logger_;
   exit_callback exit_callback_;
 
-  dispatch_queue_t queue_;
+  gcd_utility::scoped_queue queue_;
   dispatch_source_t monitor_;
 };

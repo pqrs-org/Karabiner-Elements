@@ -2,6 +2,7 @@
 
 #include "configuration_manager.hpp"
 #include "constants.hpp"
+#include "gcd_utility.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
 #include "session.hpp"
@@ -12,13 +13,12 @@ class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(void) : queue_(dispatch_queue_create(nullptr, nullptr)),
-                             timer_(0) {
+  connection_manager(void) : timer_(0) {
     notification_center::observe_distributed_notification(this,
                                                           static_grabber_is_launched_callback,
                                                           constants::get_distributed_notification_grabber_is_launched());
 
-    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
+    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_.get());
     if (!timer_) {
       logger::get_logger().error("dispatch_source_create error @ {0}", __PRETTY_FUNCTION__);
     } else {
@@ -67,8 +67,6 @@ public:
     }
 
     release();
-
-    dispatch_release(queue_);
   }
 
 private:
@@ -102,7 +100,7 @@ private:
     }
   }
 
-  dispatch_queue_t queue_;
+  gcd_utility::scoped_queue queue_;
   dispatch_source_t timer_;
 
   std::unique_ptr<configuration_manager> configuration_manager_;

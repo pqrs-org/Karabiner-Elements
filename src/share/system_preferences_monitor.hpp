@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "gcd_utility.hpp"
 #include "system_preferences.hpp"
 #include <boost/optional.hpp>
 #include <spdlog/spdlog.h>
@@ -13,9 +14,8 @@ public:
   system_preferences_monitor(spdlog::logger& logger,
                              const values_updated_callback& callback) : logger_(logger),
                                                                         callback_(callback),
-                                                                        queue_(dispatch_queue_create(nullptr, nullptr)),
                                                                         timer_(nullptr) {
-    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
+    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_.get());
     if (!timer_) {
       logger_.error("failed to dispatch_source_create @ {0}", __PRETTY_FUNCTION__);
     } else {
@@ -41,16 +41,13 @@ public:
       dispatch_release(timer_);
       timer_ = nullptr;
     }
-
-    dispatch_release(queue_);
-    queue_ = nullptr;
   }
 
 private:
   spdlog::logger& logger_;
   values_updated_callback callback_;
 
-  dispatch_queue_t queue_;
+  gcd_utility::scoped_queue queue_;
   dispatch_source_t timer_;
 
   boost::optional<system_preferences::values> values_;

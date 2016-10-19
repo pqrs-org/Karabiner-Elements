@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "device_grabber.hpp"
 #include "event_manipulator.hpp"
+#include "gcd_utility.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
 #include "receiver.hpp"
@@ -16,10 +17,9 @@ public:
   connection_manager(manipulator::event_manipulator& event_manipulator,
                      device_grabber& device_grabber) : event_manipulator_(event_manipulator),
                                                        device_grabber_(device_grabber),
-                                                       queue_(dispatch_queue_create(nullptr, nullptr)),
                                                        timer_(0),
                                                        last_uid_(0) {
-    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
+    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_.get());
     if (!timer_) {
       logger::get_logger().error("failed to dispatch_source_create");
     } else {
@@ -49,15 +49,13 @@ public:
     }
 
     receiver_ = nullptr;
-
-    dispatch_release(queue_);
   }
 
 private:
   manipulator::event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
 
-  dispatch_queue_t queue_;
+  gcd_utility::scoped_queue queue_;
   dispatch_source_t timer_;
 
   uid_t last_uid_;

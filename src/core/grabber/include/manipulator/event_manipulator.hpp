@@ -4,6 +4,7 @@
 
 #include "event_dispatcher_manager.hpp"
 #include "event_tap_manager.hpp"
+#include "gcd_utility.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
 #include "modifier_flag_manager.hpp"
@@ -412,14 +413,11 @@ private:
     key_repeat_manager(const key_repeat_manager&) = delete;
 
     key_repeat_manager(event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
-                                                               queue_(dispatch_queue_create(nullptr, nullptr)),
                                                                timer_(0) {
     }
 
     ~key_repeat_manager(void) {
       stop();
-
-      dispatch_release(queue_);
     }
 
     void stop(void) {
@@ -450,7 +448,7 @@ private:
           return;
         }
 
-        timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, queue_);
+        timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, queue_.get());
         if (timer_) {
           std::lock_guard<std::mutex> guard(mutex_);
 
@@ -470,7 +468,7 @@ private:
   private:
     event_manipulator& event_manipulator_;
 
-    dispatch_queue_t queue_;
+    gcd_utility::scoped_queue queue_;
     dispatch_source_t timer_;
 
     boost::optional<krbn::key_code> from_key_code_;
