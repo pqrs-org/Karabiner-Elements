@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gcd_utility.hpp"
 #include "logger.hpp"
 #include "modifier_flag_manager.hpp"
 #include <CoreGraphics/CoreGraphics.h>

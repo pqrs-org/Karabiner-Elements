@@ -21,7 +21,6 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(manipulator::event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
-                                                                      queue_(dispatch_queue_create(nullptr, nullptr)),
                                                                       grab_timer_(0),
                                                                       mode_(mode::observing),
                                                                       grabbed_(false),
@@ -62,8 +61,6 @@ public:
       CFRelease(manager_);
       manager_ = nullptr;
     }
-
-    dispatch_release(queue_);
   }
 
   void grab_devices(bool change_mode = true) {
@@ -78,7 +75,7 @@ public:
     // ----------------------------------------
     // setup grab_timer_
 
-    grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_);
+    grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_.get());
     dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), 0.1 * NSEC_PER_SEC, 0);
     dispatch_source_set_event_handler(grab_timer_, ^{
       std::lock_guard<std::mutex> grab_guard(grab_mutex_);
@@ -498,7 +495,7 @@ private:
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   std::mutex hids_mutex_;
 
-  dispatch_queue_t _Nonnull queue_;
+  gcd_utility::scoped_queue queue_;
   dispatch_source_t _Nullable grab_timer_;
   std::mutex grab_mutex_;
   std::atomic<mode> mode_;
