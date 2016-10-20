@@ -426,7 +426,7 @@ private:
       if (timer_) {
         dispatch_source_cancel(timer_);
         dispatch_release(timer_);
-        timer_ = 0;
+        timer_ = nullptr;
       }
     }
 

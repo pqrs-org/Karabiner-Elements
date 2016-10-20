@@ -488,7 +488,7 @@ private:
     if (grab_timer_) {
       dispatch_source_cancel(grab_timer_);
       dispatch_release(grab_timer_);
-      grab_timer_ = 0;
+      grab_timer_ = nullptr;
     }
   }
 
