@@ -1,7 +1,12 @@
 #include "libkrbn.h"
 #include "constants.hpp"
 #include "libkrbn.hpp"
+#include "thread_utility.hpp"
 #include <iostream>
+
+void libkrbn_initialize(void) {
+  thread_utility::register_main_thread();
+}
 
 const char* libkrbn_get_distributed_notification_observed_object(void) {
   static std::mutex mutex;

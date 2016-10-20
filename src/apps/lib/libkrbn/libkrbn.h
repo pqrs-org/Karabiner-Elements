@@ -6,6 +6,8 @@
 extern "C" {
 #endif
 
+void libkrbn_initialize(void);
+
 const char* libkrbn_get_distributed_notification_observed_object(void);
 const char* libkrbn_get_distributed_notification_grabber_is_launched(void);
 const char* libkrbn_get_configuration_core_file_path(void);

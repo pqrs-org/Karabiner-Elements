@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filesystem.hpp"
+#include "gcd_utility.hpp"
 #include <CoreServices/CoreServices.h>
 #include <spdlog/spdlog.h>
 #include <utility>
@@ -82,12 +83,15 @@ private:
   }
 
   void unregister_stream(void) {
-    if (stream_) {
-      FSEventStreamStop(stream_);
-      FSEventStreamInvalidate(stream_);
-      FSEventStreamRelease(stream_);
-      stream_ = nullptr;
-    }
+    // Release stream_ in main thread to avoid callback invocations after object has been destroyed.
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (stream_) {
+        FSEventStreamStop(stream_);
+        FSEventStreamInvalidate(stream_);
+        FSEventStreamRelease(stream_);
+        stream_ = nullptr;
+      }
+    });
   }
 
   static void static_stream_callback(ConstFSEventStreamRef stream,

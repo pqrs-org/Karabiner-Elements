@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gcd_utility.hpp"
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hidsystem/IOHIDLib.h>
@@ -69,24 +70,27 @@ public:
   }
 
   ~service_observer(void) {
-    if (matched_notification_) {
-      IOObjectRelease(matched_notification_);
-      matched_notification_ = IO_OBJECT_NULL;
-    }
-
-    if (terminated_notification_) {
-      IOObjectRelease(terminated_notification_);
-      terminated_notification_ = IO_OBJECT_NULL;
-    }
-
-    if (notification_port_) {
-      if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-        CFRunLoopRemoveSource(CFRunLoopGetMain(), loop_source, kCFRunLoopDefaultMode);
+    // Release matched_notification_ and terminated_notification_ in main thread to avoid callback invocations after object has been destroyed.
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (matched_notification_) {
+        IOObjectRelease(matched_notification_);
+        matched_notification_ = IO_OBJECT_NULL;
       }
 
-      IONotificationPortDestroy(notification_port_);
-      notification_port_ = nullptr;
-    }
+      if (terminated_notification_) {
+        IOObjectRelease(terminated_notification_);
+        terminated_notification_ = IO_OBJECT_NULL;
+      }
+
+      if (notification_port_) {
+        if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
+          CFRunLoopRemoveSource(CFRunLoopGetMain(), loop_source, kCFRunLoopDefaultMode);
+        }
+
+        IONotificationPortDestroy(notification_port_);
+        notification_port_ = nullptr;
+      }
+    });
   }
 
 private:

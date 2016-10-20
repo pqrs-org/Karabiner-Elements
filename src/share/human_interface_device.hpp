@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "apple_hid_usage_tables.hpp"
+#include "gcd_utility.hpp"
 #include "iokit_utility.hpp"
 #include "spdlog_utility.hpp"
 #include "types.hpp"
@@ -94,32 +95,35 @@ public:
   }
 
   ~human_interface_device(void) {
-    // Unregister all callbacks.
-    unschedule();
-    unregister_report_callback();
-    unregister_value_callback();
-    close();
+    // Release device_ and queue_ in main thread to avoid callback invocations after object has been destroyed.
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      // Unregister all callbacks.
+      unschedule();
+      unregister_report_callback();
+      unregister_value_callback();
+      close();
 
-    // ----------------------------------------
-    // release queue_
+      // ----------------------------------------
+      // release queue_
 
-    if (queue_) {
-      CFRelease(queue_);
-      queue_ = nullptr;
-    }
+      if (queue_) {
+        CFRelease(queue_);
+        queue_ = nullptr;
+      }
 
-    // ----------------------------------------
-    // release elements_
+      // ----------------------------------------
+      // release elements_
 
-    for (const auto& it : elements_) {
-      CFRelease(it.second);
-    }
-    elements_.clear();
+      for (const auto& it : elements_) {
+        CFRelease(it.second);
+      }
+      elements_.clear();
 
-    // ----------------------------------------
-    // release device_
+      // ----------------------------------------
+      // release device_
 
-    CFRelease(device_);
+      CFRelease(device_);
+    });
   }
 
   uint64_t get_registry_entry_id(void) const { return registry_entry_id_; }

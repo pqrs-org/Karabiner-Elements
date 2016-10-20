@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gcd_utility.hpp"
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOMessage.h>
 #include <IOKit/pwr_mgt/IOPMLib.h>
@@ -29,22 +30,25 @@ public:
   }
 
   ~iopm_client(void) {
-    if (notifier_) {
-      auto kr = IODeregisterForSystemPower(&notifier_);
-      if (kr != kIOReturnSuccess) {
-        logger_.error("IODeregisterForSystemPower error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+    // Release notifier_ in main thread to avoid callback invocations after object has been destroyed.
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (notifier_) {
+        auto kr = IODeregisterForSystemPower(&notifier_);
+        if (kr != kIOReturnSuccess) {
+          logger_.error("IODeregisterForSystemPower error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        }
       }
-    }
-    if (notification_port_) {
-      IONotificationPortDestroy(notification_port_);
-    }
-    if (connect_) {
-      auto kr = IOServiceClose(connect_);
-      if (kr != kIOReturnSuccess) {
-        logger_.error("IOServiceClose error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+      if (notification_port_) {
+        IONotificationPortDestroy(notification_port_);
       }
-      connect_ = IO_OBJECT_NULL;
-    }
+      if (connect_) {
+        auto kr = IOServiceClose(connect_);
+        if (kr != kIOReturnSuccess) {
+          logger_.error("IOServiceClose error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        }
+        connect_ = IO_OBJECT_NULL;
+      }
+    });
   }
 
 private:

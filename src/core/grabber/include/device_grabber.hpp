@@ -3,6 +3,7 @@
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
 #include "event_manipulator.hpp"
+#include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include "iopm_client.hpp"
@@ -52,15 +53,18 @@ public:
   }
 
   ~device_grabber(void) {
-    iopm_client_ = nullptr;
+    // Release manager_ in main thread to avoid callback invocations after object has been destroyed.
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      iopm_client_ = nullptr;
 
-    ungrab_devices();
+      ungrab_devices();
 
-    if (manager_) {
-      IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-      CFRelease(manager_);
-      manager_ = nullptr;
-    }
+      if (manager_) {
+        IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+        CFRelease(manager_);
+        manager_ = nullptr;
+      }
+    });
   }
 
   void grab_devices(bool change_mode = true) {
