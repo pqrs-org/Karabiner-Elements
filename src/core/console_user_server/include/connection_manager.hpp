@@ -13,7 +13,7 @@ class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(void) : timer_(0) {
+  connection_manager(void) : timer_(nullptr) {
     notification_center::observe_distributed_notification(this,
                                                           static_grabber_is_launched_callback,
                                                           constants::get_distributed_notification_grabber_is_launched());

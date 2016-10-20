@@ -17,7 +17,7 @@ public:
   connection_manager(manipulator::event_manipulator& event_manipulator,
                      device_grabber& device_grabber) : event_manipulator_(event_manipulator),
                                                        device_grabber_(device_grabber),
-                                                       timer_(0),
+                                                       timer_(nullptr),
                                                        last_uid_(0) {
     timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_.get());
     if (!timer_) {

@@ -22,7 +22,7 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(manipulator::event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
-                                                                      grab_timer_(0),
+                                                                      grab_timer_(nullptr),
                                                                       mode_(mode::observing),
                                                                       grabbed_(false),
                                                                       is_grabbable_callback_log_reducer_(logger::get_logger()),

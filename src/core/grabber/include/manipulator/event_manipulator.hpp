@@ -413,7 +413,7 @@ private:
     key_repeat_manager(const key_repeat_manager&) = delete;
 
     key_repeat_manager(event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
-                                                               timer_(0) {
+                                                               timer_(nullptr) {
     }
 
     ~key_repeat_manager(void) {
