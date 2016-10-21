@@ -230,6 +230,7 @@ private:
 
     auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
+    dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
 
     // ----------------------------------------
 
@@ -316,9 +317,6 @@ private:
                        std::placeholders::_4,
                        std::placeholders::_5,
                        std::placeholders::_6));
-
-    // set keyboard led
-    event_manipulator_.refresh_caps_lock_led();
   }
 
   void ungrab(human_interface_device& hid) {
@@ -397,6 +395,11 @@ private:
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
     }
     return human_interface_device::grabbable_state::grabbable;
+  }
+
+  void grabbed_callback(human_interface_device& device) {
+    // set keyboard led
+    event_manipulator_.refresh_caps_lock_led();
   }
 
   size_t get_all_devices_pressed_keys_count(void) {

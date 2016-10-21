@@ -46,6 +46,8 @@ public:
 
   typedef std::function<grabbable_state(human_interface_device& device)> is_grabbable_callback;
 
+  typedef std::function<void(human_interface_device& device)> grabbed_callback;
+
   human_interface_device(const human_interface_device&) = delete;
 
   human_interface_device(spdlog::logger& logger,
@@ -223,6 +225,10 @@ public:
       return;
     }
 
+    if (grabbed_callback_) {
+      grabbed_callback_(*this);
+    }
+
     register_value_callback(callback);
     schedule();
   }
@@ -311,6 +317,10 @@ public:
 
   void set_is_grabbable_callback(const is_grabbable_callback& callback) {
     is_grabbable_callback_ = callback;
+  }
+
+  void set_grabbed_callback(const grabbed_callback& callback) {
+    grabbed_callback_ = callback;
   }
 
   grabbable_state is_grabbable(void) {
@@ -549,5 +559,6 @@ private:
   std::vector<uint8_t> report_buffer_;
 
   is_grabbable_callback is_grabbable_callback_;
+  grabbed_callback grabbed_callback_;
   spdlog_utility::log_reducer is_grabbable_log_reducer_;
 };
