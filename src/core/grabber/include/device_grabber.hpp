@@ -91,7 +91,7 @@ public:
       {
         std::lock_guard<std::mutex> hids_guard(hids_mutex_);
         for (const auto& it : hids_) {
-          if (!(it.second)->is_grabbable()) {
+          if ((it.second)->is_grabbable() != human_interface_device::grabbable_state::grabbable) {
             return;
           }
         }
@@ -411,12 +411,12 @@ private:
     }
   }
 
-  bool is_grabbable_callback(human_interface_device& device) {
+  human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
     if (!event_manipulator_.is_ready()) {
       is_grabbable_callback_log_reducer_.warn("event_manipulator_ is not ready. Please wait for a while.");
-      return false;
+      return human_interface_device::grabbable_state::ungrabbable_temporarily;
     }
-    return true;
+    return human_interface_device::grabbable_state::grabbable;
   }
 
   size_t get_all_devices_pressed_keys_count(void) {

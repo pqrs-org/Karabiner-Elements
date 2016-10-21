@@ -23,6 +23,12 @@
 
 class human_interface_device final {
 public:
+  enum class grabbable_state {
+    grabbable,
+    ungrabbable_temporarily,
+    ungrabbable_permanently,
+  };
+
   typedef std::function<void(human_interface_device& device,
                              IOHIDValueRef _Nonnull value,
                              IOHIDElementRef _Nonnull element,
@@ -38,7 +44,7 @@ public:
                              CFIndex report_length)>
       report_callback;
 
-  typedef std::function<bool(human_interface_device& device)> is_grabbable_callback;
+  typedef std::function<grabbable_state(human_interface_device& device)> is_grabbable_callback;
 
   human_interface_device(const human_interface_device&) = delete;
 
@@ -291,13 +297,13 @@ public:
     is_grabbable_callback_ = callback;
   }
 
-  bool is_grabbable(void) {
+  grabbable_state is_grabbable(void) {
     if (repeating_key_) {
       // We should not grab the device while a key is repeating since we cannot stop the key repeating.
       // (To stop the key repeating, we have to send a hid report to the device. But we cannot do it.)
 
       is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while a key is repeating.");
-      return false;
+      return grabbable_state::ungrabbable_temporarily;
     }
 
     if (!pressed_buttons_.empty()) {
@@ -305,16 +311,17 @@ public:
       // (To release the button, we have to send a hid report to the device. But we cannot do it.)
 
       is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while mouse buttons are pressed.");
-      return false;
+      return grabbable_state::ungrabbable_temporarily;
     }
 
     if (is_grabbable_callback_) {
-      if (!is_grabbable_callback_(*this)) {
-        return false;
+      auto state = is_grabbable_callback_(*this);
+      if (state != grabbable_state::grabbable) {
+        return state;
       }
     }
 
-    return true;
+    return grabbable_state::grabbable;
   }
 
 #pragma mark - usage specific utilities
@@ -374,6 +381,11 @@ public:
   }
 
 private:
+  enum class grab_mode {
+    observing,
+    grabbing,
+  };
+
   static void static_queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
     if (result != kIOReturnSuccess) {
       return;
