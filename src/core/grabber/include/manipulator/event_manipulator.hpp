@@ -420,16 +420,6 @@ private:
       stop();
     }
 
-    void stop(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      if (timer_) {
-        dispatch_source_cancel(timer_);
-        dispatch_release(timer_);
-        timer_ = nullptr;
-      }
-    }
-
     void start(krbn::key_code from_key_code, krbn::key_code to_key_code, bool pressed,
                long initial_key_repeat_milliseconds, long key_repeat_milliseconds) {
       // stop key repeat before post key.
@@ -448,7 +438,7 @@ private:
           return;
         }
 
-        timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, queue_.get());
+        timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, dispatch_get_main_queue());
         if (timer_) {
           std::lock_guard<std::mutex> guard(mutex_);
 
@@ -465,10 +455,20 @@ private:
       }
     }
 
+    void stop(void) {
+      // Release timer_ in main thread to avoid callback invocations after object has been destroyed.
+      gcd_utility::dispatch_sync_in_main_queue(^{
+        if (timer_) {
+          dispatch_source_cancel(timer_);
+          dispatch_release(timer_);
+          timer_ = nullptr;
+        }
+      });
+    }
+
   private:
     event_manipulator& event_manipulator_;
 
-    gcd_utility::scoped_queue queue_;
     dispatch_source_t timer_;
 
     boost::optional<krbn::key_code> from_key_code_;

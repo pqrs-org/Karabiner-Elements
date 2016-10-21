@@ -19,7 +19,7 @@ public:
                                                        device_grabber_(device_grabber),
                                                        timer_(nullptr),
                                                        last_uid_(0) {
-    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_.get());
+    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
     if (!timer_) {
       logger::get_logger().error("failed to dispatch_source_create");
     } else {
@@ -42,20 +42,22 @@ public:
   }
 
   ~connection_manager(void) {
-    if (timer_) {
-      dispatch_source_cancel(timer_);
-      dispatch_release(timer_);
-      timer_ = nullptr;
-    }
+    // Release timer_ in main thread to avoid callback invocations after object has been destroyed.
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (timer_) {
+        dispatch_source_cancel(timer_);
+        dispatch_release(timer_);
+        timer_ = nullptr;
+      }
 
-    receiver_ = nullptr;
+      receiver_ = nullptr;
+    });
   }
 
 private:
   manipulator::event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
 
-  gcd_utility::scoped_queue queue_;
   dispatch_source_t timer_;
 
   uid_t last_uid_;

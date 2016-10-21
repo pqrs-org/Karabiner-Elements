@@ -15,7 +15,7 @@ public:
                              const values_updated_callback& callback) : logger_(logger),
                                                                         callback_(callback),
                                                                         timer_(nullptr) {
-    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_.get());
+    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
     if (!timer_) {
       logger_.error("failed to dispatch_source_create @ {0}", __PRETTY_FUNCTION__);
     } else {
@@ -36,18 +36,20 @@ public:
   }
 
   ~system_preferences_monitor(void) {
-    if (timer_) {
-      dispatch_source_cancel(timer_);
-      dispatch_release(timer_);
-      timer_ = nullptr;
-    }
+    // Release timer_ in main thread to avoid callback invocations after object has been destroyed.
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (timer_) {
+        dispatch_source_cancel(timer_);
+        dispatch_release(timer_);
+        timer_ = nullptr;
+      }
+    });
   }
 
 private:
   spdlog::logger& logger_;
   values_updated_callback callback_;
 
-  gcd_utility::scoped_queue queue_;
   dispatch_source_t timer_;
 
   boost::optional<system_preferences::values> values_;

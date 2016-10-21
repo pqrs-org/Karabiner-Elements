@@ -35,15 +35,18 @@ public:
   }
 
   ~log_monitor(void) {
-    if (timer_) {
-      dispatch_source_cancel(timer_);
-      dispatch_release(timer_);
-      timer_ = nullptr;
-    }
+    // Release timer_ in main thread to avoid callback invocations after object has been destroyed.
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (timer_) {
+        dispatch_source_cancel(timer_);
+        dispatch_release(timer_);
+        timer_ = nullptr;
+      }
+    });
   }
 
   void start(void) {
-    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_.get());
+    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
     if (!timer_) {
       logger_.error("failed to dispatch_source_create @ {0}", __PRETTY_FUNCTION__);
     } else {
@@ -154,7 +157,6 @@ private:
   spdlog::logger& logger_;
   new_log_line_callback callback_;
 
-  gcd_utility::scoped_queue queue_;
   dispatch_source_t timer_;
 
   std::vector<std::pair<uint64_t, std::string>> initial_lines_;

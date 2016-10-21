@@ -18,7 +18,7 @@ public:
                                                           static_grabber_is_launched_callback,
                                                           constants::get_distributed_notification_grabber_is_launched());
 
-    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue_.get());
+    timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
     if (!timer_) {
       logger::get_logger().error("dispatch_source_create error @ {0}", __PRETTY_FUNCTION__);
     } else {
@@ -60,13 +60,16 @@ public:
   }
 
   ~connection_manager(void) {
-    if (timer_) {
-      dispatch_source_cancel(timer_);
-      dispatch_release(timer_);
-      timer_ = nullptr;
-    }
+    // Release timer_ in main thread to avoid callback invocations after object has been destroyed.
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (timer_) {
+        dispatch_source_cancel(timer_);
+        dispatch_release(timer_);
+        timer_ = nullptr;
+      }
 
-    release();
+      release();
+    });
   }
 
 private:
@@ -100,7 +103,6 @@ private:
     }
   }
 
-  gcd_utility::scoped_queue queue_;
   dispatch_source_t timer_;
 
   std::unique_ptr<configuration_manager> configuration_manager_;
