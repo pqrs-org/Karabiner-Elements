@@ -106,8 +106,8 @@ public:
         std::lock_guard<std::mutex> hids_guard(hids_mutex_);
 
         for (auto&& it : hids_) {
-          unobserve(*(it.second));
-          grab(*(it.second));
+          (it.second)->unobserve();
+          (it.second)->grab();
         }
       }
 
@@ -140,8 +140,8 @@ public:
       std::lock_guard<std::mutex> hids_guard(hids_mutex_);
 
       for (auto&& it : hids_) {
-        ungrab(*(it.second));
-        observe(*(it.second));
+        (it.second)->ungrab();
+        (it.second)->observe();
       }
     }
 
@@ -243,9 +243,9 @@ private:
     // ----------------------------------------
 
     if (grabbed_) {
-      grab(*dev);
+      dev->grab();
     } else {
-      observe(*dev);
+      dev->observe();
     }
 
     {
@@ -304,23 +304,6 @@ private:
     }
 
     event_manipulator_.stop_key_repeat();
-  }
-
-  void observe(human_interface_device& hid) {
-    hid.observe();
-  }
-
-  void unobserve(human_interface_device& hid) {
-    hid.unobserve();
-  }
-
-  void grab(human_interface_device& hid) {
-    // seize device
-    hid.grab();
-  }
-
-  void ungrab(human_interface_device& hid) {
-    hid.ungrab();
   }
 
   void value_callback(human_interface_device& device,
