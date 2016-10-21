@@ -231,6 +231,14 @@ private:
     auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
+    dev->set_value_callback(std::bind(&device_grabber::value_callback,
+                                      this,
+                                      std::placeholders::_1,
+                                      std::placeholders::_2,
+                                      std::placeholders::_3,
+                                      std::placeholders::_4,
+                                      std::placeholders::_5,
+                                      std::placeholders::_6));
 
     // ----------------------------------------
 
@@ -299,8 +307,7 @@ private:
   }
 
   void observe(human_interface_device& hid) {
-    human_interface_device::value_callback callback;
-    hid.observe(callback);
+    hid.observe();
   }
 
   void unobserve(human_interface_device& hid) {
@@ -309,14 +316,7 @@ private:
 
   void grab(human_interface_device& hid) {
     // seize device
-    hid.grab(std::bind(&device_grabber::value_callback,
-                       this,
-                       std::placeholders::_1,
-                       std::placeholders::_2,
-                       std::placeholders::_3,
-                       std::placeholders::_4,
-                       std::placeholders::_5,
-                       std::placeholders::_6));
+    hid.grab();
   }
 
   void ungrab(human_interface_device& hid) {

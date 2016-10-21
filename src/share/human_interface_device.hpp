@@ -108,7 +108,7 @@ public:
       // Unregister all callbacks.
       unschedule();
       unregister_report_callback();
-      unregister_value_callback();
+      queue_stop();
       close();
 
       // ----------------------------------------
@@ -172,22 +172,20 @@ public:
     report_callback_ = nullptr;
   }
 
-  void register_value_callback(const value_callback& callback) {
-    value_callback_ = callback;
+  void queue_start(void) {
     if (queue_) {
       IOHIDQueueStart(queue_);
     }
   }
 
-  void unregister_value_callback(void) {
+  void queue_stop(void) {
     if (queue_) {
       IOHIDQueueStop(queue_);
     }
-    value_callback_ = nullptr;
   }
 
   // High-level utility method.
-  void observe(const value_callback& callback) {
+  void observe(void) {
     if (is_pqrs_devices()) {
       return;
     }
@@ -198,7 +196,7 @@ public:
       return;
     }
 
-    register_value_callback(callback);
+    queue_start();
     schedule();
   }
 
@@ -209,12 +207,12 @@ public:
     }
 
     unschedule();
-    unregister_value_callback();
+    queue_stop();
     close();
   }
 
   // High-level utility method.
-  void grab(const value_callback& callback) {
+  void grab() {
     if (is_pqrs_devices()) {
       return;
     }
@@ -229,7 +227,7 @@ public:
       grabbed_callback_(*this);
     }
 
-    register_value_callback(callback);
+    queue_start();
     schedule();
   }
 
@@ -240,7 +238,7 @@ public:
     }
 
     unschedule();
-    unregister_value_callback();
+    queue_stop();
     close();
   }
 
@@ -321,6 +319,10 @@ public:
 
   void set_grabbed_callback(const grabbed_callback& callback) {
     grabbed_callback_ = callback;
+  }
+
+  void set_value_callback(const value_callback& callback) {
+    value_callback_ = callback;
   }
 
   grabbable_state is_grabbable(void) {
