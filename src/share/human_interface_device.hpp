@@ -12,6 +12,7 @@
 #include <IOKit/hid/IOHIDQueue.h>
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include <IOKit/hid/IOHIDValue.h>
+#include <boost/algorithm/string.hpp>
 #include <boost/optional.hpp>
 #include <cstdint>
 #include <functional>
@@ -57,7 +58,6 @@ public:
                                                            queue_(nullptr),
                                                            is_grabbable_log_reducer_(logger),
                                                            grab_timer_(nullptr),
-                                                           grab_mode_(grab_mode::observing),
                                                            grabbed_(false) {
     // ----------------------------------------
     // retain device_
@@ -215,34 +215,84 @@ public:
   }
 
   // High-level utility method.
-  void grab() {
-    if (is_pqrs_devices()) {
-      return;
-    }
+  void grab(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (is_pqrs_devices()) {
+        return;
+      }
 
-    auto r = open(kIOHIDOptionsTypeSeizeDevice);
-    if (r != kIOReturnSuccess) {
-      logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
-      return;
-    }
+      if (grabbed_) {
+        return;
+      }
 
-    if (grabbed_callback_) {
-      grabbed_callback_(*this);
-    }
+      cancel_grab_timer();
 
-    queue_start();
-    schedule();
+      grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+      // We have to set an initial wait since OS X will lost the device if we called IOHIDDeviceOpen(kIOHIDOptionsTypeSeizeDevice) in device_matching_callback.
+      // (The device will be unusable after karabiner_grabber is quitted if we don't wait here.)
+      dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC), 100 * NSEC_PER_MSEC, 0);
+      dispatch_source_set_event_handler(grab_timer_, ^{
+        switch (is_grabbable()) {
+        case grabbable_state::grabbable:
+          break;
+
+        case grabbable_state::ungrabbable_temporarily:
+          return;
+
+        case grabbable_state::ungrabbable_permanently:
+          cancel_grab_timer();
+          return;
+        }
+
+        // ----------------------------------------
+        grabbed_ = true;
+
+        unobserve();
+
+        // ----------------------------------------
+        auto r = open(kIOHIDOptionsTypeSeizeDevice);
+        if (r != kIOReturnSuccess) {
+          logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
+          return;
+        }
+
+        if (grabbed_callback_) {
+          grabbed_callback_(*this);
+        }
+
+        queue_start();
+        schedule();
+
+        // ----------------------------------------
+        logger::get_logger().info("{0} is grabbed", get_name_for_log());
+
+        cancel_grab_timer();
+      });
+      dispatch_resume(grab_timer_);
+    });
   }
 
   // High-level utility method.
   void ungrab(void) {
-    if (is_pqrs_devices()) {
-      return;
-    }
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (is_pqrs_devices()) {
+        return;
+      }
 
-    unschedule();
-    queue_stop();
-    close();
+      if (!grabbed_) {
+        return;
+      }
+
+      grabbed_ = false;
+
+      cancel_grab_timer();
+
+      unschedule();
+      queue_stop();
+      close();
+
+      observe();
+    });
   }
 
   boost::optional<long> get_max_input_report_size(void) const {
@@ -279,7 +329,7 @@ public:
 
   std::string get_name_for_log(void) const {
     if (auto product_name = get_product()) {
-      return *product_name;
+      return boost::trim_copy(*product_name);
     }
     if (auto vendor_id = get_vendor_id()) {
       if (auto product_id = get_product_id()) {
@@ -355,6 +405,10 @@ public:
     return grabbable_state::grabbable;
   }
 
+  bool is_grabbed(void) const {
+    return grabbed_;
+  }
+
 #pragma mark - usage specific utilities
 
   // This method requires root privilege to use IOHIDDeviceGetValue for kHIDPage_LEDs usage.
@@ -412,11 +466,6 @@ public:
   }
 
 private:
-  enum class grab_mode {
-    observing,
-    grabbing,
-  };
-
   static void static_queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
     if (result != kIOReturnSuccess) {
       return;
@@ -577,6 +626,5 @@ private:
   grabbed_callback grabbed_callback_;
   spdlog_utility::log_reducer is_grabbable_log_reducer_;
   dispatch_source_t _Nullable grab_timer_;
-  grab_mode grab_mode_;
   bool grabbed_;
 };
