@@ -75,8 +75,8 @@ private:
 
     hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
-
-    dev->observe(boost::bind(&dump_hid_value::value_callback, this, _1, _2, _3, _4, _5, _6));
+    dev->set_value_callback(boost::bind(&dump_hid_value::value_callback, this, _1, _2, _3, _4, _5, _6));
+    dev->observe();
   }
 
   static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
