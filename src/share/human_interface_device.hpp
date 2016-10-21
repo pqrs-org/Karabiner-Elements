@@ -55,7 +55,10 @@ public:
                                                            device_(device),
                                                            registry_entry_id_(0),
                                                            queue_(nullptr),
-                                                           is_grabbable_log_reducer_(logger) {
+                                                           is_grabbable_log_reducer_(logger),
+                                                           grab_timer_(nullptr),
+                                                           grab_mode_(grab_mode::observing),
+                                                           grabbed_(false) {
     // ----------------------------------------
     // retain device_
 
@@ -546,6 +549,16 @@ private:
     return false;
   }
 
+  void cancel_grab_timer(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (grab_timer_) {
+        dispatch_source_cancel(grab_timer_);
+        dispatch_release(grab_timer_);
+        grab_timer_ = nullptr;
+      }
+    });
+  }
+
   spdlog::logger& logger_;
 
   IOHIDDeviceRef _Nonnull device_;
@@ -563,4 +576,7 @@ private:
   is_grabbable_callback is_grabbable_callback_;
   grabbed_callback grabbed_callback_;
   spdlog_utility::log_reducer is_grabbable_log_reducer_;
+  dispatch_source_t _Nullable grab_timer_;
+  grab_mode grab_mode_;
+  bool grabbed_;
 };
