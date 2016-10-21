@@ -186,6 +186,10 @@ public:
 
   // High-level utility method.
   void observe(const value_callback& callback) {
+    if (is_pqrs_devices()) {
+      return;
+    }
+
     auto r = open();
     if (r != kIOReturnSuccess) {
       logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
@@ -198,6 +202,10 @@ public:
 
   // High-level utility method.
   void unobserve(void) {
+    if (is_pqrs_devices()) {
+      return;
+    }
+
     unschedule();
     unregister_value_callback();
     close();
@@ -205,6 +213,10 @@ public:
 
   // High-level utility method.
   void grab(const value_callback& callback) {
+    if (is_pqrs_devices()) {
+      return;
+    }
+
     auto r = open(kIOHIDOptionsTypeSeizeDevice);
     if (r != kIOReturnSuccess) {
       logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
@@ -217,6 +229,10 @@ public:
 
   // High-level utility method.
   void ungrab(void) {
+    if (is_pqrs_devices()) {
+      return;
+    }
+
     unschedule();
     unregister_value_callback();
     close();
@@ -506,6 +522,16 @@ private:
     }
 
     report_buffer_.resize(buffer_size);
+  }
+
+  bool is_pqrs_devices(void) {
+    if (auto manufacturer = get_manufacturer()) {
+      if (*manufacturer == "pqrs.org") {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   spdlog::logger& logger_;
