@@ -57,7 +57,6 @@ public:
                                                            registry_entry_id_(0),
                                                            queue_(nullptr),
                                                            is_grabbable_log_reducer_(logger),
-                                                           grab_timer_(nullptr),
                                                            grabbed_(false) {
     // ----------------------------------------
     // retain device_
@@ -251,48 +250,50 @@ public:
 
       cancel_grab_timer();
 
-      grab_timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-      // We have to set an initial wait since OS X will lost the device if we called IOHIDDeviceOpen(kIOHIDOptionsTypeSeizeDevice) in device_matching_callback.
-      // (The device will be unusable after karabiner_grabber is quitted if we don't wait here.)
-      dispatch_source_set_timer(grab_timer_, dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC), 100 * NSEC_PER_MSEC, 0);
-      dispatch_source_set_event_handler(grab_timer_, ^{
-        switch (is_grabbable()) {
-        case grabbable_state::grabbable:
-          break;
+      grab_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
+          0,
+          // We have to set an initial wait since OS X will lost the device if we called IOHIDDeviceOpen(kIOHIDOptionsTypeSeizeDevice) in device_matching_callback.
+          // (The device will be unusable after karabiner_grabber is quitted if we don't wait here.)
+          dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+          100 * NSEC_PER_MSEC,
+          0,
+          ^{
+            switch (is_grabbable()) {
+            case grabbable_state::grabbable:
+              break;
 
-        case grabbable_state::ungrabbable_temporarily:
-          return;
+            case grabbable_state::ungrabbable_temporarily:
+              return;
 
-        case grabbable_state::ungrabbable_permanently:
-          cancel_grab_timer();
-          return;
-        }
+            case grabbable_state::ungrabbable_permanently:
+              cancel_grab_timer();
+              return;
+            }
 
-        // ----------------------------------------
-        grabbed_ = true;
+            // ----------------------------------------
+            grabbed_ = true;
 
-        unobserve();
+            unobserve();
 
-        // ----------------------------------------
-        auto r = open(kIOHIDOptionsTypeSeizeDevice);
-        if (r != kIOReturnSuccess) {
-          logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
-          return;
-        }
+            // ----------------------------------------
+            auto r = open(kIOHIDOptionsTypeSeizeDevice);
+            if (r != kIOReturnSuccess) {
+              logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
+              return;
+            }
 
-        if (grabbed_callback_) {
-          grabbed_callback_(*this);
-        }
+            if (grabbed_callback_) {
+              grabbed_callback_(*this);
+            }
 
-        queue_start();
-        schedule();
+            queue_start();
+            schedule();
 
-        // ----------------------------------------
-        logger_.info("{0} is grabbed", get_name_for_log());
+            // ----------------------------------------
+            logger_.info("{0} is grabbed", get_name_for_log());
 
-        cancel_grab_timer();
-      });
-      dispatch_resume(grab_timer_);
+            cancel_grab_timer();
+          });
     });
   }
 
@@ -645,13 +646,7 @@ private:
   }
 
   void cancel_grab_timer(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (grab_timer_) {
-        dispatch_source_cancel(grab_timer_);
-        dispatch_release(grab_timer_);
-        grab_timer_ = nullptr;
-      }
-    });
+    grab_timer_ = nullptr;
   }
 
   spdlog::logger& logger_;
@@ -671,6 +666,6 @@ private:
   is_grabbable_callback is_grabbable_callback_;
   grabbed_callback grabbed_callback_;
   spdlog_utility::log_reducer is_grabbable_log_reducer_;
-  dispatch_source_t _Nullable grab_timer_;
+  std::unique_ptr<gcd_utility::main_queue_timer> grab_timer_;
   bool grabbed_;
 };

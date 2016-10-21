@@ -37,6 +37,31 @@ public:
     }
   }
 
+  class main_queue_timer final {
+  public:
+    main_queue_timer(unsigned long mask, dispatch_time_t start, uint64_t interval, uint64_t leeway, void (^_Nonnull block)(void)) {
+      timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, mask, dispatch_get_main_queue());
+      if (timer_) {
+        dispatch_source_set_timer(timer_, start, interval, leeway);
+        dispatch_source_set_event_handler(timer_, block);
+        dispatch_resume(timer_);
+      }
+    }
+
+    ~main_queue_timer(void) {
+      // Release timer_ in main thread to avoid callback invocations after object has been destroyed.
+      dispatch_sync_in_main_queue(^{
+        if (timer_) {
+          dispatch_source_cancel(timer_);
+          dispatch_release(timer_);
+        }
+      });
+    }
+
+  private:
+    dispatch_source_t _Nonnull timer_;
+  };
+
 private:
   static std::string get_next_queue_label(void) {
     static std::mutex mutex;

@@ -438,41 +438,29 @@ private:
           return;
         }
 
-        timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, dispatch_get_main_queue());
-        if (timer_) {
-          std::lock_guard<std::mutex> guard(mutex_);
+        timer_ = std::make_unique<gcd_utility::main_queue_timer>(
+            DISPATCH_TIMER_STRICT,
+            dispatch_time(DISPATCH_TIME_NOW, initial_key_repeat_milliseconds * NSEC_PER_MSEC),
+            key_repeat_milliseconds * NSEC_PER_MSEC,
+            0,
+            ^{
+              event_manipulator_.post_key(from_key_code, to_key_code, pressed, true);
+            });
 
-          dispatch_source_set_timer(timer_,
-                                    dispatch_time(DISPATCH_TIME_NOW, initial_key_repeat_milliseconds * NSEC_PER_MSEC),
-                                    key_repeat_milliseconds * NSEC_PER_MSEC,
-                                    0);
-          dispatch_source_set_event_handler(timer_, ^{
-            event_manipulator_.post_key(from_key_code, to_key_code, pressed, true);
-          });
-          dispatch_resume(timer_);
-          from_key_code_ = from_key_code;
-        }
+        from_key_code_ = from_key_code;
       }
     }
 
     void stop(void) {
-      // Release timer_ in main thread to avoid callback invocations after object has been destroyed.
-      gcd_utility::dispatch_sync_in_main_queue(^{
-        if (timer_) {
-          dispatch_source_cancel(timer_);
-          dispatch_release(timer_);
-          timer_ = nullptr;
-        }
-      });
+      timer_ = nullptr;
     }
 
   private:
     event_manipulator& event_manipulator_;
 
-    dispatch_source_t timer_;
+    std::unique_ptr<gcd_utility::main_queue_timer> timer_;
 
     boost::optional<krbn::key_code> from_key_code_;
-    std::mutex mutex_;
   };
 
   bool post_modifier_flag_event(krbn::key_code key_code, bool pressed) {
