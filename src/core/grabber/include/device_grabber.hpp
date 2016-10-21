@@ -74,6 +74,9 @@ public:
       mode_ = mode::grabbing;
     }
 
+    event_manipulator_.reset();
+    event_manipulator_.grab_mouse_events();
+
     cancel_grab_timer();
 
     // ----------------------------------------
@@ -110,9 +113,6 @@ public:
           (it.second)->grab();
         }
       }
-
-      event_manipulator_.reset();
-      event_manipulator_.grab_mouse_events();
 
       logger::get_logger().info("Connected devices are grabbed");
 
