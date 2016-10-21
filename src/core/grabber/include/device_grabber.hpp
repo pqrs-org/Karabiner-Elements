@@ -298,30 +298,15 @@ private:
   }
 
   void observe(human_interface_device& hid) {
-    auto manufacturer = hid.get_manufacturer();
-    if (manufacturer && *manufacturer == "pqrs.org") {
-      return;
-    }
-
     human_interface_device::value_callback callback;
     hid.observe(callback);
   }
 
   void unobserve(human_interface_device& hid) {
-    auto manufacturer = hid.get_manufacturer();
-    if (manufacturer && *manufacturer == "pqrs.org") {
-      return;
-    }
-
     hid.unobserve();
   }
 
   void grab(human_interface_device& hid) {
-    auto manufacturer = hid.get_manufacturer();
-    if (manufacturer && *manufacturer == "pqrs.org") {
-      return;
-    }
-
     // seize device
     hid.grab(std::bind(&device_grabber::value_callback,
                        this,
@@ -337,11 +322,6 @@ private:
   }
 
   void ungrab(human_interface_device& hid) {
-    auto manufacturer = hid.get_manufacturer();
-    if (manufacturer && *manufacturer == "pqrs.org") {
-      return;
-    }
-
     hid.ungrab();
   }
 
