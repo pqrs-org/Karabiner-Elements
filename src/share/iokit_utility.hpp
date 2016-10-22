@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "types.hpp"
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
 #include <IOKit/hid/IOHIDKeys.h>
@@ -158,16 +159,25 @@ public:
     return get_long_property(device, CFSTR(kIOHIDMaxInputReportSizeKey));
   }
 
-  static boost::optional<long> get_vendor_id(IOHIDDeviceRef _Nonnull device) {
-    return get_long_property(device, CFSTR(kIOHIDVendorIDKey));
+  static boost::optional<krbn::vendor_id> get_vendor_id(IOHIDDeviceRef _Nonnull device) {
+    if (auto value = get_long_property(device, CFSTR(kIOHIDVendorIDKey))) {
+      return static_cast<krbn::vendor_id>(*value);
+    }
+    return boost::none;
   }
 
-  static boost::optional<long> get_product_id(IOHIDDeviceRef _Nonnull device) {
-    return get_long_property(device, CFSTR(kIOHIDProductIDKey));
+  static boost::optional<krbn::product_id> get_product_id(IOHIDDeviceRef _Nonnull device) {
+    if (auto value = get_long_property(device, CFSTR(kIOHIDProductIDKey))) {
+      return static_cast<krbn::product_id>(*value);
+    }
+    return boost::none;
   }
 
-  static boost::optional<long> get_location_id(IOHIDDeviceRef _Nonnull device) {
-    return get_long_property(device, CFSTR(kIOHIDLocationIDKey));
+  static boost::optional<krbn::location_id> get_location_id(IOHIDDeviceRef _Nonnull device) {
+    if (auto value = get_long_property(device, CFSTR(kIOHIDLocationIDKey))) {
+      return static_cast<krbn::location_id>(*value);
+    }
+    return boost::none;
   }
 
   static boost::optional<std::string> get_manufacturer(IOHIDDeviceRef _Nonnull device) {
@@ -196,13 +206,13 @@ public:
       logger.info("  product: {0}", *product);
     }
     if (auto vendor_id = get_vendor_id(device)) {
-      logger.info("  vendor_id: {0:#x}", *vendor_id);
+      logger.info("  vendor_id: {0:#x}", static_cast<uint32_t>(*vendor_id));
     }
     if (auto product_id = get_product_id(device)) {
-      logger.info("  product_id: {0:#x}", *product_id);
+      logger.info("  product_id: {0:#x}", static_cast<uint32_t>(*product_id));
     }
     if (auto location_id = get_location_id(device)) {
-      logger.info("  location_id: {0:#x}", *location_id);
+      logger.info("  location_id: {0:#x}", static_cast<uint32_t>(*location_id));
     }
     if (auto serial_number = get_serial_number(device)) {
       logger.info("  serial_number: {0}", *serial_number);
@@ -216,13 +226,13 @@ public:
                                  IOHIDDeviceRef _Nonnull device) {
     logger.info("removal device:");
     if (auto vendor_id = get_vendor_id(device)) {
-      logger.info("  vendor_id: {0:#x}", *vendor_id);
+      logger.info("  vendor_id: {0:#x}", static_cast<uint32_t>(*vendor_id));
     }
     if (auto product_id = get_product_id(device)) {
-      logger.info("  product_id: {0:#x}", *product_id);
+      logger.info("  product_id: {0:#x}", static_cast<uint32_t>(*product_id));
     }
     if (auto location_id = get_location_id(device)) {
-      logger.info("  location_id: {0:#x}", *location_id);
+      logger.info("  location_id: {0:#x}", static_cast<uint32_t>(*location_id));
     }
   }
 };

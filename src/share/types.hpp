@@ -200,6 +200,15 @@ enum class led_state : uint32_t {
   off,
 };
 
+enum class vendor_id : uint32_t {
+};
+
+enum class product_id : uint32_t {
+};
+
+enum class location_id : uint32_t {
+};
+
 class types final {
 public:
   static modifier_flag get_modifier_flag(key_code key_code) {

@@ -356,10 +356,10 @@ private:
     for (const auto& it : hids_) {
       nlohmann::json j({});
       if (auto vendor_id = (it.second)->get_vendor_id()) {
-        j["vendor_id"] = *vendor_id;
+        j["vendor_id"] = static_cast<uint32_t>(*vendor_id);
       }
       if (auto product_id = (it.second)->get_product_id()) {
-        j["product_id"] = *product_id;
+        j["product_id"] = static_cast<uint32_t>(*product_id);
       }
       if (auto manufacturer = (it.second)->get_manufacturer()) {
         j["manipulator"] = *manufacturer;

@@ -324,15 +324,15 @@ public:
     return iokit_utility::get_max_input_report_size(device_);
   }
 
-  boost::optional<long> get_vendor_id(void) const {
+  boost::optional<krbn::vendor_id> get_vendor_id(void) const {
     return iokit_utility::get_vendor_id(device_);
   }
 
-  boost::optional<long> get_product_id(void) const {
+  boost::optional<krbn::product_id> get_product_id(void) const {
     return iokit_utility::get_product_id(device_);
   }
 
-  boost::optional<long> get_location_id(void) const {
+  boost::optional<krbn::location_id> get_location_id(void) const {
     return iokit_utility::get_location_id(device_);
   }
 
@@ -360,8 +360,8 @@ public:
       if (auto product_id = get_product_id()) {
         std::stringstream stream;
         stream << std::hex
-               << "(vendor_id:0x" << *vendor_id
-               << ", product_id:0x" << *product_id
+               << "(vendor_id:0x" << static_cast<uint32_t>(*vendor_id)
+               << ", product_id:0x" << static_cast<uint32_t>(*product_id)
                << ")"
                << std::dec;
         return stream.str();
