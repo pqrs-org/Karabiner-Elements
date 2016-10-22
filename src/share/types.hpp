@@ -695,9 +695,9 @@ public:
       map[key_code::vk_consumer_brightness_up] = NX_KEYTYPE_BRIGHTNESS_UP;
       map[key_code::vk_consumer_illumination_down] = NX_KEYTYPE_ILLUMINATION_DOWN;
       map[key_code::vk_consumer_illumination_up] = NX_KEYTYPE_ILLUMINATION_UP;
-      map[key_code::vk_consumer_next] = NX_KEYTYPE_NEXT;
+      map[key_code::vk_consumer_next] = NX_KEYTYPE_FAST;
       map[key_code::vk_consumer_play] = NX_KEYTYPE_PLAY;
-      map[key_code::vk_consumer_previous] = NX_KEYTYPE_PREVIOUS;
+      map[key_code::vk_consumer_previous] = NX_KEYTYPE_REWIND;
     }
     return map;
   }
