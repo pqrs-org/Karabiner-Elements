@@ -79,11 +79,9 @@ end
 
 print "check simple_modifications.json"
 
-def check_simple_modifications(simple_modifications, key_code_map)
+open('../../src/apps/PreferencesWindow/PreferencesWindow/Resources/simple_modifications.json') do |f|
+  simple_modifications = JSON.parse(f.read)
   simple_modifications.each do |value|
-    unless value["children"].nil? then
-      check_simple_modifications(value["children"], key_code_map)
-    end
     unless value["name"].nil? then
       print '.'
 
@@ -111,10 +109,5 @@ def check_simple_modifications(simple_modifications, key_code_map)
       end
     end
   end
-end
-
-open('../../src/apps/PreferencesWindow/PreferencesWindow/Resources/simple_modifications.json') do |f|
-  simple_modifications = JSON.parse(f.read)
-  check_simple_modifications(simple_modifications, key_code_map)
   print "\n"
 end
