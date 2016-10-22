@@ -2,6 +2,7 @@
 #include "constants.hpp"
 #include "libkrbn.hpp"
 #include "thread_utility.hpp"
+#include "types.hpp"
 #include <iostream>
 
 void libkrbn_initialize(void) {
@@ -40,4 +41,14 @@ const char* libkrbn_get_distributed_notification_grabber_is_launched(void) {
 
 const char* libkrbn_get_configuration_core_file_path(void) {
   return constants::get_configuration_core_file_path();
+}
+
+bool libkrbn_get_hid_system_key(uint8_t* _Nonnull key, const char* key_name) {
+  if (auto key_code = krbn::types::get_key_code(key_name)) {
+    if (auto value = krbn::types::get_hid_system_key(*key_code)) {
+      *key = *value;
+      return true;
+    }
+  }
+  return false;
 }

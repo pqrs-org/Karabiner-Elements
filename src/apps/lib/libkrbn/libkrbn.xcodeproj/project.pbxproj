@@ -15,6 +15,8 @@
 		347113081D870834001AC60D /* libkrbn.h in Headers */ = {isa = PBXBuildFile; fileRef = 347113071D870834001AC60D /* libkrbn.h */; };
 		3471130C1D87092D001AC60D /* constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3471130B1D87092D001AC60D /* constants.hpp */; };
 		34B97B101DB8D2F600EB3583 /* thread_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34B97B0F1DB8D2F600EB3583 /* thread_utility.hpp */; };
+		34B97B241DBB2C4700EB3583 /* types.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34B97B231DBB2C4700EB3583 /* types.hpp */; };
+		34B97B271DBB2C5A00EB3583 /* boost_defs.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34B97B261DBB2C5A00EB3583 /* boost_defs.hpp */; };
 		34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */; };
 		34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC701D9663EC004C61E1 /* log_monitor.hpp */; };
 		34CFEC731D9663F6004C61E1 /* spdlog_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */; };
@@ -30,6 +32,8 @@
 		347113071D870834001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libkrbn.h; sourceTree = "<group>"; };
 		3471130B1D87092D001AC60D /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../../share/constants.hpp; sourceTree = "<group>"; };
 		34B97B0F1DB8D2F600EB3583 /* thread_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = thread_utility.hpp; path = ../../../share/thread_utility.hpp; sourceTree = "<group>"; };
+		34B97B231DBB2C4700EB3583 /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../../../share/types.hpp; sourceTree = "<group>"; };
+		34B97B261DBB2C5A00EB3583 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../../share/boost_defs.hpp; sourceTree = "<group>"; };
 		34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_monitor.hpp; path = ../../../share/file_monitor.hpp; sourceTree = "<group>"; };
 		34CFEC701D9663EC004C61E1 /* log_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = log_monitor.hpp; path = ../../../share/log_monitor.hpp; sourceTree = "<group>"; };
 		34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = spdlog_utility.hpp; path = ../../../share/spdlog_utility.hpp; sourceTree = "<group>"; };
@@ -78,12 +82,14 @@
 		347113091D87091F001AC60D /* share */ = {
 			isa = PBXGroup;
 			children = (
+				34B97B261DBB2C5A00EB3583 /* boost_defs.hpp */,
 				345F95411DA934C6002854B8 /* configuration_core.hpp */,
 				3471130B1D87092D001AC60D /* constants.hpp */,
 				34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */,
 				34CFEC701D9663EC004C61E1 /* log_monitor.hpp */,
 				34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */,
 				34B97B0F1DB8D2F600EB3583 /* thread_utility.hpp */,
+				34B97B231DBB2C4700EB3583 /* types.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -99,10 +105,12 @@
 				345F953B1DA2AE3F002854B8 /* libkrbn.hpp in Headers */,
 				34CFEC731D9663F6004C61E1 /* spdlog_utility.hpp in Headers */,
 				34B97B101DB8D2F600EB3583 /* thread_utility.hpp in Headers */,
+				34B97B271DBB2C5A00EB3583 /* boost_defs.hpp in Headers */,
 				347113081D870834001AC60D /* libkrbn.h in Headers */,
 				345F95421DA934C6002854B8 /* configuration_core.hpp in Headers */,
 				34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */,
 				34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */,
+				34B97B241DBB2C4700EB3583 /* types.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
