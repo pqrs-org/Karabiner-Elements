@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -49,7 +48,7 @@
                                     <rect key="frame" x="10" y="33" width="834" height="493"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <box title="Keyboard &amp; Pointing events" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="614">
+                                        <box borderType="line" title="Keyboard &amp; Pointing events" translatesAutoresizingMaskIntoConstraints="NO" id="614">
                                             <rect key="frame" x="14" y="178" width="806" height="305"/>
                                             <view key="contentView" id="pJS-41-sBt">
                                                 <rect key="frame" x="1" y="1" width="804" height="289"/>
@@ -82,7 +81,7 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" enabled="NO" rowHeight="14" headerView="565" id="564">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="753" height="16"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="753" height="214"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                     <size key="intercellSpacing" width="3" height="2"/>
                                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -113,7 +112,7 @@
                                                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                         </tableColumn>
-                                                                        <tableColumn identifier="name" editable="NO" width="120" minWidth="10" maxWidth="3.4028234663852886e+38" id="581">
+                                                                        <tableColumn identifier="name" editable="NO" width="140" minWidth="10" maxWidth="3.4028234663852886e+38" id="581">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="name">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -125,7 +124,7 @@
                                                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                         </tableColumn>
-                                                                        <tableColumn identifier="flags" editable="NO" width="220" minWidth="10" maxWidth="3.4028234663852886e+38" id="583">
+                                                                        <tableColumn identifier="flags" editable="NO" width="200" minWidth="10" maxWidth="3.4028234663852886e+38" id="583">
                                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="flags">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -167,7 +166,7 @@
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </scroller>
                                                         <tableHeaderView key="headerView" autoresizesSubviews="NO" focusRingType="none" id="565">
-                                                            <rect key="frame" x="0.0" y="0.0" width="761" height="23"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="753" height="23"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </tableHeaderView>
                                                     </scrollView>
@@ -183,8 +182,6 @@
                                                     <constraint firstItem="561" firstAttribute="leading" secondItem="541" secondAttribute="leading" id="pfn-WU-u72"/>
                                                 </constraints>
                                             </view>
-                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </box>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="925" customClass="KeyResponder">
                                             <rect key="frame" x="657" y="10" width="160" height="160"/>
@@ -216,7 +213,7 @@
                                     <rect key="frame" x="10" y="33" width="834" height="493"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <box title="Window behavior" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="Qpe-gM-a7s">
+                                        <box borderType="line" title="Window behavior" translatesAutoresizingMaskIntoConstraints="NO" id="Qpe-gM-a7s">
                                             <rect key="frame" x="14" y="409" width="806" height="74"/>
                                             <view key="contentView" id="sxi-Co-MLe">
                                                 <rect key="frame" x="1" y="1" width="804" height="58"/>
@@ -253,10 +250,8 @@
                                                     <constraint firstItem="qpH-oY-yl0" firstAttribute="leading" secondItem="sxi-Co-MLe" secondAttribute="leading" constant="17" id="nmx-vo-XhA"/>
                                                 </constraints>
                                             </view>
-                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </box>
-                                        <box title="Others" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="lH0-6O-BWP">
+                                        <box borderType="line" title="Others" translatesAutoresizingMaskIntoConstraints="NO" id="lH0-6O-BWP">
                                             <rect key="frame" x="14" y="353" width="806" height="50"/>
                                             <view key="contentView" id="xoA-9x-cwN">
                                                 <rect key="frame" x="1" y="1" width="804" height="34"/>
@@ -279,8 +274,6 @@
                                                     <constraint firstAttribute="bottom" secondItem="cCs-zq-ovo" secondAttribute="bottom" constant="10" id="od8-gC-Cw7"/>
                                                 </constraints>
                                             </view>
-                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </box>
                                     </subviews>
                                     <constraints>

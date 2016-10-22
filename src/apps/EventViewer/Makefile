@@ -3,6 +3,7 @@ CONFIGURATION = Release
 
 all:
 	../../../scripts/setversion.sh
+	make -C ../lib/libkrbn
 	xcodebuild -alltargets -configuration $(CONFIGURATION) build
 
 clean:
@@ -18,4 +19,4 @@ xcode:
 	open *.xcodeproj
 
 run: all
-	./build/Release/EventViewer.app/Contents/MacOS/EventViewer
+	./build/Release/Karabiner-EventViewer.app/Contents/MacOS/Karabiner-EventViewer
