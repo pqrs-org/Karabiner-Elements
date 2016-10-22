@@ -7,6 +7,7 @@
 
 @property NSMutableArray* queue;
 @property NSMutableDictionary* hidSystemKeyNames;
+@property NSMutableDictionary* hidSystemAuxControlButtonNames;
 @property(weak) IBOutlet NSTableView* view;
 
 @end
@@ -23,6 +24,7 @@ enum {
   if (self) {
     _queue = [NSMutableArray new];
     _hidSystemKeyNames = [NSMutableDictionary new];
+    _hidSystemAuxControlButtonNames = [NSMutableDictionary new];
 
     NSString* jsonFilePath = [[NSBundle mainBundle] pathForResource:@"simple_modifications" ofType:@"json"];
     if (jsonFilePath) {
@@ -35,6 +37,12 @@ enum {
             if (libkrbn_get_hid_system_key(&hid_system_key, [name UTF8String])) {
               if (!_hidSystemKeyNames[@(hid_system_key)]) {
                 _hidSystemKeyNames[@(hid_system_key)] = name;
+              }
+            }
+            uint8_t hid_system_aux_control_button = 0;
+            if (libkrbn_get_hid_system_aux_control_button(&hid_system_aux_control_button, [name UTF8String])) {
+              if (!_hidSystemAuxControlButtonNames[@(hid_system_aux_control_button)]) {
+                _hidSystemAuxControlButtonNames[@(hid_system_aux_control_button)] = name;
               }
             }
           }
@@ -214,9 +222,14 @@ enum {
       }
     }
 
+    NSString* name = self.hidSystemAuxControlButtonNames[@(keyCode)];
+    if (!name) {
+      name = @"";
+    }
+
     [self push:eventType
           code:[NSString stringWithFormat:@"0x%x", keyCode]
-          name:@""
+          name:name
          flags:[self modifierFlagsToString:[event modifierFlags]]
           misc:@""];
   }
