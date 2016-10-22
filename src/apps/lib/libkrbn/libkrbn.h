@@ -31,6 +31,7 @@ const char* _Nullable libkrbn_log_monitor_initial_line(libkrbn_log_monitor* _Non
 void libkrbn_log_monitor_start(libkrbn_log_monitor* _Nonnull p);
 
 bool libkrbn_get_hid_system_key(uint8_t* _Nonnull key, const char* _Nonnull key_name);
+bool libkrbn_get_hid_system_aux_control_button(uint8_t* _Nonnull button, const char* _Nonnull key_name);
 
 #ifdef __cplusplus
 }

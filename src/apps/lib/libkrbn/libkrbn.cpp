@@ -52,3 +52,13 @@ bool libkrbn_get_hid_system_key(uint8_t* _Nonnull key, const char* key_name) {
   }
   return false;
 }
+
+bool libkrbn_get_hid_system_aux_control_button(uint8_t* _Nonnull button, const char* key_name) {
+  if (auto key_code = krbn::types::get_key_code(key_name)) {
+    if (auto value = krbn::types::get_hid_system_aux_control_button(*key_code)) {
+      *button = *value;
+      return true;
+    }
+  }
+  return false;
+}
