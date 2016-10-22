@@ -19,13 +19,13 @@
 		345F954E1DAB8EC2002854B8 /* simple_modifications.json in Resources */ = {isa = PBXBuildFile; fileRef = 345F954D1DAB8EC2002854B8 /* simple_modifications.json */; };
 		345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95501DABAF7A002854B8 /* SimpleModificationsTableCellView.m */; };
 		345F95541DABE746002854B8 /* SimpleModificationsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95531DABE746002854B8 /* SimpleModificationsTableViewController.m */; };
-		345F95571DABFA29002854B8 /* JsonUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95561DABFA29002854B8 /* JsonUtility.m */; };
 		3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB691D8061E40005D30D /* PreferencesWindowController.m */; };
 		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
 		347112ED1D86E619001AC60D /* UpdaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112EC1D86E619001AC60D /* UpdaterController.m */; };
 		347112F11D87010A001AC60D /* Relauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112F01D87010A001AC60D /* Relauncher.m */; };
 		347113101D870D74001AC60D /* libkrbn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3471130F1D870D74001AC60D /* libkrbn.a */; };
 		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
+		34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B1E1DBB292A00EB3583 /* JsonUtility.m */; };
 		34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */; };
 		34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */; };
 		34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */; };
@@ -54,8 +54,6 @@
 		345F95501DABAF7A002854B8 /* SimpleModificationsTableCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableCellView.m; sourceTree = "<group>"; };
 		345F95521DABE746002854B8 /* SimpleModificationsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewController.h; sourceTree = "<group>"; };
 		345F95531DABE746002854B8 /* SimpleModificationsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewController.m; sourceTree = "<group>"; };
-		345F95551DABFA29002854B8 /* JsonUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonUtility.h; sourceTree = "<group>"; };
-		345F95561DABFA29002854B8 /* JsonUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JsonUtility.m; sourceTree = "<group>"; };
 		345F95581DAC111B002854B8 /* NotificationKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationKeys.h; sourceTree = "<group>"; };
 		3469EB681D8061E40005D30D /* PreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesWindowController.h; sourceTree = "<group>"; };
 		3469EB691D8061E40005D30D /* PreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesWindowController.m; sourceTree = "<group>"; };
@@ -69,6 +67,8 @@
 		3471130F1D870D74001AC60D /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
 		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
+		34B97B1D1DBB292A00EB3583 /* JsonUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonUtility.h; path = ../../share/JsonUtility.h; sourceTree = "<group>"; };
+		34B97B1E1DBB292A00EB3583 /* JsonUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JsonUtility.m; path = ../../share/JsonUtility.m; sourceTree = "<group>"; };
 		34EEEEEA1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDataSource.h; sourceTree = "<group>"; };
 		34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FnFunctionKeysTableViewDataSource.m; sourceTree = "<group>"; };
 		34EEEEED1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDelegate.h; sourceTree = "<group>"; };
@@ -123,8 +123,6 @@
 				34EEEEED1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.h */,
 				34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */,
 				3445E0701D801AF7004555F9 /* Info.plist */,
-				345F95551DABFA29002854B8 /* JsonUtility.h */,
-				345F95561DABFA29002854B8 /* JsonUtility.m */,
 				3469EB6D1D8127980005D30D /* LogFileTextViewController.h */,
 				3469EB6E1D8127980005D30D /* LogFileTextViewController.m */,
 				3445E06D1D801AF7004555F9 /* MainMenu.xib */,
@@ -172,6 +170,8 @@
 		3469EB6B1D806AD60005D30D /* share */ = {
 			isa = PBXGroup;
 			children = (
+				34B97B1D1DBB292A00EB3583 /* JsonUtility.h */,
+				34B97B1E1DBB292A00EB3583 /* JsonUtility.m */,
 				347112EF1D87010A001AC60D /* Relauncher.h */,
 				347112F01D87010A001AC60D /* Relauncher.m */,
 				3469EB6C1D806AEA0005D30D /* weakify.h */,
@@ -249,7 +249,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */,
-				345F95571DABFA29002854B8 /* JsonUtility.m in Sources */,
 				345F95541DABE746002854B8 /* SimpleModificationsTableViewController.m in Sources */,
 				345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */,
 				347112ED1D86E619001AC60D /* UpdaterController.m in Sources */,
@@ -263,6 +262,7 @@
 				345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,
 				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,
+				34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
 				345F95481DAA5DA1002854B8 /* ConfigurationCoreModel.m in Sources */,
 			);
