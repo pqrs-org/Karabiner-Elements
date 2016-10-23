@@ -11,7 +11,7 @@ public:
     return "/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_event_dispatcher";
   }
 
-  static const char* get_socket_directory(void) {
+  static const char* get_tmp_directory(void) {
     return "/Library/Application Support/org.pqrs/tmp";
   }
 

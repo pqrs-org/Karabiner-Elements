@@ -21,7 +21,7 @@ public:
     const size_t buffer_length = 8 * 1024;
     buffer_.resize(buffer_length);
 
-    mkdir(constants::get_socket_directory(), 0755);
+    mkdir(constants::get_tmp_directory(), 0755);
     const char* path = constants::get_event_dispatcher_socket_file_path();
     unlink(path);
     server_ = std::make_unique<local_datagram_server>(path);

@@ -24,9 +24,9 @@ int main(int argc, const char* argv[]) {
   system("/sbin/kextload '/Library/Application Support/org.pqrs/Karabiner-Elements/org.pqrs.driver.VirtualHIDManager.kext'");
 
   // make socket directory.
-  mkdir(constants::get_socket_directory(), 0755);
-  chown(constants::get_socket_directory(), 0, 0);
-  chmod(constants::get_socket_directory(), 0755);
+  mkdir(constants::get_tmp_directory(), 0755);
+  chown(constants::get_tmp_directory(), 0, 0);
+  chmod(constants::get_tmp_directory(), 0755);
 
   unlink(constants::get_grabber_socket_file_path());
   unlink(constants::get_event_dispatcher_socket_file_path());
