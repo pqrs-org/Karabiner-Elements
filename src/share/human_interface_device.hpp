@@ -336,6 +336,15 @@ public:
     return iokit_utility::get_location_id(device_);
   }
 
+  boost::optional<krbn::vendor_product_id> get_vendor_product_id(void) const {
+    if (auto vendor_id = get_vendor_id()) {
+      if (auto product_id = get_product_id()) {
+        return krbn::types::make_vendor_product_id(*vendor_id, *product_id);
+      }
+    }
+    return boost::none;
+  }
+
   boost::optional<std::string> get_manufacturer(void) const {
     return iokit_utility::get_manufacturer(device_);
   }
@@ -466,11 +475,11 @@ public:
     return r;
   }
 
-  bool is_keyboard(void) {
+  bool is_keyboard(void) const {
     return IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
   }
 
-  bool is_pointing_device(void) {
+  bool is_pointing_device(void) const {
     return IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer) ||
            IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
   }
