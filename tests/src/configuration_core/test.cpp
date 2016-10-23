@@ -44,9 +44,9 @@ TEST_CASE("valid") {
     REQUIRE(configuration.get_current_profile_fn_function_keys() == expected);
   }
   {
-    std::vector<std::pair<uint64_t, bool>> expected{
-        std::make_pair((static_cast<uint64_t>(1133) << 32) | 50475, false),
-        std::make_pair((static_cast<uint64_t>(1452) << 32) | 610, true),
+    std::vector<std::pair<krbn::vendor_product_id, bool>> expected{
+        std::make_pair(krbn::types::make_vendor_product_id(krbn::vendor_id(1133), krbn::product_id(50475)), false),
+        std::make_pair(krbn::types::make_vendor_product_id(krbn::vendor_id(1452), krbn::product_id(610)), true),
     };
     REQUIRE(configuration.get_current_profile_devices() == expected);
   }

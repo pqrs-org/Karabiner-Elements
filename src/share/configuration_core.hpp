@@ -87,8 +87,8 @@ public:
     return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
-  std::vector<std::pair<uint64_t, bool>> get_current_profile_devices(void) {
-    std::vector<std::pair<uint64_t, bool>> v;
+  std::vector<std::pair<krbn::vendor_product_id, bool>> get_current_profile_devices(void) {
+    std::vector<std::pair<krbn::vendor_product_id, bool>> v;
 
     auto profile = get_current_profile();
     if (profile["devices"].is_array()) {
@@ -99,8 +99,7 @@ public:
           uint32_t vendor_id = device["vendor_id"];
           uint32_t product_id = device["product_id"];
           bool ignore = device["ignore"];
-          uint64_t key = (static_cast<uint64_t>(vendor_id) << 32) | product_id;
-          v.push_back(std::make_pair(key, ignore));
+          v.push_back(std::make_pair(krbn::types::make_vendor_product_id(krbn::vendor_id(vendor_id), krbn::product_id(product_id)), ignore));
         }
       }
     }

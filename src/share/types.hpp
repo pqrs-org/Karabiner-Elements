@@ -209,6 +209,9 @@ enum class product_id : uint32_t {
 enum class location_id : uint32_t {
 };
 
+enum class vendor_product_id : uint64_t {
+};
+
 class types final {
 public:
   static modifier_flag get_modifier_flag(key_code key_code) {
@@ -716,6 +719,10 @@ public:
       return krbn::pointing_button(usage);
     }
     return boost::none;
+  }
+
+  static vendor_product_id make_vendor_product_id(vendor_id vendor_id, product_id product_id) {
+    return vendor_product_id((static_cast<uint64_t>(vendor_id) << 32) | static_cast<uint32_t>(product_id));
   }
 };
 
