@@ -43,6 +43,13 @@ TEST_CASE("valid") {
     };
     REQUIRE(configuration.get_current_profile_fn_function_keys() == expected);
   }
+  {
+    std::vector<std::pair<uint64_t, bool>> expected{
+        std::make_pair((static_cast<uint64_t>(1133) << 32) | 50475, false),
+        std::make_pair((static_cast<uint64_t>(1452) << 32) | 610, true),
+    };
+    REQUIRE(configuration.get_current_profile_devices() == expected);
+  }
 
   REQUIRE(configuration.is_loaded() == true);
 }

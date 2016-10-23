@@ -1,30 +1,36 @@
 {
-    "profiles": [
-        {
-            "name": "Default profile",
-            "selected": true,
-            "simple_modifications": {
-                "caps_lock": "delete_or_backspace",
-                "escape": "spacebar"
-            },
-            "fn_function_keys": {
-                "f1":  "vk_consumer_brightness_down",
-                "f2":  "vk_consumer_brightness_up",
-                "f3":  "vk_mission_control",
-                "f4":  "vk_launchpad",
-                "f5":  "vk_consumer_illumination_down",
-                "f6":  "vk_consumer_illumination_up",
-                "f7":  "vk_consumer_previous",
-                "f8":  "vk_consumer_play",
-                "f9":  "vk_consumer_next",
-                "f10": "mute",
-                "f11": "volume_down",
-                "f12": "volume_up"
-            }
+    "profiles": [{
+        "name": "Default profile",
+        "selected": true,
+        "simple_modifications": {
+            "caps_lock": "delete_or_backspace",
+            "escape": "spacebar"
         },
-        {
-            "name": "Empty",
-            "selected": false
-        }
-    ]
+        "fn_function_keys": {
+            "f1": "vk_consumer_brightness_down",
+            "f2": "vk_consumer_brightness_up",
+            "f3": "vk_mission_control",
+            "f4": "vk_launchpad",
+            "f5": "vk_consumer_illumination_down",
+            "f6": "vk_consumer_illumination_up",
+            "f7": "vk_consumer_previous",
+            "f8": "vk_consumer_play",
+            "f9": "vk_consumer_next",
+            "f10": "mute",
+            "f11": "volume_down",
+            "f12": "volume_up"
+        },
+        "devices": [{
+            "vendor_id": 1133,
+            "product_id": 50475,
+            "ignore": false
+        }, {
+            "vendor_id": 1452,
+            "product_id": 610,
+            "ignore": true
+        }]
+    }, {
+        "name": "Empty",
+        "selected": false
+    }]
 }
