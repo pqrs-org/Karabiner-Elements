@@ -12,6 +12,7 @@ void libkrbn_initialize(void);
 const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
 const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(void);
 const char* _Nonnull libkrbn_get_configuration_core_file_path(void);
+const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 
 typedef void libkrbn_configuration_monitor;
 typedef void (*libkrbn_configuration_monitor_callback)(const char* _Nonnull current_profile_json, void* _Nullable refcon);
@@ -19,6 +20,13 @@ bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor* _Nu
                                               libkrbn_configuration_monitor_callback _Nullable callback,
                                               void* _Nullable refcon);
 void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor* _Nullable* _Nonnull out);
+
+typedef void libkrbn_device_monitor;
+typedef void (*libkrbn_device_monitor_callback)(void* _Nullable refcon);
+bool libkrbn_device_monitor_initialize(libkrbn_device_monitor* _Nullable* _Nonnull out,
+                                       libkrbn_device_monitor_callback _Nullable callback,
+                                       void* _Nullable refcon);
+void libkrbn_device_monitor_terminate(libkrbn_device_monitor* _Nullable* _Nonnull out);
 
 typedef void libkrbn_log_monitor;
 typedef void (*libkrbn_log_monitor_callback)(const char* _Nonnull line, void* _Nullable refcon);
