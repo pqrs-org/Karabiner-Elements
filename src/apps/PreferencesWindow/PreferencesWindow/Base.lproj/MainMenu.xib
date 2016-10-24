@@ -16,9 +16,11 @@
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
                 <outlet property="configurationManager" destination="gHg-lq-U6a" id="1k4-2u-8fe"/>
+                <outlet property="deviceManager" destination="XCy-yA-tah" id="Mqj-sY-vin"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
             </connections>
         </customObject>
+        <customObject id="XCy-yA-tah" customClass="DeviceManager"/>
         <customObject id="wKd-bU-aLe" customClass="LogFileTextViewController">
             <connections>
                 <outlet property="currentTime" destination="WXq-hw-PS5" id="1cb-f1-Tq3"/>
@@ -546,7 +548,7 @@
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="RPX-X6-Et1" viewBased="YES" id="OWP-Cf-tc8">
-                                                        <rect key="frame" x="0.0" y="0.0" width="718" height="404"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="718" height="398"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -644,7 +646,7 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" id="RPX-X6-Et1">
-                                                <rect key="frame" x="0.0" y="0.0" width="718" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="718" height="23"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>

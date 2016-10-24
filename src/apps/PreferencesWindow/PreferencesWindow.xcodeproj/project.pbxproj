@@ -26,6 +26,9 @@
 		347113101D870D74001AC60D /* libkrbn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3471130F1D870D74001AC60D /* libkrbn.a */; };
 		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
 		34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B1E1DBB292A00EB3583 /* JsonUtility.m */; };
+		34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */; };
+		34B97B301DBE4B9B00EB3583 /* DeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B2F1DBE4B9B00EB3583 /* DeviceModel.m */; };
+		34B97B321DBE4EA100EB3583 /* DeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B311DBE4EA100EB3583 /* DeviceManager.m */; };
 		34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */; };
 		34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */; };
 		34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */; };
@@ -69,6 +72,12 @@
 		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
 		34B97B1D1DBB292A00EB3583 /* JsonUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonUtility.h; path = ../../share/JsonUtility.h; sourceTree = "<group>"; };
 		34B97B1E1DBB292A00EB3583 /* JsonUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JsonUtility.m; path = ../../share/JsonUtility.m; sourceTree = "<group>"; };
+		34B97B281DBCC23D00EB3583 /* DevicesTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableViewDataSource.h; sourceTree = "<group>"; };
+		34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesTableViewDataSource.m; sourceTree = "<group>"; };
+		34B97B2D1DBE4B9B00EB3583 /* DeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceManager.h; sourceTree = "<group>"; };
+		34B97B2E1DBE4B9B00EB3583 /* DeviceModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceModel.h; sourceTree = "<group>"; };
+		34B97B2F1DBE4B9B00EB3583 /* DeviceModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceModel.m; sourceTree = "<group>"; };
+		34B97B311DBE4EA100EB3583 /* DeviceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceManager.m; sourceTree = "<group>"; };
 		34EEEEEA1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDataSource.h; sourceTree = "<group>"; };
 		34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FnFunctionKeysTableViewDataSource.m; sourceTree = "<group>"; };
 		34EEEEED1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDelegate.h; sourceTree = "<group>"; };
@@ -116,6 +125,12 @@
 				345F95471DAA5DA1002854B8 /* ConfigurationCoreModel.m */,
 				345F95351DA2AC78002854B8 /* ConfigurationManager.h */,
 				345F95361DA2AC78002854B8 /* ConfigurationManager.m */,
+				34B97B2D1DBE4B9B00EB3583 /* DeviceManager.h */,
+				34B97B311DBE4EA100EB3583 /* DeviceManager.m */,
+				34B97B2E1DBE4B9B00EB3583 /* DeviceModel.h */,
+				34B97B2F1DBE4B9B00EB3583 /* DeviceModel.m */,
+				34B97B281DBCC23D00EB3583 /* DevicesTableViewDataSource.h */,
+				34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */,
 				34EEEEF11DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.h */,
 				34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */,
 				34EEEEEA1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.h */,
@@ -249,7 +264,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */,
+				34B97B321DBE4EA100EB3583 /* DeviceManager.m in Sources */,
 				345F95541DABE746002854B8 /* SimpleModificationsTableViewController.m in Sources */,
+				34B97B301DBE4B9B00EB3583 /* DeviceModel.m in Sources */,
 				345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */,
 				347112ED1D86E619001AC60D /* UpdaterController.m in Sources */,
 				34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */,
@@ -262,6 +279,7 @@
 				345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,
 				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,
+				34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */,
 				34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
 				345F95481DAA5DA1002854B8 /* ConfigurationCoreModel.m in Sources */,

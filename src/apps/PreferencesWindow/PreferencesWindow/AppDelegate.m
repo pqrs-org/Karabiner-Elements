@@ -1,13 +1,15 @@
 #import "AppDelegate.h"
 #import "ConfigurationManager.h"
+#import "DeviceManager.h"
 #import "PreferencesWindowController.h"
 #import "Relauncher.h"
 #include "libkrbn.h"
 
 @interface AppDelegate ()
 
-@property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
 @property(weak) IBOutlet ConfigurationManager* configurationManager;
+@property(weak) IBOutlet DeviceManager* deviceManager;
+@property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
 
 @end
 
@@ -17,6 +19,7 @@
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
   [self.configurationManager setup];
+  [self.deviceManager setup];
   [self.preferencesWindowController setup];
 
   [[NSDistributedNotificationCenter defaultCenter] addObserver:self
