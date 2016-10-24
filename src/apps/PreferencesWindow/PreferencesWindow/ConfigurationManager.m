@@ -7,7 +7,7 @@
 @interface ConfigurationManager ()
 
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
-@property(copy, readwrite) ConfigurationCoreModel* configurationCoreModel;
+@property(readwrite) ConfigurationCoreModel* configurationCoreModel;
 
 - (void)loadJsonString:(const char*)currentProfileJsonString;
 

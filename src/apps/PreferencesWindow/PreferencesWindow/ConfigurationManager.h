@@ -5,7 +5,7 @@
 
 @interface ConfigurationManager : NSObject
 
-@property(copy, readonly) ConfigurationCoreModel* configurationCoreModel;
+@property(readonly) ConfigurationCoreModel* configurationCoreModel;
 
 - (void)setup;
 

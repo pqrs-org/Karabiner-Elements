@@ -2,7 +2,7 @@
 
 @import Cocoa;
 
-@interface ConfigurationCoreModel : NSObject <NSCopying>
+@interface ConfigurationCoreModel : NSObject
 
 @property(copy, readonly) NSArray<NSDictionary*>* simpleModifications;
 @property(copy, readonly) NSArray<NSDictionary*>* fnFunctionKeys;

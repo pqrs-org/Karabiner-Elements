@@ -97,15 +97,4 @@
   return [self simpleModificationsArrayToDictionary:self.fnFunctionKeys];
 }
 
-#pragma mark - NSCoping
-
-- (id)copyWithZone:(NSZone*)zone {
-  ConfigurationCoreModel* obj = [[[self class] allocWithZone:zone] init];
-  if (obj) {
-    obj.simpleModifications = [self.simpleModifications copyWithZone:zone];
-    obj.fnFunctionKeys = [self.fnFunctionKeys copyWithZone:zone];
-  }
-  return obj;
-}
-
 @end
