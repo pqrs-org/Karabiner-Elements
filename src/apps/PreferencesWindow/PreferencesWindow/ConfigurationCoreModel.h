@@ -6,6 +6,7 @@
 
 @property(copy, readonly) NSArray<NSDictionary*>* simpleModifications;
 @property(copy, readonly) NSArray<NSDictionary*>* fnFunctionKeys;
+@property(copy, readonly) NSArray<NSDictionary*>* devices;
 @property(copy, readonly) NSDictionary* simpleModificationsDictionary;
 @property(copy, readonly) NSDictionary* fnFunctionKeysDictionary;
 
@@ -16,5 +17,7 @@
 - (void)replaceSimpleModification:(NSUInteger)index from:(NSString*)from to:(NSString*)to;
 
 - (void)replaceFnFunctionKey:(NSString*)from to:(NSString*)to;
+
+- (void)setDeviceIgnore:(NSUInteger)index ignore:(BOOL)ignore;
 
 @end

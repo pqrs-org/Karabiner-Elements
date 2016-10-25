@@ -4,6 +4,7 @@
 
 @property(copy, readwrite) NSArray<NSDictionary*>* simpleModifications;
 @property(copy, readwrite) NSArray<NSDictionary*>* fnFunctionKeys;
+@property(copy, readwrite) NSArray<NSDictionary*>* devices;
 
 @end
 
@@ -15,6 +16,7 @@
   if (self) {
     _simpleModifications = [self simpleModificationsDictionaryToArray:profile[@"simple_modifications"]];
     _fnFunctionKeys = [self simpleModificationsDictionaryToArray:profile[@"fn_function_keys"]];
+    _devices = profile[@"devices"];
   }
 
   return self;
@@ -73,6 +75,16 @@
     }
   }];
   self.fnFunctionKeys = fnFunctionKeys;
+}
+
+- (void)setDeviceIgnore:(NSUInteger)index ignore:(BOOL)ignore {
+  if (index < self.devices.count) {
+    NSMutableArray* devices = [NSMutableArray arrayWithArray:self.devices];
+    NSMutableDictionary* device = [NSMutableDictionary dictionaryWithDictionary:devices[index]];
+    device[@"ignore"] = @(ignore);
+    devices[index] = device;
+    self.devices = devices;
+  }
 }
 
 - (NSDictionary*)simpleModificationsArrayToDictionary:(NSArray*)array {

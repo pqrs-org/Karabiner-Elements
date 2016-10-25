@@ -29,6 +29,8 @@
 		34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */; };
 		34B97B301DBE4B9B00EB3583 /* DeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B2F1DBE4B9B00EB3583 /* DeviceModel.m */; };
 		34B97B321DBE4EA100EB3583 /* DeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B311DBE4EA100EB3583 /* DeviceManager.m */; };
+		34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */; };
+		34B97B391DBE5C9E00EB3583 /* DevicesTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B381DBE5C9E00EB3583 /* DevicesTableViewDelegate.m */; };
 		34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */; };
 		34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */; };
 		34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */; };
@@ -78,6 +80,10 @@
 		34B97B2E1DBE4B9B00EB3583 /* DeviceModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceModel.h; sourceTree = "<group>"; };
 		34B97B2F1DBE4B9B00EB3583 /* DeviceModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceModel.m; sourceTree = "<group>"; };
 		34B97B311DBE4EA100EB3583 /* DeviceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceManager.m; sourceTree = "<group>"; };
+		34B97B331DBE58AA00EB3583 /* DevicesTableCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableCellView.h; sourceTree = "<group>"; };
+		34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesTableCellView.m; sourceTree = "<group>"; };
+		34B97B371DBE5C9E00EB3583 /* DevicesTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableViewDelegate.h; sourceTree = "<group>"; };
+		34B97B381DBE5C9E00EB3583 /* DevicesTableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesTableViewDelegate.m; sourceTree = "<group>"; };
 		34EEEEEA1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDataSource.h; sourceTree = "<group>"; };
 		34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FnFunctionKeysTableViewDataSource.m; sourceTree = "<group>"; };
 		34EEEEED1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDelegate.h; sourceTree = "<group>"; };
@@ -129,8 +135,12 @@
 				34B97B311DBE4EA100EB3583 /* DeviceManager.m */,
 				34B97B2E1DBE4B9B00EB3583 /* DeviceModel.h */,
 				34B97B2F1DBE4B9B00EB3583 /* DeviceModel.m */,
+				34B97B331DBE58AA00EB3583 /* DevicesTableCellView.h */,
+				34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */,
 				34B97B281DBCC23D00EB3583 /* DevicesTableViewDataSource.h */,
 				34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */,
+				34B97B371DBE5C9E00EB3583 /* DevicesTableViewDelegate.h */,
+				34B97B381DBE5C9E00EB3583 /* DevicesTableViewDelegate.m */,
 				34EEEEF11DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.h */,
 				34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */,
 				34EEEEEA1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.h */,
@@ -269,9 +279,11 @@
 				34B97B301DBE4B9B00EB3583 /* DeviceModel.m in Sources */,
 				345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */,
 				347112ED1D86E619001AC60D /* UpdaterController.m in Sources */,
+				34B97B391DBE5C9E00EB3583 /* DevicesTableViewDelegate.m in Sources */,
 				34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */,
 				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
 				34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */,
+				34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */,
 				345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */,
 				347112F11D87010A001AC60D /* Relauncher.m in Sources */,
 				345F95371DA2AC78002854B8 /* ConfigurationManager.m in Sources */,
