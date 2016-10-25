@@ -67,6 +67,23 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
+  void clear_devices(void) {
+    krbn::operation_type_clear_devices_struct s;
+    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
+  void add_device(krbn::vendor_product_id vendor_product_id, bool ignore) {
+    krbn::operation_type_add_device_struct s;
+    s.vendor_product_id = vendor_product_id;
+    s.ignore = ignore;
+    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
+  void complete_devices(void) {
+    krbn::operation_type_complete_devices_struct s;
+    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
   void set_caps_lock_led_state(krbn::led_state led_state) {
     krbn::operation_type_set_caps_lock_led_state_struct s;
     s.led_state = led_state;
