@@ -57,6 +57,7 @@ public:
                                                            registry_entry_id_(0),
                                                            queue_(nullptr),
                                                            is_grabbable_log_reducer_(logger),
+                                                           observed_(false),
                                                            grabbed_(false) {
     // ----------------------------------------
     // retain device_
@@ -213,6 +214,10 @@ public:
         return;
       }
 
+      if (observed_) {
+        return;
+      }
+
       auto r = open();
       if (r != kIOReturnSuccess) {
         logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
@@ -221,6 +226,8 @@ public:
 
       queue_start();
       schedule();
+
+      observed_ = true;
     });
   }
 
@@ -231,9 +238,15 @@ public:
         return;
       }
 
+      if (!observed_) {
+        return;
+      }
+
       unschedule();
       queue_stop();
       close();
+
+      observed_ = false;
     });
   }
 
@@ -676,5 +689,6 @@ private:
   grabbed_callback grabbed_callback_;
   spdlog_utility::log_reducer is_grabbable_log_reducer_;
   std::unique_ptr<gcd_utility::main_queue_timer> grab_timer_;
+  bool observed_;
   bool grabbed_;
 };
