@@ -73,7 +73,7 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
   NSMutableDictionary* mutableProfile = [NSMutableDictionary dictionaryWithDictionary:mutableProfiles[selectedProfileIndex]];
   mutableProfile[@"simple_modifications"] = self.configurationCoreModel.simpleModificationsDictionary;
   mutableProfile[@"fn_function_keys"] = self.configurationCoreModel.fnFunctionKeysDictionary;
-  mutableProfile[@"devices"] = self.configurationCoreModel.devices;
+  mutableProfile[@"devices"] = self.configurationCoreModel.devicesArray;
 
   mutableProfiles[selectedProfileIndex] = mutableProfile;
 

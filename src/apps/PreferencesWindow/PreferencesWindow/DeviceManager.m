@@ -41,9 +41,34 @@ static void devices_updated_callback(void* refcon) {
   if (jsonObject) {
     NSMutableArray* deviceModels = [NSMutableArray new];
     for (NSDictionary* device in jsonObject) {
-      [deviceModels addObject:[[DeviceModel alloc] initWithDevice:device]];
+      DeviceModel* model = [[DeviceModel alloc] initWithDictionary:device];
+
+      BOOL found = NO;
+      for (DeviceModel* m in deviceModels) {
+        if ([m.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
+          found = YES;
+        }
+      }
+
+      if (!found) {
+        [deviceModels addObject:model];
+      }
     }
-    self.deviceModels = deviceModels;
+    self.deviceModels = [deviceModels sortedArrayUsingComparator:^(DeviceModel* obj1, DeviceModel* obj2) {
+      if (obj1.deviceIdentifiers.vendorId != obj2.deviceIdentifiers.vendorId) {
+        return obj1.deviceIdentifiers.vendorId < obj2.deviceIdentifiers.vendorId ? NSOrderedAscending : NSOrderedDescending;
+      }
+      if (obj1.deviceIdentifiers.productId != obj2.deviceIdentifiers.productId) {
+        return obj1.deviceIdentifiers.productId < obj2.deviceIdentifiers.productId ? NSOrderedAscending : NSOrderedDescending;
+      }
+      if (obj1.deviceIdentifiers.isKeyboard != obj2.deviceIdentifiers.isKeyboard) {
+        return obj1.deviceIdentifiers.isKeyboard ? NSOrderedAscending : NSOrderedDescending;
+      }
+      if (obj1.deviceIdentifiers.isPointingDevice != obj2.deviceIdentifiers.isPointingDevice) {
+        return obj1.deviceIdentifiers.isPointingDevice ? NSOrderedAscending : NSOrderedDescending;
+      }
+      return NSOrderedSame;
+    }];
   }
 }
 

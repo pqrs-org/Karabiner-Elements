@@ -1,11 +1,11 @@
 // -*- Mode: objc -*-
 
 @import Cocoa;
+#import "DeviceModel.h"
 
 @interface DevicesTableCellView : NSTableCellView
 
 @property(weak) IBOutlet NSButton* checkbox;
-@property uint32_t vendorId;
-@property uint32_t productId;
+@property DeviceIdentifiers* deviceIdentifiers;
 
 @end

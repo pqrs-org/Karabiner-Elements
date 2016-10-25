@@ -1,10 +1,19 @@
 #import "ConfigurationCoreModel.h"
 
+@interface DeviceConfiguration ()
+
+@property(readwrite) DeviceIdentifiers* deviceIdentifiers;
+
+@end
+
+@implementation DeviceConfiguration
+@end
+
 @interface ConfigurationCoreModel ()
 
 @property(copy, readwrite) NSArray<NSDictionary*>* simpleModifications;
 @property(copy, readwrite) NSArray<NSDictionary*>* fnFunctionKeys;
-@property(copy, readwrite) NSArray<NSDictionary*>* devices;
+@property(copy, readwrite) NSArray<DeviceConfiguration*>* devices;
 
 @end
 
@@ -16,7 +25,28 @@
   if (self) {
     _simpleModifications = [self simpleModificationsDictionaryToArray:profile[@"simple_modifications"]];
     _fnFunctionKeys = [self simpleModificationsDictionaryToArray:profile[@"fn_function_keys"]];
-    _devices = profile[@"devices"];
+
+    // _devices
+    NSMutableArray<DeviceConfiguration*>* devices = [NSMutableArray new];
+    if (profile[@"devices"]) {
+      for (NSDictionary* device in profile[@"devices"]) {
+        DeviceIdentifiers* deviceIdentifiers = [[DeviceIdentifiers alloc] initWithDictionary:device];
+
+        BOOL found = NO;
+        for (DeviceConfiguration* d in devices) {
+          if ([d.deviceIdentifiers isEqualToDeviceIdentifiers:deviceIdentifiers]) {
+            found = YES;
+          }
+        }
+
+        if (!found) {
+          DeviceConfiguration* deviceConfiguration = [DeviceConfiguration new];
+          deviceConfiguration.deviceIdentifiers = deviceIdentifiers;
+          deviceConfiguration.ignore = [device[@"ignore"] boolValue];
+          [devices addObject:deviceConfiguration];
+        }
+      }
+    }
   }
 
   return self;
@@ -25,11 +55,13 @@
 - (NSArray*)simpleModificationsDictionaryToArray:(NSDictionary*)dictionary {
   NSMutableArray<NSDictionary*>* array = [NSMutableArray new];
 
-  for (NSString* key in [[dictionary allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]) {
-    [array addObject:@{
-      @"from" : key,
-      @"to" : dictionary[key],
-    }];
+  if (dictionary) {
+    for (NSString* key in [[dictionary allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]) {
+      [array addObject:@{
+        @"from" : key,
+        @"to" : dictionary[key],
+      }];
+    }
   }
 
   return array;
@@ -77,15 +109,12 @@
   self.fnFunctionKeys = fnFunctionKeys;
 }
 
-- (void)setDeviceIgnore:(BOOL)ignore vendorId:(uint32_t)vendorId productId:(uint32_t)productId {
+- (void)setDeviceIgnore:(BOOL)ignore deviceIdentifiers:(DeviceIdentifiers*)deviceIdentifiers {
   NSMutableArray* devices = [NSMutableArray arrayWithArray:self.devices];
   BOOL __block found = NO;
-  [devices enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL* stop) {
-    if ([obj[@"vendor_id"] unsignedIntValue] == vendorId &&
-        [obj[@"product_id"] unsignedIntValue] == productId) {
-      NSMutableDictionary* device = [NSMutableDictionary dictionaryWithDictionary:devices[index]];
-      device[@"ignore"] = @(ignore);
-      devices[index] = device;
+  [devices enumerateObjectsUsingBlock:^(DeviceConfiguration* obj, NSUInteger index, BOOL* stop) {
+    if ([obj.deviceIdentifiers isEqualToDeviceIdentifiers:deviceIdentifiers]) {
+      obj.ignore = ignore;
 
       found = YES;
       *stop = YES;
@@ -93,11 +122,10 @@
   }];
 
   if (!found) {
-    [devices addObject:@{
-      @"vendor_id" : @(vendorId),
-      @"product_id" : @(productId),
-      @"ignore" : @(ignore),
-    }];
+    DeviceConfiguration* deviceConfiguration = [DeviceConfiguration new];
+    deviceConfiguration.deviceIdentifiers = deviceIdentifiers;
+    deviceConfiguration.ignore = ignore;
+    [devices addObject:deviceConfiguration];
   }
 
   self.devices = devices;
@@ -123,6 +151,17 @@
 
 - (NSDictionary*)fnFunctionKeysDictionary {
   return [self simpleModificationsArrayToDictionary:self.fnFunctionKeys];
+}
+
+- (NSArray*)devicesArray {
+  NSMutableArray* array = [NSMutableArray new];
+  for (DeviceConfiguration* d in self.devices) {
+    [array addObject:@{
+      @"identifiers" : [d.deviceIdentifiers toDictionary],
+      @"ignore" : @(d.ignore),
+    }];
+  }
+  return array;
 }
 
 @end

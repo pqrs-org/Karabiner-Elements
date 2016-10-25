@@ -36,7 +36,7 @@
 - (void)valueChanged:(id)sender {
   NSInteger row = [self.tableView rowForView:sender];
   DevicesTableCellView* cellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
-  [self.configurationManager.configurationCoreModel setDeviceIgnore:(cellView.checkbox.state != NSOnState) vendorId:cellView.vendorId productId:cellView.productId];
+  [self.configurationManager.configurationCoreModel setDeviceIgnore:(cellView.checkbox.state != NSOnState) deviceIdentifiers:cellView.deviceIdentifiers];
   [self.configurationManager save];
 }
 
