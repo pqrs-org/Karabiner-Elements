@@ -44,11 +44,20 @@ TEST_CASE("valid") {
     REQUIRE(configuration.get_current_profile_fn_function_keys() == expected);
   }
   {
-    std::vector<std::pair<krbn::vendor_product_id, bool>> expected{
-        std::make_pair(krbn::types::make_vendor_product_id(krbn::vendor_id(1133), krbn::product_id(50475)), false),
-        std::make_pair(krbn::types::make_vendor_product_id(krbn::vendor_id(1452), krbn::product_id(610)), true),
-    };
-    REQUIRE(configuration.get_current_profile_devices() == expected);
+    auto actual = configuration.get_current_profile_devices();
+    REQUIRE(actual.size() == 2);
+
+    REQUIRE(actual[0].first.vendor_id == krbn::vendor_id(1133));
+    REQUIRE(actual[0].first.product_id == krbn::product_id(50475));
+    REQUIRE(actual[0].first.is_keyboard == true);
+    REQUIRE(actual[0].first.is_pointing_device == false);
+    REQUIRE(actual[0].second == false);
+
+    REQUIRE(actual[1].first.vendor_id == krbn::vendor_id(1452));
+    REQUIRE(actual[1].first.product_id == krbn::product_id(610));
+    REQUIRE(actual[1].first.is_keyboard == true);
+    REQUIRE(actual[1].first.is_pointing_device == false);
+    REQUIRE(actual[1].second == true);
   }
 
   REQUIRE(configuration.is_loaded() == true);

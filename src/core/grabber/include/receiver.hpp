@@ -43,7 +43,7 @@ public:
 
     server_ = nullptr;
     console_user_server_process_monitor_ = nullptr;
-    device_grabber_.ungrab_devices();
+    device_grabber_.stop_grabbing();
     event_manipulator_.clear_simple_modifications();
     event_manipulator_.clear_fn_function_keys();
   }
@@ -75,14 +75,13 @@ private:
             case krbn::connect_from::console_user_server:
               logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
-              device_grabber_.grab_devices();
+              device_grabber_.start_grabbing();
 
               // monitor the last process
               console_user_server_process_monitor_ = nullptr;
               console_user_server_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
                                                                                        p->pid,
                                                                                        std::bind(&receiver::console_user_server_exit_callback, this));
-
               break;
             }
           }
@@ -135,6 +134,23 @@ private:
           }
           break;
 
+        case krbn::operation_type::clear_devices:
+          device_grabber_.clear_devices_configuration();
+          break;
+
+        case krbn::operation_type::add_device:
+          if (n < sizeof(krbn::operation_type_add_device_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::add_device ({0})", n);
+          } else {
+            auto p = reinterpret_cast<krbn::operation_type_add_device_struct*>(&(buffer_[0]));
+            device_grabber_.add_device_configuration(p->device_identifiers_struct, p->ignore);
+          }
+          break;
+
+        case krbn::operation_type::complete_devices:
+          device_grabber_.complete_devices_configuration();
+          break;
+
         default:
           break;
         }
@@ -143,7 +159,7 @@ private:
   }
 
   void console_user_server_exit_callback(void) {
-    device_grabber_.ungrab_devices();
+    device_grabber_.stop_grabbing();
   }
 
   manipulator::event_manipulator& event_manipulator_;

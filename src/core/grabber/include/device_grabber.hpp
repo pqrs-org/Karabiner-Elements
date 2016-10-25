@@ -1,5 +1,7 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
 #include "event_manipulator.hpp"
@@ -12,6 +14,7 @@
 #include "spdlog_utility.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
+#include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <json/json.hpp>
 #include <thread>
@@ -34,7 +37,7 @@ public:
     auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
         std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard),
         // std::make_pair(kHIDPage_Consumer, kHIDUsage_Csmr_ConsumerControl),
-        // std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse),
+        std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse),
     });
     if (device_matching_dictionaries) {
       IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
@@ -55,7 +58,7 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       iopm_client_ = nullptr;
 
-      ungrab_devices();
+      stop_grabbing();
 
       if (manager_) {
         IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
@@ -65,34 +68,39 @@ public:
     });
   }
 
-  void grab_devices(bool change_mode = true) {
+  void start_grabbing(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (change_mode) {
-        mode_ = mode::grabbing;
-      }
+      mode_ = mode::grabbing;
 
       event_manipulator_.reset();
       event_manipulator_.grab_mouse_events();
+    });
+  }
 
+  void stop_grabbing(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      ungrab_devices();
+
+      mode_ = mode::observing;
+
+      event_manipulator_.ungrab_mouse_events();
+      event_manipulator_.reset();
+    });
+  }
+
+  void grab_devices(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
       for (const auto& it : hids_) {
         (it.second)->grab();
       }
     });
   }
 
-  void ungrab_devices(bool change_mode = true) {
+  void ungrab_devices(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (change_mode) {
-        mode_ = mode::observing;
-      }
-
       for (auto&& it : hids_) {
         (it.second)->ungrab();
-        (it.second)->observe();
       }
-
-      event_manipulator_.ungrab_mouse_events();
-      event_manipulator_.reset();
 
       logger::get_logger().info("Connected devices are ungrabbed");
     });
@@ -106,7 +114,7 @@ public:
         suspended_ = true;
 
         if (mode_ == mode::grabbing) {
-          ungrab_devices(false);
+          ungrab_devices();
         }
       }
     });
@@ -120,9 +128,28 @@ public:
         suspended_ = false;
 
         if (mode_ == mode::grabbing) {
-          grab_devices(false);
+          grab_devices();
         }
       }
+    });
+  }
+
+  void clear_devices_configuration(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      devices_configuration_.clear();
+    });
+  }
+
+  void add_device_configuration(const krbn::device_identifiers_struct& device_identifiers_struct, bool ignore) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      devices_configuration_.push_back(std::make_pair(device_identifiers_struct, ignore));
+    });
+  }
+
+  void complete_devices_configuration(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      grab_devices();
+      output_devices_json();
     });
   }
 
@@ -311,6 +338,10 @@ private:
   }
 
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
+    if (is_ignored_device(device)) {
+      logger::get_logger().info("{0} is ignored.", device.get_name_for_log());
+      return human_interface_device::grabbable_state::ungrabbable_permanently;
+    }
     if (!event_manipulator_.is_ready()) {
       is_grabbable_callback_log_reducer_.warn("event_manipulator_ is not ready. Please wait for a while.");
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
@@ -346,6 +377,30 @@ private:
         return true;
       }
     }
+    return false;
+  }
+
+  bool is_ignored_device(const human_interface_device& device) {
+    if (auto vendor_id = device.get_vendor_id()) {
+      if (auto product_id = device.get_product_id()) {
+        bool is_keyboard = device.is_keyboard();
+        bool is_pointing_device = device.is_pointing_device();
+
+        for (const auto& d : devices_configuration_) {
+          if (d.first.vendor_id == *vendor_id &&
+              d.first.product_id == *product_id &&
+              d.first.is_keyboard == is_keyboard &&
+              d.first.is_pointing_device == is_pointing_device) {
+            return d.second;
+          }
+        }
+      }
+    }
+
+    if (device.is_pointing_device()) {
+      return true;
+    }
+
     return false;
   }
 
@@ -393,6 +448,8 @@ private:
   manipulator::event_manipulator& event_manipulator_;
   IOHIDManagerRef _Nullable manager_;
   std::unique_ptr<iopm_client> iopm_client_;
+
+  std::vector<std::pair<krbn::device_identifiers_struct, bool>> devices_configuration_;
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 

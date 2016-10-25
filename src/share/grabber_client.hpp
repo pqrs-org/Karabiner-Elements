@@ -72,9 +72,9 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
-  void add_device(krbn::vendor_product_id vendor_product_id, bool ignore) {
+  void add_device(const krbn::device_identifiers_struct& device_identifiers_struct, bool ignore) {
     krbn::operation_type_add_device_struct s;
-    s.vendor_product_id = vendor_product_id;
+    s.device_identifiers_struct = device_identifiers_struct;
     s.ignore = ignore;
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }

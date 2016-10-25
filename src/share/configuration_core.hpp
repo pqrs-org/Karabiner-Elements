@@ -9,40 +9,54 @@
 // Example:
 //
 // {
-//     "profiles": [{
-//         "name": "Default profile",
-//         "selected": true,
-//         "simple_modifications": {
-//             "caps_lock": "delete_or_backspace",
-//             "escape": "spacebar"
+//     "profiles": [
+//         {
+//             "name": "Default profile",
+//             "selected": true,
+//             "simple_modifications": {
+//                 "caps_lock": "delete_or_backspace",
+//                 "escape": "spacebar"
+//             },
+//             "fn_function_keys": {
+//                 "f1": "vk_consumer_brightness_down",
+//                 "f2": "vk_consumer_brightness_up",
+//                 "f3": "vk_mission_control",
+//                 "f4": "vk_launchpad",
+//                 "f5": "vk_consumer_illumination_down",
+//                 "f6": "vk_consumer_illumination_up",
+//                 "f7": "vk_consumer_previous",
+//                 "f8": "vk_consumer_play",
+//                 "f9": "vk_consumer_next",
+//                 "f10": "mute",
+//                 "f11": "volume_down",
+//                 "f12": "volume_up"
+//             },
+//             "devices": [
+//                 {
+//                     "identifiers": {
+//                         "vendor_id": 1133,
+//                         "product_id": 50475,
+//                         "is_keyboard": true,
+//                         "is_pointing_device": false
+//                     },
+//                     "ignore": false
+//                 },
+//                 {
+//                     "identifiers": {
+//                         "vendor_id": 1452,
+//                         "product_id": 610,
+//                         "is_keyboard": true,
+//                         "is_pointing_device": false
+//                     },
+//                     "ignore": true
+//                 }
+//             ]
 //         },
-//         "fn_function_keys": {
-//             "f1": "vk_consumer_brightness_down",
-//             "f2": "vk_consumer_brightness_up",
-//             "f3": "vk_mission_control",
-//             "f4": "vk_launchpad",
-//             "f5": "vk_consumer_illumination_down",
-//             "f6": "vk_consumer_illumination_up",
-//             "f7": "vk_consumer_previous",
-//             "f8": "vk_consumer_play",
-//             "f9": "vk_consumer_next",
-//             "f10": "mute",
-//             "f11": "volume_down",
-//             "f12": "volume_up"
-//         },
-//         "devices": [{
-//             "vendor_id": 1133,
-//             "product_id": 50475,
-//             "ignore": false
-//         }, {
-//             "vendor_id": 1452,
-//             "product_id": 610,
-//             "ignore": true
-//         }]
-//     }, {
-//         "name": "Empty",
-//         "selected": false
-//     }]
+//         {
+//             "name": "Empty",
+//             "selected": false
+//         }
+//     ]
 // }
 
 class configuration_core final {
@@ -87,19 +101,24 @@ public:
     return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
-  std::vector<std::pair<krbn::vendor_product_id, bool>> get_current_profile_devices(void) {
-    std::vector<std::pair<krbn::vendor_product_id, bool>> v;
+  std::vector<std::pair<krbn::device_identifiers_struct, bool>> get_current_profile_devices(void) {
+    std::vector<std::pair<krbn::device_identifiers_struct, bool>> v;
 
     auto profile = get_current_profile();
     if (profile["devices"].is_array()) {
       for (const auto& device : profile["devices"]) {
-        if (device["vendor_id"].is_number() &&
-            device["product_id"].is_number() &&
+        if (device["identifiers"].is_object() &&
+            device["identifiers"]["vendor_id"].is_number() &&
+            device["identifiers"]["product_id"].is_number() &&
+            device["identifiers"]["is_keyboard"].is_boolean() &&
+            device["identifiers"]["is_pointing_device"].is_boolean() &&
             device["ignore"].is_boolean()) {
-          uint32_t vendor_id = device["vendor_id"];
-          uint32_t product_id = device["product_id"];
-          bool ignore = device["ignore"];
-          v.push_back(std::make_pair(krbn::types::make_vendor_product_id(krbn::vendor_id(vendor_id), krbn::product_id(product_id)), ignore));
+          krbn::device_identifiers_struct s;
+          s.vendor_id = krbn::vendor_id(static_cast<uint32_t>(device["identifiers"]["vendor_id"]));
+          s.product_id = krbn::product_id(static_cast<uint32_t>(device["identifiers"]["product_id"]));
+          s.is_keyboard = device["identifiers"]["is_keyboard"];
+          s.is_pointing_device = device["identifiers"]["is_pointing_device"];
+          v.push_back(std::make_pair(s, device["ignore"]));
         }
       }
     }
