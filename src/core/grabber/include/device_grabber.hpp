@@ -354,19 +354,29 @@ private:
     json = nlohmann::json::array();
 
     for (const auto& it : hids_) {
-      nlohmann::json j({});
+      if ((it.second)->is_pqrs_device()) {
+        continue;
+      }
+
+      nlohmann::json j({
+          {"identifiers", {}},
+          {"descriptions", {}},
+      });
       if (auto vendor_id = (it.second)->get_vendor_id()) {
-        j["vendor_id"] = static_cast<uint32_t>(*vendor_id);
+        j["identifiers"]["vendor_id"] = static_cast<uint32_t>(*vendor_id);
       }
       if (auto product_id = (it.second)->get_product_id()) {
-        j["product_id"] = static_cast<uint32_t>(*product_id);
+        j["identifiers"]["product_id"] = static_cast<uint32_t>(*product_id);
       }
+      j["identifiers"]["is_keyboard"] = (it.second)->is_keyboard();
+      j["identifiers"]["is_pointing_device"] = (it.second)->is_pointing_device();
       if (auto manufacturer = (it.second)->get_manufacturer()) {
-        j["manipulator"] = *manufacturer;
+        j["descriptions"]["manufacturer"] = boost::trim_copy(*manufacturer);
       }
       if (auto product = (it.second)->get_product()) {
-        j["product"] = *product;
+        j["descriptions"]["product"] = boost::trim_copy(*product);
       }
+      j["ignore"] = is_ignored_device(*(it.second));
 
       if (!j.empty()) {
         json.push_back(j);
