@@ -26,6 +26,9 @@ enum class operation_type : uint8_t {
   add_simple_modification,
   clear_fn_function_keys,
   add_fn_function_key,
+  clear_devices,
+  add_device,
+  complete_devices,
   // event_dispatcher -> grabber
   set_caps_lock_led_state,
   // grabber -> event_dispatcher
@@ -767,6 +770,26 @@ struct operation_type_add_fn_function_key_struct {
   const operation_type operation_type;
   key_code from_key_code;
   key_code to_key_code;
+};
+
+struct operation_type_clear_devices_struct {
+  operation_type_clear_devices_struct(void) : operation_type(operation_type::clear_devices) {}
+
+  const operation_type operation_type;
+};
+
+struct operation_type_add_device_struct {
+  operation_type_add_device_struct(void) : operation_type(operation_type::add_device) {}
+
+  const operation_type operation_type;
+  vendor_product_id vendor_product_id;
+  bool ignore;
+};
+
+struct operation_type_complete_devices_struct {
+  operation_type_complete_devices_struct(void) : operation_type(operation_type::complete_devices) {}
+
+  const operation_type operation_type;
 };
 
 struct operation_type_set_caps_lock_led_state_struct {
