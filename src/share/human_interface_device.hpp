@@ -418,6 +418,33 @@ public:
     });
   }
 
+  grabbable_state is_grabbable(void) {
+    if (repeating_key_) {
+      // We should not grab the device while a key is repeating since we cannot stop the key repeating.
+      // (To stop the key repeating, we have to send a hid report to the device. But we cannot do it.)
+
+      is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while a key is repeating.");
+      return grabbable_state::ungrabbable_temporarily;
+    }
+
+    if (!pressed_buttons_.empty()) {
+      // We should not grab the device while a button is pressed since we cannot release the button.
+      // (To release the button, we have to send a hid report to the device. But we cannot do it.)
+
+      is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while mouse buttons are pressed.");
+      return grabbable_state::ungrabbable_temporarily;
+    }
+
+    if (is_grabbable_callback_) {
+      auto state = is_grabbable_callback_(*this);
+      if (state != grabbable_state::grabbable) {
+        return state;
+      }
+    }
+
+    return grabbable_state::grabbable;
+  }
+
   bool is_grabbed(void) const {
     bool __block r = false;
     gcd_utility::dispatch_sync_in_main_queue(^{
@@ -629,33 +656,6 @@ private:
     }
 
     report_buffer_.resize(buffer_size);
-  }
-
-  grabbable_state is_grabbable(void) {
-    if (repeating_key_) {
-      // We should not grab the device while a key is repeating since we cannot stop the key repeating.
-      // (To stop the key repeating, we have to send a hid report to the device. But we cannot do it.)
-
-      is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while a key is repeating.");
-      return grabbable_state::ungrabbable_temporarily;
-    }
-
-    if (!pressed_buttons_.empty()) {
-      // We should not grab the device while a button is pressed since we cannot release the button.
-      // (To release the button, we have to send a hid report to the device. But we cannot do it.)
-
-      is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while mouse buttons are pressed.");
-      return grabbable_state::ungrabbable_temporarily;
-    }
-
-    if (is_grabbable_callback_) {
-      auto state = is_grabbable_callback_(*this);
-      if (state != grabbable_state::grabbable) {
-        return state;
-      }
-    }
-
-    return grabbable_state::grabbable;
   }
 
   void cancel_grab_timer(void) {
