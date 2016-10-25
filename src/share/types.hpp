@@ -212,7 +212,11 @@ enum class product_id : uint32_t {
 enum class location_id : uint32_t {
 };
 
-enum class vendor_product_id : uint64_t {
+struct device_identifiers_struct {
+  vendor_id vendor_id;
+  product_id product_id;
+  bool is_keyboard;
+  bool is_pointing_device;
 };
 
 class types final {
@@ -723,10 +727,6 @@ public:
     }
     return boost::none;
   }
-
-  static vendor_product_id make_vendor_product_id(vendor_id vendor_id, product_id product_id) {
-    return vendor_product_id((static_cast<uint64_t>(vendor_id) << 32) | static_cast<uint32_t>(product_id));
-  }
 };
 
 struct operation_type_connect_struct {
@@ -782,7 +782,7 @@ struct operation_type_add_device_struct {
   operation_type_add_device_struct(void) : operation_type(operation_type::add_device) {}
 
   const operation_type operation_type;
-  vendor_product_id vendor_product_id;
+  device_identifiers_struct device_identifiers_struct;
   bool ignore;
 };
 
