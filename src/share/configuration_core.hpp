@@ -164,7 +164,7 @@ private:
     json["fn_function_keys"]["f10"] = "mute";
     json["fn_function_keys"]["f11"] = "volume_down";
     json["fn_function_keys"]["f12"] = "volume_up";
-    json["device_configuration"] = nlohmann::json::array();
+    json["devices"] = nlohmann::json::array();
     return json;
   }
 
