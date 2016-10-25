@@ -77,14 +77,30 @@
   self.fnFunctionKeys = fnFunctionKeys;
 }
 
-- (void)setDeviceIgnore:(NSUInteger)index ignore:(BOOL)ignore {
-  if (index < self.devices.count) {
-    NSMutableArray* devices = [NSMutableArray arrayWithArray:self.devices];
-    NSMutableDictionary* device = [NSMutableDictionary dictionaryWithDictionary:devices[index]];
-    device[@"ignore"] = @(ignore);
-    devices[index] = device;
-    self.devices = devices;
+- (void)setDeviceIgnore:(BOOL)ignore vendorId:(uint32_t)vendorId productId:(uint32_t)productId {
+  NSMutableArray* devices = [NSMutableArray arrayWithArray:self.devices];
+  BOOL __block found = NO;
+  [devices enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL* stop) {
+    if ([obj[@"vendor_id"] unsignedIntValue] == vendorId &&
+        [obj[@"product_id"] unsignedIntValue] == productId) {
+      NSMutableDictionary* device = [NSMutableDictionary dictionaryWithDictionary:devices[index]];
+      device[@"ignore"] = @(ignore);
+      devices[index] = device;
+
+      found = YES;
+      *stop = YES;
+    }
+  }];
+
+  if (!found) {
+    [devices addObject:@{
+      @"vendor_id" : @(vendorId),
+      @"product_id" : @(productId),
+      @"ignore" : @(ignore),
+    }];
   }
+
+  self.devices = devices;
 }
 
 - (NSDictionary*)simpleModificationsArrayToDictionary:(NSArray*)array {

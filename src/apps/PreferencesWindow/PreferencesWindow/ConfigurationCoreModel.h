@@ -18,6 +18,6 @@
 
 - (void)replaceFnFunctionKey:(NSString*)from to:(NSString*)to;
 
-- (void)setDeviceIgnore:(NSUInteger)index ignore:(BOOL)ignore;
+- (void)setDeviceIgnore:(BOOL)ignore vendorId:(uint32_t)vendorId productId:(uint32_t)productId;
 
 @end

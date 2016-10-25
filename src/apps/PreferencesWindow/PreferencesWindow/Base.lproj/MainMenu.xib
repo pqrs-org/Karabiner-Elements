@@ -21,6 +21,12 @@
             </connections>
         </customObject>
         <customObject id="XCy-yA-tah" customClass="DeviceManager"/>
+        <customObject id="n2S-Tf-7ZE" customClass="DevicesTableViewController">
+            <connections>
+                <outlet property="configurationManager" destination="gHg-lq-U6a" id="O8E-zS-DZa"/>
+                <outlet property="tableView" destination="W1W-Xd-0KJ" id="eN4-9F-gvt"/>
+            </connections>
+        </customObject>
         <customObject id="gV5-jV-pot" customClass="DevicesTableViewDataSource">
             <connections>
                 <outlet property="deviceManager" destination="XCy-yA-tah" id="zjL-9Y-TqT"/>
@@ -28,7 +34,9 @@
         </customObject>
         <customObject id="2br-4Z-pCK" customClass="DevicesTableViewDelegate">
             <connections>
+                <outlet property="configurationManager" destination="gHg-lq-U6a" id="zvp-J0-Y4p"/>
                 <outlet property="deviceManager" destination="XCy-yA-tah" id="Xx2-dp-M3S"/>
+                <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="iH3-hs-eSU"/>
             </connections>
         </customObject>
         <customObject id="wKd-bU-aLe" customClass="LogFileTextViewController">
@@ -39,6 +47,7 @@
         </customObject>
         <customObject id="5ke-qB-Wr5" customClass="PreferencesWindowController">
             <connections>
+                <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="ZRe-xj-uKw"/>
                 <outlet property="fnFunctionKeysTableViewController" destination="KbW-oV-WOQ" id="cpt-wg-s0p"/>
                 <outlet property="logFileTextViewController" destination="wKd-bU-aLe" id="432-Fh-vee"/>
                 <outlet property="simpleModificationsMenuManager" destination="BTc-Hs-TSF" id="9bd-ge-hVm"/>
