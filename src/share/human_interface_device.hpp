@@ -209,7 +209,7 @@ public:
   // High-level utility method.
   void observe(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (is_pqrs_devices()) {
+      if (is_pqrs_device()) {
         return;
       }
 
@@ -227,7 +227,7 @@ public:
   // High-level utility method.
   void unobserve(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (is_pqrs_devices()) {
+      if (is_pqrs_device()) {
         return;
       }
 
@@ -240,7 +240,7 @@ public:
   // High-level utility method.
   void grab(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (is_pqrs_devices()) {
+      if (is_pqrs_device()) {
         return;
       }
 
@@ -300,7 +300,7 @@ public:
   // High-level utility method.
   void ungrab(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (is_pqrs_devices()) {
+      if (is_pqrs_device()) {
         return;
       }
 
@@ -484,6 +484,16 @@ public:
            IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
   }
 
+  bool is_pqrs_device(void) const {
+    if (auto manufacturer = get_manufacturer()) {
+      if (*manufacturer == "pqrs.org") {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
 private:
   static void static_queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
     if (result != kIOReturnSuccess) {
@@ -615,16 +625,6 @@ private:
     }
 
     report_buffer_.resize(buffer_size);
-  }
-
-  bool is_pqrs_devices(void) {
-    if (auto manufacturer = get_manufacturer()) {
-      if (*manufacturer == "pqrs.org") {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   grabbable_state is_grabbable(void) {
