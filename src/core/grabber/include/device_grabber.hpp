@@ -91,7 +91,11 @@ public:
   void grab_devices(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       for (const auto& it : hids_) {
-        (it.second)->grab();
+        if ((it.second)->is_grabbable() == human_interface_device::grabbable_state::ungrabbable_permanently) {
+          (it.second)->ungrab();
+        } else {
+          (it.second)->grab();
+        }
       }
     });
   }
@@ -213,13 +217,7 @@ private:
                                       std::placeholders::_4,
                                       std::placeholders::_5,
                                       std::placeholders::_6));
-
-    // ----------------------------------------
-    if (mode_ == mode::grabbing) {
-      dev->grab();
-    } else {
-      dev->observe();
-    }
+    dev->observe();
 
     hids_[device] = std::move(dev);
 
@@ -229,6 +227,11 @@ private:
       event_manipulator_.create_virtual_hid_manager_client();
     } else {
       event_manipulator_.release_virtual_hid_manager_client();
+    }
+
+    // ----------------------------------------
+    if (mode_ == mode::grabbing) {
+      grab_devices();
     }
   }
 
