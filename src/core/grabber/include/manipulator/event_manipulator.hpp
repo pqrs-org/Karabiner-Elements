@@ -24,22 +24,15 @@ public:
   event_manipulator(const event_manipulator&) = delete;
 
   event_manipulator(void) : event_dispatcher_manager_(),
-                            event_source_(CGEventSourceCreate(kCGEventSourceStateHIDSystemState)),
                             key_repeat_manager_(*this) {
   }
 
   ~event_manipulator(void) {
     event_tap_manager_ = nullptr;
-
-    if (event_source_) {
-      CFRelease(event_source_);
-      event_source_ = nullptr;
-    }
   }
 
   bool is_ready(void) {
-    return event_dispatcher_manager_.is_connected() &&
-           event_source_ != nullptr;
+    return event_dispatcher_manager_.is_connected();
   }
 
   void grab_mouse_events(void) {
@@ -470,11 +463,8 @@ private:
     if (modifier_flag != krbn::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
-      // We have to post modifier key event via CGEventPost for some apps (Microsoft Remote Desktop)
-      if (event_source_) {
-        auto flags = modifier_flag_manager_.get_io_option_bits(key_code);
-        event_dispatcher_manager_.post_modifier_flags(key_code, flags);
-      }
+      auto flags = modifier_flag_manager_.get_io_option_bits(key_code);
+      event_dispatcher_manager_.post_modifier_flags(key_code, flags);
 
       return true;
     }
@@ -492,21 +482,18 @@ private:
   }
 
   void post_key(krbn::key_code from_key_code, krbn::key_code to_key_code, bool pressed, bool repeat) {
-    if (event_source_) {
-      auto hid_system_key = krbn::types::get_hid_system_key(to_key_code);
-      auto hid_system_aux_control_button = krbn::types::get_hid_system_aux_control_button(to_key_code);
-      if (hid_system_key || hid_system_aux_control_button) {
-        auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
-        auto flags = modifier_flag_manager_.get_io_option_bits(to_key_code);
-        event_dispatcher_manager_.post_key(to_key_code, event_type, flags, repeat);
-      }
+    auto hid_system_key = krbn::types::get_hid_system_key(to_key_code);
+    auto hid_system_aux_control_button = krbn::types::get_hid_system_aux_control_button(to_key_code);
+    if (hid_system_key || hid_system_aux_control_button) {
+      auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
+      auto flags = modifier_flag_manager_.get_io_option_bits(to_key_code);
+      event_dispatcher_manager_.post_key(to_key_code, event_type, flags, repeat);
     }
   }
 
   event_dispatcher_manager event_dispatcher_manager_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
-  CGEventSourceRef event_source_;
   key_repeat_manager key_repeat_manager_;
   std::unique_ptr<event_tap_manager> event_tap_manager_;
 
