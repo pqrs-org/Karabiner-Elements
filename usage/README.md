@@ -38,6 +38,10 @@ You can add key modification configurations from Preferences.
 
 <img src="img/simple_modifications2.png" width="400">
 
+You can investigate the key name in Karabiner-EventViewer.
+
+<img src="img/keycode.png" width="400">
+
 # Learn about `karabiner.json`
 
 Karabiner-Elements configuration will be saved to `~/.karabiner.d/configuration/karabiner.json`.
