@@ -34,7 +34,9 @@ public:
   static bool get_long_property(CFStringRef _Nonnull key, CFStringRef _Nonnull application_id, long& value) {
     bool success = false;
     if (auto v = CFPreferencesCopyAppValue(key, application_id)) {
-      success = CFNumberGetValue(static_cast<CFNumberRef>(v), kCFNumberLongType, &value);
+      if (CFNumberGetTypeID() == CFGetTypeID(v)) {
+        success = CFNumberGetValue(static_cast<CFNumberRef>(v), kCFNumberLongType, &value);
+      }
       CFRelease(v);
     }
     return success;
