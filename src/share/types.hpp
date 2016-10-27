@@ -219,6 +219,12 @@ struct device_identifiers_struct {
   bool is_pointing_device;
 };
 
+enum class keyboard_type {
+  ansi = 40,
+  iso = 41,
+  jis = 42,
+};
+
 class types final {
 public:
   static modifier_flag get_modifier_flag(key_code key_code) {
