@@ -10,7 +10,7 @@
 		345F95391DA2ADC8002854B8 /* libkrbn_log_monitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 345F95381DA2ADC8002854B8 /* libkrbn_log_monitor.cpp */; };
 		345F953B1DA2AE3F002854B8 /* libkrbn.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 345F953A1DA2AE3F002854B8 /* libkrbn.hpp */; };
 		345F953D1DA2AF06002854B8 /* libkrbn_configuration_monitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 345F953C1DA2AF06002854B8 /* libkrbn_configuration_monitor.cpp */; };
-		345F95421DA934C6002854B8 /* configuration_core.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 345F95411DA934C6002854B8 /* configuration_core.hpp */; };
+		345F95421DA934C6002854B8 /* core_configuration.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 345F95411DA934C6002854B8 /* core_configuration.hpp */; };
 		347113051D8704B7001AC60D /* libkrbn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 347113031D8704B7001AC60D /* libkrbn.cpp */; };
 		347113081D870834001AC60D /* libkrbn.h in Headers */ = {isa = PBXBuildFile; fileRef = 347113071D870834001AC60D /* libkrbn.h */; };
 		3471130C1D87092D001AC60D /* constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3471130B1D87092D001AC60D /* constants.hpp */; };
@@ -27,7 +27,7 @@
 		345F95381DA2ADC8002854B8 /* libkrbn_log_monitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn_log_monitor.cpp; sourceTree = "<group>"; };
 		345F953A1DA2AE3F002854B8 /* libkrbn.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = libkrbn.hpp; sourceTree = "<group>"; };
 		345F953C1DA2AF06002854B8 /* libkrbn_configuration_monitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn_configuration_monitor.cpp; sourceTree = "<group>"; };
-		345F95411DA934C6002854B8 /* configuration_core.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_core.hpp; path = ../../../share/configuration_core.hpp; sourceTree = "<group>"; };
+		345F95411DA934C6002854B8 /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = core_configuration.hpp; path = ../../../share/core_configuration.hpp; sourceTree = "<group>"; };
 		347112FB1D8703F3001AC60D /* libkrbn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libkrbn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		347113031D8704B7001AC60D /* libkrbn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn.cpp; sourceTree = "<group>"; };
 		347113071D870834001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libkrbn.h; sourceTree = "<group>"; };
@@ -86,7 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				34B97B261DBB2C5A00EB3583 /* boost_defs.hpp */,
-				345F95411DA934C6002854B8 /* configuration_core.hpp */,
+				345F95411DA934C6002854B8 /* core_configuration.hpp */,
 				3471130B1D87092D001AC60D /* constants.hpp */,
 				34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */,
 				34CFEC701D9663EC004C61E1 /* log_monitor.hpp */,
@@ -110,7 +110,7 @@
 				34B97B101DB8D2F600EB3583 /* thread_utility.hpp in Headers */,
 				34B97B271DBB2C5A00EB3583 /* boost_defs.hpp in Headers */,
 				347113081D870834001AC60D /* libkrbn.h in Headers */,
-				345F95421DA934C6002854B8 /* configuration_core.hpp in Headers */,
+				345F95421DA934C6002854B8 /* core_configuration.hpp in Headers */,
 				34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */,
 				34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */,
 				34B97B241DBB2C4700EB3583 /* types.hpp in Headers */,

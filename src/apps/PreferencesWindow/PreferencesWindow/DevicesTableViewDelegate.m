@@ -1,5 +1,5 @@
 #import "DevicesTableViewDelegate.h"
-#import "ConfigurationCoreModel.h"
+#import "CoreConfigurationModel.h"
 #import "ConfigurationManager.h"
 #import "DeviceManager.h"
 #import "DevicesTableCellView.h"

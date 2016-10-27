@@ -14,7 +14,7 @@
 		345F95371DA2AC78002854B8 /* ConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95361DA2AC78002854B8 /* ConfigurationManager.m */; };
 		345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */; };
 		345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */; };
-		345F95481DAA5DA1002854B8 /* ConfigurationCoreModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95471DAA5DA1002854B8 /* ConfigurationCoreModel.m */; };
+		345F95481DAA5DA1002854B8 /* CoreConfigurationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95471DAA5DA1002854B8 /* CoreConfigurationModel.m */; };
 		345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F954A1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m */; };
 		345F954E1DAB8EC2002854B8 /* simple_modifications.json in Resources */ = {isa = PBXBuildFile; fileRef = 345F954D1DAB8EC2002854B8 /* simple_modifications.json */; };
 		345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95501DABAF7A002854B8 /* SimpleModificationsTableCellView.m */; };
@@ -51,8 +51,8 @@
 		345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewDataSource.m; sourceTree = "<group>"; };
 		345F95431DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewDelegate.h; sourceTree = "<group>"; };
 		345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewDelegate.m; sourceTree = "<group>"; };
-		345F95461DAA5DA1002854B8 /* ConfigurationCoreModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationCoreModel.h; sourceTree = "<group>"; };
-		345F95471DAA5DA1002854B8 /* ConfigurationCoreModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationCoreModel.m; sourceTree = "<group>"; };
+		345F95461DAA5DA1002854B8 /* CoreConfigurationModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreConfigurationModel.h; sourceTree = "<group>"; };
+		345F95471DAA5DA1002854B8 /* CoreConfigurationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreConfigurationModel.m; sourceTree = "<group>"; };
 		345F95491DAB8DAB002854B8 /* SimpleModificationsMenuManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsMenuManager.h; sourceTree = "<group>"; };
 		345F954A1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsMenuManager.m; sourceTree = "<group>"; };
 		345F954D1DAB8EC2002854B8 /* simple_modifications.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = simple_modifications.json; path = Resources/simple_modifications.json; sourceTree = "<group>"; };
@@ -130,8 +130,8 @@
 				3445E0651D801AF7004555F9 /* AppDelegate.h */,
 				3445E0661D801AF7004555F9 /* AppDelegate.m */,
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
-				345F95461DAA5DA1002854B8 /* ConfigurationCoreModel.h */,
-				345F95471DAA5DA1002854B8 /* ConfigurationCoreModel.m */,
+				345F95461DAA5DA1002854B8 /* CoreConfigurationModel.h */,
+				345F95471DAA5DA1002854B8 /* CoreConfigurationModel.m */,
 				345F95351DA2AC78002854B8 /* ConfigurationManager.h */,
 				345F95361DA2AC78002854B8 /* ConfigurationManager.m */,
 				34B97B2D1DBE4B9B00EB3583 /* DeviceManager.h */,
@@ -300,7 +300,7 @@
 				34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */,
 				34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
-				345F95481DAA5DA1002854B8 /* ConfigurationCoreModel.m in Sources */,
+				345F95481DAA5DA1002854B8 /* CoreConfigurationModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

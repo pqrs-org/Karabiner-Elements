@@ -59,11 +59,11 @@
 //     ]
 // }
 
-class configuration_core final {
+class core_configuration final {
 public:
-  configuration_core(const configuration_core&) = delete;
+  core_configuration(const core_configuration&) = delete;
 
-  configuration_core(spdlog::logger& logger, const std::string& file_path) : logger_(logger), file_path_(file_path), loaded_(false) {
+  core_configuration(spdlog::logger& logger, const std::string& file_path) : logger_(logger), file_path_(file_path), loaded_(false) {
     std::ifstream input(file_path_);
     if (input) {
       try {
@@ -75,7 +75,7 @@ public:
     }
   }
 
-  configuration_core(spdlog::logger& logger) : configuration_core(logger, get_file_path()) {
+  core_configuration(spdlog::logger& logger) : core_configuration(logger, get_file_path()) {
   }
 
   static std::string get_file_path(void) {

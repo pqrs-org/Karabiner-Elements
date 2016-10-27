@@ -1,4 +1,4 @@
-#include "configuration_core.hpp"
+#include "core_configuration.hpp"
 #include "constants.hpp"
 #include "file_monitor.hpp"
 #include "libkrbn.h"
@@ -10,24 +10,24 @@ public:
   libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
 
   libkrbn_configuration_monitor_class(libkrbn_configuration_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    auto configuration_core_file_path = constants::get_configuration_core_file_path();
+    auto core_configuration_file_path = constants::get_core_configuration_file_path();
 
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-        {constants::get_configuration_directory(), {configuration_core_file_path}},
+        {constants::get_configuration_directory(), {core_configuration_file_path}},
     };
 
     file_monitor_ = std::make_unique<file_monitor>(libkrbn::get_logger(),
                                                    targets,
                                                    std::bind(&libkrbn_configuration_monitor_class::cpp_callback, this, std::placeholders::_1));
 
-    cpp_callback(configuration_core_file_path);
+    cpp_callback(core_configuration_file_path);
   }
 
 private:
   void cpp_callback(const std::string& file_path) {
     if (callback_) {
-      configuration_core configuration_core(libkrbn::get_logger(), file_path);
-      callback_(configuration_core.get_current_profile_json().c_str(), refcon_);
+      core_configuration core_configuration(libkrbn::get_logger(), file_path);
+      callback_(core_configuration.get_current_profile_json().c_str(), refcon_);
     }
   }
 

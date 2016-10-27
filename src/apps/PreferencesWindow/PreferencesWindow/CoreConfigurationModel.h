@@ -10,7 +10,7 @@
 
 @end
 
-@interface ConfigurationCoreModel : NSObject
+@interface CoreConfigurationModel : NSObject
 
 @property(copy, readonly) NSArray<NSDictionary*>* simpleModifications;
 @property(copy, readonly) NSArray<NSDictionary*>* fnFunctionKeys;

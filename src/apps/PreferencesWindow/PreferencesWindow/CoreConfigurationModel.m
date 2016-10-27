@@ -1,4 +1,4 @@
-#import "ConfigurationCoreModel.h"
+#import "CoreConfigurationModel.h"
 
 @interface DeviceConfiguration ()
 
@@ -9,7 +9,7 @@
 @implementation DeviceConfiguration
 @end
 
-@interface ConfigurationCoreModel ()
+@interface CoreConfigurationModel ()
 
 @property(copy, readwrite) NSArray<NSDictionary*>* simpleModifications;
 @property(copy, readwrite) NSArray<NSDictionary*>* fnFunctionKeys;
@@ -17,7 +17,7 @@
 
 @end
 
-@implementation ConfigurationCoreModel
+@implementation CoreConfigurationModel
 
 - (instancetype)initWithProfile:(NSDictionary*)profile {
   self = [super init];

@@ -1,5 +1,5 @@
 #import "ConfigurationManager.h"
-#import "ConfigurationCoreModel.h"
+#import "CoreConfigurationModel.h"
 #import "JsonUtility.h"
 #import "NotificationKeys.h"
 #include "libkrbn.h"
@@ -7,7 +7,7 @@
 @interface ConfigurationManager ()
 
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
-@property(readwrite) ConfigurationCoreModel* configurationCoreModel;
+@property(readwrite) CoreConfigurationModel* configurationCoreModel;
 
 - (void)loadJsonString:(const char*)currentProfileJsonString;
 
@@ -39,12 +39,12 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
 - (void)loadJsonString:(const char*)currentProfileJsonString {
   NSDictionary* jsonObject = [JsonUtility loadCString:currentProfileJsonString];
   if (jsonObject) {
-    self.configurationCoreModel = [[ConfigurationCoreModel alloc] initWithProfile:jsonObject];
+    self.configurationCoreModel = [[CoreConfigurationModel alloc] initWithProfile:jsonObject];
   }
 }
 
 - (void)save {
-  NSString* filePath = [NSString stringWithUTF8String:libkrbn_get_configuration_core_file_path()];
+  NSString* filePath = [NSString stringWithUTF8String:libkrbn_get_core_configuration_file_path()];
   NSDictionary* jsonObject = [JsonUtility loadFile:filePath];
   if (!jsonObject) {
     jsonObject = @{};

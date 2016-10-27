@@ -11,7 +11,7 @@ void libkrbn_initialize(void);
 
 const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
 const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(void);
-const char* _Nonnull libkrbn_get_configuration_core_file_path(void);
+const char* _Nonnull libkrbn_get_core_configuration_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 
 typedef void libkrbn_configuration_monitor;

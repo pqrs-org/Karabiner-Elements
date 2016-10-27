@@ -71,7 +71,7 @@ public:
     }
   }
 
-  static const char* get_configuration_core_file_path(void) {
+  static const char* get_core_configuration_file_path(void) {
     static std::mutex mutex;
     static bool once = false;
     static std::string file_path;

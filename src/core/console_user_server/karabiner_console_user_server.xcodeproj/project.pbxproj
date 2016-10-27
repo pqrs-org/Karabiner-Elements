@@ -35,7 +35,7 @@
 		344149111D212A1600C8ECFC /* karabiner_console_user_server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner_console_user_server; sourceTree = BUILT_PRODUCTS_DIR; };
 		34492B891DB12F430084F167 /* spdlog_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = spdlog_utility.hpp; path = ../../share/spdlog_utility.hpp; sourceTree = SOURCE_ROOT; };
 		345A9DE31D7DD6E600578F84 /* configuration_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_manager.hpp; path = include/configuration_manager.hpp; sourceTree = SOURCE_ROOT; };
-		345A9DE41D7DD7A200578F84 /* configuration_core.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_core.hpp; path = ../../share/configuration_core.hpp; sourceTree = SOURCE_ROOT; };
+		345A9DE41D7DD7A200578F84 /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = core_configuration.hpp; path = ../../share/core_configuration.hpp; sourceTree = SOURCE_ROOT; };
 		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0031D620E28009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
@@ -101,7 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				345AC0051D621651009D1FB4 /* boost_defs.hpp */,
-				345A9DE41D7DD7A200578F84 /* configuration_core.hpp */,
+				345A9DE41D7DD7A200578F84 /* core_configuration.hpp */,
 				345A9DE31D7DD6E600578F84 /* configuration_manager.hpp */,
 				341F59CC1D516B1500B441A8 /* constants.hpp */,
 				34DA28A11D8FA4A40029E37D /* file_monitor.hpp */,
