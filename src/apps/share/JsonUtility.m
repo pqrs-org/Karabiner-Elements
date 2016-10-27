@@ -71,7 +71,6 @@
                         error:&error];
       if (error) {
         NSLog(@"writeToFile error @ [JsonUtility saveJsonToFile]: %@", error);
-        return;
       }
       free(allocatedJsonString);
     }
