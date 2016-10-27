@@ -39,6 +39,11 @@ int main(int argc, const char* argv[]) {
     return 0;
   }
 
+  if (auto source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState)) {
+    std::cout << "CGEventSourceKeyboardType:" << CGEventSourceGetKeyboardType(source) << std::endl;
+    CFRelease(source);
+  }
+
   eventtap_ = CGEventTapCreate(kCGHIDEventTap,
                                kCGHeadInsertEventTap,
                                kCGEventTapOptionDefault,
