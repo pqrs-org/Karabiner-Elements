@@ -91,7 +91,7 @@ private:
             logger::get_logger().error("invalid size for krbn::operation_type::post_modifier_flags");
           } else {
             auto p = reinterpret_cast<krbn::operation_type_post_modifier_flags_struct*>(&(buffer_[0]));
-            hid_system_client_.post_modifier_flags(p->key_code, p->flags);
+            hid_system_client_.post_modifier_flags(p->key_code, p->flags, p->keyboard_type);
           }
           break;
 
@@ -100,7 +100,7 @@ private:
             logger::get_logger().error("invalid size for krbn::operation_type::post_key");
           } else {
             auto p = reinterpret_cast<krbn::operation_type_post_key_struct*>(&(buffer_[0]));
-            hid_system_client_.post_key(p->key_code, p->event_type, p->flags, p->repeat);
+            hid_system_client_.post_key(p->key_code, p->event_type, p->flags, p->repeat, p->keyboard_type);
           }
           break;
 

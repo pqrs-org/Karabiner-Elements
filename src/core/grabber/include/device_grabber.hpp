@@ -141,12 +141,14 @@ public:
   void clear_devices_configuration(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       devices_configuration_.clear();
+      devices_configuration_keyboard_type_.clear();
     });
   }
 
-  void add_device_configuration(const krbn::device_identifiers_struct& device_identifiers_struct, bool ignore) {
+  void add_device_configuration(const krbn::device_identifiers_struct& device_identifiers_struct, bool ignore, krbn::keyboard_type keyboard_type) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       devices_configuration_.push_back(std::make_pair(device_identifiers_struct, ignore));
+      devices_configuration_keyboard_type_.push_back(std::make_pair(device_identifiers_struct, keyboard_type));
     });
   }
 
@@ -288,7 +290,7 @@ private:
 
     if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
       bool pressed = integer_value;
-      event_manipulator_.handle_keyboard_event(device_registry_entry_id, *key_code, pressed);
+      event_manipulator_.handle_keyboard_event(device_registry_entry_id, *key_code, pressed, get_keyboard_type(device));
 
     } else if (auto pointing_button = krbn::types::get_pointing_button(usage_page, usage)) {
       event_manipulator_.handle_pointing_event(device_registry_entry_id,
@@ -407,6 +409,26 @@ private:
     return false;
   }
 
+  krbn::keyboard_type get_keyboard_type(const human_interface_device& device) {
+    if (auto vendor_id = device.get_vendor_id()) {
+      if (auto product_id = device.get_product_id()) {
+        bool is_keyboard = device.is_keyboard();
+        bool is_pointing_device = device.is_pointing_device();
+        
+        for (const auto& d : devices_configuration_keyboard_type_) {
+          if (d.first.vendor_id == *vendor_id &&
+              d.first.product_id == *product_id &&
+              d.first.is_keyboard == is_keyboard &&
+              d.first.is_pointing_device == is_pointing_device) {
+            return d.second;
+          }
+        }
+      }
+    }
+    return krbn::keyboard_type::none;
+  }
+  
+  
   void output_devices_json(void) {
     nlohmann::json json;
     json = nlohmann::json::array();
@@ -435,6 +457,7 @@ private:
         j["descriptions"]["product"] = boost::trim_copy(*product);
       }
       j["ignore"] = is_ignored_device(*(it.second));
+      j["keyboard_type"] = static_cast<uint32_t>(get_keyboard_type(*(it.second)));
 
       if (!j.empty()) {
         json.push_back(j);
@@ -453,6 +476,8 @@ private:
   std::unique_ptr<iopm_client> iopm_client_;
 
   std::vector<std::pair<krbn::device_identifiers_struct, bool>> devices_configuration_;
+
+  std::vector<std::pair<krbn::device_identifiers_struct, krbn::keyboard_type>> devices_configuration_keyboard_type_;
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 

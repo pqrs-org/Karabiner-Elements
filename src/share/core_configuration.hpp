@@ -40,6 +40,7 @@
 //                         "is_pointing_device": false
 //                     },
 //                     "ignore": false
+//                     "keyboard_type": 0
 //                 },
 //                 {
 //                     "identifiers": {
@@ -49,6 +50,7 @@
 //                         "is_pointing_device": false
 //                     },
 //                     "ignore": true
+//                     "keyboard_type": 45
 //                 }
 //             ]
 //         },
@@ -101,8 +103,8 @@ public:
     return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
-  std::vector<std::pair<krbn::device_identifiers_struct, bool>> get_current_profile_devices(void) {
-    std::vector<std::pair<krbn::device_identifiers_struct, bool>> v;
+  std::vector<std::tuple<krbn::device_identifiers_struct, bool, krbn::keyboard_type>> get_current_profile_devices(void) {
+    std::vector<std::tuple<krbn::device_identifiers_struct, bool, krbn::keyboard_type>> v;
 
     auto profile = get_current_profile();
     if (profile["devices"].is_array()) {
@@ -118,7 +120,8 @@ public:
           s.product_id = krbn::product_id(static_cast<uint32_t>(device["identifiers"]["product_id"]));
           s.is_keyboard = device["identifiers"]["is_keyboard"];
           s.is_pointing_device = device["identifiers"]["is_pointing_device"];
-          v.push_back(std::make_pair(s, device["ignore"]));
+          krbn::keyboard_type keyboard_type = device["keyboard_type"].is_number() ? krbn::keyboard_type(static_cast<uint32_t>(device["keyboard_type"])) : krbn::keyboard_type::none;
+          v.push_back(std::make_tuple(s, device["ignore"], keyboard_type));
         }
       }
     }
