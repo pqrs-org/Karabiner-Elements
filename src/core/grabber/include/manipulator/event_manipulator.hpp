@@ -36,7 +36,7 @@ public:
   }
 
   void grab_mouse_events(void) {
-    event_tap_manager_ = std::make_unique<event_tap_manager>(modifier_flag_manager_);
+    event_tap_manager_ = std::make_unique<event_tap_manager>();
   }
 
   void ungrab_mouse_events(void) {
