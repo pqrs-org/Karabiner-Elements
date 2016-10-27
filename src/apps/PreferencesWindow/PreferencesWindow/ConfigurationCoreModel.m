@@ -30,7 +30,11 @@
     NSMutableArray<DeviceConfiguration*>* devices = [NSMutableArray new];
     if (profile[@"devices"]) {
       for (NSDictionary* device in profile[@"devices"]) {
-        DeviceIdentifiers* deviceIdentifiers = [[DeviceIdentifiers alloc] initWithDictionary:device];
+        NSDictionary* identifiers = device[@"identifiers"];
+        if (!identifiers) {
+          continue;
+        }
+        DeviceIdentifiers* deviceIdentifiers = [[DeviceIdentifiers alloc] initWithDictionary:identifiers];
 
         BOOL found = NO;
         for (DeviceConfiguration* d in devices) {
@@ -47,6 +51,7 @@
         }
       }
     }
+    _devices = devices;
   }
 
   return self;
