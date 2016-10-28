@@ -12,6 +12,8 @@
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
+@property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
+@property(weak) IBOutlet NSTableView* devicesTableView;
 @property(weak) IBOutlet NSTextField* versionLabel;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
@@ -29,6 +31,8 @@
   self.versionLabel.stringValue = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
 
   [self.simpleModificationsTableView reloadData];
+  [self.fnFunctionKeysTableView reloadData];
+  [self.devicesTableView reloadData];
   [self.logFileTextViewController monitor];
 
   [self launchctlConsoleUserServer:YES];

@@ -4,6 +4,7 @@
 #import "DeviceManager.h"
 #import "DevicesTableCellView.h"
 #import "DevicesTableViewController.h"
+#import "libkrbn.h"
 
 @interface DevicesTableViewDelegate ()
 
@@ -52,7 +53,15 @@
       DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesKeyboardTypeCellView" owner:self];
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.devicesTableViewController;
-      [self createKeyboardTypeMenu:result.popUpButton keyboardType:deviceModels[row].keyboardType];
+
+      uint32_t keyboardType = 0;
+      for (DeviceConfiguration* device in self.configurationManager.configurationCoreModel.devices) {
+        if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:deviceModels[row].deviceIdentifiers]) {
+          keyboardType = device.keyboardType;
+        }
+      }
+
+      [self createKeyboardTypeMenu:result.popUpButton keyboardType:keyboardType];
       return result;
     }
 
@@ -90,40 +99,52 @@
 
 - (void)createKeyboardTypeMenu:(NSPopUpButton*)popUpButton keyboardType:(uint32_t)keyboardType {
   popUpButton.menu = [NSMenu new];
-  NSMenuItem* item0 = [[NSMenuItem alloc] initWithTitle:@"default"
-                                                 action:NULL
-                                          keyEquivalent:@""];
-  item0.representedObject = [NSNumber numberWithInt:0];
-  [popUpButton.menu addItem:item0];
-  NSMenuItem* item40 = [[NSMenuItem alloc] initWithTitle:@"ansi"
+  {
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"Default"
                                                   action:NULL
                                            keyEquivalent:@""];
-  item40.representedObject = [NSNumber numberWithInt:40];
-  [popUpButton.menu addItem:item40];
-  NSMenuItem* item41 = [[NSMenuItem alloc] initWithTitle:@"iso"
+    item.representedObject = [NSNumber numberWithUnsignedInt:0];
+    [popUpButton.menu addItem:item];
+  }
+  {
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"ANSI"
                                                   action:NULL
                                            keyEquivalent:@""];
-  item41.representedObject = [NSNumber numberWithInt:41];
-  [popUpButton.menu addItem:item41];
-  NSMenuItem* item42 = [[NSMenuItem alloc] initWithTitle:@"jis"
+    item.representedObject = [NSNumber numberWithUnsignedInt:libkrbn_get_keyboard_type_ansi()];
+    [popUpButton.menu addItem:item];
+  }
+  {
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"ISO"
                                                   action:NULL
                                            keyEquivalent:@""];
-  item42.representedObject = [NSNumber numberWithInt:42];
-  [popUpButton.menu addItem:item42];
+    item.representedObject = [NSNumber numberWithUnsignedInt:libkrbn_get_keyboard_type_iso()];
+    [popUpButton.menu addItem:item];
+  }
+  {
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"JIS"
+                                                  action:NULL
+                                           keyEquivalent:@""];
+    item.representedObject = [NSNumber numberWithUnsignedInt:libkrbn_get_keyboard_type_jis()];
+    [popUpButton.menu addItem:item];
+  }
 
-  if (keyboardType == 0) {
-    [popUpButton selectItem:item0];
-  } else if (keyboardType == 40) {
-    [popUpButton selectItem:item40];
-  } else if (keyboardType == 41) {
-    [popUpButton selectItem:item41];
-  } else if (keyboardType == 42) {
-    [popUpButton selectItem:item42];
-  } else {
+  NSLog(@"%@", popUpButton.menu);
+
+  // ----------------------------------------
+  // Select item
+
+  for (NSMenuItem* item in popUpButton.itemArray) {
+    if ([item.representedObject unsignedIntValue] == keyboardType) {
+      [popUpButton selectItem:item];
+      return;
+    }
+  }
+
+  {
     NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"type:%d", keyboardType]
                                                   action:NULL
                                            keyEquivalent:@""];
-    item.representedObject = [NSNumber numberWithInt:keyboardType];
+    item.representedObject = [NSNumber numberWithUnsignedInt:keyboardType];
     [popUpButton.menu addItem:item];
     [popUpButton selectItem:item];
   }

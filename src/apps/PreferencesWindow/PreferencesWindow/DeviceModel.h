@@ -29,7 +29,6 @@
 @property(readonly) DeviceIdentifiers* deviceIdentifiers;
 @property(readonly) DeviceDescriptions* deviceDescriptions;
 @property(readonly) BOOL ignore;
-@property(readonly) uint32_t keyboardType;
 
 - (instancetype)initWithDictionary:(NSDictionary*)dictionary;
 

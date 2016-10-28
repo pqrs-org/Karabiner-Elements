@@ -73,7 +73,6 @@
 @property(readwrite) DeviceIdentifiers* deviceIdentifiers;
 @property(readwrite) DeviceDescriptions* deviceDescriptions;
 @property(readwrite) BOOL ignore;
-@property(readwrite) uint32_t keyboardType;
 
 @end
 
@@ -86,7 +85,6 @@
     _deviceIdentifiers = [[DeviceIdentifiers alloc] initWithDictionary:device[@"identifiers"]];
     _deviceDescriptions = [[DeviceDescriptions alloc] initWithDictionary:device[@"descriptions"]];
     _ignore = [device[@"ignore"] boolValue];
-    _keyboardType = [device[@"keyboard_type"] unsignedIntValue];
   }
 
   return self;
