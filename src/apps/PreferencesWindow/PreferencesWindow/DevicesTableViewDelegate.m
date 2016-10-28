@@ -11,7 +11,7 @@
 @property(weak) IBOutlet DeviceManager* deviceManager;
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 
-- (void) createKeyboardTypeMenu: (NSPopUpButton*) popUpButton keyboardType:(uint32_t) keyboardType;
+- (void)createKeyboardTypeMenu:(NSPopUpButton*)popUpButton keyboardType:(uint32_t)keyboardType;
 
 @end
 
@@ -52,10 +52,10 @@
       DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesKeyboardTypeCellView" owner:self];
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.devicesTableViewController;
-      [self createKeyboardTypeMenu: result.popUpButton keyboardType:deviceModels[row].keyboardType];
+      [self createKeyboardTypeMenu:result.popUpButton keyboardType:deviceModels[row].keyboardType];
       return result;
     }
-    
+
     if ([tableColumn.identifier isEqualToString:@"DevicesVendorIdColumn"]) {
       NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
       result.textField.stringValue = [NSString stringWithFormat:@"0x%04x", deviceModels[row].deviceIdentifiers.vendorId];
@@ -88,16 +88,16 @@
   return nil;
 }
 
-- (void) createKeyboardTypeMenu:  (NSPopUpButton*) popUpButton keyboardType:(uint32_t) keyboardType {
+- (void)createKeyboardTypeMenu:(NSPopUpButton*)popUpButton keyboardType:(uint32_t)keyboardType {
   popUpButton.menu = [NSMenu new];
   NSMenuItem* item0 = [[NSMenuItem alloc] initWithTitle:@"default"
-                                                  action:NULL
-                                           keyEquivalent:@""];
+                                                 action:NULL
+                                          keyEquivalent:@""];
   item0.representedObject = [NSNumber numberWithInt:0];
   [popUpButton.menu addItem:item0];
   NSMenuItem* item40 = [[NSMenuItem alloc] initWithTitle:@"ansi"
-                                                action:NULL
-                                         keyEquivalent:@""];
+                                                  action:NULL
+                                           keyEquivalent:@""];
   item40.representedObject = [NSNumber numberWithInt:40];
   [popUpButton.menu addItem:item40];
   NSMenuItem* item41 = [[NSMenuItem alloc] initWithTitle:@"iso"
@@ -111,18 +111,18 @@
   item42.representedObject = [NSNumber numberWithInt:42];
   [popUpButton.menu addItem:item42];
 
-  if(keyboardType == 0){
+  if (keyboardType == 0) {
     [popUpButton selectItem:item0];
-  }else if(keyboardType == 40){
+  } else if (keyboardType == 40) {
     [popUpButton selectItem:item40];
-  }else if(keyboardType == 41){
+  } else if (keyboardType == 41) {
     [popUpButton selectItem:item41];
-  }else if(keyboardType == 42){
+  } else if (keyboardType == 42) {
     [popUpButton selectItem:item42];
-  }else{
+  } else {
     NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"type:%d", keyboardType]
-                                                    action:NULL
-                                             keyEquivalent:@""];
+                                                  action:NULL
+                                           keyEquivalent:@""];
     item.representedObject = [NSNumber numberWithInt:keyboardType];
     [popUpButton.menu addItem:item];
     [popUpButton selectItem:item];

@@ -115,7 +115,7 @@
   self.fnFunctionKeys = fnFunctionKeys;
 }
 
-- (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers ignore:(BOOL)ignore keyboardType:(uint32_t) keyboardType {
+- (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers ignore:(BOOL)ignore keyboardType:(uint32_t)keyboardType {
   NSMutableArray* devices = [NSMutableArray arrayWithArray:self.devices];
   BOOL __block found = NO;
   [devices enumerateObjectsUsingBlock:^(DeviceConfiguration* obj, NSUInteger index, BOOL* stop) {
@@ -167,7 +167,7 @@
     [array addObject:@{
       @"identifiers" : [d.deviceIdentifiers toDictionary],
       @"ignore" : @(d.ignore),
-      @"keyboard_type": @(d.keyboardType),
+      @"keyboard_type" : @(d.keyboardType),
     }];
   }
   return array;

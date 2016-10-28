@@ -28,6 +28,6 @@
 
 - (void)replaceFnFunctionKey:(NSString*)from to:(NSString*)to;
 
-- (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers ignore:(BOOL)ignore keyboardType:(uint32_t) keyboardType;
+- (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers ignore:(BOOL)ignore keyboardType:(uint32_t)keyboardType;
 
 @end

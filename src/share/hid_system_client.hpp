@@ -88,7 +88,6 @@ public:
     event.key.origCharSet = NX_ASCIISET;
     event.key.keyboardType = static_cast<uint32_t>(keyboard_type);
 
-
     IOGPoint loc{};
     post_event(event_type == krbn::event_type::key_down ? NX_KEYDOWN : NX_KEYUP,
                loc,

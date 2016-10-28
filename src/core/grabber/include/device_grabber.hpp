@@ -414,7 +414,7 @@ private:
       if (auto product_id = device.get_product_id()) {
         bool is_keyboard = device.is_keyboard();
         bool is_pointing_device = device.is_pointing_device();
-        
+
         for (const auto& d : devices_configuration_keyboard_type_) {
           if (d.first.vendor_id == *vendor_id &&
               d.first.product_id == *product_id &&
@@ -427,8 +427,7 @@ private:
     }
     return krbn::keyboard_type::none;
   }
-  
-  
+
   void output_devices_json(void) {
     nlohmann::json json;
     json = nlohmann::json::array();

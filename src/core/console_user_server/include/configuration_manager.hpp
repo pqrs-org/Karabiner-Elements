@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core_configuration.hpp"
 #include "constants.hpp"
+#include "core_configuration.hpp"
 #include "file_monitor.hpp"
 #include "filesystem.hpp"
 #include "grabber_client.hpp"
@@ -53,7 +53,7 @@ private:
     }
 
     grabber_client_.clear_devices();
-    for (const auto& tuple: core_configuration_->get_current_profile_devices()) {
+    for (const auto& tuple : core_configuration_->get_current_profile_devices()) {
       grabber_client_.add_device(std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple));
     }
     grabber_client_.complete_devices();
