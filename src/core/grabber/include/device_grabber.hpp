@@ -290,7 +290,7 @@ private:
 
     if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
       bool pressed = integer_value;
-      event_manipulator_.handle_keyboard_event(device_registry_entry_id, *key_code, pressed, get_keyboard_type(device));
+      event_manipulator_.handle_keyboard_event(device_registry_entry_id, *key_code, get_keyboard_type(device), pressed);
 
     } else if (auto pointing_button = krbn::types::get_pointing_button(usage_page, usage)) {
       event_manipulator_.handle_pointing_event(device_registry_entry_id,
@@ -456,7 +456,6 @@ private:
         j["descriptions"]["product"] = boost::trim_copy(*product);
       }
       j["ignore"] = is_ignored_device(*(it.second));
-      j["keyboard_type"] = static_cast<uint32_t>(get_keyboard_type(*(it.second)));
 
       if (!j.empty()) {
         json.push_back(j);

@@ -103,7 +103,11 @@ public:
     }
   }
 
-  void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat, krbn::keyboard_type keyboard_type) {
+  void post_key(krbn::key_code key_code,
+                krbn::event_type event_type,
+                IOOptionBits flags,
+                krbn::keyboard_type keyboard_type,
+                bool repeat) {
     std::lock_guard<std::mutex> guard(client_mutex_);
 
     if (!client_) {
