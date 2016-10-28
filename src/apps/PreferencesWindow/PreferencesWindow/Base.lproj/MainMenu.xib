@@ -700,7 +700,7 @@
                                                         <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn identifier="DevicesCheckboxColumn" width="393" minWidth="40" maxWidth="10000" id="zRy-dI-ooE">
+                                                            <tableColumn identifier="DevicesCheckboxColumn" width="423" minWidth="40" maxWidth="10000" id="zRy-dI-ooE">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Modify events from this device">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -714,7 +714,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="DevicesCheckboxCellView" id="Kba-PK-fRo" customClass="DevicesTableCellView">
-                                                                        <rect key="frame" x="1" y="1" width="393" height="26"/>
+                                                                        <rect key="frame" x="1" y="1" width="423" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="vJd-Z6-vgS">
@@ -749,7 +749,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="DevicesKeyboardTypeCellView" id="MVJ-EV-V5i" customClass="DevicesTableCellView">
-                                                                        <rect key="frame" x="397" y="1" width="100" height="26"/>
+                                                                        <rect key="frame" x="427" y="1" width="100" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="t6c-Ur-EgJ">
@@ -772,7 +772,7 @@
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
                                                             </tableColumn>
-                                                            <tableColumn identifier="DevicesVendorIdColumn" width="80" minWidth="40" maxWidth="1000" id="ErT-Oq-jVJ">
+                                                            <tableColumn identifier="DevicesVendorIdColumn" width="65" minWidth="40" maxWidth="1000" id="ErT-Oq-jVJ">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Vendor ID">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -786,12 +786,12 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="DevicesVendorIdCellView" id="Z95-LG-Bup">
-                                                                        <rect key="frame" x="500" y="1" width="80" height="26"/>
+                                                                        <rect key="frame" x="530" y="1" width="65" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="KQL-99-hgu">
-                                                                                <rect key="frame" x="0.0" y="4" width="80" height="18"/>
-                                                                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="0x0000" id="YG1-RS-yLk">
+                                                                                <rect key="frame" x="0.0" y="4" width="65" height="18"/>
+                                                                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="center" title="0x0000" id="YG1-RS-yLk">
                                                                                     <font key="font" size="12" name="Menlo-Regular"/>
                                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -809,7 +809,7 @@
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
                                                             </tableColumn>
-                                                            <tableColumn identifier="DevicesProductIdColumn" width="80" minWidth="10" maxWidth="3.4028234663852886e+38" id="4GC-DQ-55y">
+                                                            <tableColumn identifier="DevicesProductIdColumn" width="65" minWidth="10" maxWidth="3.4028234663852886e+38" id="4GC-DQ-55y">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Product ID">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -823,12 +823,12 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="DevicesProductIdCellView" id="9WU-po-fh5">
-                                                                        <rect key="frame" x="583" y="1" width="80" height="26"/>
+                                                                        <rect key="frame" x="598" y="1" width="65" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="uPk-gc-Whv">
-                                                                                <rect key="frame" x="0.0" y="4" width="80" height="18"/>
-                                                                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="0x0000" id="46l-Ge-Tjo">
+                                                                                <rect key="frame" x="0.0" y="4" width="65" height="18"/>
+                                                                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="center" title="0x0000" id="46l-Ge-Tjo">
                                                                                     <font key="font" size="12" name="Menlo-Regular"/>
                                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
