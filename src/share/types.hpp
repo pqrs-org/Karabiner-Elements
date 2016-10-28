@@ -212,6 +212,13 @@ enum class product_id : uint32_t {
 enum class location_id : uint32_t {
 };
 
+enum class keyboard_type : uint32_t {
+  none = 0,
+  ansi = 40,
+  iso = 41,
+  jis = 42,
+};
+
 struct device_identifiers_struct {
   vendor_id vendor_id;
   product_id product_id;
@@ -219,11 +226,9 @@ struct device_identifiers_struct {
   bool is_pointing_device;
 };
 
-enum class keyboard_type : uint32_t {
-  none = 0,
-  ansi = 40,
-  iso = 41,
-  jis = 42,
+struct device_configuration_struct {
+  bool ignore;
+  keyboard_type keyboard_type;
 };
 
 class types final {
