@@ -7,7 +7,7 @@ Karabiner-Elements is the subset of the next generation Karabiner for macOS Sier
 
 ## Project Status
 
-Karabiner-Elements works fine except Preferences GUI.
+Karabiner-Elements works fine.
 
 You can download the latest Karabiner-Elements from https://pqrs.org/latest/karabiner-elements-latest.dmg
 
