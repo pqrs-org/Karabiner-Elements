@@ -135,7 +135,7 @@ private:
           break;
 
         case krbn::operation_type::clear_devices:
-          device_grabber_.clear_devices_configuration();
+          device_grabber_.clear_device_configurations();
           break;
 
         case krbn::operation_type::add_device:
@@ -143,12 +143,12 @@ private:
             logger::get_logger().error("invalid size for krbn::operation_type::add_device ({0})", n);
           } else {
             auto p = reinterpret_cast<krbn::operation_type_add_device_struct*>(&(buffer_[0]));
-            device_grabber_.add_device_configuration(p->device_identifiers_struct, p->ignore, p->keyboard_type);
+            device_grabber_.add_device_configuration(p->device_identifiers_struct, p->device_configuration_struct);
           }
           break;
 
         case krbn::operation_type::complete_devices:
-          device_grabber_.complete_devices_configuration();
+          device_grabber_.complete_device_configurations();
           break;
 
         default:
