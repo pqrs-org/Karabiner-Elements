@@ -61,18 +61,9 @@
 
   if (data.length > 0) {
     NSString* string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    char* allocatedJsonString = libkrbn_allocate_beautified_json_string([string UTF8String]);
-    if (allocatedJsonString) {
-      NSString* jsonString = [NSString stringWithUTF8String:allocatedJsonString];
-      error = nil;
-      [jsonString writeToFile:filePath
-                   atomically:YES
-                     encoding:NSUTF8StringEncoding
-                        error:&error];
-      if (error) {
-        NSLog(@"writeToFile error @ [JsonUtility saveJsonToFile]: %@", error);
-      }
-      free(allocatedJsonString);
+    bool result = libkrbn_save_beautified_json_string([filePath UTF8String], [string UTF8String]);
+    if (!result) {
+      NSLog(@"libkrbn_save_beautified_json_string @ [JsonUtility saveJsonToFile]");
     }
   }
 }

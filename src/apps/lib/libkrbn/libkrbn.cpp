@@ -3,8 +3,10 @@
 #include "libkrbn.hpp"
 #include "thread_utility.hpp"
 #include "types.hpp"
+#include <fstream>
 #include <iostream>
 #include <json/json.hpp>
+#include <string>
 
 void libkrbn_initialize(void) {
   thread_utility::register_main_thread();
@@ -68,16 +70,16 @@ bool libkrbn_get_hid_system_aux_control_button(uint8_t* _Nonnull button, const c
   return false;
 }
 
-char* _Nonnull libkrbn_allocate_beautified_json_string(const char* _Nonnull json_string) {
-  // nlohmann::json sorts dictionary keys.
-  std::stringstream stream;
-
-  auto json = nlohmann::json::parse(json_string);
-  stream << std::setw(4) << json << std::endl;
-  auto string = stream.str();
-
-  auto buffer_length = string.size() + 1;
-  auto buffer = static_cast<char*>(malloc(buffer_length));
-  strlcpy(buffer, string.c_str(), buffer_length);
-  return buffer;
+bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string) {
+  try {
+    // nlohmann::json sorts dictionary keys.
+    std::ofstream stream(file_path);
+    if (stream) {
+      auto json = nlohmann::json::parse(json_string);
+      stream << std::setw(4) << json << std::endl;
+      return true;
+    }
+  } catch (std::exception& e) {
+  }
+  return false;
 }
