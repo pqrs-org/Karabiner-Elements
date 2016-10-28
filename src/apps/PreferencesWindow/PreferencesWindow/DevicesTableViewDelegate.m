@@ -128,8 +128,6 @@
     [popUpButton.menu addItem:item];
   }
 
-  NSLog(@"%@", popUpButton.menu);
-
   // ----------------------------------------
   // Select item
 
