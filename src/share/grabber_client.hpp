@@ -72,10 +72,11 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
-  void add_device(const krbn::device_identifiers_struct& device_identifiers_struct, bool ignore) {
+  void add_device(const krbn::device_identifiers_struct& device_identifiers_struct, bool ignore, krbn::keyboard_type keyboard_type) {
     krbn::operation_type_add_device_struct s;
     s.device_identifiers_struct = device_identifiers_struct;
     s.ignore = ignore;
+    s.keyboard_type = keyboard_type;
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 

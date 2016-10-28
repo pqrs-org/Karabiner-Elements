@@ -53,8 +53,8 @@ private:
     }
 
     grabber_client_.clear_devices();
-    for (const auto& pair: core_configuration_->get_current_profile_devices()) {
-      grabber_client_.add_device(pair.first, pair.second);
+    for (const auto& tuple: core_configuration_->get_current_profile_devices()) {
+      grabber_client_.add_device(std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple));
     }
     grabber_client_.complete_devices();
   }

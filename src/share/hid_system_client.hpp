@@ -49,10 +49,11 @@ public:
     }
   }
 
-  void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
+  void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags, krbn::keyboard_type keyboard_type) {
     if (auto key = krbn::types::get_hid_system_key(key_code)) {
       NXEventData event{};
       event.key.keyCode = *key;
+      event.key.keyboardType = static_cast<uint32_t>(keyboard_type);
 
       IOGPoint loc{};
       post_event(NX_FLAGSCHANGED, loc, &event, kNXEventDataVersion, flags, kIOHIDSetGlobalEventFlags);
@@ -63,21 +64,21 @@ public:
     logger_.warn("key_code:{1:#x} is unsupported key @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(key_code));
   }
 
-  void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
+  void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat, krbn::keyboard_type keyboard_type) {
     if (auto key = krbn::types::get_hid_system_aux_control_button(key_code)) {
       post_aux_control_button(*key, event_type, flags, repeat);
       return;
     }
 
     if (auto key = krbn::types::get_hid_system_key(key_code)) {
-      post_key(*key, event_type, flags, repeat);
+      post_key(*key, event_type, flags, repeat, keyboard_type);
       return;
     }
 
     logger_.warn("key_code:{1:#x} is unsupported key @ {0}", __PRETTY_FUNCTION__, static_cast<uint32_t>(key_code));
   }
 
-  void post_key(uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
+  void post_key(uint8_t key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat, krbn::keyboard_type keyboard_type) {
     NXEventData event{};
     event.key.origCharCode = 0;
     event.key.repeat = repeat;
@@ -85,7 +86,8 @@ public:
     event.key.charCode = 0;
     event.key.keyCode = key_code;
     event.key.origCharSet = NX_ASCIISET;
-    event.key.keyboardType = 0;
+    event.key.keyboardType = static_cast<uint32_t>(keyboard_type);
+
 
     IOGPoint loc{};
     post_event(event_type == krbn::event_type::key_down ? NX_KEYDOWN : NX_KEYUP,

@@ -84,7 +84,7 @@ public:
     }
   }
 
-  void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags) {
+  void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags, krbn::keyboard_type keyboard_type) {
     std::lock_guard<std::mutex> guard(client_mutex_);
 
     if (!client_) {
@@ -96,13 +96,14 @@ public:
       krbn::operation_type_post_modifier_flags_struct s;
       s.key_code = key_code;
       s.flags = flags;
+      s.keyboard_type = keyboard_type;
       client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
     } catch (...) {
       client_ = nullptr;
     }
   }
 
-  void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat) {
+  void post_key(krbn::key_code key_code, krbn::event_type event_type, IOOptionBits flags, bool repeat, krbn::keyboard_type keyboard_type) {
     std::lock_guard<std::mutex> guard(client_mutex_);
 
     if (!client_) {
@@ -116,6 +117,7 @@ public:
       s.event_type = event_type;
       s.flags = flags;
       s.repeat = repeat;
+      s.keyboard_type = keyboard_type;
       client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
     } catch (...) {
       client_ = nullptr;

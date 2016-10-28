@@ -219,7 +219,8 @@ struct device_identifiers_struct {
   bool is_pointing_device;
 };
 
-enum class keyboard_type {
+enum class keyboard_type : uint32_t {
+  none = 0,
   ansi = 40,
   iso = 41,
   jis = 42,
@@ -790,6 +791,7 @@ struct operation_type_add_device_struct {
   const operation_type operation_type;
   device_identifiers_struct device_identifiers_struct;
   bool ignore;
+  keyboard_type keyboard_type;
 };
 
 struct operation_type_complete_devices_struct {
@@ -824,6 +826,7 @@ struct operation_type_post_modifier_flags_struct {
   const operation_type operation_type;
   key_code key_code;
   IOOptionBits flags;
+  keyboard_type keyboard_type;
 };
 
 struct operation_type_post_key_struct {
@@ -834,5 +837,6 @@ struct operation_type_post_key_struct {
   event_type event_type;
   IOOptionBits flags;
   bool repeat;
+  keyboard_type keyboard_type;
 };
 }
