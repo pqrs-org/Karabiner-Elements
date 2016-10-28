@@ -37,7 +37,9 @@
   NSInteger row = [self.tableView rowForView:sender];
   DevicesTableCellView* cellViewCheckbox = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
   DevicesTableCellView* cellViewPopUp = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
-  [self.configurationManager.configurationCoreModel setDeviceConfiguration:cellViewCheckbox.deviceIdentifiers ignore:(cellViewCheckbox.checkbox.state != NSOnState) keyboardType:[cellViewPopUp.popUpButton.selectedItem.representedObject intValue]];
+  [self.configurationManager.configurationCoreModel setDeviceConfiguration:cellViewCheckbox.deviceIdentifiers
+                                                                    ignore:(cellViewCheckbox.checkbox.state != NSOnState)
+                                                              keyboardType:[cellViewPopUp.popUpButton.selectedItem.representedObject unsignedIntValue]];
   [self.configurationManager save];
 }
 
