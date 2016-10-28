@@ -689,18 +689,18 @@
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dj4-13-m3Q">
                                             <rect key="frame" x="17" y="8" width="720" height="422"/>
                                             <clipView key="contentView" id="FOg-OF-77U">
-                                                <rect key="frame" x="1" y="0.0" width="718" height="406"/>
+                                                <rect key="frame" x="1" y="0.0" width="718" height="421"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="PyG-O0-i8x" viewBased="YES" id="W1W-Xd-0KJ">
-                                                        <rect key="frame" x="0.0" y="0.0" width="725" height="383"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="718" height="398"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn identifier="DevicesCheckboxColumn" width="300" minWidth="40" maxWidth="10000" id="zRy-dI-ooE">
+                                                            <tableColumn identifier="DevicesCheckboxColumn" width="393" minWidth="40" maxWidth="10000" id="zRy-dI-ooE">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Modify events from this device">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -714,7 +714,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="DevicesCheckboxCellView" id="Kba-PK-fRo" customClass="DevicesTableCellView">
-                                                                        <rect key="frame" x="1" y="1" width="300" height="26"/>
+                                                                        <rect key="frame" x="1" y="1" width="393" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="vJd-Z6-vgS">
@@ -749,7 +749,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="DevicesKeyboardTypeCellView" id="MVJ-EV-V5i" customClass="DevicesTableCellView">
-                                                                        <rect key="frame" x="304" y="1" width="100" height="26"/>
+                                                                        <rect key="frame" x="397" y="1" width="100" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="t6c-Ur-EgJ">
@@ -786,7 +786,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="DevicesVendorIdCellView" id="Z95-LG-Bup">
-                                                                        <rect key="frame" x="407" y="1" width="80" height="26"/>
+                                                                        <rect key="frame" x="500" y="1" width="80" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="KQL-99-hgu">
@@ -823,7 +823,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="DevicesProductIdCellView" id="9WU-po-fh5">
-                                                                        <rect key="frame" x="490" y="1" width="80" height="26"/>
+                                                                        <rect key="frame" x="583" y="1" width="80" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="uPk-gc-Whv">
@@ -846,7 +846,7 @@
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
                                                             </tableColumn>
-                                                            <tableColumn identifier="DevicesTypeColumn" width="150" minWidth="10" maxWidth="3.4028234663852886e+38" id="Y6D-t4-Dz6">
+                                                            <tableColumn identifier="DevicesIconsColumn" width="50" minWidth="10" maxWidth="3.4028234663852886e+38" id="Y6D-t4-Dz6">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Type">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -859,25 +859,36 @@
                                                                 </textFieldCell>
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
-                                                                    <tableCellView identifier="DevicesTypeCellView" id="lW8-0s-DRR">
-                                                                        <rect key="frame" x="573" y="1" width="150" height="26"/>
+                                                                    <tableCellView identifier="DevicesIconsCellView" id="lW8-0s-DRR" customClass="DevicesTableCellView">
+                                                                        <rect key="frame" x="666" y="1" width="50" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="TSO-R6-LPy">
-                                                                                <rect key="frame" x="0.0" y="6" width="139" height="14"/>
-                                                                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="keyboard,pointing_device" id="KST-RC-Vwm">
-                                                                                    <font key="font" metaFont="smallSystem"/>
-                                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                                                </textFieldCell>
-                                                                            </textField>
+                                                                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="0Cr-Ru-fKh">
+                                                                                <rect key="frame" x="2" y="3" width="20" height="20"/>
+                                                                                <constraints>
+                                                                                    <constraint firstAttribute="height" constant="20" id="SN0-ZZ-bLO"/>
+                                                                                    <constraint firstAttribute="width" constant="20" id="ctf-Ro-OvK"/>
+                                                                                </constraints>
+                                                                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="ic_keyboard_black_48dp" id="88S-eH-mf7"/>
+                                                                            </imageView>
+                                                                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="WNl-G8-o8g">
+                                                                                <rect key="frame" x="24" y="3" width="20" height="20"/>
+                                                                                <constraints>
+                                                                                    <constraint firstAttribute="width" constant="20" id="DHr-Gg-inZ"/>
+                                                                                    <constraint firstAttribute="height" constant="20" id="bKx-62-1vG"/>
+                                                                                </constraints>
+                                                                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="ic_mouse_black_48dp" id="hYt-Hn-7QR"/>
+                                                                            </imageView>
                                                                         </subviews>
                                                                         <constraints>
-                                                                            <constraint firstItem="TSO-R6-LPy" firstAttribute="centerY" secondItem="lW8-0s-DRR" secondAttribute="centerY" id="2rx-c7-iXS"/>
-                                                                            <constraint firstItem="TSO-R6-LPy" firstAttribute="leading" secondItem="lW8-0s-DRR" secondAttribute="leading" constant="2" id="Bjs-nq-tlw"/>
+                                                                            <constraint firstItem="WNl-G8-o8g" firstAttribute="leading" secondItem="lW8-0s-DRR" secondAttribute="leading" constant="24" id="8gf-Jl-F4b"/>
+                                                                            <constraint firstItem="0Cr-Ru-fKh" firstAttribute="leading" secondItem="lW8-0s-DRR" secondAttribute="leading" constant="2" id="BIn-37-5r4"/>
+                                                                            <constraint firstItem="0Cr-Ru-fKh" firstAttribute="centerY" secondItem="lW8-0s-DRR" secondAttribute="centerY" id="Xh2-BQ-fL5"/>
+                                                                            <constraint firstItem="WNl-G8-o8g" firstAttribute="centerY" secondItem="lW8-0s-DRR" secondAttribute="centerY" id="dBc-pX-Z2y"/>
                                                                         </constraints>
                                                                         <connections>
-                                                                            <outlet property="textField" destination="TSO-R6-LPy" id="Xfh-i9-UB1"/>
+                                                                            <outlet property="keyboardImage" destination="0Cr-Ru-fKh" id="hYu-fp-yST"/>
+                                                                            <outlet property="mouseImage" destination="WNl-G8-o8g" id="WmC-X1-aj9"/>
                                                                         </connections>
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
@@ -890,7 +901,7 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="WAQ-P3-E7u">
+                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="WAQ-P3-E7u">
                                                 <rect key="frame" x="1" y="406" width="718" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -899,7 +910,7 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" id="PyG-O0-i8x">
-                                                <rect key="frame" x="0.0" y="0.0" width="725" height="23"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="718" height="23"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
@@ -1124,5 +1135,7 @@
         <image name="NSAddTemplate" width="11" height="11"/>
         <image name="NSFollowLinkFreestandingTemplate" width="14" height="14"/>
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
+        <image name="ic_keyboard_black_48dp" width="72" height="72"/>
+        <image name="ic_mouse_black_48dp" width="72" height="72"/>
     </resources>
 </document>

@@ -77,19 +77,10 @@
       return result;
     }
 
-    if ([tableColumn.identifier isEqualToString:@"DevicesTypeColumn"]) {
-      NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesTypeCellView" owner:self];
-      NSMutableString* type = [NSMutableString new];
-      if (deviceModels[row].deviceIdentifiers.isKeyboard) {
-        [type appendString:@"keyboard"];
-      }
-      if (deviceModels[row].deviceIdentifiers.isPointingDevice) {
-        if ([type length] > 0) {
-          [type appendString:@", "];
-        }
-        [type appendString:@"pointing device"];
-      }
-      result.textField.stringValue = type;
+    if ([tableColumn.identifier isEqualToString:@"DevicesIconsColumn"]) {
+      DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesIconsCellView" owner:self];
+      result.keyboardImage.hidden = !(deviceModels[row].deviceIdentifiers.isKeyboard);
+      result.mouseImage.hidden = !(deviceModels[row].deviceIdentifiers.isPointingDevice);
       return result;
     }
   }

@@ -35,6 +35,8 @@
 		34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */; };
 		34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */; };
 		34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */; };
+		34FB68031DC3AD30009A3BA7 /* ic_mouse_black_48dp.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FB68021DC3AD30009A3BA7 /* ic_mouse_black_48dp.png */; };
+		34FB68051DC3AD49009A3BA7 /* ic_keyboard_black_48dp.png in Resources */ = {isa = PBXBuildFile; fileRef = 34FB68041DC3AD49009A3BA7 /* ic_keyboard_black_48dp.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -93,6 +95,8 @@
 		34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FnFunctionKeysTableViewDelegate.m; sourceTree = "<group>"; };
 		34EEEEF11DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewController.h; sourceTree = "<group>"; };
 		34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FnFunctionKeysTableViewController.m; sourceTree = "<group>"; };
+		34FB68021DC3AD30009A3BA7 /* ic_mouse_black_48dp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_mouse_black_48dp.png; path = Resources/icons/ic_mouse_black_48dp.png; sourceTree = "<group>"; };
+		34FB68041DC3AD49009A3BA7 /* ic_keyboard_black_48dp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_keyboard_black_48dp.png; path = Resources/icons/ic_keyboard_black_48dp.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -192,6 +196,8 @@
 		345F954C1DAB8EB7002854B8 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				34FB68041DC3AD49009A3BA7 /* ic_keyboard_black_48dp.png */,
+				34FB68021DC3AD30009A3BA7 /* ic_mouse_black_48dp.png */,
 				345F954D1DAB8EC2002854B8 /* simple_modifications.json */,
 			);
 			name = Resources;
@@ -266,6 +272,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				345F954E1DAB8EC2002854B8 /* simple_modifications.json in Resources */,
+				34FB68031DC3AD30009A3BA7 /* ic_mouse_black_48dp.png in Resources */,
+				34FB68051DC3AD49009A3BA7 /* ic_keyboard_black_48dp.png in Resources */,
 				3445E06C1D801AF7004555F9 /* Assets.xcassets in Resources */,
 				3445E06F1D801AF7004555F9 /* MainMenu.xib in Resources */,
 			);
