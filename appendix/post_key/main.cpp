@@ -26,19 +26,19 @@ int main(int argc, const char* argv[]) {
 
       std::cout << "shift" << std::endl;
       if (auto key_code = krbn::types::get_key_code("left_shift")) {
-        client.post_modifier_flags(*key_code, NX_SHIFTMASK | NX_DEVICELSHIFTKEYMASK);
-        client.post_modifier_flags(*key_code, 0);
+        client.post_modifier_flags(*key_code, NX_SHIFTMASK | NX_DEVICELSHIFTKEYMASK, krbn::keyboard_type::none);
+        client.post_modifier_flags(*key_code, 0, krbn::keyboard_type::none);
       }
 
       std::cout << "mission control" << std::endl;
-      client.post_key(0xa0, krbn::event_type::key_down, 0, false);
-      client.post_key(0xa0, krbn::event_type::key_up, 0, false);
+      client.post_key(0xa0, krbn::event_type::key_down, 0, krbn::keyboard_type::none, false);
+      client.post_key(0xa0, krbn::event_type::key_up, 0, krbn::keyboard_type::none, false);
 
       std::this_thread::sleep_for(1s);
 
       std::cout << "mission control" << std::endl;
-      client.post_key(0xa0, krbn::event_type::key_down, 0, false);
-      client.post_key(0xa0, krbn::event_type::key_up, 0, false);
+      client.post_key(0xa0, krbn::event_type::key_down, 0, krbn::keyboard_type::none, false);
+      client.post_key(0xa0, krbn::event_type::key_up, 0, krbn::keyboard_type::none, false);
 
       std::this_thread::sleep_for(5s);
     }
