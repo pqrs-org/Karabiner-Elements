@@ -15,6 +15,10 @@ const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(vo
 const char* _Nonnull libkrbn_get_core_configuration_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 
+uint32_t libkrbn_get_keyboard_type_ansi(void);
+uint32_t libkrbn_get_keyboard_type_iso(void);
+uint32_t libkrbn_get_keyboard_type_jis(void);
+
 typedef void libkrbn_configuration_monitor;
 typedef void (*libkrbn_configuration_monitor_callback)(const char* _Nonnull current_profile_json, void* _Nullable refcon);
 bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor* _Nullable* _Nonnull out,

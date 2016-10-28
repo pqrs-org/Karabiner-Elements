@@ -50,6 +50,18 @@ const char* libkrbn_get_devices_json_file_path(void) {
   return constants::get_devices_json_file_path();
 }
 
+uint32_t libkrbn_get_keyboard_type_ansi(void) {
+  return static_cast<uint32_t>(krbn::keyboard_type::ansi);
+}
+
+uint32_t libkrbn_get_keyboard_type_iso(void) {
+  return static_cast<uint32_t>(krbn::keyboard_type::iso);
+}
+
+uint32_t libkrbn_get_keyboard_type_jis(void) {
+  return static_cast<uint32_t>(krbn::keyboard_type::jis);
+}
+
 bool libkrbn_get_hid_system_key(uint8_t* _Nonnull key, const char* key_name) {
   if (auto key_code = krbn::types::get_key_code(key_name)) {
     if (auto value = krbn::types::get_hid_system_key(*key_code)) {
