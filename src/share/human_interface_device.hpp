@@ -506,6 +506,20 @@ public:
     return r;
   }
 
+  krbn::keyboard_type get_keyboard_type(void) const {
+    krbn::keyboard_type __block value;
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      value = keyboard_type_;
+    });
+    return value;
+  }
+
+  void set_keyboard_type(krbn::keyboard_type keyboard_type) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      keyboard_type_ = keyboard_type;
+    });
+  }
+
   bool is_keyboard(void) const {
     return IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
   }
@@ -682,4 +696,6 @@ private:
   std::unique_ptr<gcd_utility::main_queue_timer> grab_timer_;
   bool observed_;
   bool grabbed_;
+
+  krbn::keyboard_type keyboard_type_;
 };
