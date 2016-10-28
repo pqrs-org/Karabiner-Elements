@@ -795,8 +795,7 @@ struct operation_type_add_device_struct {
 
   const operation_type operation_type;
   device_identifiers_struct device_identifiers_struct;
-  bool ignore;
-  keyboard_type keyboard_type;
+  device_configuration_struct device_configuration_struct;
 };
 
 struct operation_type_complete_devices_struct {
@@ -841,7 +840,7 @@ struct operation_type_post_key_struct {
   key_code key_code;
   event_type event_type;
   IOOptionBits flags;
-  bool repeat;
   keyboard_type keyboard_type;
+  bool repeat;
 };
 }
