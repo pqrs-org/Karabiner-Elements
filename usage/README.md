@@ -47,7 +47,7 @@ You can investigate the key name in Karabiner-EventViewer.
 
 You can set keyboard type in Devices tab.
 
-<img src="img/devices.png" width="400">
+<img src="img/keyboard_type.png" width="400">
 
 If you are using multiple keyboards which have different keyboard types, you have to set the keyboard type in Devices tab.
 Otherwise, Karabiner-Elements cannot treat keyboard type properly due to a limitation of macOS.
