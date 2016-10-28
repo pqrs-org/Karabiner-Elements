@@ -1,6 +1,6 @@
 #import "DevicesTableViewDelegate.h"
-#import "CoreConfigurationModel.h"
 #import "ConfigurationManager.h"
+#import "CoreConfigurationModel.h"
 #import "DeviceManager.h"
 #import "DevicesTableCellView.h"
 #import "DevicesTableViewController.h"
@@ -20,9 +20,17 @@
   if (0 <= row && row < (NSInteger)(deviceModels.count)) {
     if ([tableColumn.identifier isEqualToString:@"DevicesCheckboxColumn"]) {
       DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesCheckboxCellView" owner:self];
-      result.checkbox.title = [NSString stringWithFormat:@"%@ (%@)",
-                                                         deviceModels[row].deviceDescriptions.product,
-                                                         deviceModels[row].deviceDescriptions.manufacturer];
+
+      NSString* productName = deviceModels[row].deviceDescriptions.product;
+      if ([productName length] == 0) {
+        productName = @"No product name";
+      }
+      NSString* manufacturerName = deviceModels[row].deviceDescriptions.manufacturer;
+      if ([manufacturerName length] == 0) {
+        manufacturerName = @"No manufacturer name";
+      }
+      result.checkbox.title = [NSString stringWithFormat:@"%@ (%@)", productName, manufacturerName];
+
       result.checkbox.action = @selector(valueChanged:);
       result.checkbox.target = self.devicesTableViewController;
 
