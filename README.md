@@ -19,6 +19,10 @@ You can download the latest Karabiner-Elements from https://pqrs.org/latest/kara
 * Support Secure Keyboard Entry (eg. Terminal, Password prompt)
 * Modifier flags sharing with all connected keyboards.
 
+## Limitations
+
+* Karabiner-Elements cannot modify eject key due to the limitation of macOS API.
+
 ## How to build
 
 System requirements:
