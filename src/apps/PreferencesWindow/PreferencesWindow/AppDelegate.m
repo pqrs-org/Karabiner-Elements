@@ -3,7 +3,7 @@
 #import "DeviceManager.h"
 #import "PreferencesWindowController.h"
 #import "Relauncher.h"
-#include "libkrbn.h"
+#import "libkrbn.h"
 
 @interface AppDelegate ()
 

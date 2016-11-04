@@ -1,5 +1,5 @@
 #import "LogFileTextViewController.h"
-#include "libkrbn.h"
+#import "libkrbn.h"
 #import "weakify.h"
 
 @interface LogFileTextViewController ()

@@ -2,7 +2,7 @@
 #import "CoreConfigurationModel.h"
 #import "JsonUtility.h"
 #import "NotificationKeys.h"
-#include "libkrbn.h"
+#import "libkrbn.h"
 
 @interface ConfigurationManager ()
 
