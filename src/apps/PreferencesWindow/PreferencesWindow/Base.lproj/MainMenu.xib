@@ -19,6 +19,7 @@
                 <outlet property="configurationManager" destination="gHg-lq-U6a" id="1k4-2u-8fe"/>
                 <outlet property="deviceManager" destination="XCy-yA-tah" id="Mqj-sY-vin"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
+                <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="LEs-Qx-33f"/>
             </connections>
         </customObject>
         <customObject id="XCy-yA-tah" customClass="DeviceManager"/>
@@ -79,6 +80,7 @@
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="5bn-W1-NB6"/>
             </connections>
         </customObject>
+        <customObject id="gwA-uV-a9x" customClass="SystemPreferencesManager"/>
         <customObject id="KbW-oV-WOQ" customClass="FnFunctionKeysTableViewController">
             <connections>
                 <outlet property="configurationManager" destination="gHg-lq-U6a" id="H2R-oP-WgF"/>
@@ -979,7 +981,6 @@
                                                     <constraint firstAttribute="trailing" secondItem="lRS-BL-uVJ" secondAttribute="trailing" constant="17" id="tKe-5W-FJd"/>
                                                 </constraints>
                                             </view>
-                                            <font key="titleFont" metaFont="message" size="11"/>
                                         </box>
                                         <box borderType="line" title="Uninstall" translatesAutoresizingMaskIntoConstraints="NO" id="bRw-jJ-vdo">
                                             <rect key="frame" x="14" y="281" width="726" height="53"/>
@@ -1004,7 +1005,6 @@
                                                     <constraint firstItem="CzP-aW-AzB" firstAttribute="leading" secondItem="E8s-vq-cpp" secondAttribute="leading" constant="17" id="pb6-oj-hqP"/>
                                                 </constraints>
                                             </view>
-                                            <font key="titleFont" metaFont="message" size="11"/>
                                         </box>
                                         <box borderType="line" title="Web Sites" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-Lc-pSo">
                                             <rect key="frame" x="14" y="212" width="726" height="53"/>
@@ -1039,7 +1039,6 @@
                                                     <constraint firstItem="i87-Pa-TZD" firstAttribute="leading" secondItem="ibU-6J-Zdv" secondAttribute="leading" constant="17" id="v22-0C-Bcp"/>
                                                 </constraints>
                                             </view>
-                                            <font key="titleFont" metaFont="message" size="11"/>
                                         </box>
                                     </subviews>
                                     <constraints>

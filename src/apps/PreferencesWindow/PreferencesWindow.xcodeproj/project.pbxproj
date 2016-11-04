@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */; };
+		3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */; };
 		3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0661D801AF7004555F9 /* AppDelegate.m */; };
 		3445E06A1D801AF7004555F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0691D801AF7004555F9 /* main.m */; };
 		3445E06C1D801AF7004555F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06B1D801AF7004555F9 /* Assets.xcassets */; };
@@ -40,6 +42,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		342853091DCB8BD700164476 /* SystemPreferencesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemPreferencesModel.h; sourceTree = "<group>"; };
+		3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemPreferencesModel.m; sourceTree = "<group>"; };
+		3428530C1DCCFDEB00164476 /* SystemPreferencesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemPreferencesManager.h; sourceTree = "<group>"; };
+		3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemPreferencesManager.m; sourceTree = "<group>"; };
 		3445E0621D801AF7004555F9 /* Karabiner-Elements.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Karabiner-Elements.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3445E0651D801AF7004555F9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3445E0661D801AF7004555F9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -134,10 +140,10 @@
 				3445E0651D801AF7004555F9 /* AppDelegate.h */,
 				3445E0661D801AF7004555F9 /* AppDelegate.m */,
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
-				345F95461DAA5DA1002854B8 /* CoreConfigurationModel.h */,
-				345F95471DAA5DA1002854B8 /* CoreConfigurationModel.m */,
 				345F95351DA2AC78002854B8 /* ConfigurationManager.h */,
 				345F95361DA2AC78002854B8 /* ConfigurationManager.m */,
+				345F95461DAA5DA1002854B8 /* CoreConfigurationModel.h */,
+				345F95471DAA5DA1002854B8 /* CoreConfigurationModel.m */,
 				34B97B2D1DBE4B9B00EB3583 /* DeviceManager.h */,
 				34B97B311DBE4EA100EB3583 /* DeviceManager.m */,
 				34B97B2E1DBE4B9B00EB3583 /* DeviceModel.h */,
@@ -176,6 +182,10 @@
 				345F95431DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.h */,
 				345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */,
 				3445E0681D801AF7004555F9 /* Supporting Files */,
+				3428530C1DCCFDEB00164476 /* SystemPreferencesManager.h */,
+				3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */,
+				342853091DCB8BD700164476 /* SystemPreferencesModel.h */,
+				3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */,
 				347112EB1D86E619001AC60D /* UpdaterController.h */,
 				347112EC1D86E619001AC60D /* UpdaterController.m */,
 			);
@@ -289,6 +299,7 @@
 				34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */,
 				34B97B321DBE4EA100EB3583 /* DeviceManager.m in Sources */,
 				34B97B3C1DBEF9CA00EB3583 /* DevicesTableViewController.m in Sources */,
+				3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */,
 				345F95541DABE746002854B8 /* SimpleModificationsTableViewController.m in Sources */,
 				34B97B301DBE4B9B00EB3583 /* DeviceModel.m in Sources */,
 				345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */,
@@ -309,6 +320,7 @@
 				34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
 				345F95481DAA5DA1002854B8 /* CoreConfigurationModel.m in Sources */,
+				3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

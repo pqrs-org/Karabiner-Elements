@@ -2,6 +2,7 @@
 #import "DevicesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
 #import "LogFileTextViewController.h"
+#import "NotificationKeys.h"
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableViewController.h"
 #import "UpdaterController.h"
@@ -23,19 +24,37 @@
 @implementation PreferencesWindowController
 
 - (void)setup {
+  // ----------------------------------------
+  // Setup
+
   [self.simpleModificationsMenuManager setup];
   [self.simpleModificationsTableViewController setup];
   [self.fnFunctionKeysTableViewController setup];
   [self.devicesTableViewController setup];
+  [self.logFileTextViewController monitor];
+
+  [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
+                                                    object:nil
+                                                     queue:[NSOperationQueue mainQueue]
+                                                usingBlock:^(NSNotification* note) {
+                                                  NSLog(@"kSystemPreferencesValuesAreUpdated");
+                                                }];
+
+  // ----------------------------------------
+  // Update UI values
 
   self.versionLabel.stringValue = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
 
   [self.simpleModificationsTableView reloadData];
   [self.fnFunctionKeysTableView reloadData];
   [self.devicesTableView reloadData];
-  [self.logFileTextViewController monitor];
 
+  // ----------------------------------------
   [self launchctlConsoleUserServer:YES];
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)show {

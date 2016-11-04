@@ -3,6 +3,7 @@
 #import "DeviceManager.h"
 #import "PreferencesWindowController.h"
 #import "Relauncher.h"
+#import "SystemPreferencesManager.h"
 #import "libkrbn.h"
 
 @interface AppDelegate ()
@@ -10,6 +11,7 @@
 @property(weak) IBOutlet ConfigurationManager* configurationManager;
 @property(weak) IBOutlet DeviceManager* deviceManager;
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
+@property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
 
 @end
 
@@ -20,6 +22,8 @@
 
   [self.configurationManager setup];
   [self.deviceManager setup];
+  [self.systemPreferencesManager setup];
+
   [self.preferencesWindowController setup];
 
   [[NSDistributedNotificationCenter defaultCenter] addObserver:self
