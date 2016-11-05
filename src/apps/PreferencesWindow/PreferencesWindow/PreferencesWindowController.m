@@ -5,19 +5,23 @@
 #import "NotificationKeys.h"
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableViewController.h"
+#import "SystemPreferencesManager.h"
 #import "UpdaterController.h"
+#import "weakify.h"
 
 @interface PreferencesWindowController ()
 
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
-@property(weak) IBOutlet NSTableView* simpleModificationsTableView;
-@property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
+@property(weak) IBOutlet NSButton* keyboardFnStateButton;
 @property(weak) IBOutlet NSTableView* devicesTableView;
+@property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
+@property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 @property(weak) IBOutlet NSTextField* versionLabel;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
+@property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
 
 @end
 
@@ -33,11 +37,15 @@
   [self.devicesTableViewController setup];
   [self.logFileTextViewController monitor];
 
+  @weakify(self);
   [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
-                                                  NSLog(@"kSystemPreferencesValuesAreUpdated");
+                                                  @strongify(self);
+                                                  if (!self) return;
+
+                                                  [self updateKeyboardFnStateButtonState];
                                                 }];
 
   // ----------------------------------------
@@ -48,6 +56,8 @@
   [self.simpleModificationsTableView reloadData];
   [self.fnFunctionKeysTableView reloadData];
   [self.devicesTableView reloadData];
+
+  [self updateKeyboardFnStateButtonState];
 
   // ----------------------------------------
   [self launchctlConsoleUserServer:YES];
@@ -60,6 +70,14 @@
 - (void)show {
   [self.window makeKeyAndOrderFront:self];
   [NSApp activateIgnoringOtherApps:YES];
+}
+
+- (void)updateKeyboardFnStateButtonState {
+  self.keyboardFnStateButton.state = self.systemPreferencesManager.systemPreferencesModel.keyboardFnState ? NSOnState : NSOffState;
+}
+
+- (IBAction)updateKeyboardFnState:(id)sender {
+  [self.systemPreferencesManager updateKeyboardFnState:(self.keyboardFnStateButton.state == NSOnState)];
 }
 
 - (IBAction)checkForUpdatesStableOnly:(id)sender {

@@ -53,10 +53,12 @@
                 <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="ZRe-xj-uKw"/>
                 <outlet property="fnFunctionKeysTableView" destination="OWP-Cf-tc8" id="ZoU-Fp-ywc"/>
                 <outlet property="fnFunctionKeysTableViewController" destination="KbW-oV-WOQ" id="cpt-wg-s0p"/>
+                <outlet property="keyboardFnStateButton" destination="tSp-iV-F6D" id="7ra-xV-6cv"/>
                 <outlet property="logFileTextViewController" destination="wKd-bU-aLe" id="432-Fh-vee"/>
                 <outlet property="simpleModificationsMenuManager" destination="BTc-Hs-TSF" id="9bd-ge-hVm"/>
                 <outlet property="simpleModificationsTableView" destination="qEO-TG-yM2" id="Qcl-8d-0Fe"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="TxP-Ir-imi"/>
+                <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="HZj-Vf-nPo"/>
                 <outlet property="versionLabel" destination="sau-jf-Dqb" id="maD-61-nBB"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="rSZ-Ih-Gbv"/>
             </connections>
@@ -566,13 +568,13 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="za5-6F-HaL">
-                                            <rect key="frame" x="17" y="8" width="720" height="422"/>
+                                            <rect key="frame" x="17" y="60" width="720" height="370"/>
                                             <clipView key="contentView" id="LCo-MQ-oMD">
-                                                <rect key="frame" x="1" y="0.0" width="718" height="421"/>
+                                                <rect key="frame" x="1" y="0.0" width="718" height="369"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="RPX-X6-Et1" viewBased="YES" id="OWP-Cf-tc8">
-                                                        <rect key="frame" x="0.0" y="0.0" width="718" height="398"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="718" height="346"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -674,11 +676,33 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
+                                        <button translatesAutoresizingMaskIntoConstraints="NO" id="tSp-iV-F6D">
+                                            <rect key="frame" x="15" y="32" width="322" height="18"/>
+                                            <buttonCell key="cell" type="check" title="Use all F1, F2, etc. keys as standard function keys" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bqL-qm-5RA">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="updateKeyboardFnState:" target="5ke-qB-Wr5" id="cwo-gk-fBh"/>
+                                            </connections>
+                                        </button>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ELQ-Wd-O9E">
+                                            <rect key="frame" x="33" y="15" width="391" height="14"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="When this option is selected, press the Fn key to use the special features." id="JXB-ZV-gOf">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="za5-6F-HaL" secondAttribute="bottom" constant="8" id="1yw-8e-WL3"/>
+                                        <constraint firstAttribute="bottom" secondItem="za5-6F-HaL" secondAttribute="bottom" constant="60" id="1yw-8e-WL3"/>
+                                        <constraint firstItem="ELQ-Wd-O9E" firstAttribute="top" secondItem="tSp-iV-F6D" secondAttribute="bottom" constant="5" id="DDm-Ig-2UH"/>
                                         <constraint firstAttribute="trailing" secondItem="za5-6F-HaL" secondAttribute="trailing" constant="17" id="IKI-pL-wJV"/>
+                                        <constraint firstItem="ELQ-Wd-O9E" firstAttribute="leading" secondItem="tSp-iV-F6D" secondAttribute="leading" constant="18" id="ZUN-5t-r7r"/>
                                         <constraint firstItem="za5-6F-HaL" firstAttribute="leading" secondItem="Wmh-Ot-meK" secondAttribute="leading" constant="17" id="cC6-bP-AU6"/>
+                                        <constraint firstItem="tSp-iV-F6D" firstAttribute="leading" secondItem="za5-6F-HaL" secondAttribute="leading" id="chc-hf-gD6"/>
+                                        <constraint firstAttribute="bottom" secondItem="tSp-iV-F6D" secondAttribute="bottom" constant="34" id="gL6-8j-2U5"/>
                                         <constraint firstItem="za5-6F-HaL" firstAttribute="top" secondItem="Wmh-Ot-meK" secondAttribute="top" constant="8" id="q7Z-fY-zDc"/>
                                     </constraints>
                                 </view>
