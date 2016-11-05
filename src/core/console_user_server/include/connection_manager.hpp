@@ -18,14 +18,16 @@ public:
                                                           static_grabber_is_launched_callback,
                                                           constants::get_distributed_notification_grabber_is_launched());
 
+    auto current_uid = getuid();
+
     timer_ = std::make_unique<gcd_utility::main_queue_timer>(
         0,
         dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
         1 * NSEC_PER_SEC,
         0,
         ^{
-          if (auto is_active = session::is_active()) {
-            if (*is_active) {
+          if (auto uid = session::get_current_console_user_id()) {
+            if (current_uid == *uid) {
               try {
                 if (!grabber_client_) {
                   grabber_client_ = std::make_unique<grabber_client>();
