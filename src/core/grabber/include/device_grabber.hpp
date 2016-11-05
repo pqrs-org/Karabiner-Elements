@@ -8,7 +8,6 @@
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
-#include "iopm_client.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
 #include "spdlog_utility.hpp"
@@ -48,16 +47,11 @@ public:
 
       IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     }
-
-    iopm_client_ = std::make_unique<iopm_client>(logger::get_logger(),
-                                                 std::bind(&device_grabber::iopm_client_callback, this, std::placeholders::_1));
   }
 
   ~device_grabber(void) {
     // Release manager_ in main thread to avoid callback invocations after object has been destroyed.
     gcd_utility::dispatch_sync_in_main_queue(^{
-      iopm_client_ = nullptr;
-
       stop_grabbing();
 
       if (manager_) {
@@ -175,21 +169,6 @@ private:
     observing,
     grabbing,
   };
-
-  void iopm_client_callback(uint32_t message_type) {
-    switch (message_type) {
-    case kIOMessageSystemWillSleep:
-      suspend();
-      break;
-
-    case kIOMessageSystemWillPowerOn:
-      resume();
-      break;
-
-    default:
-      break;
-    }
-  }
 
   static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
     if (result != kIOReturnSuccess) {
@@ -470,7 +449,6 @@ private:
 
   manipulator::event_manipulator& event_manipulator_;
   IOHIDManagerRef _Nullable manager_;
-  std::unique_ptr<iopm_client> iopm_client_;
 
   std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> device_configurations_;
 
