@@ -4,6 +4,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <boost/optional.hpp>
+#include <cmath>
 
 class system_preferences final {
 public:
@@ -67,8 +68,7 @@ public:
 
   static uint32_t get_initial_key_repeat_milliseconds(void) {
     if (auto value = system_preferences::get_float_property(CFSTR("InitialKeyRepeat"), CFSTR("Apple Global Domain"))) {
-      // The unit of InitialKeyRepeat is 1/60 second.
-      return static_cast<uint32_t>(*value * 1000 / 60);
+      return convert_key_repeat_system_preferences_value_to_milliseconds(*value);
     }
     // default value
     return 500;
@@ -76,10 +76,19 @@ public:
 
   static uint32_t get_key_repeat_milliseconds(void) {
     if (auto value = system_preferences::get_float_property(CFSTR("KeyRepeat"), CFSTR("Apple Global Domain"))) {
-      // The unit of InitialKeyRepeat is 1/60 second.
-      return static_cast<uint32_t>(*value * 1000 / 60);
+      return convert_key_repeat_system_preferences_value_to_milliseconds(*value);
     }
     // default value
     return 83;
+  }
+
+  static float convert_key_repeat_milliseconds_to_system_preferences_value(uint32_t value) {
+    // The unit is 1/60 second.
+    return static_cast<float>(value) * 60 / 1000;
+  }
+
+  static uint32_t convert_key_repeat_system_preferences_value_to_milliseconds(float value) {
+    // The unit is 1/60 second.
+    return static_cast<uint32_t>(round(value * 1000 / 60));
   }
 };
