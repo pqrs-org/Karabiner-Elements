@@ -24,6 +24,8 @@ bool libkrbn_get_hid_system_aux_control_button(uint8_t* _Nonnull button, const c
 
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string);
 
+float libkrbn_system_preferences_convert_key_repeat_milliseconds_to_system_preferences_value(uint32_t value);
+
 // ----------------------------------------
 // libkrbn_configuration_monitor
 

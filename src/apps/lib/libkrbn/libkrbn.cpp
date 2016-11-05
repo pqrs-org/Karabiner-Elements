@@ -95,3 +95,7 @@ bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const c
   }
   return false;
 }
+
+float libkrbn_system_preferences_convert_key_repeat_milliseconds_to_system_preferences_value(uint32_t value) {
+  return system_preferences::convert_key_repeat_milliseconds_to_system_preferences_value(value);
+}
