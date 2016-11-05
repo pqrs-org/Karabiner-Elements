@@ -9,6 +9,6 @@
 
 - (void)setup;
 
-- (void)updateKeyboardFnState:(BOOL)value;
+- (void)updateSystemPreferencesValues:(SystemPreferencesModel*)model;
 
 @end

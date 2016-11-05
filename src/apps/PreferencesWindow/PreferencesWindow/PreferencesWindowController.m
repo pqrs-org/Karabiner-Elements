@@ -15,9 +15,13 @@
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
 @property(weak) IBOutlet NSButton* keyboardFnStateButton;
+@property(weak) IBOutlet NSStepper* initialKeyRepeatStepper;
+@property(weak) IBOutlet NSStepper* keyRepeatStepper;
 @property(weak) IBOutlet NSTableView* devicesTableView;
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
+@property(weak) IBOutlet NSTextField* initialKeyRepeatTextField;
+@property(weak) IBOutlet NSTextField* keyRepeatTextField;
 @property(weak) IBOutlet NSTextField* versionLabel;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
@@ -45,7 +49,7 @@
                                                   @strongify(self);
                                                   if (!self) return;
 
-                                                  [self updateKeyboardFnStateButtonState];
+                                                  [self updateSystemPreferencesUIValues];
                                                 }];
 
   // ----------------------------------------
@@ -57,7 +61,7 @@
   [self.fnFunctionKeysTableView reloadData];
   [self.devicesTableView reloadData];
 
-  [self updateKeyboardFnStateButtonState];
+  [self updateSystemPreferencesUIValues];
 
   // ----------------------------------------
   [self launchctlConsoleUserServer:YES];
@@ -72,12 +76,39 @@
   [NSApp activateIgnoringOtherApps:YES];
 }
 
-- (void)updateKeyboardFnStateButtonState {
+- (void)updateSystemPreferencesUIValues {
   self.keyboardFnStateButton.state = self.systemPreferencesManager.systemPreferencesModel.keyboardFnState ? NSOnState : NSOffState;
+
+  uint32_t initialKeyRepeatMilliseconds = self.systemPreferencesManager.systemPreferencesModel.initialKeyRepeatMilliseconds;
+  self.initialKeyRepeatTextField.stringValue = [NSString stringWithFormat:@"%d", initialKeyRepeatMilliseconds];
+  self.initialKeyRepeatStepper.integerValue = initialKeyRepeatMilliseconds;
+
+  uint32_t keyRepeatMilliseconds = self.systemPreferencesManager.systemPreferencesModel.keyRepeatMilliseconds;
+  self.keyRepeatTextField.stringValue = [NSString stringWithFormat:@"%d", keyRepeatMilliseconds];
+  self.keyRepeatStepper.integerValue = keyRepeatMilliseconds;
 }
 
-- (IBAction)updateKeyboardFnState:(id)sender {
-  [self.systemPreferencesManager updateKeyboardFnState:(self.keyboardFnStateButton.state == NSOnState)];
+- (IBAction)updateSystemPreferencesValues:(id)sender {
+  SystemPreferencesModel* model = self.systemPreferencesManager.systemPreferencesModel;
+
+  if (sender == self.keyboardFnStateButton) {
+    model.keyboardFnState = (self.keyboardFnStateButton.state == NSOnState);
+  }
+  if (sender == self.initialKeyRepeatTextField) {
+    model.initialKeyRepeatMilliseconds = [self.initialKeyRepeatTextField.stringValue intValue];
+  }
+  if (sender == self.initialKeyRepeatStepper) {
+    model.initialKeyRepeatMilliseconds = self.initialKeyRepeatStepper.intValue;
+  }
+  if (sender == self.keyRepeatTextField) {
+    model.keyRepeatMilliseconds = [self.keyRepeatTextField.stringValue intValue];
+  }
+  if (sender == self.keyRepeatStepper) {
+    model.keyRepeatMilliseconds = self.keyRepeatStepper.intValue;
+  }
+
+  [self updateSystemPreferencesUIValues];
+  [self.systemPreferencesManager updateSystemPreferencesValues:model];
 }
 
 - (IBAction)checkForUpdatesStableOnly:(id)sender {

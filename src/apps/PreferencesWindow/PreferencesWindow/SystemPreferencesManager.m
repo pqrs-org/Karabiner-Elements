@@ -39,16 +39,16 @@ static void system_preferences_updated_callback(const struct libkrbn_system_pref
   self.systemPreferencesModel = [[SystemPreferencesModel alloc] initWithValues:system_preferences_values];
 }
 
-- (void)updateNSGlobalDomain:(NSString*)key value:(id)value {
+- (void)updateSystemPreferencesValues:(SystemPreferencesModel*)model {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary<NSString*, id>* dictionary = [userDefaults persistentDomainForName:NSGlobalDomain];
   NSMutableDictionary<NSString*, id>* mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:dictionary];
-  mutableDictionary[key] = value;
-  [userDefaults setPersistentDomain:mutableDictionary forName:NSGlobalDomain];
-}
 
-- (void)updateKeyboardFnState:(BOOL)value {
-  [self updateNSGlobalDomain:@"com.apple.keyboard.fnState" value:@(value)];
+  mutableDictionary[@"com.apple.keyboard.fnState"] = @(model.keyboardFnState);
+  mutableDictionary[@"InitialKeyRepeat"] = @(libkrbn_system_preferences_convert_key_repeat_milliseconds_to_system_preferences_value(model.initialKeyRepeatMilliseconds));
+  mutableDictionary[@"KeyRepeat"] = @(libkrbn_system_preferences_convert_key_repeat_milliseconds_to_system_preferences_value(model.keyRepeatMilliseconds));
+
+  [userDefaults setPersistentDomain:mutableDictionary forName:NSGlobalDomain];
 }
 
 @end
