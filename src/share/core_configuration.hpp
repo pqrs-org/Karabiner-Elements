@@ -49,7 +49,8 @@
 //                         "is_pointing_device": false
 //                     },
 //                     "ignore": true,
-//                     "keyboard_type": 45
+//                     "keyboard_type": 45,
+//                     "disable_built_in_keyboard_if_exists": true
 //                 }
 //             ]
 //         },
@@ -123,9 +124,14 @@ public:
           krbn::device_configuration_struct device_configuration_struct;
           device_configuration_struct.ignore = device["ignore"];
           device_configuration_struct.keyboard_type = krbn::keyboard_type::none;
+          device_configuration_struct.disable_built_in_keyboard_if_exists = false;
           // keyboard_type is optional
           if (device["keyboard_type"].is_number()) {
             device_configuration_struct.keyboard_type = krbn::keyboard_type(static_cast<uint32_t>(device["keyboard_type"]));
+          }
+          // disable_built_in_keyboard_if_exists is optional
+          if (device["disable_built_in_keyboard_if_exists"].is_boolean()) {
+            device_configuration_struct.disable_built_in_keyboard_if_exists = static_cast<bool>(device["disable_built_in_keyboard_if_exists"]);
           }
 
           v.push_back(std::make_pair(device_identifiers_struct, device_configuration_struct));
