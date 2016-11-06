@@ -59,7 +59,7 @@ public:
                                                            is_grabbable_log_reducer_(logger),
                                                            observed_(false),
                                                            grabbed_(false),
-                                                           is_builtin_keyboard_(false) {
+                                                           is_built_in_keyboard_(false) {
     // ----------------------------------------
     // retain device_
 
@@ -73,7 +73,7 @@ public:
 
     if (auto product = iokit_utility::get_product(device_)) {
       if (product->find("Apple Internal ") != std::string::npos) {
-        is_builtin_keyboard_ = true;
+        is_built_in_keyboard_ = true;
       }
     }
 
@@ -536,8 +536,8 @@ public:
            IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
   }
 
-  bool is_builtin_keyboard(void) const {
-    return is_builtin_keyboard_;
+  bool is_built_in_keyboard(void) const {
+    return is_built_in_keyboard_;
   }
 
   bool is_pqrs_device(void) const {
@@ -708,6 +708,6 @@ private:
   bool observed_;
   bool grabbed_;
 
-  bool is_builtin_keyboard_;
+  bool is_built_in_keyboard_;
   krbn::keyboard_type keyboard_type_;
 };

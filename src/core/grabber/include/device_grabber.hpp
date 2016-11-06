@@ -434,6 +434,7 @@ private:
         j["descriptions"]["product"] = boost::trim_copy(*product);
       }
       j["ignore"] = is_ignored_device(*(it.second));
+      j["is_built_in_keyboard"] = (it.second)->is_built_in_keyboard();
 
       if (!j.empty()) {
         json.push_back(j);
