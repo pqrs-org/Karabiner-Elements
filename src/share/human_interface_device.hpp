@@ -49,6 +49,7 @@ public:
 
   typedef std::function<void(human_interface_device& device)> grabbed_callback;
   typedef std::function<void(human_interface_device& device)> ungrabbed_callback;
+  typedef std::function<void(human_interface_device& device)> disabled_callback;
 
   human_interface_device(const human_interface_device&) = delete;
 
@@ -60,6 +61,7 @@ public:
                                                            is_grabbable_log_reducer_(logger),
                                                            observed_(false),
                                                            grabbed_(false),
+                                                           disabled_(false),
                                                            is_built_in_keyboard_(false),
                                                            keyboard_type_(krbn::keyboard_type::none),
                                                            disable_built_in_keyboard_if_exists_(false) {
@@ -347,6 +349,42 @@ public:
     });
   }
 
+  void disable(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (is_pqrs_device()) {
+        return;
+      }
+
+      if (disabled_) {
+        return;
+      }
+
+      disabled_ = true;
+
+      if (disabled_callback_) {
+        disabled_callback_(*this);
+      }
+
+      logger_.info("{0} is disabled", get_name_for_log());
+    });
+  }
+
+  void enable(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (is_pqrs_device()) {
+        return;
+      }
+
+      if (!disabled_) {
+        return;
+      }
+
+      disabled_ = false;
+
+      logger_.info("{0} is enabled", get_name_for_log());
+    });
+  }
+
   boost::optional<long> get_max_input_report_size(void) const {
     return iokit_utility::get_max_input_report_size(device_);
   }
@@ -429,6 +467,12 @@ public:
   void set_ungrabbed_callback(const ungrabbed_callback& callback) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       ungrabbed_callback_ = callback;
+    });
+  }
+
+  void set_disabled_callback(const disabled_callback& callback) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      disabled_callback_ = callback;
     });
   }
 
@@ -650,7 +694,7 @@ private:
         }
 
         // Call value_callback_.
-        if (value_callback_) {
+        if (value_callback_ && !disabled_) {
           value_callback_(*this, value, element, usage_page, usage, integer_value);
         }
       }
@@ -731,10 +775,14 @@ private:
   is_grabbable_callback is_grabbable_callback_;
   grabbed_callback grabbed_callback_;
   ungrabbed_callback ungrabbed_callback_;
+  disabled_callback disabled_callback_;
   spdlog_utility::log_reducer is_grabbable_log_reducer_;
   std::unique_ptr<gcd_utility::main_queue_timer> grab_timer_;
   bool observed_;
   bool grabbed_;
+  // `disabled_` is ignoring input events from this device.
+  // (== `grabbed_` and does not call `value_callback_`)
+  bool disabled_;
 
   bool is_built_in_keyboard_;
   krbn::keyboard_type keyboard_type_;
