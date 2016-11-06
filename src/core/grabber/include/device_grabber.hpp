@@ -149,6 +149,7 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       for (auto&& it : hids_) {
         (it.second)->set_keyboard_type(get_keyboard_type(*(it.second)));
+        (it.second)->set_disable_built_in_keyboard_if_exists(get_disable_built_in_keyboard_if_exists(*(it.second)));
       }
 
       grab_devices();
@@ -192,6 +193,7 @@ private:
 
     auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
     dev->set_keyboard_type(get_keyboard_type(*dev));
+    dev->set_disable_built_in_keyboard_if_exists(get_disable_built_in_keyboard_if_exists(*dev));
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
     dev->set_value_callback(std::bind(&device_grabber::value_callback,
@@ -269,6 +271,10 @@ private:
       return;
     }
 
+    if (device.is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
+      return;
+    }
+
     auto device_registry_entry_id = manipulator::device_registry_entry_id(device.get_registry_entry_id());
 
     if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
@@ -327,8 +333,13 @@ private:
 
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
     if (is_ignored_device(device)) {
-      logger::get_logger().info("{0} is ignored.", device.get_name_for_log());
-      return human_interface_device::grabbable_state::ungrabbable_permanently;
+      // If we need to disable the built-in keyboard, we have to grab it.
+      if (device.is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
+        // Do nothing
+      } else {
+        logger::get_logger().info("{0} is ignored.", device.get_name_for_log());
+        return human_interface_device::grabbable_state::ungrabbable_permanently;
+      }
     }
     if (!event_manipulator_.is_ready()) {
       is_grabbable_callback_log_reducer_.warn("event_manipulator_ is not ready. Please wait for a while.");
@@ -404,6 +415,22 @@ private:
       return s->keyboard_type;
     }
     return krbn::keyboard_type::none;
+  }
+
+  bool get_disable_built_in_keyboard_if_exists(const human_interface_device& device) {
+    if (auto s = find_device_configuration_struct(device)) {
+      return s->disable_built_in_keyboard_if_exists;
+    }
+    return false;
+  }
+
+  bool need_to_disable_built_in_keyboard(void) {
+    for (const auto& it : hids_) {
+      if ((it.second)->get_disable_built_in_keyboard_if_exists()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void output_devices_json(void) {

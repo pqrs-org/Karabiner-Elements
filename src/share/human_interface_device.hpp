@@ -59,7 +59,9 @@ public:
                                                            is_grabbable_log_reducer_(logger),
                                                            observed_(false),
                                                            grabbed_(false),
-                                                           is_built_in_keyboard_(false) {
+                                                           is_built_in_keyboard_(false),
+                                                           keyboard_type_(krbn::keyboard_type::none),
+                                                           disable_built_in_keyboard_if_exists_(false) {
     // ----------------------------------------
     // retain device_
 
@@ -527,6 +529,20 @@ public:
     });
   }
 
+  bool get_disable_built_in_keyboard_if_exists(void) const {
+    bool __block value;
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      value = disable_built_in_keyboard_if_exists_;
+    });
+    return value;
+  }
+
+  void set_disable_built_in_keyboard_if_exists(bool value) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      disable_built_in_keyboard_if_exists_ = value;
+    });
+  }
+
   bool is_keyboard(void) const {
     return IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
   }
@@ -710,4 +726,5 @@ private:
 
   bool is_built_in_keyboard_;
   krbn::keyboard_type keyboard_type_;
+  bool disable_built_in_keyboard_if_exists_;
 };
