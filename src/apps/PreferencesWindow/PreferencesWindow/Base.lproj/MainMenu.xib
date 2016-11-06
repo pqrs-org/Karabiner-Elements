@@ -950,8 +950,8 @@
                                             <rect key="frame" x="17" y="177" width="720" height="5"/>
                                         </box>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kmV-TD-bJA">
-                                            <rect key="frame" x="15" y="152" width="481" height="17"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Disable the built in keyboard when a device in the selected items is connected." id="4fM-wh-3Tq">
+                                            <rect key="frame" x="15" y="152" width="526" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Disable the built in keyboard when one of the following selected devices is connected." id="4fM-wh-3Tq">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
