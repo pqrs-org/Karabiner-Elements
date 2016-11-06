@@ -11,7 +11,9 @@ Karabiner-Elements works fine.
 
 You can download the latest Karabiner-Elements from https://pqrs.org/latest/karabiner-elements-latest.dmg
 
-# [Usage](usage/README.md)
+# Usage
+
+Detailed usage instructions are available [here](usage/README.md).
 
 ## Features
 
