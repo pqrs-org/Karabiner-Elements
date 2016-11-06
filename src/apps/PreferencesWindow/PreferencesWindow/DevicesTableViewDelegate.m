@@ -21,14 +21,16 @@
 - (NSView*)tableView:(NSTableView*)tableView viewForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row {
   NSArray<DeviceModel*>* deviceModels = self.deviceManager.deviceModels;
   if (0 <= row && row < (NSInteger)(deviceModels.count)) {
+    DeviceModel* model = deviceModels[row];
+
     if ([tableColumn.identifier isEqualToString:@"DevicesCheckboxColumn"]) {
       DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesCheckboxCellView" owner:self];
 
-      NSString* productName = deviceModels[row].deviceDescriptions.product;
+      NSString* productName = model.deviceDescriptions.product;
       if ([productName length] == 0) {
         productName = @"No product name";
       }
-      NSString* manufacturerName = deviceModels[row].deviceDescriptions.manufacturer;
+      NSString* manufacturerName = model.deviceDescriptions.manufacturer;
       if ([manufacturerName length] == 0) {
         manufacturerName = @"No manufacturer name";
       }
@@ -37,11 +39,11 @@
       result.checkbox.action = @selector(valueChanged:);
       result.checkbox.target = self.devicesTableViewController;
 
-      result.deviceIdentifiers = deviceModels[row].deviceIdentifiers;
+      result.deviceIdentifiers = model.deviceIdentifiers;
 
-      result.checkbox.state = (deviceModels[row].ignore ? NSOffState : NSOnState);
+      result.checkbox.state = (model.ignore ? NSOffState : NSOnState);
       for (DeviceConfiguration* device in self.configurationManager.configurationCoreModel.devices) {
-        if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:deviceModels[row].deviceIdentifiers]) {
+        if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
           result.checkbox.state = (device.ignore ? NSOffState : NSOnState);
         }
       }
@@ -56,7 +58,7 @@
 
       uint32_t keyboardType = 0;
       for (DeviceConfiguration* device in self.configurationManager.configurationCoreModel.devices) {
-        if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:deviceModels[row].deviceIdentifiers]) {
+        if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
           keyboardType = device.keyboardType;
         }
       }
@@ -67,20 +69,62 @@
 
     if ([tableColumn.identifier isEqualToString:@"DevicesVendorIdColumn"]) {
       NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
-      result.textField.stringValue = [NSString stringWithFormat:@"0x%04x", deviceModels[row].deviceIdentifiers.vendorId];
+      result.textField.stringValue = [NSString stringWithFormat:@"0x%04x", model.deviceIdentifiers.vendorId];
       return result;
     }
 
     if ([tableColumn.identifier isEqualToString:@"DevicesProductIdColumn"]) {
       NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
-      result.textField.stringValue = [NSString stringWithFormat:@"0x%04x", deviceModels[row].deviceIdentifiers.productId];
+      result.textField.stringValue = [NSString stringWithFormat:@"0x%04x", model.deviceIdentifiers.productId];
       return result;
     }
 
     if ([tableColumn.identifier isEqualToString:@"DevicesIconsColumn"]) {
       DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesIconsCellView" owner:self];
-      result.keyboardImage.hidden = !(deviceModels[row].deviceIdentifiers.isKeyboard);
-      result.mouseImage.hidden = !(deviceModels[row].deviceIdentifiers.isPointingDevice);
+      result.keyboardImage.hidden = !(model.deviceIdentifiers.isKeyboard);
+      result.mouseImage.hidden = !(model.deviceIdentifiers.isPointingDevice);
+      return result;
+    }
+
+    if ([tableColumn.identifier isEqualToString:@"DevicesExternalKeyboardColumn"]) {
+      DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesExternalKeyboardCellView" owner:self];
+
+      // ----------------------------------------
+      NSString* productName = model.deviceDescriptions.product;
+      if ([productName length] == 0) {
+        productName = @"No product name";
+      }
+      NSString* manufacturerName = model.deviceDescriptions.manufacturer;
+      if ([manufacturerName length] == 0) {
+        manufacturerName = @"No manufacturer name";
+      }
+      result.checkbox.title = [NSString stringWithFormat:@"%@ (%@) [0x%04x,0x%04x]",
+                                                         productName, manufacturerName,
+                                                         model.deviceIdentifiers.vendorId,
+                                                         model.deviceIdentifiers.productId];
+      result.checkbox.state = NSOffState;
+
+      if (model.isBuiltInKeyboard) {
+        result.checkbox.enabled = NO;
+      } else {
+        result.checkbox.enabled = YES;
+        result.checkbox.action = @selector(valueChanged:);
+        result.checkbox.target = self.devicesTableViewController;
+
+        result.deviceIdentifiers = model.deviceIdentifiers;
+
+        for (DeviceConfiguration* device in self.configurationManager.configurationCoreModel.devices) {
+          if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
+            result.checkbox.state = (device.disableBuiltInKeyboardIfExists ? NSOnState : NSOffState);
+          }
+        }
+      }
+
+      // ----------------------------------------
+      result.keyboardImage.hidden = !(model.deviceIdentifiers.isKeyboard);
+      result.mouseImage.hidden = !(model.deviceIdentifiers.isPointingDevice);
+
+      // ----------------------------------------
       return result;
     }
   }

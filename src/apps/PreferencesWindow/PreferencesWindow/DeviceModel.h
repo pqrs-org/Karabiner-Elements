@@ -29,6 +29,7 @@
 @property(readonly) DeviceIdentifiers* deviceIdentifiers;
 @property(readonly) DeviceDescriptions* deviceDescriptions;
 @property(readonly) BOOL ignore;
+@property(readonly) BOOL isBuiltInKeyboard;
 
 - (instancetype)initWithDictionary:(NSDictionary*)dictionary;
 

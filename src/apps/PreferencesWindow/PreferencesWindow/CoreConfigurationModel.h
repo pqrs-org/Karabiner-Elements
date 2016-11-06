@@ -8,6 +8,7 @@
 @property(readonly) DeviceIdentifiers* deviceIdentifiers;
 @property BOOL ignore;
 @property uint32_t keyboardType;
+@property BOOL disableBuiltInKeyboardIfExists;
 
 @end
 
@@ -28,6 +29,9 @@
 
 - (void)replaceFnFunctionKey:(NSString*)from to:(NSString*)to;
 
-- (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers ignore:(BOOL)ignore keyboardType:(uint32_t)keyboardType;
+- (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers
+                            ignore:(BOOL)ignore
+                      keyboardType:(uint32_t)keyboardType
+    disableBuiltInKeyboardIfExists:(BOOL)disableBuiltInKeyboardIfExists;
 
 @end

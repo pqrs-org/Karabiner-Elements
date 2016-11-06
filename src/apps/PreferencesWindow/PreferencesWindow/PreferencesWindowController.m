@@ -18,6 +18,7 @@
 @property(weak) IBOutlet NSStepper* initialKeyRepeatStepper;
 @property(weak) IBOutlet NSStepper* keyRepeatStepper;
 @property(weak) IBOutlet NSTableView* devicesTableView;
+@property(weak) IBOutlet NSTableView* devicesExternalKeyboardTableView;
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 @property(weak) IBOutlet NSTextField* initialKeyRepeatTextField;
@@ -60,6 +61,7 @@
   [self.simpleModificationsTableView reloadData];
   [self.fnFunctionKeysTableView reloadData];
   [self.devicesTableView reloadData];
+  [self.devicesExternalKeyboardTableView reloadData];
 
   [self updateSystemPreferencesUIValues];
 

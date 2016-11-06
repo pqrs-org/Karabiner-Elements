@@ -73,6 +73,7 @@
 @property(readwrite) DeviceIdentifiers* deviceIdentifiers;
 @property(readwrite) DeviceDescriptions* deviceDescriptions;
 @property(readwrite) BOOL ignore;
+@property(readwrite) BOOL isBuiltInKeyboard;
 
 @end
 
@@ -85,6 +86,7 @@
     _deviceIdentifiers = [[DeviceIdentifiers alloc] initWithDictionary:device[@"identifiers"]];
     _deviceDescriptions = [[DeviceDescriptions alloc] initWithDictionary:device[@"descriptions"]];
     _ignore = [device[@"ignore"] boolValue];
+    _isBuiltInKeyboard = [device[@"is_built_in_keyboard"] boolValue];
   }
 
   return self;

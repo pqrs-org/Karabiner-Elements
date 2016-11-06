@@ -48,6 +48,7 @@
           deviceConfiguration.deviceIdentifiers = deviceIdentifiers;
           deviceConfiguration.ignore = [device[@"ignore"] boolValue];
           deviceConfiguration.keyboardType = [device[@"keyboard_type"] unsignedIntValue];
+          deviceConfiguration.disableBuiltInKeyboardIfExists = [device[@"disable_built_in_keyboard_if_exists"] boolValue];
           [devices addObject:deviceConfiguration];
         }
       }
@@ -115,13 +116,17 @@
   self.fnFunctionKeys = fnFunctionKeys;
 }
 
-- (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers ignore:(BOOL)ignore keyboardType:(uint32_t)keyboardType {
+- (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers
+                            ignore:(BOOL)ignore
+                      keyboardType:(uint32_t)keyboardType
+    disableBuiltInKeyboardIfExists:(BOOL)disableBuiltInKeyboardIfExists {
   NSMutableArray* devices = [NSMutableArray arrayWithArray:self.devices];
   BOOL __block found = NO;
   [devices enumerateObjectsUsingBlock:^(DeviceConfiguration* obj, NSUInteger index, BOOL* stop) {
     if ([obj.deviceIdentifiers isEqualToDeviceIdentifiers:deviceIdentifiers]) {
       obj.ignore = ignore;
       obj.keyboardType = keyboardType;
+      obj.disableBuiltInKeyboardIfExists = disableBuiltInKeyboardIfExists;
 
       found = YES;
       *stop = YES;
@@ -133,6 +138,7 @@
     deviceConfiguration.deviceIdentifiers = deviceIdentifiers;
     deviceConfiguration.ignore = ignore;
     deviceConfiguration.keyboardType = keyboardType;
+    deviceConfiguration.disableBuiltInKeyboardIfExists = disableBuiltInKeyboardIfExists;
     [devices addObject:deviceConfiguration];
   }
 
@@ -168,6 +174,7 @@
       @"identifiers" : [d.deviceIdentifiers toDictionary],
       @"ignore" : @(d.ignore),
       @"keyboard_type" : @(d.keyboardType),
+      @"disable_built_in_keyboard_if_exists" : @(d.disableBuiltInKeyboardIfExists),
     }];
   }
   return array;
