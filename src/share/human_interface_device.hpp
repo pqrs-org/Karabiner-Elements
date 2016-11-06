@@ -48,6 +48,7 @@ public:
   typedef std::function<grabbable_state(human_interface_device& device)> is_grabbable_callback;
 
   typedef std::function<void(human_interface_device& device)> grabbed_callback;
+  typedef std::function<void(human_interface_device& device)> ungrabbed_callback;
 
   human_interface_device(const human_interface_device&) = delete;
 
@@ -338,6 +339,10 @@ public:
       queue_stop();
       close();
 
+      if (ungrabbed_callback_) {
+        ungrabbed_callback_(*this);
+      }
+
       observe();
     });
   }
@@ -418,6 +423,12 @@ public:
   void set_grabbed_callback(const grabbed_callback& callback) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       grabbed_callback_ = callback;
+    });
+  }
+
+  void set_ungrabbed_callback(const ungrabbed_callback& callback) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      ungrabbed_callback_ = callback;
     });
   }
 
@@ -719,6 +730,7 @@ private:
 
   is_grabbable_callback is_grabbable_callback_;
   grabbed_callback grabbed_callback_;
+  ungrabbed_callback ungrabbed_callback_;
   spdlog_utility::log_reducer is_grabbable_log_reducer_;
   std::unique_ptr<gcd_utility::main_queue_timer> grab_timer_;
   bool observed_;

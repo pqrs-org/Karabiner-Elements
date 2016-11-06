@@ -196,6 +196,7 @@ private:
     dev->set_disable_built_in_keyboard_if_exists(get_disable_built_in_keyboard_if_exists(*dev));
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
+    dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
     dev->set_value_callback(std::bind(&device_grabber::value_callback,
                                       this,
                                       std::placeholders::_1,
@@ -351,6 +352,11 @@ private:
   void grabbed_callback(human_interface_device& device) {
     // set keyboard led
     event_manipulator_.refresh_caps_lock_led();
+  }
+
+  void ungrabbed_callback(human_interface_device& device) {
+    // stop key repeat
+    event_manipulator_.stop_key_repeat();
   }
 
   size_t get_all_devices_pressed_keys_count(void) {
