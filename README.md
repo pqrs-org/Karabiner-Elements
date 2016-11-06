@@ -24,6 +24,7 @@ Detailed usage instructions are available [here](usage/README.md).
 ## Limitations
 
 * Karabiner-Elements cannot modify eject key due to the limitation of macOS API.
+* Karabiner-Elements ignores the `System Preferences > Keyboard > Modifier Keys...` configuration.
 
 ## How to build
 
