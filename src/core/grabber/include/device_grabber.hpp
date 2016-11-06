@@ -91,6 +91,8 @@ public:
           (it.second)->grab();
         }
       }
+
+      enable_devices();
     });
   }
 
@@ -197,6 +199,7 @@ private:
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
     dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
+    dev->set_disabled_callback(std::bind(&device_grabber::disabled_callback, this, std::placeholders::_1));
     dev->set_value_callback(std::bind(&device_grabber::value_callback,
                                       this,
                                       std::placeholders::_1,
@@ -260,6 +263,11 @@ private:
     }
 
     event_manipulator_.stop_key_repeat();
+
+    // ----------------------------------------
+    if (mode_ == mode::grabbing) {
+      enable_devices();
+    }
   }
 
   void value_callback(human_interface_device& device,
@@ -269,10 +277,6 @@ private:
                       uint32_t usage,
                       CFIndex integer_value) {
     if (!device.is_grabbed()) {
-      return;
-    }
-
-    if (device.is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
       return;
     }
 
@@ -329,6 +333,7 @@ private:
     if (get_all_devices_pressed_keys_count() == 0) {
       event_manipulator_.reset_modifier_flag_state();
       event_manipulator_.reset_pointing_button_state();
+      event_manipulator_.stop_key_repeat();
     }
   }
 
@@ -355,6 +360,11 @@ private:
   }
 
   void ungrabbed_callback(human_interface_device& device) {
+    // stop key repeat
+    event_manipulator_.stop_key_repeat();
+  }
+
+  void disabled_callback(human_interface_device& device) {
     // stop key repeat
     event_manipulator_.stop_key_repeat();
   }
@@ -437,6 +447,16 @@ private:
       }
     }
     return false;
+  }
+
+  void enable_devices(void) {
+    for (const auto& it : hids_) {
+      if ((it.second)->is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
+        (it.second)->disable();
+      } else {
+        (it.second)->enable();
+      }
+    }
   }
 
   void output_devices_json(void) {
