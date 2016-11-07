@@ -24,7 +24,7 @@ public:
   }
 
   static const char* get_devices_json_file_path(void) {
-    return "/Library/Application Support/org.pqrs/tmp/devices.json";
+    return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_devices.json";
   }
 
   static const char* get_home_dot_karabiner_directory(void) {
