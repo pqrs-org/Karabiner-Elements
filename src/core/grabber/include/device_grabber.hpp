@@ -474,17 +474,25 @@ private:
       });
       if (auto vendor_id = (it.second)->get_vendor_id()) {
         j["identifiers"]["vendor_id"] = static_cast<uint32_t>(*vendor_id);
+      } else {
+        j["identifiers"]["vendor_id"] = 0;
       }
       if (auto product_id = (it.second)->get_product_id()) {
         j["identifiers"]["product_id"] = static_cast<uint32_t>(*product_id);
+      } else {
+        j["identifiers"]["product_id"] = 0;
       }
       j["identifiers"]["is_keyboard"] = (it.second)->is_keyboard();
       j["identifiers"]["is_pointing_device"] = (it.second)->is_pointing_device();
       if (auto manufacturer = (it.second)->get_manufacturer()) {
         j["descriptions"]["manufacturer"] = boost::trim_copy(*manufacturer);
+      } else {
+        j["descriptions"]["manufacturer"] = "";
       }
       if (auto product = (it.second)->get_product()) {
         j["descriptions"]["product"] = boost::trim_copy(*product);
+      } else {
+        j["descriptions"]["product"] = "";
       }
       j["ignore"] = is_ignored_device(*(it.second));
       j["is_built_in_keyboard"] = (it.second)->is_built_in_keyboard();
