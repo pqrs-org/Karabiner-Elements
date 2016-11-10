@@ -108,7 +108,7 @@ OSString* org_pqrs_driver_VirtualHIDPointing::newManufacturerString() const {
 }
 
 OSString* org_pqrs_driver_VirtualHIDPointing::newProductString() const {
-  return OSString::withCString("VirtualHIDPointing");
+  return OSString::withCString("pqrs.org VirtualHIDPointing");
 }
 
 OSNumber* org_pqrs_driver_VirtualHIDPointing::newVendorIDNumber() const {

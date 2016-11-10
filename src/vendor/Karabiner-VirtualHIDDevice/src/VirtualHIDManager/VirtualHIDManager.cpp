@@ -1,7 +1,53 @@
 #include "VirtualHIDManager.hpp"
+#include "GlobalLock.hpp"
 
 #define super IOService
 OSDefineMetaClassAndStructors(org_pqrs_driver_VirtualHIDManager, IOService);
+
+#define CREATE_VIRTUAL_DEVICE(CLASS, POINTER)                                                     \
+  {                                                                                               \
+    if (!POINTER) {                                                                               \
+      do {                                                                                        \
+        /* See IOKit Fundamentals > The Base Classes > Object Creation and Disposal (OSObject) */ \
+        POINTER = new CLASS;                                                                      \
+        if (!POINTER) {                                                                           \
+          return kIOReturnError;                                                                  \
+        }                                                                                         \
+                                                                                                  \
+        if (!POINTER->init(nullptr)) {                                                            \
+          goto error;                                                                             \
+        }                                                                                         \
+                                                                                                  \
+        if (!POINTER->attach(provider_)) {                                                        \
+          goto error;                                                                             \
+        }                                                                                         \
+                                                                                                  \
+        if (!POINTER->start(provider_)) {                                                         \
+          POINTER->detach(provider_);                                                             \
+          goto error;                                                                             \
+        }                                                                                         \
+                                                                                                  \
+        /* The virtual device is created! */                                                      \
+        break;                                                                                    \
+                                                                                                  \
+      error:                                                                                      \
+        if (POINTER) {                                                                            \
+          POINTER->release();                                                                     \
+          POINTER = nullptr;                                                                      \
+        }                                                                                         \
+        return kIOReturnError;                                                                    \
+      } while (false);                                                                            \
+    }                                                                                             \
+  }
+
+#define TERMINATE_VIRTUAL_DEVICE(POINTER)        \
+  {                                              \
+    if (POINTER) {                               \
+      POINTER->terminate(kIOServiceSynchronous); \
+      POINTER->release();                        \
+      POINTER = nullptr;                         \
+    }                                            \
+  }
 
 bool org_pqrs_driver_VirtualHIDManager::init(OSDictionary* dict) {
   IOLog("org_pqrs_driver_VirtualHIDManager::init\n");
@@ -10,7 +56,11 @@ bool org_pqrs_driver_VirtualHIDManager::init(OSDictionary* dict) {
     return false;
   }
 
+  org_pqrs_driver_VirtualHIDManager_GlobalLock::initialize();
+
+  provider_ = nullptr;
   attachedClientCount_ = 0;
+  virtualHIDKeyboard_ = nullptr;
   virtualHIDPointing_ = nullptr;
 
   if (auto serialNumber = OSString::withCString("org.pqrs.driver.VirtualHIDManager")) {
@@ -24,6 +74,8 @@ bool org_pqrs_driver_VirtualHIDManager::init(OSDictionary* dict) {
 void org_pqrs_driver_VirtualHIDManager::free(void) {
   IOLog("org_pqrs_driver_VirtualHIDManager::free\n");
 
+  org_pqrs_driver_VirtualHIDManager_GlobalLock::terminate();
+
   super::free();
 }
 
@@ -33,6 +85,8 @@ bool org_pqrs_driver_VirtualHIDManager::start(IOService* provider) {
   if (!super::start(provider)) {
     return false;
   }
+
+  provider_ = provider;
 
   // Publish ourselves so clients can find us
   //
@@ -47,75 +101,64 @@ bool org_pqrs_driver_VirtualHIDManager::start(IOService* provider) {
 void org_pqrs_driver_VirtualHIDManager::stop(IOService* provider) {
   IOLog("org_pqrs_driver_VirtualHIDManager::stop\n");
 
-  terminateVirtualHIDPointing();
+  TERMINATE_VIRTUAL_DEVICE(virtualHIDKeyboard_);
+  TERMINATE_VIRTUAL_DEVICE(virtualHIDPointing_);
 
   super::stop(provider);
 }
 
 void org_pqrs_driver_VirtualHIDManager::attachClient(void) {
+  org_pqrs_driver_VirtualHIDManager_GlobalLock::ScopedLock lock;
+
   ++attachedClientCount_;
 
   IOLog("org_pqrs_driver_VirtualHIDManager::attachClient attachedClientCount_ = %d\n", static_cast<int>(attachedClientCount_));
-
-  createVirtualHIDPointing();
 }
 
 void org_pqrs_driver_VirtualHIDManager::detachClient(void) {
+  org_pqrs_driver_VirtualHIDManager_GlobalLock::ScopedLock lock;
+
   if (attachedClientCount_ > 0) {
     --attachedClientCount_;
   }
 
   IOLog("org_pqrs_driver_VirtualHIDManager::detachClient attachedClientCount_ = %d\n", static_cast<int>(attachedClientCount_));
 
-  if (attachedClientCount_ == 0 && virtualHIDPointing_) {
-    terminateVirtualHIDPointing();
+  if (attachedClientCount_ == 0) {
+    TERMINATE_VIRTUAL_DEVICE(virtualHIDKeyboard_);
+    TERMINATE_VIRTUAL_DEVICE(virtualHIDPointing_);
   }
 }
 
-void org_pqrs_driver_VirtualHIDManager::createVirtualHIDPointing(void) {
-  if (virtualHIDPointing_) {
-    return;
-  }
+void org_pqrs_driver_VirtualHIDManager::terminateVirtualHIDKeyboard(void) {
+  org_pqrs_driver_VirtualHIDManager_GlobalLock::ScopedLock lock;
 
-  // See IOHIDResourceDeviceUserClient::createAndStartDevice
-  virtualHIDPointing_ = OSTypeAlloc(org_pqrs_driver_VirtualHIDPointing);
-  if (!virtualHIDPointing_) {
-    return;
-  }
-
-  if (!virtualHIDPointing_->init(nullptr)) {
-    goto error;
-  }
-
-  if (!virtualHIDPointing_->attach(this)) {
-    goto error;
-  }
-
-  if (!virtualHIDPointing_->start(this)) {
-    virtualHIDPointing_->detach(this);
-    goto error;
-  }
-
-  return;
-
-error:
-  if (virtualHIDPointing_) {
-    virtualHIDPointing_->release();
-    virtualHIDPointing_ = nullptr;
-  }
+  TERMINATE_VIRTUAL_DEVICE(virtualHIDKeyboard_);
 }
 
 void org_pqrs_driver_VirtualHIDManager::terminateVirtualHIDPointing(void) {
-  if (!virtualHIDPointing_) {
-    return;
+  org_pqrs_driver_VirtualHIDManager_GlobalLock::ScopedLock lock;
+
+  TERMINATE_VIRTUAL_DEVICE(virtualHIDPointing_);
+}
+
+IOReturn org_pqrs_driver_VirtualHIDManager::handleHIDKeyboardReport(IOMemoryDescriptor* report) {
+  org_pqrs_driver_VirtualHIDManager_GlobalLock::ScopedLock lock;
+
+  CREATE_VIRTUAL_DEVICE(org_pqrs_driver_VirtualHIDKeyboard, virtualHIDKeyboard_);
+
+  if (!virtualHIDKeyboard_) {
+    return kIOReturnError;
   }
 
-  virtualHIDPointing_->terminate();
-  virtualHIDPointing_->release();
-  virtualHIDPointing_ = nullptr;
+  return virtualHIDKeyboard_->handleReport(report, kIOHIDReportTypeInput, kIOHIDOptionsTypeNone);
 }
 
 IOReturn org_pqrs_driver_VirtualHIDManager::handleHIDPointingReport(IOMemoryDescriptor* report) {
+  org_pqrs_driver_VirtualHIDManager_GlobalLock::ScopedLock lock;
+
+  CREATE_VIRTUAL_DEVICE(org_pqrs_driver_VirtualHIDPointing, virtualHIDPointing_);
+
   if (!virtualHIDPointing_) {
     return kIOReturnError;
   }

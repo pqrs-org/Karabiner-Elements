@@ -9,6 +9,17 @@ namespace karabiner_virtualhiddevice {
 
 class hid_report final {
 public:
+  class __attribute__((packed)) keyboard_input final {
+  public:
+    keyboard_input(void) : modifiers(0), reserved(0), keys{} {}
+    bool operator==(const hid_report::keyboard_input& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
+    bool operator!=(const hid_report::keyboard_input& other) const { return !(*this == other); }
+
+    uint8_t modifiers;
+    uint8_t reserved;
+    uint8_t keys[6];
+  };
+
   class __attribute__((packed)) pointing_input final {
   public:
     pointing_input(void)
@@ -33,6 +44,9 @@ public:
 };
 
 enum class user_client_method {
+  terminate_virtual_hid_keyboard,
+  terminate_virtual_hid_pointing,
+  keyboard_input_report,
   pointing_input_report,
   end_,
 };

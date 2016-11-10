@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DiagnosticMacros.hpp"
+#include "VirtualHIDKeyboard.hpp"
 #include "VirtualHIDPointing.hpp"
 
 BEGIN_IOKIT_INCLUDE;
@@ -19,12 +20,17 @@ public:
   void attachClient(void);
   void detachClient(void);
 
+  void terminateVirtualHIDKeyboard(void);
+  void terminateVirtualHIDPointing(void);
+
+  IOReturn handleHIDKeyboardReport(IOMemoryDescriptor* report);
   IOReturn handleHIDPointingReport(IOMemoryDescriptor* report);
 
 private:
-  void createVirtualHIDPointing(void);
-  void terminateVirtualHIDPointing(void);
-
+  // We have to attach virtualHIDKeyboard_ and virtualHIDPointing_ to provider_
+  // in order to ensure that org_pqrs_driver_VirtualHIDKeyboard::free will be called.
+  IOService* provider_;
   size_t attachedClientCount_;
+  org_pqrs_driver_VirtualHIDKeyboard* virtualHIDKeyboard_;
   org_pqrs_driver_VirtualHIDPointing* virtualHIDPointing_;
 };

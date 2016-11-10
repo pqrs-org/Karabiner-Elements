@@ -18,6 +18,12 @@ public:
                                   IOExternalMethodDispatch* dispatch = 0, OSObject* target = 0, void* reference = 0) override;
 
 private:
+  static IOReturn staticTerminateVirtualHIDKeyboardCallback(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments);
+  IOReturn terminateVirtualHIDKeyboardCallback(void);
+  static IOReturn staticTerminateVirtualHIDPointingCallback(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments);
+  IOReturn terminateVirtualHIDPointingCallback(void);
+  static IOReturn staticKeyboardInputReportCallback(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments);
+  IOReturn keyboardInputReportCallback(const pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input& input);
   static IOReturn staticPointingInputReportCallback(org_pqrs_driver_VirtualHIDManager_UserClient* target, void* reference, IOExternalMethodArguments* arguments);
   IOReturn pointingInputReportCallback(const pqrs::karabiner_virtualhiddevice::hid_report::pointing_input& input);
 
