@@ -197,7 +197,7 @@ public:
   void unregister_report_callback(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       resize_report_buffer();
-      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, nullptr);
+      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
 
       report_callback_ = nullptr;
     });
