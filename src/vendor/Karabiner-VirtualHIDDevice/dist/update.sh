@@ -5,7 +5,7 @@ PATH='/bin:/sbin:/usr/bin:/usr/sbin'; export PATH
 basedir=`dirname "$0"`
 cd "$basedir"
 
-bundle_identifier='org.pqrs.driver.Karabiner.VirtualHIDDevice.v020500'
+bundle_identifier='org.pqrs.driver.Karabiner.VirtualHIDDevice.v020600'
 
 # Skip if already installed
 if kextstat | grep -q "$bundle_identifier"; then
@@ -14,7 +14,7 @@ if kextstat | grep -q "$bundle_identifier"; then
 fi
 
 # Unload kexts
-for kext in `kextstat | ruby -ne 'print $1,"\n" if /(org\.pqrs\.driver\.VirtualHIDDevice.*?) /'`; do
+for kext in `kextstat | ruby -ne 'print $1,"\n" if /(org\.pqrs\.driver\.Karabiner\.VirtualHIDDevice.*?) /'`; do
     kextunload -b "$kext" -q
 done
 
