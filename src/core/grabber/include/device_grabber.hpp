@@ -423,6 +423,15 @@ private:
       return true;
     }
 
+    if (auto vendor_id = device.get_vendor_id()) {
+      if (auto product_id = device.get_product_id()) {
+        // Touch Bar on MacBook Pro 2016
+        if (*vendor_id == krbn::vendor_id(0x05ac) && *product_id == krbn::product_id(0x8600)) {
+          return true;
+        }
+      }
+    }
+
     return false;
   }
 
