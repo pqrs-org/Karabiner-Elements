@@ -11,7 +11,7 @@
 #include "pointing_button_manager.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
-#include "virtual_hid_manager_client.hpp"
+#include "virtual_hid_device_client.hpp"
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <boost/optional.hpp>
 #include <list>
@@ -23,7 +23,8 @@ class event_manipulator final {
 public:
   event_manipulator(const event_manipulator&) = delete;
 
-  event_manipulator(void) : event_dispatcher_manager_(),
+  event_manipulator(void) : virtual_hid_device_client_(logger::get_logger()),
+                            event_dispatcher_manager_(),
                             key_repeat_manager_(*this) {
   }
 
@@ -32,7 +33,8 @@ public:
   }
 
   bool is_ready(void) {
-    return event_dispatcher_manager_.is_connected();
+    return virtual_hid_device_client_.is_connected() &&
+           event_dispatcher_manager_.is_connected();
   }
 
   void grab_mouse_events(void) {
@@ -55,16 +57,9 @@ public:
     event_dispatcher_manager_.set_caps_lock_state(false);
 
     pointing_button_manager_.reset();
-    {
-      std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
 
-      if (virtual_hid_manager_client_) {
-        pqrs::karabiner_virtualhiddevice::hid_report::pointing_input report;
-        virtual_hid_manager_client_->post_pointing_input_report(report);
-      }
-
-      virtual_hid_manager_client_ = nullptr;
-    }
+    virtual_hid_device_client_.terminate_virtual_hid_keyboard();
+    virtual_hid_device_client_.terminate_virtual_hid_pointing();
   }
 
   void reset_modifier_flag_state(void) {
@@ -75,13 +70,8 @@ public:
   void reset_pointing_button_state(void) {
     auto bits = pointing_button_manager_.get_hid_report_bits();
     pointing_button_manager_.reset();
-    {
-      std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
-
-      if (bits && virtual_hid_manager_client_) {
-        pqrs::karabiner_virtualhiddevice::hid_report::pointing_input report;
-        virtual_hid_manager_client_->post_pointing_input_report(report);
-      }
+    if (bits) {
+      virtual_hid_device_client_.reset_virtual_hid_pointing();
     }
   }
 
@@ -115,18 +105,12 @@ public:
     event_dispatcher_manager_.create_event_dispatcher_client();
   }
 
-  void create_virtual_hid_manager_client(void) {
-    std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
-
-    if (!virtual_hid_manager_client_) {
-      virtual_hid_manager_client_ = std::make_unique<virtual_hid_manager_client>(logger::get_logger());
-    }
+  void initialize_virtual_hid_pointing(void) {
+    virtual_hid_device_client_.initialize_virtual_hid_pointing();
   }
 
-  void release_virtual_hid_manager_client(void) {
-    std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
-
-    virtual_hid_manager_client_ = nullptr;
+  void terminate_virtual_hid_pointing(void) {
+    virtual_hid_device_client_.terminate_virtual_hid_pointing();
   }
 
   void handle_keyboard_event(device_registry_entry_id device_registry_entry_id,
@@ -282,14 +266,7 @@ public:
     report.buttons[1] = (bits >> 8) & 0xff;
     report.buttons[2] = (bits >> 16) & 0xff;
     report.buttons[3] = (bits >> 24) & 0xff;
-
-    {
-      std::lock_guard<std::mutex> guard(virtual_hid_manager_client_mutex_);
-
-      if (virtual_hid_manager_client_) {
-        virtual_hid_manager_client_->post_pointing_input_report(report);
-      }
-    }
+    virtual_hid_device_client_.post_pointing_input_report(report);
   }
 
   void stop_key_repeat(void) {
@@ -495,14 +472,12 @@ private:
     }
   }
 
+  virtual_hid_device_client virtual_hid_device_client_;
   event_dispatcher_manager event_dispatcher_manager_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
   key_repeat_manager key_repeat_manager_;
   std::unique_ptr<event_tap_manager> event_tap_manager_;
-
-  std::unique_ptr<virtual_hid_manager_client> virtual_hid_manager_client_;
-  std::mutex virtual_hid_manager_client_mutex_;
 
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;

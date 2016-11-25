@@ -215,9 +215,9 @@ private:
     output_devices_json();
 
     if (is_pointing_device_connected()) {
-      event_manipulator_.create_virtual_hid_manager_client();
+      event_manipulator_.initialize_virtual_hid_pointing();
     } else {
-      event_manipulator_.release_virtual_hid_manager_client();
+      event_manipulator_.terminate_virtual_hid_pointing();
     }
 
     // ----------------------------------------
@@ -257,9 +257,9 @@ private:
     output_devices_json();
 
     if (is_pointing_device_connected()) {
-      event_manipulator_.create_virtual_hid_manager_client();
+      event_manipulator_.initialize_virtual_hid_pointing();
     } else {
-      event_manipulator_.release_virtual_hid_manager_client();
+      event_manipulator_.terminate_virtual_hid_pointing();
     }
 
     event_manipulator_.stop_key_repeat();

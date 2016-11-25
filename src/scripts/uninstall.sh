@@ -2,6 +2,7 @@
 
 /usr/bin/osascript -e 'display dialog "Karabiner-Elements has been uninstalled." buttons {"OK"}'
 
+/bin/sh '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-VirtualHIDDevice/uninstall.sh'
 /bin/sh '/Library/Application Support/org.pqrs/Karabiner-Elements/uninstall_core.sh'
 
 /usr/bin/killall karabiner_grabber
