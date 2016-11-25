@@ -1,7 +1,7 @@
 #include "VirtualHIDPointing.hpp"
 
 #define super IOHIDDevice
-OSDefineMetaClassAndStructors(org_pqrs_driver_VirtualHIDPointing, IOHIDDevice);
+OSDefineMetaClassAndStructors(VIRTUAL_HID_POINTING_CLASS, super);
 
 namespace {
 uint8_t reportDescriptor_[] = {
@@ -74,68 +74,49 @@ uint8_t reportDescriptor_[] = {
 };
 }
 
-bool org_pqrs_driver_VirtualHIDPointing::start(IOService* provider) {
-  // set kIOHIDDeviceUsagePageKey
-  {
-    OSNumber* usagePage = OSNumber::withNumber(kHIDPage_GenericDesktop, 32);
-    if (usagePage) {
-      setProperty(kIOHIDDeviceUsagePageKey, usagePage);
-      usagePage->release();
-    }
-  }
-
-  // set kIOHIDDeviceUsageKey
-  {
-    OSNumber* usage = OSNumber::withNumber(kHIDUsage_GD_Mouse, 32);
-    if (usage) {
-      setProperty(kIOHIDDeviceUsageKey, usage);
-      usage->release();
-    }
-  }
-
-  // http://lists.apple.com/archives/usb/2005/Mar/msg00122.html
-  setProperty("HIDDefaultBehavior", "Pointing");
-
-  if (!super::start(provider)) {
+bool VIRTUAL_HID_POINTING_CLASS::handleStart(IOService* provider) {
+  if (!super::handleStart(provider)) {
     return false;
   }
+
+  setProperty("HIDDefaultBehavior", kOSBooleanTrue);
 
   return true;
 }
 
-OSString* org_pqrs_driver_VirtualHIDPointing::newManufacturerString() const {
+OSString* VIRTUAL_HID_POINTING_CLASS::newManufacturerString() const {
   return OSString::withCString("pqrs.org");
 }
 
-OSString* org_pqrs_driver_VirtualHIDPointing::newProductString() const {
-  return OSString::withCString("pqrs.org VirtualHIDPointing");
+OSString* VIRTUAL_HID_POINTING_CLASS::newProductString() const {
+  return OSString::withCString("Karabiner VirtualHIDPointing");
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDPointing::newVendorIDNumber() const {
+OSNumber* VIRTUAL_HID_POINTING_CLASS::newVendorIDNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDPointing::newProductIDNumber() const {
+OSNumber* VIRTUAL_HID_POINTING_CLASS::newProductIDNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDPointing::newPrimaryUsageNumber() const {
+OSNumber* VIRTUAL_HID_POINTING_CLASS::newPrimaryUsageNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(kHIDPage_GenericDesktop), 32);
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDPointing::newPrimaryUsagePageNumber() const {
+OSNumber* VIRTUAL_HID_POINTING_CLASS::newPrimaryUsagePageNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(kHIDUsage_GD_Mouse), 32);
 }
 
-IOReturn org_pqrs_driver_VirtualHIDPointing::newReportDescriptor(IOMemoryDescriptor** descriptor) const {
+IOReturn VIRTUAL_HID_POINTING_CLASS::newReportDescriptor(IOMemoryDescriptor** descriptor) const {
   *descriptor = IOBufferMemoryDescriptor::withBytes(reportDescriptor_, sizeof(reportDescriptor_), kIODirectionNone);
   return kIOReturnSuccess;
 }
 
-OSString* org_pqrs_driver_VirtualHIDPointing::newSerialNumberString() const {
-  return OSString::withCString("org.pqrs.driver.VirtualHIDPointing");
+OSString* VIRTUAL_HID_POINTING_CLASS::newSerialNumberString() const {
+  return OSString::withCString("org.pqrs.driver.Karabiner.VirtualHIDDevice.VirtualHIDPointing");
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDPointing::newLocationIDNumber() const {
+OSNumber* VIRTUAL_HID_POINTING_CLASS::newLocationIDNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
 }

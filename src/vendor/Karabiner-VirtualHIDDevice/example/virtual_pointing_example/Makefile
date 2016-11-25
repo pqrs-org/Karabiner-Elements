@@ -1,19 +1,11 @@
-CONFIGURATION = Release
+CXXFLAGS = -I../../dist/include -std=c++14 -Wall -Werror -O2
 
-all:
-	xcodebuild -alltargets -configuration $(CONFIGURATION) build
+all: main.o
+	c++ -framework IOKit main.o
 
 clean:
-	rm -rf build
-	rm -f *.xcodeproj/*.mode1
-	rm -f *.xcodeproj/*.mode1v3
-	rm -f *.xcodeproj/*.pbxuser
-	rm -rf *.xcodeproj/xcuserdata
-	rm -rf *.xcodeproj/project.xcworkspace/xcuserdata
-	rm -f *.app.zip
+	rm -f *.o
+	rm -f a.out
 
-xcode:
-	open *.xcodeproj
-
-run:
-	sudo ./build/Release/virtual_pointing_example
+run: all
+	sudo ./a.out

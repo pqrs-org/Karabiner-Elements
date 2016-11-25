@@ -32,13 +32,32 @@ The `make` script will create a redistributable kext into `dist` directory.
 
 ## Example
 
-An example is in `example/virtual_pointing_example`.
+* `example/virtual_keyboard_example`
+* `example/virtual_pointing_example`
 
 ### Usage
 
 Execute the following instructions in Terminal.
 
-1. Install VirtualHIDManager.kext by `make install` in the top directory.
+1. Install VirtualHIDDevice.kext by `make install` in the top directory.
 2. `cd example/virtual_pointing_example`
 3. `make`
 4. `make run`
+
+## Caution
+
+macOS has an issue that macOS ignores EnableSecureEventInput for input events from VirtualHIDKeyboard.
+Thus, do not use VirtualHIDKeyboard to post normal (alphabet, numbers) keyboard events in order to avoid leaking the passwords.
+
+You can show InputReportCallback value by `appendix/dump_hid_report`.
+
+1. `cd appendix/dump_hid_report`
+2. `make`
+3. `make run`
+4. Enable `Secure Keyboard Entry` in Terminal.
+5. Open new tab in Terminal.
+6. `cd example/virtual_keyboard_example`
+7. `make`
+8. `make run`
+
+If you can see output in `dump_hid_report`, the virtual keyboard input is leaked.

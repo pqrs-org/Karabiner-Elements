@@ -14,7 +14,7 @@
 
 int main(int argc, const char* argv[]) {
   if (getuid() != 0) {
-    std::cerr << "virtual_keyboard_example requires root privilege." << std::endl;
+    std::cerr << "post_keyboard_special_event_example requires root privilege." << std::endl;
   }
 
   kern_return_t kr;
@@ -31,44 +31,26 @@ int main(int argc, const char* argv[]) {
     goto finish;
   }
 
-  kr = IOConnectCallStructMethod(connect,
-                                 static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::initialize_virtual_hid_keyboard),
-                                 nullptr, 0,
-                                 nullptr, 0);
-  if (kr != KERN_SUCCESS) {
-    std::cerr << "initialize_virtual_hid_keyboard error" << std::endl;
-  }
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  for (int i = 0; i < 2; ++i) {
+    pqrs::karabiner_virtualhiddevice::keyboard_special_event keyboard_special_event;
 
-  for (int i = 0; i < 12; ++i) {
-    pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input report;
-    switch (i % 6) {
+    switch (i % 2) {
     case 0:
-      report.keys[0] = 0x04; // a
+      keyboard_special_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::key_down;
+      keyboard_special_event.flavor = 6; // power key
       break;
     case 1:
-      report.keys[0] = 0x05; // b
-      break;
-    case 2:
-      report.keys[0] = 0x06; // c
-      break;
-    case 3:
-      report.keys[0] = 0x07; // d
-      break;
-    case 4:
-      report.keys[0] = 0x08; // e
-      break;
-    case 5:
-      // Send empty report
+      keyboard_special_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::key_up;
+      keyboard_special_event.flavor = 6; // power key
       break;
     }
 
     kr = IOConnectCallStructMethod(connect,
-                                   static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::post_keyboard_input_report),
-                                   &report, sizeof(report),
+                                   static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::post_keyboard_special_event),
+                                   &keyboard_special_event, sizeof(keyboard_special_event),
                                    nullptr, 0);
     if (kr != KERN_SUCCESS) {
-      std::cerr << "post_keyboard_input_report error" << std::endl;
+      std::cerr << "post_keyboard_special_event error" << std::endl;
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));

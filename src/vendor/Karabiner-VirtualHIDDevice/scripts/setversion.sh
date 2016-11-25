@@ -1,14 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 
 basedir=`dirname $0`
-version=$(cat "$basedir/../version")
+cd "$basedir"
 
-find $basedir/.. \( -name 'Info.plist.tmpl' -or -name 'Distribution.xml.tmpl' \) -print0 | while IFS= read -r -d '' f; do
+version=$(cat "../version")
+
+version_signature=$(echo $version | ruby -ne 'print "v%02d%02d%02d" % $_.strip.split(/\./)')
+
+find .. -name '*.tmpl' -print0 | while IFS= read -r -d '' f; do
     if [ -f "$f" ]; then
         outputfile=`dirname "$f"`/`basename "$f" .tmpl`
-        tmpfile=`mktemp /tmp/Info.plist.XXXXXX`
+        tmpfile=`mktemp /tmp/setversion.XXXXXX`
 
-        sed "s|PKGVERSION|$version|g" "$f" > $tmpfile
+        sed "s|PKGVERSION|$version|g" "$f" | \
+            sed "s|VERSIONSIGNATURE|$version_signature|g" > $tmpfile
         if cmp -s "$tmpfile" "$outputfile"; then
             # tmpfile and outputfile are same. remove tmpfile.
             rm -f "$tmpfile"
@@ -17,3 +22,7 @@ find $basedir/.. \( -name 'Info.plist.tmpl' -or -name 'Distribution.xml.tmpl' \)
         fi
     fi
 done
+
+# append version_signature to MODULE_NAME and PRODUCT_BUNDLE_IDENTIFIER in project.pbxproj
+sed -i '' "s|MODULE_NAME = org\.pqrs\.driver\.Karabiner\.VirtualHIDDevice.*;|MODULE_NAME = org.pqrs.driver.Karabiner.VirtualHIDDevice.${version_signature};|g" ../src/VirtualHIDDevice.xcodeproj/project.pbxproj
+sed -i '' "s|PRODUCT_BUNDLE_IDENTIFIER = org\.pqrs\.driver\.Karabiner\.VirtualHIDDevice.*;|PRODUCT_BUNDLE_IDENTIFIER = org.pqrs.driver.Karabiner.VirtualHIDDevice.${version_signature};|g" ../src/VirtualHIDDevice.xcodeproj/project.pbxproj

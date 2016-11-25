@@ -15,7 +15,3 @@ clean:
 
 xcode:
 	open *.xcodeproj
-
-reload:
-	sudo ./scripts/unload.sh
-	sudo ./scripts/load.sh

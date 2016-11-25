@@ -1,7 +1,7 @@
 CXXFLAGS = -I../../dist/include -std=c++14 -Wall -Werror -O2
 
 all: main.o
-	c++ -framework IOKit main.o
+	c++ -framework IOKit -framework SystemConfiguration -framework CoreFoundation main.o
 
 clean:
 	rm -f *.o

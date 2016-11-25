@@ -23,7 +23,7 @@ find $basedir/../../* -name 'Info.plist.tmpl' | while read f; do
     dirname=$(dirname "$f")
     dirbasename=$(basename "$dirname")
     case "$dirbasename/$basename" in
-        VirtualHIDManager/Info.plist.tmpl)
+        VirtualHIDDevice/Info.plist.tmpl)
             "$basedir/plist.rb" CFBundleIconFile < "$f" || exit 1
             ;;
         *)

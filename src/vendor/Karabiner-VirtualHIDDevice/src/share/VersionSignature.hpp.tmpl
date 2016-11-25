@@ -1,0 +1,27 @@
+// -*- Mode: c++ -*-
+
+#pragma once
+
+// macOS sometimes increases the retain count of VirtualHIDKeyboard and VirtualHIDPointing. (maybe an bug of macOS)
+// It causes a kextunload error by the following reason.
+//
+//     (kernel) Kext org.pqrs.driver.Karabiner.VirtualHIDDevice class org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDKeyboard has 3 instances.
+//
+// Thus, we append to version signature to the class names in order to ensure load new VirtualHIDDevice at update.
+
+#define VIRTUAL_HID_ROOT_CLASS \
+  org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_VERSIONSIGNATURE
+#define VIRTUAL_HID_ROOT_USERCLIENT_CLASS \
+  org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_UserClient_VERSIONSIGNATURE
+#define VIRTUAL_HID_KEYBOARD_CLASS \
+  org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDKeyboard_VERSIONSIGNATURE
+#define VIRTUAL_HID_POINTING_CLASS \
+  org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDPointing_VERSIONSIGNATURE
+
+#define PQRS_STRINGIFY(s) PQRS_STR(s)
+#define PQRS_STR(s) #s
+
+#define VIRTUAL_HID_ROOT_CLASS_STRING PQRS_STRINGIFY(VIRTUAL_HID_ROOT_CLASS)
+#define VIRTUAL_HID_ROOT_USERCLIENT_CLASS_STRING PQRS_STRINGIFY(VIRTUAL_HID_ROOT_USERCLIENT_CLASS)
+#define VIRTUAL_HID_KEYBOARD_CLASS_STRING PQRS_STRINGIFY(VIRTUAL_HID_KEYBOARD_CLASS)
+#define VIRTUAL_HID_POINTING_CLASS_STRING PQRS_STRINGIFY(VIRTUAL_HID_POINTING_CLASS)

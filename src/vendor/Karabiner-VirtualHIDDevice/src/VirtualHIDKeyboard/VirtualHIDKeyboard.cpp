@@ -1,7 +1,7 @@
 #include "VirtualHIDKeyboard.hpp"
 
 #define super IOHIDDevice
-OSDefineMetaClassAndStructors(org_pqrs_driver_VirtualHIDKeyboard, IOHIDDevice);
+OSDefineMetaClassAndStructors(VIRTUAL_HID_KEYBOARD_CLASS, super);
 
 namespace {
 uint8_t reportDescriptor_[] = {
@@ -31,68 +31,49 @@ uint8_t reportDescriptor_[] = {
 };
 }
 
-bool org_pqrs_driver_VirtualHIDKeyboard::start(IOService* provider) {
-  // set kIOHIDDeviceUsagePageKey
-  {
-    OSNumber* usagePage = OSNumber::withNumber(kHIDPage_GenericDesktop, 32);
-    if (usagePage) {
-      setProperty(kIOHIDDeviceUsagePageKey, usagePage);
-      usagePage->release();
-    }
-  }
-
-  // set kIOHIDDeviceUsageKey
-  {
-    OSNumber* usage = OSNumber::withNumber(kHIDUsage_GD_Keyboard, 32);
-    if (usage) {
-      setProperty(kIOHIDDeviceUsageKey, usage);
-      usage->release();
-    }
-  }
-
-  // http://lists.apple.com/archives/usb/2005/Mar/msg00122.html
-  setProperty("HIDDefaultBehavior", "Keyboard");
-
-  if (!super::start(provider)) {
+bool VIRTUAL_HID_KEYBOARD_CLASS::handleStart(IOService* provider) {
+  if (!super::handleStart(provider)) {
     return false;
   }
+
+  setProperty("HIDDefaultBehavior", kOSBooleanTrue);
 
   return true;
 }
 
-OSString* org_pqrs_driver_VirtualHIDKeyboard::newManufacturerString() const {
+OSString* VIRTUAL_HID_KEYBOARD_CLASS::newManufacturerString() const {
   return OSString::withCString("pqrs.org");
 }
 
-OSString* org_pqrs_driver_VirtualHIDKeyboard::newProductString() const {
-  return OSString::withCString("pqrs.org VirtualHIDKeyboard");
+OSString* VIRTUAL_HID_KEYBOARD_CLASS::newProductString() const {
+  return OSString::withCString("Karabiner VirtualHIDKeyboard");
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDKeyboard::newVendorIDNumber() const {
+OSNumber* VIRTUAL_HID_KEYBOARD_CLASS::newVendorIDNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDKeyboard::newProductIDNumber() const {
+OSNumber* VIRTUAL_HID_KEYBOARD_CLASS::newProductIDNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDKeyboard::newPrimaryUsageNumber() const {
+OSNumber* VIRTUAL_HID_KEYBOARD_CLASS::newPrimaryUsageNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(kHIDPage_GenericDesktop), 32);
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDKeyboard::newPrimaryUsagePageNumber() const {
+OSNumber* VIRTUAL_HID_KEYBOARD_CLASS::newPrimaryUsagePageNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(kHIDUsage_GD_Keyboard), 32);
 }
 
-IOReturn org_pqrs_driver_VirtualHIDKeyboard::newReportDescriptor(IOMemoryDescriptor** descriptor) const {
+IOReturn VIRTUAL_HID_KEYBOARD_CLASS::newReportDescriptor(IOMemoryDescriptor** descriptor) const {
   *descriptor = IOBufferMemoryDescriptor::withBytes(reportDescriptor_, sizeof(reportDescriptor_), kIODirectionNone);
   return kIOReturnSuccess;
 }
 
-OSString* org_pqrs_driver_VirtualHIDKeyboard::newSerialNumberString() const {
-  return OSString::withCString("org.pqrs.driver.VirtualHIDKeyboard");
+OSString* VIRTUAL_HID_KEYBOARD_CLASS::newSerialNumberString() const {
+  return OSString::withCString("org.pqrs.driver.Karabiner.VirtualHIDDevice.VirtualHIDKeyboard");
 }
 
-OSNumber* org_pqrs_driver_VirtualHIDKeyboard::newLocationIDNumber() const {
+OSNumber* VIRTUAL_HID_KEYBOARD_CLASS::newLocationIDNumber() const {
   return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
 }
