@@ -7,5 +7,5 @@
   * version: v0.11.0
   * url: https://github.com/gabime/spdlog
 * json:
-  * version: v2.0.5
+  * version: v2.0.7
   * url: https://github.com/nlohmann/json
