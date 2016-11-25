@@ -55,6 +55,14 @@ int main(int argc, const char* argv[]) {
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
 
+  kr = IOConnectCallStructMethod(connect,
+                                 static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::reset_virtual_hid_pointing),
+                                 nullptr, 0,
+                                 nullptr, 0);
+  if (kr != KERN_SUCCESS) {
+    std::cerr << "reset_virtual_hid_pointing error" << std::endl;
+  }
+
 finish:
   if (connect) {
     IOServiceClose(connect);

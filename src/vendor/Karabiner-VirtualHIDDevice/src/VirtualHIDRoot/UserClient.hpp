@@ -43,6 +43,11 @@ private:
                                                         IOExternalMethodArguments* arguments);
   IOReturn postKeyboardInputReportCallback(const pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input& input);
 
+  static IOReturn staticResetVirtualHIDKeyboardCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
+                                                        void* reference,
+                                                        IOExternalMethodArguments* arguments);
+  IOReturn resetVirtualHIDKeyboardCallback(void);
+
   // ----------------------------------------
   // VirtualHIDPointing
   static IOReturn staticInitializeVirtualHIDPointingCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
@@ -59,6 +64,11 @@ private:
                                                         void* reference,
                                                         IOExternalMethodArguments* arguments);
   IOReturn postPointingInputReportCallback(const pqrs::karabiner_virtualhiddevice::hid_report::pointing_input& input);
+
+  static IOReturn staticResetVirtualHIDPointingCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
+                                                            void* reference,
+                                                            IOExternalMethodArguments* arguments);
+  IOReturn resetVirtualHIDPointingCallback(void);
 
   // ----------------------------------------
   // IOHIDSystem

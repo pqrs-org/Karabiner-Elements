@@ -106,11 +106,13 @@ public:
     initialize_virtual_hid_keyboard,
     terminate_virtual_hid_keyboard,
     post_keyboard_input_report,
+    reset_virtual_hid_keyboard,
 
     // VirtualHIDPointing
     initialize_virtual_hid_pointing,
     terminate_virtual_hid_pointing,
     post_pointing_input_report,
+    reset_virtual_hid_pointing,
 
     // IOHIDSystem (since macOS 10.12)
     post_keyboard_event,
@@ -121,7 +123,7 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v020400";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v020500";
   }
 };
 }
