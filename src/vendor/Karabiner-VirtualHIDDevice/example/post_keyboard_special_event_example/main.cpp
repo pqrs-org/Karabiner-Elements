@@ -1,4 +1,4 @@
-#include "karabiner_virtualhiddevice.hpp"
+#include "karabiner_virtualhiddevice_methods.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -45,10 +45,7 @@ int main(int argc, const char* argv[]) {
       break;
     }
 
-    kr = IOConnectCallStructMethod(connect,
-                                   static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::post_keyboard_special_event),
-                                   &keyboard_special_event, sizeof(keyboard_special_event),
-                                   nullptr, 0);
+    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_special_event(connect, keyboard_special_event);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_special_event error" << std::endl;
     }

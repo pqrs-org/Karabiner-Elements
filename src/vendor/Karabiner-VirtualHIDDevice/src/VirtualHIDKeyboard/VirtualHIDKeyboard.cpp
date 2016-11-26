@@ -36,6 +36,8 @@ bool VIRTUAL_HID_KEYBOARD_CLASS::handleStart(IOService* provider) {
     return false;
   }
 
+  // We have to set kIOHIDVirtualHIDevice to suppress Keyboard Setup Assistant.
+  setProperty(kIOHIDVirtualHIDevice, kOSBooleanTrue);
   setProperty("HIDDefaultBehavior", kOSBooleanTrue);
 
   return true;

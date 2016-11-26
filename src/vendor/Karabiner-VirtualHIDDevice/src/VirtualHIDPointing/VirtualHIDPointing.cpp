@@ -79,6 +79,7 @@ bool VIRTUAL_HID_POINTING_CLASS::handleStart(IOService* provider) {
     return false;
   }
 
+  setProperty(kIOHIDVirtualHIDevice, kOSBooleanTrue);
   setProperty("HIDDefaultBehavior", kOSBooleanTrue);
 
   return true;

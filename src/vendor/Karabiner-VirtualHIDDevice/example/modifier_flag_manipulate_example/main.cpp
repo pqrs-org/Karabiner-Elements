@@ -1,4 +1,4 @@
-#include "karabiner_virtualhiddevice.hpp"
+#include "karabiner_virtualhiddevice_methods.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -36,10 +36,7 @@ int main(int argc, const char* argv[]) {
   {
     std::cout << "left control by virtual_hid_keyboard (3 seconds)" << std::endl;
 
-    kr = IOConnectCallStructMethod(connect,
-                                   static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::initialize_virtual_hid_keyboard),
-                                   nullptr, 0,
-                                   nullptr, 0);
+    kr = pqrs::karabiner_virtualhiddevice_methods::initialize_virtual_hid_keyboard(connect);
     if (kr != KERN_SUCCESS) {
       std::cerr << "initialize_virtual_hid_keyboard error" << std::endl;
     }
@@ -48,10 +45,7 @@ int main(int argc, const char* argv[]) {
     pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input report;
     report.modifiers = 0x01;
 
-    kr = IOConnectCallStructMethod(connect,
-                                   static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::post_keyboard_input_report),
-                                   &report, sizeof(report),
-                                   nullptr, 0);
+    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_input_report(connect, report);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_input_report error" << std::endl;
     }
@@ -61,10 +55,7 @@ int main(int argc, const char* argv[]) {
       std::cout << (i + 1) << std::endl;
     }
 
-    kr = IOConnectCallStructMethod(connect,
-                                   static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::terminate_virtual_hid_keyboard),
-                                   nullptr, 0,
-                                   nullptr, 0);
+    kr = pqrs::karabiner_virtualhiddevice_methods::terminate_virtual_hid_keyboard(connect);
     if (kr != KERN_SUCCESS) {
       std::cerr << "terminate_virtual_hid_keyboard error" << std::endl;
     }
@@ -78,10 +69,7 @@ int main(int argc, const char* argv[]) {
     keyboard_event.key = 0x3b;
     keyboard_event.flags = 0x40001;
 
-    kr = IOConnectCallStructMethod(connect,
-                                   static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::post_keyboard_event),
-                                   &keyboard_event, sizeof(keyboard_event),
-                                   nullptr, 0);
+    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_event(connect, keyboard_event);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_event error" << std::endl;
     }
@@ -93,10 +81,7 @@ int main(int argc, const char* argv[]) {
 
     keyboard_event.flags = 0;
 
-    kr = IOConnectCallStructMethod(connect,
-                                   static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::post_keyboard_event),
-                                   &keyboard_event, sizeof(keyboard_event),
-                                   nullptr, 0);
+    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_event(connect, keyboard_event);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_event error" << std::endl;
     }

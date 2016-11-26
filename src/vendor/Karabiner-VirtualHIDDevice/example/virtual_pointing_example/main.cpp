@@ -1,4 +1,4 @@
-#include "karabiner_virtualhiddevice.hpp"
+#include "karabiner_virtualhiddevice_methods.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -31,10 +31,7 @@ int main(int argc, const char* argv[]) {
     goto finish;
   }
 
-  kr = IOConnectCallStructMethod(connect,
-                                 static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::initialize_virtual_hid_pointing),
-                                 nullptr, 0,
-                                 nullptr, 0);
+  kr = pqrs::karabiner_virtualhiddevice_methods::initialize_virtual_hid_pointing(connect);
   if (kr != KERN_SUCCESS) {
     std::cerr << "initialize_virtual_hid_pointing error" << std::endl;
   }
@@ -44,10 +41,7 @@ int main(int argc, const char* argv[]) {
     report.x = static_cast<uint8_t>(cos(0.1 * i) * 20);
     report.y = static_cast<uint8_t>(sin(0.1 * i) * 20);
 
-    kr = IOConnectCallStructMethod(connect,
-                                   static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::post_pointing_input_report),
-                                   &report, sizeof(report),
-                                   nullptr, 0);
+    kr = pqrs::karabiner_virtualhiddevice_methods::post_pointing_input_report(connect, report);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_pointing_input_report error" << std::endl;
     }
@@ -55,10 +49,7 @@ int main(int argc, const char* argv[]) {
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
 
-  kr = IOConnectCallStructMethod(connect,
-                                 static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::reset_virtual_hid_pointing),
-                                 nullptr, 0,
-                                 nullptr, 0);
+  kr = pqrs::karabiner_virtualhiddevice_methods::reset_virtual_hid_pointing(connect);
   if (kr != KERN_SUCCESS) {
     std::cerr << "reset_virtual_hid_pointing error" << std::endl;
   }
