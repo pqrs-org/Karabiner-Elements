@@ -23,7 +23,8 @@ class event_manipulator final {
 public:
   event_manipulator(const event_manipulator&) = delete;
 
-  event_manipulator(void) : virtual_hid_device_client_(logger::get_logger()),
+  event_manipulator(void) : virtual_hid_device_client_(logger::get_logger(),
+                                                       std::bind(&event_manipulator::virtual_hid_device_client_connected_callback, this, std::placeholders::_1)),
                             event_dispatcher_manager_(),
                             key_repeat_manager_(*this) {
   }
@@ -437,6 +438,10 @@ private:
     boost::optional<krbn::key_code> from_key_code_;
   };
 
+  void virtual_hid_device_client_connected_callback(virtual_hid_device_client& virtual_hid_device_client) {
+    virtual_hid_device_client.initialize_virtual_hid_keyboard();
+  }
+
   bool post_modifier_flag_event(krbn::key_code key_code, krbn::keyboard_type keyboard_type, bool pressed) {
     auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
 
@@ -444,8 +449,14 @@ private:
     if (modifier_flag != krbn::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
+#if 1
       auto flags = modifier_flag_manager_.get_io_option_bits(key_code);
       event_dispatcher_manager_.post_modifier_flags(key_code, flags, keyboard_type);
+#else
+      pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input report;
+      report.modifiers = modifier_flag_manager_.get_hid_report_bits();
+      virtual_hid_device_client_.post_keyboard_input_report(report);
+#endif
 
       return true;
     }
