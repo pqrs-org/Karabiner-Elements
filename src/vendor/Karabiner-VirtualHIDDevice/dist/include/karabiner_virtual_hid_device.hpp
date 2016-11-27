@@ -7,7 +7,7 @@
 #include <string.h>
 
 namespace pqrs {
-class karabiner_virtualhiddevice final {
+class karabiner_virtual_hid_device final {
 public:
   class hid_report final {
   public:
@@ -123,7 +123,7 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_VERSIONSIGNATURE";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v020900";
   }
 };
 }

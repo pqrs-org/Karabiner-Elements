@@ -1,4 +1,4 @@
-#include "karabiner_virtualhiddevice_methods.hpp"
+#include "karabiner_virtual_hid_device_methods.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -19,7 +19,7 @@ int main(int argc, const char* argv[]) {
 
   kern_return_t kr;
   io_connect_t connect = IO_OBJECT_NULL;
-  auto service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceNameMatching(pqrs::karabiner_virtualhiddevice::get_virtual_hid_root_name()));
+  auto service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name()));
   if (!service) {
     std::cerr << "IOServiceGetMatchingService error" << std::endl;
     goto finish;
@@ -32,20 +32,20 @@ int main(int argc, const char* argv[]) {
   }
 
   for (int i = 0; i < 2; ++i) {
-    pqrs::karabiner_virtualhiddevice::keyboard_special_event keyboard_special_event;
+    pqrs::karabiner_virtual_hid_device::keyboard_special_event keyboard_special_event;
 
     switch (i % 2) {
     case 0:
-      keyboard_special_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::key_down;
+      keyboard_special_event.event_type = pqrs::karabiner_virtual_hid_device::event_type::key_down;
       keyboard_special_event.flavor = 6; // power key
       break;
     case 1:
-      keyboard_special_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::key_up;
+      keyboard_special_event.event_type = pqrs::karabiner_virtual_hid_device::event_type::key_up;
       keyboard_special_event.flavor = 6; // power key
       break;
     }
 
-    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_special_event(connect, keyboard_special_event);
+    kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_special_event(connect, keyboard_special_event);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_special_event error" << std::endl;
     }

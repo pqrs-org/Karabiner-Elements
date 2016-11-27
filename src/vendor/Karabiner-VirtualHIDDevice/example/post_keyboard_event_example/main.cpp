@@ -1,4 +1,4 @@
-#include "karabiner_virtualhiddevice_methods.hpp"
+#include "karabiner_virtual_hid_device_methods.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -19,7 +19,7 @@ int main(int argc, const char* argv[]) {
 
   kern_return_t kr;
   io_connect_t connect = IO_OBJECT_NULL;
-  auto service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceNameMatching(pqrs::karabiner_virtualhiddevice::get_virtual_hid_root_name()));
+  auto service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name()));
   if (!service) {
     std::cerr << "IOServiceGetMatchingService error" << std::endl;
     goto finish;
@@ -32,38 +32,38 @@ int main(int argc, const char* argv[]) {
   }
 
   for (int i = 0; i < 12; ++i) {
-    pqrs::karabiner_virtualhiddevice::keyboard_event keyboard_event;
+    pqrs::karabiner_virtual_hid_device::keyboard_event keyboard_event;
 
     switch (i % 6) {
     case 0:
-      keyboard_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::key_down;
+      keyboard_event.event_type = pqrs::karabiner_virtual_hid_device::event_type::key_down;
       keyboard_event.key = 0; // a
       break;
     case 1:
-      keyboard_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::key_up;
+      keyboard_event.event_type = pqrs::karabiner_virtual_hid_device::event_type::key_up;
       keyboard_event.key = 0; // a
       break;
     case 2:
-      keyboard_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::key_down;
+      keyboard_event.event_type = pqrs::karabiner_virtual_hid_device::event_type::key_down;
       keyboard_event.key = 1; // s
       break;
     case 3:
-      keyboard_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::key_up;
+      keyboard_event.event_type = pqrs::karabiner_virtual_hid_device::event_type::key_up;
       keyboard_event.key = 1; // s
       break;
     case 4:
-      keyboard_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::flags_changed;
+      keyboard_event.event_type = pqrs::karabiner_virtual_hid_device::event_type::flags_changed;
       keyboard_event.key = 0x3b; // left control
       keyboard_event.flags = 0x40001;
       break;
     case 5:
-      keyboard_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::flags_changed;
+      keyboard_event.event_type = pqrs::karabiner_virtual_hid_device::event_type::flags_changed;
       keyboard_event.key = 0x3b; // left control
       keyboard_event.flags = 0;
       break;
     }
 
-    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_event(connect, keyboard_event);
+    kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_event(connect, keyboard_event);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_event error" << std::endl;
     }

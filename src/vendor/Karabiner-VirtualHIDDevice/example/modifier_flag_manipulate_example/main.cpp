@@ -1,4 +1,4 @@
-#include "karabiner_virtualhiddevice_methods.hpp"
+#include "karabiner_virtual_hid_device_methods.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -21,7 +21,7 @@ int main(int argc, const char* argv[]) {
 
   kern_return_t kr;
   io_connect_t connect = IO_OBJECT_NULL;
-  auto service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceNameMatching(pqrs::karabiner_virtualhiddevice::get_virtual_hid_root_name()));
+  auto service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name()));
   if (!service) {
     std::cerr << "IOServiceGetMatchingService error" << std::endl;
     goto finish;
@@ -36,16 +36,16 @@ int main(int argc, const char* argv[]) {
   {
     std::cout << "left control by virtual_hid_keyboard (3 seconds)" << std::endl;
 
-    kr = pqrs::karabiner_virtualhiddevice_methods::initialize_virtual_hid_keyboard(connect);
+    kr = pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect);
     if (kr != KERN_SUCCESS) {
       std::cerr << "initialize_virtual_hid_keyboard error" << std::endl;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input report;
+    pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
     report.modifiers = 0x01;
 
-    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_input_report(connect, report);
+    kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect, report);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_input_report error" << std::endl;
     }
@@ -55,7 +55,7 @@ int main(int argc, const char* argv[]) {
       std::cout << (i + 1) << std::endl;
     }
 
-    kr = pqrs::karabiner_virtualhiddevice_methods::terminate_virtual_hid_keyboard(connect);
+    kr = pqrs::karabiner_virtual_hid_device_methods::terminate_virtual_hid_keyboard(connect);
     if (kr != KERN_SUCCESS) {
       std::cerr << "terminate_virtual_hid_keyboard error" << std::endl;
     }
@@ -64,12 +64,12 @@ int main(int argc, const char* argv[]) {
   {
     std::cout << "left control by post_keyboard_event (3 seconds)" << std::endl;
 
-    pqrs::karabiner_virtualhiddevice::keyboard_event keyboard_event;
-    keyboard_event.event_type = pqrs::karabiner_virtualhiddevice::event_type::flags_changed;
+    pqrs::karabiner_virtual_hid_device::keyboard_event keyboard_event;
+    keyboard_event.event_type = pqrs::karabiner_virtual_hid_device::event_type::flags_changed;
     keyboard_event.key = 0x3b;
     keyboard_event.flags = 0x40001;
 
-    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_event(connect, keyboard_event);
+    kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_event(connect, keyboard_event);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_event error" << std::endl;
     }
@@ -81,7 +81,7 @@ int main(int argc, const char* argv[]) {
 
     keyboard_event.flags = 0;
 
-    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_event(connect, keyboard_event);
+    kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_event(connect, keyboard_event);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_event error" << std::endl;
     }

@@ -1,4 +1,4 @@
-#include "karabiner_virtualhiddevice_methods.hpp"
+#include "karabiner_virtual_hid_device_methods.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -19,7 +19,7 @@ int main(int argc, const char* argv[]) {
 
   kern_return_t kr;
   io_connect_t connect = IO_OBJECT_NULL;
-  auto service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceNameMatching(pqrs::karabiner_virtualhiddevice::get_virtual_hid_root_name()));
+  auto service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name()));
   if (!service) {
     std::cerr << "IOServiceGetMatchingService error" << std::endl;
     goto finish;
@@ -31,14 +31,14 @@ int main(int argc, const char* argv[]) {
     goto finish;
   }
 
-  kr = pqrs::karabiner_virtualhiddevice_methods::initialize_virtual_hid_keyboard(connect);
+  kr = pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect);
   if (kr != KERN_SUCCESS) {
     std::cerr << "initialize_virtual_hid_keyboard error" << std::endl;
   }
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   for (int i = 0; i < 12; ++i) {
-    pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input report;
+    pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
     switch (i % 6) {
     case 0:
       report.keys[0] = 0x04; // a
@@ -60,7 +60,7 @@ int main(int argc, const char* argv[]) {
       break;
     }
 
-    kr = pqrs::karabiner_virtualhiddevice_methods::post_keyboard_input_report(connect, report);
+    kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect, report);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_input_report error" << std::endl;
     }
@@ -68,7 +68,7 @@ int main(int argc, const char* argv[]) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
-  kr = pqrs::karabiner_virtualhiddevice_methods::reset_virtual_hid_keyboard(connect);
+  kr = pqrs::karabiner_virtual_hid_device_methods::reset_virtual_hid_keyboard(connect);
   if (kr != KERN_SUCCESS) {
     std::cerr << "reset_virtual_hid_keyboard error" << std::endl;
   }
