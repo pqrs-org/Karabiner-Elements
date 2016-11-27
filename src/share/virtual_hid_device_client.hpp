@@ -5,11 +5,15 @@
 
 class virtual_hid_device_client final {
 public:
+  typedef std::function<void(virtual_hid_device_client& virtual_hid_device_client)> connected_callback;
+
   virtual_hid_device_client(const virtual_hid_device_client&) = delete;
 
-  virtual_hid_device_client(spdlog::logger& logger) : logger_(logger),
-                                                      service_(IO_OBJECT_NULL),
-                                                      connect_(IO_OBJECT_NULL) {
+  virtual_hid_device_client(spdlog::logger& logger,
+                            const connected_callback& connected_callback) : logger_(logger),
+                                                                            connected_callback_(connected_callback),
+                                                                            service_(IO_OBJECT_NULL),
+                                                                            connect_(IO_OBJECT_NULL) {
     if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtualhiddevice::get_virtual_hid_root_name())) {
       service_observer_ = std::make_unique<service_observer>(logger_,
                                                              matching_dictionary,
@@ -77,6 +81,8 @@ public:
 
 private:
   void matched_callback(io_iterator_t iterator) {
+    bool connected = false;
+
     while (auto service = IOIteratorNext(iterator)) {
       std::lock_guard<std::mutex> guard(connect_mutex_);
 
@@ -92,9 +98,15 @@ private:
         }
 
         logger_.info("IOServiceOpen is succeeded @ {0}", __PRETTY_FUNCTION__);
+        connected = true;
       }
 
       IOObjectRelease(service);
+    }
+
+    // We have to call callback after connect_mutex_ is unlocked.
+    if (connected && connected_callback_) {
+      connected_callback_(*this);
     }
   }
 
@@ -140,6 +152,7 @@ private:
   }
 
   spdlog::logger& logger_;
+  connected_callback connected_callback_;
 
   std::unique_ptr<service_observer> service_observer_;
   io_service_t service_;
