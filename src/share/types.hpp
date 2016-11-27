@@ -29,11 +29,8 @@ enum class operation_type : uint8_t {
   clear_devices,
   add_device,
   complete_devices,
-  // event_dispatcher -> grabber
-  set_caps_lock_led_state,
   // grabber -> event_dispatcher
   set_caps_lock_state,
-  refresh_caps_lock_led,
   post_modifier_flags,
   post_key,
 };
@@ -805,24 +802,11 @@ struct operation_type_complete_devices_struct {
   const operation_type operation_type;
 };
 
-struct operation_type_set_caps_lock_led_state_struct {
-  operation_type_set_caps_lock_led_state_struct(void) : operation_type(operation_type::set_caps_lock_led_state) {}
-
-  const operation_type operation_type;
-  led_state led_state;
-};
-
 struct operation_type_set_caps_lock_state_struct {
   operation_type_set_caps_lock_state_struct(void) : operation_type(operation_type::set_caps_lock_state) {}
 
   const operation_type operation_type;
   bool state;
-};
-
-struct operation_type_refresh_caps_lock_led_struct {
-  operation_type_refresh_caps_lock_led_struct(void) : operation_type(operation_type::refresh_caps_lock_led) {}
-
-  const operation_type operation_type;
 };
 
 struct operation_type_post_modifier_flags_struct {

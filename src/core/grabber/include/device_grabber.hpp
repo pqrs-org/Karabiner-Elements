@@ -5,6 +5,7 @@
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
 #include "event_manipulator.hpp"
+#include "event_tap_manager.hpp"
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
@@ -24,6 +25,7 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(manipulator::event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
+                                                                      event_tap_manager_(std::bind(&device_grabber::caps_lock_state_changed_callback, this, std::placeholders::_1)),
                                                                       mode_(mode::observing),
                                                                       is_grabbable_callback_log_reducer_(logger::get_logger()),
                                                                       suspended_(false) {
@@ -67,7 +69,6 @@ public:
       mode_ = mode::grabbing;
 
       event_manipulator_.reset();
-      event_manipulator_.grab_mouse_events();
     });
   }
 
@@ -77,7 +78,6 @@ public:
 
       mode_ = mode::observing;
 
-      event_manipulator_.ungrab_mouse_events();
       event_manipulator_.reset();
     });
   }
@@ -156,14 +156,6 @@ public:
 
       grab_devices();
       output_devices_json();
-    });
-  }
-
-  void set_caps_lock_led_state(krbn::led_state state) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      for (const auto& it : hids_) {
-        (it.second)->set_caps_lock_led_state(state);
-      }
     });
   }
 
@@ -356,7 +348,7 @@ private:
 
   void grabbed_callback(human_interface_device& device) {
     // set keyboard led
-    event_manipulator_.refresh_caps_lock_led();
+    caps_lock_state_changed_callback(event_tap_manager_.get_caps_lock_state());
   }
 
   void ungrabbed_callback(human_interface_device& device) {
@@ -367,6 +359,17 @@ private:
   void disabled_callback(human_interface_device& device) {
     // stop key repeat
     event_manipulator_.stop_key_repeat();
+  }
+
+  void caps_lock_state_changed_callback(bool caps_lock_state) {
+    event_manipulator_.set_caps_lock_state(caps_lock_state);
+
+    // Update LED.
+    for (const auto& it : hids_) {
+      if ((it.second)->is_grabbed()) {
+        (it.second)->set_caps_lock_led_state(caps_lock_state ? krbn::led_state::on : krbn::led_state::off);
+      }
+    }
   }
 
   size_t get_all_devices_pressed_keys_count(void) {
@@ -519,6 +522,8 @@ private:
   }
 
   manipulator::event_manipulator& event_manipulator_;
+
+  event_tap_manager event_tap_manager_;
   IOHIDManagerRef _Nullable manager_;
 
   std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> device_configurations_;

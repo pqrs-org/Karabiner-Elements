@@ -4,17 +4,16 @@
 #include "logger.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 
-namespace manipulator {
 class event_tap_manager final {
 public:
-  typedef std::function<void(bool)> caps_lock_changed_callback;
+  typedef std::function<void(bool)> caps_lock_state_changed_callback;
 
   event_tap_manager(const event_tap_manager&) = delete;
 
-  event_tap_manager(const caps_lock_changed_callback& caps_lock_changed_callback) : caps_lock_changed_callback_(caps_lock_changed_callback),
-                                                                                    event_tap_(nullptr),
-                                                                                    run_loop_source_(nullptr),
-                                                                                    last_flags_(0) {
+  event_tap_manager(const caps_lock_state_changed_callback& caps_lock_state_changed_callback) : caps_lock_state_changed_callback_(caps_lock_state_changed_callback),
+                                                                                                event_tap_(nullptr),
+                                                                                                run_loop_source_(nullptr),
+                                                                                                last_flags_(0) {
     // Observe flags changed in order to get the caps lock state.
     auto mask = CGEventMaskBit(kCGEventFlagsChanged);
 
@@ -55,6 +54,10 @@ public:
     });
   }
 
+  bool get_caps_lock_state(void) const {
+    return (last_flags_ & NX_ALPHASHIFTMASK);
+  }
+
 private:
   static CGEventRef _Nullable static_callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event, void* _Nonnull refcon) {
     auto self = static_cast<event_tap_manager*>(refcon);
@@ -69,23 +72,22 @@ private:
       logger::get_logger().info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
       CGEventTapEnable(event_tap_, true);
     } else if (type == kCGEventFlagsChanged) {
-      bool old_caps_lock_state = (last_flags_ & NX_ALPHASHIFTMASK);
+      bool old_caps_lock_state = get_caps_lock_state();
       last_flags_ = CGEventGetFlags(event);
-      bool new_caps_lock_state = (last_flags_ & NX_ALPHASHIFTMASK);
+      bool new_caps_lock_state = get_caps_lock_state();
 
       if (old_caps_lock_state != new_caps_lock_state) {
-        if (caps_lock_changed_callback_) {
-          caps_lock_changed_callback_(new_caps_lock_state);
+        if (caps_lock_state_changed_callback_) {
+          caps_lock_state_changed_callback_(new_caps_lock_state);
         }
       }
     }
     return event;
   }
 
-  caps_lock_changed_callback caps_lock_changed_callback_;
+  caps_lock_state_changed_callback caps_lock_state_changed_callback_;
 
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;
   CGEventFlags last_flags_;
 };
-}

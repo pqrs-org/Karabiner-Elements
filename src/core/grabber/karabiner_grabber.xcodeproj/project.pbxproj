@@ -55,7 +55,7 @@
 		34A88AA41D69C85600DD480B /* modifier_flag_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = modifier_flag_manager.hpp; path = include/manipulator/modifier_flag_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34A88AA61D6DF89900DD480B /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../../share/types.hpp; sourceTree = SOURCE_ROOT; };
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_tap_manager.hpp; path = include/manipulator/event_tap_manager.hpp; sourceTree = SOURCE_ROOT; };
+		34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_tap_manager.hpp; path = include/event_tap_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34D2FC841D9C120F00168D20 /* pointing_button_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pointing_button_manager.hpp; path = include/manipulator/pointing_button_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34DA28A31D8FC8BE0029E37D /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
 		34E420601D5042240022F821 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -137,7 +137,6 @@
 			children = (
 				349950641D891BCF004FE466 /* event_dispatcher_manager.hpp */,
 				349950681D89A25D004FE466 /* event_manipulator.hpp */,
-				34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */,
 				34A88AA41D69C85600DD480B /* modifier_flag_manager.hpp */,
 				34D2FC841D9C120F00168D20 /* pointing_button_manager.hpp */,
 			);
@@ -160,6 +159,7 @@
 			children = (
 				34A88A901D6840C200DD480B /* connection_manager.hpp */,
 				34A88A881D6840C200DD480B /* device_grabber.hpp */,
+				34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */,
 				34A88A8C1D6840C200DD480B /* logger.hpp */,
 				34A88AA31D69C84900DD480B /* manipulator */,
 				34A88AA21D69B66200DD480B /* manipulator.hpp */,

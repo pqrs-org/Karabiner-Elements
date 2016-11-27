@@ -68,22 +68,6 @@ public:
     }
   }
 
-  void refresh_caps_lock_led(void) {
-    std::lock_guard<std::mutex> guard(client_mutex_);
-
-    if (!client_) {
-      logger::get_logger().error("client_ is not ready @ {0}", __PRETTY_FUNCTION__);
-      return;
-    }
-
-    try {
-      krbn::operation_type_refresh_caps_lock_led_struct s;
-      client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
-    } catch (...) {
-      client_ = nullptr;
-    }
-  }
-
   void post_modifier_flags(krbn::key_code key_code, IOOptionBits flags, krbn::keyboard_type keyboard_type) {
     std::lock_guard<std::mutex> guard(client_mutex_);
 

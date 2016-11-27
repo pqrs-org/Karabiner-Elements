@@ -3,7 +3,6 @@
 #include "boost_defs.hpp"
 
 #include "event_dispatcher_manager.hpp"
-#include "event_tap_manager.hpp"
 #include "gcd_utility.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
@@ -30,20 +29,11 @@ public:
   }
 
   ~event_manipulator(void) {
-    event_tap_manager_ = nullptr;
   }
 
   bool is_ready(void) {
     return virtual_hid_device_client_.is_connected() &&
            event_dispatcher_manager_.is_connected();
-  }
-
-  void grab_mouse_events(void) {
-    event_tap_manager_ = std::make_unique<event_tap_manager>();
-  }
-
-  void ungrab_mouse_events(void) {
-    event_tap_manager_ = nullptr;
   }
 
   void reset(void) {
@@ -114,6 +104,16 @@ public:
 
   void terminate_virtual_hid_pointing(void) {
     virtual_hid_device_client_.terminate_virtual_hid_pointing();
+  }
+
+  void set_caps_lock_state(bool state) {
+    modifier_flag_manager_.manipulate(krbn::modifier_flag::caps_lock,
+                                      state ? modifier_flag_manager::operation::lock : modifier_flag_manager::operation::unlock);
+
+    // Do not call event_dispatcher_manager_.set_caps_lock_state here.
+    //
+    // This method should be called in event_tap_manager_.caps_lock_state_changed_callback.
+    // Thus, the caps lock state in IOHIDSystem is already changed.
   }
 
   void handle_keyboard_event(device_registry_entry_id device_registry_entry_id,
@@ -203,9 +203,18 @@ public:
     // Post input events to karabiner_event_dispatcher
 
     if (to_key_code == krbn::key_code::caps_lock) {
-      if (pressed) {
-        toggle_caps_lock_state();
-        key_repeat_manager_.stop();
+      if (auto hid_system_key = krbn::types::get_hid_system_key(to_key_code)) {
+        if (pressed) {
+          virtual_hid_keyboard_pressed_keys_.add(*hid_system_key);
+          key_repeat_manager_.stop();
+        } else {
+          virtual_hid_keyboard_pressed_keys_.remove(*hid_system_key);
+        }
+
+        pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
+        report.modifiers = modifier_flag_manager_.get_hid_report_bits();
+        virtual_hid_keyboard_pressed_keys_.set_report_keys(report);
+        virtual_hid_device_client_.post_keyboard_input_report(report);
       }
       return;
     }
@@ -274,10 +283,6 @@ public:
 
   void stop_key_repeat(void) {
     key_repeat_manager_.stop();
-  }
-
-  void refresh_caps_lock_led(void) {
-    event_dispatcher_manager_.refresh_caps_lock_led();
   }
 
 private:
@@ -500,6 +505,7 @@ private:
       } else {
         pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
         report.modifiers = modifier_flag_manager_.get_hid_report_bits();
+        virtual_hid_keyboard_pressed_keys_.set_report_keys(report);
         virtual_hid_device_client_.post_keyboard_input_report(report);
       }
 
@@ -507,15 +513,6 @@ private:
     }
 
     return false;
-  }
-
-  void toggle_caps_lock_state(void) {
-    modifier_flag_manager_.manipulate(krbn::modifier_flag::caps_lock, modifier_flag_manager::operation::toggle_lock);
-    if (modifier_flag_manager_.pressed(krbn::modifier_flag::caps_lock)) {
-      event_dispatcher_manager_.set_caps_lock_state(true);
-    } else {
-      event_dispatcher_manager_.set_caps_lock_state(false);
-    }
   }
 
   void post_key(krbn::key_code from_key_code, krbn::key_code to_key_code, krbn::keyboard_type keyboard_type, bool pressed, bool repeat) {
@@ -534,7 +531,6 @@ private:
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
   key_repeat_manager key_repeat_manager_;
-  std::unique_ptr<event_tap_manager> event_tap_manager_;
 
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;
