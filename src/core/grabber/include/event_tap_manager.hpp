@@ -72,6 +72,9 @@ private:
       logger::get_logger().info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
       CGEventTapEnable(event_tap_, true);
     } else if (type == kCGEventFlagsChanged) {
+      // The caps lock key event from keyboard might be ignored by caps lock delay.
+      // Thus, we need to observe kCGEventFlagsChanged event in EventTap to detect the caps lock state change.
+
       bool old_caps_lock_state = get_caps_lock_state();
       last_flags_ = CGEventGetFlags(event);
       bool new_caps_lock_state = get_caps_lock_state();
