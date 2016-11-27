@@ -55,11 +55,13 @@ public:
     modifier_flag_manager_.reset();
     modifier_flag_manager_.unlock();
 
+    virtual_hid_keyboard_pressed_keys_.clear();
+
     event_dispatcher_manager_.set_caps_lock_state(false);
 
     pointing_button_manager_.reset();
 
-    virtual_hid_device_client_.terminate_virtual_hid_keyboard();
+    // Do not call terminate_virtual_hid_keyboard
     virtual_hid_device_client_.terminate_virtual_hid_pointing();
   }
 
@@ -232,7 +234,7 @@ public:
                              krbn::pointing_event pointing_event,
                              boost::optional<krbn::pointing_button> pointing_button,
                              CFIndex integer_value) {
-    pqrs::karabiner_virtualhiddevice::hid_report::pointing_input report;
+    pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
 
     switch (pointing_event) {
     case krbn::pointing_event::button:
@@ -347,6 +349,49 @@ private:
     std::mutex mutex_;
   };
 
+  class virtual_hid_keyboard_pressed_keys final {
+  public:
+    virtual_hid_keyboard_pressed_keys(const virtual_hid_keyboard_pressed_keys&) = delete;
+
+    virtual_hid_keyboard_pressed_keys(void) {
+    }
+
+    void clear(void) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
+      keys_.clear();
+    }
+
+    void add(uint8_t hid_system_key) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
+      if (std::find(keys_.begin(), keys_.end(), hid_system_key) == keys_.end()) {
+        keys_.push_back(hid_system_key);
+      }
+    }
+
+    void remove(uint8_t hid_system_key) {
+      std::lock_guard<std::mutex> guard(mutex_);
+
+      keys_.remove(hid_system_key);
+    }
+
+    void set_report_keys(pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& report) {
+      size_t i = 0;
+      for (const auto& key : keys_) {
+        if (i >= sizeof(report.keys) / sizeof(report.keys[0])) {
+          break;
+        }
+        report.keys[i] = key;
+        ++i;
+      }
+    }
+
+  private:
+    std::list<uint8_t> keys_;
+    std::mutex mutex_;
+  };
+
   class simple_modifications final {
   public:
     simple_modifications(const simple_modifications&) = delete;
@@ -449,14 +494,14 @@ private:
     if (modifier_flag != krbn::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
-#if 1
-      auto flags = modifier_flag_manager_.get_io_option_bits(key_code);
-      event_dispatcher_manager_.post_modifier_flags(key_code, flags, keyboard_type);
-#else
-      pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input report;
-      report.modifiers = modifier_flag_manager_.get_hid_report_bits();
-      virtual_hid_device_client_.post_keyboard_input_report(report);
-#endif
+      if (modifier_flag == krbn::modifier_flag::fn) {
+        auto flags = modifier_flag_manager_.get_io_option_bits(key_code);
+        event_dispatcher_manager_.post_modifier_flags(key_code, flags, keyboard_type);
+      } else {
+        pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
+        report.modifiers = modifier_flag_manager_.get_hid_report_bits();
+        virtual_hid_device_client_.post_keyboard_input_report(report);
+      }
 
       return true;
     }
@@ -484,6 +529,7 @@ private:
   }
 
   virtual_hid_device_client virtual_hid_device_client_;
+  virtual_hid_keyboard_pressed_keys virtual_hid_keyboard_pressed_keys_;
   event_dispatcher_manager event_dispatcher_manager_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;

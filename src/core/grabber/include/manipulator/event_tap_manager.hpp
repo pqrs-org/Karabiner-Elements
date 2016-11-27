@@ -12,21 +12,8 @@ public:
   event_tap_manager(void) : event_tap_(nullptr),
                             run_loop_source_(nullptr),
                             last_flags_(0) {
-    // Observe flags changed and all mouse events
-    auto mask = CGEventMaskBit(kCGEventFlagsChanged) |
-                CGEventMaskBit(kCGEventLeftMouseDown) |
-                CGEventMaskBit(kCGEventLeftMouseUp) |
-                CGEventMaskBit(kCGEventRightMouseDown) |
-                CGEventMaskBit(kCGEventRightMouseUp) |
-                CGEventMaskBit(kCGEventMouseMoved) |
-                CGEventMaskBit(kCGEventLeftMouseDragged) |
-                CGEventMaskBit(kCGEventRightMouseDragged) |
-                CGEventMaskBit(kCGEventScrollWheel) |
-                CGEventMaskBit(kCGEventTabletPointer) |
-                CGEventMaskBit(kCGEventTabletProximity) |
-                CGEventMaskBit(kCGEventOtherMouseDown) |
-                CGEventMaskBit(kCGEventOtherMouseUp) |
-                CGEventMaskBit(kCGEventOtherMouseDragged);
+    // Observe flags changed in order to get the caps lock state.
+    auto mask = CGEventMaskBit(kCGEventFlagsChanged);
 
     event_tap_ = CGEventTapCreate(kCGHIDEventTap,
                                   kCGHeadInsertEventTap,
@@ -80,8 +67,6 @@ private:
       CGEventTapEnable(event_tap_, true);
     } else if (type == kCGEventFlagsChanged) {
       last_flags_ = CGEventGetFlags(event);
-    } else if (event) {
-      CGEventSetFlags(event, last_flags_);
     }
     return event;
   }
