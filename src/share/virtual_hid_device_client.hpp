@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtualhiddevice_methods.hpp"
+#include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "service_observer.hpp"
 
 class virtual_hid_device_client final {
@@ -14,7 +14,7 @@ public:
                                                                             connected_callback_(connected_callback),
                                                                             service_(IO_OBJECT_NULL),
                                                                             connect_(IO_OBJECT_NULL) {
-    if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtualhiddevice::get_virtual_hid_root_name())) {
+    if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name())) {
       service_observer_ = std::make_unique<service_observer>(logger_,
                                                              matching_dictionary,
                                                              std::bind(&virtual_hid_device_client::matched_callback, this, std::placeholders::_1),
@@ -33,49 +33,49 @@ public:
 
   void initialize_virtual_hid_keyboard(void) {
     call_method([this](void) {
-      return pqrs::karabiner_virtualhiddevice_methods::initialize_virtual_hid_keyboard(connect_);
+      return pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect_);
     });
   }
 
   void terminate_virtual_hid_keyboard(void) {
     call_method([this](void) {
-      return pqrs::karabiner_virtualhiddevice_methods::terminate_virtual_hid_keyboard(connect_);
+      return pqrs::karabiner_virtual_hid_device_methods::terminate_virtual_hid_keyboard(connect_);
     });
   }
 
-  void post_keyboard_input_report(const pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input& report) {
+  void post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& report) {
     call_method([this, &report](void) {
-      return pqrs::karabiner_virtualhiddevice_methods::post_keyboard_input_report(connect_, report);
+      return pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
     });
   }
 
   void reset_virtual_hid_keyboard(void) {
     call_method([this](void) {
-      return pqrs::karabiner_virtualhiddevice_methods::reset_virtual_hid_keyboard(connect_);
+      return pqrs::karabiner_virtual_hid_device_methods::reset_virtual_hid_keyboard(connect_);
     });
   }
 
   void initialize_virtual_hid_pointing(void) {
     call_method([this](void) {
-      return pqrs::karabiner_virtualhiddevice_methods::initialize_virtual_hid_pointing(connect_);
+      return pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_pointing(connect_);
     });
   }
 
   void terminate_virtual_hid_pointing(void) {
     call_method([this](void) {
-      return pqrs::karabiner_virtualhiddevice_methods::terminate_virtual_hid_pointing(connect_);
+      return pqrs::karabiner_virtual_hid_device_methods::terminate_virtual_hid_pointing(connect_);
     });
   }
 
-  void post_pointing_input_report(const pqrs::karabiner_virtualhiddevice::hid_report::pointing_input& report) {
+  void post_pointing_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& report) {
     call_method([this, &report](void) {
-      return pqrs::karabiner_virtualhiddevice_methods::post_pointing_input_report(connect_, report);
+      return pqrs::karabiner_virtual_hid_device_methods::post_pointing_input_report(connect_, report);
     });
   }
 
   void reset_virtual_hid_pointing(void) {
     call_method([this](void) {
-      return pqrs::karabiner_virtualhiddevice_methods::reset_virtual_hid_pointing(connect_);
+      return pqrs::karabiner_virtual_hid_device_methods::reset_virtual_hid_pointing(connect_);
     });
   }
 
