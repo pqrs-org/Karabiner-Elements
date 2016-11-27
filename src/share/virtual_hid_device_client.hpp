@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtualhiddevice.hpp"
+#include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtualhiddevice_methods.hpp"
 #include "service_observer.hpp"
 
 class virtual_hid_device_client final {
@@ -27,70 +27,52 @@ public:
     return connect_ != IO_OBJECT_NULL;
   }
 
-  void call_struct_method(uint32_t selector,
-                          const void* _Nullable input_struct,
-                          size_t input_struct_length,
-                          void* _Nullable output_struct,
-                          size_t* _Nullable output_struct_length) {
-    std::lock_guard<std::mutex> guard(connect_mutex_);
-
-    if (!connect_) {
-      logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
-      return;
-    }
-
-    auto kr = IOConnectCallStructMethod(connect_, selector, input_struct, input_struct_length, output_struct, output_struct_length);
-    if (kr != KERN_SUCCESS) {
-      logger_.error("IOConnectCallStructMethod error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
-    }
-  }
-
   void initialize_virtual_hid_keyboard(void) {
-    call_struct_method(static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::initialize_virtual_hid_keyboard),
-                       nullptr, 0,
-                       nullptr, 0);
+    call_method([this](void) {
+      return pqrs::karabiner_virtualhiddevice_methods::initialize_virtual_hid_keyboard(connect_);
+    });
   }
 
   void terminate_virtual_hid_keyboard(void) {
-    call_struct_method(static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::terminate_virtual_hid_keyboard),
-                       nullptr, 0,
-                       nullptr, 0);
+    call_method([this](void) {
+      return pqrs::karabiner_virtualhiddevice_methods::terminate_virtual_hid_keyboard(connect_);
+    });
   }
 
   void post_keyboard_input_report(const pqrs::karabiner_virtualhiddevice::hid_report::keyboard_input& report) {
-    call_struct_method(static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::post_keyboard_input_report),
-                       static_cast<const void*>(&report), sizeof(report),
-                       nullptr, 0);
+    call_method([this, &report](void) {
+      return pqrs::karabiner_virtualhiddevice_methods::post_keyboard_input_report(connect_, report);
+    });
   }
 
   void reset_virtual_hid_keyboard(void) {
-    call_struct_method(static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::reset_virtual_hid_keyboard),
-                       nullptr, 0,
-                       nullptr, 0);
+    call_method([this](void) {
+      return pqrs::karabiner_virtualhiddevice_methods::reset_virtual_hid_keyboard(connect_);
+    });
   }
 
   void initialize_virtual_hid_pointing(void) {
-    call_struct_method(static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::initialize_virtual_hid_pointing),
-                       nullptr, 0,
-                       nullptr, 0);
+    call_method([this](void) {
+      return pqrs::karabiner_virtualhiddevice_methods::initialize_virtual_hid_pointing(connect_);
+    });
   }
 
   void terminate_virtual_hid_pointing(void) {
-    call_struct_method(static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::terminate_virtual_hid_pointing),
-                       nullptr, 0,
-                       nullptr, 0);
+    call_method([this](void) {
+      return pqrs::karabiner_virtualhiddevice_methods::terminate_virtual_hid_pointing(connect_);
+    });
   }
 
   void post_pointing_input_report(const pqrs::karabiner_virtualhiddevice::hid_report::pointing_input& report) {
-    call_struct_method(static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::post_pointing_input_report),
-                       static_cast<const void*>(&report), sizeof(report),
-                       nullptr, 0);
+    call_method([this, &report](void) {
+      return pqrs::karabiner_virtualhiddevice_methods::post_pointing_input_report(connect_, report);
+    });
   }
 
   void reset_virtual_hid_pointing(void) {
-    call_struct_method(static_cast<uint32_t>(pqrs::karabiner_virtualhiddevice::user_client_method::reset_virtual_hid_pointing),
-                       nullptr, 0,
-                       nullptr, 0);
+    call_method([this](void) {
+      return pqrs::karabiner_virtualhiddevice_methods::reset_virtual_hid_pointing(connect_);
+    });
   }
 
 private:
@@ -140,6 +122,20 @@ private:
     if (service_) {
       IOObjectRelease(service_);
       service_ = IO_OBJECT_NULL;
+    }
+  }
+
+  void call_method(std::function<IOReturn(void)> method) {
+    std::lock_guard<std::mutex> guard(connect_mutex_);
+
+    if (!connect_) {
+      logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
+      return;
+    }
+
+    auto kr = method();
+    if (kr != KERN_SUCCESS) {
+      logger_.error("IOConnectCallStructMethod error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
     }
   }
 
