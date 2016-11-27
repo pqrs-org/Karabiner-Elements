@@ -7,7 +7,7 @@
 #include <string.h>
 
 namespace pqrs {
-class karabiner_virtualhiddevice {
+class karabiner_virtualhiddevice final {
 public:
   class hid_report final {
   public:
@@ -61,7 +61,7 @@ public:
     flags_changed = 12,
   };
 
-  class __attribute__((packed)) keyboard_event {
+  class __attribute__((packed)) keyboard_event final {
   public:
     keyboard_event(void) : event_type(event_type::key_down),
                            flags(0),
@@ -84,7 +84,7 @@ public:
     bool repeat;
   };
 
-  class __attribute__((packed)) keyboard_special_event {
+  class __attribute__((packed)) keyboard_special_event final {
   public:
     keyboard_special_event(void) : event_type(event_type::key_down),
                                    flags(0),
@@ -123,7 +123,7 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v020700";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v020800";
   }
 };
 }

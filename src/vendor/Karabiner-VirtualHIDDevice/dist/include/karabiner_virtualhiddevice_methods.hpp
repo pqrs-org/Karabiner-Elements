@@ -6,7 +6,7 @@
 #include <IOKit/IOKitLib.h>
 
 namespace pqrs {
-class karabiner_virtualhiddevice_methods {
+class karabiner_virtualhiddevice_methods final {
 public:
   // VirtualHIDKeyboard
 
