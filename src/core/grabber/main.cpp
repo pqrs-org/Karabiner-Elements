@@ -20,6 +20,9 @@ int main(int argc, const char* argv[]) {
 
   logger::get_logger().info("version {0}", karabiner_version);
 
+  // load kexts
+  system("/sbin/kextload /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext");
+
   // make socket directory.
   mkdir(constants::get_tmp_directory(), 0755);
   chown(constants::get_tmp_directory(), 0, 0);
