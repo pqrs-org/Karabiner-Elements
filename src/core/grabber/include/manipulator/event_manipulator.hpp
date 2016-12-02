@@ -31,9 +31,20 @@ public:
   ~event_manipulator(void) {
   }
 
-  bool is_ready(void) {
-    return virtual_hid_device_client_.is_connected() &&
-           event_dispatcher_manager_.is_connected();
+  enum class ready_state {
+    ready,
+    virtual_hid_device_client_is_not_ready,
+    event_dispatcher_manager_is_not_ready,
+  };
+
+  ready_state is_ready(void) {
+    if (!virtual_hid_device_client_.is_connected()) {
+      return ready_state::virtual_hid_device_client_is_not_ready;
+    }
+    if (!event_dispatcher_manager_.is_connected()) {
+      return ready_state::event_dispatcher_manager_is_not_ready;
+    }
+    return ready_state::ready;
   }
 
   void reset(void) {

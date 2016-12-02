@@ -339,8 +339,22 @@ private:
         return human_interface_device::grabbable_state::ungrabbable_permanently;
       }
     }
-    if (!event_manipulator_.is_ready()) {
-      is_grabbable_callback_log_reducer_.warn("event_manipulator_ is not ready. Please wait for a while.");
+
+    auto ready_state = event_manipulator_.is_ready();
+    if (ready_state != manipulator::event_manipulator::ready_state::ready) {
+      std::string message = "event_manipulator_ is not ready. ";
+      switch (ready_state) {
+        case manipulator::event_manipulator::ready_state::ready:
+          break;
+        case manipulator::event_manipulator::ready_state::virtual_hid_device_client_is_not_ready:
+          message += "(virtual_hid_device_client is not ready) ";
+          break;
+        case manipulator::event_manipulator::ready_state::event_dispatcher_manager_is_not_ready:
+          message += "(event_dispatcher_manager_is_not_ready is not ready) ";
+          break;
+      }
+      message += "Please wait for a while.";
+      is_grabbable_callback_log_reducer_.warn(message);
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
     }
     return human_interface_device::grabbable_state::grabbable;
