@@ -179,7 +179,7 @@ uint8_t keys[6];
 #### Apple HID keyboard report descriptor
 
 ```
-uint8_t unknown;
+uint8_t record_id;
 uint8_t modifiers;
 uint8_t reserved;
 uint8_t keys[6];
