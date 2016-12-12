@@ -74,17 +74,15 @@ Thus, `karabiner_grabber` uses this method to modify mouse events.
 
 # The difference of event posting methods
 
+## IOKit call IOHIKeyboard::dispatchKeyboardEvent in kext
+
+It requires posting HID usage page and usage.
+`karabiner_grabber` uses this method by using `Karabiner-VirtualHIDDevice`.
+
 ## IOKit device report in kext
 
 It requires posting HID events.<br />
 The IOHIKeyboard processes the reports by passing reports to `handleReport`.
-
-However, this method is not enough polite.
-Calling the `handleReport` method directly causes a problem that OS X ignores `EnableSecureEventInput`.
-(The normal privillege EventTap can observe all events even in Secure Keyboard Entry.)
-So we cannot use this method to common keys for security reason.
-
-We use the virtual keyboard for modifier flags to use changed modifier keys in accessibility functions such as zoom by control+scroll wheel and sticky keys.
 
 ## IOHIDPostEvent
 
@@ -92,15 +90,6 @@ It requires posting coregraphics events.<br />
 
 `IOHIDPostEvent` will be failed if the process is not running in the current session user.
 (The root user is also forbidden.)
-
-`karabiner_event_dispatcher` uses this method.
-
-### Note
-
-There is a limitation that the mouse events will ignore modifier flags by IOHIDPostEvent.
-For example, even if we pressed the command key (and the NX_COMMANDMASK is sent by IOHIDPostEvent),
-the mouse click event will be treated as click without any modifier flags. (not command+click)
-`karabiner_grabber` uses `handleReport` to send modifier flag events, so we don't need to care this limitation.
 
 ## CGEventPost
 
@@ -117,11 +106,6 @@ Thus, `karabiner_grabber` does not use `CGEventPost`.
 ## IOKit device value in kext
 
 It requires posting HID events.<br />
-We have to make a complete set of virtual devices to post the IOHIDValue.
-
-## IOKit call IOHIKeyboard::dispatchKeyboardEvent in kext
-
-It requires posting coregraphics events.<br />
 We have to make a complete set of virtual devices to post the IOHIDValue.
 
 --------------------------------------------------------------------------------
