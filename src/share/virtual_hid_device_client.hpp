@@ -43,6 +43,12 @@ public:
     });
   }
 
+  void dispatch_keyboard_event(const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event) {
+    call_method([this, &keyboard_event](void) {
+      return pqrs::karabiner_virtual_hid_device_methods::dispatch_keyboard_event(connect_, keyboard_event);
+    });
+  }
+
   void post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& report) {
     call_method([this, &report](void) {
       return pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
