@@ -65,7 +65,7 @@ check_value('CLANG_WARN_SUSPICIOUS_MOVE', 'YES')
 check_value('CLANG_WARN_UNREACHABLE_CODE', 'YES')
 check_value('ENABLE_STRICT_OBJC_MSGSEND', 'YES')
 check_value('GCC_NO_COMMON_BLOCKS', 'YES')
-check_value('MACOSX_DEPLOYMENT_TARGET', '10.10')
+check_value('MACOSX_DEPLOYMENT_TARGET', '10.11')
 check_value('RUN_CLANG_STATIC_ANALYZER', 'YES')
 check_value('SDKROOT', 'macosx')
 
