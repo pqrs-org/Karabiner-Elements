@@ -17,8 +17,7 @@ public:
       targets.push_back(std::string(p) + "/log/console_user_server_log");
     }
 
-    log_monitor_ = std::make_unique<log_monitor>(libkrbn::get_logger(),
-                                                 targets,
+    log_monitor_ = std::make_unique<log_monitor>(targets,
                                                  std::bind(&libkrbn_log_monitor_class::cpp_callback, this, std::placeholders::_1));
   }
 

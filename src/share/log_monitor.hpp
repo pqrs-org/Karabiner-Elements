@@ -20,10 +20,8 @@ public:
   //
   // We use timer to observe file changes instead.
 
-  log_monitor(spdlog::logger& logger,
-              const std::vector<std::string>& targets,
-              const new_log_line_callback& callback) : logger_(logger),
-                                                       callback_(callback) {
+  log_monitor(const std::vector<std::string>& targets,
+              const new_log_line_callback& callback) : callback_(callback) {
     // setup initial_lines_
 
     for (const auto& target : targets) {
@@ -145,7 +143,6 @@ private:
     read_position_[file_path] = read_position;
   }
 
-  spdlog::logger& logger_;
   new_log_line_callback callback_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> timer_;
