@@ -74,7 +74,10 @@ private:
     hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
 
-    dev->open();
+    auto kr = dev->open();
+    if (kr != kIOReturnSuccess) {
+      logger::get_logger().error("failed to dev->open(). {0}", kr);
+    }
     dev->schedule();
 
     if (auto caps_lock_led_state = dev->get_caps_lock_led_state()) {

@@ -1,19 +1,7 @@
-CONFIGURATION = Release
+all: main.o
+	c++ -framework CoreFoundation -framework SystemConfiguration main.o
 
-all:
-	xcodebuild -alltargets -configuration $(CONFIGURATION) build
+run: all
+	./a.out
 
-clean:
-	rm -rf build
-	rm -f *.xcodeproj/*.mode1
-	rm -f *.xcodeproj/*.mode1v3
-	rm -f *.xcodeproj/*.pbxuser
-	rm -rf *.xcodeproj/xcuserdata
-	rm -rf *.xcodeproj/project.xcworkspace/xcuserdata
-	rm -f *.app.zip
-
-xcode:
-	open *.xcodeproj
-
-run:
-	./build/Release/session
+include ../Makefile.rules

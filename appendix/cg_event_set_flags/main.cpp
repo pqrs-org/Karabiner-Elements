@@ -14,7 +14,7 @@ static CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventTyp
   }
 
   if (event) {
-    CGEventSetFlags(event, kCGEventFlagMaskNonCoalesced | kCGEventFlagMaskCommand);
+    CGEventSetFlags(event, static_cast<CGEventFlags>(kCGEventFlagMaskNonCoalesced | kCGEventFlagMaskCommand));
   }
   return event;
 }
