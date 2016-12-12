@@ -1,6 +1,17 @@
 #pragma once
 
+#include "DiagnosticMacros.hpp"
+
+BEGIN_IOKIT_INCLUDE;
+#include <IOKit/IOBufferMemoryDescriptor.h>
+#include <IOKit/IOLib.h>
+#include <IOKit/IOUserClient.h>
+#include <IOKit/hid/IOHIDInterface.h>
+#include <IOKit/hidsystem/IOHIDSystem.h>
+END_IOKIT_INCLUDE;
+
 #include "VersionSignature.hpp"
+#include "VirtualHIDEventService.hpp"
 #include "VirtualHIDKeyboard.hpp"
 #include "VirtualHIDPointing.hpp"
 #include "VirtualHIDRoot.hpp"
@@ -25,6 +36,7 @@ public:
 
 private:
 #include "KernelVersion.hpp"
+#include "ServiceDetector.hpp"
 
   // ----------------------------------------
   // VirtualHIDKeyboard
@@ -37,6 +49,11 @@ private:
                                                             void* reference,
                                                             IOExternalMethodArguments* arguments);
   IOReturn terminateVirtualHIDKeyboardCallback(void);
+
+  static IOReturn staticDispatchKeyboardEventCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
+                                                      void* reference,
+                                                      IOExternalMethodArguments* arguments);
+  IOReturn dispatchKeyboardEventCallback(const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event);
 
   static IOReturn staticPostKeyboardInputReportCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                         void* reference,
@@ -66,29 +83,21 @@ private:
   IOReturn postPointingInputReportCallback(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& input);
 
   static IOReturn staticResetVirtualHIDPointingCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
-                                                            void* reference,
-                                                            IOExternalMethodArguments* arguments);
+                                                        void* reference,
+                                                        IOExternalMethodArguments* arguments);
   IOReturn resetVirtualHIDPointingCallback(void);
 
   // ----------------------------------------
-  // IOHIDSystem
-  static IOReturn staticPostKeyboardEventCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
-                                                  void* reference,
-                                                  IOExternalMethodArguments* arguments);
-  IOReturn postKeyboardEventCallback(const pqrs::karabiner_virtual_hid_device::keyboard_event& keyboard_event);
+  static bool isTargetHIDInterface(IOService* newService, IOService* refCon);
 
-  static IOReturn staticPostKeyboardSpecialEventCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
-                                                         void* reference,
-                                                         IOExternalMethodArguments* arguments);
-  IOReturn postKeyboardSpecialEventCallback(const pqrs::karabiner_virtual_hid_device::keyboard_special_event& keyboard_special_event);
+  bool initializeVirtualHIDEventService(IOHIDInterface* hidInterface);
+  void terminateVirtualHIDEventService(void);
 
-  static IOReturn staticUpdateEventFlagsCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
-                                                 void* reference,
-                                                 IOExternalMethodArguments* arguments);
-  IOReturn updateEventFlagsCallback(const uint32_t& flags);
-
+  // ----------------------------------------
+  ServiceDetector hidInterfaceDetector_;
   static IOExternalMethodDispatch methods_[static_cast<size_t>(pqrs::karabiner_virtual_hid_device::user_client_method::end_)];
   int kernelMajorReleaseVersion_;
   VIRTUAL_HID_KEYBOARD_CLASS* virtualHIDKeyboard_;
   VIRTUAL_HID_POINTING_CLASS* virtualHIDPointing_;
+  VIRTUAL_HID_EVENT_SERVICE_CLASS* virtualHIDEventService_;
 };

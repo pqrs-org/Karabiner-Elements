@@ -1,12 +1,3 @@
-#include "DiagnosticMacros.hpp"
-
-BEGIN_IOKIT_INCLUDE;
-#include <IOKit/IOBufferMemoryDescriptor.h>
-#include <IOKit/IOLib.h>
-#include <IOKit/IOUserClient.h>
-#include <IOKit/hidsystem/IOHIDSystem.h>
-END_IOKIT_INCLUDE;
-
 #include "UserClient.hpp"
 
 #define super IOUserClient
@@ -79,10 +70,18 @@ IOExternalMethodDispatch VIRTUAL_HID_ROOT_USERCLIENT_CLASS::methods_[static_cast
         0                                                                                     // No struct output value.
     },
     {
+        // dispatch_keyboard_event
+        reinterpret_cast<IOExternalMethodAction>(&staticDispatchKeyboardEventCallback), // Method pointer.
+        0,                                                                              // No scalar input value.
+        sizeof(pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event),  // One struct input value.
+        0,                                                                              // No scalar output value.
+        0                                                                               // No struct output value.
+    },
+    {
         // post_keyboard_input_report
         reinterpret_cast<IOExternalMethodAction>(&staticPostKeyboardInputReportCallback), // Method pointer.
         0,                                                                                // No scalar input value.
-        sizeof(pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input),             // One struct input value.
+        sizeof(pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input),           // One struct input value.
         0,                                                                                // No scalar output value.
         0                                                                                 // No struct output value.
     },
@@ -118,7 +117,7 @@ IOExternalMethodDispatch VIRTUAL_HID_ROOT_USERCLIENT_CLASS::methods_[static_cast
         // post_pointing_input_report
         reinterpret_cast<IOExternalMethodAction>(&staticPostPointingInputReportCallback), // Method pointer.
         0,                                                                                // No scalar input value.
-        sizeof(pqrs::karabiner_virtual_hid_device::hid_report::pointing_input),             // One struct input value.
+        sizeof(pqrs::karabiner_virtual_hid_device::hid_report::pointing_input),           // One struct input value.
         0,                                                                                // No scalar output value.
         0                                                                                 // No struct output value.
     },
@@ -129,34 +128,6 @@ IOExternalMethodDispatch VIRTUAL_HID_ROOT_USERCLIENT_CLASS::methods_[static_cast
         0,                                                                                // No struct input value.
         0,                                                                                // No scalar output value.
         0                                                                                 // No struct output value.
-    },
-
-    // ----------------------------------------
-    // IOHIDSystem
-
-    {
-        // post_keyboard_event
-        reinterpret_cast<IOExternalMethodAction>(&staticPostKeyboardEventCallback), // Method pointer.
-        0,                                                                          // No scalar input value.
-        sizeof(pqrs::karabiner_virtual_hid_device::keyboard_event),                   // One struct input value.
-        0,                                                                          // No scalar output value.
-        0                                                                           // No struct output value.
-    },
-    {
-        // post_keyboard_special_event
-        reinterpret_cast<IOExternalMethodAction>(&staticPostKeyboardSpecialEventCallback), // Method pointer.
-        0,                                                                                 // No scalar input value.
-        sizeof(pqrs::karabiner_virtual_hid_device::keyboard_special_event),                  // One struct input value.
-        0,                                                                                 // No scalar output value.
-        0                                                                                  // No struct output value.
-    },
-    {
-        // update_event_flags
-        reinterpret_cast<IOExternalMethodAction>(&staticUpdateEventFlagsCallback), // Method pointer.
-        0,                                                                         // No scalar input value.
-        sizeof(uint32_t),                                                          // One struct input value.
-        0,                                                                         // No scalar output value.
-        0                                                                          // No struct output value.
     },
 };
 
@@ -175,9 +146,12 @@ bool VIRTUAL_HID_ROOT_USERCLIENT_CLASS::initWithTask(task_t owningTask,
     return false;
   }
 
+  hidInterfaceDetector_.setIsTargetServiceCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS::isTargetHIDInterface, this);
+  hidInterfaceDetector_.setNotifier("IOHIDInterface");
   kernelMajorReleaseVersion_ = KernelVersion::getMajorReleaseVersion();
   virtualHIDKeyboard_ = nullptr;
   virtualHIDPointing_ = nullptr;
+  virtualHIDEventService_ = nullptr;
 
   return true;
 }
@@ -195,8 +169,12 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::clientClose(void) {
     postPointingInputReportCallback(report);
   }
 
+  terminateVirtualHIDEventService();
   TERMINATE_VIRTUAL_DEVICE(virtualHIDKeyboard_);
   TERMINATE_VIRTUAL_DEVICE(virtualHIDPointing_);
+
+  hidInterfaceDetector_.unsetNotifier();
+  hidInterfaceDetector_.unsetIsTargetServiceCallback();
 
   if (!terminate()) {
     IOLog("%s Error: terminate failed.\n", __PRETTY_FUNCTION__);
@@ -372,8 +350,23 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::resetVirtualHIDKeyboardCallback(void
     return kIOReturnSuccess;
   }
 
-  pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
-  return postKeyboardInputReportCallback(report);
+  bool result = kIOReturnSuccess;
+
+  // reset for dispatch_keyboard_event
+  if (virtualHIDEventService_) {
+    virtualHIDEventService_->dispatchKeyUpAllPressedKeys();
+  }
+
+  // reset for post_keyboard_input_report
+  {
+    pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
+    auto kr = postKeyboardInputReportCallback(report);
+    if (kr != kIOReturnSuccess) {
+      result = kIOReturnError;
+    }
+  }
+
+  return result;
 }
 
 #pragma mark - reset_virtual_hid_pointing
@@ -397,11 +390,11 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::resetVirtualHIDPointingCallback(void
   return postPointingInputReportCallback(report);
 }
 
-#pragma mark - post_keyboard_event
+#pragma mark - dispatch_keyboard_event
 
-IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticPostKeyboardEventCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
-                                                                            void* reference,
-                                                                            IOExternalMethodArguments* arguments) {
+IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticDispatchKeyboardEventCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
+                                                                                void* reference,
+                                                                                IOExternalMethodArguments* arguments) {
   if (!target) {
     return kIOReturnBadArgument;
   }
@@ -409,121 +402,70 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticPostKeyboardEventCallback(VIRT
     return kIOReturnBadArgument;
   }
 
-  if (auto keyboard_event = static_cast<const pqrs::karabiner_virtual_hid_device::keyboard_event*>(arguments->structureInput)) {
-    return target->postKeyboardEventCallback(*keyboard_event);
+  if (auto keyboard_event = static_cast<const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event*>(arguments->structureInput)) {
+    return target->dispatchKeyboardEventCallback(*keyboard_event);
   }
 
   return kIOReturnBadArgument;
 }
 
-IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::postKeyboardEventCallback(const pqrs::karabiner_virtual_hid_device::keyboard_event& keyboard_event) {
-  if (kernelMajorReleaseVersion_ < 16) {
-    IOLog(VIRTUAL_HID_ROOT_USERCLIENT_CLASS_STRING "::postKeyboardEventCallback requires macOS 10.12 or later.\n");
-    // IOHIDSystem::keyboardEvent is available since macOS Sierra.
-    // (This method exists in previous macOS releases, but it causes kernel panic.)
-    return kIOReturnUnsupported;
-  }
-
-  if (auto hidSystem = IOHIDSystem::instance()) {
-    AbsoluteTime ts;
-    clock_get_uptime(&ts);
-
-    hidSystem->keyboardEvent(static_cast<uint32_t>(keyboard_event.event_type),
-                             keyboard_event.flags,
-                             keyboard_event.key,
-                             keyboard_event.char_code,
-                             keyboard_event.char_set,
-                             keyboard_event.orig_char_code,
-                             keyboard_event.orig_char_set,
-                             keyboard_event.keyboard_type,
-                             keyboard_event.repeat,
-                             ts);
-
+IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::dispatchKeyboardEventCallback(const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event) {
+  if (virtualHIDEventService_) {
+    virtualHIDEventService_->dispatchKeyboardEvent(keyboard_event.usage_page, keyboard_event.usage, keyboard_event.value);
     return kIOReturnSuccess;
   }
 
   return kIOReturnError;
 }
 
-#pragma mark - post_keyboard_special_event
-
-IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticPostKeyboardSpecialEventCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
-                                                                                   void* reference,
-                                                                                   IOExternalMethodArguments* arguments) {
-  if (!target) {
-    return kIOReturnBadArgument;
-  }
-  if (!arguments) {
-    return kIOReturnBadArgument;
-  }
-
-  if (auto keyboard_special_event = static_cast<const pqrs::karabiner_virtual_hid_device::keyboard_special_event*>(arguments->structureInput)) {
-    return target->postKeyboardSpecialEventCallback(*keyboard_special_event);
+bool VIRTUAL_HID_ROOT_USERCLIENT_CLASS::isTargetHIDInterface(IOService* service, IOService* refCon) {
+  if (auto self = OSDynamicCast(VIRTUAL_HID_ROOT_USERCLIENT_CLASS, refCon)) {
+    if (auto interface = OSDynamicCast(IOHIDInterface, service)) {
+      if (auto serialNumber = interface->getSerialNumber()) {
+        if (serialNumber->isEqualTo(VIRTUAL_HID_KEYBOARD_CLASS::serialNumberCString())) {
+          if (self->initializeVirtualHIDEventService(interface)) {
+            return true;
+          }
+        }
+      }
+    }
   }
 
-  return kIOReturnBadArgument;
+  return false;
 }
 
-IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::postKeyboardSpecialEventCallback(const pqrs::karabiner_virtual_hid_device::keyboard_special_event& keyboard_special_event) {
-  if (kernelMajorReleaseVersion_ < 16) {
-    IOLog(VIRTUAL_HID_ROOT_USERCLIENT_CLASS_STRING "::postKeyboardSpecialEventCallback requires macOS 10.12 or later.\n");
-    // IOHIDSystem::keyboardSpecialEvent is available since macOS Sierra.
-    // (This method exists in previous macOS releases, but it causes kernel panic.)
-    return kIOReturnUnsupported;
+bool VIRTUAL_HID_ROOT_USERCLIENT_CLASS::initializeVirtualHIDEventService(IOHIDInterface* hidInterface) {
+  terminateVirtualHIDEventService();
+
+  if (hidInterface) {
+    virtualHIDEventService_ = new VIRTUAL_HID_EVENT_SERVICE_CLASS();
+    if (virtualHIDEventService_) {
+      if (virtualHIDEventService_->init(nullptr)) {
+        if (virtualHIDEventService_->attach(hidInterface)) {
+          if (virtualHIDEventService_->start(hidInterface)) {
+            IOLog(VIRTUAL_HID_ROOT_CLASS_STRING "::virtualHIDEventService_ is started\n");
+            return true;
+          }
+
+          // Error handling
+          virtualHIDEventService_->detach(hidInterface);
+        }
+      }
+      // Error handling
+      virtualHIDEventService_->release();
+      virtualHIDEventService_ = nullptr;
+    }
   }
 
-  if (auto hidSystem = IOHIDSystem::instance()) {
-    AbsoluteTime ts;
-    clock_get_uptime(&ts);
-
-    hidSystem->keyboardSpecialEvent(static_cast<uint32_t>(keyboard_special_event.event_type),
-                                    keyboard_special_event.flags,
-                                    keyboard_special_event.key,
-                                    keyboard_special_event.flavor,
-                                    keyboard_special_event.guid,
-                                    keyboard_special_event.repeat,
-                                    ts);
-
-    return kIOReturnSuccess;
-  }
-
-  return kIOReturnError;
+  return false;
 }
 
-#pragma mark - update_event_flags
+void VIRTUAL_HID_ROOT_USERCLIENT_CLASS::terminateVirtualHIDEventService(void) {
+  if (virtualHIDEventService_) {
+    virtualHIDEventService_->dispatchKeyUpAllPressedKeys();
 
-IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticUpdateEventFlagsCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
-                                                                           void* reference,
-                                                                           IOExternalMethodArguments* arguments) {
-  if (!target) {
-    return kIOReturnBadArgument;
+    virtualHIDEventService_->terminate(kIOServiceSynchronous);
+    virtualHIDEventService_->release();
+    virtualHIDEventService_ = nullptr;
   }
-  if (!arguments) {
-    return kIOReturnBadArgument;
-  }
-
-  if (auto flags = static_cast<const uint32_t*>(arguments->structureInput)) {
-    return target->updateEventFlagsCallback(*flags);
-  }
-
-  return kIOReturnBadArgument;
-}
-
-IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::updateEventFlagsCallback(const uint32_t& flags) {
-  if (kernelMajorReleaseVersion_ < 16) {
-    IOLog(VIRTUAL_HID_ROOT_USERCLIENT_CLASS_STRING "::updateEventFlagsCallback requires macOS 10.12 or later.\n");
-    // IOHIDSystem::keyboardSpecialEvent is available since macOS Sierra.
-    // (This method exists in previous macOS releases, but it causes kernel panic.)
-    return kIOReturnUnsupported;
-  }
-
-  if (auto hidSystem = IOHIDSystem::instance()) {
-    AbsoluteTime ts;
-    clock_get_uptime(&ts);
-
-    hidSystem->updateEventFlags(flags);
-    return kIOReturnSuccess;
-  }
-
-  return kIOReturnError;
 }

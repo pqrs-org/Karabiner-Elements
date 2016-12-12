@@ -15,6 +15,13 @@ all: gitclean
 install:
 	sudo sh dist/update.sh
 
+uninstall:
+	sudo sh dist/uninstall.sh
+
+reload:
+	make uninstall
+	make install
+
 clean:
 	make -C src clean
 

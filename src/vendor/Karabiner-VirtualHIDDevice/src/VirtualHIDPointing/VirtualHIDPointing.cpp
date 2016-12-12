@@ -102,11 +102,11 @@ OSNumber* VIRTUAL_HID_POINTING_CLASS::newProductIDNumber() const {
 }
 
 OSNumber* VIRTUAL_HID_POINTING_CLASS::newPrimaryUsageNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(kHIDPage_GenericDesktop), 32);
+  return OSNumber::withNumber(static_cast<uint32_t>(kHIDUsage_GD_Mouse), 32);
 }
 
 OSNumber* VIRTUAL_HID_POINTING_CLASS::newPrimaryUsagePageNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(kHIDUsage_GD_Mouse), 32);
+  return OSNumber::withNumber(static_cast<uint32_t>(kHIDPage_GenericDesktop), 32);
 }
 
 IOReturn VIRTUAL_HID_POINTING_CLASS::newReportDescriptor(IOMemoryDescriptor** descriptor) const {

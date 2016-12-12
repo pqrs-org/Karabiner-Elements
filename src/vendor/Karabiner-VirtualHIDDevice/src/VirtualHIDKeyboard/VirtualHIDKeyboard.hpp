@@ -22,4 +22,8 @@ public:
   virtual IOReturn newReportDescriptor(IOMemoryDescriptor** descriptor) const override;
   virtual OSString* newSerialNumberString() const override;
   virtual OSNumber* newLocationIDNumber() const override;
+
+  static const char* serialNumberCString(void) {
+    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.VirtualHIDKeyboard";
+  }
 };

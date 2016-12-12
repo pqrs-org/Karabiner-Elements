@@ -6,6 +6,7 @@ find ../../* \
     ! -ipath '*/Pods/*' \
     ! -ipath '*/build/*' \
     ! -ipath '*/vendor/*' \
+    ! -ipath '*/sdk/*' \
     \
     | while read f; do
     clang-format -i "$f"

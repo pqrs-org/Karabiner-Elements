@@ -1,7 +1,7 @@
 # Files
 
 * Karabiner-VirtualHIDDevice:
-  * version: v2.9.0
+  * version: v3.3.0
   * url: https://github.com/tekezo/Karabiner-VirtualHIDDevice
 * spdlog:
   * version: v0.11.0
