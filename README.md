@@ -35,7 +35,7 @@ System requirements:
 * Command Line Tools for Xcode
 * Boost 1.61.0+ (header-only) http://www.boost.org/
 
-Please install Boost into `/opt/local/include/boost`. (eg. `/opt/local/include/boost/version.hpp`)
+To install the Boost requirement, [download the latest Boost release](http://www.boost.org/), open the `boost` folder inside of it, and move all of the files there into `/opt/local/include/boost/`.
 
 ### Step 1: Getting source code
 
