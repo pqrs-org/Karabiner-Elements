@@ -2,23 +2,12 @@
 
 * `karabiner_grabber`
   * Run with root privilege.
-  * Seize the input devices and modify events then post events using `karabiner_event_dispatcher`.
-* `karabiner_event_dispatcher`
-  * Launch with root privilege. And then change uid to console user.
-  * Receive key events from `karabiner_grabber` and post them to IOHIDSystem.
+  * Seize the input devices and modify events then post events using `Karabiner-VirtualHIDDevice`.
 * `karabiner_console_user_server`
   * Run with console user privilege.
   * Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
   * Monitor a karabiner configuration file and notify changes to `karabiner_grabber`.
   * `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
-
-## About security
-
-`karabiner_grabber` and `karabiner_event_dispatcher` treat very sensitive data (input events from device).
-And they seizes devices even in Secure Keyboard Entry.
-
-They are communicating by using unix domain sockets.
-To avoid the data leaks, the unix domain socket of `karabiner_event_dispatcher` is owned by root user and forbid access from normal privilege users.
 
 ## program sequence
 
@@ -27,16 +16,9 @@ To avoid the data leaks, the unix domain socket of `karabiner_event_dispatcher` 
 `karabiner_grabber`
 
 1. Run `karabiner_grabber`.
-2. `karabiner_grabber` launches `karabiner_event_dispatcher`.
 3. `karabiner_grabber` opens grabber server unix domain socket.
 4. `karabiner_grabber` start polling the session state.
 5. When session state is changed, `karabiner_grabber` changes the unix domain socket owner to console user.
-
-`karabiner_event_dispatcher`
-
-1. `karabiner_event_dispatcher` provides a unix domain socket for `karabiner_grabber`.
-2. `karabiner_event_dispatcher` makes a connection to `karabiner_grabber`.
-3. `karabiner_event_dispatcher` changes their uid to the console user.
 
 ### device grabbing
 

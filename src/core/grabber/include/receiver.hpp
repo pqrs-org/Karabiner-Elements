@@ -67,11 +67,6 @@ private:
             auto p = reinterpret_cast<krbn::operation_type_connect_struct*>(&(buffer_[0]));
 
             switch (p->connect_from) {
-            case krbn::connect_from::event_dispatcher:
-              logger::get_logger().info("karabiner_event_dispatcher is connected (pid:{0})", p->pid);
-              event_manipulator_.create_event_dispatcher_client();
-              break;
-
             case krbn::connect_from::console_user_server:
               logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 

@@ -41,7 +41,6 @@
 		3469EB701D814F140005D30D /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
 		347113141D871C6C001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_monitor.hpp; path = ../../share/process_monitor.hpp; sourceTree = SOURCE_ROOT; };
 		348FC00A1D9B76830083F98F /* virtual_hid_device_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_device_client.hpp; path = ../../share/virtual_hid_device_client.hpp; sourceTree = SOURCE_ROOT; };
-		349950641D891BCF004FE466 /* event_dispatcher_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_dispatcher_manager.hpp; path = include/manipulator/event_dispatcher_manager.hpp; sourceTree = SOURCE_ROOT; };
 		349950681D89A25D004FE466 /* event_manipulator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_manipulator.hpp; path = include/manipulator/event_manipulator.hpp; sourceTree = SOURCE_ROOT; };
 		349950691D89A2EF004FE466 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
@@ -135,7 +134,6 @@
 		34A88AA31D69C84900DD480B /* manipulator */ = {
 			isa = PBXGroup;
 			children = (
-				349950641D891BCF004FE466 /* event_dispatcher_manager.hpp */,
 				349950681D89A25D004FE466 /* event_manipulator.hpp */,
 				34A88AA41D69C85600DD480B /* modifier_flag_manager.hpp */,
 				34D2FC841D9C120F00168D20 /* pointing_button_manager.hpp */,

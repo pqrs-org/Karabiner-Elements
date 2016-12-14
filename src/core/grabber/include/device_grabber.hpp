@@ -349,9 +349,6 @@ private:
       case manipulator::event_manipulator::ready_state::virtual_hid_device_client_is_not_ready:
         message += "(virtual_hid_device_client is not ready) ";
         break;
-      case manipulator::event_manipulator::ready_state::event_dispatcher_manager_is_not_ready:
-        message += "(event_dispatcher_manager_is_not_ready is not ready) ";
-        break;
       }
       message += "Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);

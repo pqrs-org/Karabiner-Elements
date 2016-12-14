@@ -7,20 +7,12 @@
 
 class constants final {
 public:
-  static const char* get_event_dispatcher_binary_file_path(void) {
-    return "/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_event_dispatcher";
-  }
-
   static const char* get_tmp_directory(void) {
     return "/Library/Application Support/org.pqrs/tmp";
   }
 
   static const char* get_grabber_socket_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_receiver";
-  }
-
-  static const char* get_event_dispatcher_socket_file_path(void) {
-    return "/Library/Application Support/org.pqrs/tmp/karabiner_event_dispatcher_receiver";
   }
 
   static const char* get_devices_json_file_path(void) {

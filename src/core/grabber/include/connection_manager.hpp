@@ -30,8 +30,6 @@ public:
               last_uid_ = *uid;
               logger::get_logger().info("current_console_user_id: {0}", *uid);
 
-              event_manipulator_.relaunch_event_dispatcher();
-
               receiver_ = nullptr;
               receiver_ = std::make_unique<receiver>(event_manipulator_, device_grabber_);
             }

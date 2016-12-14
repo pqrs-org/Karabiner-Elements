@@ -2,7 +2,6 @@
 
 #include "boost_defs.hpp"
 
-#include "event_dispatcher_manager.hpp"
 #include "gcd_utility.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
@@ -23,9 +22,7 @@ public:
   event_manipulator(const event_manipulator&) = delete;
 
   event_manipulator(void) : virtual_hid_device_client_(logger::get_logger(),
-                                                       std::bind(&event_manipulator::virtual_hid_device_client_connected_callback, this, std::placeholders::_1)),
-                            event_dispatcher_manager_(),
-                            key_repeat_manager_(*this) {
+                                                       std::bind(&event_manipulator::virtual_hid_device_client_connected_callback, this, std::placeholders::_1)) {
   }
 
   ~event_manipulator(void) {
@@ -34,31 +31,21 @@ public:
   enum class ready_state {
     ready,
     virtual_hid_device_client_is_not_ready,
-    event_dispatcher_manager_is_not_ready,
   };
 
   ready_state is_ready(void) {
     if (!virtual_hid_device_client_.is_connected()) {
       return ready_state::virtual_hid_device_client_is_not_ready;
     }
-    if (!event_dispatcher_manager_.is_connected()) {
-      return ready_state::event_dispatcher_manager_is_not_ready;
-    }
     return ready_state::ready;
   }
 
   void reset(void) {
-    key_repeat_manager_.stop();
-
     manipulated_keys_.clear();
     manipulated_fn_keys_.clear();
 
     modifier_flag_manager_.reset();
     modifier_flag_manager_.unlock();
-
-    virtual_hid_keyboard_pressed_keys_.clear();
-
-    event_dispatcher_manager_.set_caps_lock_state(false);
 
     pointing_button_manager_.reset();
 
@@ -77,10 +64,6 @@ public:
     if (bits) {
       virtual_hid_device_client_.reset_virtual_hid_pointing();
     }
-  }
-
-  void relaunch_event_dispatcher(void) {
-    event_dispatcher_manager_.relaunch();
   }
 
   void set_system_preferences_values(const system_preferences::values& values) {
@@ -105,10 +88,6 @@ public:
     fn_function_keys_.add(from_key_code, to_key_code);
   }
 
-  void create_event_dispatcher_client(void) {
-    event_dispatcher_manager_.create_event_dispatcher_client();
-  }
-
   void initialize_virtual_hid_pointing(void) {
     virtual_hid_device_client_.initialize_virtual_hid_pointing();
   }
@@ -120,11 +99,6 @@ public:
   void set_caps_lock_state(bool state) {
     modifier_flag_manager_.manipulate(krbn::modifier_flag::caps_lock,
                                       state ? modifier_flag_manager::operation::lock : modifier_flag_manager::operation::unlock);
-
-    // Do not call event_dispatcher_manager_.set_caps_lock_state here.
-    //
-    // This method should be called in event_tap_manager_.caps_lock_state_changed_callback.
-    // Thus, the caps lock state in IOHIDSystem is already changed.
   }
 
   void handle_keyboard_event(device_registry_entry_id device_registry_entry_id,
@@ -211,43 +185,11 @@ public:
     }
 
     // ----------------------------------------
-    // Post input events to karabiner_event_dispatcher
-
-    if (to_key_code == krbn::key_code::caps_lock) {
-      if (auto hid_system_key = krbn::types::get_hid_system_key(to_key_code)) {
-        if (pressed) {
-          virtual_hid_keyboard_pressed_keys_.add(*hid_system_key);
-          key_repeat_manager_.stop();
-        } else {
-          virtual_hid_keyboard_pressed_keys_.remove(*hid_system_key);
-        }
-
-        pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
-        report.modifiers = modifier_flag_manager_.get_hid_report_bits();
-        virtual_hid_keyboard_pressed_keys_.set_report_keys(report);
-        virtual_hid_device_client_.post_keyboard_input_report(report);
-      }
-      return;
-    }
-
     if (post_modifier_flag_event(to_key_code, keyboard_type, pressed)) {
-      key_repeat_manager_.stop();
       return;
     }
 
-    post_key(from_key_code, to_key_code, keyboard_type, pressed, false);
-
-    // set key repeat
-    long initial_key_repeat_milliseconds = 0;
-    long key_repeat_milliseconds = 0;
-    {
-      std::lock_guard<std::mutex> guard(system_preferences_values_mutex_);
-      initial_key_repeat_milliseconds = system_preferences_values_.get_initial_key_repeat_milliseconds();
-      key_repeat_milliseconds = system_preferences_values_.get_key_repeat_milliseconds();
-    }
-
-    key_repeat_manager_.start(from_key_code, to_key_code, keyboard_type, pressed,
-                              initial_key_repeat_milliseconds, key_repeat_milliseconds);
+    post_key(to_key_code, keyboard_type, pressed, false);
   }
 
   void handle_pointing_event(device_registry_entry_id device_registry_entry_id,
@@ -293,7 +235,7 @@ public:
   }
 
   void stop_key_repeat(void) {
-    key_repeat_manager_.stop();
+    virtual_hid_device_client_.reset_virtual_hid_keyboard();
   }
 
 private:
@@ -365,49 +307,6 @@ private:
     std::mutex mutex_;
   };
 
-  class virtual_hid_keyboard_pressed_keys final {
-  public:
-    virtual_hid_keyboard_pressed_keys(const virtual_hid_keyboard_pressed_keys&) = delete;
-
-    virtual_hid_keyboard_pressed_keys(void) {
-    }
-
-    void clear(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      keys_.clear();
-    }
-
-    void add(uint8_t hid_system_key) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      if (std::find(keys_.begin(), keys_.end(), hid_system_key) == keys_.end()) {
-        keys_.push_back(hid_system_key);
-      }
-    }
-
-    void remove(uint8_t hid_system_key) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      keys_.remove(hid_system_key);
-    }
-
-    void set_report_keys(pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& report) {
-      size_t i = 0;
-      for (const auto& key : keys_) {
-        if (i >= sizeof(report.keys) / sizeof(report.keys[0])) {
-          break;
-        }
-        report.keys[i] = key;
-        ++i;
-      }
-    }
-
-  private:
-    std::list<uint8_t> keys_;
-    std::mutex mutex_;
-  };
-
   class simple_modifications final {
   public:
     simple_modifications(const simple_modifications&) = delete;
@@ -443,62 +342,6 @@ private:
     std::mutex mutex_;
   };
 
-  class key_repeat_manager final {
-  public:
-    key_repeat_manager(const key_repeat_manager&) = delete;
-
-    key_repeat_manager(event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
-                                                               timer_(nullptr) {
-    }
-
-    ~key_repeat_manager(void) {
-      stop();
-    }
-
-    void start(krbn::key_code from_key_code, krbn::key_code to_key_code,
-               krbn::keyboard_type keyboard_type, bool pressed,
-               long initial_key_repeat_milliseconds, long key_repeat_milliseconds) {
-      // stop key repeat before post key.
-      if (pressed) {
-        stop();
-      } else {
-        if (from_key_code_ && *from_key_code_ == from_key_code) {
-          stop();
-        }
-      }
-
-      // set key repeat
-      if (pressed) {
-        if (to_key_code == krbn::key_code::mute ||
-            to_key_code == krbn::key_code::vk_consumer_play) {
-          return;
-        }
-
-        timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-            DISPATCH_TIMER_STRICT,
-            dispatch_time(DISPATCH_TIME_NOW, initial_key_repeat_milliseconds * NSEC_PER_MSEC),
-            key_repeat_milliseconds * NSEC_PER_MSEC,
-            0,
-            ^{
-              event_manipulator_.post_key(from_key_code, to_key_code, keyboard_type, pressed, true);
-            });
-
-        from_key_code_ = from_key_code;
-      }
-    }
-
-    void stop(void) {
-      timer_ = nullptr;
-    }
-
-  private:
-    event_manipulator& event_manipulator_;
-
-    std::unique_ptr<gcd_utility::main_queue_timer> timer_;
-
-    boost::optional<krbn::key_code> from_key_code_;
-  };
-
   void virtual_hid_device_client_connected_callback(virtual_hid_device_client& virtual_hid_device_client) {
     virtual_hid_device_client.initialize_virtual_hid_keyboard();
   }
@@ -510,14 +353,14 @@ private:
     if (modifier_flag != krbn::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
-      if (modifier_flag == krbn::modifier_flag::fn) {
-        auto flags = modifier_flag_manager_.get_io_option_bits(key_code);
-        event_dispatcher_manager_.post_modifier_flags(key_code, flags, keyboard_type);
-      } else {
-        pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
-        report.modifiers = modifier_flag_manager_.get_hid_report_bits();
-        virtual_hid_keyboard_pressed_keys_.set_report_keys(report);
-        virtual_hid_device_client_.post_keyboard_input_report(report);
+      if (auto usage_page = krbn::types::get_usage_page(key_code)) {
+        if (auto usage = krbn::types::get_usage(key_code)) {
+          pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
+          keyboard_event.usage_page = *usage_page;
+          keyboard_event.usage = *usage;
+          keyboard_event.value = pressed;
+          virtual_hid_device_client_.dispatch_keyboard_event(keyboard_event);
+        }
       }
 
       return true;
@@ -526,22 +369,21 @@ private:
     return false;
   }
 
-  void post_key(krbn::key_code from_key_code, krbn::key_code to_key_code, krbn::keyboard_type keyboard_type, bool pressed, bool repeat) {
-    auto hid_system_key = krbn::types::get_hid_system_key(to_key_code);
-    auto hid_system_aux_control_button = krbn::types::get_hid_system_aux_control_button(to_key_code);
-    if (hid_system_key || hid_system_aux_control_button) {
-      auto event_type = pressed ? krbn::event_type::key_down : krbn::event_type::key_up;
-      auto flags = modifier_flag_manager_.get_io_option_bits(to_key_code);
-      event_dispatcher_manager_.post_key(to_key_code, event_type, flags, keyboard_type, repeat);
+  void post_key(krbn::key_code key_code, krbn::keyboard_type keyboard_type, bool pressed, bool repeat) {
+    if (auto usage_page = krbn::types::get_usage_page(key_code)) {
+      if (auto usage = krbn::types::get_usage(key_code)) {
+        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
+        keyboard_event.usage_page = *usage_page;
+        keyboard_event.usage = *usage;
+        keyboard_event.value = pressed;
+        virtual_hid_device_client_.dispatch_keyboard_event(keyboard_event);
+      }
     }
   }
 
   virtual_hid_device_client virtual_hid_device_client_;
-  virtual_hid_keyboard_pressed_keys virtual_hid_keyboard_pressed_keys_;
-  event_dispatcher_manager event_dispatcher_manager_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
-  key_repeat_manager key_repeat_manager_;
 
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;

@@ -19,7 +19,7 @@
 namespace krbn {
 enum class operation_type : uint8_t {
   none,
-  // event_dispatcher,console_user_server -> grabber
+  // console_user_server -> grabber
   connect,
   // console_user_server -> grabber
   system_preferences_values_updated,
@@ -30,14 +30,9 @@ enum class operation_type : uint8_t {
   clear_devices,
   add_device,
   complete_devices,
-  // grabber -> event_dispatcher
-  set_caps_lock_state,
-  post_modifier_flags,
-  post_key,
 };
 
 enum class connect_from : uint8_t {
-  event_dispatcher,
   console_user_server,
 };
 
@@ -877,32 +872,5 @@ struct operation_type_complete_devices_struct {
   operation_type_complete_devices_struct(void) : operation_type(operation_type::complete_devices) {}
 
   const operation_type operation_type;
-};
-
-struct operation_type_set_caps_lock_state_struct {
-  operation_type_set_caps_lock_state_struct(void) : operation_type(operation_type::set_caps_lock_state) {}
-
-  const operation_type operation_type;
-  bool state;
-};
-
-struct operation_type_post_modifier_flags_struct {
-  operation_type_post_modifier_flags_struct(void) : operation_type(operation_type::post_modifier_flags) {}
-
-  const operation_type operation_type;
-  key_code key_code;
-  IOOptionBits flags;
-  keyboard_type keyboard_type;
-};
-
-struct operation_type_post_key_struct {
-  operation_type_post_key_struct(void) : operation_type(operation_type::post_key) {}
-
-  const operation_type operation_type;
-  key_code key_code;
-  event_type event_type;
-  IOOptionBits flags;
-  keyboard_type keyboard_type;
-  bool repeat;
 };
 }
