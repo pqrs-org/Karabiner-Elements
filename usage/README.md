@@ -61,7 +61,7 @@ We describe about `karabiner.json` for advanced usage.
 
 ## An example `karabiner.json`
 
-`karabiner.json` uses the `json` syntax. If you are not familiar with it, it may help to [read up on it](http://www.w3schools.com/json/) beforehand.
+`karabiner.json` uses the `json` syntax. If you are not familiar with it, it may help to [read up on it](http://www.w3schools.com/js/js_json_intro.asp) beforehand.
 
 The following is an example configuration. It maps Caps Lock `⇪` key to Delete `⌫` key.
 
