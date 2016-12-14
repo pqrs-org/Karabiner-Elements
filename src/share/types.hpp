@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "apple_hid_usage_tables.hpp"
 #include "system_preferences.hpp"
 #include <CoreFoundation/CoreFoundation.h>
@@ -729,6 +730,82 @@ public:
       return boost::none;
     }
     return it->second;
+  }
+
+  static boost::optional<pqrs::karabiner_virtual_hid_device::usage_page> get_usage_page(key_code key_code) {
+    switch (key_code) {
+    case key_code::vk_fn_modifier:
+    case key_code::vk_consumer_illumination_down:
+    case key_code::vk_consumer_illumination_up:
+      return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_top_case;
+
+    case key_code::vk_dashboard:
+    case key_code::vk_launchpad:
+    case key_code::vk_mission_control:
+      return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_keyboard;
+
+    case key_code::mute:
+    case key_code::volume_up:
+    case key_code::volume_down:
+    case key_code::vk_consumer_brightness_down:
+    case key_code::vk_consumer_brightness_up:
+    case key_code::vk_consumer_next:
+    case key_code::vk_consumer_play:
+    case key_code::vk_consumer_previous:
+      return pqrs::karabiner_virtual_hid_device::usage_page::consumer;
+
+    default:
+      return pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad;
+    }
+  }
+
+  static boost::optional<pqrs::karabiner_virtual_hid_device::usage> get_usage(key_code key_code) {
+    switch (key_code) {
+    case key_code::vk_fn_modifier:
+      return pqrs::karabiner_virtual_hid_device::usage::av_top_case_keyboard_fn;
+
+    case key_code::vk_consumer_illumination_down:
+      return pqrs::karabiner_virtual_hid_device::usage::av_top_case_illumination_down;
+
+    case key_code::vk_consumer_illumination_up:
+      return pqrs::karabiner_virtual_hid_device::usage::av_top_case_illumination_up;
+
+    case key_code::vk_dashboard:
+      return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_dashboard;
+
+    case key_code::vk_launchpad:
+      return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_launchpad;
+
+    case key_code::vk_mission_control:
+      return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_expose_all;
+
+    case key_code::mute:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_mute;
+
+    case key_code::volume_up:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_volume_increment;
+
+    case key_code::volume_down:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_volume_decrement;
+
+    case key_code::vk_consumer_brightness_down:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_display_brightness_decrement;
+
+    case key_code::vk_consumer_brightness_up:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_display_brightness_increment;
+
+    case key_code::vk_consumer_next:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_fastforward;
+
+    case key_code::vk_consumer_play:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_play_or_pause;
+
+    case key_code::vk_consumer_previous:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_rewind;
+
+    default:
+      return pqrs::karabiner_virtual_hid_device::usage(key_code);
+    }
   }
 
   static boost::optional<pointing_button> get_pointing_button(uint32_t usage_page, uint32_t usage) {
