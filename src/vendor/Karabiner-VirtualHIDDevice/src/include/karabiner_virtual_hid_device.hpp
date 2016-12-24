@@ -52,6 +52,16 @@ public:
     apple_vendor_keyboard_brightness_down = 0x21,
   };
 
+  enum class milliseconds : uint64_t {
+  };
+
+  enum class nanoseconds : uint64_t {
+  };
+
+  static nanoseconds to_nanoseconds(milliseconds value) {
+    return nanoseconds(static_cast<uint64_t>(value) * 1000 * 1000);
+  }
+
   class hid_report final {
   public:
     class __attribute__((packed)) keyboard_input final {
@@ -112,6 +122,23 @@ public:
     };
   };
 
+  class properties final {
+  public:
+    enum class keyboard_type : uint32_t {
+      none = 0,
+      ansi = 40,
+      iso = 41,
+      jis = 42,
+    };
+
+    class __attribute__((packed)) keyboard_initialization final {
+    public:
+      keyboard_initialization(void) : keyboard_type(keyboard_type::none) {}
+
+      keyboard_type keyboard_type;
+    };
+  };
+
   enum class user_client_method {
     // VirtualHIDKeyboard
     initialize_virtual_hid_keyboard,
@@ -130,7 +157,7 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v030500";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040000";
   }
 };
 }

@@ -57,7 +57,7 @@ IOExternalMethodDispatch VIRTUAL_HID_ROOT_USERCLIENT_CLASS::methods_[static_cast
         // initialize_virtual_hid_keyboard
         reinterpret_cast<IOExternalMethodAction>(&staticInitializeVirtualHIDKeyboardCallback), // Method pointer.
         0,                                                                                     // No scalar input value.
-        0,                                                                                     // No struct input value.
+        sizeof(pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization),       // One struct input value.
         0,                                                                                     // No scalar output value.
         0                                                                                      // No struct output value.
     },
@@ -209,11 +209,22 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticInitializeVirtualHIDKeyboardCa
   if (!target) {
     return kIOReturnBadArgument;
   }
+  if (!arguments) {
+    return kIOReturnBadArgument;
+  }
 
-  return target->initializeVirtualHIDKeyboardCallback();
+  if (auto properties = static_cast<const pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization*>(arguments->structureInput)) {
+    return target->initializeVirtualHIDKeyboardCallback(*properties);
+  }
+
+  return kIOReturnBadArgument;
 }
 
-IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::initializeVirtualHIDKeyboardCallback(void) {
+IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::initializeVirtualHIDKeyboardCallback(const pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization& properties) {
+  terminateVirtualHIDKeyboardCallback();
+
+  virtualHIDKeyboardType_ = properties.keyboard_type;
+
   CREATE_VIRTUAL_DEVICE(VIRTUAL_HID_KEYBOARD_CLASS, virtualHIDKeyboard_);
   return virtualHIDKeyboard_ ? kIOReturnSuccess : kIOReturnError;
 }
@@ -248,6 +259,8 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticTerminateVirtualHIDKeyboardCal
 }
 
 IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::terminateVirtualHIDKeyboardCallback(void) {
+  terminateVirtualHIDEventService();
+
   TERMINATE_VIRTUAL_DEVICE(virtualHIDKeyboard_);
   return kIOReturnSuccess;
 }
@@ -418,6 +431,8 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::dispatchKeyboardEventCallback(const 
   return kIOReturnError;
 }
 
+#pragma mark - other methods
+
 bool VIRTUAL_HID_ROOT_USERCLIENT_CLASS::isTargetHIDInterface(IOService* service, IOService* refCon) {
   if (auto self = OSDynamicCast(VIRTUAL_HID_ROOT_USERCLIENT_CLASS, refCon)) {
     if (auto interface = OSDynamicCast(IOHIDInterface, service)) {
@@ -440,7 +455,20 @@ bool VIRTUAL_HID_ROOT_USERCLIENT_CLASS::initializeVirtualHIDEventService(IOHIDIn
   if (hidInterface) {
     virtualHIDEventService_ = new VIRTUAL_HID_EVENT_SERVICE_CLASS();
     if (virtualHIDEventService_) {
-      if (virtualHIDEventService_->init(nullptr)) {
+      bool initialized = false;
+
+      if (auto properties = OSDictionary::withCapacity(1)) {
+        if (auto number = OSNumber::withNumber(static_cast<uint32_t>(virtualHIDKeyboardType_), 32)) {
+          properties->setObject(kIOHIDAltHandlerIdKey, number);
+          number->release();
+        }
+
+        initialized = virtualHIDEventService_->init(properties);
+
+        properties->release();
+      }
+
+      if (initialized) {
         if (virtualHIDEventService_->attach(hidInterface)) {
           if (virtualHIDEventService_->start(hidInterface)) {
             IOLog(VIRTUAL_HID_ROOT_CLASS_STRING "::virtualHIDEventService_ is started\n");

@@ -5,7 +5,7 @@ PATH='/bin:/sbin:/usr/bin:/usr/sbin'; export PATH
 basedir=`dirname "$0"`
 cd "$basedir"
 
-bundle_identifier='org.pqrs.driver.Karabiner.VirtualHIDDevice.v030500'
+bundle_identifier='org.pqrs.driver.Karabiner.VirtualHIDDevice.v040000'
 
 # Skip if already installed
 if kextstat | grep -q "$bundle_identifier"; then

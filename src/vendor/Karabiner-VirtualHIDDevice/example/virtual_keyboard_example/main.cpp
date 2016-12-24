@@ -31,11 +31,19 @@ int main(int argc, const char* argv[]) {
     goto finish;
   }
 
-  kr = pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect);
-  if (kr != KERN_SUCCESS) {
-    std::cerr << "initialize_virtual_hid_keyboard error" << std::endl;
+  {
+    pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
+#if 0
+    properties.keyboard_type = pqrs::karabiner_virtual_hid_device::properties::keyboard_type::jis;
+#else
+    properties.keyboard_type = pqrs::karabiner_virtual_hid_device::properties::keyboard_type::ansi;
+#endif
+    kr = pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect, properties);
+    if (kr != KERN_SUCCESS) {
+      std::cerr << "initialize_virtual_hid_keyboard error" << std::endl;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   // ----------------------------------------
 
@@ -52,11 +60,11 @@ int main(int argc, const char* argv[]) {
       keyboard_event.value = 0;
       break;
     case 2:
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardB);
+      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardOpenBracket);
       keyboard_event.value = 1;
       break;
     case 3:
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardB);
+      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardOpenBracket);
       keyboard_event.value = 0;
       break;
     case 4:
