@@ -212,6 +212,12 @@ enum class keyboard_type : uint32_t {
   jis = 42,
 };
 
+struct virtual_hid_keyboard_configuration_struct {
+  virtual_hid_keyboard_configuration_struct(void) : keyboard_type(keyboard_type::ansi) {}
+
+  keyboard_type keyboard_type;
+};
+
 struct device_identifiers_struct {
   vendor_id vendor_id;
   product_id product_id;
@@ -808,6 +814,26 @@ public:
       return krbn::pointing_button(usage);
     }
     return boost::none;
+  }
+
+  static const std::unordered_map<std::string, keyboard_type>& get_keyboard_type_map(void) {
+    static std::unordered_map<std::string, keyboard_type> map({
+        {"none", keyboard_type::none},
+        {"ansi", keyboard_type::ansi},
+        {"iso", keyboard_type::iso},
+        {"jis", keyboard_type::jis},
+    });
+
+    return map;
+  }
+
+  static boost::optional<keyboard_type> get_keyboard_type(const std::string& name) {
+    auto& map = get_keyboard_type_map();
+    auto it = map.find(name);
+    if (it == map.end()) {
+      return boost::none;
+    }
+    return it->second;
   }
 };
 
