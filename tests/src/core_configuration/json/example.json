@@ -21,6 +21,9 @@
                 "f11": "volume_down",
                 "f12": "volume_up"
             },
+            "virtual_hid_keyboard": {
+                "keyboard_type": "iso"
+            },
             "devices": [
                 {
                     "identifiers": {
@@ -39,7 +42,6 @@
                         "is_pointing_device": false
                     },
                     "ignore": true,
-                    "keyboard_type": 40,
                     "disable_built_in_keyboard_if_exists": true
                 }
             ]

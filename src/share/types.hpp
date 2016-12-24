@@ -227,7 +227,6 @@ struct device_identifiers_struct {
 
 struct device_configuration_struct {
   bool ignore;
-  keyboard_type keyboard_type;
   bool disable_built_in_keyboard_if_exists;
 };
 

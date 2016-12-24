@@ -31,6 +31,9 @@
 //                 "f11": "volume_down",
 //                 "f12": "volume_up"
 //             },
+//             "virtual_hid_keyboard": {
+//                 "keyboard_type": "ansi"
+//             },
 //             "devices": [
 //                 {
 //                     "identifiers": {
@@ -49,7 +52,6 @@
 //                         "is_pointing_device": false
 //                     },
 //                     "ignore": true,
-//                     "keyboard_type": 45,
 //                     "disable_built_in_keyboard_if_exists": true
 //                 }
 //             ]
@@ -103,7 +105,22 @@ public:
     return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
-  std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> get_current_profile_devices(void) {
+  krbn::virtual_hid_keyboard_configuration_struct get_current_profile_virtual_hid_keyboard(void) {
+    krbn::virtual_hid_keyboard_configuration_struct virtual_hid_keyboard_configuration_struct;
+
+    auto profile = get_current_profile();
+    if (profile["virtual_hid_keyboard"].is_object()) {
+      std::string keyboard_type_name = profile["virtual_hid_keyboard"]["keyboard_type"];
+      if (auto keyboard_type = krbn::types::get_keyboard_type(keyboard_type_name)) {
+        virtual_hid_keyboard_configuration_struct.keyboard_type = *keyboard_type;
+      }
+    }
+
+    return virtual_hid_keyboard_configuration_struct;
+  }
+
+  std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>>
+  get_current_profile_devices(void) {
     std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> v;
 
     auto profile = get_current_profile();
@@ -123,12 +140,7 @@ public:
 
           krbn::device_configuration_struct device_configuration_struct;
           device_configuration_struct.ignore = device["ignore"];
-          device_configuration_struct.keyboard_type = krbn::keyboard_type::none;
           device_configuration_struct.disable_built_in_keyboard_if_exists = false;
-          // keyboard_type is optional
-          if (device["keyboard_type"].is_number()) {
-            device_configuration_struct.keyboard_type = krbn::keyboard_type(static_cast<uint32_t>(device["keyboard_type"]));
-          }
           // disable_built_in_keyboard_if_exists is optional
           if (device["disable_built_in_keyboard_if_exists"].is_boolean()) {
             device_configuration_struct.disable_built_in_keyboard_if_exists = static_cast<bool>(device["disable_built_in_keyboard_if_exists"]);
