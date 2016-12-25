@@ -21,6 +21,7 @@ public:
     states_[static_cast<size_t>(krbn::modifier_flag::right_option)] = std::make_unique<state>("option", "⌥");
     states_[static_cast<size_t>(krbn::modifier_flag::right_command)] = std::make_unique<state>("command", "⌘");
     states_[static_cast<size_t>(krbn::modifier_flag::fn)] = std::make_unique<state>("fn", "fn");
+    states_[static_cast<size_t>(krbn::modifier_flag::hyper)] = std::make_unique<state>("hyper", "hyper");
   }
 
   void reset(void) {
@@ -119,6 +120,9 @@ public:
     if (pressed(krbn::modifier_flag::right_command)) {
       bits |= (0x1 << 7);
     }
+    if (pressed(krbn::modifier_flag::hyper)) {
+      bits |= (0x1 << 0) | (0x1 << 2) | (0x1 << 3);
+    }
 
     return bits;
   }
@@ -153,6 +157,9 @@ public:
     }
     if (pressed(krbn::modifier_flag::right_command)) {
       bits |= NX_COMMANDMASK | NX_DEVICERCMDKEYMASK;
+    }
+    if (pressed(krbn::modifier_flag::hyper)) {
+      bits |= NX_CONTROLMASK | NX_ALTERNATEMASK | NX_COMMANDMASK;
     }
     if (pressed(krbn::modifier_flag::fn)) {
       bits |= NX_SECONDARYFNMASK;
