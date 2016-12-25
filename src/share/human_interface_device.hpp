@@ -63,7 +63,6 @@ public:
                                                            grabbed_(false),
                                                            disabled_(false),
                                                            is_built_in_keyboard_(false),
-                                                           keyboard_type_(krbn::keyboard_type::none),
                                                            disable_built_in_keyboard_if_exists_(false) {
     // ----------------------------------------
     // retain device_
@@ -570,20 +569,6 @@ public:
     return r;
   }
 
-  krbn::keyboard_type get_keyboard_type(void) const {
-    krbn::keyboard_type __block value;
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      value = keyboard_type_;
-    });
-    return value;
-  }
-
-  void set_keyboard_type(krbn::keyboard_type keyboard_type) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      keyboard_type_ = keyboard_type;
-    });
-  }
-
   bool get_disable_built_in_keyboard_if_exists(void) const {
     bool __block value;
     gcd_utility::dispatch_sync_in_main_queue(^{
@@ -785,6 +770,5 @@ private:
   bool disabled_;
 
   bool is_built_in_keyboard_;
-  krbn::keyboard_type keyboard_type_;
   bool disable_built_in_keyboard_if_exists_;
 };
