@@ -1041,8 +1041,18 @@
                                     <rect key="frame" x="10" y="33" width="754" height="438"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SbY-ZN-51c">
+                                            <rect key="frame" x="15" y="384" width="724" height="34"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="vh8-NI-szY">
+                                                <font key="font" metaFont="system"/>
+                                                <string key="title">Karabiner-Elements gathers input events from all keyboards and then post them to the Karabiner's virtual keyboard.
+Please change the keyboard type if your keyboards are not ANSI layout.</string>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="iJC-5f-F7u">
-                                            <rect key="frame" x="275" y="383" width="205" height="25"/>
+                                            <rect key="frame" x="275" y="329" width="205" height="25"/>
                                             <subviews>
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zBP-Pe-eYU">
                                                     <rect key="frame" x="-2" y="4" width="99" height="17"/>
@@ -1078,8 +1088,11 @@
                                         </customView>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="SbY-ZN-51c" firstAttribute="leading" secondItem="z9H-0i-wnG" secondAttribute="leading" constant="17" id="9JV-0V-Vsc"/>
+                                        <constraint firstItem="iJC-5f-F7u" firstAttribute="top" secondItem="SbY-ZN-51c" secondAttribute="bottom" constant="30" id="IQu-IB-rVu"/>
+                                        <constraint firstAttribute="trailing" secondItem="SbY-ZN-51c" secondAttribute="trailing" constant="17" id="KSx-jp-nlx"/>
                                         <constraint firstItem="iJC-5f-F7u" firstAttribute="centerX" secondItem="z9H-0i-wnG" secondAttribute="centerX" id="Llz-Xq-3zJ"/>
-                                        <constraint firstItem="iJC-5f-F7u" firstAttribute="top" secondItem="z9H-0i-wnG" secondAttribute="top" constant="30" id="S6z-T7-bAb"/>
+                                        <constraint firstItem="SbY-ZN-51c" firstAttribute="top" secondItem="z9H-0i-wnG" secondAttribute="top" constant="20" id="hbo-ao-TG1"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
