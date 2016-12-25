@@ -16,7 +16,6 @@ const char* _Nonnull libkrbn_get_core_configuration_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 
 bool libkrbn_get_hid_system_key(uint8_t* _Nonnull key, const char* _Nonnull key_name);
-bool libkrbn_get_hid_system_aux_control_button(uint8_t* _Nonnull button, const char* _Nonnull key_name);
 
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string);
 

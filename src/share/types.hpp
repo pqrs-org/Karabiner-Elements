@@ -692,34 +692,6 @@ public:
     return it->second;
   }
 
-  static const std::unordered_map<key_code, uint8_t>& get_hid_system_aux_control_button_map(void) {
-    static std::unordered_map<key_code, uint8_t> map;
-    if (map.empty()) {
-      map[key_code(kHIDUsage_KeyboardPower)] = NX_POWER_KEY;
-      map[key_code(kHIDUsage_KeyboardMute)] = NX_KEYTYPE_MUTE;
-      map[key_code(kHIDUsage_KeyboardVolumeUp)] = NX_KEYTYPE_SOUND_UP;
-      map[key_code(kHIDUsage_KeyboardVolumeDown)] = NX_KEYTYPE_SOUND_DOWN;
-
-      map[key_code::vk_consumer_brightness_down] = NX_KEYTYPE_BRIGHTNESS_DOWN;
-      map[key_code::vk_consumer_brightness_up] = NX_KEYTYPE_BRIGHTNESS_UP;
-      map[key_code::vk_consumer_illumination_down] = NX_KEYTYPE_ILLUMINATION_DOWN;
-      map[key_code::vk_consumer_illumination_up] = NX_KEYTYPE_ILLUMINATION_UP;
-      map[key_code::vk_consumer_next] = NX_KEYTYPE_FAST;
-      map[key_code::vk_consumer_play] = NX_KEYTYPE_PLAY;
-      map[key_code::vk_consumer_previous] = NX_KEYTYPE_REWIND;
-    }
-    return map;
-  }
-
-  static boost::optional<uint8_t> get_hid_system_aux_control_button(key_code key_code) {
-    auto& map = get_hid_system_aux_control_button_map();
-    auto it = map.find(key_code);
-    if (it == map.end()) {
-      return boost::none;
-    }
-    return it->second;
-  }
-
   static boost::optional<pqrs::karabiner_virtual_hid_device::usage_page> get_usage_page(key_code key_code) {
     switch (key_code) {
     case key_code::vk_fn_modifier:

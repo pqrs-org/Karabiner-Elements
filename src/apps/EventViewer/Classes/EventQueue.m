@@ -7,7 +7,7 @@
 
 @property NSMutableArray* queue;
 @property NSMutableDictionary* hidSystemKeyNames;
-@property NSMutableDictionary* hidSystemAuxControlButtonNames;
+@property NSDictionary* hidSystemAuxControlButtonNames;
 @property(weak) IBOutlet NSTableView* view;
 
 @end
@@ -24,7 +24,19 @@ enum {
   if (self) {
     _queue = [NSMutableArray new];
     _hidSystemKeyNames = [NSMutableDictionary new];
-    _hidSystemAuxControlButtonNames = [NSMutableDictionary new];
+    _hidSystemAuxControlButtonNames = @{
+      @(NX_POWER_KEY) : @"power",
+      @(NX_KEYTYPE_MUTE) : @"mute",
+      @(NX_KEYTYPE_SOUND_UP) : @"volume_up",
+      @(NX_KEYTYPE_SOUND_DOWN) : @"volume_down",
+      @(NX_KEYTYPE_BRIGHTNESS_DOWN) : @"vk_consumer_brightness_down",
+      @(NX_KEYTYPE_BRIGHTNESS_UP) : @"vk_consumer_brightness_up",
+      @(NX_KEYTYPE_ILLUMINATION_DOWN) : @"vk_consumer_illumination_down",
+      @(NX_KEYTYPE_ILLUMINATION_UP) : @"vk_consumer_illumination_up",
+      @(NX_KEYTYPE_FAST) : @"vk_consumer_next",
+      @(NX_KEYTYPE_PLAY) : @"vk_consumer_play",
+      @(NX_KEYTYPE_REWIND) : @"vk_consumer_previous",
+    };
 
     NSString* jsonFilePath = [[NSBundle mainBundle] pathForResource:@"simple_modifications" ofType:@"json"];
     if (jsonFilePath) {
@@ -37,12 +49,6 @@ enum {
             if (libkrbn_get_hid_system_key(&hid_system_key, [name UTF8String])) {
               if (!_hidSystemKeyNames[@(hid_system_key)]) {
                 _hidSystemKeyNames[@(hid_system_key)] = name;
-              }
-            }
-            uint8_t hid_system_aux_control_button = 0;
-            if (libkrbn_get_hid_system_aux_control_button(&hid_system_aux_control_button, [name UTF8String])) {
-              if (!_hidSystemAuxControlButtonNames[@(hid_system_aux_control_button)]) {
-                _hidSystemAuxControlButtonNames[@(hid_system_aux_control_button)] = name;
               }
             }
           }
