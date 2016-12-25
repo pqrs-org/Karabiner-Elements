@@ -119,7 +119,7 @@
   // Select item
 
   NSString* keyboardType = @"ansi";
-  CoreConfigurationModel* coreConfigurationModel = self.configurationManager.configurationCoreModel;
+  CoreConfigurationModel* coreConfigurationModel = self.configurationManager.coreConfigurationModel;
   if (coreConfigurationModel) {
     keyboardType = coreConfigurationModel.virtualHIDKeyboardType;
   }
@@ -135,7 +135,7 @@
 - (IBAction)changeVirtualHIDKeyboardTYpe:(id)sender {
   NSMenuItem* selectedItem = self.virtualHIDKeyboardTypePopupButton.selectedItem;
   if (selectedItem) {
-    CoreConfigurationModel* coreConfigurationModel = self.configurationManager.configurationCoreModel;
+    CoreConfigurationModel* coreConfigurationModel = self.configurationManager.coreConfigurationModel;
     if (coreConfigurationModel) {
       coreConfigurationModel.virtualHIDKeyboardType = selectedItem.representedObject;
       [self.configurationManager save];

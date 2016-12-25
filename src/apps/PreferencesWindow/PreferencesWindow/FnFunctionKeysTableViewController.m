@@ -42,7 +42,7 @@
       toValue = toCellView.popUpButton.selectedItem.representedObject;
     }
 
-    [self.configurationManager.configurationCoreModel replaceFnFunctionKey:fromValue to:toValue];
+    [self.configurationManager.coreConfigurationModel replaceFnFunctionKey:fromValue to:toValue];
   }
 
   [self.configurationManager save];

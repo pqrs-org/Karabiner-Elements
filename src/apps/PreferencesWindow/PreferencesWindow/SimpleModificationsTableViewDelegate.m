@@ -18,7 +18,7 @@
   if ([tableColumn.identifier isEqualToString:@"SimpleModificationsFromColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsFromCellView" owner:self];
 
-    NSArray<NSDictionary*>* simpleModifications = self.configurationManager.configurationCoreModel.simpleModifications;
+    NSArray<NSDictionary*>* simpleModifications = self.configurationManager.coreConfigurationModel.simpleModifications;
     if (0 <= row && row < (NSInteger)(simpleModifications.count)) {
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.simpleModificationsTableViewController;
@@ -34,7 +34,7 @@
   if ([tableColumn.identifier isEqualToString:@"SimpleModificationsToColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsToCellView" owner:self];
 
-    NSArray<NSDictionary*>* simpleModifications = self.configurationManager.configurationCoreModel.simpleModifications;
+    NSArray<NSDictionary*>* simpleModifications = self.configurationManager.coreConfigurationModel.simpleModifications;
     if (0 <= row && row < (NSInteger)(simpleModifications.count)) {
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.simpleModificationsTableViewController;

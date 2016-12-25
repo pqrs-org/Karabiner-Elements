@@ -10,7 +10,7 @@
 @implementation SimpleModificationsTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  return self.configurationManager.configurationCoreModel.simpleModifications.count;
+  return self.configurationManager.coreConfigurationModel.simpleModifications.count;
 }
 
 @end

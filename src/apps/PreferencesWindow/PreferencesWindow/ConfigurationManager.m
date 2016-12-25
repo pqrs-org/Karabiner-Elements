@@ -7,7 +7,7 @@
 @interface ConfigurationManager ()
 
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
-@property(readwrite) CoreConfigurationModel* configurationCoreModel;
+@property(readwrite) CoreConfigurationModel* coreConfigurationModel;
 
 - (void)loadJsonString:(const char*)currentProfileJsonString;
 
@@ -39,7 +39,7 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
 - (void)loadJsonString:(const char*)currentProfileJsonString {
   NSDictionary* jsonObject = [JsonUtility loadCString:currentProfileJsonString];
   if (jsonObject) {
-    self.configurationCoreModel = [[CoreConfigurationModel alloc] initWithProfile:jsonObject];
+    self.coreConfigurationModel = [[CoreConfigurationModel alloc] initWithProfile:jsonObject];
   }
 }
 
@@ -71,10 +71,10 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
   }
 
   NSMutableDictionary* mutableProfile = [NSMutableDictionary dictionaryWithDictionary:mutableProfiles[selectedProfileIndex]];
-  mutableProfile[@"simple_modifications"] = self.configurationCoreModel.simpleModificationsDictionary;
-  mutableProfile[@"fn_function_keys"] = self.configurationCoreModel.fnFunctionKeysDictionary;
-  mutableProfile[@"virtual_hid_keyboard"] = self.configurationCoreModel.virtualHIDKeyboardDictionary;
-  mutableProfile[@"devices"] = self.configurationCoreModel.devicesArray;
+  mutableProfile[@"simple_modifications"] = self.coreConfigurationModel.simpleModificationsDictionary;
+  mutableProfile[@"fn_function_keys"] = self.coreConfigurationModel.fnFunctionKeysDictionary;
+  mutableProfile[@"virtual_hid_keyboard"] = self.coreConfigurationModel.virtualHIDKeyboardDictionary;
+  mutableProfile[@"devices"] = self.coreConfigurationModel.devicesArray;
 
   mutableProfiles[selectedProfileIndex] = mutableProfile;
 

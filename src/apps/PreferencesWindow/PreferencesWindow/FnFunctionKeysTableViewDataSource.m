@@ -10,7 +10,7 @@
 @implementation FnFunctionKeysTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  return self.configurationManager.configurationCoreModel.fnFunctionKeys.count;
+  return self.configurationManager.coreConfigurationModel.fnFunctionKeys.count;
 }
 
 @end

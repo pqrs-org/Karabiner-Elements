@@ -47,7 +47,7 @@
   }
   DevicesTableCellView* cellViewCheckbox = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
   DevicesTableCellView* cellViewExternalKeyboard = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
-  [self.configurationManager.configurationCoreModel setDeviceConfiguration:cellViewCheckbox.deviceIdentifiers
+  [self.configurationManager.coreConfigurationModel setDeviceConfiguration:cellViewCheckbox.deviceIdentifiers
                                                                     ignore:(cellViewCheckbox.checkbox.state != NSOnState)
                                             disableBuiltInKeyboardIfExists:(cellViewExternalKeyboard.checkbox.state == NSOnState)];
   [self.configurationManager save];

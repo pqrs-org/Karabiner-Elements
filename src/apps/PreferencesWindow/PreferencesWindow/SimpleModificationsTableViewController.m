@@ -56,7 +56,7 @@
       }
       toCellView.popUpButton.enabled = YES;
 
-      [self.configurationManager.configurationCoreModel replaceSimpleModification:(NSUInteger)(i) from:fromValue to:toValue];
+      [self.configurationManager.coreConfigurationModel replaceSimpleModification:(NSUInteger)(i) from:fromValue to:toValue];
     }
   }
 
@@ -65,14 +65,14 @@
 
 - (void)removeItem:(id)sender {
   NSInteger row = [self.tableView rowForView:sender];
-  [self.configurationManager.configurationCoreModel removeSimpleModification:(NSUInteger)(row)];
+  [self.configurationManager.coreConfigurationModel removeSimpleModification:(NSUInteger)(row)];
   [self.tableView reloadData];
 
   [self.configurationManager save];
 }
 
 - (IBAction)addItem:(id)sender {
-  [self.configurationManager.configurationCoreModel addSimpleModification];
+  [self.configurationManager.coreConfigurationModel addSimpleModification];
   [self.tableView reloadData];
 
   [self.configurationManager save];

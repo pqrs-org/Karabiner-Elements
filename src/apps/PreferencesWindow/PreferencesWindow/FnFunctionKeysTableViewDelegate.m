@@ -19,7 +19,7 @@
   if ([tableColumn.identifier isEqualToString:@"FnFunctionKeysFromColumn"]) {
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysFromCellView" owner:self];
 
-    NSArray<NSDictionary*>* fnFunctionKeys = self.configurationManager.configurationCoreModel.fnFunctionKeys;
+    NSArray<NSDictionary*>* fnFunctionKeys = self.configurationManager.coreConfigurationModel.fnFunctionKeys;
     if (0 <= row && row < (NSInteger)(fnFunctionKeys.count)) {
       result.textField.stringValue = fnFunctionKeys[row][@"from"];
     }
@@ -30,7 +30,7 @@
   if ([tableColumn.identifier isEqualToString:@"FnFunctionKeysToColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysToCellView" owner:self];
 
-    NSArray<NSDictionary*>* fnFunctionKeys = self.configurationManager.configurationCoreModel.fnFunctionKeys;
+    NSArray<NSDictionary*>* fnFunctionKeys = self.configurationManager.coreConfigurationModel.fnFunctionKeys;
     if (0 <= row && row < (NSInteger)(fnFunctionKeys.count)) {
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.fnFunctionKeysTableViewController;

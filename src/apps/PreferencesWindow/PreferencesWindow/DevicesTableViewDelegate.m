@@ -40,7 +40,7 @@
       result.deviceIdentifiers = model.deviceIdentifiers;
 
       result.checkbox.state = (model.ignore ? NSOffState : NSOnState);
-      for (DeviceConfiguration* device in self.configurationManager.configurationCoreModel.devices) {
+      for (DeviceConfiguration* device in self.configurationManager.coreConfigurationModel.devices) {
         if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
           result.checkbox.state = (device.ignore ? NSOffState : NSOnState);
         }
@@ -95,7 +95,7 @@
 
         result.deviceIdentifiers = model.deviceIdentifiers;
 
-        for (DeviceConfiguration* device in self.configurationManager.configurationCoreModel.devices) {
+        for (DeviceConfiguration* device in self.configurationManager.coreConfigurationModel.devices) {
           if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
             result.checkbox.state = (device.disableBuiltInKeyboardIfExists ? NSOnState : NSOffState);
           }
