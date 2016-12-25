@@ -46,6 +46,7 @@ enum class key_code : uint32_t {
   return_or_enter = kHIDUsage_KeyboardReturnOrEnter,
   delete_or_backspace = kHIDUsage_KeyboardDeleteOrBackspace,
   caps_lock = kHIDUsage_KeyboardCapsLock,
+  escape = kHIDUsage_KeyboardEscape,
 
   f1 = kHIDUsage_KeyboardF1,
   f2 = kHIDUsage_KeyboardF2,
@@ -540,7 +541,6 @@ public:
       map[key_code(kHIDUsage_Keyboard0)] = 0x1d;
 
       map[key_code(kHIDUsage_KeyboardReturnOrEnter)] = 0x24;
-      map[key_code(kHIDUsage_KeyboardEscape)] = 0x35;
       map[key_code(kHIDUsage_KeyboardDeleteOrBackspace)] = 0x33;
       map[key_code(kHIDUsage_KeyboardTab)] = 0x30;
       map[key_code(kHIDUsage_KeyboardSpacebar)] = 0x31;
@@ -691,6 +691,8 @@ public:
       map[key_code::vk_dashboard] = 0x82;
       map[key_code::vk_launchpad] = 0x83;
       map[key_code::vk_mission_control] = 0xa0;
+      // This key behaves differently in CGEventPost, e.g. Opt-Cmd-Esc
+      map[key_code::escape] = 0x35;
     }
     return map;
   }
