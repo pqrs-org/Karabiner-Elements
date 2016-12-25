@@ -31,11 +31,15 @@ public:
   enum class ready_state {
     ready,
     virtual_hid_device_client_is_not_ready,
+    virtual_hid_keyboard_is_not_ready,
   };
 
   ready_state is_ready(void) {
     if (!virtual_hid_device_client_.is_connected()) {
       return ready_state::virtual_hid_device_client_is_not_ready;
+    }
+    if (!virtual_hid_device_client_.is_virtual_hid_keyboard_initialized()) {
+      return ready_state::virtual_hid_keyboard_is_not_ready;
     }
     return ready_state::ready;
   }
@@ -88,6 +92,10 @@ public:
     fn_function_keys_.add(from_key_code, to_key_code);
   }
 
+  void initialize_virtual_hid_keyboard(krbn::keyboard_type keyboard_type) {
+    virtual_hid_device_client_.initialize_virtual_hid_keyboard(keyboard_type);
+  }
+
   void initialize_virtual_hid_pointing(void) {
     virtual_hid_device_client_.initialize_virtual_hid_pointing();
   }
@@ -103,7 +111,6 @@ public:
 
   void handle_keyboard_event(device_registry_entry_id device_registry_entry_id,
                              krbn::key_code from_key_code,
-                             krbn::keyboard_type keyboard_type,
                              bool pressed) {
     krbn::key_code to_key_code = from_key_code;
 
@@ -185,11 +192,11 @@ public:
     }
 
     // ----------------------------------------
-    if (post_modifier_flag_event(to_key_code, keyboard_type, pressed)) {
+    if (post_modifier_flag_event(to_key_code, pressed)) {
       return;
     }
 
-    post_key(to_key_code, keyboard_type, pressed, false);
+    post_key(to_key_code, pressed);
   }
 
   void handle_pointing_event(device_registry_entry_id device_registry_entry_id,
@@ -343,33 +350,24 @@ private:
   };
 
   void virtual_hid_device_client_connected_callback(virtual_hid_device_client& virtual_hid_device_client) {
-    virtual_hid_device_client.initialize_virtual_hid_keyboard();
+    logger::get_logger().info("virtual_hid_device_client is connected");
   }
 
-  bool post_modifier_flag_event(krbn::key_code key_code, krbn::keyboard_type keyboard_type, bool pressed) {
+  bool post_modifier_flag_event(krbn::key_code key_code, bool pressed) {
     auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
 
     auto modifier_flag = krbn::types::get_modifier_flag(key_code);
     if (modifier_flag != krbn::modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
-      if (auto usage_page = krbn::types::get_usage_page(key_code)) {
-        if (auto usage = krbn::types::get_usage(key_code)) {
-          pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-          keyboard_event.usage_page = *usage_page;
-          keyboard_event.usage = *usage;
-          keyboard_event.value = pressed;
-          virtual_hid_device_client_.dispatch_keyboard_event(keyboard_event);
-        }
-      }
-
+      post_key(key_code, pressed);
       return true;
     }
 
     return false;
   }
 
-  void post_key(krbn::key_code key_code, krbn::keyboard_type keyboard_type, bool pressed, bool repeat) {
+  void post_key(krbn::key_code key_code, bool pressed) {
     if (auto usage_page = krbn::types::get_usage_page(key_code)) {
       if (auto usage = krbn::types::get_usage(key_code)) {
         pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;

@@ -13,7 +13,9 @@ public:
                             const connected_callback& connected_callback) : logger_(logger),
                                                                             connected_callback_(connected_callback),
                                                                             service_(IO_OBJECT_NULL),
-                                                                            connect_(IO_OBJECT_NULL) {
+                                                                            connect_(IO_OBJECT_NULL),
+                                                                            virtual_hid_keyboard_initialized_(false),
+                                                                            keyboard_type_(krbn::keyboard_type::none) {
     if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name())) {
       service_observer_ = std::make_unique<service_observer>(logger_,
                                                              matching_dictionary,
@@ -31,13 +33,28 @@ public:
     return connect_ != IO_OBJECT_NULL;
   }
 
-  void initialize_virtual_hid_keyboard(void) {
-    call_method([this](void) {
-      return pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect_);
+  bool is_virtual_hid_keyboard_initialized(void) const {
+    return virtual_hid_keyboard_initialized_;
+  }
+
+  void initialize_virtual_hid_keyboard(krbn::keyboard_type keyboard_type) {
+    if (virtual_hid_keyboard_initialized_ && keyboard_type_ == keyboard_type) {
+      return;
+    }
+
+    logger_.info("initialize_virtual_hid_keyboard keyboard_type:{0}", static_cast<int>(keyboard_type));
+
+    keyboard_type_ = keyboard_type;
+    virtual_hid_keyboard_initialized_ = call_method([this](void) {
+      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
+      properties.keyboard_type = static_cast<pqrs::karabiner_virtual_hid_device::properties::keyboard_type>(keyboard_type_);
+      return pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect_, properties);
     });
   }
 
   void terminate_virtual_hid_keyboard(void) {
+    virtual_hid_keyboard_initialized_ = false;
+
     call_method([this](void) {
       return pqrs::karabiner_virtual_hid_device_methods::terminate_virtual_hid_keyboard(connect_);
     });
@@ -141,20 +158,25 @@ private:
       IOObjectRelease(service_);
       service_ = IO_OBJECT_NULL;
     }
+
+    virtual_hid_keyboard_initialized_ = false;
   }
 
-  void call_method(std::function<IOReturn(void)> method) {
+  bool call_method(std::function<IOReturn(void)> method) {
     std::lock_guard<std::mutex> guard(connect_mutex_);
 
     if (!connect_) {
       logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
-      return;
+      return false;
     }
 
     auto kr = method();
     if (kr != KERN_SUCCESS) {
       logger_.error("IOConnectCallStructMethod error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+      return false;
     }
+
+    return true;
   }
 
   spdlog::logger& logger_;
@@ -164,4 +186,7 @@ private:
   io_service_t service_;
   io_connect_t connect_;
   std::mutex connect_mutex_;
+
+  bool virtual_hid_keyboard_initialized_;
+  krbn::keyboard_type keyboard_type_;
 };

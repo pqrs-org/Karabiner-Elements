@@ -52,6 +52,8 @@ private:
       grabber_client_.add_fn_function_key(pair.first, pair.second);
     }
 
+    grabber_client_.virtual_hid_keyboard_configuration_updated(core_configuration_->get_current_profile_virtual_hid_keyboard());
+
     grabber_client_.clear_devices();
     for (const auto& pair : core_configuration_->get_current_profile_devices()) {
       grabber_client_.add_device(pair.first, pair.second);

@@ -37,7 +37,7 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
-  void system_preferences_values_updated(const system_preferences::values values) {
+  void system_preferences_values_updated(const system_preferences::values& values) {
     krbn::operation_type_system_preferences_values_updated_struct s;
     s.values = values;
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
@@ -64,6 +64,12 @@ public:
     krbn::operation_type_add_fn_function_key_struct s;
     s.from_key_code = from_key_code;
     s.to_key_code = to_key_code;
+    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
+  void virtual_hid_keyboard_configuration_updated(const krbn::virtual_hid_keyboard_configuration_struct& virtual_hid_keyboard_configuration_struct) {
+    krbn::operation_type_virtual_hid_keyboard_configuration_updated_struct s;
+    s.virtual_hid_keyboard_configuration_struct = virtual_hid_keyboard_configuration_struct;
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 

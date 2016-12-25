@@ -21,12 +21,12 @@ enum class operation_type : uint8_t {
   none,
   // console_user_server -> grabber
   connect,
-  // console_user_server -> grabber
   system_preferences_values_updated,
   clear_simple_modifications,
   add_simple_modification,
   clear_fn_function_keys,
   add_fn_function_key,
+  virtual_hid_keyboard_configuration_updated,
   clear_devices,
   add_device,
   complete_devices,
@@ -877,6 +877,13 @@ struct operation_type_add_fn_function_key_struct {
   const operation_type operation_type;
   key_code from_key_code;
   key_code to_key_code;
+};
+
+struct operation_type_virtual_hid_keyboard_configuration_updated_struct {
+  operation_type_virtual_hid_keyboard_configuration_updated_struct(void) : operation_type(operation_type::virtual_hid_keyboard_configuration_updated) {}
+
+  const operation_type operation_type;
+  virtual_hid_keyboard_configuration_struct virtual_hid_keyboard_configuration_struct;
 };
 
 struct operation_type_clear_devices_struct {

@@ -118,6 +118,15 @@ private:
           }
           break;
 
+        case krbn::operation_type::virtual_hid_keyboard_configuration_updated:
+          if (n < sizeof(krbn::operation_type_virtual_hid_keyboard_configuration_updated_struct)) {
+            logger::get_logger().error("invalid size for krbn::operation_type::virtual_hid_keyboard_configuration_updated ({0})", n);
+          } else {
+            auto p = reinterpret_cast<krbn::operation_type_virtual_hid_keyboard_configuration_updated_struct*>(&(buffer_[0]));
+            event_manipulator_.initialize_virtual_hid_keyboard((p->virtual_hid_keyboard_configuration_struct).keyboard_type);
+          }
+          break;
+
         case krbn::operation_type::clear_devices:
           device_grabber_.clear_device_configurations();
           break;

@@ -150,7 +150,6 @@ public:
   void complete_device_configurations(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       for (auto&& it : hids_) {
-        (it.second)->set_keyboard_type(get_keyboard_type(*(it.second)));
         (it.second)->set_disable_built_in_keyboard_if_exists(get_disable_built_in_keyboard_if_exists(*(it.second)));
       }
 
@@ -186,7 +185,6 @@ private:
     iokit_utility::log_matching_device(logger::get_logger(), device);
 
     auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
-    dev->set_keyboard_type(get_keyboard_type(*dev));
     dev->set_disable_built_in_keyboard_if_exists(get_disable_built_in_keyboard_if_exists(*dev));
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
@@ -276,7 +274,7 @@ private:
 
     if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
       bool pressed = integer_value;
-      event_manipulator_.handle_keyboard_event(device_registry_entry_id, *key_code, device.get_keyboard_type(), pressed);
+      event_manipulator_.handle_keyboard_event(device_registry_entry_id, *key_code, pressed);
 
     } else if (auto pointing_button = krbn::types::get_pointing_button(usage_page, usage)) {
       event_manipulator_.handle_pointing_event(device_registry_entry_id,
@@ -348,6 +346,9 @@ private:
         break;
       case manipulator::event_manipulator::ready_state::virtual_hid_device_client_is_not_ready:
         message += "(virtual_hid_device_client is not ready) ";
+        break;
+      case manipulator::event_manipulator::ready_state::virtual_hid_keyboard_is_not_ready:
+        message += "(virtual_hid_keyboard is not ready) ";
         break;
       }
       message += "Please wait for a while.";
@@ -447,13 +448,6 @@ private:
     }
 
     return false;
-  }
-
-  krbn::keyboard_type get_keyboard_type(const human_interface_device& device) {
-    if (auto s = find_device_configuration_struct(device)) {
-      return s->keyboard_type;
-    }
-    return krbn::keyboard_type::none;
   }
 
   bool get_disable_built_in_keyboard_if_exists(const human_interface_device& device) {
