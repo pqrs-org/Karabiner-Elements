@@ -1,4 +1,5 @@
 #import "CoreConfigurationModel.h"
+#import "libkrbn.h"
 
 @interface DeviceConfiguration ()
 
@@ -26,6 +27,11 @@
     _simpleModifications = [self simpleModificationsDictionaryToArray:profile[@"simple_modifications"]];
     _fnFunctionKeys = [self simpleModificationsDictionaryToArray:profile[@"fn_function_keys"]];
 
+    _virtualHIDKeyboardType = @"ansi";
+    if ([profile[@"virtual_hid_keyboard"] isKindOfClass:[NSDictionary class]]) {
+      _virtualHIDKeyboardType = profile[@"virtual_hid_keyboard"][@"keyboard_type"];
+    }
+
     // _devices
     NSMutableArray<DeviceConfiguration*>* devices = [NSMutableArray new];
     if (profile[@"devices"]) {
@@ -47,7 +53,6 @@
           DeviceConfiguration* deviceConfiguration = [DeviceConfiguration new];
           deviceConfiguration.deviceIdentifiers = deviceIdentifiers;
           deviceConfiguration.ignore = [device[@"ignore"] boolValue];
-          deviceConfiguration.keyboardType = [device[@"keyboard_type"] unsignedIntValue];
           deviceConfiguration.disableBuiltInKeyboardIfExists = [device[@"disable_built_in_keyboard_if_exists"] boolValue];
           [devices addObject:deviceConfiguration];
         }
@@ -118,14 +123,12 @@
 
 - (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers
                             ignore:(BOOL)ignore
-                      keyboardType:(uint32_t)keyboardType
     disableBuiltInKeyboardIfExists:(BOOL)disableBuiltInKeyboardIfExists {
   NSMutableArray* devices = [NSMutableArray arrayWithArray:self.devices];
   BOOL __block found = NO;
   [devices enumerateObjectsUsingBlock:^(DeviceConfiguration* obj, NSUInteger index, BOOL* stop) {
     if ([obj.deviceIdentifiers isEqualToDeviceIdentifiers:deviceIdentifiers]) {
       obj.ignore = ignore;
-      obj.keyboardType = keyboardType;
       obj.disableBuiltInKeyboardIfExists = disableBuiltInKeyboardIfExists;
 
       found = YES;
@@ -137,7 +140,6 @@
     DeviceConfiguration* deviceConfiguration = [DeviceConfiguration new];
     deviceConfiguration.deviceIdentifiers = deviceIdentifiers;
     deviceConfiguration.ignore = ignore;
-    deviceConfiguration.keyboardType = keyboardType;
     deviceConfiguration.disableBuiltInKeyboardIfExists = disableBuiltInKeyboardIfExists;
     [devices addObject:deviceConfiguration];
   }
@@ -167,13 +169,18 @@
   return [self simpleModificationsArrayToDictionary:self.fnFunctionKeys];
 }
 
+- (NSDictionary*)virtualHIDKeyboardDictionary {
+  return @{
+    @"keyboard_type" : self.virtualHIDKeyboardType,
+  };
+}
+
 - (NSArray*)devicesArray {
   NSMutableArray* array = [NSMutableArray new];
   for (DeviceConfiguration* d in self.devices) {
     [array addObject:@{
       @"identifiers" : [d.deviceIdentifiers toDictionary],
       @"ignore" : @(d.ignore),
-      @"keyboard_type" : @(d.keyboardType),
       @"disable_built_in_keyboard_if_exists" : @(d.disableBuiltInKeyboardIfExists),
     }];
   }

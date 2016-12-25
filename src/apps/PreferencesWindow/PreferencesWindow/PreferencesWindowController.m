@@ -1,4 +1,6 @@
 #import "PreferencesWindowController.h"
+#import "ConfigurationManager.h"
+#import "CoreConfigurationModel.h"
 #import "DevicesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
 #import "LogFileTextViewController.h"
@@ -11,19 +13,17 @@
 
 @interface PreferencesWindowController ()
 
+@property(weak) IBOutlet ConfigurationManager* configurationManager;
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet LogFileTextViewController* logFileTextViewController;
 @property(weak) IBOutlet NSButton* keyboardFnStateButton;
-@property(weak) IBOutlet NSStepper* initialKeyRepeatStepper;
-@property(weak) IBOutlet NSStepper* keyRepeatStepper;
 @property(weak) IBOutlet NSTableView* devicesTableView;
 @property(weak) IBOutlet NSTableView* devicesExternalKeyboardTableView;
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
-@property(weak) IBOutlet NSTextField* initialKeyRepeatTextField;
-@property(weak) IBOutlet NSTextField* keyRepeatTextField;
 @property(weak) IBOutlet NSTextField* versionLabel;
+@property(weak) IBOutlet NSPopUpButton* virtualHIDKeyboardTypePopupButton;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
@@ -40,9 +40,19 @@
   [self.simpleModificationsTableViewController setup];
   [self.fnFunctionKeysTableViewController setup];
   [self.devicesTableViewController setup];
+  [self setupVirtualHIDKeyboardTypePopUpButton];
   [self.logFileTextViewController monitor];
 
   @weakify(self);
+  [[NSNotificationCenter defaultCenter] addObserverForName:kConfigurationIsLoaded
+                                                    object:nil
+                                                     queue:[NSOperationQueue mainQueue]
+                                                usingBlock:^(NSNotification* note) {
+                                                  @strongify(self);
+                                                  if (!self) return;
+
+                                                  [self setupVirtualHIDKeyboardTypePopUpButton];
+                                                }];
   [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
@@ -78,16 +88,63 @@
   [NSApp activateIgnoringOtherApps:YES];
 }
 
+- (void)setupVirtualHIDKeyboardTypePopUpButton {
+  NSMenu* menu = [NSMenu new];
+
+  {
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"ANSI"
+                                                  action:NULL
+                                           keyEquivalent:@""];
+    item.representedObject = @"ansi";
+    [menu addItem:item];
+  }
+  {
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"ISO"
+                                                  action:NULL
+                                           keyEquivalent:@""];
+    item.representedObject = @"iso";
+    [menu addItem:item];
+  }
+  {
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"JIS"
+                                                  action:NULL
+                                           keyEquivalent:@""];
+    item.representedObject = @"jis";
+    [menu addItem:item];
+  }
+
+  self.virtualHIDKeyboardTypePopupButton.menu = menu;
+
+  // ----------------------------------------
+  // Select item
+
+  NSString* keyboardType = @"ansi";
+  CoreConfigurationModel* coreConfigurationModel = self.configurationManager.configurationCoreModel;
+  if (coreConfigurationModel) {
+    keyboardType = coreConfigurationModel.virtualHIDKeyboardType;
+  }
+
+  for (NSMenuItem* item in self.virtualHIDKeyboardTypePopupButton.itemArray) {
+    if ([item.representedObject isEqualToString:keyboardType]) {
+      [self.virtualHIDKeyboardTypePopupButton selectItem:item];
+      break;
+    }
+  }
+}
+
+- (IBAction)changeVirtualHIDKeyboardTYpe:(id)sender {
+  NSMenuItem* selectedItem = self.virtualHIDKeyboardTypePopupButton.selectedItem;
+  if (selectedItem) {
+    CoreConfigurationModel* coreConfigurationModel = self.configurationManager.configurationCoreModel;
+    if (coreConfigurationModel) {
+      coreConfigurationModel.virtualHIDKeyboardType = selectedItem.representedObject;
+      [self.configurationManager save];
+    }
+  }
+}
+
 - (void)updateSystemPreferencesUIValues {
   self.keyboardFnStateButton.state = self.systemPreferencesManager.systemPreferencesModel.keyboardFnState ? NSOnState : NSOffState;
-
-  uint32_t initialKeyRepeatMilliseconds = self.systemPreferencesManager.systemPreferencesModel.initialKeyRepeatMilliseconds;
-  self.initialKeyRepeatTextField.stringValue = [NSString stringWithFormat:@"%d", initialKeyRepeatMilliseconds];
-  self.initialKeyRepeatStepper.integerValue = initialKeyRepeatMilliseconds;
-
-  uint32_t keyRepeatMilliseconds = self.systemPreferencesManager.systemPreferencesModel.keyRepeatMilliseconds;
-  self.keyRepeatTextField.stringValue = [NSString stringWithFormat:@"%d", keyRepeatMilliseconds];
-  self.keyRepeatStepper.integerValue = keyRepeatMilliseconds;
 }
 
 - (IBAction)updateSystemPreferencesValues:(id)sender {
@@ -95,18 +152,6 @@
 
   if (sender == self.keyboardFnStateButton) {
     model.keyboardFnState = (self.keyboardFnStateButton.state == NSOnState);
-  }
-  if (sender == self.initialKeyRepeatTextField) {
-    model.initialKeyRepeatMilliseconds = [self.initialKeyRepeatTextField.stringValue intValue];
-  }
-  if (sender == self.initialKeyRepeatStepper) {
-    model.initialKeyRepeatMilliseconds = self.initialKeyRepeatStepper.intValue;
-  }
-  if (sender == self.keyRepeatTextField) {
-    model.keyRepeatMilliseconds = [self.keyRepeatTextField.stringValue intValue];
-  }
-  if (sender == self.keyRepeatStepper) {
-    model.keyRepeatMilliseconds = self.keyRepeatStepper.intValue;
   }
 
   [self updateSystemPreferencesUIValues];

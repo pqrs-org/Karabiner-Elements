@@ -7,7 +7,6 @@
 
 @property(readonly) DeviceIdentifiers* deviceIdentifiers;
 @property BOOL ignore;
-@property uint32_t keyboardType;
 @property BOOL disableBuiltInKeyboardIfExists;
 
 @end
@@ -19,7 +18,9 @@
 @property(copy, readonly) NSArray<DeviceConfiguration*>* devices;
 @property(copy, readonly) NSDictionary* simpleModificationsDictionary;
 @property(copy, readonly) NSDictionary* fnFunctionKeysDictionary;
+@property(copy, readonly) NSDictionary* virtualHIDKeyboardDictionary;
 @property(copy, readonly) NSArray* devicesArray;
+@property(copy, readwrite) NSString* virtualHIDKeyboardType;
 
 - (instancetype)initWithProfile:(NSDictionary*)profile;
 
@@ -31,7 +32,6 @@
 
 - (void)setDeviceConfiguration:(DeviceIdentifiers*)deviceIdentifiers
                             ignore:(BOOL)ignore
-                      keyboardType:(uint32_t)keyboardType
     disableBuiltInKeyboardIfExists:(BOOL)disableBuiltInKeyboardIfExists;
 
 @end

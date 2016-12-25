@@ -15,10 +15,6 @@ const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(vo
 const char* _Nonnull libkrbn_get_core_configuration_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 
-uint32_t libkrbn_get_keyboard_type_ansi(void);
-uint32_t libkrbn_get_keyboard_type_iso(void);
-uint32_t libkrbn_get_keyboard_type_jis(void);
-
 bool libkrbn_get_hid_system_key(uint8_t* _Nonnull key, const char* _Nonnull key_name);
 bool libkrbn_get_hid_system_aux_control_button(uint8_t* _Nonnull button, const char* _Nonnull key_name);
 
