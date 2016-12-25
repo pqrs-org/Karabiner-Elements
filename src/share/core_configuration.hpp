@@ -17,6 +17,9 @@
 //                 "caps_lock": "delete_or_backspace",
 //                 "escape": "spacebar"
 //             },
+//             "compound_modifications": {
+//                 "caps_lock": ["left_command", "spacebar"]
+//             },
 //             "fn_function_keys": {
 //                 "f1": "vk_consumer_brightness_down",
 //                 "f2": "vk_consumer_brightness_up",
@@ -97,6 +100,11 @@ public:
   std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_simple_modifications(void) {
     auto profile = get_current_profile();
     return get_key_code_pair_from_json_object(profile["simple_modifications"]);
+  }
+
+  std::vector<std::pair<krbn::key_code, std::vector<krbn::key_code>>> get_current_profile_compound_modifications(void) {
+    auto profile = get_current_profile();
+    return get_key_code_patterns_from_json_object(profile["compound_modifications"]);
   }
 
   // std::vector<f1,vk_consumer_brightness_down>
@@ -217,9 +225,9 @@ private:
     std::vector<std::pair<krbn::key_code, krbn::key_code>> v;
 
     if (json.is_object()) {
-      for (auto it = json.begin(); it != json.end(); ++it) {
-        std::string from = it.key();
-        std::string to = it.value();
+      for (auto mapping = json.begin(); mapping != json.end(); ++mapping) {
+        std::string from = mapping.key();
+        std::string to = mapping.value();
 
         auto from_key_code = krbn::types::get_key_code(from);
         if (!from_key_code) {
@@ -236,6 +244,39 @@ private:
       }
     }
 
+    return v;
+  }
+
+  std::vector<std::pair<krbn::key_code, std::vector<krbn::key_code>>> get_key_code_patterns_from_json_object(const nlohmann::json& json) {
+    std::vector<std::pair<krbn::key_code, std::vector<krbn::key_code>>> v;
+
+    if (json.is_object()) {
+      for (auto mapping = json.begin(); mapping != json.end(); ++mapping) {
+        std::string from = mapping.key();
+        std::vector<std::string> to = mapping.value();
+
+        auto from_key_code = krbn::types::get_key_code(from);
+        if (!from_key_code) {
+          logger_.warn("unknown key_code:{0} in {1}", from, file_path_);
+          continue;
+        }
+
+        std::vector<krbn::key_code> to_key_codes;
+        for (auto key = to.begin(); key != to.end(); ++key) {
+          auto to_key_code = krbn::types::get_key_code(*key);
+          if (!to_key_code) {
+            logger_.warn("unknown key_code:{0} in mapping {1} from {2}", *key, from, file_path_);
+            to_key_codes.clear();
+            break;
+          }
+
+          to_key_codes.push_back(*to_key_code);
+        }
+
+        v.push_back(std::make_pair(*from_key_code, to_key_codes));
+      }
+    }
+    
     return v;
   }
 

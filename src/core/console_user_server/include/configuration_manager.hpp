@@ -47,6 +47,11 @@ private:
       grabber_client_.add_simple_modification(pair.first, pair.second);
     }
 
+    logger_.info("loading compound modifications");
+    for (const auto& pair : configuration_core_->get_current_profile_compound_modifications()) {
+      logger_.info("found compound keys for {0}", (uint32_t) pair.first);
+    }
+
     grabber_client_.clear_fn_function_keys();
     for (const auto& pair : core_configuration_->get_current_profile_fn_function_keys()) {
       grabber_client_.add_fn_function_key(pair.first, pair.second);
