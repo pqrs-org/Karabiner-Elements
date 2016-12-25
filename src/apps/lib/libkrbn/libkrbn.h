@@ -15,8 +15,6 @@ const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(vo
 const char* _Nonnull libkrbn_get_core_configuration_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 
-bool libkrbn_get_hid_system_key(uint8_t* _Nonnull key, const char* _Nonnull key_name);
-
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string);
 
 float libkrbn_system_preferences_convert_key_repeat_milliseconds_to_system_preferences_value(uint32_t value);

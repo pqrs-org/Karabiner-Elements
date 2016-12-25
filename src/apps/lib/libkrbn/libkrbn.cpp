@@ -50,16 +50,6 @@ const char* libkrbn_get_devices_json_file_path(void) {
   return constants::get_devices_json_file_path();
 }
 
-bool libkrbn_get_hid_system_key(uint8_t* _Nonnull key, const char* key_name) {
-  if (auto key_code = krbn::types::get_key_code(key_name)) {
-    if (auto value = krbn::types::get_hid_system_key(*key_code)) {
-      *key = *value;
-      return true;
-    }
-  }
-  return false;
-}
-
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string) {
   try {
     // nlohmann::json sorts dictionary keys.
