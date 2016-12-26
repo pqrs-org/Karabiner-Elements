@@ -6,7 +6,7 @@
             "simple_modifications": {
                 "f1": "vk_consumer_brightness_down",
                 "f2": "vk_consumer_brightness_up",
-                "f3": "vk_mission_control",
+                "f3": "mission_control",
                 "f4": "vk_launchpad",
                 "f5": "vk_consumer_illumination_down",
                 "f6": "vk_consumer_illumination_up",

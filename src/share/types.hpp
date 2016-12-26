@@ -122,7 +122,7 @@ enum class key_code : uint32_t {
   vk_consumer_previous,
   vk_dashboard,
   vk_launchpad,
-  vk_mission_control,
+  mission_control,
 };
 
 enum class pointing_button : uint32_t {
@@ -431,17 +431,6 @@ public:
         {"right_alt", key_code(kHIDUsage_KeyboardRightAlt)},
         {"right_gui", key_code(kHIDUsage_KeyboardRightGUI)},
 
-        // Aliases
-        {"left_option", key_code(kHIDUsage_KeyboardLeftAlt)},
-        {"left_command", key_code(kHIDUsage_KeyboardLeftGUI)},
-        {"right_option", key_code(kHIDUsage_KeyboardRightAlt)},
-        {"right_command", key_code(kHIDUsage_KeyboardRightGUI)},
-        {"japanese_eisuu", key_code(kHIDUsage_KeyboardLANG2)},
-        {"japanese_kana", key_code(kHIDUsage_KeyboardLANG1)},
-        {"japanese_pc_nfer", key_code(kHIDUsage_KeyboardInternational5)},
-        {"japanese_pc_xfer", key_code(kHIDUsage_KeyboardInternational4)},
-        {"japanese_pc_katakana", key_code(kHIDUsage_KeyboardInternational2)},
-
         // Extra
         {"fn", key_code::vk_fn_modifier},
         {"vk_none", key_code::vk_none},
@@ -454,7 +443,19 @@ public:
         {"vk_consumer_previous", key_code::vk_consumer_previous},
         {"vk_dashboard", key_code::vk_dashboard},
         {"vk_launchpad", key_code::vk_launchpad},
-        {"vk_mission_control", key_code::vk_mission_control},
+        {"mission_control", key_code::mission_control},
+
+        // Aliases
+        {"left_option", key_code(kHIDUsage_KeyboardLeftAlt)},
+        {"left_command", key_code(kHIDUsage_KeyboardLeftGUI)},
+        {"right_option", key_code(kHIDUsage_KeyboardRightAlt)},
+        {"right_command", key_code(kHIDUsage_KeyboardRightGUI)},
+        {"japanese_eisuu", key_code(kHIDUsage_KeyboardLANG2)},
+        {"japanese_kana", key_code(kHIDUsage_KeyboardLANG1)},
+        {"japanese_pc_nfer", key_code(kHIDUsage_KeyboardInternational5)},
+        {"japanese_pc_xfer", key_code(kHIDUsage_KeyboardInternational4)},
+        {"japanese_pc_katakana", key_code(kHIDUsage_KeyboardInternational2)},
+        {"vk_mission_control", key_code::mission_control},
     });
     return map;
   }
@@ -494,7 +495,7 @@ public:
 
     case key_code::vk_dashboard:
     case key_code::vk_launchpad:
-    case key_code::vk_mission_control:
+    case key_code::mission_control:
       return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_keyboard;
 
     case key_code::mute:
@@ -529,7 +530,7 @@ public:
     case key_code::vk_launchpad:
       return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_launchpad;
 
-    case key_code::vk_mission_control:
+    case key_code::mission_control:
       return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_expose_all;
 
     case key_code::mute:

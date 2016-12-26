@@ -228,7 +228,7 @@
     "name": "vk_consumer_brightness_up",
     "not_from": true
 }, {
-    "name": "vk_mission_control",
+    "name": "mission_control",
     "not_from": true
 }, {
     "name": "vk_launchpad",
@@ -484,4 +484,7 @@
 }, {
     "name": "right_gui",
     "label": "right_gui (equal to `right_command`)"
+}, {
+    "name": "vk_mission_control",
+    "label": "vk_mission_control (equal to `mission_control`)"
 }]

@@ -20,7 +20,7 @@
 //             "fn_function_keys": {
 //                 "f1": "vk_consumer_brightness_down",
 //                 "f2": "vk_consumer_brightness_up",
-//                 "f3": "vk_mission_control",
+//                 "f3": "mission_control",
 //                 "f4": "vk_launchpad",
 //                 "f5": "vk_consumer_illumination_down",
 //                 "f6": "vk_consumer_illumination_up",
@@ -182,7 +182,7 @@ private:
     json["simple_modifications"] = nlohmann::json::object();
     json["fn_function_keys"]["f1"] = "vk_consumer_brightness_down";
     json["fn_function_keys"]["f2"] = "vk_consumer_brightness_up";
-    json["fn_function_keys"]["f3"] = "vk_mission_control";
+    json["fn_function_keys"]["f3"] = "mission_control";
     json["fn_function_keys"]["f4"] = "vk_launchpad";
     json["fn_function_keys"]["f5"] = "vk_consumer_illumination_down";
     json["fn_function_keys"]["f6"] = "vk_consumer_illumination_up";
