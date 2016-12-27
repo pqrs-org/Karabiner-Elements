@@ -161,8 +161,8 @@ enum {
     _hidSystemAuxControlButtonNames = @{
       @(NX_POWER_KEY) : @"power",
       @(NX_KEYTYPE_MUTE) : @"mute",
-      @(NX_KEYTYPE_SOUND_UP) : @"volume_up",
-      @(NX_KEYTYPE_SOUND_DOWN) : @"volume_down",
+      @(NX_KEYTYPE_SOUND_DOWN) : @"volume_decrement",
+      @(NX_KEYTYPE_SOUND_UP) : @"volume_increment",
       @(NX_KEYTYPE_BRIGHTNESS_DOWN) : @"display_brightness_decrement",
       @(NX_KEYTYPE_BRIGHTNESS_UP) : @"display_brightness_increment",
       @(NX_KEYTYPE_ILLUMINATION_DOWN) : @"illumination_decrement",

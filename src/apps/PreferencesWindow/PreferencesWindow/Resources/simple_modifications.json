@@ -370,10 +370,10 @@
         "name": "mute"
     },
     {
-        "name": "volume_up"
+        "name": "volume_decrement"
     },
     {
-        "name": "volume_down"
+        "name": "volume_increment"
     },
     {
         "category": "Keypad keys"
@@ -737,5 +737,13 @@
         "name": "vk_consumer_next",
         "label": "vk_consumer_next (equal to `fastforward`)",
         "not_from": true
+    },
+    {
+        "name": "volume_down",
+        "label": "volume_down (equal to `volume_decrement`)"
+    },
+    {
+        "name": "volume_up",
+        "label": "volume_up (equal to `volume_increment`)"
     }
 ]

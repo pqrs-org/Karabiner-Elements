@@ -18,8 +18,8 @@
                 "f8": "play_or_pause",
                 "f9": "fastforward",
                 "f10": "mute",
-                "f11": "volume_down",
-                "f12": "volume_up"
+                "f11": "volume_decrement",
+                "f12": "volume_increment"
             },
             "virtual_hid_keyboard": {
                 "keyboard_type": "iso"

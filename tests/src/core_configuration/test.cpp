@@ -30,8 +30,8 @@ TEST_CASE("valid") {
     std::vector<std::pair<krbn::key_code, krbn::key_code>> expected{
         std::make_pair(krbn::key_code::f1, krbn::key_code::display_brightness_decrement),
         std::make_pair(krbn::key_code::f10, krbn::key_code::mute),
-        std::make_pair(krbn::key_code::f11, krbn::key_code::volume_down),
-        std::make_pair(krbn::key_code::f12, krbn::key_code::volume_up),
+        std::make_pair(krbn::key_code::f11, krbn::key_code::volume_decrement),
+        std::make_pair(krbn::key_code::f12, krbn::key_code::volume_increment),
         std::make_pair(krbn::key_code::f2, krbn::key_code::display_brightness_increment),
         std::make_pair(krbn::key_code::f3, krbn::key_code::mission_control),
         std::make_pair(krbn::key_code::f4, krbn::key_code::launchpad),

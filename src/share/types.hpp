@@ -103,8 +103,8 @@ enum class key_code : uint32_t {
   page_down = kHIDUsage_KeyboardPageDown,
 
   mute = kHIDUsage_KeyboardMute,
-  volume_up = kHIDUsage_KeyboardVolumeUp,
-  volume_down = kHIDUsage_KeyboardVolumeDown,
+  volume_decrement = kHIDUsage_KeyboardVolumeDown,
+  volume_increment = kHIDUsage_KeyboardVolumeUp,
 
   // 0x1000 - are karabiner own virtual key codes or keys not in keyboard_or_keypad usage page.
   extra_ = 0x1000,
@@ -385,8 +385,8 @@ public:
         {"paste", key_code(kHIDUsage_KeyboardPaste)},
         {"find", key_code(kHIDUsage_KeyboardFind)},
         {"mute", key_code(kHIDUsage_KeyboardMute)},
-        {"volume_up", key_code(kHIDUsage_KeyboardVolumeUp)},
-        {"volume_down", key_code(kHIDUsage_KeyboardVolumeDown)},
+        {"volume_decrement", key_code(kHIDUsage_KeyboardVolumeDown)},
+        {"volume_increment", key_code(kHIDUsage_KeyboardVolumeUp)},
         {"locking_caps_lock", key_code(kHIDUsage_KeyboardLockingCapsLock)},
         {"locking_num_lock", key_code(kHIDUsage_KeyboardLockingNumLock)},
         {"locking_scroll_lock", key_code(kHIDUsage_KeyboardLockingScrollLock)},
@@ -466,6 +466,8 @@ public:
         {"vk_consumer_previous", key_code::rewind},
         {"vk_consumer_play", key_code::play_or_pause},
         {"vk_consumer_next", key_code::fastforward},
+        {"volume_down", key_code(kHIDUsage_KeyboardVolumeDown)},
+        {"volume_up", key_code(kHIDUsage_KeyboardVolumeUp)},
     });
     return map;
   }
@@ -509,8 +511,8 @@ public:
       return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_keyboard;
 
     case key_code::mute:
-    case key_code::volume_up:
-    case key_code::volume_down:
+    case key_code::volume_decrement:
+    case key_code::volume_increment:
     case key_code::display_brightness_decrement:
     case key_code::display_brightness_increment:
     case key_code::rewind:
@@ -546,11 +548,11 @@ public:
     case key_code::mute:
       return pqrs::karabiner_virtual_hid_device::usage::csmr_mute;
 
-    case key_code::volume_up:
-      return pqrs::karabiner_virtual_hid_device::usage::csmr_volume_increment;
-
-    case key_code::volume_down:
+    case key_code::volume_decrement:
       return pqrs::karabiner_virtual_hid_device::usage::csmr_volume_decrement;
+
+    case key_code::volume_increment:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_volume_increment;
 
     case key_code::display_brightness_decrement:
       return pqrs::karabiner_virtual_hid_device::usage::csmr_display_brightness_decrement;

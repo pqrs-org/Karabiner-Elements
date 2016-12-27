@@ -28,8 +28,8 @@
 //                 "f8": "play_or_pause",
 //                 "f9": "fastforward",
 //                 "f10": "mute",
-//                 "f11": "volume_down",
-//                 "f12": "volume_up"
+//                 "f11": "volume_decrement",
+//                 "f12": "volume_increment"
 //             },
 //             "virtual_hid_keyboard": {
 //                 "keyboard_type": "ansi"
@@ -190,8 +190,8 @@ private:
     json["fn_function_keys"]["f8"] = "play_or_pause";
     json["fn_function_keys"]["f9"] = "fastforward";
     json["fn_function_keys"]["f10"] = "mute";
-    json["fn_function_keys"]["f11"] = "volume_down";
-    json["fn_function_keys"]["f12"] = "volume_up";
+    json["fn_function_keys"]["f11"] = "volume_decrement";
+    json["fn_function_keys"]["f12"] = "volume_increment";
     json["devices"] = nlohmann::json::array();
     return json;
   }
