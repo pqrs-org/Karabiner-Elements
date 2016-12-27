@@ -22,3 +22,6 @@ indent_size = 4
 
 [*.applescript]
 indent_size = 4
+
+[*.json]
+indent_size = 4
