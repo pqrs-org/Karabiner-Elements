@@ -28,18 +28,18 @@ TEST_CASE("valid") {
   }
   {
     std::vector<std::pair<krbn::key_code, krbn::key_code>> expected{
-        std::make_pair(krbn::key_code::f1, krbn::key_code::vk_consumer_brightness_down),
+        std::make_pair(krbn::key_code::f1, krbn::key_code::display_brightness_decrement),
         std::make_pair(krbn::key_code::f10, krbn::key_code::mute),
         std::make_pair(krbn::key_code::f11, krbn::key_code::volume_down),
         std::make_pair(krbn::key_code::f12, krbn::key_code::volume_up),
-        std::make_pair(krbn::key_code::f2, krbn::key_code::vk_consumer_brightness_up),
+        std::make_pair(krbn::key_code::f2, krbn::key_code::display_brightness_increment),
         std::make_pair(krbn::key_code::f3, krbn::key_code::mission_control),
-        std::make_pair(krbn::key_code::f4, krbn::key_code::vk_launchpad),
-        std::make_pair(krbn::key_code::f5, krbn::key_code::vk_consumer_illumination_down),
-        std::make_pair(krbn::key_code::f6, krbn::key_code::vk_consumer_illumination_up),
-        std::make_pair(krbn::key_code::f7, krbn::key_code::vk_consumer_previous),
-        std::make_pair(krbn::key_code::f8, krbn::key_code::vk_consumer_play),
-        std::make_pair(krbn::key_code::f9, krbn::key_code::vk_consumer_next),
+        std::make_pair(krbn::key_code::f4, krbn::key_code::launchpad),
+        std::make_pair(krbn::key_code::f5, krbn::key_code::illumination_decrement),
+        std::make_pair(krbn::key_code::f6, krbn::key_code::illumination_increment),
+        std::make_pair(krbn::key_code::f7, krbn::key_code::rewind),
+        std::make_pair(krbn::key_code::f8, krbn::key_code::play_or_pause),
+        std::make_pair(krbn::key_code::f9, krbn::key_code::fastforward),
     };
     REQUIRE(configuration.get_current_profile_fn_function_keys() == expected);
   }

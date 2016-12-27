@@ -42,7 +42,7 @@ enum class event_type : uint32_t {
 };
 
 enum class key_code : uint32_t {
-  // 0x00 - 0xff are usage pages
+  // 0x00 - 0xff are keys in keyboard_or_keypad usage page.
   return_or_enter = kHIDUsage_KeyboardReturnOrEnter,
   delete_or_backspace = kHIDUsage_KeyboardDeleteOrBackspace,
   caps_lock = kHIDUsage_KeyboardCapsLock,
@@ -106,23 +106,23 @@ enum class key_code : uint32_t {
   volume_up = kHIDUsage_KeyboardVolumeUp,
   volume_down = kHIDUsage_KeyboardVolumeDown,
 
-  // 0x1000 - are karabiner own virtual key codes
+  // 0x1000 - are karabiner own virtual key codes or keys not in keyboard_or_keypad usage page.
   extra_ = 0x1000,
-  // predefined virtual modifier flags
+  // A pseudo key that does not send any event.
   vk_none,
-  vk_fn_modifier,
 
-  // virtual key codes
-  vk_consumer_brightness_down,
-  vk_consumer_brightness_up,
-  vk_consumer_illumination_down,
-  vk_consumer_illumination_up,
-  vk_consumer_next,
-  vk_consumer_play,
-  vk_consumer_previous,
-  vk_dashboard,
-  vk_launchpad,
+  // Keys that are not in generic keyboard_or_keypad usage_page.
+  fn,
+  display_brightness_decrement,
+  display_brightness_increment,
+  dashboard,
+  launchpad,
   mission_control,
+  illumination_decrement,
+  illumination_increment,
+  rewind,
+  play_or_pause,
+  fastforward,
 };
 
 enum class pointing_button : uint32_t {
@@ -250,7 +250,7 @@ public:
       return modifier_flag::right_option;
     case kHIDUsage_KeyboardRightGUI:
       return modifier_flag::right_command;
-    case static_cast<uint32_t>(key_code::vk_fn_modifier):
+    case static_cast<uint32_t>(key_code::fn):
       return modifier_flag::fn;
     default:
       return modifier_flag::zero;
@@ -432,18 +432,19 @@ public:
         {"right_gui", key_code(kHIDUsage_KeyboardRightGUI)},
 
         // Extra
-        {"fn", key_code::vk_fn_modifier},
         {"vk_none", key_code::vk_none},
-        {"vk_consumer_brightness_down", key_code::vk_consumer_brightness_down},
-        {"vk_consumer_brightness_up", key_code::vk_consumer_brightness_up},
-        {"vk_consumer_illumination_down", key_code::vk_consumer_illumination_down},
-        {"vk_consumer_illumination_up", key_code::vk_consumer_illumination_up},
-        {"vk_consumer_next", key_code::vk_consumer_next},
-        {"vk_consumer_play", key_code::vk_consumer_play},
-        {"vk_consumer_previous", key_code::vk_consumer_previous},
-        {"vk_dashboard", key_code::vk_dashboard},
-        {"vk_launchpad", key_code::vk_launchpad},
+
+        {"fn", key_code::fn},
+        {"display_brightness_decrement", key_code::display_brightness_decrement},
+        {"display_brightness_increment", key_code::display_brightness_increment},
         {"mission_control", key_code::mission_control},
+        {"launchpad", key_code::launchpad},
+        {"dashboard", key_code::dashboard},
+        {"illumination_decrement", key_code::illumination_decrement},
+        {"illumination_increment", key_code::illumination_increment},
+        {"rewind", key_code::rewind},
+        {"play_or_pause", key_code::play_or_pause},
+        {"fastforward", key_code::fastforward},
 
         // Aliases
         {"left_option", key_code(kHIDUsage_KeyboardLeftAlt)},
@@ -455,7 +456,16 @@ public:
         {"japanese_pc_nfer", key_code(kHIDUsage_KeyboardInternational5)},
         {"japanese_pc_xfer", key_code(kHIDUsage_KeyboardInternational4)},
         {"japanese_pc_katakana", key_code(kHIDUsage_KeyboardInternational2)},
+        {"vk_consumer_brightness_down", key_code::display_brightness_decrement},
+        {"vk_consumer_brightness_up", key_code::display_brightness_increment},
         {"vk_mission_control", key_code::mission_control},
+        {"vk_launchpad", key_code::launchpad},
+        {"vk_dashboard", key_code::dashboard},
+        {"vk_consumer_illumination_down", key_code::illumination_decrement},
+        {"vk_consumer_illumination_up", key_code::illumination_increment},
+        {"vk_consumer_previous", key_code::rewind},
+        {"vk_consumer_play", key_code::play_or_pause},
+        {"vk_consumer_next", key_code::fastforward},
     });
     return map;
   }
@@ -479,7 +489,7 @@ public:
 
     case kHIDPage_AppleVendorTopCase:
       if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
-        return krbn::key_code::vk_fn_modifier;
+        return krbn::key_code::fn;
       }
       break;
     }
@@ -488,24 +498,24 @@ public:
 
   static boost::optional<pqrs::karabiner_virtual_hid_device::usage_page> get_usage_page(key_code key_code) {
     switch (key_code) {
-    case key_code::vk_fn_modifier:
-    case key_code::vk_consumer_illumination_down:
-    case key_code::vk_consumer_illumination_up:
+    case key_code::fn:
+    case key_code::illumination_decrement:
+    case key_code::illumination_increment:
       return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_top_case;
 
-    case key_code::vk_dashboard:
-    case key_code::vk_launchpad:
+    case key_code::dashboard:
+    case key_code::launchpad:
     case key_code::mission_control:
       return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_keyboard;
 
     case key_code::mute:
     case key_code::volume_up:
     case key_code::volume_down:
-    case key_code::vk_consumer_brightness_down:
-    case key_code::vk_consumer_brightness_up:
-    case key_code::vk_consumer_next:
-    case key_code::vk_consumer_play:
-    case key_code::vk_consumer_previous:
+    case key_code::display_brightness_decrement:
+    case key_code::display_brightness_increment:
+    case key_code::rewind:
+    case key_code::play_or_pause:
+    case key_code::fastforward:
       return pqrs::karabiner_virtual_hid_device::usage_page::consumer;
 
     default:
@@ -515,19 +525,19 @@ public:
 
   static boost::optional<pqrs::karabiner_virtual_hid_device::usage> get_usage(key_code key_code) {
     switch (key_code) {
-    case key_code::vk_fn_modifier:
+    case key_code::fn:
       return pqrs::karabiner_virtual_hid_device::usage::av_top_case_keyboard_fn;
 
-    case key_code::vk_consumer_illumination_down:
+    case key_code::illumination_decrement:
       return pqrs::karabiner_virtual_hid_device::usage::av_top_case_illumination_down;
 
-    case key_code::vk_consumer_illumination_up:
+    case key_code::illumination_increment:
       return pqrs::karabiner_virtual_hid_device::usage::av_top_case_illumination_up;
 
-    case key_code::vk_dashboard:
+    case key_code::dashboard:
       return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_dashboard;
 
-    case key_code::vk_launchpad:
+    case key_code::launchpad:
       return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_launchpad;
 
     case key_code::mission_control:
@@ -542,20 +552,20 @@ public:
     case key_code::volume_down:
       return pqrs::karabiner_virtual_hid_device::usage::csmr_volume_decrement;
 
-    case key_code::vk_consumer_brightness_down:
+    case key_code::display_brightness_decrement:
       return pqrs::karabiner_virtual_hid_device::usage::csmr_display_brightness_decrement;
 
-    case key_code::vk_consumer_brightness_up:
+    case key_code::display_brightness_increment:
       return pqrs::karabiner_virtual_hid_device::usage::csmr_display_brightness_increment;
 
-    case key_code::vk_consumer_next:
-      return pqrs::karabiner_virtual_hid_device::usage::csmr_fastforward;
+    case key_code::rewind:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_rewind;
 
-    case key_code::vk_consumer_play:
+    case key_code::play_or_pause:
       return pqrs::karabiner_virtual_hid_device::usage::csmr_play_or_pause;
 
-    case key_code::vk_consumer_previous:
-      return pqrs::karabiner_virtual_hid_device::usage::csmr_rewind;
+    case key_code::fastforward:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_fastforward;
 
     default:
       return pqrs::karabiner_virtual_hid_device::usage(key_code);

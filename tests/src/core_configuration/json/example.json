@@ -8,15 +8,15 @@
                 "escape": "spacebar"
             },
             "fn_function_keys": {
-                "f1": "vk_consumer_brightness_down",
-                "f2": "vk_consumer_brightness_up",
+                "f1": "display_brightness_decrement",
+                "f2": "display_brightness_increment",
                 "f3": "mission_control",
-                "f4": "vk_launchpad",
-                "f5": "vk_consumer_illumination_down",
-                "f6": "vk_consumer_illumination_up",
-                "f7": "vk_consumer_previous",
-                "f8": "vk_consumer_play",
-                "f9": "vk_consumer_next",
+                "f4": "launchpad",
+                "f5": "illumination_decrement",
+                "f6": "illumination_increment",
+                "f7": "rewind",
+                "f8": "play_or_pause",
+                "f9": "fastforward",
                 "f10": "mute",
                 "f11": "volume_down",
                 "f12": "volume_up"

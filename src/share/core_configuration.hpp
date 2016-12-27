@@ -18,15 +18,15 @@
 //                 "escape": "spacebar"
 //             },
 //             "fn_function_keys": {
-//                 "f1": "vk_consumer_brightness_down",
-//                 "f2": "vk_consumer_brightness_up",
+//                 "f1": "display_brightness_decrement",
+//                 "f2": "display_brightness_increment",
 //                 "f3": "mission_control",
-//                 "f4": "vk_launchpad",
-//                 "f5": "vk_consumer_illumination_down",
-//                 "f6": "vk_consumer_illumination_up",
-//                 "f7": "vk_consumer_previous",
-//                 "f8": "vk_consumer_play",
-//                 "f9": "vk_consumer_next",
+//                 "f4": "launchpad",
+//                 "f5": "illumination_decrement",
+//                 "f6": "illumination_increment",
+//                 "f7": "rewind",
+//                 "f8": "play_or_pause",
+//                 "f9": "fastforward",
 //                 "f10": "mute",
 //                 "f11": "volume_down",
 //                 "f12": "volume_up"
@@ -99,7 +99,7 @@ public:
     return get_key_code_pair_from_json_object(profile["simple_modifications"]);
   }
 
-  // std::vector<f1,vk_consumer_brightness_down>
+  // std::vector<f1,display_brightness_decrement>
   std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_fn_function_keys(void) {
     auto profile = get_current_profile();
     return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
@@ -180,15 +180,15 @@ private:
     json["name"] = "Default profile";
     json["selected"] = true;
     json["simple_modifications"] = nlohmann::json::object();
-    json["fn_function_keys"]["f1"] = "vk_consumer_brightness_down";
-    json["fn_function_keys"]["f2"] = "vk_consumer_brightness_up";
+    json["fn_function_keys"]["f1"] = "display_brightness_decrement";
+    json["fn_function_keys"]["f2"] = "display_brightness_increment";
     json["fn_function_keys"]["f3"] = "mission_control";
-    json["fn_function_keys"]["f4"] = "vk_launchpad";
-    json["fn_function_keys"]["f5"] = "vk_consumer_illumination_down";
-    json["fn_function_keys"]["f6"] = "vk_consumer_illumination_up";
-    json["fn_function_keys"]["f7"] = "vk_consumer_previous";
-    json["fn_function_keys"]["f8"] = "vk_consumer_play";
-    json["fn_function_keys"]["f9"] = "vk_consumer_next";
+    json["fn_function_keys"]["f4"] = "launchpad";
+    json["fn_function_keys"]["f5"] = "illumination_decrement";
+    json["fn_function_keys"]["f6"] = "illumination_increment";
+    json["fn_function_keys"]["f7"] = "rewind";
+    json["fn_function_keys"]["f8"] = "play_or_pause";
+    json["fn_function_keys"]["f9"] = "fastforward";
     json["fn_function_keys"]["f10"] = "mute";
     json["fn_function_keys"]["f11"] = "volume_down";
     json["fn_function_keys"]["f12"] = "volume_up";

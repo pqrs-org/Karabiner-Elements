@@ -163,13 +163,13 @@ enum {
       @(NX_KEYTYPE_MUTE) : @"mute",
       @(NX_KEYTYPE_SOUND_UP) : @"volume_up",
       @(NX_KEYTYPE_SOUND_DOWN) : @"volume_down",
-      @(NX_KEYTYPE_BRIGHTNESS_DOWN) : @"vk_consumer_brightness_down",
-      @(NX_KEYTYPE_BRIGHTNESS_UP) : @"vk_consumer_brightness_up",
-      @(NX_KEYTYPE_ILLUMINATION_DOWN) : @"vk_consumer_illumination_down",
-      @(NX_KEYTYPE_ILLUMINATION_UP) : @"vk_consumer_illumination_up",
-      @(NX_KEYTYPE_FAST) : @"vk_consumer_next",
-      @(NX_KEYTYPE_PLAY) : @"vk_consumer_play",
-      @(NX_KEYTYPE_REWIND) : @"vk_consumer_previous",
+      @(NX_KEYTYPE_BRIGHTNESS_DOWN) : @"display_brightness_decrement",
+      @(NX_KEYTYPE_BRIGHTNESS_UP) : @"display_brightness_increment",
+      @(NX_KEYTYPE_ILLUMINATION_DOWN) : @"illumination_decrement",
+      @(NX_KEYTYPE_ILLUMINATION_UP) : @"illumination_increment",
+      @(NX_KEYTYPE_FAST) : @"fastforward",
+      @(NX_KEYTYPE_PLAY) : @"play_or_pause",
+      @(NX_KEYTYPE_REWIND) : @"rewind",
     };
   }
 

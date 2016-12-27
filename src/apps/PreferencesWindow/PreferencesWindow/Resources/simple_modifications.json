@@ -222,34 +222,34 @@
 }, {
     "category": "Media controls"
 }, {
-    "name": "vk_consumer_brightness_down",
+    "name": "display_brightness_decrement",
     "not_from": true
 }, {
-    "name": "vk_consumer_brightness_up",
+    "name": "display_brightness_increment",
     "not_from": true
 }, {
     "name": "mission_control",
     "not_from": true
 }, {
-    "name": "vk_launchpad",
+    "name": "launchpad",
     "not_from": true
 }, {
-    "name": "vk_dashboard",
+    "name": "dashboard",
     "not_from": true
 }, {
-    "name": "vk_consumer_illumination_down",
+    "name": "illumination_decrement",
     "not_from": true
 }, {
-    "name": "vk_consumer_illumination_up",
+    "name": "illumination_increment",
     "not_from": true
 }, {
-    "name": "vk_consumer_next",
+    "name": "rewind",
     "not_from": true
 }, {
-    "name": "vk_consumer_play",
+    "name": "play_or_pause",
     "not_from": true
 }, {
-    "name": "vk_consumer_previous",
+    "name": "fastforward",
     "not_from": true
 }, {
     "name": "mute"
@@ -485,6 +485,43 @@
     "name": "right_gui",
     "label": "right_gui (equal to `right_command`)"
 }, {
+    "name": "vk_consumer_brightness_down",
+    "label": "vk_consumer_brightness_down (equal to `display_brightness_decrement`)",
+    "not_from": true
+}, {
+    "name": "vk_consumer_brightness_up",
+    "label": "vk_consumer_brightness_up (equal to `display_brightness_increment`)",
+    "not_from": true
+}, {
     "name": "vk_mission_control",
-    "label": "vk_mission_control (equal to `mission_control`)"
+    "label": "vk_mission_control (equal to `mission_control`)",
+    "not_from": true
+}, {
+    "name": "vk_launchpad",
+    "label": "vk_launchpad (equal to `launchpad`)",
+    "not_from": true
+}, {
+    "name": "vk_dashboard",
+    "label": "vk_dashboard (equal to `dashboard`)",
+    "not_from": true
+}, {
+    "name": "vk_consumer_illumination_down",
+    "label": "vk_consumer_illumination_down (equal to `illumination_decrement`)",
+    "not_from": true
+}, {
+    "name": "vk_consumer_illumination_up",
+    "label": "vk_consumer_illumination_up (equal to `illumination_increment`)",
+    "not_from": true
+}, {
+    "name": "vk_consumer_previous",
+    "label": "vk_consumer_previous (equal to `rewind`)",
+    "not_from": true
+}, {
+    "name": "vk_consumer_play",
+    "label": "vk_consumer_play (equal to `play`)",
+    "not_from": true
+}, {
+    "name": "vk_consumer_next",
+    "label": "vk_consumer_next (equal to `fastforward`)",
+    "not_from": true
 }]
