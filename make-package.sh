@@ -8,10 +8,7 @@ PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:$GEM_HOME/bin"; export PATH
 version=$(cat version)
 
 echo "make build"
-make build | ruby scripts/reduce-logs.rb
-if [ ${PIPESTATUS[0]} -ne 0 ]; then
-    exit 99
-fi
+ruby scripts/reduce-logs.rb 'make build' || exit 99
 
 # --------------------------------------------------
 echo "Copy Files"

@@ -61,7 +61,3 @@ make
 ```
 
 The `make` script will create a redistributable **Karabiner-Elements-VERSION.dmg** in the current directory.
-
-#### Troubleshooting
-
-If your build was failed, please execute `make build` to determine the error cause.
