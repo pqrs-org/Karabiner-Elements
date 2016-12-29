@@ -482,6 +482,16 @@ public:
   }
 
   grabbable_state is_grabbable(void) {
+    if (is_grabbable_callback_) {
+      auto state = is_grabbable_callback_(*this);
+      if (state != grabbable_state::grabbable) {
+        return state;
+      }
+    }
+
+    // ----------------------------------------
+    // We are going to grab the device.
+
     if (repeating_key_) {
       // We should not grab the device while a key is repeating since we cannot stop the key repeating.
       // (To stop the key repeating, we have to send a hid report to the device. But we cannot do it.)
@@ -498,13 +508,7 @@ public:
       return grabbable_state::ungrabbable_temporarily;
     }
 
-    if (is_grabbable_callback_) {
-      auto state = is_grabbable_callback_(*this);
-      if (state != grabbable_state::grabbable) {
-        return state;
-      }
-    }
-
+    // ----------------------------------------
     return grabbable_state::grabbable;
   }
 
