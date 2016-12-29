@@ -24,11 +24,16 @@ class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(manipulator::event_manipulator& event_manipulator) : event_manipulator_(event_manipulator),
+  device_grabber(virtual_hid_device_client& virtual_hid_device_client,
+                 manipulator::event_manipulator& event_manipulator) : virtual_hid_device_client_(virtual_hid_device_client),
+                                                                      event_manipulator_(event_manipulator),
                                                                       event_tap_manager_(std::bind(&device_grabber::caps_lock_state_changed_callback, this, std::placeholders::_1)),
                                                                       mode_(mode::observing),
                                                                       is_grabbable_callback_log_reducer_(logger::get_logger()),
                                                                       suspended_(false) {
+    virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
+        boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
+
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
@@ -61,6 +66,8 @@ public:
         CFRelease(manager_);
         manager_ = nullptr;
       }
+
+      virtual_hid_device_client_disconnected_connection.disconnect();
     });
   }
 
@@ -163,6 +170,10 @@ private:
     observing,
     grabbing,
   };
+
+  void virtual_hid_device_client_disconnected_callback(void) {
+    stop_grabbing();
+  }
 
   static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
     if (result != kIOReturnSuccess) {
@@ -526,7 +537,10 @@ private:
     }
   }
 
+  virtual_hid_device_client& virtual_hid_device_client_;
   manipulator::event_manipulator& event_manipulator_;
+
+  boost::signals2::connection virtual_hid_device_client_disconnected_connection;
 
   event_tap_manager event_tap_manager_;
   IOHIDManagerRef _Nullable manager_;

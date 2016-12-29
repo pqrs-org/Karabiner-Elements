@@ -1,21 +1,23 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "service_observer.hpp"
+#include <boost/signals2.hpp>
 
 class virtual_hid_device_client final {
 public:
-  typedef std::function<void(virtual_hid_device_client& virtual_hid_device_client)> connected_callback;
+  boost::signals2::signal<void(void)> client_connected;
+  boost::signals2::signal<void(void)> client_disconnected;
 
   virtual_hid_device_client(const virtual_hid_device_client&) = delete;
 
-  virtual_hid_device_client(spdlog::logger& logger,
-                            const connected_callback& connected_callback) : logger_(logger),
-                                                                            connected_callback_(connected_callback),
-                                                                            service_(IO_OBJECT_NULL),
-                                                                            connect_(IO_OBJECT_NULL),
-                                                                            virtual_hid_keyboard_initialized_(false),
-                                                                            keyboard_type_(krbn::keyboard_type::none) {
+  virtual_hid_device_client(spdlog::logger& logger) : logger_(logger),
+                                                      service_(IO_OBJECT_NULL),
+                                                      connect_(IO_OBJECT_NULL),
+                                                      virtual_hid_keyboard_initialized_(false),
+                                                      keyboard_type_(krbn::keyboard_type::none) {
     if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name())) {
       service_observer_ = std::make_unique<service_observer>(logger_,
                                                              matching_dictionary,
@@ -127,19 +129,28 @@ private:
       IOObjectRelease(service);
     }
 
-    // We have to call callback after connect_mutex_ is unlocked.
-    if (connected && connected_callback_) {
-      connected_callback_(*this);
+    // We have to call callbacks after connect_mutex_ is unlocked.
+    if (connected) {
+      client_connected();
     }
   }
 
   void terminated_callback(io_iterator_t iterator) {
+    bool disconnected = false;
+
     while (auto service = IOIteratorNext(iterator)) {
       std::lock_guard<std::mutex> guard(connect_mutex_);
 
       close_connection();
 
+      disconnected = true;
+
       IOObjectRelease(service);
+    }
+
+    // We have to call callbacks after connect_mutex_ is unlocked.
+    if (disconnected) {
+      client_disconnected();
     }
   }
 
@@ -180,7 +191,6 @@ private:
   }
 
   spdlog::logger& logger_;
-  connected_callback connected_callback_;
 
   std::unique_ptr<service_observer> service_observer_;
   io_service_t service_;

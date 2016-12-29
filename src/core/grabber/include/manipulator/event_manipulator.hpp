@@ -21,8 +21,7 @@ class event_manipulator final {
 public:
   event_manipulator(const event_manipulator&) = delete;
 
-  event_manipulator(void) : virtual_hid_device_client_(logger::get_logger(),
-                                                       std::bind(&event_manipulator::virtual_hid_device_client_connected_callback, this, std::placeholders::_1)) {
+  event_manipulator(virtual_hid_device_client& virtual_hid_device_client) : virtual_hid_device_client_(virtual_hid_device_client) {
   }
 
   ~event_manipulator(void) {
@@ -349,10 +348,6 @@ private:
     std::mutex mutex_;
   };
 
-  void virtual_hid_device_client_connected_callback(virtual_hid_device_client& virtual_hid_device_client) {
-    logger::get_logger().info("virtual_hid_device_client is connected");
-  }
-
   bool post_modifier_flag_event(krbn::key_code key_code, bool pressed) {
     auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
 
@@ -379,7 +374,7 @@ private:
     }
   }
 
-  virtual_hid_device_client virtual_hid_device_client_;
+  virtual_hid_device_client& virtual_hid_device_client_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
 

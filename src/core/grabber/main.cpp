@@ -4,6 +4,7 @@
 #include "karabiner_version.h"
 #include "notification_center.hpp"
 #include "thread_utility.hpp"
+#include "virtual_hid_device_client.hpp"
 #include <iostream>
 #include <unistd.h>
 
@@ -30,8 +31,9 @@ int main(int argc, const char* argv[]) {
 
   unlink(constants::get_grabber_socket_file_path());
 
-  std::unique_ptr<manipulator::event_manipulator> event_manipulator_ptr = std::make_unique<manipulator::event_manipulator>();
-  std::unique_ptr<device_grabber> device_grabber_ptr = std::make_unique<device_grabber>(*event_manipulator_ptr);
+  std::unique_ptr<virtual_hid_device_client> virtual_hid_device_client_ptr = std::make_unique<virtual_hid_device_client>(logger::get_logger());
+  std::unique_ptr<manipulator::event_manipulator> event_manipulator_ptr = std::make_unique<manipulator::event_manipulator>(*virtual_hid_device_client_ptr);
+  std::unique_ptr<device_grabber> device_grabber_ptr = std::make_unique<device_grabber>(*virtual_hid_device_client_ptr, *event_manipulator_ptr);
   connection_manager connection_manager(*event_manipulator_ptr, *device_grabber_ptr);
 
   notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_grabber_is_launched());
