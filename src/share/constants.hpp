@@ -79,50 +79,6 @@ public:
     }
   }
 
-  static const char* get_home_dot_karabiner_directory(void) {
-    static std::mutex mutex;
-    static bool once = false;
-    static std::string directory;
-
-    std::lock_guard<std::mutex> guard(mutex);
-
-    if (!once) {
-      once = true;
-      if (auto p = std::getenv("HOME")) {
-        directory = p;
-        directory += "/.karabiner.d";
-      }
-    }
-
-    if (directory.empty()) {
-      return nullptr;
-    } else {
-      return directory.c_str();
-    }
-  }
-
-  static const char* get_configuration_directory(void) {
-    static std::mutex mutex;
-    static bool once = false;
-    static std::string directory;
-
-    std::lock_guard<std::mutex> guard(mutex);
-
-    if (!once) {
-      once = true;
-      if (auto p = get_home_dot_karabiner_directory()) {
-        directory = p;
-        directory += "/configuration";
-      }
-    }
-
-    if (directory.empty()) {
-      return nullptr;
-    } else {
-      return directory.c_str();
-    }
-  }
-
   static const char* get_core_configuration_file_path(void) {
     static std::mutex mutex;
     static bool once = false;
