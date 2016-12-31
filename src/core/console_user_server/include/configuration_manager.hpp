@@ -15,12 +15,12 @@ public:
   configuration_manager(spdlog::logger& logger,
                         grabber_client& grabber_client) : logger_(logger),
                                                           grabber_client_(grabber_client) {
-    mkdir(constants::get_configuration_directory(), 0700);
+    filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
 
     auto core_configuration_file_path = constants::get_core_configuration_file_path();
 
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-        {constants::get_configuration_directory(), {core_configuration_file_path}},
+        {constants::get_user_configuration_directory(), {core_configuration_file_path}},
     };
     file_monitor_ = std::make_unique<file_monitor>(logger_, targets, std::bind(&configuration_manager::reload_core_configuration, this, std::placeholders::_1));
 

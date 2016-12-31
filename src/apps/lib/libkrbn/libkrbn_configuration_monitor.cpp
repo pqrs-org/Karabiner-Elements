@@ -13,7 +13,7 @@ public:
     auto core_configuration_file_path = constants::get_core_configuration_file_path();
 
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-        {constants::get_configuration_directory(), {core_configuration_file_path}},
+        {constants::get_user_configuration_directory(), {core_configuration_file_path}},
     };
 
     file_monitor_ = std::make_unique<file_monitor>(libkrbn::get_logger(),

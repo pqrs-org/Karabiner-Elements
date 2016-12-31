@@ -132,7 +132,7 @@ public:
 
     if (!once) {
       once = true;
-      if (auto p = get_configuration_directory()) {
+      if (auto p = get_user_configuration_directory()) {
         file_path = p;
         file_path += "/karabiner.json";
       }

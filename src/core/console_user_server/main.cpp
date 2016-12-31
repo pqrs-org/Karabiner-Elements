@@ -13,7 +13,7 @@ int main(int argc, const char* argv[]) {
 
   system("open '/Library/Application Support/org.pqrs/Karabiner-Elements/updater/Karabiner-Elements.app'");
 
-  mkdir(constants::get_configuration_directory(), 0700);
+  filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
 
   connection_manager manager;
 
