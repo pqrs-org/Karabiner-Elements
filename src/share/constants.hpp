@@ -49,6 +49,36 @@ public:
     }
   }
 
+  static const char* get_user_data_directory(void) {
+    static std::mutex mutex;
+    static bool once = false;
+    static std::string directory;
+
+    std::lock_guard<std::mutex> guard(mutex);
+
+    if (!once) {
+      once = true;
+      if (auto xdg_config_home = std::getenv("XDG_DATA_HOME")) {
+        directory = xdg_config_home;
+      } else {
+        if (auto home = std::getenv("HOME")) {
+          directory = home;
+          directory += "/.local/share";
+        }
+      }
+
+      if (!directory.empty()) {
+        directory += "/karabiner";
+      }
+    }
+
+    if (directory.empty()) {
+      return nullptr;
+    } else {
+      return directory.c_str();
+    }
+  }
+
   static const char* get_home_dot_karabiner_directory(void) {
     static std::mutex mutex;
     static bool once = false;
