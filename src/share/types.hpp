@@ -124,6 +124,8 @@ enum class key_code : uint32_t {
   play_or_pause,
   fastforward,
   eject,
+  apple_display_brightness_decrement,
+  apple_display_brightness_increment,
 };
 
 enum class pointing_button : uint32_t {
@@ -447,6 +449,8 @@ public:
         {"play_or_pause", key_code::play_or_pause},
         {"fastforward", key_code::fastforward},
         {"eject", key_code::eject},
+        {"apple_display_brightness_decrement", key_code::apple_display_brightness_decrement},
+        {"apple_display_brightness_increment", key_code::apple_display_brightness_increment},
 
         // Aliases
         {"left_option", key_code(kHIDUsage_KeyboardLeftAlt)},
@@ -510,6 +514,8 @@ public:
     case key_code::dashboard:
     case key_code::launchpad:
     case key_code::mission_control:
+    case key_code::apple_display_brightness_decrement:
+    case key_code::apple_display_brightness_increment:
       return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_keyboard;
 
     case key_code::mute:
@@ -547,6 +553,12 @@ public:
 
     case key_code::mission_control:
       return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_expose_all;
+
+    case key_code::apple_display_brightness_decrement:
+      return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_brightness_down;
+
+    case key_code::apple_display_brightness_increment:
+      return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_brightness_up;
 
     case key_code::mute:
       return pqrs::karabiner_virtual_hid_device::usage::csmr_mute;

@@ -380,6 +380,14 @@
         "not_from": true
     },
     {
+        "name": "apple_display_brightness_decrement",
+        "not_from": true
+    },
+    {
+        "name": "apple_display_brightness_increment",
+        "not_from": true
+    },
+    {
         "category": "Keypad keys"
     },
     {
