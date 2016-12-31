@@ -126,6 +126,8 @@ enum class key_code : uint32_t {
   eject,
   apple_display_brightness_decrement,
   apple_display_brightness_increment,
+  apple_top_case_display_brightness_decrement,
+  apple_top_case_display_brightness_increment,
 };
 
 enum class pointing_button : uint32_t {
@@ -451,6 +453,8 @@ public:
         {"eject", key_code::eject},
         {"apple_display_brightness_decrement", key_code::apple_display_brightness_decrement},
         {"apple_display_brightness_increment", key_code::apple_display_brightness_increment},
+        {"apple_top_case_display_brightness_decrement", key_code::apple_top_case_display_brightness_decrement},
+        {"apple_top_case_display_brightness_increment", key_code::apple_top_case_display_brightness_increment},
 
         // Aliases
         {"left_option", key_code(kHIDUsage_KeyboardLeftAlt)},
@@ -509,6 +513,8 @@ public:
     case key_code::fn:
     case key_code::illumination_decrement:
     case key_code::illumination_increment:
+    case key_code::apple_top_case_display_brightness_decrement:
+    case key_code::apple_top_case_display_brightness_increment:
       return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_top_case;
 
     case key_code::dashboard:
@@ -544,6 +550,12 @@ public:
 
     case key_code::illumination_increment:
       return pqrs::karabiner_virtual_hid_device::usage::av_top_case_illumination_up;
+
+    case key_code::apple_top_case_display_brightness_decrement:
+      return pqrs::karabiner_virtual_hid_device::usage::av_top_case_brightness_down;
+
+    case key_code::apple_top_case_display_brightness_increment:
+      return pqrs::karabiner_virtual_hid_device::usage::av_top_case_brightness_up;
 
     case key_code::dashboard:
       return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_dashboard;
