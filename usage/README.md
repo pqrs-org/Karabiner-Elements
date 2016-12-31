@@ -45,16 +45,15 @@ You can investigate the key name in Karabiner-EventViewer.
 
 # Set keyboard type
 
-You can set keyboard type in Devices tab.
+You can set keyboard type in Virtual Keyboard tab.
 
 <img src="img/keyboard_type.png" width="400">
 
-If you are using multiple keyboards which have different keyboard types, you have to set the keyboard type in Devices tab.
-Otherwise, Karabiner-Elements cannot treat keyboard type properly due to a limitation of macOS.
+oIf your keyboard is not ANSI layout, you have to set the keyboard type of virtual keyboard.
 
 # Learn about `karabiner.json`
 
-Karabiner-Elements configuration will be saved to `~/.karabiner.d/configuration/karabiner.json`.
+Karabiner-Elements configuration will be saved to `~/.config/karabiner/karabiner.json`.
 
 You don't need to care about this file for normal usage.
 We describe about `karabiner.json` for advanced usage.
@@ -100,7 +99,7 @@ Let's say, in addition to Caps Lock mapping, we want to map left Command `⌘` k
 
 ## The key definition
 
-You need key definitions to map keys. For example you should know Caps Lock `⇪` key is `caps_lock`. Keys (e.g. "caps_lock") are defined in [`types.hpp`](https://github.com/tekezo/Karabiner-Elements/blob/master/src/share/types.hpp#L177-L369).
+You need key definitions to map keys. For example you should know Caps Lock `⇪` key is `caps_lock`. Keys (e.g. "caps_lock") are defined in [`simple_modifications.json`](https://github.com/tekezo/Karabiner-Elements/blob/master/src/apps/PreferencesWindow/PreferencesWindow/Resources/simple_modifications.json).
 
 ## Typical configuration files
 
