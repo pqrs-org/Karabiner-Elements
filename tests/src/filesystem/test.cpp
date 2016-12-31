@@ -6,6 +6,14 @@
 #include "filesystem.hpp"
 #include <boost/optional/optional_io.hpp>
 
+TEST_CASE("is_directory") {
+  REQUIRE(filesystem::is_directory("/") == true);
+  REQUIRE(filesystem::is_directory(".") == true);
+  REQUIRE(filesystem::is_directory("..") == true);
+  REQUIRE(filesystem::is_directory("/bin/ls") == false);
+  REQUIRE(filesystem::is_directory("/not_found") == false);
+}
+
 TEST_CASE("dirname") {
   REQUIRE(filesystem::dirname("/usr/bin/ls") == "/usr/bin");
   REQUIRE(filesystem::dirname("/usr/bin/ls/") == "/usr/bin");
