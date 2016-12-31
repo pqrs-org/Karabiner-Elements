@@ -376,6 +376,10 @@
         "name": "volume_increment"
     },
     {
+        "name": "eject",
+        "not_from": true
+    },
+    {
         "category": "Keypad keys"
     },
     {

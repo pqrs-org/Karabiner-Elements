@@ -123,6 +123,7 @@ enum class key_code : uint32_t {
   rewind,
   play_or_pause,
   fastforward,
+  eject,
 };
 
 enum class pointing_button : uint32_t {
@@ -445,6 +446,7 @@ public:
         {"rewind", key_code::rewind},
         {"play_or_pause", key_code::play_or_pause},
         {"fastforward", key_code::fastforward},
+        {"eject", key_code::eject},
 
         // Aliases
         {"left_option", key_code(kHIDUsage_KeyboardLeftAlt)},
@@ -518,6 +520,7 @@ public:
     case key_code::rewind:
     case key_code::play_or_pause:
     case key_code::fastforward:
+    case key_code::eject:
       return pqrs::karabiner_virtual_hid_device::usage_page::consumer;
 
     default:
@@ -568,6 +571,9 @@ public:
 
     case key_code::fastforward:
       return pqrs::karabiner_virtual_hid_device::usage::csmr_fastforward;
+
+    case key_code::eject:
+      return pqrs::karabiner_virtual_hid_device::usage::csmr_eject;
 
     default:
       return pqrs::karabiner_virtual_hid_device::usage(key_code);
