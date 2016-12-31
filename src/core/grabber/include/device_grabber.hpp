@@ -27,7 +27,6 @@ public:
   device_grabber(virtual_hid_device_client& virtual_hid_device_client,
                  manipulator::event_manipulator& event_manipulator) : virtual_hid_device_client_(virtual_hid_device_client),
                                                                       event_manipulator_(event_manipulator),
-                                                                      event_tap_manager_(std::bind(&device_grabber::caps_lock_state_changed_callback, this, std::placeholders::_1)),
                                                                       mode_(mode::observing),
                                                                       is_grabbable_callback_log_reducer_(logger::get_logger()),
                                                                       suspended_(false) {
@@ -76,6 +75,10 @@ public:
       mode_ = mode::grabbing;
 
       event_manipulator_.reset();
+
+      // We should call CGEventTapCreate after user is logged in.
+      // So, we create event_tap_manager here.
+      event_tap_manager_ = std::make_unique<event_tap_manager>(std::bind(&device_grabber::caps_lock_state_changed_callback, this, std::placeholders::_1));
     });
   }
 
@@ -86,6 +89,8 @@ public:
       mode_ = mode::observing;
 
       event_manipulator_.reset();
+
+      event_tap_manager_ = nullptr;
     });
   }
 
@@ -371,7 +376,9 @@ private:
 
   void grabbed_callback(human_interface_device& device) {
     // set keyboard led
-    caps_lock_state_changed_callback(event_tap_manager_.get_caps_lock_state());
+    if (event_tap_manager_) {
+      caps_lock_state_changed_callback(event_tap_manager_->get_caps_lock_state());
+    }
   }
 
   void ungrabbed_callback(human_interface_device& device) {
@@ -542,7 +549,7 @@ private:
 
   boost::signals2::connection virtual_hid_device_client_disconnected_connection;
 
-  event_tap_manager event_tap_manager_;
+  std::unique_ptr<event_tap_manager> event_tap_manager_;
   IOHIDManagerRef _Nullable manager_;
 
   std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> device_configurations_;

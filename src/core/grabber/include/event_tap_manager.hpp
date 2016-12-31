@@ -30,7 +30,7 @@ public:
         CFRunLoopAddSource(CFRunLoopGetMain(), run_loop_source_, kCFRunLoopCommonModes);
         CGEventTapEnable(event_tap_, true);
 
-        logger::get_logger().info("event_tap_manager grabbed mouse events");
+        logger::get_logger().info("event_tap_manager initialized");
       }
     }
   }
@@ -50,7 +50,7 @@ public:
         CFRelease(event_tap_);
         event_tap_ = nullptr;
       }
-      logger::get_logger().info("event_tap_manager ungrabbed mouse events");
+      logger::get_logger().info("event_tap_manager terminated");
     });
   }
 
