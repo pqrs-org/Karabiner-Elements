@@ -79,18 +79,6 @@ public:
     }
   }
 
-  core_configuration(spdlog::logger& logger) : core_configuration(logger, get_file_path()) {
-  }
-
-  static std::string get_file_path(void) {
-    std::string file_path;
-    if (auto p = constants::get_configuration_directory()) {
-      file_path = p;
-      file_path += "/karabiner-elements.json";
-    }
-    return file_path;
-  }
-
   bool is_loaded(void) const { return loaded_; }
 
   // std::vector<from,to>
