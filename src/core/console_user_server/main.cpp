@@ -2,6 +2,7 @@
 #include "constants.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
+#include "migration.hpp"
 #include "thread_utility.hpp"
 
 int main(int argc, const char* argv[]) {
@@ -10,6 +11,8 @@ int main(int argc, const char* argv[]) {
   thread_utility::register_main_thread();
 
   logger::get_logger().info("version {0}", karabiner_version);
+
+  migration::migrate_v1();
 
   system("open '/Library/Application Support/org.pqrs/Karabiner-Elements/updater/Karabiner-Elements.app'");
 
