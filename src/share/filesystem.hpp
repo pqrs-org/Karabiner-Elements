@@ -14,6 +14,22 @@ public:
     return (stat(path.c_str(), &s) == 0);
   }
 
+  static bool create_directory_with_intermediate_directories(const std::string& path, mode_t mode) {
+    if (is_directory(path)) {
+      return true;
+    }
+
+    if (!create_directory_with_intermediate_directories(dirname(path), mode)) {
+      return false;
+    }
+
+    if (mkdir(path.c_str(), mode) != 0) {
+      return false;
+    }
+
+    return true;
+  }
+
   static boost::optional<off_t> file_size(const std::string& path) {
     struct stat s;
     if (stat(path.c_str(), &s) != 0) {

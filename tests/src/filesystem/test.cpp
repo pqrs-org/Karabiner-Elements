@@ -6,6 +6,12 @@
 #include "filesystem.hpp"
 #include <boost/optional/optional_io.hpp>
 
+TEST_CASE("create_directory_with_intermediate_directories") {
+  REQUIRE(filesystem::create_directory_with_intermediate_directories("/", 0700) == true);
+  REQUIRE(filesystem::create_directory_with_intermediate_directories(".", 0700) == true);
+  REQUIRE(filesystem::create_directory_with_intermediate_directories("mkdir_example/a/b/c/d/e", 0700) == true);
+}
+
 TEST_CASE("is_directory") {
   REQUIRE(filesystem::is_directory("/") == true);
   REQUIRE(filesystem::is_directory(".") == true);
