@@ -145,6 +145,28 @@ public:
     }
   }
 
+  static const char* get_user_log_directory(void) {
+    static std::mutex mutex;
+    static bool once = false;
+    static std::string directory;
+
+    std::lock_guard<std::mutex> guard(mutex);
+
+    if (!once) {
+      once = true;
+      if (auto p = get_user_data_directory()) {
+        directory = p;
+        directory += "/log";
+      }
+    }
+
+    if (directory.empty()) {
+      return nullptr;
+    } else {
+      return directory.c_str();
+    }
+  }
+
   static CFStringRef get_distributed_notification_observed_object(void) {
     return CFSTR("org.pqrs.karabiner");
   }
