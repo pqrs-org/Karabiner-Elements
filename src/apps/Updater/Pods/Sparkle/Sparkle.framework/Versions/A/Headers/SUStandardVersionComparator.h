@@ -9,7 +9,11 @@
 #ifndef SUSTANDARDVERSIONCOMPARATOR_H
 #define SUSTANDARDVERSIONCOMPARATOR_H
 
+#if __has_feature(modules)
+@import Foundation;
+#else
 #import <Foundation/Foundation.h>
+#endif
 #import "SUExport.h"
 #import "SUVersionComparisonProtocol.h"
 
