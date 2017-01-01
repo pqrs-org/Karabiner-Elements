@@ -108,8 +108,7 @@ public:
     return virtual_hid_keyboard_configuration_struct;
   }
 
-  std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>>
-  get_current_profile_devices(void) {
+  std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> get_current_profile_devices(void) {
     std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> v;
 
     auto profile = get_current_profile();
