@@ -46,9 +46,9 @@
 		348323671934E0FD0038CA78 /* PreferencesKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesKeys.h; path = Classes/PreferencesKeys.h; sourceTree = "<group>"; };
 		3488F175174FB64C00178158 /* app.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = app.icns; path = Resources/app.icns; sourceTree = "<group>"; };
 		34B97B161DBB26E400EB3583 /* simple_modifications.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = simple_modifications.json; path = ../PreferencesWindow/PreferencesWindow/Resources/simple_modifications.json; sourceTree = "<group>"; };
-		34B97B181DBB276200EB3583 /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
-		34B97B1A1DBB276B00EB3583 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "../../../../../../../usr/lib/libc++.dylib"; sourceTree = "<group>"; };
-		34B97B1C1DBB27C900EB3583 /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
+		34B97B181DBB276200EB3583 /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
+		34B97B1A1DBB276B00EB3583 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<group>"; };
+		34B97B1C1DBB27C900EB3583 /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		34B97B201DBB298800EB3583 /* JsonUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonUtility.h; path = ../share/JsonUtility.h; sourceTree = "<group>"; };
 		34B97B211DBB298800EB3583 /* JsonUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JsonUtility.m; path = ../share/JsonUtility.m; sourceTree = "<group>"; };
 		34C92D211122EDA100B0B4ED /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
@@ -327,7 +327,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = ../lib/libkrbn/build/Release;
+				LIBRARY_SEARCH_PATHS = ../../lib/libkrbn/build/Release;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;

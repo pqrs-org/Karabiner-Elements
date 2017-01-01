@@ -1,7 +1,7 @@
 CONFIGURATION = Release
 
 all:
-	make -C ../../../share
+	make -C ../../share
 	xcodebuild -alltargets -configuration $(CONFIGURATION) build
 
 clean:
