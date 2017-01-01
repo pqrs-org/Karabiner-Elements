@@ -50,5 +50,6 @@
             "name": "Empty",
             "selected": false
         }
-    ]
+    ],
+    "show_in_menu_bar": true
 }

@@ -66,6 +66,8 @@ TEST_CASE("valid") {
     REQUIRE(actual[1].second.disable_built_in_keyboard_if_exists == true);
   }
 
+  REQUIRE(configuration.show_in_menu_bar() == true);
+
   REQUIRE(configuration.is_loaded() == true);
 }
 

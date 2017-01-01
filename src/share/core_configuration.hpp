@@ -60,7 +60,8 @@
 //             "name": "Empty",
 //             "selected": false
 //         }
-//     ]
+//     ],
+//     "show_in_menu_bar": true
 // }
 
 class core_configuration final {
@@ -144,6 +145,13 @@ public:
 
   std::string get_current_profile_json(void) {
     return get_current_profile().dump();
+  }
+
+  bool show_in_menu_bar(void) {
+    if (json_["show_in_menu_bar"].is_boolean()) {
+      return json_["show_in_menu_bar"];
+    }
+    return true;
   }
 
   // Note:
