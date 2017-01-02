@@ -20,6 +20,8 @@
 		34D423651E1939C9000E4154 /* JsonUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D423611E1939C9000E4154 /* JsonUtility.h */; };
 		34D423661E1939C9000E4154 /* JsonUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D423621E1939C9000E4154 /* JsonUtility.m */; };
 		34D423681E1939EC000E4154 /* NotificationKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D423671E1939EC000E4154 /* NotificationKeys.h */; };
+		34D4237C1E1A9678000E4154 /* ConfigurationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D4237A1E1A9678000E4154 /* ConfigurationManager.h */; };
+		34D4237D1E1A9678000E4154 /* ConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D4237B1E1A9678000E4154 /* ConfigurationManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +39,8 @@
 		34D423611E1939C9000E4154 /* JsonUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonUtility.h; sourceTree = "<group>"; };
 		34D423621E1939C9000E4154 /* JsonUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JsonUtility.m; sourceTree = "<group>"; };
 		34D423671E1939EC000E4154 /* NotificationKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationKeys.h; sourceTree = "<group>"; };
+		34D4237A1E1A9678000E4154 /* ConfigurationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationManager.h; sourceTree = "<group>"; };
+		34D4237B1E1A9678000E4154 /* ConfigurationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +75,8 @@
 		34D423461E18F06A000E4154 /* KarabinerKit */ = {
 			isa = PBXGroup;
 			children = (
+				34D4237A1E1A9678000E4154 /* ConfigurationManager.h */,
+				34D4237B1E1A9678000E4154 /* ConfigurationManager.m */,
 				34D423501E18F2B5000E4154 /* CoreConfigurationModel.h */,
 				34D423511E18F2B5000E4154 /* CoreConfigurationModel.m */,
 				34D4235F1E1939C9000E4154 /* DeviceManager.h */,
@@ -109,6 +115,7 @@
 				34D423561E18F2D4000E4154 /* DeviceModel.h in Headers */,
 				34D423681E1939EC000E4154 /* NotificationKeys.h in Headers */,
 				34D4235E1E18F340000E4154 /* libkrbn.h in Headers */,
+				34D4237C1E1A9678000E4154 /* ConfigurationManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,6 +179,7 @@
 				34D423641E1939C9000E4154 /* DeviceManager.m in Sources */,
 				34D423661E1939C9000E4154 /* JsonUtility.m in Sources */,
 				34D423531E18F2B5000E4154 /* CoreConfigurationModel.m in Sources */,
+				34D4237D1E1A9678000E4154 /* ConfigurationManager.m in Sources */,
 				34D423571E18F2D4000E4154 /* DeviceModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,5 +1,4 @@
 #import "DevicesTableViewDelegate.h"
-#import "ConfigurationManager.h"
 #import "DevicesTableCellView.h"
 #import "DevicesTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
@@ -7,7 +6,6 @@
 
 @interface DevicesTableViewDelegate ()
 
-@property(weak) IBOutlet ConfigurationManager* configurationManager;
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 
 @end
@@ -38,7 +36,9 @@
       result.deviceIdentifiers = model.deviceIdentifiers;
 
       result.checkbox.state = (model.ignore ? NSOffState : NSOnState);
-      for (KarabinerKitDeviceConfiguration* device in self.configurationManager.coreConfigurationModel.devices) {
+
+      KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+      for (KarabinerKitDeviceConfiguration* device in configurationManager.coreConfigurationModel.devices) {
         if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
           result.checkbox.state = (device.ignore ? NSOffState : NSOnState);
         }
@@ -93,7 +93,8 @@
 
         result.deviceIdentifiers = model.deviceIdentifiers;
 
-        for (KarabinerKitDeviceConfiguration* device in self.configurationManager.coreConfigurationModel.devices) {
+        KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+        for (KarabinerKitDeviceConfiguration* device in configurationManager.coreConfigurationModel.devices) {
           if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
             result.checkbox.state = (device.disableBuiltInKeyboardIfExists ? NSOnState : NSOffState);
           }

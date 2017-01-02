@@ -1,12 +1,10 @@
 #import "DevicesTableViewController.h"
-#import "ConfigurationManager.h"
 #import "DevicesTableCellView.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
 
 @interface DevicesTableViewController ()
 
-@property(weak) IBOutlet ConfigurationManager* configurationManager;
 @property(weak) IBOutlet NSTableView* tableView;
 @property(weak) IBOutlet NSTableView* externalKeyboardTableView;
 
@@ -47,10 +45,13 @@
   }
   DevicesTableCellView* cellViewCheckbox = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
   DevicesTableCellView* cellViewExternalKeyboard = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
-  [self.configurationManager.coreConfigurationModel setDeviceConfiguration:cellViewCheckbox.deviceIdentifiers
-                                                                    ignore:(cellViewCheckbox.checkbox.state != NSOnState)
-                                            disableBuiltInKeyboardIfExists:(cellViewExternalKeyboard.checkbox.state == NSOnState)];
-  [self.configurationManager save];
+
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+
+  [configurationManager.coreConfigurationModel setDeviceConfiguration:cellViewCheckbox.deviceIdentifiers
+                                                               ignore:(cellViewCheckbox.checkbox.state != NSOnState)
+                                       disableBuiltInKeyboardIfExists:(cellViewExternalKeyboard.checkbox.state == NSOnState)];
+  [configurationManager save];
 }
 
 @end

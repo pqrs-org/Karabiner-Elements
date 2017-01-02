@@ -1,16 +1,13 @@
 #import "FnFunctionKeysTableViewDataSource.h"
-#import "ConfigurationManager.h"
+#import "KarabinerKit/KarabinerKit.h"
 
 @interface FnFunctionKeysTableViewDataSource ()
-
-@property(weak) IBOutlet ConfigurationManager* configurationManager;
-
 @end
 
 @implementation FnFunctionKeysTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  return self.configurationManager.coreConfigurationModel.fnFunctionKeys.count;
+  return [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.fnFunctionKeys.count;
 }
 
 @end

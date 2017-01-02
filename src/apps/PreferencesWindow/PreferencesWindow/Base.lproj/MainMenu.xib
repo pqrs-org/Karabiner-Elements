@@ -14,17 +14,14 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customObject id="gHg-lq-U6a" customClass="ConfigurationManager"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="1k4-2u-8fe"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
                 <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="LEs-Qx-33f"/>
             </connections>
         </customObject>
         <customObject id="n2S-Tf-7ZE" customClass="DevicesTableViewController">
             <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="O8E-zS-DZa"/>
                 <outlet property="externalKeyboardTableView" destination="aIG-lD-1bK" id="mLO-bs-e8W"/>
                 <outlet property="tableView" destination="W1W-Xd-0KJ" id="eN4-9F-gvt"/>
             </connections>
@@ -32,7 +29,6 @@
         <customObject id="gV5-jV-pot" customClass="DevicesTableViewDataSource"/>
         <customObject id="2br-4Z-pCK" customClass="DevicesTableViewDelegate">
             <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="zvp-J0-Y4p"/>
                 <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="iH3-hs-eSU"/>
             </connections>
         </customObject>
@@ -44,7 +40,6 @@
         </customObject>
         <customObject id="5ke-qB-Wr5" customClass="PreferencesWindowController">
             <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="7kZ-DC-LVA"/>
                 <outlet property="devicesExternalKeyboardTableView" destination="aIG-lD-1bK" id="xqm-dH-bv7"/>
                 <outlet property="devicesTableView" destination="W1W-Xd-0KJ" id="UWx-UI-YNo"/>
                 <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="ZRe-xj-uKw"/>
@@ -64,18 +59,12 @@
         <customObject id="BTc-Hs-TSF" customClass="SimpleModificationsMenuManager"/>
         <customObject id="4f7-Hm-cOy" customClass="SimpleModificationsTableViewController">
             <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="WN0-0W-Ous"/>
                 <outlet property="tableView" destination="qEO-TG-yM2" id="a70-Me-u6U"/>
             </connections>
         </customObject>
-        <customObject id="fgK-SD-L1B" customClass="SimpleModificationsTableViewDataSource">
-            <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="pcv-lp-ogR"/>
-            </connections>
-        </customObject>
+        <customObject id="fgK-SD-L1B" customClass="SimpleModificationsTableViewDataSource"/>
         <customObject id="dFK-f1-d60" customClass="SimpleModificationsTableViewDelegate">
             <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="c92-Jw-fNe"/>
                 <outlet property="simpleModificationsMenuManager" destination="BTc-Hs-TSF" id="ofP-iD-C1k"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="5bn-W1-NB6"/>
             </connections>
@@ -83,18 +72,12 @@
         <customObject id="gwA-uV-a9x" customClass="SystemPreferencesManager"/>
         <customObject id="KbW-oV-WOQ" customClass="FnFunctionKeysTableViewController">
             <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="H2R-oP-WgF"/>
                 <outlet property="tableView" destination="OWP-Cf-tc8" id="ZsD-Nm-X5E"/>
             </connections>
         </customObject>
-        <customObject id="gFL-e0-KYR" customClass="FnFunctionKeysTableViewDataSource">
-            <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="L9w-c6-JOI"/>
-            </connections>
-        </customObject>
+        <customObject id="gFL-e0-KYR" customClass="FnFunctionKeysTableViewDataSource"/>
         <customObject id="ADN-Nz-xqI" customClass="FnFunctionKeysTableViewDelegate">
             <connections>
-                <outlet property="configurationManager" destination="gHg-lq-U6a" id="0sK-WF-pSD"/>
                 <outlet property="fnFunctionKeysTableViewController" destination="KbW-oV-WOQ" id="4r0-M5-Bgg"/>
                 <outlet property="simpleModificationsMenuManager" destination="BTc-Hs-TSF" id="5ek-bn-2CO"/>
             </connections>

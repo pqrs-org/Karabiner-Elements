@@ -13,7 +13,6 @@
 		3445E06A1D801AF7004555F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0691D801AF7004555F9 /* main.m */; };
 		3445E06C1D801AF7004555F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06B1D801AF7004555F9 /* Assets.xcassets */; };
 		3445E06F1D801AF7004555F9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06D1D801AF7004555F9 /* MainMenu.xib */; };
-		345F95371DA2AC78002854B8 /* ConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95361DA2AC78002854B8 /* ConfigurationManager.m */; };
 		345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */; };
 		345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */; };
 		345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F954A1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m */; };
@@ -51,8 +50,6 @@
 		3445E06B1D801AF7004555F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3445E06E1D801AF7004555F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		3445E0701D801AF7004555F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		345F95351DA2AC78002854B8 /* ConfigurationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationManager.h; sourceTree = "<group>"; };
-		345F95361DA2AC78002854B8 /* ConfigurationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationManager.m; sourceTree = "<group>"; };
 		345F953E1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewDataSource.h; sourceTree = "<group>"; };
 		345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewDataSource.m; sourceTree = "<group>"; };
 		345F95431DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewDelegate.h; sourceTree = "<group>"; };
@@ -135,8 +132,6 @@
 				3445E0651D801AF7004555F9 /* AppDelegate.h */,
 				3445E0661D801AF7004555F9 /* AppDelegate.m */,
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
-				345F95351DA2AC78002854B8 /* ConfigurationManager.h */,
-				345F95361DA2AC78002854B8 /* ConfigurationManager.m */,
 				34B97B331DBE58AA00EB3583 /* DevicesTableCellView.h */,
 				34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */,
 				34B97B3A1DBEF9CA00EB3583 /* DevicesTableViewController.h */,
@@ -306,7 +301,6 @@
 				34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */,
 				345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */,
 				347112F11D87010A001AC60D /* Relauncher.m in Sources */,
-				345F95371DA2AC78002854B8 /* ConfigurationManager.m in Sources */,
 				345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */,
 				345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,

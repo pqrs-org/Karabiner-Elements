@@ -1,5 +1,6 @@
 // -*- Mode: objc -*-
 
+#import "KarabinerKit/ConfigurationManager.h"
 #import "KarabinerKit/CoreConfigurationModel.h"
 #import "KarabinerKit/DeviceManager.h"
 #import "KarabinerKit/DeviceModel.h"

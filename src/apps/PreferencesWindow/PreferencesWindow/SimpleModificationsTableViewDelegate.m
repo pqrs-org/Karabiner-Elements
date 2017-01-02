@@ -1,12 +1,11 @@
 #import "SimpleModificationsTableViewDelegate.h"
-#import "ConfigurationManager.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableCellView.h"
 #import "SimpleModificationsTableViewController.h"
 
 @interface SimpleModificationsTableViewDelegate ()
 
-@property(weak) IBOutlet ConfigurationManager* configurationManager;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 
@@ -18,7 +17,8 @@
   if ([tableColumn.identifier isEqualToString:@"SimpleModificationsFromColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsFromCellView" owner:self];
 
-    NSArray<NSDictionary*>* simpleModifications = self.configurationManager.coreConfigurationModel.simpleModifications;
+    KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+    NSArray<NSDictionary*>* simpleModifications = configurationManager.coreConfigurationModel.simpleModifications;
     if (0 <= row && row < (NSInteger)(simpleModifications.count)) {
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.simpleModificationsTableViewController;
@@ -34,7 +34,8 @@
   if ([tableColumn.identifier isEqualToString:@"SimpleModificationsToColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsToCellView" owner:self];
 
-    NSArray<NSDictionary*>* simpleModifications = self.configurationManager.coreConfigurationModel.simpleModifications;
+    KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+    NSArray<NSDictionary*>* simpleModifications = configurationManager.coreConfigurationModel.simpleModifications;
     if (0 <= row && row < (NSInteger)(simpleModifications.count)) {
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.simpleModificationsTableViewController;

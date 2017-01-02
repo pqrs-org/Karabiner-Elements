@@ -1,8 +1,9 @@
 #import "ConfigurationManager.h"
+#import "JsonUtility.h"
 #import "NotificationKeys.h"
 #import "libkrbn.h"
 
-@interface ConfigurationManager ()
+@interface KarabinerKitConfigurationManager ()
 
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
 @property(readwrite) KarabinerKitCoreConfigurationModel* coreConfigurationModel;
@@ -12,19 +13,27 @@
 @end
 
 static void configuration_file_updated_callback(const char* currentProfileJsonString, void* refcon) {
-  ConfigurationManager* manager = (__bridge ConfigurationManager*)(refcon);
+  KarabinerKitConfigurationManager* manager = (__bridge KarabinerKitConfigurationManager*)(refcon);
   [manager loadJsonString:currentProfileJsonString];
-  [[NSNotificationCenter defaultCenter] postNotificationName:kConfigurationIsLoaded object:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitConfigurationIsLoaded object:nil];
 }
 
-@implementation ConfigurationManager
+@implementation KarabinerKitConfigurationManager
 
-- (void)setup {
-  libkrbn_configuration_monitor* p = NULL;
-  if (libkrbn_configuration_monitor_initialize(&p, configuration_file_updated_callback, (__bridge void*)(self))) {
-    return;
-  }
-  self.libkrbn_configuration_monitor = p;
++ (KarabinerKitConfigurationManager*)sharedManager {
+  static dispatch_once_t once;
+  static KarabinerKitConfigurationManager* manager;
+  dispatch_once(&once, ^{
+    manager = [KarabinerKitConfigurationManager new];
+
+    libkrbn_configuration_monitor* p = NULL;
+    if (libkrbn_configuration_monitor_initialize(&p, configuration_file_updated_callback, (__bridge void*)(manager))) {
+      return;
+    }
+    manager.libkrbn_configuration_monitor = p;
+  });
+
+  return manager;
 }
 
 - (void)dealloc {

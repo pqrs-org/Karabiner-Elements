@@ -1,5 +1,5 @@
 #import "FnFunctionKeysTableViewDelegate.h"
-#import "ConfigurationManager.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "FnFunctionKeysTableViewController.h"
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableCellView.h"
@@ -7,7 +7,6 @@
 
 @interface FnFunctionKeysTableViewDelegate ()
 
-@property(weak) IBOutlet ConfigurationManager* configurationManager;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 
@@ -19,7 +18,8 @@
   if ([tableColumn.identifier isEqualToString:@"FnFunctionKeysFromColumn"]) {
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysFromCellView" owner:self];
 
-    NSArray<NSDictionary*>* fnFunctionKeys = self.configurationManager.coreConfigurationModel.fnFunctionKeys;
+    KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+    NSArray<NSDictionary*>* fnFunctionKeys = configurationManager.coreConfigurationModel.fnFunctionKeys;
     if (0 <= row && row < (NSInteger)(fnFunctionKeys.count)) {
       result.textField.stringValue = fnFunctionKeys[row][@"from"];
     }
@@ -30,7 +30,8 @@
   if ([tableColumn.identifier isEqualToString:@"FnFunctionKeysToColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysToCellView" owner:self];
 
-    NSArray<NSDictionary*>* fnFunctionKeys = self.configurationManager.coreConfigurationModel.fnFunctionKeys;
+    KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+    NSArray<NSDictionary*>* fnFunctionKeys = configurationManager.coreConfigurationModel.fnFunctionKeys;
     if (0 <= row && row < (NSInteger)(fnFunctionKeys.count)) {
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.fnFunctionKeysTableViewController;

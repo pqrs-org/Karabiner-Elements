@@ -1,5 +1,4 @@
 #import "AppDelegate.h"
-#import "ConfigurationManager.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "PreferencesWindowController.h"
 #import "Relauncher.h"
@@ -8,7 +7,6 @@
 
 @interface AppDelegate ()
 
-@property(weak) IBOutlet ConfigurationManager* configurationManager;
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
 
@@ -21,7 +19,6 @@
 
   [KarabinerKit setup];
 
-  [self.configurationManager setup];
   [self.systemPreferencesManager setup];
 
   [self.preferencesWindowController setup];

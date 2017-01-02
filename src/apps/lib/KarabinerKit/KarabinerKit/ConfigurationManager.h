@@ -1,13 +1,13 @@
 // -*- Mode: objc -*-
 
 @import Cocoa;
-#import "KarabinerKit/KarabinerKit.h"
+#import "CoreConfigurationModel.h"
 
-@interface ConfigurationManager : NSObject
+@interface KarabinerKitConfigurationManager : NSObject
 
 @property(readonly) KarabinerKitCoreConfigurationModel* coreConfigurationModel;
 
-- (void)setup;
++ (KarabinerKitConfigurationManager*)sharedManager;
 
 - (void)save;
 

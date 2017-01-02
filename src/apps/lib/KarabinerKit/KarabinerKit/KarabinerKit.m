@@ -3,7 +3,8 @@
 @implementation KarabinerKit
 
 + (void)setup {
-  // initialize KarabinerKitDeviceManager
+  // initialize managers
+  [KarabinerKitConfigurationManager sharedManager];
   [KarabinerKitDeviceManager sharedManager];
 }
 

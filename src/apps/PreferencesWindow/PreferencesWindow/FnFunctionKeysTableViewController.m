@@ -1,5 +1,5 @@
 #import "FnFunctionKeysTableViewController.h"
-#import "ConfigurationManager.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
 #import "SimpleModificationsTableCellView.h"
 #import "SimpleModificationsTableViewController.h"
@@ -7,7 +7,6 @@
 
 @interface FnFunctionKeysTableViewController ()
 
-@property(weak) IBOutlet ConfigurationManager* configurationManager;
 @property(weak) IBOutlet NSTableView* tableView;
 
 @end
@@ -28,6 +27,8 @@
 }
 
 - (void)valueChanged:(id)sender {
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+
   NSInteger rows = [self.tableView numberOfRows];
   for (NSInteger i = 0; i < rows; ++i) {
     SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:i makeIfNecessary:NO];
@@ -42,10 +43,10 @@
       toValue = toCellView.popUpButton.selectedItem.representedObject;
     }
 
-    [self.configurationManager.coreConfigurationModel replaceFnFunctionKey:fromValue to:toValue];
+    [configurationManager.coreConfigurationModel replaceFnFunctionKey:fromValue to:toValue];
   }
 
-  [self.configurationManager save];
+  [configurationManager save];
 }
 
 @end

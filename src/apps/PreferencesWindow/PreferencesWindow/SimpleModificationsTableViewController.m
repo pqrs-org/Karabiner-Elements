@@ -1,12 +1,11 @@
 #import "SimpleModificationsTableViewController.h"
-#import "ConfigurationManager.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
 #import "SimpleModificationsTableCellView.h"
 #import "weakify.h"
 
 @interface SimpleModificationsTableViewController ()
 
-@property(weak) IBOutlet ConfigurationManager* configurationManager;
 @property(weak) IBOutlet NSTableView* tableView;
 
 @end
@@ -41,6 +40,8 @@
 }
 
 - (void)valueChanged:(id)sender {
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+
   NSInteger rows = [self.tableView numberOfRows];
   for (NSInteger i = 0; i < rows; ++i) {
     SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:i makeIfNecessary:NO];
@@ -56,26 +57,30 @@
       }
       toCellView.popUpButton.enabled = YES;
 
-      [self.configurationManager.coreConfigurationModel replaceSimpleModification:(NSUInteger)(i) from:fromValue to:toValue];
+      [configurationManager.coreConfigurationModel replaceSimpleModification:(NSUInteger)(i) from:fromValue to:toValue];
     }
   }
 
-  [self.configurationManager save];
+  [configurationManager save];
 }
 
 - (void)removeItem:(id)sender {
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+
   NSInteger row = [self.tableView rowForView:sender];
-  [self.configurationManager.coreConfigurationModel removeSimpleModification:(NSUInteger)(row)];
+  [configurationManager.coreConfigurationModel removeSimpleModification:(NSUInteger)(row)];
   [self.tableView reloadData];
 
-  [self.configurationManager save];
+  [configurationManager save];
 }
 
 - (IBAction)addItem:(id)sender {
-  [self.configurationManager.coreConfigurationModel addSimpleModification];
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+
+  [configurationManager.coreConfigurationModel addSimpleModification];
   [self.tableView reloadData];
 
-  [self.configurationManager save];
+  [configurationManager save];
 }
 
 @end
