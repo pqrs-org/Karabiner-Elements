@@ -3,7 +3,7 @@ CONFIGURATION = Release
 
 all:
 	../../../scripts/setversion.sh
-	make -C ../../lib/libkrbn
+	make -C ../lib/KarabinerKit
 	xcodebuild -alltargets -configuration $(CONFIGURATION) build
 
 clean:

@@ -1,16 +1,13 @@
 #import "DevicesTableViewDataSource.h"
-#import "DeviceManager.h"
+#import "KarabinerKit/KarabinerKit.h"
 
 @interface DevicesTableViewDataSource ()
-
-@property(weak) IBOutlet DeviceManager* deviceManager;
-
 @end
 
 @implementation DevicesTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  return self.deviceManager.deviceModels.count;
+  return [KarabinerKitDeviceManager sharedManager].deviceModels.count;
 }
 
 @end

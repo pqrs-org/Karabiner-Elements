@@ -1,6 +1,6 @@
 #import "AppDelegate.h"
 #import "ConfigurationManager.h"
-#import "DeviceManager.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "PreferencesWindowController.h"
 #import "Relauncher.h"
 #import "SystemPreferencesManager.h"
@@ -9,7 +9,6 @@
 @interface AppDelegate ()
 
 @property(weak) IBOutlet ConfigurationManager* configurationManager;
-@property(weak) IBOutlet DeviceManager* deviceManager;
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
 
@@ -20,8 +19,9 @@
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
+  [KarabinerKit setup];
+
   [self.configurationManager setup];
-  [self.deviceManager setup];
   [self.systemPreferencesManager setup];
 
   [self.preferencesWindowController setup];

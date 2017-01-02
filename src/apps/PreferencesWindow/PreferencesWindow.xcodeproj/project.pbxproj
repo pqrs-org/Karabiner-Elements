@@ -16,7 +16,6 @@
 		345F95371DA2AC78002854B8 /* ConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95361DA2AC78002854B8 /* ConfigurationManager.m */; };
 		345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */; };
 		345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */; };
-		345F95481DAA5DA1002854B8 /* CoreConfigurationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95471DAA5DA1002854B8 /* CoreConfigurationModel.m */; };
 		345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F954A1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m */; };
 		345F954E1DAB8EC2002854B8 /* simple_modifications.json in Resources */ = {isa = PBXBuildFile; fileRef = 345F954D1DAB8EC2002854B8 /* simple_modifications.json */; };
 		345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95501DABAF7A002854B8 /* SimpleModificationsTableCellView.m */; };
@@ -29,11 +28,10 @@
 		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
 		34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B1E1DBB292A00EB3583 /* JsonUtility.m */; };
 		34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */; };
-		34B97B301DBE4B9B00EB3583 /* DeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B2F1DBE4B9B00EB3583 /* DeviceModel.m */; };
-		34B97B321DBE4EA100EB3583 /* DeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B311DBE4EA100EB3583 /* DeviceManager.m */; };
 		34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */; };
 		34B97B391DBE5C9E00EB3583 /* DevicesTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B381DBE5C9E00EB3583 /* DevicesTableViewDelegate.m */; };
 		34B97B3C1DBEF9CA00EB3583 /* DevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B3B1DBEF9CA00EB3583 /* DevicesTableViewController.m */; };
+		34D4236B1E1A58D6000E4154 /* libKarabinerKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34D4236A1E1A58D6000E4154 /* libKarabinerKit.a */; };
 		34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */; };
 		34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEEE1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m */; };
 		34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EEEEF21DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m */; };
@@ -59,8 +57,6 @@
 		345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewDataSource.m; sourceTree = "<group>"; };
 		345F95431DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewDelegate.h; sourceTree = "<group>"; };
 		345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewDelegate.m; sourceTree = "<group>"; };
-		345F95461DAA5DA1002854B8 /* CoreConfigurationModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreConfigurationModel.h; sourceTree = "<group>"; };
-		345F95471DAA5DA1002854B8 /* CoreConfigurationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreConfigurationModel.m; sourceTree = "<group>"; };
 		345F95491DAB8DAB002854B8 /* SimpleModificationsMenuManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsMenuManager.h; sourceTree = "<group>"; };
 		345F954A1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsMenuManager.m; sourceTree = "<group>"; };
 		345F954D1DAB8EC2002854B8 /* simple_modifications.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = simple_modifications.json; path = Resources/simple_modifications.json; sourceTree = "<group>"; };
@@ -78,23 +74,20 @@
 		347112EC1D86E619001AC60D /* UpdaterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdaterController.m; sourceTree = "<group>"; };
 		347112EF1D87010A001AC60D /* Relauncher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Relauncher.h; path = ../../share/Relauncher.h; sourceTree = "<group>"; };
 		347112F01D87010A001AC60D /* Relauncher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Relauncher.m; path = ../../share/Relauncher.m; sourceTree = "<group>"; };
-		3471130F1D870D74001AC60D /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
-		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
+		3471130F1D870D74001AC60D /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
+		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
 		34B97B1D1DBB292A00EB3583 /* JsonUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonUtility.h; path = ../../share/JsonUtility.h; sourceTree = "<group>"; };
 		34B97B1E1DBB292A00EB3583 /* JsonUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JsonUtility.m; path = ../../share/JsonUtility.m; sourceTree = "<group>"; };
 		34B97B281DBCC23D00EB3583 /* DevicesTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableViewDataSource.h; sourceTree = "<group>"; };
 		34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesTableViewDataSource.m; sourceTree = "<group>"; };
-		34B97B2D1DBE4B9B00EB3583 /* DeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceManager.h; sourceTree = "<group>"; };
-		34B97B2E1DBE4B9B00EB3583 /* DeviceModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceModel.h; sourceTree = "<group>"; };
-		34B97B2F1DBE4B9B00EB3583 /* DeviceModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceModel.m; sourceTree = "<group>"; };
-		34B97B311DBE4EA100EB3583 /* DeviceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceManager.m; sourceTree = "<group>"; };
 		34B97B331DBE58AA00EB3583 /* DevicesTableCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableCellView.h; sourceTree = "<group>"; };
 		34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesTableCellView.m; sourceTree = "<group>"; };
 		34B97B371DBE5C9E00EB3583 /* DevicesTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableViewDelegate.h; sourceTree = "<group>"; };
 		34B97B381DBE5C9E00EB3583 /* DevicesTableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesTableViewDelegate.m; sourceTree = "<group>"; };
 		34B97B3A1DBEF9CA00EB3583 /* DevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableViewController.h; sourceTree = "<group>"; };
 		34B97B3B1DBEF9CA00EB3583 /* DevicesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesTableViewController.m; sourceTree = "<group>"; };
+		34D4236A1E1A58D6000E4154 /* libKarabinerKit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libKarabinerKit.a; path = ../lib/KarabinerKit/build/Release/libKarabinerKit.a; sourceTree = "<group>"; };
 		34EEEEEA1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDataSource.h; sourceTree = "<group>"; };
 		34EEEEEB1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FnFunctionKeysTableViewDataSource.m; sourceTree = "<group>"; };
 		34EEEEED1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FnFunctionKeysTableViewDelegate.h; sourceTree = "<group>"; };
@@ -110,6 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34D4236B1E1A58D6000E4154 /* libKarabinerKit.a in Frameworks */,
 				347113101D870D74001AC60D /* libkrbn.a in Frameworks */,
 				347113131D870F5F001AC60D /* libc++.dylib in Frameworks */,
 			);
@@ -123,6 +117,7 @@
 			children = (
 				3445E0641D801AF7004555F9 /* PreferencesWindow */,
 				3445E0631D801AF7004555F9 /* Products */,
+				34D423691E1A58D6000E4154 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -142,12 +137,6 @@
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
 				345F95351DA2AC78002854B8 /* ConfigurationManager.h */,
 				345F95361DA2AC78002854B8 /* ConfigurationManager.m */,
-				345F95461DAA5DA1002854B8 /* CoreConfigurationModel.h */,
-				345F95471DAA5DA1002854B8 /* CoreConfigurationModel.m */,
-				34B97B2D1DBE4B9B00EB3583 /* DeviceManager.h */,
-				34B97B311DBE4EA100EB3583 /* DeviceManager.m */,
-				34B97B2E1DBE4B9B00EB3583 /* DeviceModel.h */,
-				34B97B2F1DBE4B9B00EB3583 /* DeviceModel.m */,
 				34B97B331DBE58AA00EB3583 /* DevicesTableCellView.h */,
 				34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */,
 				34B97B3A1DBEF9CA00EB3583 /* DevicesTableViewController.h */,
@@ -195,9 +184,6 @@
 		3445E0681D801AF7004555F9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				347113121D870F5F001AC60D /* libc++.dylib */,
-				347113111D870E87001AC60D /* libkrbn.h */,
-				3471130F1D870D74001AC60D /* libkrbn.a */,
 				3445E0691D801AF7004555F9 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -223,6 +209,17 @@
 				3469EB6C1D806AEA0005D30D /* weakify.h */,
 			);
 			name = share;
+			sourceTree = "<group>";
+		};
+		34D423691E1A58D6000E4154 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				347113121D870F5F001AC60D /* libc++.dylib */,
+				34D4236A1E1A58D6000E4154 /* libKarabinerKit.a */,
+				3471130F1D870D74001AC60D /* libkrbn.a */,
+				347113111D870E87001AC60D /* libkrbn.h */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -297,11 +294,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */,
-				34B97B321DBE4EA100EB3583 /* DeviceManager.m in Sources */,
 				34B97B3C1DBEF9CA00EB3583 /* DevicesTableViewController.m in Sources */,
 				3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */,
 				345F95541DABE746002854B8 /* SimpleModificationsTableViewController.m in Sources */,
-				34B97B301DBE4B9B00EB3583 /* DeviceModel.m in Sources */,
 				345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */,
 				347112ED1D86E619001AC60D /* UpdaterController.m in Sources */,
 				34B97B391DBE5C9E00EB3583 /* DevicesTableViewDelegate.m in Sources */,
@@ -319,7 +314,6 @@
 				34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */,
 				34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
-				345F95481DAA5DA1002854B8 /* CoreConfigurationModel.m in Sources */,
 				3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -380,7 +374,11 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = ../../lib/libkrbn/build/Release;
+				HEADER_SEARCH_PATHS = ../lib/KarabinerKit/;
+				LIBRARY_SEARCH_PATHS = (
+					../../lib/libkrbn/build/Release,
+					../lib/KarabinerKit/build/Release,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;

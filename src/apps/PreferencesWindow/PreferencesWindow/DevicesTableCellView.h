@@ -1,7 +1,7 @@
 // -*- Mode: objc -*-
 
 @import Cocoa;
-#import "DeviceModel.h"
+#import "KarabinerKit/DeviceModel.h"
 
 @interface DevicesTableCellView : NSTableCellView
 
@@ -13,6 +13,6 @@
 @property(weak) IBOutlet NSImageView* keyboardImage;
 @property(weak) IBOutlet NSImageView* mouseImage;
 
-@property DeviceIdentifiers* deviceIdentifiers;
+@property KarabinerKitDeviceIdentifiers* deviceIdentifiers;
 
 @end

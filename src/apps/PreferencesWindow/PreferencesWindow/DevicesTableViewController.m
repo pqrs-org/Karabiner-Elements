@@ -1,7 +1,7 @@
 #import "DevicesTableViewController.h"
 #import "ConfigurationManager.h"
-#import "CoreConfigurationModel.h"
 #import "DevicesTableCellView.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
 
 @interface DevicesTableViewController ()

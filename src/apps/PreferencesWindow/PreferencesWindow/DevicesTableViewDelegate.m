@@ -1,15 +1,13 @@
 #import "DevicesTableViewDelegate.h"
 #import "ConfigurationManager.h"
-#import "CoreConfigurationModel.h"
-#import "DeviceManager.h"
 #import "DevicesTableCellView.h"
 #import "DevicesTableViewController.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn.h"
 
 @interface DevicesTableViewDelegate ()
 
 @property(weak) IBOutlet ConfigurationManager* configurationManager;
-@property(weak) IBOutlet DeviceManager* deviceManager;
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 
 @end
@@ -17,9 +15,9 @@
 @implementation DevicesTableViewDelegate
 
 - (NSView*)tableView:(NSTableView*)tableView viewForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row {
-  NSArray<DeviceModel*>* deviceModels = self.deviceManager.deviceModels;
+  NSArray<KarabinerKitDeviceModel*>* deviceModels = [KarabinerKitDeviceManager sharedManager].deviceModels;
   if (0 <= row && row < (NSInteger)(deviceModels.count)) {
-    DeviceModel* model = deviceModels[row];
+    KarabinerKitDeviceModel* model = deviceModels[row];
 
     if ([tableColumn.identifier isEqualToString:@"DevicesCheckboxColumn"]) {
       DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesCheckboxCellView" owner:self];
@@ -40,7 +38,7 @@
       result.deviceIdentifiers = model.deviceIdentifiers;
 
       result.checkbox.state = (model.ignore ? NSOffState : NSOnState);
-      for (DeviceConfiguration* device in self.configurationManager.coreConfigurationModel.devices) {
+      for (KarabinerKitDeviceConfiguration* device in self.configurationManager.coreConfigurationModel.devices) {
         if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
           result.checkbox.state = (device.ignore ? NSOffState : NSOnState);
         }
@@ -95,7 +93,7 @@
 
         result.deviceIdentifiers = model.deviceIdentifiers;
 
-        for (DeviceConfiguration* device in self.configurationManager.coreConfigurationModel.devices) {
+        for (KarabinerKitDeviceConfiguration* device in self.configurationManager.coreConfigurationModel.devices) {
           if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
             result.checkbox.state = (device.disableBuiltInKeyboardIfExists ? NSOnState : NSOffState);
           }

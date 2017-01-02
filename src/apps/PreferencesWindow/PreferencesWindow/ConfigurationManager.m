@@ -1,13 +1,11 @@
 #import "ConfigurationManager.h"
-#import "CoreConfigurationModel.h"
-#import "JsonUtility.h"
 #import "NotificationKeys.h"
 #import "libkrbn.h"
 
 @interface ConfigurationManager ()
 
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
-@property(readwrite) CoreConfigurationModel* coreConfigurationModel;
+@property(readwrite) KarabinerKitCoreConfigurationModel* coreConfigurationModel;
 
 - (void)loadJsonString:(const char*)currentProfileJsonString;
 
@@ -37,15 +35,15 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
 }
 
 - (void)loadJsonString:(const char*)currentProfileJsonString {
-  NSDictionary* jsonObject = [JsonUtility loadCString:currentProfileJsonString];
+  NSDictionary* jsonObject = [KarabinerKitJsonUtility loadCString:currentProfileJsonString];
   if (jsonObject) {
-    self.coreConfigurationModel = [[CoreConfigurationModel alloc] initWithProfile:jsonObject];
+    self.coreConfigurationModel = [[KarabinerKitCoreConfigurationModel alloc] initWithProfile:jsonObject];
   }
 }
 
 - (void)save {
   NSString* filePath = [NSString stringWithUTF8String:libkrbn_get_core_configuration_file_path()];
-  NSDictionary* jsonObject = [JsonUtility loadFile:filePath];
+  NSDictionary* jsonObject = [KarabinerKitJsonUtility loadFile:filePath];
   if (!jsonObject) {
     jsonObject = @{};
   }
@@ -80,7 +78,7 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
 
   mutableJsonObject[@"profiles"] = mutableProfiles;
 
-  [JsonUtility saveJsonToFile:mutableJsonObject filePath:filePath];
+  [KarabinerKitJsonUtility saveJsonToFile:mutableJsonObject filePath:filePath];
 }
 
 @end

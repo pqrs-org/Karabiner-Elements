@@ -18,12 +18,10 @@
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
                 <outlet property="configurationManager" destination="gHg-lq-U6a" id="1k4-2u-8fe"/>
-                <outlet property="deviceManager" destination="XCy-yA-tah" id="Mqj-sY-vin"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
                 <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="LEs-Qx-33f"/>
             </connections>
         </customObject>
-        <customObject id="XCy-yA-tah" customClass="DeviceManager"/>
         <customObject id="n2S-Tf-7ZE" customClass="DevicesTableViewController">
             <connections>
                 <outlet property="configurationManager" destination="gHg-lq-U6a" id="O8E-zS-DZa"/>
@@ -31,15 +29,10 @@
                 <outlet property="tableView" destination="W1W-Xd-0KJ" id="eN4-9F-gvt"/>
             </connections>
         </customObject>
-        <customObject id="gV5-jV-pot" customClass="DevicesTableViewDataSource">
-            <connections>
-                <outlet property="deviceManager" destination="XCy-yA-tah" id="zjL-9Y-TqT"/>
-            </connections>
-        </customObject>
+        <customObject id="gV5-jV-pot" customClass="DevicesTableViewDataSource"/>
         <customObject id="2br-4Z-pCK" customClass="DevicesTableViewDelegate">
             <connections>
                 <outlet property="configurationManager" destination="gHg-lq-U6a" id="zvp-J0-Y4p"/>
-                <outlet property="deviceManager" destination="XCy-yA-tah" id="Xx2-dp-M3S"/>
                 <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="iH3-hs-eSU"/>
             </connections>
         </customObject>

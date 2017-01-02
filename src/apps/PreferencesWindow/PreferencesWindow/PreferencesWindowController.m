@@ -1,8 +1,8 @@
 #import "PreferencesWindowController.h"
 #import "ConfigurationManager.h"
-#import "CoreConfigurationModel.h"
 #import "DevicesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "LogFileTextViewController.h"
 #import "NotificationKeys.h"
 #import "SimpleModificationsMenuManager.h"
@@ -119,7 +119,7 @@
   // Select item
 
   NSString* keyboardType = @"ansi";
-  CoreConfigurationModel* coreConfigurationModel = self.configurationManager.coreConfigurationModel;
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = self.configurationManager.coreConfigurationModel;
   if (coreConfigurationModel) {
     keyboardType = coreConfigurationModel.virtualHIDKeyboardType;
   }
@@ -135,7 +135,7 @@
 - (IBAction)changeVirtualHIDKeyboardTYpe:(id)sender {
   NSMenuItem* selectedItem = self.virtualHIDKeyboardTypePopupButton.selectedItem;
   if (selectedItem) {
-    CoreConfigurationModel* coreConfigurationModel = self.configurationManager.coreConfigurationModel;
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = self.configurationManager.coreConfigurationModel;
     if (coreConfigurationModel) {
       coreConfigurationModel.virtualHIDKeyboardType = selectedItem.representedObject;
       [self.configurationManager save];
