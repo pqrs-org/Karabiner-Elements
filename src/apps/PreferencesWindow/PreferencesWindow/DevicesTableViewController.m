@@ -13,7 +13,7 @@
 @implementation DevicesTableViewController
 
 - (void)setup {
-  [[NSNotificationCenter defaultCenter] addObserverForName:kConfigurationIsLoaded
+  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
@@ -21,7 +21,7 @@
                                                   [self.externalKeyboardTableView reloadData];
                                                 }];
 
-  [[NSNotificationCenter defaultCenter] addObserverForName:kDevicesAreUpdated
+  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {

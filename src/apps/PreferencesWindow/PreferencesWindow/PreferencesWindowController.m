@@ -42,7 +42,7 @@
   [self.logFileTextViewController monitor];
 
   @weakify(self);
-  [[NSNotificationCenter defaultCenter] addObserverForName:kConfigurationIsLoaded
+  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
