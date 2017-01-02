@@ -1,0 +1,14 @@
+// -*- Mode: objc -*-
+
+#import "KarabinerKit/CoreConfigurationModel.h"
+#import "KarabinerKit/DeviceManager.h"
+#import "KarabinerKit/DeviceModel.h"
+#import "KarabinerKit/JsonUtility.h"
+#import "KarabinerKit/NotificationKeys.h"
+@import Foundation;
+
+@interface KarabinerKit : NSObject
+
++ (void)setup;
+
+@end
