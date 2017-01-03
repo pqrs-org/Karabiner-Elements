@@ -4,7 +4,8 @@
 
 /* Usage Pages */
 enum {
-  kHIDPage_AppleVendorTopCase = 0x00ff
+  kHIDPage_AppleVendorKeyboard = 0xff01,
+  kHIDPage_AppleVendorTopCase = 0x00ff,
 };
 
 /* AppleVendor Keyboard Page (0xff01) */
