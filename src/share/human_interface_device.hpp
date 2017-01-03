@@ -57,6 +57,7 @@ public:
                          IOHIDDeviceRef _Nonnull device) : logger_(logger),
                                                            device_(device),
                                                            registry_entry_id_(0),
+                                                           modifier_flags_queue_(nullptr),
                                                            queue_(nullptr),
                                                            is_grabbable_log_reducer_(logger),
                                                            observed_(false),
@@ -104,14 +105,31 @@ public:
     // setup queue_
 
     const CFIndex depth = 1024;
+
+    modifier_flags_queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
     queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
-    if (!queue_) {
+    if (!modifier_flags_queue_ || !queue_) {
       logger_.error("IOHIDQueueCreate error @ {0}", __PRETTY_FUNCTION__);
     } else {
       // Add elements into queue_.
       for (const auto& it : elements_) {
-        IOHIDQueueAddElement(queue_, it.second);
+        bool is_modifier = false;
+
+        auto usage_page = IOHIDElementGetUsagePage(it.second);
+        auto usage = IOHIDElementGetUsage(it.second);
+        if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
+          if (krbn::types::get_modifier_flag(*key_code) != krbn::modifier_flag::zero) {
+            is_modifier = true;
+          }
+        }
+
+        if (is_modifier) {
+          IOHIDQueueAddElement(modifier_flags_queue_, it.second);
+        } else {
+          IOHIDQueueAddElement(queue_, it.second);
+        }
       }
+      IOHIDQueueRegisterValueAvailableCallback(modifier_flags_queue_, static_queue_value_available_callback, this);
       IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
     }
   }
@@ -128,6 +146,10 @@ public:
       // ----------------------------------------
       // release queue_
 
+      if (modifier_flags_queue_) {
+        CFRelease(modifier_flags_queue_);
+        modifier_flags_queue_ = nullptr;
+      }
       if (queue_) {
         CFRelease(queue_);
         queue_ = nullptr;
@@ -169,6 +191,9 @@ public:
   void schedule(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       IOHIDDeviceScheduleWithRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+      if (modifier_flags_queue_) {
+        IOHIDQueueScheduleWithRunLoop(modifier_flags_queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+      }
       if (queue_) {
         IOHIDQueueScheduleWithRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
       }
@@ -177,6 +202,9 @@ public:
 
   void unschedule(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
+      if (modifier_flags_queue_) {
+        IOHIDQueueUnscheduleFromRunLoop(modifier_flags_queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+      }
       if (queue_) {
         IOHIDQueueUnscheduleFromRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
       }
@@ -204,6 +232,9 @@ public:
 
   void queue_start(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
+      if (modifier_flags_queue_) {
+        IOHIDQueueStart(modifier_flags_queue_);
+      }
       if (queue_) {
         IOHIDQueueStart(queue_);
       }
@@ -212,6 +243,9 @@ public:
 
   void queue_stop(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
+      if (modifier_flags_queue_) {
+        IOHIDQueueStop(modifier_flags_queue_);
+      }
       if (queue_) {
         IOHIDQueueStop(queue_);
       }
@@ -621,12 +655,49 @@ private:
       return;
     }
 
-    auto queue = static_cast<IOHIDQueueRef>(sender);
-    if (!queue) {
-      return;
-    }
+    // We have to separate modifier flags queue and generic queue.
+    //
+    // Some devices are send modifier flag and key at the same report.
+    // For example, a key sends control+up-arrow by this reports.
+    //
+    //   modifiers: 0x0
+    //   keys: 0x0 0x0 0x0 0x0 0x0 0x0
+    //
+    //   modifiers: 0x1
+    //   keys: 0x52 0x0 0x0 0x0 0x0 0x0
+    //
+    // In this case, macOS does not guarantee the value event order to be modifier first.
+    // At least macOS 10.12 or prior sends the up-arrow event first.
+    //
+    //   ----------------------------------------
+    //   Example of hid value events in a single queue at control+up-arrow
+    //
+    //   1. up-arrow keydown
+    //     usage_page:0x7
+    //     usage:0x4f
+    //     integer_value:1
+    //
+    //   2. control keydown
+    //     usage_page:0x7
+    //     usage:0xe1
+    //     integer_value:1
+    //
+    //   3. up-arrow keyup
+    //     usage_page:0x7
+    //     usage:0x4f
+    //     integer_value:0
+    //
+    //   4. control keyup
+    //     usage_page:0x7
+    //     usage:0xe1
+    //     integer_value:0
+    //   ----------------------------------------
+    //
+    // These events will not be interpreted as intended in this order.
+    // Thus, we have to reorder the events using two separate queues.
 
-    self->queue_value_available_callback(queue);
+    self->queue_value_available_callback(self->modifier_flags_queue_);
+    self->queue_value_available_callback(self->queue_);
   }
 
   void queue_value_available_callback(IOHIDQueueRef _Nonnull queue) {
@@ -751,6 +822,7 @@ private:
 
   IOHIDDeviceRef _Nonnull device_;
   uint64_t registry_entry_id_;
+  IOHIDQueueRef _Nullable modifier_flags_queue_;
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
