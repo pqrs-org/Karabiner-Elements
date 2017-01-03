@@ -504,6 +504,12 @@ public:
         return krbn::key_code::fn;
       }
       break;
+
+    case kHIDPage_AppleVendorKeyboard:
+      if (usage == kHIDUsage_AppleVendorKeyboard_Function) {
+        return krbn::key_code::fn;
+      }
+      break;
     }
     return boost::none;
   }
