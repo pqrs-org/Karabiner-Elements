@@ -584,6 +584,17 @@ public:
 
   // This method requires root privilege to use IOHIDDeviceSetValue for kHIDPage_LEDs usage.
   IOReturn set_caps_lock_led_state(krbn::led_state state) {
+    // `IOHIDDeviceSetValue` will block forever with some buggy devices. (eg. Bit Touch)
+    // This, we use a blacklist.
+    if (auto vendor_id = get_vendor_id()) {
+      if (auto product_id = get_product_id()) {
+        if ((*vendor_id == krbn::vendor_id(0x22ea) && *product_id == krbn::product_id(0xf)) /* Bit Touch (Bit Trade One LTD.) */ ||
+            false) {
+          return kIOReturnSuccess;
+        }
+      }
+    }
+
     IOReturn __block r = kIOReturnError;
 
     gcd_utility::dispatch_sync_in_main_queue(^{
@@ -597,7 +608,13 @@ public:
 
         if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault, element, mach_absolute_time(), integer_value)) {
           r = IOHIDDeviceSetValue(device_, element, value);
+
+          if (r != kIOReturnSuccess) {
+            logger_.error("IOHIDDeviceSetValue error {1} for {2} @ {0}", __PRETTY_FUNCTION__, r, get_name_for_log());
+          }
+
           CFRelease(value);
+
         } else {
           logger_.error("IOHIDValueCreateWithIntegerValue error @ {0}", __PRETTY_FUNCTION__);
         }
