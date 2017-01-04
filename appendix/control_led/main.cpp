@@ -96,6 +96,8 @@ private:
         dev->set_caps_lock_led_state(krbn::led_state::on);
       }
 
+      logger::get_logger().info("set_caps_lock_led_state is called.");
+
     } else {
       logger::get_logger().info("failed to get caps_lock_led_state.");
     }
