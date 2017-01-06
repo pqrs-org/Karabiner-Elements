@@ -138,6 +138,8 @@ private:
 };
 
 int main(int argc, const char* argv[]) {
+  thread_utility::register_main_thread();
+
   dump_hid_report d;
   CFRunLoopRun();
   return 0;

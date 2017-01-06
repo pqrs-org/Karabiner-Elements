@@ -23,6 +23,8 @@ void system_preferences_values_updated_callback(const system_preferences::values
 }
 
 int main(int argc, const char* argv[]) {
+  thread_utility::register_main_thread();
+
   system_preferences_monitor monitor(logger::get_logger(), system_preferences_values_updated_callback);
 
   CFRunLoopRun();

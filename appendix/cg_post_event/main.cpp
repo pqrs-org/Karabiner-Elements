@@ -1,8 +1,11 @@
+#include "thread_utility.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 #include <chrono>
 #include <thread>
 
 int main(int argc, const char* argv[]) {
+  thread_utility::register_main_thread();
+
   if (auto source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState)) {
     while (true) {
       // shift key

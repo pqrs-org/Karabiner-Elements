@@ -16,6 +16,8 @@ static void callback(uint32_t message_type) {
 }
 
 int main(int argc, const char* argv[]) {
+  thread_utility::register_main_thread();
+
   iopm_client client(logger::get_logger(), std::bind(callback, std::placeholders::_1));
 
   CFRunLoopRun();

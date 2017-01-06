@@ -137,6 +137,8 @@ private:
 };
 
 int main(int argc, const char* argv[]) {
+  thread_utility::register_main_thread();
+
   if (getuid() != 0) {
     logger::get_logger().error("control_led requires root privilege.");
   }

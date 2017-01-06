@@ -1,10 +1,12 @@
+#include "session.hpp"
+#include "thread_utility.hpp"
 #include <chrono>
 #include <iostream>
 #include <thread>
 
-#include "session.hpp"
-
 int main(int argc, const char* argv[]) {
+  thread_utility::register_main_thread();
+
   while (true) {
     if (auto current_console_user_id = session::get_current_console_user_id()) {
       std::cout << "current_console_user_id: " << *current_console_user_id << std::endl;

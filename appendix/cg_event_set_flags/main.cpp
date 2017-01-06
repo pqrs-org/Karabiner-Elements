@@ -1,3 +1,4 @@
+#include "thread_utility.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 #include <iostream>
 
@@ -20,6 +21,8 @@ static CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventTyp
 }
 
 int main(int argc, const char* argv[]) {
+  thread_utility::register_main_thread();
+
   // Observe all mouse events
   auto mask = CGEventMaskBit(kCGEventLeftMouseDown) |
               CGEventMaskBit(kCGEventLeftMouseUp) |
