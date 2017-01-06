@@ -1,10 +1,12 @@
-#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_RUNNER
 #include "../../vendor/catch/catch.hpp"
 
-#include <ostream>
+#include "boost_defs.hpp"
 
 #include "filesystem.hpp"
+#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
+#include <ostream>
 
 TEST_CASE("create_directory_with_intermediate_directories") {
   REQUIRE(filesystem::create_directory_with_intermediate_directories("/", 0700) == true);
@@ -147,4 +149,9 @@ TEST_CASE("realpath") {
 
   actual = filesystem::realpath("/var/log/system.log");
   REQUIRE(*actual == "/private/var/log/system.log");
+}
+
+int main(int argc, char* const argv[]) {
+  thread_utility::register_main_thread();
+  return Catch::Session().run(argc, argv);
 }

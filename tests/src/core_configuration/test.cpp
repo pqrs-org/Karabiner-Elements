@@ -1,7 +1,8 @@
-#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_RUNNER
 #include "../../vendor/catch/catch.hpp"
 
 #include "core_configuration.hpp"
+#include "thread_utility.hpp"
 #include <iostream>
 #include <spdlog/spdlog.h>
 
@@ -87,4 +88,9 @@ TEST_CASE("invalid_key_code_name.json") {
   };
   REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
   REQUIRE(configuration.is_loaded() == true);
+}
+
+int main(int argc, char* const argv[]) {
+  thread_utility::register_main_thread();
+  return Catch::Session().run(argc, argv);
 }
