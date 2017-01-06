@@ -4,6 +4,7 @@
 
 #include <Security/CodeSigning.h>
 #include <boost/optional.hpp>
+#include <string>
 
 class codesign {
 public:
