@@ -287,13 +287,18 @@ private:
     }
 
     auto device_registry_entry_id = manipulator::device_registry_entry_id(device.get_registry_entry_id());
+    auto timestamp = IOHIDValueGetTimeStamp(value);
 
     if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
       bool pressed = integer_value;
-      event_manipulator_.handle_keyboard_event(device_registry_entry_id, *key_code, pressed);
+      event_manipulator_.handle_keyboard_event(device_registry_entry_id,
+                                               timestamp,
+                                               *key_code,
+                                               pressed);
 
     } else if (auto pointing_button = krbn::types::get_pointing_button(usage_page, usage)) {
       event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                               timestamp,
                                                krbn::pointing_event::button,
                                                *pointing_button,
                                                integer_value);
@@ -303,18 +308,21 @@ private:
       case kHIDPage_GenericDesktop:
         if (usage == kHIDUsage_GD_X) {
           event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                   timestamp,
                                                    krbn::pointing_event::x,
                                                    boost::none,
                                                    integer_value);
         }
         if (usage == kHIDUsage_GD_Y) {
           event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                   timestamp,
                                                    krbn::pointing_event::y,
                                                    boost::none,
                                                    integer_value);
         }
         if (usage == kHIDUsage_GD_Wheel) {
           event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                   timestamp,
                                                    krbn::pointing_event::vertical_wheel,
                                                    boost::none,
                                                    integer_value);
@@ -324,6 +332,7 @@ private:
       case kHIDPage_Consumer:
         if (usage == kHIDUsage_Csmr_ACPan) {
           event_manipulator_.handle_pointing_event(device_registry_entry_id,
+                                                   timestamp,
                                                    krbn::pointing_event::horizontal_wheel,
                                                    boost::none,
                                                    integer_value);
