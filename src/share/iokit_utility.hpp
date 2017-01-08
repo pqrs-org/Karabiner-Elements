@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "cf_utility.hpp"
 #include "types.hpp"
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -37,11 +38,7 @@ public:
                                                         key,
                                                         kCFAllocatorDefault,
                                                         kIORegistryIterateRecursively | kIORegistryIterateParents)) {
-      std::string value;
-      if (auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8)) {
-        value = p;
-      }
-
+      auto value = cf_utility::to_string(property);
       CFRelease(property);
       return value;
     }
@@ -139,20 +136,7 @@ public:
 
   static boost::optional<std::string> get_string_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key) {
     auto property = IOHIDDeviceGetProperty(device, key);
-    if (!property) {
-      return boost::none;
-    }
-
-    if (CFStringGetTypeID() != CFGetTypeID(property)) {
-      return boost::none;
-    }
-
-    std::string value;
-    if (auto p = CFStringGetCStringPtr(static_cast<CFStringRef>(property), kCFStringEncodingUTF8)) {
-      value = p;
-    }
-
-    return value;
+    return cf_utility::to_string(property);
   }
 
   static boost::optional<long> get_max_input_report_size(IOHIDDeviceRef _Nonnull device) {

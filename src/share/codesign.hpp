@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "cf_utility.hpp"
 #include <Security/CodeSigning.h>
 #include <boost/optional.hpp>
 #include <string>
@@ -27,8 +28,7 @@ public:
                 auto certificate = static_cast<SecCertificateRef>(const_cast<void*>(CFArrayGetValueAtIndex(certificates, 0)));
                 CFStringRef common_name_string;
                 if (SecCertificateCopyCommonName(certificate, &common_name_string) == errSecSuccess) {
-                  common_name = CFStringGetCStringPtr(common_name_string, kCFStringEncodingUTF8);
-
+                  common_name = cf_utility::to_string(common_name_string);
                   CFRelease(common_name_string);
                 }
               }
