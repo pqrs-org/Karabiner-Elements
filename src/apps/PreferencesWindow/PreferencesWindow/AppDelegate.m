@@ -26,7 +26,7 @@
   [[NSDistributedNotificationCenter defaultCenter] addObserver:self
                                                       selector:@selector(grabberIsLaunchedNotificationCallback:)
                                                           name:[NSString stringWithUTF8String:libkrbn_get_distributed_notification_grabber_is_launched()]
-                                                        object:nil
+                                                        object:[NSString stringWithUTF8String:libkrbn_get_distributed_notification_observed_object()]
                                             suspensionBehavior:NSNotificationSuspensionBehaviorDeliverImmediately];
 }
 
