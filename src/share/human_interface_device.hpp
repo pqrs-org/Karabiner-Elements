@@ -57,7 +57,6 @@ public:
                          IOHIDDeviceRef _Nonnull device) : logger_(logger),
                                                            device_(device),
                                                            registry_entry_id_(0),
-                                                           modifier_flags_queue_(nullptr),
                                                            queue_(nullptr),
                                                            is_grabbable_log_reducer_(logger),
                                                            observed_(false),
@@ -105,31 +104,14 @@ public:
     // setup queue_
 
     const CFIndex depth = 1024;
-
-    modifier_flags_queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
     queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
-    if (!modifier_flags_queue_ || !queue_) {
+    if (!queue_) {
       logger_.error("IOHIDQueueCreate error @ {0}", __PRETTY_FUNCTION__);
     } else {
       // Add elements into queue_.
       for (const auto& it : elements_) {
-        bool is_modifier = false;
-
-        auto usage_page = IOHIDElementGetUsagePage(it.second);
-        auto usage = IOHIDElementGetUsage(it.second);
-        if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
-          if (krbn::types::get_modifier_flag(*key_code) != krbn::modifier_flag::zero) {
-            is_modifier = true;
-          }
-        }
-
-        if (is_modifier) {
-          IOHIDQueueAddElement(modifier_flags_queue_, it.second);
-        } else {
-          IOHIDQueueAddElement(queue_, it.second);
-        }
+        IOHIDQueueAddElement(queue_, it.second);
       }
-      IOHIDQueueRegisterValueAvailableCallback(modifier_flags_queue_, static_queue_value_available_callback, this);
       IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
     }
   }
@@ -146,10 +128,6 @@ public:
       // ----------------------------------------
       // release queue_
 
-      if (modifier_flags_queue_) {
-        CFRelease(modifier_flags_queue_);
-        modifier_flags_queue_ = nullptr;
-      }
       if (queue_) {
         CFRelease(queue_);
         queue_ = nullptr;
@@ -191,9 +169,6 @@ public:
   void schedule(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       IOHIDDeviceScheduleWithRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-      if (modifier_flags_queue_) {
-        IOHIDQueueScheduleWithRunLoop(modifier_flags_queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-      }
       if (queue_) {
         IOHIDQueueScheduleWithRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
       }
@@ -202,9 +177,6 @@ public:
 
   void unschedule(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (modifier_flags_queue_) {
-        IOHIDQueueUnscheduleFromRunLoop(modifier_flags_queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-      }
       if (queue_) {
         IOHIDQueueUnscheduleFromRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
       }
@@ -232,9 +204,6 @@ public:
 
   void queue_start(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (modifier_flags_queue_) {
-        IOHIDQueueStart(modifier_flags_queue_);
-      }
       if (queue_) {
         IOHIDQueueStart(queue_);
       }
@@ -243,9 +212,6 @@ public:
 
   void queue_stop(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (modifier_flags_queue_) {
-        IOHIDQueueStop(modifier_flags_queue_);
-      }
       if (queue_) {
         IOHIDQueueStop(queue_);
       }
@@ -672,6 +638,10 @@ private:
       return;
     }
 
+    self->queue_value_available_callback();
+  }
+
+  void queue_value_available_callback(void) {
     // We have to separate modifier flags queue and generic queue.
     //
     // Some devices are send modifier flag and key at the same report.
@@ -711,19 +681,85 @@ private:
     //   ----------------------------------------
     //
     // These events will not be interpreted as intended in this order.
-    // Thus, we have to reorder the events using two separate queues.
+    // Thus, we have to reorder the events.
 
-    self->queue_value_available_callback(self->modifier_flags_queue_);
-    self->queue_value_available_callback(self->queue_);
-  }
+    std::vector<IOHIDValueRef> retained_values;
 
-  void queue_value_available_callback(IOHIDQueueRef _Nonnull queue) {
+    // ----------------------------------------
+    // Drain all values in queue at first.
+
     while (true) {
-      auto value = IOHIDQueueCopyNextValueWithTimeout(queue, 0.);
+      auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.);
       if (!value) {
         break;
       }
 
+      retained_values.push_back(value);
+    }
+
+    // ----------------------------------------
+    // Sort values
+
+    std::sort(retained_values.begin(), retained_values.end(), [](const IOHIDValueRef& v1, const IOHIDValueRef& v2) {
+      auto t1 = IOHIDValueGetTimeStamp(v1);
+      auto t2 = IOHIDValueGetTimeStamp(v2);
+
+      if (t1 == t2) {
+        auto e1 = IOHIDValueGetElement(v1);
+        auto e2 = IOHIDValueGetElement(v2);
+
+        if (e1 && e2) {
+          auto modifier_flag1 = krbn::modifier_flag::zero;
+          auto modifier_flag2 = krbn::modifier_flag::zero;
+
+          auto usage_page1 = IOHIDElementGetUsagePage(e1);
+          auto usage1 = IOHIDElementGetUsage(e1);
+          auto usage_page2 = IOHIDElementGetUsagePage(e2);
+          auto usage2 = IOHIDElementGetUsage(e2);
+
+          if (auto key_code1 = krbn::types::get_key_code(usage_page1, usage1)) {
+            modifier_flag1 = krbn::types::get_modifier_flag(*key_code1);
+          }
+          if (auto key_code2 = krbn::types::get_key_code(usage_page2, usage2)) {
+            modifier_flag2 = krbn::types::get_modifier_flag(*key_code2);
+          }
+
+          // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
+
+          if (modifier_flag1 == krbn::modifier_flag::zero &&
+              modifier_flag2 != krbn::modifier_flag::zero) {
+            // v2 is modifier_flag
+            auto integer_value2 = IOHIDValueGetIntegerValue(v2);
+            if (integer_value2) {
+              // reorder to v2,v1 if v2 is pressed.
+              return false;
+            } else {
+              return true;
+            }
+          }
+
+          if (modifier_flag1 != krbn::modifier_flag::zero &&
+              modifier_flag2 == krbn::modifier_flag::zero) {
+            // v1 is modifier_flag
+            auto integer_value1 = IOHIDValueGetIntegerValue(v1);
+            if (integer_value1) {
+              return true;
+            } else {
+              // reorder to v2,v1 if v1 is released.
+              return false;
+            }
+          }
+        }
+      }
+
+      // keep order
+      return t1 <= t2;
+    });
+
+    // ----------------------------------------
+    // Then process the callback.
+
+    for (const auto& value : retained_values) {
       auto element = IOHIDValueGetElement(value);
       if (element) {
         auto usage_page = IOHIDElementGetUsagePage(element);
@@ -775,7 +811,12 @@ private:
           value_callback_(*this, value, element, usage_page, usage, integer_value);
         }
       }
+    }
 
+    // ----------------------------------------
+    // Release retained values
+
+    for (const auto& value : retained_values) {
       CFRelease(value);
     }
   }
@@ -839,7 +880,6 @@ private:
 
   IOHIDDeviceRef _Nonnull device_;
   uint64_t registry_entry_id_;
-  IOHIDQueueRef _Nullable modifier_flags_queue_;
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
