@@ -224,6 +224,7 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::initializeVirtualHIDKeyboardCallback
   terminateVirtualHIDKeyboardCallback();
 
   virtualHIDKeyboardType_ = properties.keyboard_type;
+  capsLockDelayMilliseconds_ = properties.caps_lock_delay_milliseconds;
 
   CREATE_VIRTUAL_DEVICE(VIRTUAL_HID_KEYBOARD_CLASS, virtualHIDKeyboard_);
   return virtualHIDKeyboard_ ? kIOReturnSuccess : kIOReturnError;
@@ -457,15 +458,28 @@ bool VIRTUAL_HID_ROOT_USERCLIENT_CLASS::initializeVirtualHIDEventService(IOHIDIn
     if (virtualHIDEventService_) {
       bool initialized = false;
 
-      if (auto properties = OSDictionary::withCapacity(1)) {
-        if (auto number = OSNumber::withNumber(static_cast<uint32_t>(virtualHIDKeyboardType_), 32)) {
-          properties->setObject(kIOHIDAltHandlerIdKey, number);
-          number->release();
+      if (auto init_properties = OSDictionary::withCapacity(2)) {
+        if (auto event_service_properties = OSDictionary::withCapacity(1)) {
+          if (auto number = OSNumber::withNumber(static_cast<uint32_t>(virtualHIDKeyboardType_), 32)) {
+            init_properties->setObject(kIOHIDAltHandlerIdKey, number);
+
+            number->release();
+          }
+          if (auto number = OSNumber::withNumber(static_cast<uint64_t>(capsLockDelayMilliseconds_), 64)) {
+            auto key = kIOHIDKeyboardCapsLockDelay;
+            init_properties->setObject(key, number);          // for macOS 10.11
+            event_service_properties->setObject(key, number); // for macOS 10.12
+
+            number->release();
+          }
+
+          initialized = virtualHIDEventService_->init(init_properties);
+          virtualHIDEventService_->setProperties(event_service_properties);
+
+          event_service_properties->release();
         }
 
-        initialized = virtualHIDEventService_->init(properties);
-
-        properties->release();
+        init_properties->release();
       }
 
       if (initialized) {

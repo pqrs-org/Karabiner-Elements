@@ -101,4 +101,5 @@ private:
   VIRTUAL_HID_POINTING_CLASS* virtualHIDPointing_;
   VIRTUAL_HID_EVENT_SERVICE_CLASS* virtualHIDEventService_;
   pqrs::karabiner_virtual_hid_device::properties::keyboard_type virtualHIDKeyboardType_;
+  pqrs::karabiner_virtual_hid_device::milliseconds capsLockDelayMilliseconds_;
 };
