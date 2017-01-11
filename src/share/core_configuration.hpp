@@ -32,7 +32,8 @@
 //                 "f12": "volume_increment"
 //             },
 //             "virtual_hid_keyboard": {
-//                 "keyboard_type": "ansi"
+//                 "keyboard_type": "ansi",
+//                 "caps_lock_delay_milliseconds": 100
 //             },
 //             "devices": [
 //                 {
@@ -102,6 +103,10 @@ public:
       std::string keyboard_type_name = profile["virtual_hid_keyboard"]["keyboard_type"];
       if (auto keyboard_type = krbn::types::get_keyboard_type(keyboard_type_name)) {
         virtual_hid_keyboard_configuration_struct.keyboard_type = *keyboard_type;
+      }
+
+      if (profile["virtual_hid_keyboard"]["caps_lock_delay_milliseconds"].is_number()) {
+        virtual_hid_keyboard_configuration_struct.caps_lock_delay_milliseconds = profile["virtual_hid_keyboard"]["caps_lock_delay_milliseconds"];
       }
     }
 

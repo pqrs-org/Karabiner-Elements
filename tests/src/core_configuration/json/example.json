@@ -22,7 +22,8 @@
                 "f12": "volume_increment"
             },
             "virtual_hid_keyboard": {
-                "keyboard_type": "iso"
+                "keyboard_type": "iso",
+                "caps_lock_delay_milliseconds": 100
             },
             "devices": [
                 {
