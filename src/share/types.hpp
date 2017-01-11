@@ -218,9 +218,16 @@ enum class keyboard_type : uint32_t {
 };
 
 struct virtual_hid_keyboard_configuration_struct {
-  virtual_hid_keyboard_configuration_struct(void) : keyboard_type(keyboard_type::ansi) {}
+  virtual_hid_keyboard_configuration_struct(void) : keyboard_type(keyboard_type::ansi),
+                                                    caps_lock_delay_milliseconds(0) {}
+
+  bool operator==(const virtual_hid_keyboard_configuration_struct& other) const {
+    return keyboard_type == other.keyboard_type &&
+           caps_lock_delay_milliseconds == other.caps_lock_delay_milliseconds;
+  }
 
   keyboard_type keyboard_type;
+  uint32_t caps_lock_delay_milliseconds;
 };
 
 struct device_identifiers_struct {
