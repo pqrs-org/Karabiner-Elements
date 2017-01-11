@@ -16,8 +16,7 @@ public:
   virtual_hid_device_client(spdlog::logger& logger) : logger_(logger),
                                                       service_(IO_OBJECT_NULL),
                                                       connect_(IO_OBJECT_NULL),
-                                                      virtual_hid_keyboard_initialized_(false),
-                                                      keyboard_type_(krbn::keyboard_type::none) {
+                                                      virtual_hid_keyboard_initialized_(false) {
     if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name())) {
       service_observer_ = std::make_unique<service_observer>(logger_,
                                                              matching_dictionary,
@@ -39,17 +38,25 @@ public:
     return virtual_hid_keyboard_initialized_;
   }
 
-  void initialize_virtual_hid_keyboard(krbn::keyboard_type keyboard_type) {
-    if (virtual_hid_keyboard_initialized_ && keyboard_type_ == keyboard_type) {
+  void initialize_virtual_hid_keyboard(const krbn::virtual_hid_keyboard_configuration_struct& configuration) {
+    if (virtual_hid_keyboard_initialized_ &&
+        virtual_hid_keyboard_configuration_struct_ == configuration) {
       return;
     }
 
-    logger_.info("initialize_virtual_hid_keyboard keyboard_type:{0}", static_cast<int>(keyboard_type));
+    virtual_hid_keyboard_configuration_struct_ = configuration;
 
-    keyboard_type_ = keyboard_type;
     virtual_hid_keyboard_initialized_ = call_method([this](void) {
+      auto keyboard_type = static_cast<int>(virtual_hid_keyboard_configuration_struct_.keyboard_type);
+      auto caps_lock_delay_milliseconds = virtual_hid_keyboard_configuration_struct_.caps_lock_delay_milliseconds;
+      logger_.info("initialize_virtual_hid_keyboard");
+      logger_.info("  keyboard_type:{0}", keyboard_type);
+      logger_.info("  caps_lock_delay_milliseconds:{0}", caps_lock_delay_milliseconds);
+
       pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-      properties.keyboard_type = static_cast<pqrs::karabiner_virtual_hid_device::properties::keyboard_type>(keyboard_type_);
+      properties.keyboard_type = pqrs::karabiner_virtual_hid_device::properties::keyboard_type(keyboard_type);
+      properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(caps_lock_delay_milliseconds);
+
       return pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect_, properties);
     });
   }
@@ -198,5 +205,5 @@ private:
   std::mutex connect_mutex_;
 
   bool virtual_hid_keyboard_initialized_;
-  krbn::keyboard_type keyboard_type_;
+  krbn::virtual_hid_keyboard_configuration_struct virtual_hid_keyboard_configuration_struct_;
 };

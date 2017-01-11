@@ -92,8 +92,8 @@ public:
     fn_function_keys_.add(from_key_code, to_key_code);
   }
 
-  void initialize_virtual_hid_keyboard(krbn::keyboard_type keyboard_type) {
-    virtual_hid_device_client_.initialize_virtual_hid_keyboard(keyboard_type);
+  void initialize_virtual_hid_keyboard(const krbn::virtual_hid_keyboard_configuration_struct& configuration) {
+    virtual_hid_device_client_.initialize_virtual_hid_keyboard(configuration);
   }
 
   void initialize_virtual_hid_pointing(void) {
