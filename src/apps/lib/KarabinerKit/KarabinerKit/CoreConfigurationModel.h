@@ -20,7 +20,8 @@
 @property(copy, readonly) NSDictionary* fnFunctionKeysDictionary;
 @property(copy, readonly) NSDictionary* virtualHIDKeyboardDictionary;
 @property(copy, readonly) NSArray* devicesArray;
-@property(copy, readwrite) NSString* virtualHIDKeyboardType;
+@property(copy) NSString* virtualHIDKeyboardType;
+@property NSUInteger virtualHIDKeyboardCapsLockDelayMilliseconds;
 
 - (instancetype)initWithProfile:(NSDictionary*)profile;
 

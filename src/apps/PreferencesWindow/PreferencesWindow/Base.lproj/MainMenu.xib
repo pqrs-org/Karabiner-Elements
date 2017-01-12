@@ -52,6 +52,8 @@
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="TxP-Ir-imi"/>
                 <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="HZj-Vf-nPo"/>
                 <outlet property="versionLabel" destination="sau-jf-Dqb" id="maD-61-nBB"/>
+                <outlet property="virtualHIDKeyboardCapsLockDelayMillisecondsStepper" destination="8oq-XL-Uqg" id="JVi-LV-1T5"/>
+                <outlet property="virtualHIDKeyboardCapsLockDelayMillisecondsText" destination="VxT-OA-zK5" id="b3S-aS-BT1"/>
                 <outlet property="virtualHIDKeyboardTypePopupButton" destination="Z6i-Q5-mKI" id="Mhi-r3-L1e"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="rSZ-Ih-Gbv"/>
             </connections>
@@ -1028,10 +1030,10 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </textFieldCell>
                                         </textField>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="iJC-5f-F7u">
-                                            <rect key="frame" x="275" y="329" width="205" height="25"/>
+                                            <rect key="frame" x="270" y="300" width="215" height="54"/>
                                             <subviews>
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zBP-Pe-eYU">
-                                                    <rect key="frame" x="-2" y="4" width="99" height="17"/>
+                                                    <rect key="frame" x="8" y="33" width="99" height="17"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Keyboard Type:" id="wIA-ez-Glx">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1039,7 +1041,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                     </textFieldCell>
                                                 </textField>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Z6i-Q5-mKI">
-                                                    <rect key="frame" x="103" y="-1" width="105" height="26"/>
+                                                    <rect key="frame" x="113" y="28" width="105" height="26"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="100" id="GYS-gg-sPA"/>
                                                     </constraints>
@@ -1052,14 +1054,53 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         <action selector="changeVirtualHIDKeyboardTYpe:" target="5ke-qB-Wr5" id="Kdg-Mq-GN1"/>
                                                     </connections>
                                                 </popUpButton>
+                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wfH-C6-3Zk">
+                                                    <rect key="frame" x="-2" y="6" width="109" height="17"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Caps Lock Delay:" id="DTe-J0-hEy">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="VxT-OA-zK5">
+                                                    <rect key="frame" x="115" y="4" width="60" height="22"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="60" id="0DD-Gt-nPt"/>
+                                                    </constraints>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="q10-hM-Ask">
+                                                        <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="KSt-H5-nCd">
+                                                            <real key="minimum" value="0.0"/>
+                                                            <real key="maximum" value="10000"/>
+                                                        </numberFormatter>
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                    <connections>
+                                                        <action selector="changeVirtualHIDKeyboardCapsLockDelayMilliseconds:" target="5ke-qB-Wr5" id="BR5-S8-7tn"/>
+                                                    </connections>
+                                                </textField>
+                                                <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8oq-XL-Uqg">
+                                                    <rect key="frame" x="174" y="1" width="19" height="27"/>
+                                                    <stepperCell key="cell" continuous="YES" alignment="left" increment="100" maxValue="10000" id="Op4-4d-caF"/>
+                                                    <connections>
+                                                        <action selector="changeVirtualHIDKeyboardCapsLockDelayMilliseconds:" target="5ke-qB-Wr5" id="5Lo-sV-dlP"/>
+                                                    </connections>
+                                                </stepper>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="Z6i-Q5-mKI" firstAttribute="leading" secondItem="zBP-Pe-eYU" secondAttribute="trailing" constant="10" id="JaT-EB-bxQ"/>
                                                 <constraint firstAttribute="trailing" secondItem="Z6i-Q5-mKI" secondAttribute="trailing" id="NCa-LM-IuD"/>
-                                                <constraint firstAttribute="bottom" secondItem="Z6i-Q5-mKI" secondAttribute="bottom" constant="2" id="bxd-3t-Kva"/>
+                                                <constraint firstItem="zBP-Pe-eYU" firstAttribute="trailing" secondItem="wfH-C6-3Zk" secondAttribute="trailing" id="Npz-31-GSU"/>
+                                                <constraint firstItem="VxT-OA-zK5" firstAttribute="leading" secondItem="Z6i-Q5-mKI" secondAttribute="leading" id="Rw7-KM-swb"/>
+                                                <constraint firstItem="wfH-C6-3Zk" firstAttribute="top" secondItem="zBP-Pe-eYU" secondAttribute="bottom" constant="10" id="cBi-Xh-n3R"/>
                                                 <constraint firstItem="Z6i-Q5-mKI" firstAttribute="centerY" secondItem="zBP-Pe-eYU" secondAttribute="centerY" id="fSp-tf-Vlw"/>
+                                                <constraint firstItem="8oq-XL-Uqg" firstAttribute="leading" secondItem="VxT-OA-zK5" secondAttribute="trailing" constant="2" id="jYJ-36-paK"/>
+                                                <constraint firstItem="VxT-OA-zK5" firstAttribute="centerY" secondItem="wfH-C6-3Zk" secondAttribute="centerY" id="jaD-M6-sYw"/>
+                                                <constraint firstItem="8oq-XL-Uqg" firstAttribute="centerY" secondItem="VxT-OA-zK5" secondAttribute="centerY" id="l7C-5Z-OlS"/>
+                                                <constraint firstItem="wfH-C6-3Zk" firstAttribute="leading" secondItem="iJC-5f-F7u" secondAttribute="leading" id="q9g-vh-yJs"/>
                                                 <constraint firstItem="Z6i-Q5-mKI" firstAttribute="top" secondItem="iJC-5f-F7u" secondAttribute="top" constant="2" id="uJN-Sz-Awl"/>
-                                                <constraint firstItem="zBP-Pe-eYU" firstAttribute="leading" secondItem="iJC-5f-F7u" secondAttribute="leading" id="vvR-fU-Mgw"/>
+                                                <constraint firstAttribute="bottom" secondItem="wfH-C6-3Zk" secondAttribute="bottom" constant="6" id="yey-cB-a0L"/>
                                             </constraints>
                                         </customView>
                                     </subviews>
