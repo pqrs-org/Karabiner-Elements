@@ -1,8 +1,11 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include "gcd_utility.hpp"
 #include "logger.hpp"
 #include <CoreGraphics/CoreGraphics.h>
+#include <boost/optional.hpp>
 
 class event_tap_manager final {
 public:
@@ -12,8 +15,7 @@ public:
 
   event_tap_manager(const caps_lock_state_changed_callback& caps_lock_state_changed_callback) : caps_lock_state_changed_callback_(caps_lock_state_changed_callback),
                                                                                                 event_tap_(nullptr),
-                                                                                                run_loop_source_(nullptr),
-                                                                                                last_flags_(0) {
+                                                                                                run_loop_source_(nullptr) {
     // Observe flags changed in order to get the caps lock state.
     auto mask = CGEventMaskBit(kCGEventFlagsChanged);
 
@@ -54,8 +56,11 @@ public:
     });
   }
 
-  bool get_caps_lock_state(void) const {
-    return (last_flags_ & NX_ALPHASHIFTMASK);
+  boost::optional<bool> get_caps_lock_state(void) const {
+    if (last_flags_) {
+      return (*last_flags_ & NX_ALPHASHIFTMASK);
+    }
+    return boost::none;
   }
 
 private:
@@ -75,13 +80,17 @@ private:
       // The caps lock key event from keyboard might be ignored by caps lock delay.
       // Thus, we need to observe kCGEventFlagsChanged event in EventTap to detect the caps lock state change.
 
-      bool old_caps_lock_state = get_caps_lock_state();
+      auto old_caps_lock_state = get_caps_lock_state();
       last_flags_ = CGEventGetFlags(event);
-      bool new_caps_lock_state = get_caps_lock_state();
+      auto new_caps_lock_state = get_caps_lock_state();
 
-      if (old_caps_lock_state != new_caps_lock_state) {
+      if (old_caps_lock_state &&
+          new_caps_lock_state &&
+          *old_caps_lock_state == *new_caps_lock_state) {
+        // the caps lock state is not changed.
+      } else {
         if (caps_lock_state_changed_callback_) {
-          caps_lock_state_changed_callback_(new_caps_lock_state);
+          caps_lock_state_changed_callback_(*new_caps_lock_state);
         }
       }
     }
@@ -92,5 +101,5 @@ private:
 
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;
-  CGEventFlags last_flags_;
+  boost::optional<CGEventFlags> last_flags_;
 };
