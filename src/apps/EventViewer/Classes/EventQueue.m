@@ -340,9 +340,10 @@ enum {
       return;
     }
 
-    // Hide Help (0x5) and NumLock (0xa)
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIgnorableEvents]) {
-      if (keyCode == 0x5 || keyCode == 0xa) {
+      if (keyCode == NX_KEYTYPE_CAPS_LOCK ||
+          keyCode == NX_KEYTYPE_HELP ||
+          keyCode == NX_KEYTYPE_NUM_LOCK) {
         return;
       }
     }
