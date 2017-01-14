@@ -300,8 +300,11 @@ enum {
   // (keyMod and keyCode == 0).
   // So, we ignore it.
   if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIgnorableEvents]) {
-    if ([eventType isEqualToString:@"FlagsChanged"] && [event keyCode] == 0) {
-      return;
+    if ([eventType isEqualToString:@"FlagsChanged"]) {
+      unsigned short keyCode = [event keyCode];
+      if (keyCode == 0 || keyCode == 0xff) {
+        return;
+      }
     }
   }
 
