@@ -3,6 +3,7 @@ all:
 	$(MAKE) -C cg_post_event
 	$(MAKE) -C codesign
 	$(MAKE) -C control_led
+	$(MAKE) -C dump_caps_lock_state
 	$(MAKE) -C dump_hid_report
 	$(MAKE) -C dump_hid_value
 	$(MAKE) -C dump_system_preferences
@@ -15,6 +16,7 @@ clean:
 	$(MAKE) -C cg_post_event clean
 	$(MAKE) -C codesign clean
 	$(MAKE) -C control_led clean
+	$(MAKE) -C dump_caps_lock_state clean
 	$(MAKE) -C dump_hid_report clean
 	$(MAKE) -C dump_hid_value clean
 	$(MAKE) -C dump_system_preferences clean
