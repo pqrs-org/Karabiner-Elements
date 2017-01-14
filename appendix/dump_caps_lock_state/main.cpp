@@ -29,7 +29,7 @@ int main(int argc, const char* argv[]) {
   thread_utility::register_main_thread();
 
   if (getuid() != 0) {
-    logger::get_logger().error("control_led requires root privilege.");
+    logger::get_logger().error("dump_caps_lock_state requires root privilege.");
   }
 
   hid_system_client client(logger::get_logger());
@@ -37,23 +37,29 @@ int main(int argc, const char* argv[]) {
     std::cout << "state: " << *state << std::endl;
   }
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   client.set_caps_lock_state(true);
-  client.set_caps_lock_state(true);
-  client.set_caps_lock_state(true);
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   if (auto state = client.get_caps_lock_state()) {
     std::cout << "state: " << *state << std::endl;
   }
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  client.set_caps_lock_state(true);
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+  if (auto state = client.get_caps_lock_state()) {
+    std::cout << "state: " << *state << std::endl;
+  }
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   client.set_caps_lock_state(false);
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   if (auto state = client.get_caps_lock_state()) {
     std::cout << "state: " << *state << std::endl;
