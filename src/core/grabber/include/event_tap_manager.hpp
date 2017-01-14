@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gcd_utility.hpp"
+#include "hid_system_client.hpp"
 #include "logger.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 
@@ -13,7 +14,8 @@ public:
   event_tap_manager(const caps_lock_state_changed_callback& caps_lock_state_changed_callback) : caps_lock_state_changed_callback_(caps_lock_state_changed_callback),
                                                                                                 event_tap_(nullptr),
                                                                                                 run_loop_source_(nullptr),
-                                                                                                last_flags_(0) {
+                                                                                                last_flags_(0),
+                                                                                                hid_system_client_(logger::get_logger()) {
     // Observe flags changed in order to get the caps lock state.
     auto mask = CGEventMaskBit(kCGEventFlagsChanged);
 
@@ -80,6 +82,13 @@ private:
       bool new_caps_lock_state = get_caps_lock_state();
 
       if (old_caps_lock_state != new_caps_lock_state) {
+        // We have to update IOHIDSystem's caps lock state to synchronize caps lock state in all connected keyboards.
+        // Unless the state update, macOS 10.12 will revert the caps lock led change by device_grabber.
+
+        hid_system_client_.set_caps_lock_state(new_caps_lock_state);
+
+        // Call callback to update keyboard LED.
+
         if (caps_lock_state_changed_callback_) {
           caps_lock_state_changed_callback_(new_caps_lock_state);
         }
@@ -93,4 +102,6 @@ private:
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;
   CGEventFlags last_flags_;
+
+  hid_system_client hid_system_client_;
 };
