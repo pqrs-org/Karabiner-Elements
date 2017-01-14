@@ -33,6 +33,22 @@ public:
     virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
         boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
 
+    // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
+    // The behavior causes LED state mismatch because device_grabber does not change the caps lock state of physical keyboards.
+    // Thus, we monitor the LED state and update it if needed.
+    led_monitor_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
+        0,
+        dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
+        1.0 * NSEC_PER_SEC,
+        0,
+        ^{
+          if (event_tap_manager_) {
+            if (auto state = event_tap_manager_->get_caps_lock_state()) {
+              caps_lock_state_changed_callback(*state);
+            }
+          }
+        });
+
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
@@ -65,6 +81,8 @@ public:
         CFRelease(manager_);
         manager_ = nullptr;
       }
+
+      led_monitor_timer_ = nullptr;
 
       virtual_hid_device_client_disconnected_connection.disconnect();
     });
@@ -386,7 +404,11 @@ private:
   void grabbed_callback(human_interface_device& device) {
     // set keyboard led
     if (event_tap_manager_) {
-      caps_lock_state_changed_callback(event_tap_manager_->get_caps_lock_state());
+      bool state = false;
+      if (auto s = event_tap_manager_->get_caps_lock_state()) {
+        state = *s;
+      }
+      caps_lock_state_changed_callback(state);
     }
   }
 
@@ -564,6 +586,8 @@ private:
   std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> device_configurations_;
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
+
+  std::unique_ptr<gcd_utility::main_queue_timer> led_monitor_timer_;
 
   mode mode_;
 
