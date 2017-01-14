@@ -44,7 +44,7 @@ public:
         ^{
           if (event_tap_manager_) {
             if (auto state = event_tap_manager_->get_caps_lock_state()) {
-              caps_lock_state_changed_callback(*state);
+              update_caps_lock_led(*state);
             }
           }
         });
@@ -408,7 +408,7 @@ private:
       if (auto s = event_tap_manager_->get_caps_lock_state()) {
         state = *s;
       }
-      caps_lock_state_changed_callback(state);
+      update_caps_lock_led(state);
     }
   }
 
@@ -424,7 +424,10 @@ private:
 
   void caps_lock_state_changed_callback(bool caps_lock_state) {
     event_manipulator_.set_caps_lock_state(caps_lock_state);
+    update_caps_lock_led(caps_lock_state);
+  }
 
+  void update_caps_lock_led(bool caps_lock_state) {
     // Update LED.
     for (const auto& it : hids_) {
       if ((it.second)->is_grabbed()) {
