@@ -4,6 +4,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
+#include <deque>
 #include <iomanip>
 #include <spdlog/spdlog.h>
 
@@ -88,35 +89,55 @@ public:
   public:
     log_reducer(const log_reducer&) = delete;
 
-    log_reducer(spdlog::logger& logger) : logger_(logger), time_(0) {}
+    log_reducer(spdlog::logger& logger) : logger_(logger) {}
+
+    void reset(void) {
+      messages_.clear();
+    }
 
     void info(const std::string& message) {
-      auto t = time(nullptr);
-      if (time_ != t) {
-        time_ = t;
-        logger_.info(message);
+      if (is_ignore(message)) {
+        return;
       }
+
+      logger_.info(message);
     }
 
     void warn(const std::string& message) {
-      auto t = time(nullptr);
-      if (time_ != t) {
-        time_ = t;
-        logger_.warn(message);
+      if (is_ignore(message)) {
+        return;
       }
+
+      logger_.warn(message);
     }
 
     void error(const std::string& message) {
-      auto t = time(nullptr);
-      if (time_ != t) {
-        time_ = t;
-        logger_.error(message);
+      if (is_ignore(message)) {
+        return;
       }
+
+      logger_.error(message);
     }
 
   private:
+    bool is_ignore(const std::string& message) {
+      for (const auto& m : messages_) {
+        if (m == message) {
+          return true;
+        }
+      }
+
+      const size_t max_size = 16;
+      messages_.push_back(message);
+      while (messages_.size() > max_size) {
+        messages_.pop_front();
+      }
+
+      return false;
+    }
+
     spdlog::logger& logger_;
 
-    time_t time_;
+    std::deque<std::string> messages_;
   };
 };
