@@ -92,6 +92,10 @@ private:
           }
           break;
 
+        case krbn::operation_type::core_configuration_updated:
+          device_grabber_.reset_log_reducer();
+          break;
+
         case krbn::operation_type::clear_simple_modifications:
           event_manipulator_.clear_simple_modifications();
           break;

@@ -42,6 +42,8 @@ private:
     core_configuration_ = std::move(new_ptr);
     logger_.info("core_configuration_ was loaded.");
 
+    grabber_client_.core_configuration_updated();
+
     grabber_client_.clear_simple_modifications();
     for (const auto& pair : core_configuration_->get_current_profile_simple_modifications()) {
       grabber_client_.add_simple_modification(pair.first, pair.second);

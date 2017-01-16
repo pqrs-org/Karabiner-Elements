@@ -43,6 +43,11 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
+  void core_configuration_updated(void) {
+    krbn::operation_type_core_configuration_updated_struct s;
+    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
   void clear_simple_modifications(void) {
     krbn::operation_type_clear_simple_modifications_struct s;
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));

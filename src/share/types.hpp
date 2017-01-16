@@ -22,6 +22,7 @@ enum class operation_type : uint8_t {
   // console_user_server -> grabber
   connect,
   system_preferences_values_updated,
+  core_configuration_updated,
   clear_simple_modifications,
   add_simple_modification,
   clear_fn_function_keys,
@@ -658,6 +659,12 @@ struct operation_type_system_preferences_values_updated_struct {
 
   const operation_type operation_type;
   system_preferences::values values;
+};
+
+struct operation_type_core_configuration_updated_struct {
+  operation_type_core_configuration_updated_struct(void) : operation_type(operation_type::core_configuration_updated) {}
+
+  const operation_type operation_type;
 };
 
 struct operation_type_clear_simple_modifications_struct {

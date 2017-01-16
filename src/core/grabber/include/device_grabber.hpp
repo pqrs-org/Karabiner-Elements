@@ -164,6 +164,12 @@ public:
     });
   }
 
+  void reset_log_reducer(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      is_grabbable_callback_log_reducer_.reset();
+    });
+  }
+
   void clear_device_configurations(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       device_configurations_.clear();
