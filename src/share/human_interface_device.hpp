@@ -274,6 +274,8 @@ public:
 
       cancel_grab_timer();
 
+      is_grabbable_log_reducer_.reset();
+
       grab_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
           0,
           // We have to set an initial wait since OS X will lost the device if we called IOHIDDeviceOpen(kIOHIDOptionsTypeSeizeDevice) in device_matching_callback.
