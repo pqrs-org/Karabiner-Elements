@@ -96,7 +96,7 @@ public:
     }
 
     void info(const std::string& message) {
-      if (is_ignore(message)) {
+      if (is_ignore(spdlog::level::info, message)) {
         return;
       }
 
@@ -104,7 +104,7 @@ public:
     }
 
     void warn(const std::string& message) {
-      if (is_ignore(message)) {
+      if (is_ignore(spdlog::level::warn, message)) {
         return;
       }
 
@@ -112,7 +112,7 @@ public:
     }
 
     void error(const std::string& message) {
-      if (is_ignore(message)) {
+      if (is_ignore(spdlog::level::err, message)) {
         return;
       }
 
@@ -120,15 +120,15 @@ public:
     }
 
   private:
-    bool is_ignore(const std::string& message) {
-      for (const auto& m : messages_) {
-        if (m == message) {
+    bool is_ignore(spdlog::level::level_enum level, const std::string& message) {
+      for (const auto& it : messages_) {
+        if (it.first == level && it.second == message) {
           return true;
         }
       }
 
       const size_t max_size = 16;
-      messages_.push_back(message);
+      messages_.push_back(std::make_pair(level, message));
       while (messages_.size() > max_size) {
         messages_.pop_front();
       }
@@ -138,6 +138,6 @@ public:
 
     spdlog::logger& logger_;
 
-    std::deque<std::string> messages_;
+    std::deque<std::pair<spdlog::level::level_enum, std::string>> messages_;
   };
 };
