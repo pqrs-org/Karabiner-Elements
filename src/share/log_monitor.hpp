@@ -4,6 +4,7 @@
 #include "filesystem.hpp"
 #include "gcd_utility.hpp"
 #include "spdlog_utility.hpp"
+#include <deque>
 #include <fstream>
 #include <spdlog/spdlog.h>
 #include <thread>
@@ -21,7 +22,7 @@ public:
   // We use timer to observe file changes instead.
 
   log_monitor(const std::vector<std::string>& targets,
-              const new_log_line_callback& callback) : callback_(callback) {
+              const new_log_line_callback& callback) : callback_(callback), timer_count_(timer_count(0)) {
     // setup initial_lines_
 
     for (const auto& target : targets) {
@@ -43,16 +44,18 @@ public:
         1.0 * NSEC_PER_SEC,
         0,
         ^{
+          timer_count_ = timer_count(static_cast<uint64_t>(timer_count_) + 1);
           for (const auto& file : files_) {
             if (auto size = filesystem::file_size(file)) {
               auto it = read_position_.find(file);
               if (it != read_position_.end()) {
                 if (it->second != *size) {
-                  call_callback(file);
+                  add_lines(file);
                 }
               }
             }
           }
+          call_callback();
         });
   }
 
@@ -61,6 +64,8 @@ public:
   }
 
 private:
+  enum class timer_count : uint64_t {};
+
   void add_initial_lines(const std::string& file_path) {
     std::ifstream stream(file_path);
     std::string line;
@@ -110,7 +115,7 @@ private:
     return false;
   }
 
-  void call_callback(const std::string& file_path) {
+  void add_lines(const std::string& file_path) {
     std::ifstream stream(file_path);
     if (!stream) {
       return;
@@ -134,20 +139,50 @@ private:
     std::string line;
     std::streampos read_position;
     while (std::getline(stream, line)) {
-      if (callback_) {
-        callback_(line);
+      if (auto sort_key = spdlog_utility::get_sort_key(line)) {
+        added_lines_.push_back(std::make_tuple(timer_count_, *sort_key, line));
       }
       read_position = stream.tellg();
     }
 
     read_position_[file_path] = read_position;
+
+    // ----------------------------------------
+    // sort
+
+    std::stable_sort(added_lines_.begin(), added_lines_.end(), [](const auto& a, const auto& b) {
+      return std::get<1>(a) < std::get<1>(b);
+    });
+  }
+
+  void call_callback(void) {
+    while (true) {
+      if (added_lines_.empty()) {
+        return;
+      }
+
+      auto front = added_lines_.front();
+
+      if (std::get<0>(front) != timer_count_) {
+        // Wait if front is just added.
+        return;
+      }
+
+      if (callback_) {
+        callback_(std::get<2>(front));
+      }
+
+      added_lines_.pop_front();
+    }
   }
 
   new_log_line_callback callback_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> timer_;
+  timer_count timer_count_;
 
   std::vector<std::pair<uint64_t, std::string>> initial_lines_;
   std::unordered_map<std::string, std::streampos> read_position_;
   std::vector<std::string> files_;
+  std::deque<std::tuple<timer_count, uint64_t, std::string>> added_lines_;
 };
