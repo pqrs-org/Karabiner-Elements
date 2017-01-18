@@ -30,17 +30,21 @@ public:
 
   void manual_check(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      version_file_updated_callback(constants::get_version_file_path());
+      logger_.info("Check version...");
+      check_version();
     });
   }
 
 private:
   void version_file_updated_callback(const std::string& file_path) {
-    logger_.info("version file is updated.");
+    logger_.info("Version file is updated.");
+    check_version();
+  }
 
+  void check_version(void) {
     auto version = read_version_file();
     if (version_ != version) {
-      logger_.info("version is changed: '{0}' -> '{1}'", version_, version);
+      logger_.info("Version is changed: '{0}' -> '{1}'", version_, version);
       exit(0);
     }
   }

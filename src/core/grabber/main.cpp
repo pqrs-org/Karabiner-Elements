@@ -4,6 +4,7 @@
 #include "karabiner_version.h"
 #include "notification_center.hpp"
 #include "thread_utility.hpp"
+#include "version_monitor.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <iostream>
 #include <unistd.h>
@@ -21,6 +22,8 @@ int main(int argc, const char* argv[]) {
 
   logger::get_logger().info("version {0}", karabiner_version);
 
+  std::unique_ptr<version_monitor> version_monitor_ptr = std::make_unique<version_monitor>(logger::get_logger());
+
   // load kexts
   system("/sbin/kextload /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext");
 
@@ -34,7 +37,7 @@ int main(int argc, const char* argv[]) {
   std::unique_ptr<virtual_hid_device_client> virtual_hid_device_client_ptr = std::make_unique<virtual_hid_device_client>(logger::get_logger());
   std::unique_ptr<manipulator::event_manipulator> event_manipulator_ptr = std::make_unique<manipulator::event_manipulator>(*virtual_hid_device_client_ptr);
   std::unique_ptr<device_grabber> device_grabber_ptr = std::make_unique<device_grabber>(*virtual_hid_device_client_ptr, *event_manipulator_ptr);
-  connection_manager connection_manager(*event_manipulator_ptr, *device_grabber_ptr);
+  connection_manager connection_manager(*version_monitor_ptr, *event_manipulator_ptr, *device_grabber_ptr);
 
   notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_grabber_is_launched());
 
@@ -42,6 +45,7 @@ int main(int argc, const char* argv[]) {
 
   device_grabber_ptr = nullptr;
   event_manipulator_ptr = nullptr;
+  version_monitor_ptr = nullptr;
 
   return 0;
 }

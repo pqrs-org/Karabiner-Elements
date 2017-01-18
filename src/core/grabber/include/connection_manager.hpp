@@ -8,14 +8,17 @@
 #include "notification_center.hpp"
 #include "receiver.hpp"
 #include "session.hpp"
+#include "version_monitor.hpp"
 #include <sys/stat.h>
 
 class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(manipulator::event_manipulator& event_manipulator,
-                     device_grabber& device_grabber) : event_manipulator_(event_manipulator),
+  connection_manager(version_monitor& version_monitor,
+                     manipulator::event_manipulator& event_manipulator,
+                     device_grabber& device_grabber) : version_monitor_(version_monitor),
+                                                       event_manipulator_(event_manipulator),
                                                        device_grabber_(device_grabber),
                                                        timer_(nullptr),
                                                        last_uid_(0) {
@@ -30,6 +33,8 @@ public:
               last_uid_ = *uid;
               logger::get_logger().info("current_console_user_id: {0}", *uid);
 
+              version_monitor_.manual_check();
+
               receiver_ = nullptr;
               receiver_ = std::make_unique<receiver>(event_manipulator_, device_grabber_);
             }
@@ -43,6 +48,7 @@ public:
   }
 
 private:
+  version_monitor& version_monitor_;
   manipulator::event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
 

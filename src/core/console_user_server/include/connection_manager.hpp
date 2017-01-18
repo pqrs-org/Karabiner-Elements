@@ -7,13 +7,14 @@
 #include "notification_center.hpp"
 #include "session.hpp"
 #include "system_preferences_monitor.hpp"
+#include "version_monitor.hpp"
 #include <thread>
 
 class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(void) {
+  connection_manager(version_monitor& version_monitor) : version_monitor_(version_monitor) {
     notification_center::observe_distributed_notification(this,
                                                           static_grabber_is_launched_callback,
                                                           constants::get_distributed_notification_grabber_is_launched());
@@ -30,6 +31,8 @@ public:
             if (current_uid == *uid) {
               try {
                 if (!grabber_client_) {
+                  version_monitor_.manual_check();
+
                   grabber_client_ = std::make_unique<grabber_client>();
                   grabber_client_->connect(krbn::connect_from::console_user_server);
                   logger::get_logger().info("grabber_client_ is connected");
@@ -93,6 +96,8 @@ private:
       grabber_client_->system_preferences_values_updated(values);
     }
   }
+
+  version_monitor& version_monitor_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> timer_;
 

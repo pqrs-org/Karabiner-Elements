@@ -39,6 +39,7 @@
 		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0031D620E28009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
+		3463EABE1E2FCD9400427A81 /* version_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = version_monitor.hpp; path = ../../share/version_monitor.hpp; sourceTree = SOURCE_ROOT; };
 		347113151D871EC1001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_monitor.hpp; path = ../../share/process_monitor.hpp; sourceTree = SOURCE_ROOT; };
 		348A6C461E17D28D00DB5FA4 /* migration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = migration.hpp; path = include/migration.hpp; sourceTree = SOURCE_ROOT; };
 		3492C9BC1D772D8B0055988F /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
@@ -101,9 +102,9 @@
 			isa = PBXGroup;
 			children = (
 				345AC0051D621651009D1FB4 /* boost_defs.hpp */,
-				345A9DE41D7DD7A200578F84 /* core_configuration.hpp */,
 				345A9DE31D7DD6E600578F84 /* configuration_manager.hpp */,
 				341F59CC1D516B1500B441A8 /* constants.hpp */,
+				345A9DE41D7DD7A200578F84 /* core_configuration.hpp */,
 				34DA28A11D8FA4A40029E37D /* file_monitor.hpp */,
 				3492C9BC1D772D8B0055988F /* filesystem.hpp */,
 				3431346F1DB710E80008F284 /* gcd_utility.hpp */,
@@ -120,6 +121,7 @@
 				345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */,
 				343134711DB71C2C0008F284 /* thread_utility.hpp */,
 				34A88AA71D6DF8E300DD480B /* types.hpp */,
+				3463EABE1E2FCD9400427A81 /* version_monitor.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
