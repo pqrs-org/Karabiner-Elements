@@ -7,6 +7,10 @@
 
 class constants final {
 public:
+  static const char* get_version_file_path(void) {
+    return "/Library/Application Support/org.pqrs/Karabiner-Elements/version";
+  }
+
   static const char* get_tmp_directory(void) {
     return "/Library/Application Support/org.pqrs/tmp";
   }

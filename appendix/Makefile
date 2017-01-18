@@ -10,6 +10,7 @@ all:
 	$(MAKE) -C eventtap
 	$(MAKE) -C iopmlib
 	$(MAKE) -C session
+	$(MAKE) -C version_monitor
 
 clean:
 	$(MAKE) -C cg_event_set_flags clean
@@ -23,3 +24,4 @@ clean:
 	$(MAKE) -C eventtap clean
 	$(MAKE) -C iopmlib clean
 	$(MAKE) -C session clean
+	$(MAKE) -C version_monitor clean
