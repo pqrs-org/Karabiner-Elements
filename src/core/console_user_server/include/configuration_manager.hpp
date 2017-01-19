@@ -22,9 +22,10 @@ public:
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
         {constants::get_user_configuration_directory(), {core_configuration_file_path}},
     };
-    file_monitor_ = std::make_unique<file_monitor>(logger_, targets, std::bind(&configuration_manager::reload_core_configuration, this, std::placeholders::_1));
+    file_monitor_ = std::make_unique<file_monitor>(logger_, targets,
+                                                   std::bind(&configuration_manager::core_configuration_file_updated_callback, this, std::placeholders::_1));
 
-    reload_core_configuration(core_configuration_file_path);
+    core_configuration_file_updated_callback(core_configuration_file_path);
   }
 
   ~configuration_manager(void) {
@@ -32,7 +33,7 @@ public:
   }
 
 private:
-  void reload_core_configuration(const std::string& file_path) {
+  void core_configuration_file_updated_callback(const std::string& file_path) {
     auto new_ptr = std::make_unique<core_configuration>(logger_, file_path);
     // skip if karabiner.json is broken.
     if (core_configuration_ && !new_ptr->is_loaded()) {
