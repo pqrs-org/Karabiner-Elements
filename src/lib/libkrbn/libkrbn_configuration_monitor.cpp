@@ -27,11 +27,13 @@ private:
   void cpp_callback(const std::string& file_path) {
     if (callback_) {
       core_configuration core_configuration(libkrbn::get_logger(), file_path);
-      callback_(core_configuration.get_current_profile_json().c_str(), refcon_);
+      auto json_string = core_configuration.to_json_string();
+      auto profile_json_string = core_configuration.get_current_profile_json();
+      callback_(json_string.c_str(), profile_json_string.c_str(), refcon_);
     }
   }
 
-  libkrbn_log_monitor_callback callback_;
+  libkrbn_configuration_monitor_callback callback_;
   void* refcon_;
 
   std::unique_ptr<file_monitor> file_monitor_;

@@ -23,7 +23,7 @@
 
 @implementation KarabinerKitCoreConfigurationModel
 
-- (instancetype)initWithProfile:(NSDictionary*)profile {
+- (instancetype)initWithProfile:(NSDictionary*)jsonObject currentProfileJsonObject:(NSDictionary*)profile {
   self = [super init];
 
   if (self) {
@@ -32,7 +32,7 @@
     _globalConfiguration.showInMenubar = YES;
 
     {
-      NSDictionary* global = profile[@"global"];
+      NSDictionary* global = jsonObject[@"global"];
       if ([global isKindOfClass:[NSDictionary class]]) {
         {
           NSNumber* value = global[@"check_for_updates_on_startup"];

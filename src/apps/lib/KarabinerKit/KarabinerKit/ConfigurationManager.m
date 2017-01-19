@@ -8,13 +8,13 @@
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
 @property(readwrite) KarabinerKitCoreConfigurationModel* coreConfigurationModel;
 
-- (void)loadJsonString:(const char*)currentProfileJsonString;
+- (void)loadJsonString:(const char*)jsonString currentProfileJsonString:(const char*)currentProfileJsonString;
 
 @end
 
-static void configuration_file_updated_callback(const char* currentProfileJsonString, void* refcon) {
+static void configuration_file_updated_callback(const char* jsonString, const char* currentProfileJsonString, void* refcon) {
   KarabinerKitConfigurationManager* manager = (__bridge KarabinerKitConfigurationManager*)(refcon);
-  [manager loadJsonString:currentProfileJsonString];
+  [manager loadJsonString:jsonString currentProfileJsonString:currentProfileJsonString];
   [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitConfigurationIsLoaded object:nil];
 }
 
@@ -43,10 +43,11 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
   }
 }
 
-- (void)loadJsonString:(const char*)currentProfileJsonString {
-  NSDictionary* jsonObject = [KarabinerKitJsonUtility loadCString:currentProfileJsonString];
-  if (jsonObject) {
-    self.coreConfigurationModel = [[KarabinerKitCoreConfigurationModel alloc] initWithProfile:jsonObject];
+- (void)loadJsonString:(const char*)jsonString currentProfileJsonString:(const char*)currentProfileJsonString {
+  NSDictionary* jsonObject = [KarabinerKitJsonUtility loadCString:jsonString];
+  NSDictionary* currentProfileJsonObject = [KarabinerKitJsonUtility loadCString:currentProfileJsonString];
+  if (jsonObject && currentProfileJsonString) {
+    self.coreConfigurationModel = [[KarabinerKitCoreConfigurationModel alloc] initWithProfile:jsonObject currentProfileJsonObject:currentProfileJsonObject];
   }
 }
 
@@ -79,7 +80,7 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
 
   mutableJsonObject[@"global"] = @{
     @"check_for_updates_on_startup" : @(self.coreConfigurationModel.globalConfiguration.checkForUpdatesOnStartup),
-    @"show_in_menu_bar" : @(self.coreConfigurationModel.globalConfiguration.checkForUpdatesOnStartup),
+    @"show_in_menu_bar" : @(self.coreConfigurationModel.globalConfiguration.showInMenubar),
   };
 
   NSMutableDictionary* mutableProfile = [NSMutableDictionary dictionaryWithDictionary:mutableProfiles[selectedProfileIndex]];

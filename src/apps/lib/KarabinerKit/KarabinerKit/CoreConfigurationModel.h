@@ -31,7 +31,7 @@
 @property(copy) NSString* virtualHIDKeyboardType;
 @property NSUInteger virtualHIDKeyboardCapsLockDelayMilliseconds;
 
-- (instancetype)initWithProfile:(NSDictionary*)profile;
+- (instancetype)initWithProfile:(NSDictionary*)jsonObject currentProfileJsonObject:(NSDictionary*)profile;
 
 - (void)addSimpleModification;
 - (void)removeSimpleModification:(NSUInteger)index;

@@ -23,7 +23,7 @@ float libkrbn_system_preferences_convert_key_repeat_milliseconds_to_system_prefe
 // libkrbn_configuration_monitor
 
 typedef void libkrbn_configuration_monitor;
-typedef void (*libkrbn_configuration_monitor_callback)(const char* _Nonnull current_profile_json, void* _Nullable refcon);
+typedef void (*libkrbn_configuration_monitor_callback)(const char* _Nonnull json, const char* _Nonnull current_profile_json, void* _Nullable refcon);
 bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor* _Nullable* _Nonnull out,
                                               libkrbn_configuration_monitor_callback _Nullable callback,
                                               void* _Nullable refcon);
