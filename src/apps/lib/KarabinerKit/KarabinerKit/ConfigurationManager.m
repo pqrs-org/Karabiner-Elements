@@ -77,6 +77,11 @@ static void configuration_file_updated_callback(const char* currentProfileJsonSt
     selectedProfileIndex = mutableProfiles.count - 1;
   }
 
+  mutableJsonObject[@"global"] = @{
+    @"check_for_updates_on_startup" : @(self.coreConfigurationModel.globalConfiguration.checkForUpdatesOnStartup),
+    @"show_in_menu_bar" : @(self.coreConfigurationModel.globalConfiguration.checkForUpdatesOnStartup),
+  };
+
   NSMutableDictionary* mutableProfile = [NSMutableDictionary dictionaryWithDictionary:mutableProfiles[selectedProfileIndex]];
   mutableProfile[@"simple_modifications"] = self.coreConfigurationModel.simpleModificationsDictionary;
   mutableProfile[@"fn_function_keys"] = self.coreConfigurationModel.fnFunctionKeysDictionary;

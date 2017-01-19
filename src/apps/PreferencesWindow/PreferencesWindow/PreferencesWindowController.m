@@ -24,6 +24,7 @@
 @property(weak) IBOutlet NSPopUpButton* virtualHIDKeyboardTypePopupButton;
 @property(weak) IBOutlet NSTextField* virtualHIDKeyboardCapsLockDelayMillisecondsText;
 @property(weak) IBOutlet NSStepper* virtualHIDKeyboardCapsLockDelayMillisecondsStepper;
+@property(weak) IBOutlet NSButton* checkForUpdateOnStartupButton;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
@@ -42,6 +43,7 @@
   [self.devicesTableViewController setup];
   [self setupVirtualHIDKeyboardTypePopUpButton];
   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
+  [self setupMiscTabControls];
   [self.logFileTextViewController monitor];
 
   @weakify(self);
@@ -54,6 +56,7 @@
 
                                                   [self setupVirtualHIDKeyboardTypePopUpButton];
                                                   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
+                                                  [self setupMiscTabControls];
                                                 }];
   [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
                                                     object:nil
@@ -191,6 +194,36 @@
 
   [self updateSystemPreferencesUIValues];
   [self.systemPreferencesManager updateSystemPreferencesValues:model];
+}
+
+- (void)setupMiscTabControls {
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+  if (configurationManager) {
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = configurationManager.coreConfigurationModel;
+    if (coreConfigurationModel) {
+      if (coreConfigurationModel.globalConfiguration.checkForUpdatesOnStartup) {
+        self.checkForUpdateOnStartupButton.state = NSOnState;
+      } else {
+        self.checkForUpdateOnStartupButton.state = NSOffState;
+      }
+
+      if (coreConfigurationModel.globalConfiguration.showInMenubar) {
+        // ...
+      }
+    }
+  }
+}
+
+- (IBAction)changeMiscTabControls:(id)sender {
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+  if (configurationManager) {
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = configurationManager.coreConfigurationModel;
+    if (coreConfigurationModel) {
+      coreConfigurationModel.globalConfiguration.checkForUpdatesOnStartup = (self.checkForUpdateOnStartupButton.state == NSOnState);
+
+      [configurationManager save];
+    }
+  }
 }
 
 - (IBAction)checkForUpdatesStableOnly:(id)sender {

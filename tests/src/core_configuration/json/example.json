@@ -1,4 +1,8 @@
 {
+    "global": {
+        "check_for_updates_on_startup": false,
+        "show_in_menu_bar": false
+    },
     "profiles": [
         {
             "name": "Default profile",
@@ -51,6 +55,4 @@
             "name": "Empty",
             "selected": false
         }
-    ],
-    "show_in_menu_bar": true
-}
+    ]}

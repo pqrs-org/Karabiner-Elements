@@ -40,6 +40,7 @@
         </customObject>
         <customObject id="5ke-qB-Wr5" customClass="PreferencesWindowController">
             <connections>
+                <outlet property="checkForUpdateOnStartupButton" destination="xCD-vQ-a37" id="Odj-bl-4qq"/>
                 <outlet property="devicesExternalKeyboardTableView" destination="aIG-lD-1bK" id="xqm-dH-bv7"/>
                 <outlet property="devicesTableView" destination="W1W-Xd-0KJ" id="UWx-UI-YNo"/>
                 <outlet property="devicesTableViewController" destination="n2S-Tf-7ZE" id="ZRe-xj-uKw"/>
@@ -1145,11 +1146,21 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </textFieldCell>
                                         </textField>
                                         <box borderType="line" title="Update" translatesAutoresizingMaskIntoConstraints="NO" id="3j8-8U-bBH">
-                                            <rect key="frame" x="14" y="350" width="726" height="53"/>
+                                            <rect key="frame" x="14" y="326" width="726" height="77"/>
                                             <view key="contentView" id="Blg-HH-9LH">
-                                                <rect key="frame" x="1" y="1" width="724" height="37"/>
+                                                <rect key="frame" x="1" y="1" width="724" height="61"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
+                                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="xCD-vQ-a37">
+                                                        <rect key="frame" x="15" y="37" width="281" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Check for updates on startup (Default: On)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Wug-gg-zmP">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="D1a-c2-dCp"/>
+                                                        </connections>
+                                                    </button>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hA8-fr-71n">
                                                         <rect key="frame" x="11" y="1" width="152" height="32"/>
                                                         <buttonCell key="cell" type="push" title="Check for updates" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="iDW-FG-uaL">
@@ -1172,16 +1183,18 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                     </button>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="hA8-fr-71n" firstAttribute="top" secondItem="Blg-HH-9LH" secondAttribute="top" constant="8" id="1es-cH-bxk"/>
+                                                    <constraint firstItem="hA8-fr-71n" firstAttribute="top" secondItem="xCD-vQ-a37" secondAttribute="bottom" constant="10" id="6VE-tv-1oW"/>
                                                     <constraint firstItem="hA8-fr-71n" firstAttribute="leading" secondItem="Blg-HH-9LH" secondAttribute="leading" constant="17" id="Qwl-Qb-Tu3"/>
+                                                    <constraint firstItem="xCD-vQ-a37" firstAttribute="top" secondItem="Blg-HH-9LH" secondAttribute="top" constant="8" id="cJJ-aJ-WqS"/>
                                                     <constraint firstAttribute="bottom" secondItem="hA8-fr-71n" secondAttribute="bottom" constant="8" id="eD1-M3-Z4B"/>
+                                                    <constraint firstItem="xCD-vQ-a37" firstAttribute="leading" secondItem="Blg-HH-9LH" secondAttribute="leading" constant="17" id="lCQ-la-qZH"/>
                                                     <constraint firstItem="lRS-BL-uVJ" firstAttribute="centerY" secondItem="hA8-fr-71n" secondAttribute="centerY" id="sdT-P1-Flj"/>
                                                     <constraint firstAttribute="trailing" secondItem="lRS-BL-uVJ" secondAttribute="trailing" constant="17" id="tKe-5W-FJd"/>
                                                 </constraints>
                                             </view>
                                         </box>
                                         <box borderType="line" title="Uninstall" translatesAutoresizingMaskIntoConstraints="NO" id="bRw-jJ-vdo">
-                                            <rect key="frame" x="14" y="281" width="726" height="53"/>
+                                            <rect key="frame" x="14" y="257" width="726" height="53"/>
                                             <view key="contentView" id="E8s-vq-cpp">
                                                 <rect key="frame" x="1" y="1" width="724" height="37"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1205,7 +1218,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </view>
                                         </box>
                                         <box borderType="line" title="Web Sites" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-Lc-pSo">
-                                            <rect key="frame" x="14" y="212" width="726" height="53"/>
+                                            <rect key="frame" x="14" y="188" width="726" height="53"/>
                                             <view key="contentView" id="ibU-6J-Zdv">
                                                 <rect key="frame" x="1" y="1" width="724" height="37"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

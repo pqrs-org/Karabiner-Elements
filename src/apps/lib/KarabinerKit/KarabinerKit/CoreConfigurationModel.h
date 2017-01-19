@@ -3,6 +3,13 @@
 @import Cocoa;
 #import "DeviceModel.h"
 
+@interface KarabinerKitGlobalConfiguration : NSObject
+
+@property BOOL checkForUpdatesOnStartup;
+@property BOOL showInMenubar;
+
+@end
+
 @interface KarabinerKitDeviceConfiguration : NSObject
 
 @property(readonly) KarabinerKitDeviceIdentifiers* deviceIdentifiers;
@@ -13,6 +20,7 @@
 
 @interface KarabinerKitCoreConfigurationModel : NSObject
 
+@property KarabinerKitGlobalConfiguration* globalConfiguration;
 @property(copy, readonly) NSArray<NSDictionary*>* simpleModifications;
 @property(copy, readonly) NSArray<NSDictionary*>* fnFunctionKeys;
 @property(copy, readonly) NSArray<KarabinerKitDeviceConfiguration*>* devices;

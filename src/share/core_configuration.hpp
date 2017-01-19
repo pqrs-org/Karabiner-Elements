@@ -9,6 +9,10 @@
 // Example:
 //
 // {
+//     "global": {
+//         "check_for_updates_on_startup": true,
+//         "show_in_menu_bar": true
+//     },
 //     "profiles": [
 //         {
 //             "name": "Default profile",
@@ -61,8 +65,7 @@
 //             "name": "Empty",
 //             "selected": false
 //         }
-//     ],
-//     "show_in_menu_bar": true
+//     ]
 // }
 
 class core_configuration final {
@@ -151,9 +154,17 @@ public:
     return get_current_profile().dump();
   }
 
-  bool show_in_menu_bar(void) {
-    if (json_["show_in_menu_bar"].is_boolean()) {
-      return json_["show_in_menu_bar"];
+  bool get_global_check_for_updates_on_startup(void) {
+    if (json_["global"]["check_for_updates_on_startup"].is_boolean()) {
+      return json_["global"]["check_for_updates_on_startup"];
+    }
+    return true;
+  }
+
+  bool get_global_show_in_menu_bar(void) {
+    auto value = json_["global"]["show_in_menu_bar"];
+    if (value.is_boolean()) {
+      return value;
     }
     return true;
   }

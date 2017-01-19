@@ -1,6 +1,9 @@
 #import "CoreConfigurationModel.h"
 #import "libkrbn.h"
 
+@implementation KarabinerKitGlobalConfiguration
+@end
+
 @interface KarabinerKitDeviceConfiguration ()
 
 @property(readwrite) KarabinerKitDeviceIdentifiers* deviceIdentifiers;
@@ -24,6 +27,28 @@
   self = [super init];
 
   if (self) {
+    _globalConfiguration = [KarabinerKitGlobalConfiguration new];
+    _globalConfiguration.checkForUpdatesOnStartup = YES;
+    _globalConfiguration.showInMenubar = YES;
+
+    {
+      NSDictionary* global = profile[@"global"];
+      if ([global isKindOfClass:[NSDictionary class]]) {
+        {
+          NSNumber* value = global[@"check_for_updates_on_startup"];
+          if (value) {
+            _globalConfiguration.checkForUpdatesOnStartup = [value boolValue];
+          }
+        }
+        {
+          NSNumber* value = global[@"show_in_menu_bar"];
+          if (value) {
+            _globalConfiguration.showInMenubar = [value boolValue];
+          }
+        }
+      }
+    }
+
     _simpleModifications = [self simpleModificationsDictionaryToArray:profile[@"simple_modifications"]];
     _fnFunctionKeys = [self simpleModificationsDictionaryToArray:profile[@"fn_function_keys"]];
 

@@ -17,8 +17,6 @@ int main(int argc, const char* argv[]) {
 
   migration::migrate_v1();
 
-  system("open '/Library/Application Support/org.pqrs/Karabiner-Elements/updater/Karabiner-Elements.app'");
-
   filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
 
   connection_manager manager(*version_monitor_ptr);

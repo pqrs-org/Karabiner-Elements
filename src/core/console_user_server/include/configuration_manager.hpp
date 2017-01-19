@@ -14,7 +14,8 @@ public:
 
   configuration_manager(spdlog::logger& logger,
                         grabber_client& grabber_client) : logger_(logger),
-                                                          grabber_client_(grabber_client) {
+                                                          grabber_client_(grabber_client),
+                                                          need_to_check_for_updates_(true) {
     filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
 
     auto core_configuration_file_path = constants::get_core_configuration_file_path();
@@ -43,6 +44,9 @@ private:
     core_configuration_ = std::move(new_ptr);
     logger_.info("core_configuration_ was loaded.");
 
+    // ----------------------------------------
+    // Send configuration to grabber.
+
     grabber_client_.core_configuration_updated();
 
     grabber_client_.clear_simple_modifications();
@@ -62,6 +66,16 @@ private:
       grabber_client_.add_device(pair.first, pair.second);
     }
     grabber_client_.complete_devices();
+
+    // ----------------------------------------
+    // Check for updates
+    if (need_to_check_for_updates_) {
+      need_to_check_for_updates_ = false;
+      if (core_configuration_->get_global_check_for_updates_on_startup()) {
+        logger_.info("Check for updates...");
+        system("open '/Library/Application Support/org.pqrs/Karabiner-Elements/updater/Karabiner-Elements.app'");
+      }
+    }
   }
 
   spdlog::logger& logger_;
@@ -70,4 +84,6 @@ private:
   std::unique_ptr<file_monitor> file_monitor_;
 
   std::unique_ptr<core_configuration> core_configuration_;
+
+  bool need_to_check_for_updates_;
 };
