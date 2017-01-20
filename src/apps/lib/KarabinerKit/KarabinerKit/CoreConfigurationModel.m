@@ -137,7 +137,7 @@
 - (NSArray*)simpleModificationsDictionaryToArray:(NSDictionary*)dictionary {
   NSMutableArray<NSDictionary*>* array = [NSMutableArray new];
 
-  if (dictionary) {
+  if ([dictionary isKindOfClass:[NSDictionary class]]) {
     for (NSString* key in [[dictionary allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]) {
       [array addObject:@{
         @"from" : key,
