@@ -8,13 +8,13 @@
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
 @property(readwrite) KarabinerKitCoreConfigurationModel* coreConfigurationModel;
 
-- (void)loadJsonString:(const char*)jsonString currentProfileJsonString:(const char*)currentProfileJsonString;
+- (void)loadJsonString:(const char*)jsonString;
 
 @end
 
-static void configuration_file_updated_callback(const char* jsonString, const char* currentProfileJsonString, void* refcon) {
+static void configuration_file_updated_callback(const char* jsonString, void* refcon) {
   KarabinerKitConfigurationManager* manager = (__bridge KarabinerKitConfigurationManager*)(refcon);
-  [manager loadJsonString:jsonString currentProfileJsonString:currentProfileJsonString];
+  [manager loadJsonString:jsonString];
   [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitConfigurationIsLoaded object:nil];
 }
 
@@ -43,11 +43,10 @@ static void configuration_file_updated_callback(const char* jsonString, const ch
   }
 }
 
-- (void)loadJsonString:(const char*)jsonString currentProfileJsonString:(const char*)currentProfileJsonString {
+- (void)loadJsonString:(const char*)jsonString {
   NSDictionary* jsonObject = [KarabinerKitJsonUtility loadCString:jsonString];
-  NSDictionary* currentProfileJsonObject = [KarabinerKitJsonUtility loadCString:currentProfileJsonString];
-  if (jsonObject && currentProfileJsonString) {
-    self.coreConfigurationModel = [[KarabinerKitCoreConfigurationModel alloc] initWithProfile:jsonObject currentProfileJsonObject:currentProfileJsonObject];
+  if (jsonObject) {
+    self.coreConfigurationModel = [[KarabinerKitCoreConfigurationModel alloc] initWithJsonObject:jsonObject];
   }
 }
 
@@ -84,10 +83,10 @@ static void configuration_file_updated_callback(const char* jsonString, const ch
   };
 
   NSMutableDictionary* mutableProfile = [NSMutableDictionary dictionaryWithDictionary:mutableProfiles[selectedProfileIndex]];
-  mutableProfile[@"simple_modifications"] = self.coreConfigurationModel.simpleModificationsDictionary;
-  mutableProfile[@"fn_function_keys"] = self.coreConfigurationModel.fnFunctionKeysDictionary;
-  mutableProfile[@"virtual_hid_keyboard"] = self.coreConfigurationModel.virtualHIDKeyboardDictionary;
-  mutableProfile[@"devices"] = self.coreConfigurationModel.devicesArray;
+  mutableProfile[@"simple_modifications"] = self.coreConfigurationModel.currentProfile.simpleModificationsDictionary;
+  mutableProfile[@"fn_function_keys"] = self.coreConfigurationModel.currentProfile.fnFunctionKeysDictionary;
+  mutableProfile[@"virtual_hid_keyboard"] = self.coreConfigurationModel.currentProfile.virtualHIDKeyboardDictionary;
+  mutableProfile[@"devices"] = self.coreConfigurationModel.currentProfile.devicesArray;
 
   mutableProfiles[selectedProfileIndex] = mutableProfile;
 

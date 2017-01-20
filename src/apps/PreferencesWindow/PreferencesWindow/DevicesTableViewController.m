@@ -48,9 +48,9 @@
 
   KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
 
-  [configurationManager.coreConfigurationModel setDeviceConfiguration:cellViewCheckbox.deviceIdentifiers
-                                                               ignore:(cellViewCheckbox.checkbox.state != NSOnState)
-                                       disableBuiltInKeyboardIfExists:(cellViewExternalKeyboard.checkbox.state == NSOnState)];
+  [configurationManager.coreConfigurationModel.currentProfile setDeviceConfiguration:cellViewCheckbox.deviceIdentifiers
+                                                                              ignore:(cellViewCheckbox.checkbox.state != NSOnState)
+                                                      disableBuiltInKeyboardIfExists:(cellViewExternalKeyboard.checkbox.state == NSOnState)];
   [configurationManager save];
 }
 

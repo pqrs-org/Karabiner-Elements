@@ -8,6 +8,8 @@
 @property BOOL checkForUpdatesOnStartup;
 @property BOOL showInMenubar;
 
+- (instancetype)initWithJsonObject:(NSDictionary*)global;
+
 @end
 
 @interface KarabinerKitDeviceConfiguration : NSObject
@@ -18,20 +20,23 @@
 
 @end
 
-@interface KarabinerKitCoreConfigurationModel : NSObject
+@interface KarabinerKitConfigurationProfile : NSObject
 
-@property KarabinerKitGlobalConfiguration* globalConfiguration;
+@property(copy) NSString* name;
+@property BOOL selected;
 @property(copy, readonly) NSArray<NSDictionary*>* simpleModifications;
 @property(copy, readonly) NSArray<NSDictionary*>* fnFunctionKeys;
 @property(copy, readonly) NSArray<KarabinerKitDeviceConfiguration*>* devices;
+@property(copy) NSString* virtualHIDKeyboardType;
+@property NSUInteger virtualHIDKeyboardCapsLockDelayMilliseconds;
+
+// For JSON serialization
 @property(copy, readonly) NSDictionary* simpleModificationsDictionary;
 @property(copy, readonly) NSDictionary* fnFunctionKeysDictionary;
 @property(copy, readonly) NSDictionary* virtualHIDKeyboardDictionary;
 @property(copy, readonly) NSArray* devicesArray;
-@property(copy) NSString* virtualHIDKeyboardType;
-@property NSUInteger virtualHIDKeyboardCapsLockDelayMilliseconds;
 
-- (instancetype)initWithProfile:(NSDictionary*)jsonObject currentProfileJsonObject:(NSDictionary*)profile;
+- (instancetype)initWithJsonObject:(NSDictionary*)jsonObject;
 
 - (void)addSimpleModification;
 - (void)removeSimpleModification:(NSUInteger)index;
@@ -42,5 +47,14 @@
 - (void)setDeviceConfiguration:(KarabinerKitDeviceIdentifiers*)deviceIdentifiers
                             ignore:(BOOL)ignore
     disableBuiltInKeyboardIfExists:(BOOL)disableBuiltInKeyboardIfExists;
+
+@end
+
+@interface KarabinerKitCoreConfigurationModel : NSObject
+
+@property(readonly) KarabinerKitGlobalConfiguration* globalConfiguration;
+@property(readonly) KarabinerKitConfigurationProfile* currentProfile;
+
+- (instancetype)initWithJsonObject:(NSDictionary*)jsonObject;
 
 @end

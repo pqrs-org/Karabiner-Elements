@@ -28,8 +28,7 @@ private:
     if (callback_) {
       core_configuration core_configuration(libkrbn::get_logger(), file_path);
       auto json_string = core_configuration.to_json_string();
-      auto profile_json_string = core_configuration.get_current_profile_json();
-      callback_(json_string.c_str(), profile_json_string.c_str(), refcon_);
+      callback_(json_string.c_str(), refcon_);
     }
   }
 

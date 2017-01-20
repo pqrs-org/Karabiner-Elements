@@ -19,7 +19,7 @@
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysFromCellView" owner:self];
 
     KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-    NSArray<NSDictionary*>* fnFunctionKeys = configurationManager.coreConfigurationModel.fnFunctionKeys;
+    NSArray<NSDictionary*>* fnFunctionKeys = configurationManager.coreConfigurationModel.currentProfile.fnFunctionKeys;
     if (0 <= row && row < (NSInteger)(fnFunctionKeys.count)) {
       result.textField.stringValue = fnFunctionKeys[row][@"from"];
     }
@@ -31,7 +31,7 @@
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysToCellView" owner:self];
 
     KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-    NSArray<NSDictionary*>* fnFunctionKeys = configurationManager.coreConfigurationModel.fnFunctionKeys;
+    NSArray<NSDictionary*>* fnFunctionKeys = configurationManager.coreConfigurationModel.currentProfile.fnFunctionKeys;
     if (0 <= row && row < (NSInteger)(fnFunctionKeys.count)) {
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.fnFunctionKeysTableViewController;

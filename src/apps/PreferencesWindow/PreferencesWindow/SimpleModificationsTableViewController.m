@@ -57,7 +57,7 @@
       }
       toCellView.popUpButton.enabled = YES;
 
-      [configurationManager.coreConfigurationModel replaceSimpleModification:(NSUInteger)(i) from:fromValue to:toValue];
+      [configurationManager.coreConfigurationModel.currentProfile replaceSimpleModification:(NSUInteger)(i) from:fromValue to:toValue];
     }
   }
 
@@ -68,7 +68,7 @@
   KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
 
   NSInteger row = [self.tableView rowForView:sender];
-  [configurationManager.coreConfigurationModel removeSimpleModification:(NSUInteger)(row)];
+  [configurationManager.coreConfigurationModel.currentProfile removeSimpleModification:(NSUInteger)(row)];
   [self.tableView reloadData];
 
   [configurationManager save];
@@ -77,7 +77,7 @@
 - (IBAction)addItem:(id)sender {
   KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
 
-  [configurationManager.coreConfigurationModel addSimpleModification];
+  [configurationManager.coreConfigurationModel.currentProfile addSimpleModification];
   [self.tableView reloadData];
 
   [configurationManager save];

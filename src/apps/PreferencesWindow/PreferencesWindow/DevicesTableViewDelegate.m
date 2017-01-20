@@ -38,7 +38,7 @@
       result.checkbox.state = (model.ignore ? NSOffState : NSOnState);
 
       KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-      for (KarabinerKitDeviceConfiguration* device in configurationManager.coreConfigurationModel.devices) {
+      for (KarabinerKitDeviceConfiguration* device in configurationManager.coreConfigurationModel.currentProfile.devices) {
         if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
           result.checkbox.state = (device.ignore ? NSOffState : NSOnState);
         }
@@ -94,7 +94,7 @@
         result.deviceIdentifiers = model.deviceIdentifiers;
 
         KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-        for (KarabinerKitDeviceConfiguration* device in configurationManager.coreConfigurationModel.devices) {
+        for (KarabinerKitDeviceConfiguration* device in configurationManager.coreConfigurationModel.currentProfile.devices) {
           if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
             result.checkbox.state = (device.disableBuiltInKeyboardIfExists ? NSOnState : NSOffState);
           }

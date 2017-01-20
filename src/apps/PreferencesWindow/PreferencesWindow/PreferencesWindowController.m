@@ -126,7 +126,7 @@
   NSString* keyboardType = @"ansi";
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   if (coreConfigurationModel) {
-    keyboardType = coreConfigurationModel.virtualHIDKeyboardType;
+    keyboardType = coreConfigurationModel.currentProfile.virtualHIDKeyboardType;
   }
 
   for (NSMenuItem* item in self.virtualHIDKeyboardTypePopupButton.itemArray) {
@@ -141,10 +141,10 @@
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   if (coreConfigurationModel) {
     if (sender != self.virtualHIDKeyboardCapsLockDelayMillisecondsText) {
-      self.virtualHIDKeyboardCapsLockDelayMillisecondsText.stringValue = @(coreConfigurationModel.virtualHIDKeyboardCapsLockDelayMilliseconds).stringValue;
+      self.virtualHIDKeyboardCapsLockDelayMillisecondsText.stringValue = @(coreConfigurationModel.currentProfile.virtualHIDKeyboardCapsLockDelayMilliseconds).stringValue;
     }
     if (sender != self.virtualHIDKeyboardCapsLockDelayMillisecondsStepper) {
-      self.virtualHIDKeyboardCapsLockDelayMillisecondsStepper.integerValue = coreConfigurationModel.virtualHIDKeyboardCapsLockDelayMilliseconds;
+      self.virtualHIDKeyboardCapsLockDelayMillisecondsStepper.integerValue = coreConfigurationModel.currentProfile.virtualHIDKeyboardCapsLockDelayMilliseconds;
     }
   }
 }
@@ -156,7 +156,7 @@
     if (configurationManager) {
       KarabinerKitCoreConfigurationModel* coreConfigurationModel = configurationManager.coreConfigurationModel;
       if (coreConfigurationModel) {
-        coreConfigurationModel.virtualHIDKeyboardType = selectedItem.representedObject;
+        coreConfigurationModel.currentProfile.virtualHIDKeyboardType = selectedItem.representedObject;
         [configurationManager save];
       }
     }
@@ -173,7 +173,7 @@
   if (configurationManager) {
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = configurationManager.coreConfigurationModel;
     if (coreConfigurationModel) {
-      coreConfigurationModel.virtualHIDKeyboardCapsLockDelayMilliseconds = sender.integerValue;
+      coreConfigurationModel.currentProfile.virtualHIDKeyboardCapsLockDelayMilliseconds = sender.integerValue;
       [configurationManager save];
     }
   }

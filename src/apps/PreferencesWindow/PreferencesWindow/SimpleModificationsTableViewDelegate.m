@@ -18,7 +18,7 @@
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsFromCellView" owner:self];
 
     KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-    NSArray<NSDictionary*>* simpleModifications = configurationManager.coreConfigurationModel.simpleModifications;
+    NSArray<NSDictionary*>* simpleModifications = configurationManager.coreConfigurationModel.currentProfile.simpleModifications;
     if (0 <= row && row < (NSInteger)(simpleModifications.count)) {
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.simpleModificationsTableViewController;
@@ -35,7 +35,7 @@
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsToCellView" owner:self];
 
     KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-    NSArray<NSDictionary*>* simpleModifications = configurationManager.coreConfigurationModel.simpleModifications;
+    NSArray<NSDictionary*>* simpleModifications = configurationManager.coreConfigurationModel.currentProfile.simpleModifications;
     if (0 <= row && row < (NSInteger)(simpleModifications.count)) {
       result.popUpButton.action = @selector(valueChanged:);
       result.popUpButton.target = self.simpleModificationsTableViewController;

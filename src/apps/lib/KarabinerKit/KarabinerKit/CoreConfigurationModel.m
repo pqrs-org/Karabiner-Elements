@@ -2,18 +2,83 @@
 #import "libkrbn.h"
 
 @implementation KarabinerKitGlobalConfiguration
+
+// jsonObject:
+//   {
+//       "check_for_updates_on_startup": true,
+//       "show_in_menu_bar": true
+//   }
+
+- (instancetype)initWithJsonObject:(NSDictionary*)jsonObject {
+  self = [super init];
+
+  if (self) {
+    _checkForUpdatesOnStartup = YES;
+    _showInMenubar = YES;
+
+    if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+      {
+        NSNumber* value = jsonObject[@"check_for_updates_on_startup"];
+        if (value) {
+          _checkForUpdatesOnStartup = [value boolValue];
+        }
+      }
+      {
+        NSNumber* value = jsonObject[@"show_in_menu_bar"];
+        if (value) {
+          _showInMenubar = [value boolValue];
+        }
+      }
+    }
+  }
+
+  return self;
+}
+
 @end
 
 @interface KarabinerKitDeviceConfiguration ()
 
 @property(readwrite) KarabinerKitDeviceIdentifiers* deviceIdentifiers;
 
+// jsonObject:
+//   {
+//       "identifiers": {
+//           "vendor_id": 1133,
+//           "product_id": 50475,
+//           "is_keyboard": true,
+//           "is_pointing_device": false
+//       },
+//       "ignore": false
+//   },
+
+- (instancetype)initWithJsonObject:(NSDictionary*)jsonObject;
+
 @end
 
 @implementation KarabinerKitDeviceConfiguration
+
+- (instancetype)initWithJsonObject:(NSDictionary*)jsonObject {
+  self = [super init];
+
+  if (self) {
+    if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+      NSDictionary* identifiers = jsonObject[@"identifiers"];
+      if (identifiers) {
+        _deviceIdentifiers = [[KarabinerKitDeviceIdentifiers alloc] initWithDictionary:identifiers];
+      }
+
+      _ignore = [jsonObject[@"ignore"] boolValue];
+      _disableBuiltInKeyboardIfExists = [jsonObject[@"disable_built_in_keyboard_if_exists"] boolValue];
+    }
+  }
+
+  return self;
+}
+
 @end
 
-@interface KarabinerKitCoreConfigurationModel ()
+@interface KarabinerKitConfigurationProfile ()
 
 @property(copy, readwrite) NSArray<NSDictionary*>* simpleModifications;
 @property(copy, readwrite) NSArray<NSDictionary*>* fnFunctionKeys;
@@ -21,70 +86,45 @@
 
 @end
 
-@implementation KarabinerKitCoreConfigurationModel
+@implementation KarabinerKitConfigurationProfile
 
-- (instancetype)initWithProfile:(NSDictionary*)jsonObject currentProfileJsonObject:(NSDictionary*)profile {
+- (instancetype)initWithJsonObject:(NSDictionary*)jsonObject {
   self = [super init];
 
   if (self) {
-    _globalConfiguration = [KarabinerKitGlobalConfiguration new];
-    _globalConfiguration.checkForUpdatesOnStartup = YES;
-    _globalConfiguration.showInMenubar = YES;
+    _name = jsonObject[@"name"];
+    _selected = [jsonObject[@"selected"] boolValue];
 
-    {
-      NSDictionary* global = jsonObject[@"global"];
-      if ([global isKindOfClass:[NSDictionary class]]) {
-        {
-          NSNumber* value = global[@"check_for_updates_on_startup"];
-          if (value) {
-            _globalConfiguration.checkForUpdatesOnStartup = [value boolValue];
-          }
-        }
-        {
-          NSNumber* value = global[@"show_in_menu_bar"];
-          if (value) {
-            _globalConfiguration.showInMenubar = [value boolValue];
-          }
-        }
-      }
-    }
-
-    _simpleModifications = [self simpleModificationsDictionaryToArray:profile[@"simple_modifications"]];
-    _fnFunctionKeys = [self simpleModificationsDictionaryToArray:profile[@"fn_function_keys"]];
+    _simpleModifications = [self simpleModificationsDictionaryToArray:jsonObject[@"simple_modifications"]];
+    _fnFunctionKeys = [self simpleModificationsDictionaryToArray:jsonObject[@"fn_function_keys"]];
 
     _virtualHIDKeyboardType = @"ansi";
-    if ([profile[@"virtual_hid_keyboard"] isKindOfClass:[NSDictionary class]]) {
-      _virtualHIDKeyboardType = profile[@"virtual_hid_keyboard"][@"keyboard_type"];
+    if ([jsonObject[@"virtual_hid_keyboard"] isKindOfClass:[NSDictionary class]]) {
+      _virtualHIDKeyboardType = jsonObject[@"virtual_hid_keyboard"][@"keyboard_type"];
     }
 
     _virtualHIDKeyboardCapsLockDelayMilliseconds = 0;
-    if ([profile[@"virtual_hid_keyboard"] isKindOfClass:[NSDictionary class]]) {
-      _virtualHIDKeyboardCapsLockDelayMilliseconds = [profile[@"virtual_hid_keyboard"][@"caps_lock_delay_milliseconds"] unsignedIntegerValue];
+    if ([jsonObject[@"virtual_hid_keyboard"] isKindOfClass:[NSDictionary class]]) {
+      _virtualHIDKeyboardCapsLockDelayMilliseconds = [jsonObject[@"virtual_hid_keyboard"][@"caps_lock_delay_milliseconds"] unsignedIntegerValue];
     }
 
     // _devices
     NSMutableArray<KarabinerKitDeviceConfiguration*>* devices = [NSMutableArray new];
-    if (profile[@"devices"]) {
-      for (NSDictionary* device in profile[@"devices"]) {
-        NSDictionary* identifiers = device[@"identifiers"];
-        if (!identifiers) {
-          continue;
-        }
-        KarabinerKitDeviceIdentifiers* deviceIdentifiers = [[KarabinerKitDeviceIdentifiers alloc] initWithDictionary:identifiers];
+    if (jsonObject[@"devices"]) {
+      for (NSDictionary* device in jsonObject[@"devices"]) {
+        KarabinerKitDeviceConfiguration* deviceConfiguration = [[KarabinerKitDeviceConfiguration alloc] initWithJsonObject:device];
 
-        BOOL found = NO;
-        for (KarabinerKitDeviceConfiguration* d in devices) {
-          if ([d.deviceIdentifiers isEqualToDeviceIdentifiers:deviceIdentifiers]) {
-            found = YES;
+        if (deviceConfiguration.deviceIdentifiers) {
+          BOOL found = NO;
+          for (KarabinerKitDeviceConfiguration* d in devices) {
+            if ([d.deviceIdentifiers isEqualToDeviceIdentifiers:deviceConfiguration.deviceIdentifiers]) {
+              found = YES;
+            }
           }
-        }
 
-        if (!found) {
-          KarabinerKitDeviceConfiguration* deviceConfiguration = [KarabinerKitDeviceConfiguration new];
-          deviceConfiguration.deviceIdentifiers = deviceIdentifiers;
-          deviceConfiguration.ignore = [device[@"ignore"] boolValue];
-          deviceConfiguration.disableBuiltInKeyboardIfExists = [device[@"disable_built_in_keyboard_if_exists"] boolValue];
-          [devices addObject:deviceConfiguration];
+          if (!found) {
+            [devices addObject:deviceConfiguration];
+          }
         }
       }
     }
@@ -216,6 +256,37 @@
     }];
   }
   return array;
+}
+
+@end
+
+@interface KarabinerKitCoreConfigurationModel ()
+
+@property KarabinerKitGlobalConfiguration* globalConfiguration;
+@property KarabinerKitConfigurationProfile* currentProfile;
+
+@end
+
+@implementation KarabinerKitCoreConfigurationModel
+
+- (instancetype)initWithJsonObject:(NSDictionary*)jsonObject {
+  self = [super init];
+
+  if (self) {
+    _globalConfiguration = [[KarabinerKitGlobalConfiguration alloc] initWithJsonObject:jsonObject[@"global"]];
+
+    NSArray* profiles = jsonObject[@"profiles"];
+    if ([profiles isKindOfClass:[NSArray class]]) {
+      for (NSDictionary* profile in profiles) {
+        KarabinerKitConfigurationProfile* p = [[KarabinerKitConfigurationProfile alloc] initWithJsonObject:profile];
+        if (p.selected) {
+          _currentProfile = p;
+        }
+      }
+    }
+  }
+
+  return self;
 }
 
 @end

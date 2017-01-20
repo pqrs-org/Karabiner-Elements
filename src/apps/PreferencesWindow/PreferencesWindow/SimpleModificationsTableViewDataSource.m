@@ -7,7 +7,7 @@
 @implementation SimpleModificationsTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  return [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.simpleModifications.count;
+  return [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.currentProfile.simpleModifications.count;
 }
 
 @end

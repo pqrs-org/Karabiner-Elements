@@ -7,7 +7,7 @@
 @implementation FnFunctionKeysTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  return [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.fnFunctionKeys.count;
+  return [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.currentProfile.fnFunctionKeys.count;
 }
 
 @end
