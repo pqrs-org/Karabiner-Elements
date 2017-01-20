@@ -77,30 +77,31 @@ public:
     if (input) {
       try {
         json_ = nlohmann::json::parse(input);
-
-        // ----------------------------------------
-        // Add default values if needed.
-
-        if (!json_["profiles"].is_array()) {
-          json_["profiles"] = nlohmann::json::array();
-        }
-        if (json_["profiles"].empty()) {
-          json_["profiles"].push_back(get_default_profile());
-        }
-
-        for (auto&& profile : json_["profiles"]) {
-          // Use default value if fn_function_keys is not set.
-          if (!profile["fn_function_keys"].is_object() || profile["fn_function_keys"].empty()) {
-            auto default_profile = get_default_profile();
-            profile["fn_function_keys"] = default_profile["fn_function_keys"];
-          }
-        }
-
-        // ----------------------------------------
         loaded_ = true;
-
       } catch (std::exception& e) {
         logger_.warn("parse error in {0}: {1}", file_path_, e.what());
+      }
+
+    } else {
+      // If file is not found, use default values.
+      loaded_ = true;
+    }
+
+    // ----------------------------------------
+    // Add default values if needed.
+
+    if (!json_["profiles"].is_array()) {
+      json_["profiles"] = nlohmann::json::array();
+    }
+    if (json_["profiles"].empty()) {
+      json_["profiles"].push_back(get_default_profile());
+    }
+
+    for (auto&& profile : json_["profiles"]) {
+      // Use default value if fn_function_keys is not set.
+      if (!profile["fn_function_keys"].is_object() || profile["fn_function_keys"].empty()) {
+        auto default_profile = get_default_profile();
+        profile["fn_function_keys"] = default_profile["fn_function_keys"];
       }
     }
   }
