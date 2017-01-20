@@ -27,8 +27,10 @@ private:
   void cpp_callback(const std::string& file_path) {
     if (callback_) {
       core_configuration core_configuration(libkrbn::get_logger(), file_path);
-      auto json_string = core_configuration.to_json_string();
-      callback_(json_string.c_str(), refcon_);
+      if (core_configuration.is_loaded()) {
+        auto json_string = core_configuration.to_json_string();
+        callback_(json_string.c_str(), refcon_);
+      }
     }
   }
 
