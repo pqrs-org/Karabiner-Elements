@@ -19,8 +19,6 @@ private:
     if (callback_) {
       libkrbn_system_preferences_values v;
       v.keyboard_fn_state = values.get_keyboard_fn_state();
-      v.initial_key_repeat_milliseconds = values.get_initial_key_repeat_milliseconds();
-      v.key_repeat_milliseconds = values.get_key_repeat_milliseconds();
       callback_(&v, refcon_);
     }
   }

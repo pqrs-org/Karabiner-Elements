@@ -17,8 +17,6 @@ const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string);
 
-float libkrbn_system_preferences_convert_key_repeat_milliseconds_to_system_preferences_value(uint32_t value);
-
 // ----------------------------------------
 // libkrbn_configuration_monitor
 
@@ -34,8 +32,6 @@ void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor* _Nul
 
 struct libkrbn_system_preferences_values {
   bool keyboard_fn_state;
-  uint32_t initial_key_repeat_milliseconds;
-  uint32_t key_repeat_milliseconds;
 };
 
 typedef void libkrbn_system_preferences_monitor;

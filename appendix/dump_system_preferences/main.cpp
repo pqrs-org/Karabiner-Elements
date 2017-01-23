@@ -17,8 +17,6 @@ namespace {
 void system_preferences_values_updated_callback(const system_preferences::values& values) {
   std::cout << "system_preferences_values_updated_callback:" << std::endl;
   std::cout << "  com.apple.keyboard.fnState: " << values.get_keyboard_fn_state() << std::endl;
-  std::cout << "  InitialKeyRepeat: " << values.get_initial_key_repeat_milliseconds() << std::endl;
-  std::cout << "  KeyRepeat: " << values.get_key_repeat_milliseconds() << std::endl;
 }
 }
 
