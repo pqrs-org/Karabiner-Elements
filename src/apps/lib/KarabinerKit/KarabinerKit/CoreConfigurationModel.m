@@ -92,43 +92,45 @@
   self = [super init];
 
   if (self) {
-    _name = jsonObject[@"name"];
-    _selected = [jsonObject[@"selected"] boolValue];
+    if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+      _name = jsonObject[@"name"];
+      _selected = [jsonObject[@"selected"] boolValue];
 
-    _simpleModifications = [self simpleModificationsDictionaryToArray:jsonObject[@"simple_modifications"]];
-    _fnFunctionKeys = [self simpleModificationsDictionaryToArray:jsonObject[@"fn_function_keys"]];
+      _simpleModifications = [self simpleModificationsDictionaryToArray:jsonObject[@"simple_modifications"]];
+      _fnFunctionKeys = [self simpleModificationsDictionaryToArray:jsonObject[@"fn_function_keys"]];
 
-    _virtualHIDKeyboardType = @"ansi";
-    if ([jsonObject[@"virtual_hid_keyboard"] isKindOfClass:[NSDictionary class]]) {
-      _virtualHIDKeyboardType = jsonObject[@"virtual_hid_keyboard"][@"keyboard_type"];
-    }
+      _virtualHIDKeyboardType = @"ansi";
+      if ([jsonObject[@"virtual_hid_keyboard"] isKindOfClass:[NSDictionary class]]) {
+        _virtualHIDKeyboardType = jsonObject[@"virtual_hid_keyboard"][@"keyboard_type"];
+      }
 
-    _virtualHIDKeyboardCapsLockDelayMilliseconds = 0;
-    if ([jsonObject[@"virtual_hid_keyboard"] isKindOfClass:[NSDictionary class]]) {
-      _virtualHIDKeyboardCapsLockDelayMilliseconds = [jsonObject[@"virtual_hid_keyboard"][@"caps_lock_delay_milliseconds"] unsignedIntegerValue];
-    }
+      _virtualHIDKeyboardCapsLockDelayMilliseconds = 0;
+      if ([jsonObject[@"virtual_hid_keyboard"] isKindOfClass:[NSDictionary class]]) {
+        _virtualHIDKeyboardCapsLockDelayMilliseconds = [jsonObject[@"virtual_hid_keyboard"][@"caps_lock_delay_milliseconds"] unsignedIntegerValue];
+      }
 
-    // _devices
-    NSMutableArray<KarabinerKitDeviceConfiguration*>* devices = [NSMutableArray new];
-    if (jsonObject[@"devices"]) {
-      for (NSDictionary* device in jsonObject[@"devices"]) {
-        KarabinerKitDeviceConfiguration* deviceConfiguration = [[KarabinerKitDeviceConfiguration alloc] initWithJsonObject:device];
+      // _devices
+      NSMutableArray<KarabinerKitDeviceConfiguration*>* devices = [NSMutableArray new];
+      if (jsonObject[@"devices"]) {
+        for (NSDictionary* device in jsonObject[@"devices"]) {
+          KarabinerKitDeviceConfiguration* deviceConfiguration = [[KarabinerKitDeviceConfiguration alloc] initWithJsonObject:device];
 
-        if (deviceConfiguration.deviceIdentifiers) {
-          BOOL found = NO;
-          for (KarabinerKitDeviceConfiguration* d in devices) {
-            if ([d.deviceIdentifiers isEqualToDeviceIdentifiers:deviceConfiguration.deviceIdentifiers]) {
-              found = YES;
+          if (deviceConfiguration.deviceIdentifiers) {
+            BOOL found = NO;
+            for (KarabinerKitDeviceConfiguration* d in devices) {
+              if ([d.deviceIdentifiers isEqualToDeviceIdentifiers:deviceConfiguration.deviceIdentifiers]) {
+                found = YES;
+              }
             }
-          }
 
-          if (!found) {
-            [devices addObject:deviceConfiguration];
+            if (!found) {
+              [devices addObject:deviceConfiguration];
+            }
           }
         }
       }
+      _devices = devices;
     }
-    _devices = devices;
   }
 
   return self;
