@@ -1,9 +1,6 @@
 #import "SimpleModificationsTableViewDataSource.h"
 #import "KarabinerKit/KarabinerKit.h"
 
-@interface SimpleModificationsTableViewDataSource ()
-@end
-
 @implementation SimpleModificationsTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
