@@ -53,6 +53,7 @@
 @interface KarabinerKitCoreConfigurationModel : NSObject
 
 @property(readonly) KarabinerKitGlobalConfiguration* globalConfiguration;
+@property(copy, readonly) NSArray<KarabinerKitConfigurationProfile*>* profiles;
 @property(readonly) KarabinerKitConfigurationProfile* currentProfile;
 
 - (instancetype)initWithJsonObject:(NSDictionary*)jsonObject;

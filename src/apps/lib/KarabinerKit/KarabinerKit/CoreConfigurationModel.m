@@ -263,6 +263,7 @@
 @interface KarabinerKitCoreConfigurationModel ()
 
 @property KarabinerKitGlobalConfiguration* globalConfiguration;
+@property(copy) NSArray<KarabinerKitConfigurationProfile*>* profiles;
 @property KarabinerKitConfigurationProfile* currentProfile;
 
 @end
@@ -275,15 +276,21 @@
   if (self) {
     _globalConfiguration = [[KarabinerKitGlobalConfiguration alloc] initWithJsonObject:jsonObject[@"global"]];
 
+    NSMutableArray<KarabinerKitConfigurationProfile*>* mutableProfiles = [NSMutableArray<KarabinerKitConfigurationProfile*> new];
+
     NSArray* profiles = jsonObject[@"profiles"];
     if ([profiles isKindOfClass:[NSArray class]]) {
       for (NSDictionary* profile in profiles) {
         KarabinerKitConfigurationProfile* p = [[KarabinerKitConfigurationProfile alloc] initWithJsonObject:profile];
+        [mutableProfiles addObject:p];
+
         if (p.selected) {
           _currentProfile = p;
         }
       }
     }
+
+    _profiles = mutableProfiles;
   }
 
   return self;
