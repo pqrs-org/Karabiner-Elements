@@ -4,6 +4,7 @@
 #import "KarabinerKit/KarabinerKit.h"
 #import "LogFileTextViewController.h"
 #import "NotificationKeys.h"
+#import "ProfilesTableViewController.h"
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
@@ -25,6 +26,7 @@
 @property(weak) IBOutlet NSTextField* virtualHIDKeyboardCapsLockDelayMillisecondsText;
 @property(weak) IBOutlet NSStepper* virtualHIDKeyboardCapsLockDelayMillisecondsStepper;
 @property(weak) IBOutlet NSButton* checkForUpdateOnStartupButton;
+@property(weak) IBOutlet ProfilesTableViewController* profilesTableViewController;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
@@ -43,6 +45,7 @@
   [self.devicesTableViewController setup];
   [self setupVirtualHIDKeyboardTypePopUpButton];
   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
+  [self.profilesTableViewController setup];
   [self setupMiscTabControls];
   [self.logFileTextViewController monitor];
 
