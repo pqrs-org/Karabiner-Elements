@@ -15,6 +15,8 @@ const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(vo
 const char* _Nonnull libkrbn_get_core_configuration_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 
+const char* _Nonnull libkrbn_get_default_profile_json_string(void);
+
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string);
 
 // ----------------------------------------

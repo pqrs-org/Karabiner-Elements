@@ -1,5 +1,6 @@
 #include "libkrbn.h"
 #include "constants.hpp"
+#include "core_configuration.hpp"
 #include "libkrbn.hpp"
 #include "thread_utility.hpp"
 #include "types.hpp"
@@ -48,6 +49,22 @@ const char* libkrbn_get_core_configuration_file_path(void) {
 
 const char* libkrbn_get_devices_json_file_path(void) {
   return constants::get_devices_json_file_path();
+}
+
+const char* _Nonnull libkrbn_get_default_profile_json_string(void) {
+  static std::mutex mutex;
+  static bool once = false;
+  static std::string result;
+
+  std::lock_guard<std::mutex> guard(mutex);
+
+  if (!once) {
+    once = true;
+
+    result = core_configuration::get_default_profile().dump();
+  }
+
+  return result.c_str();
 }
 
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string) {
