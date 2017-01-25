@@ -56,41 +56,18 @@ static void configuration_file_updated_callback(const char* jsonString, void* re
   if (!jsonObject) {
     jsonObject = @{};
   }
-  NSMutableDictionary* mutableJsonObject = [NSMutableDictionary dictionaryWithDictionary:jsonObject];
-
-  if (!mutableJsonObject[@"profiles"]) {
-    mutableJsonObject[@"profiles"] = @[];
-  }
-  NSMutableArray* mutableProfiles = [NSMutableArray arrayWithArray:mutableJsonObject[@"profiles"]];
-  NSInteger __block selectedProfileIndex = -1;
-  [mutableProfiles enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL* stop) {
-    if (obj[@"selected"] && [obj[@"selected"] boolValue]) {
-      selectedProfileIndex = (NSInteger)(index);
-      *stop = YES;
-    }
-  }];
-  if (selectedProfileIndex == -1) {
-    [mutableProfiles addObject:@{
-      @"name" : @"Default profile",
-      @"selected" : @(YES),
-    }];
-    selectedProfileIndex = mutableProfiles.count - 1;
-  }
+  NSMutableDictionary* mutableJsonObject = [jsonObject mutableCopy];
 
   mutableJsonObject[@"global"] = @{
     @"check_for_updates_on_startup" : @(self.coreConfigurationModel.globalConfiguration.checkForUpdatesOnStartup),
     @"show_in_menu_bar" : @(self.coreConfigurationModel.globalConfiguration.showInMenubar),
   };
 
-  NSMutableDictionary* mutableProfile = [NSMutableDictionary dictionaryWithDictionary:mutableProfiles[selectedProfileIndex]];
-  mutableProfile[@"simple_modifications"] = self.coreConfigurationModel.currentProfile.simpleModificationsDictionary;
-  mutableProfile[@"fn_function_keys"] = self.coreConfigurationModel.currentProfile.fnFunctionKeysDictionary;
-  mutableProfile[@"virtual_hid_keyboard"] = self.coreConfigurationModel.currentProfile.virtualHIDKeyboardDictionary;
-  mutableProfile[@"devices"] = self.coreConfigurationModel.currentProfile.devicesArray;
-
-  mutableProfiles[selectedProfileIndex] = mutableProfile;
-
-  mutableJsonObject[@"profiles"] = mutableProfiles;
+  NSMutableArray* profiles = [NSMutableArray new];
+  for (KarabinerKitConfigurationProfile* profile in self.coreConfigurationModel.profiles) {
+    [profiles addObject:profile.jsonObject];
+  }
+  mutableJsonObject[@"profiles"] = profiles;
 
   [KarabinerKitJsonUtility saveJsonToFile:mutableJsonObject filePath:filePath];
 }

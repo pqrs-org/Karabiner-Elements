@@ -30,11 +30,7 @@
 @property(copy) NSString* virtualHIDKeyboardType;
 @property NSUInteger virtualHIDKeyboardCapsLockDelayMilliseconds;
 
-// For JSON serialization
-@property(copy, readonly) NSDictionary* simpleModificationsDictionary;
-@property(copy, readonly) NSDictionary* fnFunctionKeysDictionary;
-@property(copy, readonly) NSDictionary* virtualHIDKeyboardDictionary;
-@property(copy, readonly) NSArray* devicesArray;
+@property(copy, readonly) NSDictionary* jsonObject;
 
 - (instancetype)initWithJsonObject:(NSDictionary*)jsonObject;
 
@@ -57,5 +53,8 @@
 @property(readonly) KarabinerKitConfigurationProfile* currentProfile;
 
 - (instancetype)initWithJsonObject:(NSDictionary*)jsonObject;
+
+- (void)addProfile;
+- (void)removeProfile:(NSUInteger)index;
 
 @end

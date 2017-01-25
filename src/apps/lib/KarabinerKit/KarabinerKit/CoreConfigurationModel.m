@@ -1,4 +1,5 @@
 #import "CoreConfigurationModel.h"
+#import "JsonUtility.h"
 #import "libkrbn.h"
 
 @implementation KarabinerKitGlobalConfiguration
@@ -80,9 +81,10 @@
 
 @interface KarabinerKitConfigurationProfile ()
 
-@property(copy, readwrite) NSArray<NSDictionary*>* simpleModifications;
-@property(copy, readwrite) NSArray<NSDictionary*>* fnFunctionKeys;
-@property(copy, readwrite) NSArray<KarabinerKitDeviceConfiguration*>* devices;
+@property(copy) NSDictionary* originalJsonObject;
+@property(copy) NSArray<NSDictionary*>* simpleModifications;
+@property(copy) NSArray<NSDictionary*>* fnFunctionKeys;
+@property(copy) NSArray<KarabinerKitDeviceConfiguration*>* devices;
 
 @end
 
@@ -93,6 +95,9 @@
 
   if (self) {
     if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+      // Save passed jsonObject in order to keep unknown keys.
+      _originalJsonObject = jsonObject;
+
       _name = jsonObject[@"name"];
       _selected = [jsonObject[@"selected"] boolValue];
 
@@ -233,31 +238,32 @@
   return dictionary;
 }
 
-- (NSDictionary*)simpleModificationsDictionary {
-  return [self simpleModificationsArrayToDictionary:self.simpleModifications];
-}
+- (NSDictionary*)jsonObject {
+  NSMutableDictionary* mutableJsonObject = [self.originalJsonObject mutableCopy];
+  mutableJsonObject[@"name"] = self.name;
 
-- (NSDictionary*)fnFunctionKeysDictionary {
-  return [self simpleModificationsArrayToDictionary:self.fnFunctionKeys];
-}
+  mutableJsonObject[@"selected"] = @(self.selected);
 
-- (NSDictionary*)virtualHIDKeyboardDictionary {
-  return @{
+  mutableJsonObject[@"simple_modifications"] = [self simpleModificationsArrayToDictionary:self.simpleModifications];
+
+  mutableJsonObject[@"fn_function_keys"] = [self simpleModificationsArrayToDictionary:self.fnFunctionKeys];
+
+  mutableJsonObject[@"virtual_hid_keyboard"] = @{
     @"keyboard_type" : self.virtualHIDKeyboardType,
     @"caps_lock_delay_milliseconds" : @(self.virtualHIDKeyboardCapsLockDelayMilliseconds),
   };
-}
 
-- (NSArray*)devicesArray {
-  NSMutableArray* array = [NSMutableArray new];
+  NSMutableArray* devices = [NSMutableArray new];
   for (KarabinerKitDeviceConfiguration* d in self.devices) {
-    [array addObject:@{
+    [devices addObject:@{
       @"identifiers" : [d.deviceIdentifiers toDictionary],
       @"ignore" : @(d.ignore),
       @"disable_built_in_keyboard_if_exists" : @(d.disableBuiltInKeyboardIfExists),
     }];
   }
-  return array;
+  mutableJsonObject[@"devices"] = devices;
+
+  return mutableJsonObject;
 }
 
 @end
@@ -296,6 +302,22 @@
   }
 
   return self;
+}
+
+- (void)addProfile {
+  NSDictionary* jsonObject = [KarabinerKitJsonUtility loadCString:libkrbn_get_default_profile_json_string()];
+  KarabinerKitConfigurationProfile* profile = [[KarabinerKitConfigurationProfile alloc] initWithJsonObject:jsonObject];
+
+  profile.name = @"New profile";
+  profile.selected = NO;
+
+  NSMutableArray<KarabinerKitConfigurationProfile*>* mutableProfiles = [self.profiles mutableCopy];
+  [mutableProfiles addObject:profile];
+
+  self.profiles = mutableProfiles;
+}
+
+- (void)removeProfile:(NSUInteger)index {
 }
 
 @end
