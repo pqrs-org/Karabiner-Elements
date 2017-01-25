@@ -211,8 +211,7 @@ public:
     return true;
   }
 
-private:
-  nlohmann::json get_default_profile(void) const {
+  static nlohmann::json get_default_profile(void) {
     nlohmann::json json;
     json["name"] = "Default profile";
     json["selected"] = true;
@@ -233,6 +232,7 @@ private:
     return json;
   }
 
+private:
   nlohmann::json get_current_profile(void) {
     if (json_.is_object() && json_["profiles"].is_array()) {
       for (auto&& profile : json_["profiles"]) {
