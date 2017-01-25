@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1212" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1217" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
@@ -60,15 +60,15 @@
                 <outlet property="window" destination="QvC-M9-y7g" id="rSZ-Ih-Gbv"/>
             </connections>
         </customObject>
+        <customObject id="lSQ-bm-e7S" customClass="ProfilesTableViewController">
+            <connections>
+                <outlet property="tableView" destination="Y8t-wV-kQb" id="4kf-rs-hyr"/>
+            </connections>
+        </customObject>
         <customObject id="ayn-5n-LeR" customClass="ProfilesTableViewDataSource"/>
         <customObject id="pyV-ub-p8d" customClass="ProfilesTableViewDelegate">
             <connections>
                 <outlet property="profilesTableViewController" destination="lSQ-bm-e7S" id="ct5-mb-eyq"/>
-            </connections>
-        </customObject>
-        <customObject id="lSQ-bm-e7S" customClass="ProfilesTableViewController">
-            <connections>
-                <outlet property="tableView" destination="Y8t-wV-kQb" id="4kf-rs-hyr"/>
             </connections>
         </customObject>
         <customObject id="BTc-Hs-TSF" customClass="SimpleModificationsMenuManager"/>
@@ -1151,13 +1151,13 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nFr-Ff-HgQ">
-                                            <rect key="frame" x="17" y="8" width="720" height="422"/>
+                                            <rect key="frame" x="17" y="34" width="720" height="396"/>
                                             <clipView key="contentView" id="KqJ-JT-0VB">
-                                                <rect key="frame" x="1" y="0.0" width="718" height="421"/>
+                                                <rect key="frame" x="1" y="0.0" width="718" height="395"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="4rB-73-cgf" viewBased="YES" id="Y8t-wV-kQb" customClass="ProfilesTableView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="718" height="398"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="718" height="372"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1246,12 +1246,27 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
+                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="w9R-y0-ZHf">
+                                            <rect key="frame" x="11" y="1" width="122" height="32"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="110" id="Dif-Ik-bO1"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="push" title="Add profile" bezelStyle="rounded" image="ic_add_circle_black_48dp" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ZZS-ry-ePh">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="addProfile:" target="lSQ-bm-e7S" id="idt-HD-A3g"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="w9R-y0-ZHf" firstAttribute="leading" secondItem="nFr-Ff-HgQ" secondAttribute="leading" id="Cg6-9P-OEr"/>
                                         <constraint firstAttribute="trailing" secondItem="nFr-Ff-HgQ" secondAttribute="trailing" constant="17" id="PV8-fe-6DT"/>
                                         <constraint firstItem="nFr-Ff-HgQ" firstAttribute="leading" secondItem="7Zc-pb-qgV" secondAttribute="leading" constant="17" id="Qc9-X6-Sdu"/>
                                         <constraint firstItem="nFr-Ff-HgQ" firstAttribute="top" secondItem="7Zc-pb-qgV" secondAttribute="top" constant="8" id="SC4-EA-Ja2"/>
-                                        <constraint firstAttribute="bottom" secondItem="nFr-Ff-HgQ" secondAttribute="bottom" constant="8" id="fUq-vu-PcA"/>
+                                        <constraint firstAttribute="bottom" secondItem="w9R-y0-ZHf" secondAttribute="bottom" constant="8" id="VLM-UT-CQ0"/>
+                                        <constraint firstItem="w9R-y0-ZHf" firstAttribute="top" secondItem="nFr-Ff-HgQ" secondAttribute="bottom" constant="5" id="aDO-To-FvO"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>

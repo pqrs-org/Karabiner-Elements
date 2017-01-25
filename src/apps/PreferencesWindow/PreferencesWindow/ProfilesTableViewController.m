@@ -32,6 +32,11 @@
 }
 
 - (IBAction)addProfile:(id)sender {
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+  [configurationManager.coreConfigurationModel addProfile];
+  [configurationManager save];
+
+  [self.tableView reloadData];
 }
 
 @end
