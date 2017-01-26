@@ -39,8 +39,8 @@ public:
 
   class main_queue_timer final {
   public:
-    main_queue_timer(unsigned long mask, dispatch_time_t start, uint64_t interval, uint64_t leeway, void (^_Nonnull block)(void)) {
-      timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, mask, dispatch_get_main_queue());
+    main_queue_timer(dispatch_time_t start, uint64_t interval, uint64_t leeway, void (^_Nonnull block)(void)) {
+      timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
       if (timer_) {
         dispatch_source_set_timer(timer_, start, interval, leeway);
         dispatch_source_set_event_handler(timer_, block);

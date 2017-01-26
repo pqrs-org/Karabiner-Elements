@@ -22,7 +22,6 @@ public:
     auto current_uid = getuid();
 
     timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-        0,
         dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
         1 * NSEC_PER_SEC,
         0,

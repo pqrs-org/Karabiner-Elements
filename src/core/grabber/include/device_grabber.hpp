@@ -37,7 +37,6 @@ public:
     // The behavior causes LED state mismatch because device_grabber does not change the caps lock state of physical keyboards.
     // Thus, we monitor the LED state and update it if needed.
     led_monitor_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-        0,
         dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
         1.0 * NSEC_PER_SEC,
         0,
