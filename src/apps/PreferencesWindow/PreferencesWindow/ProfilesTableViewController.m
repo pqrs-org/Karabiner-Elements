@@ -26,6 +26,15 @@
 }
 
 - (void)valueChanged:(id)sender {
+  NSInteger row = [self.tableView rowForView:sender];
+
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+  NSArray<KarabinerKitConfigurationProfile*>* profiles = configurationManager.coreConfigurationModel.profiles;
+  if (0 <= row && row < (NSInteger)(profiles.count)) {
+    NSTextField* name = (NSTextField*)(sender);
+    profiles[row].name = name.stringValue;
+    [configurationManager save];
+  }
 }
 
 - (void)removeProfile:(id)sender {
