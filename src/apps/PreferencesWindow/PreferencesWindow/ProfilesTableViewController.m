@@ -29,6 +29,13 @@
 }
 
 - (void)removeProfile:(id)sender {
+  NSInteger row = [self.tableView rowForView:sender];
+
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+  [configurationManager.coreConfigurationModel removeProfile:(NSUInteger)(row)];
+  [configurationManager save];
+
+  [self.tableView reloadData];
 }
 
 - (IBAction)addProfile:(id)sender {

@@ -26,6 +26,9 @@
     result.removeProfileButton.hidden = NO;
   }
 
+  result.removeProfileButton.action = @selector(removeProfile:);
+  result.removeProfileButton.target = self.profilesTableViewController;
+
   return result;
 }
 

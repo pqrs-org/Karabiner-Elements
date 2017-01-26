@@ -318,6 +318,11 @@
 }
 
 - (void)removeProfile:(NSUInteger)index {
+  if (index < self.profiles.count) {
+    NSMutableArray<KarabinerKitConfigurationProfile*>* mutableProfiles = [self.profiles mutableCopy];
+    [mutableProfiles removeObjectAtIndex:index];
+    self.profiles = mutableProfiles;
+  }
 }
 
 @end
