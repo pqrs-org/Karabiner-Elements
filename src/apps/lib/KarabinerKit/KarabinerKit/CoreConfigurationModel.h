@@ -56,5 +56,6 @@
 
 - (void)addProfile;
 - (void)removeProfile:(NSUInteger)index;
+- (void)selectProfile:(NSUInteger)index;
 
 @end

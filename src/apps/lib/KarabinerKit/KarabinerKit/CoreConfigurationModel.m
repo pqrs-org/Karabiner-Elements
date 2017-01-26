@@ -325,4 +325,17 @@
   }
 }
 
+- (void)selectProfile:(NSUInteger)index {
+  if (index < self.profiles.count) {
+    [self.profiles enumerateObjectsUsingBlock:^(KarabinerKitConfigurationProfile* profile, NSUInteger i, BOOL* stop) {
+      if (index == i) {
+        profile.selected = YES;
+        self.currentProfile = profile;
+      } else {
+        profile.selected = NO;
+      }
+    }];
+  }
+}
+
 @end

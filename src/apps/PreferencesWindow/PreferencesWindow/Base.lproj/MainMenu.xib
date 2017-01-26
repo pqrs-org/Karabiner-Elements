@@ -1189,8 +1189,26 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                 </textFieldCell>
                                                                             </textField>
+                                                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7dB-iC-Z4u">
+                                                                                <rect key="frame" x="509" y="-5" width="92" height="32"/>
+                                                                                <constraints>
+                                                                                    <constraint firstAttribute="width" constant="80" id="lmi-wY-Q3g"/>
+                                                                                </constraints>
+                                                                                <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" image="ic_label_outline_black_48dp" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uwD-3g-0lE">
+                                                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                                    <font key="font" metaFont="system"/>
+                                                                                </buttonCell>
+                                                                            </button>
+                                                                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wSk-3w-9nX">
+                                                                                <rect key="frame" x="515" y="5" width="16" height="16"/>
+                                                                                <constraints>
+                                                                                    <constraint firstAttribute="width" constant="16" id="XUU-Xf-mQs"/>
+                                                                                    <constraint firstAttribute="height" constant="16" id="aHO-Vg-1Ya"/>
+                                                                                </constraints>
+                                                                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="ic_label_black_48dp" id="aFs-KH-qdi"/>
+                                                                            </imageView>
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Vxo-a6-SRu">
-                                                                                <rect key="frame" x="635" y="5" width="58" height="17"/>
+                                                                                <rect key="frame" x="534" y="5" width="58" height="17"/>
                                                                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Selected" id="a8h-ts-iv1">
                                                                                     <font key="font" metaFont="system"/>
                                                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1198,7 +1216,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                                                 </textFieldCell>
                                                                             </textField>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fqK-Cb-Nrr">
-                                                                                <rect key="frame" x="613" y="-4" width="102" height="32"/>
+                                                                                <rect key="frame" x="609" y="-4" width="102" height="32"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="width" constant="90" id="fCL-dy-ULQ"/>
                                                                                 </constraints>
@@ -1210,17 +1228,23 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                                         </subviews>
                                                                         <constraints>
                                                                             <constraint firstItem="Vxo-a6-SRu" firstAttribute="centerY" secondItem="ggo-9A-yNX" secondAttribute="centerY" id="3gj-X0-rlW"/>
+                                                                            <constraint firstItem="fqK-Cb-Nrr" firstAttribute="leading" secondItem="7dB-iC-Z4u" secondAttribute="trailing" constant="20" id="3uQ-tJ-R9M"/>
                                                                             <constraint firstItem="fqK-Cb-Nrr" firstAttribute="centerY" secondItem="ggo-9A-yNX" secondAttribute="centerY" id="8kx-XK-xy8"/>
-                                                                            <constraint firstAttribute="trailing" secondItem="fqK-Cb-Nrr" secondAttribute="trailing" constant="6" id="Byd-8Y-2Tw"/>
+                                                                            <constraint firstItem="wSk-3w-9nX" firstAttribute="centerY" secondItem="ggo-9A-yNX" secondAttribute="centerY" id="I2w-Vt-UYx"/>
                                                                             <constraint firstAttribute="trailing" secondItem="3fl-PC-xYQ" secondAttribute="trailing" constant="300" id="MA8-nY-zvp"/>
+                                                                            <constraint firstItem="Vxo-a6-SRu" firstAttribute="leading" secondItem="wSk-3w-9nX" secondAttribute="trailing" constant="5" id="PJK-sP-ItB"/>
                                                                             <constraint firstItem="3fl-PC-xYQ" firstAttribute="centerY" secondItem="ggo-9A-yNX" secondAttribute="centerY" id="PpG-0H-5vM"/>
-                                                                            <constraint firstItem="Vxo-a6-SRu" firstAttribute="centerX" secondItem="fqK-Cb-Nrr" secondAttribute="centerX" id="YZZ-gg-swJ"/>
+                                                                            <constraint firstItem="7dB-iC-Z4u" firstAttribute="centerY" secondItem="ggo-9A-yNX" secondAttribute="centerY" id="Unk-Zz-Tkn"/>
+                                                                            <constraint firstItem="wSk-3w-9nX" firstAttribute="leading" secondItem="7dB-iC-Z4u" secondAttribute="leading" id="dgH-dX-7tm"/>
+                                                                            <constraint firstAttribute="trailing" secondItem="fqK-Cb-Nrr" secondAttribute="trailing" constant="10" id="p9T-bt-rEP"/>
                                                                             <constraint firstItem="3fl-PC-xYQ" firstAttribute="leading" secondItem="ggo-9A-yNX" secondAttribute="leading" constant="4" id="zMH-8X-RPE"/>
                                                                         </constraints>
                                                                         <connections>
                                                                             <outlet property="name" destination="3fl-PC-xYQ" id="eUb-Rf-Ysf"/>
                                                                             <outlet property="removeProfileButton" destination="fqK-Cb-Nrr" id="gZx-u5-fPa"/>
+                                                                            <outlet property="selectProfileButton" destination="7dB-iC-Z4u" id="8Vb-X6-Ir7"/>
                                                                             <outlet property="selected" destination="Vxo-a6-SRu" id="Vfk-bX-L7V"/>
+                                                                            <outlet property="selectedImage" destination="wSk-3w-9nX" id="GWC-ZG-bPg"/>
                                                                         </connections>
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
@@ -1308,9 +1332,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         </connections>
                                                     </button>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hA8-fr-71n">
-                                                        <rect key="frame" x="11" y="1" width="172" height="32"/>
+                                                        <rect key="frame" x="11" y="1" width="162" height="32"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="160" id="iSJ-lv-nXz"/>
+                                                            <constraint firstAttribute="width" constant="150" id="iSJ-lv-nXz"/>
                                                         </constraints>
                                                         <buttonCell key="cell" type="push" title="Check for updates" bezelStyle="rounded" image="ic_refresh_black_48dp" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="iDW-FG-uaL">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1352,9 +1376,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CzP-aW-AzB">
-                                                        <rect key="frame" x="11" y="1" width="172" height="32"/>
+                                                        <rect key="frame" x="11" y="1" width="162" height="32"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="160" id="Jnc-lQ-tmx"/>
+                                                            <constraint firstAttribute="width" constant="150" id="Jnc-lQ-tmx"/>
                                                         </constraints>
                                                         <buttonCell key="cell" type="push" title="Launch uninstaller" bezelStyle="rounded" image="ic_forward_black_48dp" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Sr0-va-jSj">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1379,9 +1403,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="i87-Pa-TZD">
-                                                        <rect key="frame" x="11" y="1" width="342" height="32"/>
+                                                        <rect key="frame" x="11" y="1" width="332" height="32"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="330" id="bv5-9p-aHA"/>
+                                                            <constraint firstAttribute="width" constant="320" id="bv5-9p-aHA"/>
                                                         </constraints>
                                                         <buttonCell key="cell" type="push" title="https://github.com/tekezo/Karabiner-Elements" bezelStyle="rounded" image="ic_forward_black_48dp" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PWa-pr-xeD">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1392,7 +1416,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         </connections>
                                                     </button>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="c8u-qB-WbK">
-                                                        <rect key="frame" x="350" y="10" width="88" height="17"/>
+                                                        <rect key="frame" x="345" y="10" width="88" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(source code)" id="pmQ-71-PVZ">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1401,7 +1425,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                     </textField>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="c8u-qB-WbK" firstAttribute="leading" secondItem="i87-Pa-TZD" secondAttribute="trailing" constant="5" id="9Za-AM-3cr"/>
+                                                    <constraint firstItem="c8u-qB-WbK" firstAttribute="leading" secondItem="i87-Pa-TZD" secondAttribute="trailing" constant="10" id="9Za-AM-3cr"/>
                                                     <constraint firstItem="c8u-qB-WbK" firstAttribute="centerY" secondItem="i87-Pa-TZD" secondAttribute="centerY" id="DMo-op-9v5"/>
                                                     <constraint firstItem="i87-Pa-TZD" firstAttribute="top" secondItem="ibU-6J-Zdv" secondAttribute="top" constant="8" id="kuW-cn-ejw"/>
                                                     <constraint firstAttribute="bottom" secondItem="i87-Pa-TZD" secondAttribute="bottom" constant="8" id="slT-g9-UVV"/>
@@ -1504,6 +1528,8 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
         <image name="ic_cancel_black_48dp" width="72" height="72"/>
         <image name="ic_forward_black_48dp" width="72" height="72"/>
         <image name="ic_keyboard_black_48dp" width="72" height="72"/>
+        <image name="ic_label_black_48dp" width="72" height="72"/>
+        <image name="ic_label_outline_black_48dp" width="72" height="72"/>
         <image name="ic_mouse_black_48dp" width="72" height="72"/>
         <image name="ic_refresh_black_48dp" width="72" height="72"/>
         <image name="ic_remove_circle_black_48dp" width="72" height="72"/>

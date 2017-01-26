@@ -37,6 +37,14 @@
   }
 }
 
+- (IBAction)addProfile:(id)sender {
+  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+  [configurationManager.coreConfigurationModel addProfile];
+  [configurationManager save];
+
+  [self.tableView reloadData];
+}
+
 - (void)removeProfile:(id)sender {
   NSInteger row = [self.tableView rowForView:sender];
 
@@ -47,9 +55,11 @@
   [self.tableView reloadData];
 }
 
-- (IBAction)addProfile:(id)sender {
+- (void)selectProfile:(id)sender {
+  NSInteger row = [self.tableView rowForView:sender];
+
   KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-  [configurationManager.coreConfigurationModel addProfile];
+  [configurationManager.coreConfigurationModel selectProfile:(NSUInteger)(row)];
   [configurationManager save];
 
   [self.tableView reloadData];
