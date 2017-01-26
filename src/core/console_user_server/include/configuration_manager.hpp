@@ -35,14 +35,14 @@ public:
 
 private:
   void core_configuration_file_updated_callback(const std::string& file_path) {
-    auto new_ptr = std::make_unique<core_configuration>(logger_, file_path);
+    core_configuration core_configuration(logger_, file_path);
+
     // skip if karabiner.json is broken.
-    if (core_configuration_ && !new_ptr->is_loaded()) {
+    if (!core_configuration.is_loaded()) {
       return;
     }
 
-    core_configuration_ = std::move(new_ptr);
-    logger_.info("core_configuration_ was loaded.");
+    logger_.info("karabiner.json was loaded.");
 
     // ----------------------------------------
     // Send configuration to grabber.
@@ -50,19 +50,19 @@ private:
     grabber_client_.core_configuration_updated();
 
     grabber_client_.clear_simple_modifications();
-    for (const auto& pair : core_configuration_->get_current_profile_simple_modifications()) {
+    for (const auto& pair : core_configuration.get_current_profile_simple_modifications()) {
       grabber_client_.add_simple_modification(pair.first, pair.second);
     }
 
     grabber_client_.clear_fn_function_keys();
-    for (const auto& pair : core_configuration_->get_current_profile_fn_function_keys()) {
+    for (const auto& pair : core_configuration.get_current_profile_fn_function_keys()) {
       grabber_client_.add_fn_function_key(pair.first, pair.second);
     }
 
-    grabber_client_.virtual_hid_keyboard_configuration_updated(core_configuration_->get_current_profile_virtual_hid_keyboard());
+    grabber_client_.virtual_hid_keyboard_configuration_updated(core_configuration.get_current_profile_virtual_hid_keyboard());
 
     grabber_client_.clear_devices();
-    for (const auto& pair : core_configuration_->get_current_profile_devices()) {
+    for (const auto& pair : core_configuration.get_current_profile_devices()) {
       grabber_client_.add_device(pair.first, pair.second);
     }
     grabber_client_.complete_devices();
@@ -71,7 +71,7 @@ private:
     // Check for updates
     if (need_to_check_for_updates_) {
       need_to_check_for_updates_ = false;
-      if (core_configuration_->get_global_check_for_updates_on_startup()) {
+      if (core_configuration.get_global_check_for_updates_on_startup()) {
         logger_.info("Check for updates...");
         system("open '/Library/Application Support/org.pqrs/Karabiner-Elements/updater/Karabiner-Elements.app'");
       }
@@ -82,8 +82,6 @@ private:
   grabber_client& grabber_client_;
 
   std::unique_ptr<file_monitor> file_monitor_;
-
-  std::unique_ptr<core_configuration> core_configuration_;
 
   bool need_to_check_for_updates_;
 };
