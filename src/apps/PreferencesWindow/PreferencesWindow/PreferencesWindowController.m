@@ -70,6 +70,16 @@
 
                                                   [self updateSystemPreferencesUIValues];
                                                 }];
+  [[NSNotificationCenter defaultCenter] addObserverForName:kSelectedProfileChanged
+                                                    object:nil
+                                                     queue:[NSOperationQueue mainQueue]
+                                                usingBlock:^(NSNotification* note) {
+                                                  @strongify(self);
+                                                  if (!self) return;
+
+                                                  [self setupVirtualHIDKeyboardTypePopUpButton];
+                                                  [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
+                                                }];
 
   // ----------------------------------------
   // Update UI values

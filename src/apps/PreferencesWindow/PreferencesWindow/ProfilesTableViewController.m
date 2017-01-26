@@ -63,6 +63,8 @@
   [configurationManager save];
 
   [self.tableView reloadData];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:kSelectedProfileChanged object:nil];
 }
 
 @end
