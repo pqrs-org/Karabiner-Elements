@@ -1373,11 +1373,11 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CzP-aW-AzB">
-                                                        <rect key="frame" x="11" y="1" width="162" height="32"/>
+                                                        <rect key="frame" x="11" y="1" width="232" height="32"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="150" id="Jnc-lQ-tmx"/>
+                                                            <constraint firstAttribute="width" constant="220" id="Jnc-lQ-tmx"/>
                                                         </constraints>
-                                                        <buttonCell key="cell" type="push" title="Launch uninstaller" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Sr0-va-jSj">
+                                                        <buttonCell key="cell" type="push" title="Uninstall Karabiner-Elements" bezelStyle="rounded" image="ic_delete_forever_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Sr0-va-jSj">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>
@@ -1524,6 +1524,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
         <image name="ic_add_circle_18pt" width="36" height="36"/>
         <image name="ic_cancel_18pt" width="36" height="36"/>
         <image name="ic_check_18pt" width="36" height="36"/>
+        <image name="ic_delete_forever_18pt" width="36" height="36"/>
         <image name="ic_forward_18pt" width="36" height="36"/>
         <image name="ic_keyboard_18pt" width="36" height="36"/>
         <image name="ic_mouse_18pt" width="36" height="36"/>
