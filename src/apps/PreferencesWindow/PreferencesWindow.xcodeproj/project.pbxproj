@@ -25,7 +25,6 @@
 		347112F11D87010A001AC60D /* Relauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112F01D87010A001AC60D /* Relauncher.m */; };
 		347113101D870D74001AC60D /* libkrbn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3471130F1D870D74001AC60D /* libkrbn.a */; };
 		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
-		34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B1E1DBB292A00EB3583 /* JsonUtility.m */; };
 		34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */; };
 		34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */; };
 		34B97B391DBE5C9E00EB3583 /* DevicesTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B381DBE5C9E00EB3583 /* DevicesTableViewDelegate.m */; };
@@ -77,8 +76,6 @@
 		3471130F1D870D74001AC60D /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
 		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
-		34B97B1D1DBB292A00EB3583 /* JsonUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonUtility.h; path = ../../share/JsonUtility.h; sourceTree = "<group>"; };
-		34B97B1E1DBB292A00EB3583 /* JsonUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JsonUtility.m; path = ../../share/JsonUtility.m; sourceTree = "<group>"; };
 		34B97B281DBCC23D00EB3583 /* DevicesTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableViewDataSource.h; sourceTree = "<group>"; };
 		34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesTableViewDataSource.m; sourceTree = "<group>"; };
 		34B97B331DBE58AA00EB3583 /* DevicesTableCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableCellView.h; sourceTree = "<group>"; };
@@ -216,8 +213,6 @@
 		3469EB6B1D806AD60005D30D /* share */ = {
 			isa = PBXGroup;
 			children = (
-				34B97B1D1DBB292A00EB3583 /* JsonUtility.h */,
-				34B97B1E1DBB292A00EB3583 /* JsonUtility.m */,
 				347112EF1D87010A001AC60D /* Relauncher.h */,
 				347112F01D87010A001AC60D /* Relauncher.m */,
 				3469EB6C1D806AEA0005D30D /* weakify.h */,
@@ -328,7 +323,6 @@
 				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,
 				34ECD8FA1E365FFB007D5AB8 /* ProfilesTableViewController.m in Sources */,
 				34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */,
-				34B97B1F1DBB292A00EB3583 /* JsonUtility.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
 				3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */,
 			);

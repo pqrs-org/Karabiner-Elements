@@ -1,5 +1,5 @@
 #import "SimpleModificationsMenuManager.h"
-#import "JsonUtility.h"
+#import "KarabinerKit/KarabinerKit.h"
 
 @interface SimpleModificationsMenuManager ()
 
@@ -17,7 +17,7 @@
     return;
   }
 
-  NSArray* jsonObject = [JsonUtility loadFile:jsonFilePath];
+  NSArray* jsonObject = [KarabinerKitJsonUtility loadFile:jsonFilePath];
   if (jsonObject) {
     self.fromMenu = [NSMenu new];
     self.fromMenu.autoenablesItems = NO;
