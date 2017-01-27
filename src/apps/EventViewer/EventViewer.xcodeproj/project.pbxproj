@@ -16,7 +16,6 @@
 		34B97B171DBB26E400EB3583 /* simple_modifications.json in Resources */ = {isa = PBXBuildFile; fileRef = 34B97B161DBB26E400EB3583 /* simple_modifications.json */; };
 		34B97B191DBB276200EB3583 /* libkrbn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34B97B181DBB276200EB3583 /* libkrbn.a */; };
 		34B97B1B1DBB276B00EB3583 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 34B97B1A1DBB276B00EB3583 /* libc++.dylib */; };
-		34B97B221DBB298800EB3583 /* JsonUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B211DBB298800EB3583 /* JsonUtility.m */; };
 		34C92D221122EDA100B0B4ED /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C92D211122EDA100B0B4ED /* Carbon.framework */; };
 		34CA697F174FB72900EC8EFB /* EventQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA6978174FB72900EC8EFB /* EventQueue.m */; };
 		34CA6980174FB72900EC8EFB /* KeyResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA697A174FB72900EC8EFB /* KeyResponder.m */; };
@@ -49,8 +48,6 @@
 		34B97B181DBB276200EB3583 /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
 		34B97B1A1DBB276B00EB3583 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<group>"; };
 		34B97B1C1DBB27C900EB3583 /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
-		34B97B201DBB298800EB3583 /* JsonUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonUtility.h; path = ../share/JsonUtility.h; sourceTree = "<group>"; };
-		34B97B211DBB298800EB3583 /* JsonUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JsonUtility.m; path = ../share/JsonUtility.m; sourceTree = "<group>"; };
 		34C92D211122EDA100B0B4ED /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		34CA6977174FB72900EC8EFB /* EventQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EventQueue.h; path = Classes/EventQueue.h; sourceTree = "<group>"; };
 		34CA6978174FB72900EC8EFB /* EventQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EventQueue.m; path = Classes/EventQueue.m; sourceTree = "<group>"; };
@@ -171,8 +168,6 @@
 		34CA6972174FB71200EC8EFB /* share */ = {
 			isa = PBXGroup;
 			children = (
-				34B97B201DBB298800EB3583 /* JsonUtility.h */,
-				34B97B211DBB298800EB3583 /* JsonUtility.m */,
 				346971B01CE47C5D004034E1 /* weakify.h */,
 			);
 			name = share;
@@ -251,7 +246,6 @@
 				343EEA0E19C5E1D1001A969F /* TabView.m in Sources */,
 				34CA697F174FB72900EC8EFB /* EventQueue.m in Sources */,
 				3481A9BA1BC524280092E8EC /* PreferencesManager.m in Sources */,
-				34B97B221DBB298800EB3583 /* JsonUtility.m in Sources */,
 				34CA6980174FB72900EC8EFB /* KeyResponder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
