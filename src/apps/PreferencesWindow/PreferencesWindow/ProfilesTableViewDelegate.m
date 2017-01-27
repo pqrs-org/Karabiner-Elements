@@ -13,25 +13,33 @@
 
 - (NSView*)tableView:(NSTableView*)tableView viewForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row {
   KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-
-  KarabinerKitConfigurationProfile* profile = configurationManager.coreConfigurationModel.profiles[row];
+  NSArray<KarabinerKitConfigurationProfile*>* profiles = configurationManager.coreConfigurationModel.profiles;
+  KarabinerKitConfigurationProfile* profile = profiles[row];
 
   ProfilesTableCellView* result = [tableView makeViewWithIdentifier:@"ProfilesCellView" owner:self];
+
   result.name.stringValue = profile.name;
-  if (profile.selected) {
-    result.selectedImage.hidden = NO;
-    result.selected.hidden = NO;
+  result.name.action = @selector(valueChanged:);
+  result.name.target = self.profilesTableViewController;
+
+  if (profiles.count == 1) {
+    result.selectedImage.hidden = YES;
+    result.selected.hidden = YES;
     result.selectProfileButton.hidden = YES;
     result.removeProfileButton.hidden = YES;
   } else {
-    result.selectedImage.hidden = YES;
-    result.selected.hidden = YES;
-    result.selectProfileButton.hidden = NO;
-    result.removeProfileButton.hidden = NO;
+    if (profile.selected) {
+      result.selectedImage.hidden = NO;
+      result.selected.hidden = NO;
+      result.selectProfileButton.hidden = YES;
+      result.removeProfileButton.hidden = YES;
+    } else {
+      result.selectedImage.hidden = YES;
+      result.selected.hidden = YES;
+      result.selectProfileButton.hidden = NO;
+      result.removeProfileButton.hidden = NO;
+    }
   }
-
-  result.name.action = @selector(valueChanged:);
-  result.name.target = self.profilesTableViewController;
 
   result.selectProfileButton.action = @selector(selectProfile:);
   result.selectProfileButton.target = self.profilesTableViewController;

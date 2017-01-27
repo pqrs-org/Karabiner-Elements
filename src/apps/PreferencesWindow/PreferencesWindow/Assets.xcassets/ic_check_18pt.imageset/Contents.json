@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "ic_label_outline_18pt.png",
+      "filename" : "ic_check_18pt.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "ic_label_outline_18pt_2x.png",
+      "filename" : "ic_check_18pt_2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "ic_label_outline_18pt_3x.png",
+      "filename" : "ic_check_18pt_3x.png",
       "scale" : "3x"
     }
   ],
