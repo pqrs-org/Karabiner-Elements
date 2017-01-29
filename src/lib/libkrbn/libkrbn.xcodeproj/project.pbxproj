@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3404CB781E3E3C7100629451 /* update_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3404CB771E3E3C7100629451 /* update_utility.hpp */; };
+		3404CB7A1E3E430000629451 /* launchctl_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3404CB791E3E430000629451 /* launchctl_utility.hpp */; };
 		342853041DCB850200164476 /* libkrbn_system_preferences_monitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 342853031DCB850200164476 /* libkrbn_system_preferences_monitor.cpp */; };
 		342853071DCB851B00164476 /* system_preferences_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 342853051DCB851B00164476 /* system_preferences_monitor.hpp */; };
 		342853081DCB851B00164476 /* system_preferences.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 342853061DCB851B00164476 /* system_preferences.hpp */; };
@@ -30,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		3404CB771E3E3C7100629451 /* update_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = update_utility.hpp; path = ../../share/update_utility.hpp; sourceTree = SOURCE_ROOT; };
+		3404CB791E3E430000629451 /* launchctl_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = launchctl_utility.hpp; path = ../../share/launchctl_utility.hpp; sourceTree = SOURCE_ROOT; };
 		342853031DCB850200164476 /* libkrbn_system_preferences_monitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn_system_preferences_monitor.cpp; sourceTree = "<group>"; };
 		342853051DCB851B00164476 /* system_preferences_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences_monitor.hpp; path = ../../share/system_preferences_monitor.hpp; sourceTree = "<group>"; };
 		342853061DCB851B00164476 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 				3471130B1D87092D001AC60D /* constants.hpp */,
 				345F95411DA934C6002854B8 /* core_configuration.hpp */,
 				34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */,
+				3404CB791E3E430000629451 /* launchctl_utility.hpp */,
 				34CFEC701D9663EC004C61E1 /* log_monitor.hpp */,
 				34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */,
 				342853051DCB851B00164476 /* system_preferences_monitor.hpp */,
@@ -130,6 +133,7 @@
 				3404CB781E3E3C7100629451 /* update_utility.hpp in Headers */,
 				34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */,
 				342853071DCB851B00164476 /* system_preferences_monitor.hpp in Headers */,
+				3404CB7A1E3E430000629451 /* launchctl_utility.hpp in Headers */,
 				342853081DCB851B00164476 /* system_preferences.hpp in Headers */,
 				34B97B241DBB2C4700EB3583 /* types.hpp in Headers */,
 				3476862E1E22A9F400A7DFAB /* cf_utility.hpp in Headers */,

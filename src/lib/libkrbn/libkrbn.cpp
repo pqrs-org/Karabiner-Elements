@@ -1,6 +1,7 @@
 #include "libkrbn.h"
 #include "constants.hpp"
 #include "core_configuration.hpp"
+#include "launchctl_utility.hpp"
 #include "libkrbn.hpp"
 #include "thread_utility.hpp"
 #include "types.hpp"
@@ -80,6 +81,10 @@ bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const c
   } catch (std::exception& e) {
   }
   return false;
+}
+
+void libkrbn_launchctl_manage_console_user_server(bool load) {
+  launchctl_utility::manage_console_user_server(load);
 }
 
 void libkrbn_check_for_updates_in_background(void) {
