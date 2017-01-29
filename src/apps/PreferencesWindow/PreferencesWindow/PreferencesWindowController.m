@@ -221,7 +221,7 @@
         self.checkForUpdateOnStartupButton.state = NSOffState;
       }
 
-      if (coreConfigurationModel.globalConfiguration.showInMenubar) {
+      if (coreConfigurationModel.globalConfiguration.showInMenuBar) {
         // ...
       }
     }
