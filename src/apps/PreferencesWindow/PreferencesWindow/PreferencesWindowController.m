@@ -27,6 +27,7 @@
 @property(weak) IBOutlet NSTextField* virtualHIDKeyboardCapsLockDelayMillisecondsText;
 @property(weak) IBOutlet NSStepper* virtualHIDKeyboardCapsLockDelayMillisecondsStepper;
 @property(weak) IBOutlet NSButton* checkForUpdateOnStartupButton;
+@property(weak) IBOutlet NSButton* showInMenuBarButton;
 @property(weak) IBOutlet ProfilesTableViewController* profilesTableViewController;
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
@@ -222,7 +223,9 @@
       }
 
       if (coreConfigurationModel.globalConfiguration.showInMenuBar) {
-        // ...
+        self.showInMenuBarButton.state = NSOnState;
+      } else {
+        self.showInMenuBarButton.state = NSOffState;
       }
     }
   }
@@ -234,8 +237,11 @@
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = configurationManager.coreConfigurationModel;
     if (coreConfigurationModel) {
       coreConfigurationModel.globalConfiguration.checkForUpdatesOnStartup = (self.checkForUpdateOnStartupButton.state == NSOnState);
+      coreConfigurationModel.globalConfiguration.showInMenuBar = (self.showInMenuBarButton.state == NSOnState);
 
       [configurationManager save];
+
+      libkrbn_launch_menu();
     }
   }
 }

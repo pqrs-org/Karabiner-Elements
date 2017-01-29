@@ -49,6 +49,7 @@
                 <outlet property="keyboardFnStateButton" destination="tSp-iV-F6D" id="7ra-xV-6cv"/>
                 <outlet property="logFileTextViewController" destination="wKd-bU-aLe" id="432-Fh-vee"/>
                 <outlet property="profilesTableViewController" destination="lSQ-bm-e7S" id="63i-dL-nvU"/>
+                <outlet property="showInMenuBarButton" destination="AHk-df-Lmk" id="uF4-rt-rbe"/>
                 <outlet property="simpleModificationsMenuManager" destination="BTc-Hs-TSF" id="9bd-ge-hVm"/>
                 <outlet property="simpleModificationsTableView" destination="qEO-TG-yM2" id="Qcl-8d-0Fe"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="TxP-Ir-imi"/>
@@ -1430,6 +1431,30 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 </constraints>
                                             </view>
                                         </box>
+                                        <box title="Miscellaneous" translatesAutoresizingMaskIntoConstraints="NO" id="BAq-6J-75B">
+                                            <rect key="frame" x="14" y="125" width="726" height="47"/>
+                                            <view key="contentView" id="9XA-gC-pTe">
+                                                <rect key="frame" x="2" y="2" width="722" height="30"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="AHk-df-Lmk">
+                                                        <rect key="frame" x="15" y="6" width="241" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Show icon in menu bar (Default: On)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cel-5I-zrQ">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="CHt-rF-YUB"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="AHk-df-Lmk" secondAttribute="bottom" constant="8" id="CTd-Mf-Qxl"/>
+                                                    <constraint firstItem="AHk-df-Lmk" firstAttribute="leading" secondItem="9XA-gC-pTe" secondAttribute="leading" constant="17" id="dGb-ZH-I2O"/>
+                                                    <constraint firstItem="AHk-df-Lmk" firstAttribute="top" secondItem="9XA-gC-pTe" secondAttribute="top" constant="8" id="tBi-fH-cEd"/>
+                                                </constraints>
+                                            </view>
+                                        </box>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" constant="17" id="0eo-bc-F4Z"/>
@@ -1439,11 +1464,14 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                         <constraint firstItem="sau-jf-Dqb" firstAttribute="centerY" secondItem="DOX-q0-HoN" secondAttribute="centerY" id="KYg-f5-u1g"/>
                                         <constraint firstItem="DOX-q0-HoN" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="17" id="Okn-qw-iEx"/>
                                         <constraint firstItem="DOX-q0-HoN" firstAttribute="top" secondItem="oZ9-PG-xey" secondAttribute="top" constant="8" id="Qji-lS-jHg"/>
+                                        <constraint firstItem="BAq-6J-75B" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="UEh-kf-9oL"/>
                                         <constraint firstItem="ZAS-Lc-pSo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="aQo-bz-os7"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="cu0-mY-LNc"/>
+                                        <constraint firstItem="BAq-6J-75B" firstAttribute="top" secondItem="ZAS-Lc-pSo" secondAttribute="bottom" constant="20" id="epb-wg-d8d"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="fV2-yM-QGE"/>
                                         <constraint firstItem="ZAS-Lc-pSo" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="hgp-AD-qmh"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="top" secondItem="3j8-8U-bBH" secondAttribute="bottom" constant="20" id="otG-Wg-M9X"/>
+                                        <constraint firstItem="BAq-6J-75B" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="yhU-hH-Shb"/>
                                         <constraint firstItem="3j8-8U-bBH" firstAttribute="top" secondItem="DOX-q0-HoN" secondAttribute="bottom" constant="10" id="zkN-OQ-f0K"/>
                                     </constraints>
                                 </view>

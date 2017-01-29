@@ -23,7 +23,6 @@
 		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
 		347112ED1D86E619001AC60D /* UpdaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112EC1D86E619001AC60D /* UpdaterController.m */; };
 		347112F11D87010A001AC60D /* Relauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112F01D87010A001AC60D /* Relauncher.m */; };
-		347113101D870D74001AC60D /* libkrbn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3471130F1D870D74001AC60D /* libkrbn.a */; };
 		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
 		34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */; };
 		34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */; };
@@ -73,7 +72,6 @@
 		347112EC1D86E619001AC60D /* UpdaterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdaterController.m; sourceTree = "<group>"; };
 		347112EF1D87010A001AC60D /* Relauncher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Relauncher.h; path = ../../share/Relauncher.h; sourceTree = "<group>"; };
 		347112F01D87010A001AC60D /* Relauncher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Relauncher.m; path = ../../share/Relauncher.m; sourceTree = "<group>"; };
-		3471130F1D870D74001AC60D /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
 		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
 		34B97B281DBCC23D00EB3583 /* DevicesTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableViewDataSource.h; sourceTree = "<group>"; };
@@ -109,7 +107,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				34D4236B1E1A58D6000E4154 /* libKarabinerKit.a in Frameworks */,
-				347113101D870D74001AC60D /* libkrbn.a in Frameworks */,
 				347113131D870F5F001AC60D /* libc++.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -225,7 +222,6 @@
 			children = (
 				347113121D870F5F001AC60D /* libc++.dylib */,
 				34D4236A1E1A58D6000E4154 /* libKarabinerKit.a */,
-				3471130F1D870D74001AC60D /* libkrbn.a */,
 				347113111D870E87001AC60D /* libkrbn.h */,
 			);
 			name = Frameworks;
