@@ -19,6 +19,10 @@ const char* _Nonnull libkrbn_get_default_profile_json_string(void);
 
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string);
 
+void libkrbn_check_for_updates_in_background(void);
+void libkrbn_check_for_updates_stable_only(void);
+void libkrbn_check_for_updates_with_beta_version(void);
+
 // ----------------------------------------
 // libkrbn_configuration_monitor
 
@@ -53,6 +57,9 @@ bool libkrbn_device_monitor_initialize(libkrbn_device_monitor* _Nullable* _Nonnu
                                        libkrbn_device_monitor_callback _Nullable callback,
                                        void* _Nullable refcon);
 void libkrbn_device_monitor_terminate(libkrbn_device_monitor* _Nullable* _Nonnull out);
+
+// ----------------------------------------
+// libkrbn_log_monitor
 
 typedef void libkrbn_log_monitor;
 typedef void (*libkrbn_log_monitor_callback)(const char* _Nonnull line, void* _Nullable refcon);

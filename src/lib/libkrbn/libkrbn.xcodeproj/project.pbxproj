@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3404CB781E3E3C7100629451 /* update_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3404CB771E3E3C7100629451 /* update_utility.hpp */; };
 		342853041DCB850200164476 /* libkrbn_system_preferences_monitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 342853031DCB850200164476 /* libkrbn_system_preferences_monitor.cpp */; };
 		342853071DCB851B00164476 /* system_preferences_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 342853051DCB851B00164476 /* system_preferences_monitor.hpp */; };
 		342853081DCB851B00164476 /* system_preferences.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 342853061DCB851B00164476 /* system_preferences.hpp */; };
@@ -28,6 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3404CB771E3E3C7100629451 /* update_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = update_utility.hpp; path = ../../share/update_utility.hpp; sourceTree = SOURCE_ROOT; };
 		342853031DCB850200164476 /* libkrbn_system_preferences_monitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn_system_preferences_monitor.cpp; sourceTree = "<group>"; };
 		342853051DCB851B00164476 /* system_preferences_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences_monitor.hpp; path = ../../share/system_preferences_monitor.hpp; sourceTree = "<group>"; };
 		342853061DCB851B00164476 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 				342853061DCB851B00164476 /* system_preferences.hpp */,
 				34B97B0F1DB8D2F600EB3583 /* thread_utility.hpp */,
 				34B97B231DBB2C4700EB3583 /* types.hpp */,
+				3404CB771E3E3C7100629451 /* update_utility.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -124,6 +127,7 @@
 				347113081D870834001AC60D /* libkrbn.h in Headers */,
 				345F95421DA934C6002854B8 /* core_configuration.hpp in Headers */,
 				34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */,
+				3404CB781E3E3C7100629451 /* update_utility.hpp in Headers */,
 				34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */,
 				342853071DCB851B00164476 /* system_preferences_monitor.hpp in Headers */,
 				342853081DCB851B00164476 /* system_preferences.hpp in Headers */,

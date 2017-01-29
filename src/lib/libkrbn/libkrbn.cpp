@@ -4,6 +4,7 @@
 #include "libkrbn.hpp"
 #include "thread_utility.hpp"
 #include "types.hpp"
+#include "update_utility.hpp"
 #include <fstream>
 #include <iostream>
 #include <json/json.hpp>
@@ -79,4 +80,16 @@ bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const c
   } catch (std::exception& e) {
   }
   return false;
+}
+
+void libkrbn_check_for_updates_in_background(void) {
+  update_utility::check_for_updates_in_background();
+}
+
+void libkrbn_check_for_updates_stable_only(void) {
+  update_utility::check_for_updates_stable_only();
+}
+
+void libkrbn_check_for_updates_with_beta_version(void) {
+  update_utility::check_for_updates_with_beta_version();
 }
