@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdlib>
+#include <string>
+
 class update_utility final {
 public:
   static void check_for_updates_in_background(void) {
