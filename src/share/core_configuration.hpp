@@ -11,7 +11,8 @@
 // {
 //     "global": {
 //         "check_for_updates_on_startup": true,
-//         "show_in_menu_bar": true
+//         "show_in_menu_bar": true,
+//         "show_profile_name_in_menu_bar": true
 //     },
 //     "profiles": [
 //         {
@@ -193,6 +194,14 @@ public:
       return value;
     }
     return true;
+  }
+
+  bool get_global_show_profile_name_in_menu_bar(void) {
+    auto value = json_["global"]["show_profile_name_in_menu_bar"];
+    if (value.is_boolean()) {
+      return value;
+    }
+    return false;
   }
 
   // Note:
