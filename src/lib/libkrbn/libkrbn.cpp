@@ -1,4 +1,5 @@
 #include "libkrbn.h"
+#include "application_launcher.hpp"
 #include "constants.hpp"
 #include "core_configuration.hpp"
 #include "launchctl_utility.hpp"
@@ -97,4 +98,16 @@ void libkrbn_check_for_updates_stable_only(void) {
 
 void libkrbn_check_for_updates_with_beta_version(void) {
   update_utility::check_for_updates_with_beta_version();
+}
+
+void libkrbn_launch_event_viewer(void) {
+  application_launcher::launch_event_viewer();
+}
+
+void libkrbn_launch_menu(void) {
+  application_launcher::launch_menu();
+}
+
+void libkrbn_launch_preferences(void) {
+  application_launcher::launch_preferences();
 }

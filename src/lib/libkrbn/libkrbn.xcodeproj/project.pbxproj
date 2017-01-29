@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3404CB781E3E3C7100629451 /* update_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3404CB771E3E3C7100629451 /* update_utility.hpp */; };
 		3404CB7A1E3E430000629451 /* launchctl_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3404CB791E3E430000629451 /* launchctl_utility.hpp */; };
+		3404CB7C1E3E5B2000629451 /* application_launcher.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3404CB7B1E3E5B2000629451 /* application_launcher.hpp */; };
 		342853041DCB850200164476 /* libkrbn_system_preferences_monitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 342853031DCB850200164476 /* libkrbn_system_preferences_monitor.cpp */; };
 		342853071DCB851B00164476 /* system_preferences_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 342853051DCB851B00164476 /* system_preferences_monitor.hpp */; };
 		342853081DCB851B00164476 /* system_preferences.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 342853061DCB851B00164476 /* system_preferences.hpp */; };
@@ -32,6 +33,7 @@
 /* Begin PBXFileReference section */
 		3404CB771E3E3C7100629451 /* update_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = update_utility.hpp; path = ../../share/update_utility.hpp; sourceTree = SOURCE_ROOT; };
 		3404CB791E3E430000629451 /* launchctl_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = launchctl_utility.hpp; path = ../../share/launchctl_utility.hpp; sourceTree = SOURCE_ROOT; };
+		3404CB7B1E3E5B2000629451 /* application_launcher.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = application_launcher.hpp; path = ../../share/application_launcher.hpp; sourceTree = SOURCE_ROOT; };
 		342853031DCB850200164476 /* libkrbn_system_preferences_monitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn_system_preferences_monitor.cpp; sourceTree = "<group>"; };
 		342853051DCB851B00164476 /* system_preferences_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences_monitor.hpp; path = ../../share/system_preferences_monitor.hpp; sourceTree = "<group>"; };
 		342853061DCB851B00164476 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 		347113091D87091F001AC60D /* share */ = {
 			isa = PBXGroup;
 			children = (
+				3404CB7B1E3E5B2000629451 /* application_launcher.hpp */,
 				34B97B261DBB2C5A00EB3583 /* boost_defs.hpp */,
 				3476862D1E22A9F400A7DFAB /* cf_utility.hpp */,
 				3471130B1D87092D001AC60D /* constants.hpp */,
@@ -125,6 +128,7 @@
 				3471130C1D87092D001AC60D /* constants.hpp in Headers */,
 				345F953B1DA2AE3F002854B8 /* libkrbn.hpp in Headers */,
 				34CFEC731D9663F6004C61E1 /* spdlog_utility.hpp in Headers */,
+				3404CB7C1E3E5B2000629451 /* application_launcher.hpp in Headers */,
 				34B97B101DB8D2F600EB3583 /* thread_utility.hpp in Headers */,
 				34B97B271DBB2C5A00EB3583 /* boost_defs.hpp in Headers */,
 				347113081D870834001AC60D /* libkrbn.h in Headers */,
