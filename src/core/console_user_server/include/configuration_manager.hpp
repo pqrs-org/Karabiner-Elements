@@ -1,5 +1,6 @@
 #pragma once
 
+#include "application_launcher.hpp"
 #include "constants.hpp"
 #include "core_configuration.hpp"
 #include "file_monitor.hpp"
@@ -76,6 +77,12 @@ private:
         logger_.info("Check for updates...");
         update_utility::check_for_updates_in_background();
       }
+    }
+
+    // ----------------------------------------
+    // Launch menu
+    if (core_configuration.get_global_show_in_menu_bar()) {
+      application_launcher::launch_menu();
     }
   }
 

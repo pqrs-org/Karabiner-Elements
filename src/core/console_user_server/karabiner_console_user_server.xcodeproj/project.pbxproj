@@ -34,6 +34,7 @@
 		3431346F1DB710E80008F284 /* gcd_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = gcd_utility.hpp; path = ../../share/gcd_utility.hpp; sourceTree = SOURCE_ROOT; };
 		343134711DB71C2C0008F284 /* thread_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = thread_utility.hpp; path = ../../share/thread_utility.hpp; sourceTree = SOURCE_ROOT; };
 		344149111D212A1600C8ECFC /* karabiner_console_user_server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner_console_user_server; sourceTree = BUILT_PRODUCTS_DIR; };
+		344608C31E3E5DE4007956BD /* application_launcher.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = application_launcher.hpp; path = ../../share/application_launcher.hpp; sourceTree = SOURCE_ROOT; };
 		34492B891DB12F430084F167 /* spdlog_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = spdlog_utility.hpp; path = ../../share/spdlog_utility.hpp; sourceTree = SOURCE_ROOT; };
 		345A9DE31D7DD6E600578F84 /* configuration_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_manager.hpp; path = include/configuration_manager.hpp; sourceTree = SOURCE_ROOT; };
 		345A9DE41D7DD7A200578F84 /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = core_configuration.hpp; path = ../../share/core_configuration.hpp; sourceTree = SOURCE_ROOT; };
@@ -102,6 +103,7 @@
 		3495C6801D3CE652007CB9E7 /* share */ = {
 			isa = PBXGroup;
 			children = (
+				344608C31E3E5DE4007956BD /* application_launcher.hpp */,
 				345AC0051D621651009D1FB4 /* boost_defs.hpp */,
 				341F59CC1D516B1500B441A8 /* constants.hpp */,
 				345A9DE41D7DD7A200578F84 /* core_configuration.hpp */,
