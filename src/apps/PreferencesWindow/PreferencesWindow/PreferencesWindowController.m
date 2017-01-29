@@ -9,6 +9,7 @@
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
 #import "UpdaterController.h"
+#import "libkrbn.h"
 #import "weakify.h"
 
 @interface PreferencesWindowController ()
@@ -94,7 +95,7 @@
   [self updateSystemPreferencesUIValues];
 
   // ----------------------------------------
-  [self launchctlConsoleUserServer:YES];
+  libkrbn_launchctl_manage_console_user_server(true);
 }
 
 - (void)dealloc {
@@ -257,34 +258,8 @@
 }
 
 - (IBAction)quitWithConfirmation:(id)sender {
-  NSAlert* alert = [NSAlert new];
-  alert.messageText = @"Are you sure you want to quit Karabiner-Elements?";
-  alert.informativeText = @"The changed key will be restored after Karabiner-Elements is quit.";
-  [alert addButtonWithTitle:@"Quit"];
-  [alert addButtonWithTitle:@"Cancel"];
-  if ([alert runModal] == NSAlertFirstButtonReturn) {
-    [self launchctlConsoleUserServer:NO];
+  if ([KarabinerKit quitKarabinerWithConfirmation]) {
     [NSApp terminate:nil];
-  }
-}
-
-- (void)launchctlConsoleUserServer:(BOOL)load {
-  uid_t uid = getuid();
-  NSString* domainTarget = [NSString stringWithFormat:@"gui/%d", uid];
-  NSString* serviceTarget = [NSString stringWithFormat:@"gui/%d/org.pqrs.karabiner.karabiner_console_user_server", uid];
-  NSString* plistFilePath = @"/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist";
-
-  if (load) {
-    // If plistFilePath is already bootstrapped and disabled, launchctl bootstrap will fail until it is enabled again.
-    // So we should enable it first, and then bootstrap and enable it.
-
-    system([[NSString stringWithFormat:@"/bin/launchctl enable %@", serviceTarget] UTF8String]);
-    system([[NSString stringWithFormat:@"/bin/launchctl bootstrap %@ %@", domainTarget, plistFilePath] UTF8String]);
-    system([[NSString stringWithFormat:@"/bin/launchctl enable %@", serviceTarget] UTF8String]);
-
-  } else {
-    system([[NSString stringWithFormat:@"/bin/launchctl bootout %@ %@", domainTarget, plistFilePath] UTF8String]);
-    system([[NSString stringWithFormat:@"/bin/launchctl disable %@", serviceTarget] UTF8String]);
   }
 }
 
