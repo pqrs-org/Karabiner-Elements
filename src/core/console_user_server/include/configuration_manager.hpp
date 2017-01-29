@@ -5,6 +5,7 @@
 #include "file_monitor.hpp"
 #include "filesystem.hpp"
 #include "grabber_client.hpp"
+#include "update_utility.hpp"
 #include <CoreServices/CoreServices.h>
 #include <memory>
 
@@ -73,7 +74,7 @@ private:
       need_to_check_for_updates_ = false;
       if (core_configuration.get_global_check_for_updates_on_startup()) {
         logger_.info("Check for updates...");
-        system("open '/Library/Application Support/org.pqrs/Karabiner-Elements/updater/Karabiner-Elements.app'");
+        update_utility::check_for_updates_in_background();
       }
     }
   }
