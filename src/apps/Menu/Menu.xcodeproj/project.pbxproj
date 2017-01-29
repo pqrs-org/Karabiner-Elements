@@ -7,15 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		340CACD21E3DD20200A9D86D /* MenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340CACD11E3DD20200A9D86D /* MenuController.m */; };
 		34496A211E188C0E00276D0B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34496A201E188C0E00276D0B /* AppDelegate.m */; };
 		34496A241E188C0E00276D0B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 34496A231E188C0E00276D0B /* main.m */; };
 		34496A261E188C0E00276D0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34496A251E188C0E00276D0B /* Assets.xcassets */; };
 		34496A291E188C0E00276D0B /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34496A271E188C0E00276D0B /* MainMenu.xib */; };
 		34D423381E18ECE5000E4154 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 34D423371E18ECE5000E4154 /* libc++.dylib */; };
 		34D4233A1E18ED79000E4154 /* libkrbn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34D423391E18ED79000E4154 /* libkrbn.a */; };
+		34D7B1831E3DD57B008E42AC /* libKarabinerKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34D7B1821E3DD57B008E42AC /* libKarabinerKit.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		340CACD01E3DD20200A9D86D /* MenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuController.h; sourceTree = "<group>"; };
+		340CACD11E3DD20200A9D86D /* MenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuController.m; sourceTree = "<group>"; };
 		34496A1C1E188C0E00276D0B /* Karabiner-Menu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Karabiner-Menu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		34496A1F1E188C0E00276D0B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		34496A201E188C0E00276D0B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -26,6 +30,7 @@
 		34D423351E18ECB5000E4154 /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		34D423371E18ECE5000E4154 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<group>"; };
 		34D423391E18ED79000E4154 /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
+		34D7B1821E3DD57B008E42AC /* libKarabinerKit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libKarabinerKit.a; path = ../lib/KarabinerKit/build/Release/libKarabinerKit.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +38,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34D7B1831E3DD57B008E42AC /* libKarabinerKit.a in Frameworks */,
 				34D4233A1E18ED79000E4154 /* libkrbn.a in Frameworks */,
 				34D423381E18ECE5000E4154 /* libc++.dylib in Frameworks */,
 			);
@@ -64,8 +70,10 @@
 				34496A1F1E188C0E00276D0B /* AppDelegate.h */,
 				34496A201E188C0E00276D0B /* AppDelegate.m */,
 				34496A251E188C0E00276D0B /* Assets.xcassets */,
-				34496A271E188C0E00276D0B /* MainMenu.xib */,
 				34496A2A1E188C0E00276D0B /* Info.plist */,
+				34496A271E188C0E00276D0B /* MainMenu.xib */,
+				340CACD01E3DD20200A9D86D /* MenuController.h */,
+				340CACD11E3DD20200A9D86D /* MenuController.m */,
 				34496A221E188C0E00276D0B /* Supporting Files */,
 			);
 			path = Menu;
@@ -84,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				34D423371E18ECE5000E4154 /* libc++.dylib */,
+				34D7B1821E3DD57B008E42AC /* libKarabinerKit.a */,
 				34D423391E18ED79000E4154 /* libkrbn.a */,
 			);
 			name = Frameworks;
@@ -123,7 +132,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 34496A171E188C0E00276D0B /* Build configuration list for PBXProject "Karabiner-Menu" */;
+			buildConfigurationList = 34496A171E188C0E00276D0B /* Build configuration list for PBXProject "Menu" */;
 			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -160,6 +169,7 @@
 			files = (
 				34496A241E188C0E00276D0B /* main.m in Sources */,
 				34496A211E188C0E00276D0B /* AppDelegate.m in Sources */,
+				340CACD21E3DD20200A9D86D /* MenuController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,7 +231,11 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = ../../lib/libkrbn/build/Release;
+				HEADER_SEARCH_PATHS = ../lib/KarabinerKit/;
+				LIBRARY_SEARCH_PATHS = (
+					../../lib/libkrbn/build/Release,
+					../lib/KarabinerKit/build/Release,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -244,7 +258,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		34496A171E188C0E00276D0B /* Build configuration list for PBXProject "Karabiner-Menu" */ = {
+		34496A171E188C0E00276D0B /* Build configuration list for PBXProject "Menu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				34496A2C1E188C0E00276D0B /* Release */,

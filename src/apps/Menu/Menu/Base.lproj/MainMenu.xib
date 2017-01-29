@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1212" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1217" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
@@ -12,6 +12,48 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customObject id="Voe-Tx-rLC" customClass="AppDelegate"/>
+        <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
+            <connections>
+                <outlet property="menuController" destination="mfy-Mo-ZtT" id="dL7-y9-rxq"/>
+            </connections>
+        </customObject>
+        <customObject id="mfy-Mo-ZtT" customClass="MenuController">
+            <connections>
+                <outlet property="menu" destination="3gY-Tz-M5Y" id="pfK-VM-yS7"/>
+            </connections>
+        </customObject>
+        <menu id="3gY-Tz-M5Y" userLabel="StatusBarMenu">
+            <items>
+                <menuItem isSeparatorItem="YES" title="endoflist" id="Nrs-0z-bVB"/>
+                <menuItem title="Preferences..." id="GIk-F4-9kA">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="openPreferences:" target="mfy-Mo-ZtT" id="wVO-Qb-2qJ"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Check for updates..." id="5uz-ag-fpT">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="checkForUpdates:" target="mfy-Mo-ZtT" id="CzE-Zy-zor"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Launch EventViewer..." id="5ze-Yf-v7I">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="launchEventViewer:" target="mfy-Mo-ZtT" id="E3c-D3-XBY"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="t9I-dd-l5G"/>
+                <menuItem title="Quit Karabiner-Elements" id="lHD-gf-yxO">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="quitKarabiner:" target="mfy-Mo-ZtT" id="PIY-MC-k6y"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <connections>
+                <outlet property="delegate" destination="mfy-Mo-ZtT" id="5vY-aM-iPc"/>
+            </connections>
+        </menu>
     </objects>
 </document>

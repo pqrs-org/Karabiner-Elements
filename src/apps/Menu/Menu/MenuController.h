@@ -2,5 +2,8 @@
 
 @import Cocoa;
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+@interface MenuController : NSObject <NSMenuDelegate>
+
+- (void)setup;
+
 @end
