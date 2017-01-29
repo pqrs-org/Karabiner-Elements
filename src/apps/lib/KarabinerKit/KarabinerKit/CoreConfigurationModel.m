@@ -15,7 +15,8 @@
 
   if (self) {
     _checkForUpdatesOnStartup = YES;
-    _showInMenubar = YES;
+    _showInMenuBar = YES;
+    _showProfileNameInMenuBar = NO;
 
     if ([jsonObject isKindOfClass:[NSDictionary class]]) {
       {
@@ -27,7 +28,13 @@
       {
         NSNumber* value = jsonObject[@"show_in_menu_bar"];
         if (value) {
-          _showInMenubar = [value boolValue];
+          _showInMenuBar = [value boolValue];
+        }
+      }
+      {
+        NSNumber* value = jsonObject[@"show_profile_name_in_menu_bar"];
+        if (value) {
+          _showProfileNameInMenuBar = [value boolValue];
         }
       }
     }

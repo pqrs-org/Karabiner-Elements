@@ -60,7 +60,8 @@ static void configuration_file_updated_callback(const char* jsonString, void* re
 
   mutableJsonObject[@"global"] = @{
     @"check_for_updates_on_startup" : @(self.coreConfigurationModel.globalConfiguration.checkForUpdatesOnStartup),
-    @"show_in_menu_bar" : @(self.coreConfigurationModel.globalConfiguration.showInMenubar),
+    @"show_in_menu_bar" : @(self.coreConfigurationModel.globalConfiguration.showInMenuBar),
+    @"show_profile_name_in_menu_bar" : @(self.coreConfigurationModel.globalConfiguration.showProfileNameInMenuBar),
   };
 
   NSMutableArray* profiles = [NSMutableArray new];

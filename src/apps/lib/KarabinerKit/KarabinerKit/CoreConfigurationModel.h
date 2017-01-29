@@ -6,7 +6,8 @@
 @interface KarabinerKitGlobalConfiguration : NSObject
 
 @property BOOL checkForUpdatesOnStartup;
-@property BOOL showInMenubar;
+@property BOOL showInMenuBar;
+@property BOOL showProfileNameInMenuBar;
 
 - (instancetype)initWithJsonObject:(NSDictionary*)global;
 
