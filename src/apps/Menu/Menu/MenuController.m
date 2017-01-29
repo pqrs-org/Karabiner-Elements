@@ -99,7 +99,7 @@
 }
 
 - (IBAction)openPreferences:(id)sender {
-  [[NSWorkspace sharedWorkspace] launchApplication:@"/Applications/Karabiner-Elements.app"];
+  libkrbn_launch_preferences();
 }
 
 - (IBAction)checkForUpdates:(id)sender {
@@ -107,7 +107,7 @@
 }
 
 - (IBAction)launchEventViewer:(id)sender {
-  [[NSWorkspace sharedWorkspace] launchApplication:@"/Applications/Karabiner-EventViewer.app"];
+  libkrbn_launch_event_viewer();
 }
 
 - (IBAction)quitKarabiner:(id)sender {
