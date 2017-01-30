@@ -8,9 +8,13 @@
 
 class version_monitor final {
 public:
+  typedef std::function<void(void)> callback;
+
   version_monitor(const version_monitor&) = delete;
 
-  version_monitor(spdlog::logger& logger) : logger_(logger) {
+  version_monitor(spdlog::logger& logger,
+                  const callback& callback) : logger_(logger),
+                                              callback_(callback) {
     auto version_file_path = constants::get_version_file_path();
     auto version_file_directory = filesystem::dirname(version_file_path);
 
@@ -45,7 +49,10 @@ private:
     auto version = read_version_file();
     if (version_ != version) {
       logger_.info("Version is changed: '{0}' -> '{1}'", version_, version);
-      exit(0);
+      if (callback_) {
+        callback_();
+      }
+      version_ = version;
     }
   }
 
@@ -61,6 +68,7 @@ private:
   }
 
   spdlog::logger& logger_;
+  callback callback_;
 
   std::string version_;
   std::unique_ptr<file_monitor> file_monitor_;

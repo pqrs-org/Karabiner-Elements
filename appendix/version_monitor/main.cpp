@@ -18,7 +18,9 @@ public:
 int main(int argc, const char* argv[]) {
   thread_utility::register_main_thread();
 
-  version_monitor monitor(logger::get_logger());
+  version_monitor monitor(logger::get_logger(), [] {
+    logger::get_logger().info("version_changed_callback");
+  });
 
   CFRunLoopRun();
   return 0;

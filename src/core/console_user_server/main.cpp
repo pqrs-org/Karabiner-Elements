@@ -13,7 +13,9 @@ int main(int argc, const char* argv[]) {
 
   logger::get_logger().info("version {0}", karabiner_version);
 
-  std::unique_ptr<version_monitor> version_monitor_ptr = std::make_unique<version_monitor>(logger::get_logger());
+  std::unique_ptr<version_monitor> version_monitor_ptr = std::make_unique<version_monitor>(logger::get_logger(), [] {
+    exit(0);
+  });
 
   migration::migrate_v1();
 
