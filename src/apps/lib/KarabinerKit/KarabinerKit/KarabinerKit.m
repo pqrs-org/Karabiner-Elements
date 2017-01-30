@@ -1,12 +1,29 @@
 #import "KarabinerKit.h"
 #import "libkrbn.h"
 
+static libkrbn_version_monitor* libkrbn_version_monitor_ = NULL;
+
+static void version_changed_callback(void* refcon) {
+  [KarabinerKit relaunch];
+}
+
 @implementation KarabinerKit
 
 + (void)setup {
-  // initialize managers
-  [KarabinerKitConfigurationManager sharedManager];
-  [KarabinerKitDeviceManager sharedManager];
+  static dispatch_once_t once;
+
+  dispatch_once(&once, ^{
+    // initialize managers
+    [KarabinerKitConfigurationManager sharedManager];
+    [KarabinerKitDeviceManager sharedManager];
+
+    libkrbn_version_monitor_initialize(&libkrbn_version_monitor_, version_changed_callback, NULL);
+  });
+}
+
++ (void)relaunch {
+  [NSTask launchedTaskWithLaunchPath:[[NSBundle mainBundle] executablePath] arguments:@[]];
+  [NSApp terminate:nil];
 }
 
 + (BOOL)quitKarabinerWithConfirmation {

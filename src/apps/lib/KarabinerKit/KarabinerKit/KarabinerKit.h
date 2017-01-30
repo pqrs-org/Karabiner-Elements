@@ -12,6 +12,7 @@
 
 + (void)setup;
 
++ (void)relaunch;
 + (BOOL)quitKarabinerWithConfirmation;
 
 @end
