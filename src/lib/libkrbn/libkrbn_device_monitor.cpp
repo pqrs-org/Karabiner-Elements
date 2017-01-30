@@ -15,7 +15,7 @@ public:
 
     file_monitor_ = std::make_unique<file_monitor>(libkrbn::get_logger(),
                                                    targets,
-                                                   std::bind(&libkrbn_device_monitor_class::cpp_callback, this, std::placeholders::_1));
+                                                   [this](const std::string& file_path) { cpp_callback(file_path); });
 
     cpp_callback(constants::get_devices_json_file_path());
   }

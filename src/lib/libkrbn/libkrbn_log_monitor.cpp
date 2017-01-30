@@ -17,7 +17,7 @@ public:
     }
 
     log_monitor_ = std::make_unique<log_monitor>(targets,
-                                                 std::bind(&libkrbn_log_monitor_class::cpp_callback, this, std::placeholders::_1));
+                                                 [this](const std::string& line) { cpp_callback(line); });
   }
 
   const std::vector<std::pair<uint64_t, std::string>>& get_initial_lines(void) const {
