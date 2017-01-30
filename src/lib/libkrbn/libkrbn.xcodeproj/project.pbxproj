@@ -17,6 +17,8 @@
 		345F953B1DA2AE3F002854B8 /* libkrbn.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 345F953A1DA2AE3F002854B8 /* libkrbn.hpp */; };
 		345F953D1DA2AF06002854B8 /* libkrbn_configuration_monitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 345F953C1DA2AF06002854B8 /* libkrbn_configuration_monitor.cpp */; };
 		345F95421DA934C6002854B8 /* core_configuration.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 345F95411DA934C6002854B8 /* core_configuration.hpp */; };
+		346FC7FF1E3F8C2E0090B203 /* libkrbn_version_monitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 346FC7FE1E3F8C2E0090B203 /* libkrbn_version_monitor.cpp */; };
+		346FC8011E3F8CAD0090B203 /* version_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 346FC8001E3F8CAD0090B203 /* version_monitor.hpp */; };
 		347113051D8704B7001AC60D /* libkrbn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 347113031D8704B7001AC60D /* libkrbn.cpp */; };
 		347113081D870834001AC60D /* libkrbn.h in Headers */ = {isa = PBXBuildFile; fileRef = 347113071D870834001AC60D /* libkrbn.h */; };
 		3471130C1D87092D001AC60D /* constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3471130B1D87092D001AC60D /* constants.hpp */; };
@@ -41,6 +43,8 @@
 		345F953A1DA2AE3F002854B8 /* libkrbn.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = libkrbn.hpp; sourceTree = "<group>"; };
 		345F953C1DA2AF06002854B8 /* libkrbn_configuration_monitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn_configuration_monitor.cpp; sourceTree = "<group>"; };
 		345F95411DA934C6002854B8 /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = core_configuration.hpp; path = ../../share/core_configuration.hpp; sourceTree = "<group>"; };
+		346FC7FE1E3F8C2E0090B203 /* libkrbn_version_monitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn_version_monitor.cpp; sourceTree = "<group>"; };
+		346FC8001E3F8CAD0090B203 /* version_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = version_monitor.hpp; path = ../../share/version_monitor.hpp; sourceTree = "<group>"; };
 		347112FB1D8703F3001AC60D /* libkrbn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libkrbn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		347113031D8704B7001AC60D /* libkrbn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn.cpp; sourceTree = "<group>"; };
 		347113071D870834001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libkrbn.h; sourceTree = "<group>"; };
@@ -89,6 +93,7 @@
 				34B97B2B1DBCD2CB00EB3583 /* libkrbn_device_monitor.cpp */,
 				345F95381DA2ADC8002854B8 /* libkrbn_log_monitor.cpp */,
 				342853031DCB850200164476 /* libkrbn_system_preferences_monitor.cpp */,
+				346FC7FE1E3F8C2E0090B203 /* libkrbn_version_monitor.cpp */,
 				347113031D8704B7001AC60D /* libkrbn.cpp */,
 				347113071D870834001AC60D /* libkrbn.h */,
 				345F953A1DA2AE3F002854B8 /* libkrbn.hpp */,
@@ -114,6 +119,7 @@
 				34B97B0F1DB8D2F600EB3583 /* thread_utility.hpp */,
 				34B97B231DBB2C4700EB3583 /* types.hpp */,
 				3404CB771E3E3C7100629451 /* update_utility.hpp */,
+				346FC8001E3F8CAD0090B203 /* version_monitor.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -134,6 +140,7 @@
 				347113081D870834001AC60D /* libkrbn.h in Headers */,
 				345F95421DA934C6002854B8 /* core_configuration.hpp in Headers */,
 				34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */,
+				346FC8011E3F8CAD0090B203 /* version_monitor.hpp in Headers */,
 				3404CB781E3E3C7100629451 /* update_utility.hpp in Headers */,
 				34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */,
 				342853071DCB851B00164476 /* system_preferences_monitor.hpp in Headers */,
@@ -199,6 +206,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				346FC7FF1E3F8C2E0090B203 /* libkrbn_version_monitor.cpp in Sources */,
 				345F953D1DA2AF06002854B8 /* libkrbn_configuration_monitor.cpp in Sources */,
 				34B97B2C1DBCD2CB00EB3583 /* libkrbn_device_monitor.cpp in Sources */,
 				342853041DCB850200164476 /* libkrbn_system_preferences_monitor.cpp in Sources */,

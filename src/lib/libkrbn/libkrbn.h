@@ -77,6 +77,16 @@ size_t libkrbn_log_monitor_initial_lines_size(libkrbn_log_monitor* _Nonnull p);
 const char* _Nullable libkrbn_log_monitor_initial_line(libkrbn_log_monitor* _Nonnull p, size_t index);
 void libkrbn_log_monitor_start(libkrbn_log_monitor* _Nonnull p);
 
+// ----------------------------------------
+// libkrbn_version_monitor
+
+typedef void libkrbn_version_monitor;
+typedef void (*libkrbn_version_monitor_callback)(void* _Nullable refcon);
+bool libkrbn_version_monitor_initialize(libkrbn_version_monitor* _Nullable* _Nonnull out,
+                                        libkrbn_version_monitor_callback _Nullable callback,
+                                        void* _Nullable refcon);
+void libkrbn_version_monitor_terminate(libkrbn_version_monitor* _Nullable* _Nonnull out);
+
 #ifdef __cplusplus
 }
 #endif
