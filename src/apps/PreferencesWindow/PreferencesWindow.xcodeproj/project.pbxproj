@@ -22,7 +22,6 @@
 		3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB691D8061E40005D30D /* PreferencesWindowController.m */; };
 		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
 		347112ED1D86E619001AC60D /* UpdaterController.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112EC1D86E619001AC60D /* UpdaterController.m */; };
-		347112F11D87010A001AC60D /* Relauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = 347112F01D87010A001AC60D /* Relauncher.m */; };
 		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
 		34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */; };
 		34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */; };
@@ -70,8 +69,6 @@
 		3469EB6E1D8127980005D30D /* LogFileTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogFileTextViewController.m; sourceTree = "<group>"; };
 		347112EB1D86E619001AC60D /* UpdaterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdaterController.h; sourceTree = "<group>"; };
 		347112EC1D86E619001AC60D /* UpdaterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdaterController.m; sourceTree = "<group>"; };
-		347112EF1D87010A001AC60D /* Relauncher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Relauncher.h; path = ../../share/Relauncher.h; sourceTree = "<group>"; };
-		347112F01D87010A001AC60D /* Relauncher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Relauncher.m; path = ../../share/Relauncher.m; sourceTree = "<group>"; };
 		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
 		34B97B281DBCC23D00EB3583 /* DevicesTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableViewDataSource.h; sourceTree = "<group>"; };
@@ -210,8 +207,6 @@
 		3469EB6B1D806AD60005D30D /* share */ = {
 			isa = PBXGroup;
 			children = (
-				347112EF1D87010A001AC60D /* Relauncher.h */,
-				347112F01D87010A001AC60D /* Relauncher.m */,
 				3469EB6C1D806AEA0005D30D /* weakify.h */,
 			);
 			name = share;
@@ -311,7 +306,6 @@
 				34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */,
 				34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */,
 				345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */,
-				347112F11D87010A001AC60D /* Relauncher.m in Sources */,
 				345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */,
 				345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */,
 				34ECD8F61E3659BB007D5AB8 /* ProfilesTableCellView.m in Sources */,
