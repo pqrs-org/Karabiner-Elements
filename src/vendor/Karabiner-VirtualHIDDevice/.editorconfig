@@ -13,3 +13,6 @@ indent_style = tab
 
 [*.sh]
 indent_size = 4
+
+[*.sh.tmpl]
+indent_size = 4
