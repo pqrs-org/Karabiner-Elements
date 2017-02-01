@@ -20,10 +20,10 @@ public:
     }
 
     // Remove old logs and directories.
-    system("/bin/rm ~/.karabiner.d/log/*");
-    system("/bin/rmdir ~/.karabiner.d/log");
-    system("/bin/rmdir ~/.karabiner.d/configuration");
-    system("/bin/rmdir ~/.karabiner.d");
+    system("/bin/rm    ~/.karabiner.d/log/*         2>/dev/null");
+    system("/bin/rmdir ~/.karabiner.d/log           2>/dev/null");
+    system("/bin/rmdir ~/.karabiner.d/configuration 2>/dev/null");
+    system("/bin/rmdir ~/.karabiner.d               2>/dev/null");
   }
 
 private:
