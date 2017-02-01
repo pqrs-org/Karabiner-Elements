@@ -75,8 +75,8 @@ bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid
   return process_utility::lock_single_application_with_user_pid_file(pid_file_name);
 }
 
-void libkrbn_unlock_single_application(const char* _Nonnull pid_file_name) {
-  process_utility::unlock_single_application(pid_file_name);
+void libkrbn_unlock_single_application(void) {
+  process_utility::unlock_single_application();
 }
 
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string) {
