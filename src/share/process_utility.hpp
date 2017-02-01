@@ -1,5 +1,7 @@
 #pragma once
 
+#include "constants.hpp"
+#include "filesystem.hpp"
 #include <fcntl.h>
 #include <string>
 #include <sys/file.h>
@@ -24,5 +26,20 @@ public:
     if (fd >= 0) {
       flock(fd, LOCK_UN);
     }
+  }
+
+  static bool lock_single_application_with_user_pid_file(const std::string& pid_file_name) {
+    auto pid_directory = constants::get_user_pid_directory();
+    if (pid_directory.empty()) {
+      throw std::runtime_error("failed to get user pid directory");
+    }
+
+    filesystem::create_directory_with_intermediate_directories(pid_directory, 0700);
+    if (!filesystem::is_directory(pid_directory)) {
+      throw std::runtime_error("failed to create user pid directory");
+    }
+
+    std::string pid_file_path = pid_directory + "/" + pid_file_name;
+    return lock_single_application(pid_file_path);
   }
 };
