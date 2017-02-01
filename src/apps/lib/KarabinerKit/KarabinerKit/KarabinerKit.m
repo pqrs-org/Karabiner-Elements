@@ -21,7 +21,16 @@ static void version_changed_callback(void* refcon) {
   });
 }
 
++ (void)exitIfAnotherProcessIsRunning:(const char*)pidFileName {
+  if (!libkrbn_lock_single_application_with_user_pid_file(pidFileName)) {
+    NSLog(@"Exit since another process is running.");
+    [NSApp terminate:nil];
+  }
+}
+
 + (void)relaunch {
+  libkrbn_unlock_single_application();
+
   [NSTask launchedTaskWithLaunchPath:[[NSBundle mainBundle] executablePath] arguments:@[]];
   [NSApp terminate:nil];
 }

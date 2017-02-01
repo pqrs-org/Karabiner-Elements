@@ -11,6 +11,7 @@
 @interface KarabinerKit : NSObject
 
 + (void)setup;
++ (void)exitIfAnotherProcessIsRunning:(const char*)pidFileName;
 
 + (void)relaunch;
 + (BOOL)quitKarabinerWithConfirmation;

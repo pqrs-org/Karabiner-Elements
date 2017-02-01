@@ -17,6 +17,7 @@
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
   [KarabinerKit setup];
+  [KarabinerKit exitIfAnotherProcessIsRunning:"preferences_window.pid"];
 
   [self.systemPreferencesManager setup];
 
