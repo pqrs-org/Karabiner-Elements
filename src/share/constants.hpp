@@ -127,6 +127,24 @@ public:
     }
   }
 
+  static const std::string& get_user_pid_directory(void) {
+    static std::mutex mutex;
+    static bool once = false;
+    static std::string directory;
+
+    std::lock_guard<std::mutex> guard(mutex);
+
+    if (!once) {
+      once = true;
+      if (auto p = get_user_data_directory()) {
+        directory = p;
+        directory += "/pid";
+      }
+    }
+
+    return directory;
+  }
+
   static CFStringRef get_distributed_notification_observed_object(void) {
     return CFSTR("org.pqrs.karabiner");
   }
