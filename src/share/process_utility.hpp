@@ -28,7 +28,7 @@ public:
   }
 
   static void unlock_single_application(const std::string& pid_file_path) {
-    auto fd = open(pid_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
+    auto fd = open(pid_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
     if (fd >= 0) {
       flock(fd, LOCK_UN);
     }
