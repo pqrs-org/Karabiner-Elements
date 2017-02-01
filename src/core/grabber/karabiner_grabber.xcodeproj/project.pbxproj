@@ -26,6 +26,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		340C7F681E424F0E00F9B911 /* process_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_utility.hpp; path = ../../share/process_utility.hpp; sourceTree = SOURCE_ROOT; };
 		3411F57C1D84FD9400C4ED1E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../../share/local_datagram_server.hpp; sourceTree = SOURCE_ROOT; };
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = SOURCE_ROOT; };
@@ -123,6 +124,7 @@
 				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				345AC0021D620C8C009D1FB4 /* notification_center.hpp */,
 				347113141D871C6C001AC60D /* process_monitor.hpp */,
+				340C7F681E424F0E00F9B911 /* process_utility.hpp */,
 				34DA28A31D8FC8BE0029E37D /* service_observer.hpp */,
 				34A88A8F1D6840C200DD480B /* session.hpp */,
 				34492B881DB12C9A0084F167 /* spdlog_utility.hpp */,

@@ -3,6 +3,7 @@
 #include "event_manipulator.hpp"
 #include "karabiner_version.h"
 #include "notification_center.hpp"
+#include "process_utility.hpp"
 #include "thread_utility.hpp"
 #include "version_monitor.hpp"
 #include "virtual_hid_device_client.hpp"
@@ -21,6 +22,16 @@ int main(int argc, const char* argv[]) {
   thread_utility::register_main_thread();
 
   logger::get_logger().info("version {0}", karabiner_version);
+
+  {
+    std::string pid_file_path = std::string(constants::get_tmp_directory()) + "/karabiner_grabber.pid";
+    if (!process_utility::lock_single_application(pid_file_path)) {
+      std::string message("Exit since another process is running.");
+      logger::get_logger().info(message);
+      std::cerr << message << std::endl;
+      return 0;
+    }
+  }
 
   std::unique_ptr<version_monitor> version_monitor_ptr = std::make_unique<version_monitor>(logger::get_logger(), [] {
     exit(0);
