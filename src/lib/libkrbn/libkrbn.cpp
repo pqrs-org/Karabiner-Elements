@@ -4,6 +4,7 @@
 #include "core_configuration.hpp"
 #include "launchctl_utility.hpp"
 #include "libkrbn.hpp"
+#include "process_utility.hpp"
 #include "thread_utility.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
@@ -68,6 +69,14 @@ const char* _Nonnull libkrbn_get_default_profile_json_string(void) {
   }
 
   return result.c_str();
+}
+
+bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name) {
+  return process_utility::lock_single_application_with_user_pid_file(pid_file_name);
+}
+
+void libkrbn_unlock_single_application(const char* _Nonnull pid_file_name) {
+  process_utility::unlock_single_application(pid_file_name);
 }
 
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string) {
