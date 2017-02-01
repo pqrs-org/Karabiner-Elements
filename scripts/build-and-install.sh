@@ -1,5 +1,8 @@
 #!/bin/bash
 
+topdir=`dirname $0`/..
+cd "$topdir"
+
 set -e
 
 # remove macports include paths
