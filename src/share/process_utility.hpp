@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include <fcntl.h>
+#include <sstream>
 #include <string>
 #include <sys/file.h>
 
@@ -15,6 +16,11 @@ public:
     }
 
     if (flock(fd, LOCK_EX | LOCK_NB) == 0) {
+      std::stringstream ss;
+      ss << getpid() << std::endl;
+      auto string = ss.str();
+      write(fd, string.c_str(), string.size());
+
       return true;
     }
 
