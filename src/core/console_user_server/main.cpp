@@ -3,6 +3,7 @@
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "migration.hpp"
+#include "process_utility.hpp"
 #include "thread_utility.hpp"
 #include "version_monitor.hpp"
 
@@ -12,6 +13,13 @@ int main(int argc, const char* argv[]) {
   thread_utility::register_main_thread();
 
   logger::get_logger().info("version {0}", karabiner_version);
+
+  if (!process_utility::lock_single_application_with_user_pid_file("karabiner_console_user_server.pid")) {
+    std::string message("Exit since another process is running.");
+    logger::get_logger().info(message);
+    std::cerr << message << std::endl;
+    return 0;
+  }
 
   std::unique_ptr<version_monitor> version_monitor_ptr = std::make_unique<version_monitor>(logger::get_logger(), [] {
     exit(0);

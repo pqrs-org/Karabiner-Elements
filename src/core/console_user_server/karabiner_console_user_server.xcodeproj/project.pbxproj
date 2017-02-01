@@ -27,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		3404CB761E3E3B3100629451 /* update_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = update_utility.hpp; path = ../../share/update_utility.hpp; sourceTree = SOURCE_ROOT; };
+		340C7F671E424D2C00F9B911 /* process_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_utility.hpp; path = ../../share/process_utility.hpp; sourceTree = SOURCE_ROOT; };
 		341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_server.hpp; path = ../../share/local_datagram_server.hpp; sourceTree = SOURCE_ROOT; };
 		341F59CC1D516B1500B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = SOURCE_ROOT; };
 		341F59D51D535D2500B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../../share/local_datagram_client.hpp; sourceTree = SOURCE_ROOT; };
@@ -117,6 +118,7 @@
 				341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */,
 				345AC0031D620E28009D1FB4 /* notification_center.hpp */,
 				347113151D871EC1001AC60D /* process_monitor.hpp */,
+				340C7F671E424D2C00F9B911 /* process_utility.hpp */,
 				34A88A9D1D685A4600DD480B /* session.hpp */,
 				34492B891DB12F430084F167 /* spdlog_utility.hpp */,
 				349950651D898530004FE466 /* system_preferences_monitor.hpp */,
