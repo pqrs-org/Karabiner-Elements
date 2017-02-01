@@ -105,7 +105,7 @@ public:
     }
   }
 
-  static const char* get_user_log_directory(void) {
+  static const std::string& get_user_log_directory(void) {
     static std::mutex mutex;
     static bool once = false;
     static std::string directory;
@@ -120,11 +120,7 @@ public:
       }
     }
 
-    if (directory.empty()) {
-      return nullptr;
-    } else {
-      return directory.c_str();
-    }
+    return directory;
   }
 
   static const std::string& get_user_pid_directory(void) {

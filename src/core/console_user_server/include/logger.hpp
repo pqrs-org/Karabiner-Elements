@@ -12,8 +12,8 @@ public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
-      if (auto p = constants::get_user_log_directory()) {
-        std::string log_directory(p);
+      auto log_directory = constants::get_user_log_directory();
+      if (!log_directory.empty()) {
         filesystem::create_directory_with_intermediate_directories(log_directory, 0700);
 
         if (filesystem::is_directory(log_directory)) {

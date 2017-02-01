@@ -12,8 +12,9 @@ public:
     std::vector<std::string> targets = {
         "/var/log/karabiner/grabber_log",
     };
-    if (auto p = constants::get_user_log_directory()) {
-      targets.push_back(std::string(p) + "/console_user_server_log");
+    auto log_directory = constants::get_user_log_directory();
+    if (!log_directory.empty()) {
+      targets.push_back(log_directory + "/console_user_server_log");
     }
 
     log_monitor_ = std::make_unique<log_monitor>(targets,
