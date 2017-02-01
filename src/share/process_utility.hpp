@@ -16,6 +16,8 @@ public:
     }
 
     if (flock(fd, LOCK_EX | LOCK_NB) == 0) {
+      get_single_application_lock_pid_file_descriptor() = fd;
+
       std::stringstream ss;
       ss << getpid() << std::endl;
       auto string = ss.str();
@@ -27,10 +29,11 @@ public:
     return false;
   }
 
-  static void unlock_single_application(const std::string& pid_file_path) {
-    auto fd = open(pid_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
+  static void unlock_single_application(void) {
+    auto& fd = get_single_application_lock_pid_file_descriptor();
     if (fd >= 0) {
       flock(fd, LOCK_UN);
+      close(fd);
     }
   }
 
@@ -47,5 +50,11 @@ public:
 
     std::string pid_file_path = pid_directory + "/" + pid_file_name;
     return lock_single_application(pid_file_path);
+  }
+
+private:
+  static int& get_single_application_lock_pid_file_descriptor(void) {
+    static int fd = 0;
+    return fd;
   }
 };
