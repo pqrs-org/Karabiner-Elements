@@ -34,6 +34,7 @@ public:
     if (fd >= 0) {
       flock(fd, LOCK_UN);
       close(fd);
+      fd = -1;
     }
   }
 
@@ -54,7 +55,7 @@ public:
 
 private:
   static int& get_single_application_lock_pid_file_descriptor(void) {
-    static int fd = 0;
+    static int fd = -1;
     return fd;
   }
 };
