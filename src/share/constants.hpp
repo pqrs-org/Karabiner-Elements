@@ -129,11 +129,15 @@ public:
     return directory;
   }
 
-  static CFStringRef get_distributed_notification_observed_object(void) {
-    return CFSTR("org.pqrs.karabiner");
+  static const char* get_distributed_notification_observed_object(void) {
+    return "org.pqrs.karabiner";
   }
 
-  static CFStringRef get_distributed_notification_grabber_is_launched(void) {
-    return CFSTR("grabber_is_launched");
+  static const char* get_distributed_notification_grabber_is_launched(void) {
+    return "grabber_is_launched";
+  }
+
+  static const char* get_distributed_notification_console_user_server_is_disabled(void) {
+    return "console_user_server_is_disabled";
   }
 };

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "constants.hpp"
+#include "notification_center.hpp"
 #include <cstdlib>
-#include <string>
 #include <sstream>
+#include <string>
 
 class launchctl_utility final {
 public:
@@ -38,6 +40,8 @@ public:
         auto command = std::string("/bin/launchctl disable ") + service_target;
         system(command.c_str());
       }
+
+      notification_center::post_distributed_notification(constants::get_distributed_notification_console_user_server_is_disabled());
     }
   }
 };
