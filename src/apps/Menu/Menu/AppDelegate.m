@@ -13,6 +13,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [KarabinerKit setup];
   [KarabinerKit exitIfAnotherProcessIsRunning:"menu.pid"];
+  [KarabinerKit observeConsoleUserServerIsDisabledNotification];
 
   [self.menuController setup];
 }

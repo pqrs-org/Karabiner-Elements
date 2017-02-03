@@ -272,9 +272,7 @@
 }
 
 - (IBAction)quitWithConfirmation:(id)sender {
-  if ([KarabinerKit quitKarabinerWithConfirmation]) {
-    [NSApp terminate:nil];
-  }
+  [KarabinerKit quitKarabinerWithConfirmation];
 }
 
 @end
