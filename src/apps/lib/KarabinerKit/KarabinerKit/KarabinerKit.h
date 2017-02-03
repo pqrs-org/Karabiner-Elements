@@ -13,6 +13,8 @@
 + (void)setup;
 + (void)exitIfAnotherProcessIsRunning:(const char*)pidFileName;
 
++ (void)observeConsoleUserServerIsDisabledNotification;
+
 + (void)relaunch;
 + (BOOL)quitKarabinerWithConfirmation;
 
