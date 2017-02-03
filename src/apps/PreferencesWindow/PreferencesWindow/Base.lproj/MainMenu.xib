@@ -50,6 +50,7 @@
                 <outlet property="logFileTextViewController" destination="wKd-bU-aLe" id="432-Fh-vee"/>
                 <outlet property="profilesTableViewController" destination="lSQ-bm-e7S" id="63i-dL-nvU"/>
                 <outlet property="showInMenuBarButton" destination="AHk-df-Lmk" id="uF4-rt-rbe"/>
+                <outlet property="showProfileNameInMenuBarButton" destination="TNd-jk-kpr" id="qrS-KW-dmV"/>
                 <outlet property="simpleModificationsMenuManager" destination="BTc-Hs-TSF" id="9bd-ge-hVm"/>
                 <outlet property="simpleModificationsTableView" destination="qEO-TG-yM2" id="Qcl-8d-0Fe"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="TxP-Ir-imi"/>
@@ -1432,13 +1433,13 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </view>
                                         </box>
                                         <box title="Miscellaneous" translatesAutoresizingMaskIntoConstraints="NO" id="BAq-6J-75B">
-                                            <rect key="frame" x="14" y="125" width="726" height="47"/>
+                                            <rect key="frame" x="14" y="101" width="726" height="71"/>
                                             <view key="contentView" id="9XA-gC-pTe">
-                                                <rect key="frame" x="2" y="2" width="722" height="30"/>
+                                                <rect key="frame" x="2" y="2" width="722" height="54"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="AHk-df-Lmk">
-                                                        <rect key="frame" x="15" y="6" width="241" height="18"/>
+                                                        <rect key="frame" x="15" y="30" width="241" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show icon in menu bar (Default: On)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cel-5I-zrQ">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -1447,10 +1448,22 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                             <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="CHt-rF-YUB"/>
                                                         </connections>
                                                     </button>
+                                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="TNd-jk-kpr">
+                                                        <rect key="frame" x="35" y="6" width="292" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Show profile name in menu bar (Default: Off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="dqN-LK-Qdn">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="changeMiscTabControls:" target="5ke-qB-Wr5" id="fGd-h5-gMY"/>
+                                                        </connections>
+                                                    </button>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstAttribute="bottom" secondItem="AHk-df-Lmk" secondAttribute="bottom" constant="8" id="CTd-Mf-Qxl"/>
+                                                    <constraint firstAttribute="bottom" secondItem="TNd-jk-kpr" secondAttribute="bottom" constant="8" id="GQ0-ap-Rnz"/>
+                                                    <constraint firstItem="TNd-jk-kpr" firstAttribute="top" secondItem="AHk-df-Lmk" secondAttribute="bottom" constant="10" id="JbR-OF-0u2"/>
                                                     <constraint firstItem="AHk-df-Lmk" firstAttribute="leading" secondItem="9XA-gC-pTe" secondAttribute="leading" constant="17" id="dGb-ZH-I2O"/>
+                                                    <constraint firstItem="TNd-jk-kpr" firstAttribute="leading" secondItem="AHk-df-Lmk" secondAttribute="leading" constant="20" id="rnM-zX-mB6"/>
                                                     <constraint firstItem="AHk-df-Lmk" firstAttribute="top" secondItem="9XA-gC-pTe" secondAttribute="top" constant="8" id="tBi-fH-cEd"/>
                                                 </constraints>
                                             </view>
