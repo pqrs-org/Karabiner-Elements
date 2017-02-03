@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>VirtualHIDDevice</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.pqrs.driver.Karabiner.VirtualHIDDevice.v040200</string>
+	<string>org.pqrs.driver.Karabiner.VirtualHIDDevice.v040300</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>KEXT</string>
 	<key>CFBundleShortVersionString</key>
-	<string>4.2.0</string>
+	<string>4.3.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleSupportedPlatforms</key>
@@ -25,7 +25,7 @@
 		<string>MacOSX</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>4.2.0</string>
+	<string>4.3.0</string>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
@@ -45,19 +45,19 @@
 		<key>VirtualHIDRoot</key>
 		<dict>
 			<key>CFBundleIdentifier</key>
-			<string>org.pqrs.driver.Karabiner.VirtualHIDDevice.v040200</string>
+			<string>org.pqrs.driver.Karabiner.VirtualHIDDevice.v040300</string>
 			<key>IOClass</key>
-			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040200</string>
+			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040300</string>
 			<key>IOKitDebug</key>
 			<integer>0</integer>
 			<key>IOMatchCategory</key>
-			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040200</string>
+			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040300</string>
 			<key>IOProviderClass</key>
 			<string>IOResources</string>
 			<key>IOResourceMatch</key>
 			<string>IOKit</string>
 			<key>IOUserClientClass</key>
-			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_UserClient_v040200</string>
+			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_UserClient_v040300</string>
 		</dict>
 	</dict>
 	<key>OSBundleLibraries</key>

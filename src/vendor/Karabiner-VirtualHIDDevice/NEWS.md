@@ -1,3 +1,8 @@
+# Version 4.3.0
+
+* kextunload calls in `uninstall.sh` and `update.sh` has been removed in order to avoid a macOS problem.
+
+
 # Version 4.2.0
 
 * Fixed issue:
