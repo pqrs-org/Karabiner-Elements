@@ -23,7 +23,7 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_devices.json";
   }
 
-  static const char* get_user_configuration_directory(void) {
+  static const std::string& get_user_configuration_directory(void) {
     static std::mutex mutex;
     static bool once = false;
     static std::string directory;
@@ -46,14 +46,10 @@ public:
       }
     }
 
-    if (directory.empty()) {
-      return nullptr;
-    } else {
-      return directory.c_str();
-    }
+    return directory;
   }
 
-  static const char* get_user_data_directory(void) {
+  static const std::string& get_user_data_directory(void) {
     static std::mutex mutex;
     static bool once = false;
     static std::string directory;
@@ -76,14 +72,10 @@ public:
       }
     }
 
-    if (directory.empty()) {
-      return nullptr;
-    } else {
-      return directory.c_str();
-    }
+    return directory;
   }
 
-  static const char* get_core_configuration_file_path(void) {
+  static const std::string& get_core_configuration_file_path(void) {
     static std::mutex mutex;
     static bool once = false;
     static std::string file_path;
@@ -92,17 +84,13 @@ public:
 
     if (!once) {
       once = true;
-      if (auto p = get_user_configuration_directory()) {
-        file_path = p;
-        file_path += "/karabiner.json";
+      auto directory = get_user_configuration_directory();
+      if (!directory.empty()) {
+        file_path = directory + "/karabiner.json";
       }
     }
 
-    if (file_path.empty()) {
-      return nullptr;
-    } else {
-      return file_path.c_str();
-    }
+    return file_path;
   }
 
   static const std::string& get_user_log_directory(void) {
@@ -114,9 +102,9 @@ public:
 
     if (!once) {
       once = true;
-      if (auto p = get_user_data_directory()) {
-        directory = p;
-        directory += "/log";
+      auto d = get_user_data_directory();
+      if (!d.empty()) {
+        directory = d + "/log";
       }
     }
 
@@ -132,9 +120,9 @@ public:
 
     if (!once) {
       once = true;
-      if (auto p = get_user_data_directory()) {
-        directory = p;
-        directory += "/pid";
+      auto d = get_user_data_directory();
+      if (!d.empty()) {
+        directory = d + "/pid";
       }
     }
 

@@ -48,7 +48,7 @@ const char* libkrbn_get_distributed_notification_grabber_is_launched(void) {
 }
 
 const char* libkrbn_get_core_configuration_file_path(void) {
-  return constants::get_core_configuration_file_path();
+  return constants::get_core_configuration_file_path().c_str();
 }
 
 const char* libkrbn_get_devices_json_file_path(void) {
