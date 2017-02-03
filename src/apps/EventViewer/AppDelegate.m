@@ -22,10 +22,6 @@
   return YES;
 }
 
-- (void)dealloc {
-  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem {
   if ([[tabViewItem identifier] isEqualToString:@"Main"]) {
     [self setKeyResponder];
