@@ -8,7 +8,6 @@
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
-#import "UpdaterController.h"
 #import "libkrbn.h"
 #import "weakify.h"
 
@@ -255,11 +254,11 @@
 }
 
 - (IBAction)checkForUpdatesStableOnly:(id)sender {
-  [UpdaterController checkForUpdatesStableOnly];
+  libkrbn_check_for_updates_stable_only();
 }
 
 - (IBAction)checkForUpdatesWithBetaVersion:(id)sender {
-  [UpdaterController checkForUpdatesWithBetaVersion];
+  libkrbn_check_for_updates_with_beta_version();
 }
 
 - (IBAction)launchUninstaller:(id)sender {
