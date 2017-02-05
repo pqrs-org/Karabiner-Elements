@@ -10,6 +10,16 @@
 class process_utility final {
 public:
   static bool lock_single_application(const std::string& pid_file_path) {
+    auto pid_directory = filesystem::dirname(pid_file_path);
+    if (pid_directory.empty()) {
+      throw std::runtime_error("failed to get user pid directory");
+    }
+
+    filesystem::create_directory_with_intermediate_directories(pid_directory, 0700);
+    if (!filesystem::is_directory(pid_directory)) {
+      throw std::runtime_error("failed to create pid directory");
+    }
+
     auto fd = open(pid_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
     if (fd < 0) {
       throw std::runtime_error("failed to create pid file");
@@ -42,11 +52,6 @@ public:
     auto pid_directory = constants::get_user_pid_directory();
     if (pid_directory.empty()) {
       throw std::runtime_error("failed to get user pid directory");
-    }
-
-    filesystem::create_directory_with_intermediate_directories(pid_directory, 0700);
-    if (!filesystem::is_directory(pid_directory)) {
-      throw std::runtime_error("failed to create user pid directory");
     }
 
     std::string pid_file_path = pid_directory + "/" + pid_file_name;
