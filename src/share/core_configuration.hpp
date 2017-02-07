@@ -71,6 +71,69 @@
 
 class core_configuration final {
 public:
+  class global_configuration final {
+  public:
+    global_configuration(const nlohmann::json& json) : check_for_updates_on_startup_(true),
+                                                       show_in_menu_bar_(true),
+                                                       show_profile_name_in_menu_bar_(false) {
+      {
+        const std::string key = "check_for_updates_on_startup";
+        if (json.find(key) != json.end() &&
+            json[key].is_boolean()) {
+          check_for_updates_on_startup_ = json[key];
+        }
+      }
+      {
+        const std::string key = "show_in_menu_bar";
+        if (json.find(key) != json.end() &&
+            json[key].is_boolean()) {
+          show_in_menu_bar_ = json[key];
+        }
+      }
+      {
+        const std::string key = "show_profile_name_in_menu_bar";
+        if (json.find(key) != json.end() &&
+            json[key].is_boolean()) {
+          show_profile_name_in_menu_bar_ = json[key];
+        }
+      }
+    }
+
+    nlohmann::json to_json(void) {
+      return {
+          {"check_for_updates_on_startup", check_for_updates_on_startup_},
+          {"show_in_menu_bar", show_in_menu_bar_},
+          {"show_profile_name_in_menu_bar", show_profile_name_in_menu_bar_},
+      };
+    }
+
+    bool get_check_for_updates_on_startup(void) {
+      return check_for_updates_on_startup_;
+    }
+    void set_check_for_updates_on_startup(bool value) {
+      check_for_updates_on_startup_ = value;
+    }
+
+    bool get_show_in_menu_bar(void) {
+      return show_in_menu_bar_;
+    }
+    void set_show_in_menu_bar(bool value) {
+      show_in_menu_bar_ = value;
+    }
+
+    bool get_show_profile_name_in_menu_bar(void) {
+      return show_profile_name_in_menu_bar_;
+    }
+    void set_show_profile_name_in_menu_bar(bool value) {
+      show_profile_name_in_menu_bar_ = value;
+    }
+
+  private:
+    bool check_for_updates_on_startup_;
+    bool show_in_menu_bar_;
+    bool show_profile_name_in_menu_bar_;
+  };
+
   core_configuration(const core_configuration&) = delete;
 
   core_configuration(spdlog::logger& logger, const std::string& file_path) : logger_(logger), file_path_(file_path), loaded_(false) {
