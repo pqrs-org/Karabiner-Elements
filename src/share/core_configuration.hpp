@@ -130,7 +130,7 @@ public:
     }
 
   private:
-    nlohmann::json json_;
+    const nlohmann::json json_;
     bool check_for_updates_on_startup_;
     bool show_in_menu_bar_;
     bool show_profile_name_in_menu_bar_;
