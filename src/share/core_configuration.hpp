@@ -137,6 +137,57 @@ public:
 
   class profile final {
   public:
+    class simple_modifications final {
+    public:
+      simple_modifications(const nlohmann::json& json) {
+        if (json.is_object()) {
+          for (auto it = json.begin(); it != json.end(); ++it) {
+            // it.key() is always std::string.
+            if (it.value().is_string()) {
+              std::string value = it.value();
+              pairs_.push_back(std::make_pair(it.key(), value));
+            }
+          }
+        }
+      }
+
+      nlohmann::json to_json(void) {
+        auto json = nlohmann::json::object();
+        for (const auto& it : pairs_) {
+          if (!it.first.empty() &&
+              !it.second.empty() &&
+              json.find(it.first) == json.end()) {
+            json[it.first] = it.second;
+          }
+        }
+        return json;
+      }
+
+      const std::vector<std::pair<std::string, std::string>>& get_pairs(void) {
+        return pairs_;
+      }
+
+      void push_back_pair(void) {
+        pairs_.push_back(std::make_pair("", ""));
+      }
+
+      void erase_pair(size_t index) {
+        if (index < pairs_.size()) {
+          pairs_.erase(pairs_.begin() + index);
+        }
+      }
+
+      void replace_pair(size_t index, const std::string& from, const std::string& to) {
+        if (index < pairs_.size()) {
+          pairs_[index].first = from;
+          pairs_[index].second = to;
+        }
+      }
+
+    private:
+      std::vector<std::pair<std::string, std::string>> pairs_;
+    };
+
     profile(const nlohmann::json& json) : json_(json),
                                           selected_(false) {
       {
@@ -153,14 +204,10 @@ public:
       }
       {
         const std::string key = "simple_modifications";
-        if (json.find(key) != json.end() && json[key].is_object()) {
-          for (auto it = json[key].begin(); it != json[key].end(); ++it) {
-            // it.key() is always std::string.
-            if (it.value().is_string()) {
-              std::string value = it.value();
-              simple_modifications_.push_back(std::make_pair(it.key(), value));
-            }
-          }
+        if (json.find(key) != json.end()) {
+          simple_modifications_ = std::make_unique<simple_modifications>(json[key]);
+        } else {
+          simple_modifications_ = std::make_unique<simple_modifications>(nlohmann::json());
         }
       }
     }
@@ -169,17 +216,7 @@ public:
       auto j = json_;
       j["name"] = name_;
       j["selected"] = selected_;
-      {
-        auto o = nlohmann::json::object();
-        for (const auto& it : simple_modifications_) {
-          if (!it.first.empty() &&
-              !it.second.empty() &&
-              o.find(it.first) == o.end()) {
-            o[it.first] = it.second;
-          }
-        }
-        j["simple_modifications"] = o;
-      }
+      j["simple_modifications"] = simple_modifications_->to_json();
       return j;
     }
 
@@ -198,28 +235,23 @@ public:
     }
 
     const std::vector<std::pair<std::string, std::string>>& get_simple_modifications(void) {
-      return simple_modifications_;
+      return simple_modifications_->get_pairs();
     }
-    void add_simple_modification(void) {
-      simple_modifications_.push_back(std::make_pair("", ""));
+    void push_back_simple_modification(void) {
+      simple_modifications_->push_back_pair();
     }
-    void remove_simple_modification(size_t index) {
-      if (index < simple_modifications_.size()) {
-        simple_modifications_.erase(simple_modifications_.begin() + index);
-      }
+    void erase_simple_modification(size_t index) {
+      simple_modifications_->erase_pair(index);
     }
     void replace_simple_modification(size_t index, const std::string& from, const std::string& to) {
-      if (index < simple_modifications_.size()) {
-        simple_modifications_[index].first = from;
-        simple_modifications_[index].second = to;
-      }
+      simple_modifications_->replace_pair(index, from, to);
     }
 
   private:
     const nlohmann::json json_;
     std::string name_;
     bool selected_;
-    std::vector<std::pair<std::string, std::string>> simple_modifications_;
+    std::unique_ptr<simple_modifications> simple_modifications_;
   };
 
   core_configuration(const core_configuration&) = delete;

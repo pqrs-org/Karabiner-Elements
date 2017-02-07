@@ -255,19 +255,19 @@ TEST_CASE("profile.to_json") {
     profile.set_name("profile 1");
     profile.set_selected(true);
 
-    profile.add_simple_modification();
+    profile.push_back_simple_modification();
     // {
     //   "": ""
     // }
 
-    profile.add_simple_modification();
+    profile.push_back_simple_modification();
     profile.replace_simple_modification(1, "from 1", "to 1");
     // {
     //   "": "",
     //   "from 1": "to 1"
     // }
 
-    profile.add_simple_modification();
+    profile.push_back_simple_modification();
     profile.replace_simple_modification(2, "from 3", "to 3");
     // {
     //   "": "",
@@ -275,7 +275,7 @@ TEST_CASE("profile.to_json") {
     //   "from 3": "to 3"
     // }
 
-    profile.add_simple_modification();
+    profile.push_back_simple_modification();
     profile.replace_simple_modification(3, "from 4", "to 4");
     // {
     //   "": "",
@@ -284,7 +284,7 @@ TEST_CASE("profile.to_json") {
     //   "from 4": "to 4"
     // }
 
-    profile.add_simple_modification();
+    profile.push_back_simple_modification();
     profile.replace_simple_modification(4, "from 2", "to 2");
     // {
     //   "": "",
@@ -294,7 +294,7 @@ TEST_CASE("profile.to_json") {
     //   "from 2": "to 2"
     // }
 
-    profile.add_simple_modification();
+    profile.push_back_simple_modification();
     profile.replace_simple_modification(5, "from 2", "to 2.0");
     // {
     //   "": "",
@@ -305,7 +305,7 @@ TEST_CASE("profile.to_json") {
     //   "from 2": "to 2.0"
     // }
 
-    profile.remove_simple_modification(2);
+    profile.erase_simple_modification(2);
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -314,7 +314,7 @@ TEST_CASE("profile.to_json") {
     //   "from 2": "to 2.0"
     // }
 
-    profile.add_simple_modification();
+    profile.push_back_simple_modification();
     profile.replace_simple_modification(5, "", "to 0");
     // {
     //   "": "",
@@ -325,7 +325,7 @@ TEST_CASE("profile.to_json") {
     //   "": "to 0"
     // }
 
-    profile.add_simple_modification();
+    profile.push_back_simple_modification();
     profile.replace_simple_modification(6, "from 0", "");
     // {
     //   "": "",
@@ -337,7 +337,7 @@ TEST_CASE("profile.to_json") {
     //   "from 0": ""
     // }
 
-    profile.add_simple_modification();
+    profile.push_back_simple_modification();
     profile.replace_simple_modification(7, "from 5", "to 5");
     // {
     //   "": "",
