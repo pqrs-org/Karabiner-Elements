@@ -157,6 +157,222 @@ TEST_CASE("global_configuration.to_json") {
   }
 }
 
+TEST_CASE("profile") {
+  // empty json
+  {
+    nlohmann::json json;
+    core_configuration::profile profile(json);
+    REQUIRE(profile.get_name() == std::string(""));
+    REQUIRE(profile.get_selected() == false);
+    REQUIRE(profile.get_simple_modifications().size() == 0);
+  }
+
+  // load values from json
+  {
+    nlohmann::json json = {
+        {"name", "profile 1"},
+        {"selected", true},
+        {"simple_modifications", {
+                                     {
+                                         "from 1", "to 1",
+                                     },
+                                     {
+                                         "from 3", "to 3",
+                                     },
+                                     {
+                                         "from 2", "to 2",
+                                     },
+                                 }},
+    };
+    core_configuration::profile profile(json);
+    REQUIRE(profile.get_name() == std::string("profile 1"));
+    REQUIRE(profile.get_selected() == true);
+    {
+      std::vector<std::pair<std::string, std::string>> actual({
+          {"from 1", "to 1"},
+          {"from 2", "to 2"},
+          {"from 3", "to 3"},
+      });
+      REQUIRE(profile.get_simple_modifications() == actual);
+    }
+  }
+
+  // invalid values in json
+  {
+    nlohmann::json json = {
+        {"name", nlohmann::json::array()},
+        {"selected", 0},
+        {"simple_modifications", ""},
+    };
+    core_configuration::profile profile(json);
+    REQUIRE(profile.get_name() == std::string(""));
+    REQUIRE(profile.get_selected() == false);
+    REQUIRE(profile.get_simple_modifications().size() == 0);
+  }
+  {
+    nlohmann::json json = {
+        {"simple_modifications", {
+                                     {
+                                         "number", 0,
+                                     },
+                                     {
+                                         "object", nlohmann::json::object(),
+                                     },
+                                     {
+                                         "array", nlohmann::json::array(),
+                                     },
+                                     {
+                                         "key", "value",
+                                     },
+                                 }},
+    };
+    core_configuration::profile profile(json);
+    {
+      std::vector<std::pair<std::string, std::string>> actual({
+          {"key", "value"},
+      });
+      REQUIRE(profile.get_simple_modifications() == actual);
+    }
+  }
+}
+
+TEST_CASE("profile.to_json") {
+  {
+    nlohmann::json json;
+    core_configuration::profile profile(json);
+    nlohmann::json expected({
+        {"name", ""},
+        {"selected", false},
+        {"simple_modifications", nlohmann::json::object()},
+    });
+    REQUIRE(profile.to_json() == expected);
+  }
+  {
+    nlohmann::json json({
+        {"dummy", {{"keep_me", true}}},
+    });
+    core_configuration::profile profile(json);
+    profile.set_name("profile 1");
+    profile.set_selected(true);
+
+    profile.add_simple_modification();
+    // {
+    //   "": ""
+    // }
+
+    profile.add_simple_modification();
+    profile.replace_simple_modification(1, "from 1", "to 1");
+    // {
+    //   "": "",
+    //   "from 1": "to 1"
+    // }
+
+    profile.add_simple_modification();
+    profile.replace_simple_modification(2, "from 3", "to 3");
+    // {
+    //   "": "",
+    //   "from 1": "to 1",
+    //   "from 3": "to 3"
+    // }
+
+    profile.add_simple_modification();
+    profile.replace_simple_modification(3, "from 4", "to 4");
+    // {
+    //   "": "",
+    //   "from 1": "to 1",
+    //   "from 3": "to 3",
+    //   "from 4": "to 4"
+    // }
+
+    profile.add_simple_modification();
+    profile.replace_simple_modification(4, "from 2", "to 2");
+    // {
+    //   "": "",
+    //   "from 1": "to 1",
+    //   "from 3": "to 3",
+    //   "from 4": "to 4",
+    //   "from 2": "to 2"
+    // }
+
+    profile.add_simple_modification();
+    profile.replace_simple_modification(5, "from 2", "to 2.0");
+    // {
+    //   "": "",
+    //   "from 1": "to 1",
+    //   "from 3": "to 3",
+    //   "from 4": "to 4",
+    //   "from 2": "to 2",
+    //   "from 2": "to 2.0"
+    // }
+
+    profile.remove_simple_modification(2);
+    // {
+    //   "": "",
+    //   "from 1": "to 1",
+    //   "from 4": "to 4",
+    //   "from 2": "to 2",
+    //   "from 2": "to 2.0"
+    // }
+
+    profile.add_simple_modification();
+    profile.replace_simple_modification(5, "", "to 0");
+    // {
+    //   "": "",
+    //   "from 1": "to 1",
+    //   "from 4": "to 4",
+    //   "from 2": "to 2",
+    //   "from 2": "to 2.0",
+    //   "": "to 0"
+    // }
+
+    profile.add_simple_modification();
+    profile.replace_simple_modification(6, "from 0", "");
+    // {
+    //   "": "",
+    //   "from 1": "to 1",
+    //   "from 4": "to 4",
+    //   "from 2": "to 2",
+    //   "from 2": "to 2.0",
+    //   "": "to 0",
+    //   "from 0": ""
+    // }
+
+    profile.add_simple_modification();
+    profile.replace_simple_modification(7, "from 5", "to 5");
+    // {
+    //   "": "",
+    //   "from 1": "to 1",
+    //   "from 4": "to 4",
+    //   "from 2": "to 2",
+    //   "from 2": "to 2.0",
+    //   "": "to 0",
+    //   "from 0": "",
+    //   "from 5": "to 5"
+    // }
+
+    nlohmann::json expected({
+        {"name", "profile 1"},
+        {"dummy", {{"keep_me", true}}},
+        {"selected", true},
+        {"simple_modifications", {
+                                     {
+                                         "from 1", "to 1",
+                                     },
+                                     {
+                                         "from 2", "to 2",
+                                     },
+                                     {
+                                         "from 4", "to 4",
+                                     },
+                                     {
+                                         "from 5", "to 5",
+                                     },
+                                 }},
+    });
+    REQUIRE(profile.to_json() == expected);
+  }
+}
+
 int main(int argc, char* const argv[]) {
   thread_utility::register_main_thread();
   return Catch::Session().run(argc, argv);

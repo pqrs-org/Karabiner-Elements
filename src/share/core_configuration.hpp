@@ -5,6 +5,8 @@
 #include <fstream>
 #include <json/json.hpp>
 #include <spdlog/spdlog.h>
+#include <string>
+#include <unordered_map>
 
 // Example:
 //
@@ -79,22 +81,19 @@ public:
                                                        show_profile_name_in_menu_bar_(false) {
       {
         const std::string key = "check_for_updates_on_startup";
-        if (json.find(key) != json.end() &&
-            json[key].is_boolean()) {
+        if (json.find(key) != json.end() && json[key].is_boolean()) {
           check_for_updates_on_startup_ = json[key];
         }
       }
       {
         const std::string key = "show_in_menu_bar";
-        if (json.find(key) != json.end() &&
-            json[key].is_boolean()) {
+        if (json.find(key) != json.end() && json[key].is_boolean()) {
           show_in_menu_bar_ = json[key];
         }
       }
       {
         const std::string key = "show_profile_name_in_menu_bar";
-        if (json.find(key) != json.end() &&
-            json[key].is_boolean()) {
+        if (json.find(key) != json.end() && json[key].is_boolean()) {
           show_profile_name_in_menu_bar_ = json[key];
         }
       }
@@ -134,6 +133,93 @@ public:
     bool check_for_updates_on_startup_;
     bool show_in_menu_bar_;
     bool show_profile_name_in_menu_bar_;
+  };
+
+  class profile final {
+  public:
+    profile(const nlohmann::json& json) : json_(json),
+                                          selected_(false) {
+      {
+        const std::string key = "name";
+        if (json.find(key) != json.end() && json[key].is_string()) {
+          name_ = json[key];
+        }
+      }
+      {
+        const std::string key = "selected";
+        if (json.find(key) != json.end() && json[key].is_boolean()) {
+          selected_ = json[key];
+        }
+      }
+      {
+        const std::string key = "simple_modifications";
+        if (json.find(key) != json.end() && json[key].is_object()) {
+          for (auto it = json[key].begin(); it != json[key].end(); ++it) {
+            // it.key() is always std::string.
+            if (it.value().is_string()) {
+              std::string value = it.value();
+              simple_modifications_.push_back(std::make_pair(it.key(), value));
+            }
+          }
+        }
+      }
+    }
+
+    nlohmann::json to_json(void) {
+      auto j = json_;
+      j["name"] = name_;
+      j["selected"] = selected_;
+      {
+        auto o = nlohmann::json::object();
+        for (const auto& it : simple_modifications_) {
+          if (!it.first.empty() &&
+              !it.second.empty() &&
+              o.find(it.first) == o.end()) {
+            o[it.first] = it.second;
+          }
+        }
+        j["simple_modifications"] = o;
+      }
+      return j;
+    }
+
+    const std::string& get_name(void) {
+      return name_;
+    }
+    void set_name(const std::string& value) {
+      name_ = value;
+    }
+
+    bool get_selected(void) {
+      return selected_;
+    }
+    void set_selected(bool value) {
+      selected_ = value;
+    }
+
+    const std::vector<std::pair<std::string, std::string>>& get_simple_modifications(void) {
+      return simple_modifications_;
+    }
+    void add_simple_modification(void) {
+      simple_modifications_.push_back(std::make_pair("", ""));
+    }
+    void remove_simple_modification(size_t index) {
+      if (index < simple_modifications_.size()) {
+        simple_modifications_.erase(simple_modifications_.begin() + index);
+      }
+    }
+    void replace_simple_modification(size_t index, const std::string& from, const std::string& to) {
+      if (index < simple_modifications_.size()) {
+        simple_modifications_[index].first = from;
+        simple_modifications_[index].second = to;
+      }
+    }
+
+  private:
+    const nlohmann::json json_;
+    std::string name_;
+    bool selected_;
+    std::vector<std::pair<std::string, std::string>> simple_modifications_;
   };
 
   core_configuration(const core_configuration&) = delete;
