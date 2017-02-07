@@ -140,13 +140,16 @@ TEST_CASE("global_configuration.to_json") {
     REQUIRE(global_configuration.to_json() == expected);
   }
   {
-    nlohmann::json json;
+    nlohmann::json json({
+        {"dummy", {{"keep_me", true}}},
+    });
     core_configuration::global_configuration global_configuration(json);
     global_configuration.set_check_for_updates_on_startup(false);
     global_configuration.set_show_in_menu_bar(false);
     global_configuration.set_show_profile_name_in_menu_bar(true);
     nlohmann::json expected({
         {"check_for_updates_on_startup", false},
+        {"dummy", {{"keep_me", true}}},
         {"show_in_menu_bar", false},
         {"show_profile_name_in_menu_bar", true},
     });
