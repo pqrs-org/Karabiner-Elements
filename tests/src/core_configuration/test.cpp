@@ -411,6 +411,10 @@ TEST_CASE("profile.to_json") {
     //   "from 5": "to 5"
     // }
 
+    profile.replace_fn_function_keys("f3", "to f3");
+
+    auto expected_fn_function_keys = get_default_fn_function_keys_json();
+    expected_fn_function_keys["f3"] = "to f3";
     nlohmann::json expected({
         {"name", "profile 1"},
         {"dummy", {{"keep_me", true}}},
@@ -429,7 +433,7 @@ TEST_CASE("profile.to_json") {
                                          "from 5", "to 5",
                                      },
                                  }},
-        {"fn_function_keys", get_default_fn_function_keys_json()},
+        {"fn_function_keys", expected_fn_function_keys},
     });
     REQUIRE(profile.to_json() == expected);
   }

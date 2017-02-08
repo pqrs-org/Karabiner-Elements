@@ -294,8 +294,8 @@ public:
     const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) {
       return fn_function_keys_->get_pairs();
     }
-    void replace_fn_function_keys(size_t index, const std::string& from, const std::string& to) {
-      fn_function_keys_->replace_pair(index, from, to);
+    void replace_fn_function_keys(const std::string& from, const std::string& to) {
+      fn_function_keys_->replace_second(from, to);
     }
 
   private:
