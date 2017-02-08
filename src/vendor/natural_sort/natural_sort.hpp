@@ -227,7 +227,12 @@ namespace natural
 				current2 = last_nondigit2;
 			}
 		}
-		return current1 == lhsEnd;
+
+		if (current1 == lhsEnd && current2 == rhsEnd) {
+			return false;
+		} else {
+			return current1 == lhsEnd;
+		}
 	}
 
 	template<typename String>
