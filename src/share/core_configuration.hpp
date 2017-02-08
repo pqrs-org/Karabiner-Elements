@@ -4,6 +4,7 @@
 #include "types.hpp"
 #include <fstream>
 #include <json/json.hpp>
+#include <natural_sort/natural_sort.hpp>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <unordered_map>
@@ -148,6 +149,11 @@ public:
               pairs_.push_back(std::make_pair(it.key(), value));
             }
           }
+
+          std::sort(pairs_.begin(), pairs_.end(), [](const std::pair<std::string, std::string>& a,
+                                                     const std::pair<std::string, std::string>& b) {
+            return SI::natural::compare<std::string>(a.first, b.first);
+          });
         }
       }
 
@@ -184,6 +190,15 @@ public:
         }
       }
 
+      void replace_second(const std::string& from, const std::string& to) {
+        for (auto&& it : pairs_) {
+          if (it.first == from) {
+            it.second = to;
+            return;
+          }
+        }
+      }
+
     private:
       std::vector<std::pair<std::string, std::string>> pairs_;
     };
@@ -210,6 +225,34 @@ public:
           simple_modifications_ = std::make_unique<simple_modifications>(nlohmann::json());
         }
       }
+      {
+        const std::string key = "fn_function_keys";
+
+        // default values
+        fn_function_keys_ = std::make_unique<simple_modifications>(nlohmann::json({
+            {"f1", "display_brightness_decrement"},
+            {"f2", "display_brightness_increment"},
+            {"f3", "mission_control"},
+            {"f4", "launchpad"},
+            {"f5", "illumination_decrement"},
+            {"f6", "illumination_increment"},
+            {"f7", "rewind"},
+            {"f8", "play_or_pause"},
+            {"f9", "fastforward"},
+            {"f10", "mute"},
+            {"f11", "volume_decrement"},
+            {"f12", "volume_increment"},
+        }));
+
+        if (json.find(key) != json.end() && json[key].is_object()) {
+          for (auto it = json[key].begin(); it != json[key].end(); ++it) {
+            // it.key() is always std::string.
+            if (it.value().is_string()) {
+              fn_function_keys_->replace_second(it.key(), it.value());
+            }
+          }
+        }
+      }
     }
 
     nlohmann::json to_json(void) {
@@ -217,6 +260,7 @@ public:
       j["name"] = name_;
       j["selected"] = selected_;
       j["simple_modifications"] = simple_modifications_->to_json();
+      j["fn_function_keys"] = fn_function_keys_->to_json();
       return j;
     }
 
@@ -247,11 +291,19 @@ public:
       simple_modifications_->replace_pair(index, from, to);
     }
 
+    const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) {
+      return fn_function_keys_->get_pairs();
+    }
+    void replace_fn_function_keys(size_t index, const std::string& from, const std::string& to) {
+      fn_function_keys_->replace_pair(index, from, to);
+    }
+
   private:
     const nlohmann::json json_;
     std::string name_;
     bool selected_;
     std::unique_ptr<simple_modifications> simple_modifications_;
+    std::unique_ptr<simple_modifications> fn_function_keys_;
   };
 
   core_configuration(const core_configuration&) = delete;

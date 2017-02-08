@@ -157,6 +157,42 @@ TEST_CASE("global_configuration.to_json") {
   }
 }
 
+namespace {
+nlohmann::json get_default_fn_function_keys_json(void) {
+  return nlohmann::json({
+      {"f1", "display_brightness_decrement"},
+      {"f10", "mute"},
+      {"f11", "volume_decrement"},
+      {"f12", "volume_increment"},
+      {"f2", "display_brightness_increment"},
+      {"f3", "mission_control"},
+      {"f4", "launchpad"},
+      {"f5", "illumination_decrement"},
+      {"f6", "illumination_increment"},
+      {"f7", "rewind"},
+      {"f8", "play_or_pause"},
+      {"f9", "fastforward"},
+  });
+}
+
+std::vector<std::pair<std::string, std::string>> get_default_fn_function_keys_pairs(void) {
+  return std::vector<std::pair<std::string, std::string>>({
+      {"f1", "display_brightness_decrement"},
+      {"f2", "display_brightness_increment"},
+      {"f3", "mission_control"},
+      {"f4", "launchpad"},
+      {"f5", "illumination_decrement"},
+      {"f6", "illumination_increment"},
+      {"f7", "rewind"},
+      {"f8", "play_or_pause"},
+      {"f9", "fastforward"},
+      {"f10", "mute"},
+      {"f11", "volume_decrement"},
+      {"f12", "volume_increment"},
+  });
+}
+}
+
 TEST_CASE("profile") {
   // empty json
   {
@@ -165,6 +201,7 @@ TEST_CASE("profile") {
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().size() == 0);
+    REQUIRE(profile.get_fn_function_keys() == get_default_fn_function_keys_pairs());
   }
 
   // load values from json
@@ -182,18 +219,39 @@ TEST_CASE("profile") {
                                      {
                                          "from 2", "to 2",
                                      },
+                                     {
+                                         "from 10", "to 10",
+                                     },
                                  }},
+        {"fn_function_keys", {
+                                 {
+                                     "f3", "to f3",
+                                 },
+                                 {
+                                     "f4", "to f4",
+                                 },
+                                 {
+                                     "f13", "to f13",
+                                 },
+                             }},
     };
     core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string("profile 1"));
     REQUIRE(profile.get_selected() == true);
     {
-      std::vector<std::pair<std::string, std::string>> actual({
+      std::vector<std::pair<std::string, std::string>> expected({
           {"from 1", "to 1"},
           {"from 2", "to 2"},
           {"from 3", "to 3"},
+          {"from 10", "to 10"},
       });
-      REQUIRE(profile.get_simple_modifications() == actual);
+      REQUIRE(profile.get_simple_modifications() == expected);
+    }
+    {
+      auto expected = get_default_fn_function_keys_pairs();
+      expected[2].second = "to f3";
+      expected[3].second = "to f4";
+      REQUIRE(profile.get_fn_function_keys() == expected);
     }
   }
 
@@ -203,11 +261,13 @@ TEST_CASE("profile") {
         {"name", nlohmann::json::array()},
         {"selected", 0},
         {"simple_modifications", ""},
+        {"fn_function_keys", nlohmann::json::array()},
     };
     core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().size() == 0);
+    REQUIRE(profile.get_fn_function_keys() == get_default_fn_function_keys_pairs());
   }
   {
     nlohmann::json json = {
@@ -228,10 +288,10 @@ TEST_CASE("profile") {
     };
     core_configuration::profile profile(json);
     {
-      std::vector<std::pair<std::string, std::string>> actual({
+      std::vector<std::pair<std::string, std::string>> expected({
           {"key", "value"},
       });
-      REQUIRE(profile.get_simple_modifications() == actual);
+      REQUIRE(profile.get_simple_modifications() == expected);
     }
   }
 }
@@ -244,6 +304,7 @@ TEST_CASE("profile.to_json") {
         {"name", ""},
         {"selected", false},
         {"simple_modifications", nlohmann::json::object()},
+        {"fn_function_keys", get_default_fn_function_keys_json()},
     });
     REQUIRE(profile.to_json() == expected);
   }
@@ -368,6 +429,7 @@ TEST_CASE("profile.to_json") {
                                          "from 5", "to 5",
                                      },
                                  }},
+        {"fn_function_keys", get_default_fn_function_keys_json()},
     });
     REQUIRE(profile.to_json() == expected);
   }
