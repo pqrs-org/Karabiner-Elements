@@ -1,6 +1,6 @@
 #import "FnFunctionKeysTableViewDelegate.h"
-#import "KarabinerKit/KarabinerKit.h"
 #import "FnFunctionKeysTableViewController.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableCellView.h"
 #import "SimpleModificationsTableViewController.h"
