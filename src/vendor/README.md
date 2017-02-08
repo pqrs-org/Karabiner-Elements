@@ -9,3 +9,6 @@
 * json:
   * version: v2.1.0
   * url: https://github.com/nlohmann/json
+* natural_sort:
+  * version: 3fef01bc9e69458db9faeab8a3fcb64390572cdc
+  * url: https://github.com/tekezo/NaturalSort/
