@@ -61,3 +61,7 @@ make
 ```
 
 The `make` script will create a redistributable **Karabiner-Elements-VERSION.dmg** in the current directory.
+
+# Donations
+
+If you would like to contribute financially to the development of Karabiner Elements, donations can be made via https://pqrs.org/osx/karabiner/donation.html.en.
