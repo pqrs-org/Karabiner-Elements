@@ -10,5 +10,5 @@
   * version: v2.1.0
   * url: https://github.com/nlohmann/json
 * natural_sort:
-  * version: cc9f16e836828cb11f76dd0b8bc1490622031f8d
-  * url: https://github.com/tekezo/NaturalSort/
+  * version: 4a695f9c6e81322abc4cea0f0e4b9007bcddd34a
+  * url: https://github.com/scopeInfinity/NaturalSort
