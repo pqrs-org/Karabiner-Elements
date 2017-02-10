@@ -310,12 +310,15 @@ public:
 
       nlohmann::json to_json(void) const {
         auto j = json_;
-        j["identifiers"] = identifiers_->to_json();
+        j["identifiers"] = *identifiers_;
         j["ignore"] = ignore_;
         j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
         return j;
       }
 
+      const identifiers& get_identifiers(void) const {
+        return *identifiers_;
+      }
       identifiers& get_identifiers(void) {
         return *identifiers_;
       }
@@ -391,14 +394,23 @@ public:
           }
         }
       }
+      {
+        const std::string key = "devices";
+        if (json.find(key) != json.end() && json[key].is_array()) {
+          for (const auto& d : json[key]) {
+            devices_.push_back(device(d));
+          }
+        }
+      }
     }
 
     nlohmann::json to_json(void) const {
       auto j = json_;
       j["name"] = name_;
       j["selected"] = selected_;
-      j["simple_modifications"] = simple_modifications_->to_json();
-      j["fn_function_keys"] = fn_function_keys_->to_json();
+      j["simple_modifications"] = *simple_modifications_;
+      j["fn_function_keys"] = *fn_function_keys_;
+      j["devices"] = devices_;
       return j;
     }
 
@@ -436,12 +448,17 @@ public:
       fn_function_keys_->replace_second(from, to);
     }
 
+    const std::vector<device>& get_devices(void) const {
+      return devices_;
+    }
+
   private:
     const nlohmann::json json_;
     std::string name_;
     bool selected_;
     std::unique_ptr<simple_modifications> simple_modifications_;
     std::unique_ptr<simple_modifications> fn_function_keys_;
+    std::vector<device> devices_;
   };
 
   core_configuration(const core_configuration&) = delete;
@@ -658,3 +675,19 @@ private:
   bool loaded_;
   nlohmann::json json_;
 };
+
+void to_json(nlohmann::json& json, const core_configuration::global_configuration& global_configuration) {
+  json = global_configuration.to_json();
+}
+
+void to_json(nlohmann::json& json, const core_configuration::profile::simple_modifications& simple_modifications) {
+  json = simple_modifications.to_json();
+}
+
+void to_json(nlohmann::json& json, const core_configuration::profile::device::identifiers& identifiers) {
+  json = identifiers.to_json();
+}
+
+void to_json(nlohmann::json& json, const core_configuration::profile::device& device) {
+  json = device.to_json();
+}
