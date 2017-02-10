@@ -203,6 +203,144 @@ public:
       std::vector<std::pair<std::string, std::string>> pairs_;
     };
 
+    class device final {
+    public:
+      class identifiers final {
+      public:
+        identifiers(const nlohmann::json& json) : json_(json),
+                                                  vendor_id_(0),
+                                                  product_id_(0),
+                                                  is_keyboard_(false),
+                                                  is_pointing_device_(false) {
+          {
+            const std::string key = "vendor_id";
+            if (json.find(key) != json.end() && json[key].is_number()) {
+              vendor_id_ = json[key];
+            }
+          }
+          {
+            const std::string key = "product_id";
+            if (json.find(key) != json.end() && json[key].is_number()) {
+              product_id_ = json[key];
+            }
+          }
+          {
+            const std::string key = "is_keyboard";
+            if (json.find(key) != json.end() && json[key].is_boolean()) {
+              is_keyboard_ = json[key];
+            }
+          }
+          {
+            const std::string key = "is_pointing_device";
+            if (json.find(key) != json.end() && json[key].is_boolean()) {
+              is_pointing_device_ = json[key];
+            }
+          }
+        }
+
+        nlohmann::json to_json(void) const {
+          auto j = json_;
+          j["vendor_id"] = vendor_id_;
+          j["product_id"] = product_id_;
+          j["is_keyboard"] = is_keyboard_;
+          j["is_pointing_device"] = is_pointing_device_;
+          return j;
+        }
+
+        uint32_t get_vendor_id(void) const {
+          return vendor_id_;
+        }
+        void set_vendor_id(uint32_t value) {
+          vendor_id_ = value;
+        }
+
+        uint32_t get_product_id(void) const {
+          return product_id_;
+        }
+        void set_product_id(uint32_t value) {
+          product_id_ = value;
+        }
+
+        bool is_keyboard(void) const {
+          return is_keyboard_;
+        }
+        void set_is_keyboard(bool value) {
+          is_keyboard_ = value;
+        }
+
+        bool is_pointing_device(void) const {
+          return is_pointing_device_;
+        }
+        void set_is_pointing_device(bool value) {
+          is_pointing_device_ = value;
+        }
+
+      private:
+        const nlohmann::json json_;
+        uint32_t vendor_id_;
+        uint32_t product_id_;
+        bool is_keyboard_;
+        bool is_pointing_device_;
+      };
+
+      device(const nlohmann::json& json) : json_(json),
+                                           ignore_(false),
+                                           disable_built_in_keyboard_if_exists_(false) {
+        {
+          const std::string key = "identifiers";
+          if (json.find(key) != json.end() && json[key].is_object()) {
+            identifiers_ = std::make_unique<identifiers>(json[key]);
+          } else {
+            identifiers_ = std::make_unique<identifiers>(nlohmann::json());
+          }
+        }
+        {
+          const std::string key = "ignore";
+          if (json.find(key) != json.end() && json[key].is_boolean()) {
+            ignore_ = json[key];
+          }
+        }
+        {
+          const std::string key = "disable_built_in_keyboard_if_exists";
+          if (json.find(key) != json.end() && json[key].is_boolean()) {
+            disable_built_in_keyboard_if_exists_ = json[key];
+          }
+        }
+      }
+
+      nlohmann::json to_json(void) const {
+        auto j = json_;
+        j["identifiers"] = identifiers_->to_json();
+        j["ignore"] = ignore_;
+        j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
+        return j;
+      }
+
+      identifiers& get_identifiers(void) {
+        return *identifiers_;
+      }
+
+      bool is_ignore(void) const {
+        return ignore_;
+      }
+      void set_ignore(bool value) {
+        ignore_ = value;
+      }
+
+      bool is_disable_built_in_keyboard_if_exists(void) const {
+        return disable_built_in_keyboard_if_exists_;
+      }
+      void set_disable_built_in_keyboard_if_exists(bool value) {
+        disable_built_in_keyboard_if_exists_ = value;
+      }
+
+    private:
+      const nlohmann::json json_;
+      std::unique_ptr<identifiers> identifiers_;
+      bool ignore_;
+      bool disable_built_in_keyboard_if_exists_;
+    };
+
     profile(const nlohmann::json& json) : json_(json),
                                           selected_(false) {
       {

@@ -103,11 +103,11 @@ TEST_CASE("global_configuration") {
 
   // load values from json
   {
-    nlohmann::json json = {
+    nlohmann::json json({
         {"check_for_updates_on_startup", false},
         {"show_in_menu_bar", false},
         {"show_profile_name_in_menu_bar", true},
-    };
+    });
     core_configuration::global_configuration global_configuration(json);
     REQUIRE(global_configuration.get_check_for_updates_on_startup() == false);
     REQUIRE(global_configuration.get_show_in_menu_bar() == false);
@@ -116,11 +116,11 @@ TEST_CASE("global_configuration") {
 
   // invalid values in json
   {
-    nlohmann::json json = {
+    nlohmann::json json({
         {"check_for_updates_on_startup", nlohmann::json::array()},
         {"show_in_menu_bar", 0},
         {"show_profile_name_in_menu_bar", nlohmann::json::object()},
-    };
+    });
     core_configuration::global_configuration global_configuration(json);
     REQUIRE(global_configuration.get_check_for_updates_on_startup() == true);
     REQUIRE(global_configuration.get_show_in_menu_bar() == true);
@@ -206,7 +206,7 @@ TEST_CASE("profile") {
 
   // load values from json
   {
-    nlohmann::json json = {
+    nlohmann::json json({
         {"name", "profile 1"},
         {"selected", true},
         {"simple_modifications", {
@@ -234,7 +234,7 @@ TEST_CASE("profile") {
                                      "f13", "to f13",
                                  },
                              }},
-    };
+    });
     core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string("profile 1"));
     REQUIRE(profile.get_selected() == true);
@@ -257,12 +257,12 @@ TEST_CASE("profile") {
 
   // invalid values in json
   {
-    nlohmann::json json = {
+    nlohmann::json json({
         {"name", nlohmann::json::array()},
         {"selected", 0},
         {"simple_modifications", ""},
         {"fn_function_keys", nlohmann::json::array()},
-    };
+    });
     core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
@@ -270,7 +270,7 @@ TEST_CASE("profile") {
     REQUIRE(profile.get_fn_function_keys() == get_default_fn_function_keys_pairs());
   }
   {
-    nlohmann::json json = {
+    nlohmann::json json({
         {"simple_modifications", {
                                      {
                                          "number", 0,
@@ -285,7 +285,7 @@ TEST_CASE("profile") {
                                          "key", "value",
                                      },
                                  }},
-    };
+    });
     core_configuration::profile profile(json);
     {
       std::vector<std::pair<std::string, std::string>> expected({
@@ -436,6 +436,200 @@ TEST_CASE("profile.to_json") {
         {"fn_function_keys", expected_fn_function_keys},
     });
     REQUIRE(profile.to_json() == expected);
+  }
+}
+
+TEST_CASE("device.identifiers") {
+  // empty json
+  {
+    nlohmann::json json;
+    core_configuration::profile::device::identifiers identifiers(json);
+    REQUIRE(identifiers.get_vendor_id() == 0);
+    REQUIRE(identifiers.get_product_id() == 0);
+    REQUIRE(identifiers.is_keyboard() == false);
+    REQUIRE(identifiers.is_pointing_device() == false);
+  }
+
+  // load values from json
+  {
+    nlohmann::json json({
+        {"vendor_id", 1234},
+        {"product_id", 5678},
+        {"is_keyboard", true},
+        {"is_pointing_device", true},
+    });
+    core_configuration::profile::device::identifiers identifiers(json);
+    REQUIRE(identifiers.get_vendor_id() == 1234);
+    REQUIRE(identifiers.get_product_id() == 5678);
+    REQUIRE(identifiers.is_keyboard() == true);
+    REQUIRE(identifiers.is_pointing_device() == true);
+  }
+
+  // invalid values in json
+  {
+    nlohmann::json json({
+        {"vendor_id", nlohmann::json::array()},
+        {"product_id", true},
+        {"is_keyboard", 1},
+        {"is_pointing_device", nlohmann::json::array()},
+    });
+    core_configuration::profile::device::identifiers identifiers(json);
+    REQUIRE(identifiers.get_vendor_id() == 0);
+    REQUIRE(identifiers.get_product_id() == 0);
+    REQUIRE(identifiers.is_keyboard() == false);
+    REQUIRE(identifiers.is_pointing_device() == false);
+  }
+}
+
+TEST_CASE("device.identifiers.to_json") {
+  {
+    nlohmann::json json;
+    core_configuration::profile::device::identifiers identifiers(json);
+    nlohmann::json expected({
+        {"vendor_id", 0},
+        {"product_id", 0},
+        {"is_keyboard", false},
+        {"is_pointing_device", false},
+    });
+    REQUIRE(identifiers.to_json() == expected);
+  }
+  {
+    nlohmann::json json({
+        {"is_pointing_device", true},
+        {"dummy", {{"keep_me", true}}},
+    });
+    core_configuration::profile::device::identifiers identifiers(json);
+    nlohmann::json expected({
+        {"dummy", {{"keep_me", true}}},
+        {"vendor_id", 0},
+        {"product_id", 0},
+        {"is_keyboard", false},
+        {"is_pointing_device", true},
+    });
+    REQUIRE(identifiers.to_json() == expected);
+  }
+}
+
+TEST_CASE("device") {
+  // empty json
+  {
+    nlohmann::json json;
+    core_configuration::profile::device device(json);
+    REQUIRE(device.get_identifiers().get_vendor_id() == 0);
+    REQUIRE(device.get_identifiers().get_product_id() == 0);
+    REQUIRE(device.get_identifiers().is_keyboard() == false);
+    REQUIRE(device.get_identifiers().is_pointing_device() == false);
+    REQUIRE(device.is_ignore() == false);
+    REQUIRE(device.is_disable_built_in_keyboard_if_exists() == false);
+  }
+
+  // load values from json
+  {
+    nlohmann::json json({
+        {"identifiers", {
+                            {
+                                "vendor_id", 1234,
+                            },
+                            {
+                                "product_id", 5678,
+                            },
+                            {
+                                "is_keyboard", true,
+                            },
+                            {
+                                "is_pointing_device", true,
+                            },
+                        }},
+        {"ignore", true},
+        {"disable_built_in_keyboard_if_exists", true},
+    });
+    core_configuration::profile::device device(json);
+    REQUIRE(device.get_identifiers().get_vendor_id() == 1234);
+    REQUIRE(device.get_identifiers().get_product_id() == 5678);
+    REQUIRE(device.get_identifiers().is_keyboard() == true);
+    REQUIRE(device.get_identifiers().is_pointing_device() == true);
+    REQUIRE(device.is_ignore() == true);
+    REQUIRE(device.is_disable_built_in_keyboard_if_exists() == true);
+  }
+
+  // invalid values in json
+  {
+    nlohmann::json json({
+        {"identifiers", nullptr},
+        {"ignore", 1},
+        {"disable_built_in_keyboard_if_exists", nlohmann::json::array()},
+    });
+    core_configuration::profile::device device(json);
+    REQUIRE(device.get_identifiers().get_vendor_id() == 0);
+    REQUIRE(device.get_identifiers().get_product_id() == 0);
+    REQUIRE(device.get_identifiers().is_keyboard() == false);
+    REQUIRE(device.get_identifiers().is_pointing_device() == false);
+    REQUIRE(device.is_ignore() == false);
+    REQUIRE(device.is_disable_built_in_keyboard_if_exists() == false);
+  }
+}
+
+TEST_CASE("device.to_json") {
+  {
+    nlohmann::json json;
+    core_configuration::profile::device device(json);
+    nlohmann::json expected({
+        {"identifiers", {
+                            {
+                                "vendor_id", 0,
+                            },
+                            {
+                                "product_id", 0,
+                            },
+                            {
+                                "is_keyboard", false,
+                            },
+                            {
+                                "is_pointing_device", false,
+                            },
+                        }},
+        {"ignore", false},
+        {"disable_built_in_keyboard_if_exists", false},
+    });
+    REQUIRE(device.to_json() == expected);
+  }
+  {
+    nlohmann::json json({
+        {"identifiers", {
+                            {
+                                "is_keyboard", true,
+                            },
+                            {
+                                "dummy", {{"keep_me", true}},
+                            },
+                        }},
+        {"ignore", true},
+        {"dummy", {{"keep_me", true}}},
+    });
+    core_configuration::profile::device device(json);
+    nlohmann::json expected({
+        {"identifiers", {
+                            {
+                                "dummy", {{"keep_me", true}},
+                            },
+                            {
+                                "vendor_id", 0,
+                            },
+                            {
+                                "product_id", 0,
+                            },
+                            {
+                                "is_keyboard", true,
+                            },
+                            {
+                                "is_pointing_device", false,
+                            },
+                        }},
+        {"ignore", true},
+        {"disable_built_in_keyboard_if_exists", false},
+        {"dummy", {{"keep_me", true}}},
+    });
+    REQUIRE(device.to_json() == expected);
   }
 }
 
