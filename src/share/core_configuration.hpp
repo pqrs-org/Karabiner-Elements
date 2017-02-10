@@ -100,7 +100,7 @@ public:
       }
     }
 
-    nlohmann::json to_json(void) {
+    nlohmann::json to_json(void) const {
       auto j = json_;
       j["check_for_updates_on_startup"] = check_for_updates_on_startup_;
       j["show_in_menu_bar"] = show_in_menu_bar_;
@@ -108,21 +108,21 @@ public:
       return j;
     }
 
-    bool get_check_for_updates_on_startup(void) {
+    bool get_check_for_updates_on_startup(void) const {
       return check_for_updates_on_startup_;
     }
     void set_check_for_updates_on_startup(bool value) {
       check_for_updates_on_startup_ = value;
     }
 
-    bool get_show_in_menu_bar(void) {
+    bool get_show_in_menu_bar(void) const {
       return show_in_menu_bar_;
     }
     void set_show_in_menu_bar(bool value) {
       show_in_menu_bar_ = value;
     }
 
-    bool get_show_profile_name_in_menu_bar(void) {
+    bool get_show_profile_name_in_menu_bar(void) const {
       return show_profile_name_in_menu_bar_;
     }
     void set_show_profile_name_in_menu_bar(bool value) {
@@ -157,7 +157,7 @@ public:
         }
       }
 
-      nlohmann::json to_json(void) {
+      nlohmann::json to_json(void) const {
         auto json = nlohmann::json::object();
         for (const auto& it : pairs_) {
           if (!it.first.empty() &&
@@ -169,7 +169,7 @@ public:
         return json;
       }
 
-      const std::vector<std::pair<std::string, std::string>>& get_pairs(void) {
+      const std::vector<std::pair<std::string, std::string>>& get_pairs(void) const {
         return pairs_;
       }
 
@@ -255,7 +255,7 @@ public:
       }
     }
 
-    nlohmann::json to_json(void) {
+    nlohmann::json to_json(void) const {
       auto j = json_;
       j["name"] = name_;
       j["selected"] = selected_;
@@ -264,21 +264,21 @@ public:
       return j;
     }
 
-    const std::string& get_name(void) {
+    const std::string& get_name(void) const {
       return name_;
     }
     void set_name(const std::string& value) {
       name_ = value;
     }
 
-    bool get_selected(void) {
+    bool get_selected(void) const {
       return selected_;
     }
     void set_selected(bool value) {
       selected_ = value;
     }
 
-    const std::vector<std::pair<std::string, std::string>>& get_simple_modifications(void) {
+    const std::vector<std::pair<std::string, std::string>>& get_simple_modifications(void) const {
       return simple_modifications_->get_pairs();
     }
     void push_back_simple_modification(void) {
@@ -291,7 +291,7 @@ public:
       simple_modifications_->replace_pair(index, from, to);
     }
 
-    const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) {
+    const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) const {
       return fn_function_keys_->get_pairs();
     }
     void replace_fn_function_keys(const std::string& from, const std::string& to) {
