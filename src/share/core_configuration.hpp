@@ -676,18 +676,18 @@ private:
   nlohmann::json json_;
 };
 
-void to_json(nlohmann::json& json, const core_configuration::global_configuration& global_configuration) {
+inline void to_json(nlohmann::json& json, const core_configuration::global_configuration& global_configuration) {
   json = global_configuration.to_json();
 }
 
-void to_json(nlohmann::json& json, const core_configuration::profile::simple_modifications& simple_modifications) {
+inline void to_json(nlohmann::json& json, const core_configuration::profile::simple_modifications& simple_modifications) {
   json = simple_modifications.to_json();
 }
 
-void to_json(nlohmann::json& json, const core_configuration::profile::device::identifiers& identifiers) {
+inline void to_json(nlohmann::json& json, const core_configuration::profile::device::identifiers& identifiers) {
   json = identifiers.to_json();
 }
 
-void to_json(nlohmann::json& json, const core_configuration::profile::device& device) {
+inline void to_json(nlohmann::json& json, const core_configuration::profile::device& device) {
   json = device.to_json();
 }
