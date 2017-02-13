@@ -530,6 +530,68 @@ TEST_CASE("profile.to_json") {
   }
 }
 
+TEST_CASE("virtual_hid_keyboard") {
+  // empty json
+  {
+    nlohmann::json json;
+    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string("ansi"));
+    REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 0);
+  }
+
+  // load values from json
+  {
+    nlohmann::json json({
+        {"keyboard_type", "iso"},
+        {"caps_lock_delay_milliseconds", 300},
+    });
+    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string("iso"));
+    REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 300);
+  }
+
+  // invalid values in json
+  {
+    nlohmann::json json({
+        {"keyboard_type", nlohmann::json::array()},
+        {"caps_lock_delay_milliseconds", nlohmann::json::object()},
+    });
+    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string("ansi"));
+    REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 0);
+  }
+}
+
+TEST_CASE("virtual_hid_keyboard.to_json") {
+  {
+    nlohmann::json json;
+    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    nlohmann::json expected({
+        {"caps_lock_delay_milliseconds", 0},
+        {"keyboard_type", "ansi"},
+    });
+    REQUIRE(virtual_hid_keyboard.to_json() == expected);
+
+    nlohmann::json actual = virtual_hid_keyboard;
+    REQUIRE(actual == expected);
+  }
+  {
+    nlohmann::json json({
+        {"dummy", {{"keep_me", true}}},
+    });
+    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    virtual_hid_keyboard.set_caps_lock_delay_milliseconds(200);
+    virtual_hid_keyboard.set_keyboard_type("iso");
+
+    nlohmann::json expected({
+        {"caps_lock_delay_milliseconds", 200},
+        {"dummy", {{"keep_me", true}}},
+        {"keyboard_type", "iso"},
+    });
+    REQUIRE(virtual_hid_keyboard.to_json() == expected);
+  }
+}
+
 TEST_CASE("device.identifiers") {
   // empty json
   {
