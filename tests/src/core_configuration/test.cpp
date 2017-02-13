@@ -608,8 +608,8 @@ TEST_CASE("device.identifiers") {
     core_configuration::profile::device::identifiers identifiers(json);
     REQUIRE(identifiers.get_vendor_id() == 0);
     REQUIRE(identifiers.get_product_id() == 0);
-    REQUIRE(identifiers.is_keyboard() == false);
-    REQUIRE(identifiers.is_pointing_device() == false);
+    REQUIRE(identifiers.get_is_keyboard() == false);
+    REQUIRE(identifiers.get_is_pointing_device() == false);
   }
 
   // load values from json
@@ -623,8 +623,8 @@ TEST_CASE("device.identifiers") {
     core_configuration::profile::device::identifiers identifiers(json);
     REQUIRE(identifiers.get_vendor_id() == 1234);
     REQUIRE(identifiers.get_product_id() == 5678);
-    REQUIRE(identifiers.is_keyboard() == true);
-    REQUIRE(identifiers.is_pointing_device() == true);
+    REQUIRE(identifiers.get_is_keyboard() == true);
+    REQUIRE(identifiers.get_is_pointing_device() == true);
   }
 
   // invalid values in json
@@ -638,8 +638,8 @@ TEST_CASE("device.identifiers") {
     core_configuration::profile::device::identifiers identifiers(json);
     REQUIRE(identifiers.get_vendor_id() == 0);
     REQUIRE(identifiers.get_product_id() == 0);
-    REQUIRE(identifiers.is_keyboard() == false);
-    REQUIRE(identifiers.is_pointing_device() == false);
+    REQUIRE(identifiers.get_is_keyboard() == false);
+    REQUIRE(identifiers.get_is_pointing_device() == false);
   }
 }
 
@@ -682,10 +682,10 @@ TEST_CASE("device") {
     core_configuration::profile::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == 0);
     REQUIRE(device.get_identifiers().get_product_id() == 0);
-    REQUIRE(device.get_identifiers().is_keyboard() == false);
-    REQUIRE(device.get_identifiers().is_pointing_device() == false);
-    REQUIRE(device.is_ignore() == false);
-    REQUIRE(device.is_disable_built_in_keyboard_if_exists() == false);
+    REQUIRE(device.get_identifiers().get_is_keyboard() == false);
+    REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
+    REQUIRE(device.get_ignore() == false);
+    REQUIRE(device.get_disable_built_in_keyboard_if_exists() == false);
   }
 
   // load values from json
@@ -711,10 +711,10 @@ TEST_CASE("device") {
     core_configuration::profile::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == 1234);
     REQUIRE(device.get_identifiers().get_product_id() == 5678);
-    REQUIRE(device.get_identifiers().is_keyboard() == true);
-    REQUIRE(device.get_identifiers().is_pointing_device() == true);
-    REQUIRE(device.is_ignore() == true);
-    REQUIRE(device.is_disable_built_in_keyboard_if_exists() == true);
+    REQUIRE(device.get_identifiers().get_is_keyboard() == true);
+    REQUIRE(device.get_identifiers().get_is_pointing_device() == true);
+    REQUIRE(device.get_ignore() == true);
+    REQUIRE(device.get_disable_built_in_keyboard_if_exists() == true);
   }
 
   // invalid values in json
@@ -727,10 +727,10 @@ TEST_CASE("device") {
     core_configuration::profile::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == 0);
     REQUIRE(device.get_identifiers().get_product_id() == 0);
-    REQUIRE(device.get_identifiers().is_keyboard() == false);
-    REQUIRE(device.get_identifiers().is_pointing_device() == false);
-    REQUIRE(device.is_ignore() == false);
-    REQUIRE(device.is_disable_built_in_keyboard_if_exists() == false);
+    REQUIRE(device.get_identifiers().get_is_keyboard() == false);
+    REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
+    REQUIRE(device.get_ignore() == false);
+    REQUIRE(device.get_disable_built_in_keyboard_if_exists() == false);
   }
 }
 

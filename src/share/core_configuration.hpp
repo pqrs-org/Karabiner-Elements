@@ -308,14 +308,14 @@ public:
           product_id_ = value;
         }
 
-        bool is_keyboard(void) const {
+        bool get_is_keyboard(void) const {
           return is_keyboard_;
         }
         void set_is_keyboard(bool value) {
           is_keyboard_ = value;
         }
 
-        bool is_pointing_device(void) const {
+        bool get_is_pointing_device(void) const {
           return is_pointing_device_;
         }
         void set_is_pointing_device(bool value) {
@@ -370,14 +370,14 @@ public:
         return *identifiers_;
       }
 
-      bool is_ignore(void) const {
+      bool get_ignore(void) const {
         return ignore_;
       }
       void set_ignore(bool value) {
         ignore_ = value;
       }
 
-      bool is_disable_built_in_keyboard_if_exists(void) const {
+      bool get_disable_built_in_keyboard_if_exists(void) const {
         return disable_built_in_keyboard_if_exists_;
       }
       void set_disable_built_in_keyboard_if_exists(bool value) {
