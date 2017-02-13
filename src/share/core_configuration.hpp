@@ -452,8 +452,8 @@ public:
       {
         const std::string key = "devices";
         if (json.find(key) != json.end() && json[key].is_array()) {
-          for (const auto& d : json[key]) {
-            devices_.push_back(device(d));
+          for (const auto& device_json : json[key]) {
+            devices_.push_back(device(device_json));
           }
         }
       }
@@ -532,6 +532,24 @@ public:
     if (input) {
       try {
         json_ = nlohmann::json::parse(input);
+
+        {
+          const std::string key = "global";
+          if (json_.find(key) != json_.end()) {
+            global_configuration_ = std::make_unique<global_configuration>(json_[key]);
+          } else {
+            global_configuration_ = std::make_unique<global_configuration>(nullptr);
+          }
+        }
+        {
+          const std::string key = "profiles";
+          if (json_.find(key) != json_.end() && json_[key].is_array()) {
+            for (const auto& profile_json : json_[key]) {
+              profiles_.push_back(profile(profile_json));
+            }
+          }
+        }
+
         loaded_ = true;
       } catch (std::exception& e) {
         logger_.warn("parse error in {0}: {1}", file_path_, e.what());
@@ -735,6 +753,9 @@ private:
 
   spdlog::logger& logger_;
   std::string file_path_;
+
+  std::unique_ptr<global_configuration> global_configuration_;
+  std::vector<profile> profiles_;
 
   bool loaded_;
   nlohmann::json json_;
