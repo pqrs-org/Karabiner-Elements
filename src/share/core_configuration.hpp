@@ -338,7 +338,7 @@ public:
           if (json.find(key) != json.end() && json[key].is_object()) {
             identifiers_ = std::make_unique<identifiers>(json[key]);
           } else {
-            identifiers_ = std::make_unique<identifiers>(nlohmann::json());
+            identifiers_ = std::make_unique<identifiers>(nullptr);
           }
         }
         {
@@ -410,7 +410,7 @@ public:
         if (json.find(key) != json.end()) {
           simple_modifications_ = std::make_unique<simple_modifications>(json[key]);
         } else {
-          simple_modifications_ = std::make_unique<simple_modifications>(nlohmann::json());
+          simple_modifications_ = std::make_unique<simple_modifications>(nullptr);
         }
       }
       {
@@ -442,6 +442,14 @@ public:
         }
       }
       {
+        const std::string key = "virtual_hid_keyboard";
+        if (json.find(key) != json.end()) {
+          virtual_hid_keyboard_ = std::make_unique<virtual_hid_keyboard>(json[key]);
+        } else {
+          virtual_hid_keyboard_ = std::make_unique<virtual_hid_keyboard>(nullptr);
+        }
+      }
+      {
         const std::string key = "devices";
         if (json.find(key) != json.end() && json[key].is_array()) {
           for (const auto& d : json[key]) {
@@ -457,6 +465,7 @@ public:
       j["selected"] = selected_;
       j["simple_modifications"] = *simple_modifications_;
       j["fn_function_keys"] = *fn_function_keys_;
+      j["virtual_hid_keyboard"] = *virtual_hid_keyboard_;
       j["devices"] = devices_;
       return j;
     }
@@ -495,6 +504,13 @@ public:
       fn_function_keys_->replace_second(from, to);
     }
 
+    const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
+      return *virtual_hid_keyboard_;
+    }
+    virtual_hid_keyboard& get_virtual_hid_keyboard(void) {
+      return *virtual_hid_keyboard_;
+    }
+
     const std::vector<device>& get_devices(void) const {
       return devices_;
     }
@@ -505,6 +521,7 @@ public:
     bool selected_;
     std::unique_ptr<simple_modifications> simple_modifications_;
     std::unique_ptr<simple_modifications> fn_function_keys_;
+    std::unique_ptr<virtual_hid_keyboard> virtual_hid_keyboard_;
     std::vector<device> devices_;
   };
 

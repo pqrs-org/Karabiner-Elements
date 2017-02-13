@@ -178,6 +178,13 @@ nlohmann::json get_default_fn_function_keys_json(void) {
   });
 }
 
+nlohmann::json get_default_virtual_hid_keyboard_json(void) {
+  return nlohmann::json({
+      {"caps_lock_delay_milliseconds", 0},
+      {"keyboard_type", "ansi"},
+  });
+}
+
 std::vector<std::pair<std::string, std::string>> get_default_fn_function_keys_pairs(void) {
   return std::vector<std::pair<std::string, std::string>>({
       {"f1", "display_brightness_decrement"},
@@ -356,6 +363,7 @@ TEST_CASE("profile.to_json") {
         {"selected", false},
         {"simple_modifications", nlohmann::json::object()},
         {"fn_function_keys", get_default_fn_function_keys_json()},
+        {"virtual_hid_keyboard", get_default_virtual_hid_keyboard_json()},
     });
     REQUIRE(profile.to_json() == expected);
   }
@@ -484,8 +492,12 @@ TEST_CASE("profile.to_json") {
 
     profile.replace_fn_function_keys("f3", "to f3");
 
+    profile.get_virtual_hid_keyboard().set_keyboard_type("iso");
+
     auto expected_fn_function_keys = get_default_fn_function_keys_json();
     expected_fn_function_keys["f3"] = "to f3";
+    auto expected_virtual_hid_keyboard = get_default_virtual_hid_keyboard_json();
+    expected_virtual_hid_keyboard["keyboard_type"] = "iso";
     nlohmann::json expected({
         {"devices", {
                         {
@@ -525,6 +537,7 @@ TEST_CASE("profile.to_json") {
                                      },
                                  }},
         {"fn_function_keys", expected_fn_function_keys},
+        {"virtual_hid_keyboard", expected_virtual_hid_keyboard},
     });
     REQUIRE(profile.to_json() == expected);
   }
@@ -566,14 +579,10 @@ TEST_CASE("virtual_hid_keyboard.to_json") {
   {
     nlohmann::json json;
     core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
-    nlohmann::json expected({
-        {"caps_lock_delay_milliseconds", 0},
-        {"keyboard_type", "ansi"},
-    });
-    REQUIRE(virtual_hid_keyboard.to_json() == expected);
+    REQUIRE(virtual_hid_keyboard.to_json() == get_default_virtual_hid_keyboard_json());
 
     nlohmann::json actual = virtual_hid_keyboard;
-    REQUIRE(actual == expected);
+    REQUIRE(actual == get_default_virtual_hid_keyboard_json());
   }
   {
     nlohmann::json json({
