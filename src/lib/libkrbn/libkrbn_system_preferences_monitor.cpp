@@ -41,9 +41,9 @@ bool libkrbn_system_preferences_monitor_initialize(libkrbn_system_preferences_mo
   return true;
 }
 
-void libkrbn_system_preferences_monitor_terminate(libkrbn_system_preferences_monitor* _Nullable* _Nonnull out) {
-  if (out && *out) {
-    delete reinterpret_cast<libkrbn_system_preferences_monitor_class*>(*out);
-    *out = nullptr;
+void libkrbn_system_preferences_monitor_terminate(libkrbn_system_preferences_monitor* _Nullable* _Nonnull p) {
+  if (p && *p) {
+    delete reinterpret_cast<libkrbn_system_preferences_monitor_class*>(*p);
+    *p = nullptr;
   }
 }

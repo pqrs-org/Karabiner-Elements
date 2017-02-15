@@ -52,10 +52,10 @@ bool libkrbn_log_monitor_initialize(libkrbn_log_monitor** out, libkrbn_log_monit
   return true;
 }
 
-void libkrbn_log_monitor_terminate(libkrbn_log_monitor** out) {
-  if (out && *out) {
-    delete reinterpret_cast<libkrbn_log_monitor_class*>(*out);
-    *out = nullptr;
+void libkrbn_log_monitor_terminate(libkrbn_log_monitor** p) {
+  if (p && *p) {
+    delete reinterpret_cast<libkrbn_log_monitor_class*>(*p);
+    *p = nullptr;
   }
 }
 

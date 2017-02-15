@@ -50,9 +50,9 @@ bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor** ou
   return true;
 }
 
-void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor** out) {
-  if (out && *out) {
-    delete reinterpret_cast<libkrbn_configuration_monitor_class*>(*out);
-    *out = nullptr;
+void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor** p) {
+  if (p && *p) {
+    delete reinterpret_cast<libkrbn_configuration_monitor_class*>(*p);
+    *p = nullptr;
   }
 }

@@ -36,9 +36,9 @@ bool libkrbn_version_monitor_initialize(libkrbn_version_monitor** out, libkrbn_v
   return true;
 }
 
-void libkrbn_version_monitor_terminate(libkrbn_version_monitor** out) {
-  if (out && *out) {
-    delete reinterpret_cast<libkrbn_version_monitor_class*>(*out);
-    *out = nullptr;
+void libkrbn_version_monitor_terminate(libkrbn_version_monitor** p) {
+  if (p && *p) {
+    delete reinterpret_cast<libkrbn_version_monitor_class*>(*p);
+    *p = nullptr;
   }
 }

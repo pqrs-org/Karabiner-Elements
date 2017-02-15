@@ -43,9 +43,9 @@ bool libkrbn_device_monitor_initialize(libkrbn_device_monitor** out, libkrbn_dev
   return true;
 }
 
-void libkrbn_device_monitor_terminate(libkrbn_device_monitor** out) {
-  if (out && *out) {
-    delete reinterpret_cast<libkrbn_device_monitor_class*>(*out);
-    *out = nullptr;
+void libkrbn_device_monitor_terminate(libkrbn_device_monitor** p) {
+  if (p && *p) {
+    delete reinterpret_cast<libkrbn_device_monitor_class*>(*p);
+    *p = nullptr;
   }
 }
