@@ -80,6 +80,14 @@ TEST_CASE("broken.json") {
     std::vector<std::pair<krbn::key_code, krbn::key_code>> expected;
     REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
     REQUIRE(configuration.is_loaded() == false);
+
+    REQUIRE(configuration.get_global_configuration().get_check_for_updates_on_startup() == true);
+    REQUIRE(configuration.get_global_configuration().get_show_in_menu_bar() == true);
+    REQUIRE(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
+    REQUIRE(configuration.get_profiles().size() == 1);
+    REQUIRE((configuration.get_profiles())[0].get_name() == "Default profile");
+    REQUIRE((configuration.get_profiles())[0].get_selected() == true);
+    REQUIRE((configuration.get_profiles())[0].get_fn_function_keys().size() == 12);
   }
   {
     core_configuration configuration(logger::get_logger(), "a.out");

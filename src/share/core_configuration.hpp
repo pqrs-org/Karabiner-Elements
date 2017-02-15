@@ -562,8 +562,6 @@ public:
           const std::string key = "global";
           if (json_.find(key) != json_.end()) {
             global_configuration_ = std::make_unique<global_configuration>(json_[key]);
-          } else {
-            global_configuration_ = std::make_unique<global_configuration>(nullptr);
           }
         }
         {
@@ -583,6 +581,16 @@ public:
     } else {
       // If file is not found, use default values.
       loaded_ = true;
+    }
+
+    if (!global_configuration_) {
+      global_configuration_ = std::make_unique<global_configuration>(nullptr);
+    }
+    if (profiles_.empty()) {
+      profiles_.emplace_back(nlohmann::json({
+          {"name", "Default profile"},
+          {"selected", true},
+      }));
     }
 
     // ----------------------------------------
@@ -615,6 +623,9 @@ public:
   }
   global_configuration& get_global_configuration(void) {
     return *global_configuration_;
+  }
+  const std::vector<profile>& get_profiles(void) const {
+    return profiles_;
   }
 
   // std::vector<from,to>
