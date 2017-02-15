@@ -610,6 +610,13 @@ public:
 
   bool is_loaded(void) const { return loaded_; }
 
+  const global_configuration& get_global_configuration(void) const {
+    return *global_configuration_;
+  }
+  global_configuration& get_global_configuration(void) {
+    return *global_configuration_;
+  }
+
   // std::vector<from,to>
   std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_simple_modifications(void) {
     auto profile = get_current_profile();
