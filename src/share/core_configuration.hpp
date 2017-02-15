@@ -146,7 +146,7 @@ public:
             // it.key() is always std::string.
             if (it.value().is_string()) {
               std::string value = it.value();
-              pairs_.push_back(std::make_pair(it.key(), value));
+              pairs_.emplace_back(it.key(), value);
             }
           }
 
@@ -174,7 +174,7 @@ public:
       }
 
       void push_back_pair(void) {
-        pairs_.push_back(std::make_pair("", ""));
+        pairs_.emplace_back("", "");
       }
 
       void erase_pair(size_t index) {
@@ -322,6 +322,13 @@ public:
           is_pointing_device_ = value;
         }
 
+        bool operator==(const identifiers& other) const {
+          return vendor_id_ == other.vendor_id_ &&
+                 product_id_ == other.product_id_ &&
+                 is_keyboard_ == other.is_keyboard_ &&
+                 is_pointing_device_ == other.is_pointing_device_;
+        }
+
       private:
         const nlohmann::json json_;
         uint32_t vendor_id_;
@@ -453,7 +460,7 @@ public:
         const std::string key = "devices";
         if (json.find(key) != json.end() && json[key].is_array()) {
           for (const auto& device_json : json[key]) {
-            devices_.push_back(device(device_json));
+            devices_.emplace_back(device_json);
           }
         }
       }
@@ -514,6 +521,24 @@ public:
     const std::vector<device>& get_devices(void) const {
       return devices_;
     }
+    void set_device(const device::identifiers& identifiers,
+                    bool ignore,
+                    bool disable_built_in_keyboard_if_exists) {
+      for (auto&& device : devices_) {
+        if (device.get_identifiers() == identifiers) {
+          device.set_ignore(ignore);
+          device.set_disable_built_in_keyboard_if_exists(disable_built_in_keyboard_if_exists);
+          return;
+        }
+      }
+
+      auto json = nlohmann::json({
+          {"identifiers", identifiers.to_json()},
+          {"ignore", ignore},
+          {"disable_built_in_keyboard_if_exists", disable_built_in_keyboard_if_exists},
+      });
+      devices_.emplace_back(json);
+    }
 
   private:
     const nlohmann::json json_;
@@ -545,7 +570,7 @@ public:
           const std::string key = "profiles";
           if (json_.find(key) != json_.end() && json_[key].is_array()) {
             for (const auto& profile_json : json_[key]) {
-              profiles_.push_back(profile(profile_json));
+              profiles_.emplace_back(profile_json);
             }
           }
         }

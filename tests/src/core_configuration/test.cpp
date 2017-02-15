@@ -306,8 +306,59 @@ TEST_CASE("profile") {
       REQUIRE(profile.get_devices().size() == 2);
       REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == 1234);
       REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[0].get_ignore() == true);
+      REQUIRE((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == true);
       REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == 4321);
       REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == 8765);
+      REQUIRE((profile.get_devices())[1].get_ignore() == false);
+      REQUIRE((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
+    }
+
+    // set_device (existing identifiers)
+    {
+      auto identifiers = core_configuration::profile::device::identifiers(nlohmann::json({
+          {
+              "vendor_id", 1234,
+          },
+          {
+              "product_id", 5678,
+          },
+          {
+              "is_keyboard", true,
+          },
+          {
+              "is_pointing_device", true,
+          },
+      }));
+      profile.set_device(identifiers, false, false);
+      REQUIRE(profile.get_devices().size() == 2);
+      REQUIRE((profile.get_devices())[0].get_ignore() == false);
+      REQUIRE((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == false);
+    }
+    // set_device (new identifiers)
+    {
+      auto identifiers = core_configuration::profile::device::identifiers(nlohmann::json({
+          {
+              "vendor_id", 1111,
+          },
+          {
+              "product_id", 2222,
+          },
+          {
+              "is_keyboard", false,
+          },
+          {
+              "is_pointing_device", true,
+          },
+      }));
+      profile.set_device(identifiers, true, false);
+      REQUIRE(profile.get_devices().size() == 3);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == 1111);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == 2222);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_is_keyboard() == false);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_is_pointing_device() == true);
+      REQUIRE((profile.get_devices())[2].get_ignore() == true);
+      REQUIRE((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == false);
     }
   }
 
