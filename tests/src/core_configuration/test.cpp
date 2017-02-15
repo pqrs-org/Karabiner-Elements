@@ -74,11 +74,20 @@ TEST_CASE("valid") {
 }
 
 TEST_CASE("broken.json") {
-  core_configuration configuration(logger::get_logger(), "json/broken.json");
+  {
+    core_configuration configuration(logger::get_logger(), "json/broken.json");
 
-  std::vector<std::pair<krbn::key_code, krbn::key_code>> expected;
-  REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
-  REQUIRE(configuration.is_loaded() == false);
+    std::vector<std::pair<krbn::key_code, krbn::key_code>> expected;
+    REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+    REQUIRE(configuration.is_loaded() == false);
+  }
+  {
+    core_configuration configuration(logger::get_logger(), "a.out");
+
+    std::vector<std::pair<krbn::key_code, krbn::key_code>> expected;
+    REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+    REQUIRE(configuration.is_loaded() == false);
+  }
 }
 
 TEST_CASE("invalid_key_code_name.json") {
