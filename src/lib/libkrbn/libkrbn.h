@@ -34,6 +34,18 @@ void libkrbn_launch_menu(void);
 void libkrbn_launch_preferences(void);
 
 // ----------------------------------------
+// libkrbn_core_configuration
+
+typedef void libkrbn_core_configuration;
+bool libkrbn_core_configuration_initialize(libkrbn_core_configuration* _Nullable* _Nonnull out,
+                                           const char* _Nonnull file_path);
+void libkrbn_core_configuration_terminate(libkrbn_core_configuration* _Nullable* _Nonnull p);
+bool libkrbn_core_configuration_is_loaded(libkrbn_core_configuration* _Nonnull p);
+bool libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* _Nonnull p);
+bool libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(libkrbn_core_configuration* _Nonnull p);
+bool libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(libkrbn_core_configuration* _Nonnull p);
+
+// ----------------------------------------
 // libkrbn_configuration_monitor
 
 typedef void libkrbn_configuration_monitor;
@@ -41,7 +53,7 @@ typedef void (*libkrbn_configuration_monitor_callback)(const char* _Nonnull json
 bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor* _Nullable* _Nonnull out,
                                               libkrbn_configuration_monitor_callback _Nullable callback,
                                               void* _Nullable refcon);
-void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor* _Nullable* _Nonnull out);
+void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor* _Nullable* _Nonnull p);
 
 // ----------------------------------------
 // libkrbn_system_preferences_monitor
@@ -56,7 +68,7 @@ typedef void (*libkrbn_system_preferences_monitor_callback)(const struct libkrbn
 bool libkrbn_system_preferences_monitor_initialize(libkrbn_system_preferences_monitor* _Nullable* _Nonnull out,
                                                    libkrbn_system_preferences_monitor_callback _Nullable callback,
                                                    void* _Nullable refcon);
-void libkrbn_system_preferences_monitor_terminate(libkrbn_system_preferences_monitor* _Nullable* _Nonnull out);
+void libkrbn_system_preferences_monitor_terminate(libkrbn_system_preferences_monitor* _Nullable* _Nonnull p);
 
 // ----------------------------------------
 // libkrbn_device_monitor
@@ -66,7 +78,7 @@ typedef void (*libkrbn_device_monitor_callback)(void* _Nullable refcon);
 bool libkrbn_device_monitor_initialize(libkrbn_device_monitor* _Nullable* _Nonnull out,
                                        libkrbn_device_monitor_callback _Nullable callback,
                                        void* _Nullable refcon);
-void libkrbn_device_monitor_terminate(libkrbn_device_monitor* _Nullable* _Nonnull out);
+void libkrbn_device_monitor_terminate(libkrbn_device_monitor* _Nullable* _Nonnull p);
 
 // ----------------------------------------
 // libkrbn_log_monitor
@@ -76,7 +88,7 @@ typedef void (*libkrbn_log_monitor_callback)(const char* _Nonnull line, void* _N
 bool libkrbn_log_monitor_initialize(libkrbn_log_monitor* _Nullable* _Nonnull out,
                                     libkrbn_log_monitor_callback _Nullable callback,
                                     void* _Nullable refcon);
-void libkrbn_log_monitor_terminate(libkrbn_log_monitor* _Nullable* _Nonnull out);
+void libkrbn_log_monitor_terminate(libkrbn_log_monitor* _Nullable* _Nonnull p);
 size_t libkrbn_log_monitor_initial_lines_size(libkrbn_log_monitor* _Nonnull p);
 const char* _Nullable libkrbn_log_monitor_initial_line(libkrbn_log_monitor* _Nonnull p, size_t index);
 void libkrbn_log_monitor_start(libkrbn_log_monitor* _Nonnull p);
@@ -89,7 +101,7 @@ typedef void (*libkrbn_version_monitor_callback)(void* _Nullable refcon);
 bool libkrbn_version_monitor_initialize(libkrbn_version_monitor* _Nullable* _Nonnull out,
                                         libkrbn_version_monitor_callback _Nullable callback,
                                         void* _Nullable refcon);
-void libkrbn_version_monitor_terminate(libkrbn_version_monitor* _Nullable* _Nonnull out);
+void libkrbn_version_monitor_terminate(libkrbn_version_monitor* _Nullable* _Nonnull p);
 
 #ifdef __cplusplus
 }
