@@ -26,28 +26,22 @@ bool libkrbn_core_configuration_is_loaded(libkrbn_core_configuration* p) {
 }
 
 bool libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* _Nonnull p) {
-  if (libkrbn_core_configuration_is_loaded(p)) {
-    if (auto c = reinterpret_cast<core_configuration*>(p)) {
-      return (c->get_global_configuration()).get_check_for_updates_on_startup();
-    }
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    return (c->get_global_configuration()).get_check_for_updates_on_startup();
   }
   return false;
 }
 
 bool libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(libkrbn_core_configuration* _Nonnull p) {
-  if (libkrbn_core_configuration_is_loaded(p)) {
-    if (auto c = reinterpret_cast<core_configuration*>(p)) {
-      return (c->get_global_configuration()).get_show_in_menu_bar();
-    }
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    return (c->get_global_configuration()).get_show_in_menu_bar();
   }
   return false;
 }
 
 bool libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(libkrbn_core_configuration* _Nonnull p) {
-  if (libkrbn_core_configuration_is_loaded(p)) {
-    if (auto c = reinterpret_cast<core_configuration*>(p)) {
-      return (c->get_global_configuration()).get_show_profile_name_in_menu_bar();
-    }
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    return (c->get_global_configuration()).get_show_profile_name_in_menu_bar();
   }
   return false;
 }
