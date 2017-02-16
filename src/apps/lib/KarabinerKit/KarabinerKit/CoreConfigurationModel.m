@@ -346,3 +346,58 @@
 }
 
 @end
+
+@interface KarabinerKitCoreConfigurationModel2 ()
+
+@property libkrbn_core_configuration* libkrbn_core_configuration;
+
+@end
+
+@implementation KarabinerKitCoreConfigurationModel2
+
+- (instancetype)init {
+  self = [super init];
+
+  if (self) {
+    libkrbn_core_configuration* p = NULL;
+    if (libkrbn_core_configuration_initialize(&p, libkrbn_get_core_configuration_file_path())) {
+      _libkrbn_core_configuration = p;
+    }
+  }
+
+  return self;
+}
+
+- (BOOL)isLoaded {
+  return libkrbn_core_configuration_is_loaded(self.libkrbn_core_configuration);
+}
+
+- (BOOL)save {
+  return libkrbn_core_configuration_save(self.libkrbn_core_configuration);
+}
+
+- (BOOL)globalConfigurationCheckForUpdatesOnStartup {
+  return libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(self.libkrbn_core_configuration);
+}
+
+- (void)setGlobalConfigurationCheckForUpdatesOnStartup:(BOOL)value {
+  libkrbn_core_configuration_set_global_configuration_check_for_updates_on_startup(self.libkrbn_core_configuration, value);
+}
+
+- (BOOL)globalConfigurationShowInMenuBar {
+  return libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(self.libkrbn_core_configuration);
+}
+
+- (void)setGlobalConfigurationShowInMenuBar:(BOOL)value {
+  libkrbn_core_configuration_set_global_configuration_show_in_menu_bar(self.libkrbn_core_configuration, value);
+}
+
+- (BOOL)globalConfigurationShowProfileNameInMenuBar {
+  return libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(self.libkrbn_core_configuration);
+}
+
+- (void)setGlobalConfigurationShowProfileNameInMenuBar:(BOOL)value {
+  libkrbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(self.libkrbn_core_configuration, value);
+}
+
+@end

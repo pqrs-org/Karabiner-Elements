@@ -60,3 +60,14 @@
 - (void)selectProfile:(NSUInteger)index;
 
 @end
+
+@interface KarabinerKitCoreConfigurationModel2 : NSObject
+
+@property(readonly) BOOL isLoaded;
+- (BOOL)save;
+
+@property BOOL globalConfigurationCheckForUpdatesOnStartup;
+@property BOOL globalConfigurationShowInMenuBar;
+@property BOOL globalConfigurationShowProfileNameInMenuBar;
+
+@end
