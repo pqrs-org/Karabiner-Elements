@@ -7,6 +7,7 @@
 
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
 @property(readwrite) KarabinerKitCoreConfigurationModel* coreConfigurationModel;
+@property(readwrite) KarabinerKitCoreConfigurationModel2* coreConfigurationModel2;
 
 - (void)loadJsonString:(const char*)jsonString;
 
@@ -46,6 +47,11 @@ static void configuration_file_updated_callback(const char* jsonString, void* re
   NSDictionary* jsonObject = [KarabinerKitJsonUtility loadCString:jsonString];
   if (jsonObject) {
     self.coreConfigurationModel = [[KarabinerKitCoreConfigurationModel alloc] initWithJsonObject:jsonObject];
+  }
+
+  KarabinerKitCoreConfigurationModel2* model = [KarabinerKitCoreConfigurationModel2 new];
+  if (!self.coreConfigurationModel2 || model.isLoaded) {
+    self.coreConfigurationModel2 = model;
   }
 }
 
