@@ -576,11 +576,13 @@ public:
         loaded_ = true;
       } catch (std::exception& e) {
         logger_.warn("parse error in {0}: {1}", file_path_, e.what());
+        json_ = nlohmann::json();
       }
 
     } else {
       // If file is not found, use default values.
       loaded_ = true;
+      json_ = nlohmann::json();
     }
 
     if (!global_configuration_) {
@@ -610,6 +612,13 @@ public:
         profile["fn_function_keys"] = default_profile["fn_function_keys"];
       }
     }
+  }
+
+  nlohmann::json to_json(void) const {
+    auto j = json_;
+    j["global"] = *global_configuration_;
+    j["profiles"] = profiles_;
+    return j;
   }
 
   std::string to_json_string(void) const {
@@ -731,7 +740,7 @@ public:
       return false;
     }
 
-    output << std::setw(4) << json_ << std::endl;
+    output << std::setw(4) << to_json() << std::endl;
     return true;
   }
 
@@ -806,6 +815,10 @@ private:
 
 inline void to_json(nlohmann::json& json, const core_configuration::global_configuration& global_configuration) {
   json = global_configuration.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile& profile) {
+  json = profile.to_json();
 }
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::simple_modifications& simple_modifications) {
