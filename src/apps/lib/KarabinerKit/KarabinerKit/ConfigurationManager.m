@@ -28,9 +28,8 @@ static void configuration_file_updated_callback(const char* jsonString, void* re
 
     libkrbn_configuration_monitor* p = NULL;
     if (libkrbn_configuration_monitor_initialize(&p, configuration_file_updated_callback, (__bridge void*)(manager))) {
-      return;
+      manager.libkrbn_configuration_monitor = p;
     }
-    manager.libkrbn_configuration_monitor = p;
   });
 
   return manager;
