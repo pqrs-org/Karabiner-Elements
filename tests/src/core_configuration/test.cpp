@@ -71,14 +71,22 @@ TEST_CASE("valid") {
   REQUIRE(configuration.get_global_show_in_menu_bar() == false);
 
   REQUIRE(configuration.is_loaded() == true);
+
+  {
+    std::ifstream input("json/to_json_example.json");
+    auto expected = nlohmann::json::parse(input);
+    REQUIRE(configuration.to_json() == expected);
+  }
 }
 
 TEST_CASE("broken.json") {
   {
     core_configuration configuration(logger::get_logger(), "json/broken.json");
 
-    std::vector<std::pair<krbn::key_code, krbn::key_code>> expected;
-    REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+    {
+      std::vector<std::pair<krbn::key_code, krbn::key_code>> expected;
+      REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+    }
     REQUIRE(configuration.is_loaded() == false);
 
     REQUIRE(configuration.get_global_configuration().get_check_for_updates_on_startup() == true);
@@ -88,6 +96,13 @@ TEST_CASE("broken.json") {
     REQUIRE((configuration.get_profiles())[0].get_name() == "Default profile");
     REQUIRE((configuration.get_profiles())[0].get_selected() == true);
     REQUIRE((configuration.get_profiles())[0].get_fn_function_keys().size() == 12);
+
+    {
+      // to_json result is default json if is_loaded == false
+      std::ifstream input("json/to_json_default.json");
+      auto expected = nlohmann::json::parse(input);
+      REQUIRE(configuration.to_json() == expected);
+    }
   }
   {
     core_configuration configuration(logger::get_logger(), "a.out");

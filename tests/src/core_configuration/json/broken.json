@@ -1,3 +1,6 @@
 {
+    "dummy": {
+        "keep_me": true
+    },
     "profiles": [
         {
