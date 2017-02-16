@@ -400,4 +400,16 @@
   libkrbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(self.libkrbn_core_configuration, value);
 }
 
+- (NSUInteger)profilesSize {
+  return libkrbn_core_configuration_get_profiles_size(self.libkrbn_core_configuration);
+}
+
+- (NSString*)profileNameAtIndex:(NSUInteger)index {
+  const char* p = libkrbn_core_configuration_get_profile_name(self.libkrbn_core_configuration, index);
+  if (p) {
+    return [NSString stringWithUTF8String:p];
+  }
+  return nil;
+}
+
 @end

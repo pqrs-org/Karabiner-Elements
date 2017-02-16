@@ -70,4 +70,7 @@
 @property BOOL globalConfigurationShowInMenuBar;
 @property BOOL globalConfigurationShowProfileNameInMenuBar;
 
+@property(readonly) NSUInteger profilesSize;
+- (NSString*)profileNameAtIndex:(NSUInteger)index;
+
 @end
