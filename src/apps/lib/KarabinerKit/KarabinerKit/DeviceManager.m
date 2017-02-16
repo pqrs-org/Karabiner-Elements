@@ -28,9 +28,8 @@ static void devices_updated_callback(void* refcon) {
 
     libkrbn_device_monitor* p = NULL;
     if (libkrbn_device_monitor_initialize(&p, devices_updated_callback, (__bridge void*)(manager))) {
-      return;
+      manager.libkrbn_device_monitor = p;
     }
-    manager.libkrbn_device_monitor = p;
   });
 
   return manager;
