@@ -633,8 +633,14 @@ public:
   global_configuration& get_global_configuration(void) {
     return *global_configuration_;
   }
+
   const std::vector<profile>& get_profiles(void) const {
     return profiles_;
+  }
+  void push_back_profile(void) {
+    profiles_.emplace_back(nlohmann::json({
+        {"name", "New profile"},
+    }));
   }
 
   // std::vector<from,to>
