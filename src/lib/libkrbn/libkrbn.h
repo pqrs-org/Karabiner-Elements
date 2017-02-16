@@ -42,12 +42,16 @@ bool libkrbn_core_configuration_initialize(libkrbn_core_configuration* _Nullable
 void libkrbn_core_configuration_terminate(libkrbn_core_configuration* _Nullable* _Nonnull p);
 bool libkrbn_core_configuration_is_loaded(libkrbn_core_configuration* _Nonnull p);
 bool libkrbn_core_configuration_save(libkrbn_core_configuration* _Nonnull p);
+
 bool libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_set_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* _Nonnull p, bool value);
 bool libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_set_global_configuration_show_in_menu_bar(libkrbn_core_configuration* _Nonnull p, bool value);
 bool libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(libkrbn_core_configuration* _Nonnull p, bool value);
+
+size_t libkrbn_core_configuration_get_profiles_size(libkrbn_core_configuration* _Nonnull p);
+const char* _Nullable libkrbn_core_configuration_get_profile_name(libkrbn_core_configuration* _Nonnull p, size_t index);
 
 // ----------------------------------------
 // libkrbn_configuration_monitor

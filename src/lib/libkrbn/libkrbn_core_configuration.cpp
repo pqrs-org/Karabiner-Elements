@@ -70,3 +70,20 @@ void libkrbn_core_configuration_set_global_configuration_show_profile_name_in_me
     return (c->get_global_configuration()).set_show_profile_name_in_menu_bar(value);
   }
 }
+
+size_t libkrbn_core_configuration_get_profiles_size(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    return (c->get_profiles()).size();
+  }
+  return 0;
+}
+
+const char* libkrbn_core_configuration_get_profile_name(libkrbn_core_configuration* p, size_t index) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    const auto& profiles = c->get_profiles();
+    if (index < profiles.size()) {
+      return profiles[index].get_name().c_str();
+    }
+  }
+  return nullptr;
+}
