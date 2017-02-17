@@ -130,7 +130,7 @@ public:
     }
 
   private:
-    const nlohmann::json json_;
+    nlohmann::json json_;
     bool check_for_updates_on_startup_;
     bool show_in_menu_bar_;
     bool show_profile_name_in_menu_bar_;
@@ -245,7 +245,7 @@ public:
       }
 
     private:
-      const nlohmann::json json_;
+      nlohmann::json json_;
       std::string keyboard_type_;
       uint32_t caps_lock_delay_milliseconds_;
     };
@@ -330,7 +330,7 @@ public:
         }
 
       private:
-        const nlohmann::json json_;
+        nlohmann::json json_;
         uint32_t vendor_id_;
         uint32_t product_id_;
         bool is_keyboard_;
@@ -392,7 +392,7 @@ public:
       }
 
     private:
-      const nlohmann::json json_;
+      nlohmann::json json_;
       std::unique_ptr<identifiers> identifiers_;
       bool ignore_;
       bool disable_built_in_keyboard_if_exists_;
@@ -541,7 +541,7 @@ public:
     }
 
   private:
-    const nlohmann::json json_;
+    nlohmann::json json_;
     std::string name_;
     bool selected_;
     std::unique_ptr<simple_modifications> simple_modifications_;
@@ -637,10 +637,31 @@ public:
   const std::vector<profile>& get_profiles(void) const {
     return profiles_;
   }
+  void set_profile_name(size_t index, const std::string name) {
+    if (index < profiles_.size()) {
+      profiles_[index].set_name(name);
+    }
+  }
+  void select_profile(size_t index) {
+    if (index < profiles_.size()) {
+      for (size_t i = 0; i < profiles_.size(); ++i) {
+        if (i == index) {
+          profiles_[i].set_selected(true);
+        } else {
+          profiles_[i].set_selected(false);
+        }
+      }
+    }
+  }
   void push_back_profile(void) {
     profiles_.emplace_back(nlohmann::json({
         {"name", "New profile"},
     }));
+  }
+  void erase_profile(size_t index) {
+    if (index < profiles_.size()) {
+      profiles_.erase(profiles_.begin() + index);
+    }
   }
 
   // std::vector<from,to>
