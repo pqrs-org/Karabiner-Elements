@@ -660,8 +660,19 @@ public:
   }
   void erase_profile(size_t index) {
     if (index < profiles_.size()) {
-      profiles_.erase(profiles_.begin() + index);
+      if (profiles_.size() > 1) {
+        profiles_.erase(profiles_.begin() + index);
+      }
     }
+  }
+
+  profile& get_selected_profile(void) {
+    for (auto&& profile : profiles_) {
+      if (profile.get_selected()) {
+        return profile;
+      }
+    }
+    return profiles_[0];
   }
 
   // std::vector<from,to>
