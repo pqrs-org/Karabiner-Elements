@@ -88,7 +88,13 @@ const char* libkrbn_core_configuration_get_profile_name(libkrbn_core_configurati
   return nullptr;
 }
 
-bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration* _Nonnull p, size_t index) {
+void libkrbn_core_configuration_set_profile_name(libkrbn_core_configuration* p, size_t index, const char* name) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    c->set_profile_name(index, name);
+  }
+}
+
+bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<core_configuration*>(p)) {
     const auto& profiles = c->get_profiles();
     if (index < profiles.size()) {
@@ -98,8 +104,20 @@ bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration*
   return false;
 }
 
+void libkrbn_core_configuration_select_profile(libkrbn_core_configuration* p, size_t index) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    c->select_profile(index);
+  }
+}
+
 void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<core_configuration*>(p)) {
-    return c->push_back_profile();
+    c->push_back_profile();
+  }
+}
+
+void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, size_t index) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    c->erase_profile(index);
   }
 }

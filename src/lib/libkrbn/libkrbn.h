@@ -52,8 +52,11 @@ void libkrbn_core_configuration_set_global_configuration_show_profile_name_in_me
 
 size_t libkrbn_core_configuration_get_profiles_size(libkrbn_core_configuration* _Nonnull p);
 const char* _Nullable libkrbn_core_configuration_get_profile_name(libkrbn_core_configuration* _Nonnull p, size_t index);
+void libkrbn_core_configuration_set_profile_name(libkrbn_core_configuration* _Nonnull p, size_t index, const char* _Nonnull name);
 bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration* _Nonnull p, size_t index);
+void libkrbn_core_configuration_select_profile(libkrbn_core_configuration* _Nonnull p, size_t index);
 void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* _Nonnull p);
+void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* _Nonnull p, size_t index);
 
 // ----------------------------------------
 // libkrbn_configuration_monitor
