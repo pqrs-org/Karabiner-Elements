@@ -412,4 +412,12 @@
   return nil;
 }
 
+- (BOOL)profileSelectedAtIndex:(NSUInteger)index {
+  return libkrbn_core_configuration_get_profile_selected(self.libkrbn_core_configuration, index);
+}
+
+- (void)pushBackProfile {
+  libkrbn_core_configuration_push_back_profile(self.libkrbn_core_configuration);
+}
+
 @end
