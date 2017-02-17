@@ -78,4 +78,7 @@
 - (void)addProfile;
 - (void)removeProfileAtIndex:(NSUInteger)index;
 
+@property(copy) NSString* selectedProfileVirtualHIDKeyboardKeyboardType;
+@property NSInteger selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds;
+
 @end

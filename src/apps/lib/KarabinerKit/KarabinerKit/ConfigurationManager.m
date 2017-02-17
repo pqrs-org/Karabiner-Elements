@@ -26,14 +26,22 @@ static void configuration_file_updated_callback(const char* jsonString, void* re
   static KarabinerKitConfigurationManager* manager;
   dispatch_once(&once, ^{
     manager = [KarabinerKitConfigurationManager new];
-
-    libkrbn_configuration_monitor* p = NULL;
-    if (libkrbn_configuration_monitor_initialize(&p, configuration_file_updated_callback, (__bridge void*)(manager))) {
-      manager.libkrbn_configuration_monitor = p;
-    }
   });
 
   return manager;
+}
+
+- (instancetype)init {
+  self = [super init];
+
+  if (self) {
+    libkrbn_configuration_monitor* p = NULL;
+    if (libkrbn_configuration_monitor_initialize(&p, configuration_file_updated_callback, (__bridge void*)(self))) {
+      _libkrbn_configuration_monitor = p;
+    }
+  }
+
+  return self;
 }
 
 - (void)dealloc {

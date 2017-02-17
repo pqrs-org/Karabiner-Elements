@@ -409,7 +409,7 @@
   if (p) {
     return [NSString stringWithUTF8String:p];
   }
-  return nil;
+  return @"";
 }
 
 - (void)setProfileNameAtIndex:(NSUInteger)index name:(NSString*)name {
@@ -430,6 +430,26 @@
 
 - (void)removeProfileAtIndex:(NSUInteger)index {
   libkrbn_core_configuration_erase_profile(self.libkrbn_core_configuration, index);
+}
+
+- (NSString*)selectedProfileVirtualHIDKeyboardKeyboardType {
+  const char* p = libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(self.libkrbn_core_configuration);
+  if (p) {
+    return [NSString stringWithUTF8String:p];
+  }
+  return @"";
+}
+
+- (void)setSelectedProfileVirtualHIDKeyboardKeyboardType:(NSString*)value {
+  libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type(self.libkrbn_core_configuration, [value UTF8String]);
+}
+
+- (NSInteger)selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds {
+  return libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(self.libkrbn_core_configuration);
+}
+
+- (void)setSelectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds:(NSInteger)value {
+  libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(self.libkrbn_core_configuration, (uint32_t)(value));
 }
 
 @end
