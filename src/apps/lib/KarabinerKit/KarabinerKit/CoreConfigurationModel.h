@@ -72,7 +72,10 @@
 
 @property(readonly) NSUInteger profilesSize;
 - (NSString*)profileNameAtIndex:(NSUInteger)index;
+- (void)setProfileNameAtIndex:(NSUInteger)index name:(NSString*)name;
 - (BOOL)profileSelectedAtIndex:(NSUInteger)index;
-- (void)pushBackProfile;
+- (void)selectProfileAtIndex:(NSUInteger)index;
+- (void)addProfile;
+- (void)removeProfileAtIndex:(NSUInteger)index;
 
 @end

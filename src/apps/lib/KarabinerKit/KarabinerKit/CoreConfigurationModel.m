@@ -412,12 +412,24 @@
   return nil;
 }
 
+- (void)setProfileNameAtIndex:(NSUInteger)index name:(NSString*)name {
+  libkrbn_core_configuration_set_profile_name(self.libkrbn_core_configuration, index, [name UTF8String]);
+}
+
 - (BOOL)profileSelectedAtIndex:(NSUInteger)index {
   return libkrbn_core_configuration_get_profile_selected(self.libkrbn_core_configuration, index);
 }
 
-- (void)pushBackProfile {
+- (void)selectProfileAtIndex:(NSUInteger)index {
+  libkrbn_core_configuration_select_profile(self.libkrbn_core_configuration, index);
+}
+
+- (void)addProfile {
   libkrbn_core_configuration_push_back_profile(self.libkrbn_core_configuration);
+}
+
+- (void)removeProfileAtIndex:(NSUInteger)index {
+  libkrbn_core_configuration_erase_profile(self.libkrbn_core_configuration, index);
 }
 
 @end
