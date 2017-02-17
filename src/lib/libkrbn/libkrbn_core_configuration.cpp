@@ -3,9 +3,17 @@
 #include "libkrbn.hpp"
 
 bool libkrbn_core_configuration_initialize(libkrbn_core_configuration** out, const char* file_path) {
-  if (!out) return false;
+  if (!out) {
+    return false;
+  }
   // return if already initialized.
-  if (*out) return false;
+  if (*out) {
+    return false;
+  }
+
+  if (!file_path) {
+    return false;
+  }
 
   *out = reinterpret_cast<libkrbn_core_configuration*>(new core_configuration(libkrbn::get_logger(), file_path));
   return true;
@@ -88,9 +96,11 @@ const char* libkrbn_core_configuration_get_profile_name(libkrbn_core_configurati
   return nullptr;
 }
 
-void libkrbn_core_configuration_set_profile_name(libkrbn_core_configuration* p, size_t index, const char* name) {
+void libkrbn_core_configuration_set_profile_name(libkrbn_core_configuration* p, size_t index, const char* value) {
   if (auto c = reinterpret_cast<core_configuration*>(p)) {
-    c->set_profile_name(index, name);
+    if (value) {
+      c->set_profile_name(index, value);
+    }
   }
 }
 
@@ -119,5 +129,33 @@ void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* p)
 void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<core_configuration*>(p)) {
     c->erase_profile(index);
+  }
+}
+
+const char* libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    return c->get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type().c_str();
+  }
+  return nullptr;
+}
+
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* p, const char* value) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    if (value) {
+      c->get_selected_profile().get_virtual_hid_keyboard().set_keyboard_type(value);
+    }
+  }
+}
+
+int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    return c->get_selected_profile().get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
+  }
+  return 0;
+}
+
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(libkrbn_core_configuration* p, uint32_t value) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    c->get_selected_profile().get_virtual_hid_keyboard().set_caps_lock_delay_milliseconds(value);
   }
 }
