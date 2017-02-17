@@ -12,23 +12,21 @@
 @implementation ProfilesTableViewDelegate
 
 - (NSView*)tableView:(NSTableView*)tableView viewForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row {
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-  NSArray<KarabinerKitConfigurationProfile*>* profiles = configurationManager.coreConfigurationModel.profiles;
-  KarabinerKitConfigurationProfile* profile = profiles[row];
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
 
   ProfilesTableCellView* result = [tableView makeViewWithIdentifier:@"ProfilesCellView" owner:self];
 
-  result.name.stringValue = profile.name;
+  result.name.stringValue = [coreConfigurationModel2 profileNameAtIndex:row];
   result.name.action = @selector(valueChanged:);
   result.name.target = self.profilesTableViewController;
 
-  if (profiles.count == 1) {
+  if (coreConfigurationModel2.profilesSize == 1) {
     result.selectedImage.hidden = YES;
     result.selected.hidden = YES;
     result.selectProfileButton.hidden = YES;
     result.removeProfileButton.hidden = YES;
   } else {
-    if (profile.selected) {
+    if ([coreConfigurationModel2 profileSelectedAtIndex:row]) {
       result.selectedImage.hidden = NO;
       result.selected.hidden = NO;
       result.selectProfileButton.hidden = YES;

@@ -27,20 +27,17 @@
 
 - (void)valueChanged:(id)sender {
   NSInteger row = [self.tableView rowForView:sender];
+  NSTextField* name = (NSTextField*)(sender);
 
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-  NSArray<KarabinerKitConfigurationProfile*>* profiles = configurationManager.coreConfigurationModel.profiles;
-  if (0 <= row && row < (NSInteger)(profiles.count)) {
-    NSTextField* name = (NSTextField*)(sender);
-    profiles[row].name = name.stringValue;
-    [configurationManager save];
-  }
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  [coreConfigurationModel2 setProfileNameAtIndex:row name:name.stringValue];
+  [coreConfigurationModel2 save];
 }
 
 - (IBAction)addProfile:(id)sender {
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-  [configurationManager.coreConfigurationModel addProfile];
-  [configurationManager save];
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  [coreConfigurationModel2 addProfile];
+  [coreConfigurationModel2 save];
 
   [self.tableView reloadData];
 }
@@ -48,9 +45,9 @@
 - (void)removeProfile:(id)sender {
   NSInteger row = [self.tableView rowForView:sender];
 
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-  [configurationManager.coreConfigurationModel removeProfile:(NSUInteger)(row)];
-  [configurationManager save];
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  [coreConfigurationModel2 removeProfileAtIndex:(NSUInteger)(row)];
+  [coreConfigurationModel2 save];
 
   [self.tableView reloadData];
 }
@@ -58,9 +55,9 @@
 - (void)selectProfile:(id)sender {
   NSInteger row = [self.tableView rowForView:sender];
 
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-  [configurationManager.coreConfigurationModel selectProfile:(NSUInteger)(row)];
-  [configurationManager save];
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  [coreConfigurationModel2 selectProfileAtIndex:(NSUInteger)(row)];
+  [coreConfigurationModel2 save];
 
   [self.tableView reloadData];
 
