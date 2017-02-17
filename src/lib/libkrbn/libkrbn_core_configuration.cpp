@@ -87,3 +87,19 @@ const char* libkrbn_core_configuration_get_profile_name(libkrbn_core_configurati
   }
   return nullptr;
 }
+
+bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration* _Nonnull p, size_t index) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    const auto& profiles = c->get_profiles();
+    if (index < profiles.size()) {
+      return profiles[index].get_selected();
+    }
+  }
+  return false;
+}
+
+void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    return c->push_back_profile();
+  }
+}
