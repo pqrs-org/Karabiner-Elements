@@ -46,47 +46,42 @@
 }
 
 - (void)valueChanged:(id)sender {
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+  NSInteger row = [self.tableView rowForView:sender];
 
-  NSInteger rows = [self.tableView numberOfRows];
-  for (NSInteger i = 0; i < rows; ++i) {
-    SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:i makeIfNecessary:NO];
-    SimpleModificationsTableCellView* toCellView = [self.tableView viewAtColumn:1 row:i makeIfNecessary:NO];
+  SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
+  SimpleModificationsTableCellView* toCellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
 
-    NSString* fromValue = fromCellView.popUpButton.selectedItem.representedObject;
-    if (fromValue && ![fromValue isEqualToString:@""]) {
-      // If toCellView is not selected, set fromCellView value to toCellView.
-      NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
-      if (!toValue || [toValue isEqualToString:@""]) {
-        [SimpleModificationsTableViewController selectPopUpButtonMenu:toCellView.popUpButton representedObject:fromValue];
-        toValue = toCellView.popUpButton.selectedItem.representedObject;
-      }
-      toCellView.popUpButton.enabled = YES;
-
-      [configurationManager.coreConfigurationModel.currentProfile replaceSimpleModification:(NSUInteger)(i) from:fromValue to:toValue];
+  NSString* fromValue = fromCellView.popUpButton.selectedItem.representedObject;
+  if (fromValue && ![fromValue isEqualToString:@""]) {
+    // If toCellView is not selected, set fromCellView value to toCellView.
+    NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
+    if (!toValue || [toValue isEqualToString:@""]) {
+      [SimpleModificationsTableViewController selectPopUpButtonMenu:toCellView.popUpButton representedObject:fromValue];
+      toValue = toCellView.popUpButton.selectedItem.representedObject;
     }
-  }
+    toCellView.popUpButton.enabled = YES;
 
-  [configurationManager save];
+    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+    [coreConfigurationModel2 setSelectedProfileSimpleModificationAtIndex:row from:fromValue to:toValue];
+    [coreConfigurationModel2 save];
+  }
 }
 
 - (void)removeItem:(id)sender {
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-
   NSInteger row = [self.tableView rowForView:sender];
-  [configurationManager.coreConfigurationModel.currentProfile removeSimpleModification:(NSUInteger)(row)];
-  [self.tableView reloadData];
 
-  [configurationManager save];
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  [coreConfigurationModel2 removeSelectedProfileSimpleModificationAtIndex:row];
+  [coreConfigurationModel2 save];
+
+  [self.tableView reloadData];
 }
 
 - (IBAction)addItem:(id)sender {
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  [coreConfigurationModel2 addSimpleModificationToSelectedProfile];
 
-  [configurationManager.coreConfigurationModel.currentProfile addSimpleModification];
   [self.tableView reloadData];
-
-  [configurationManager save];
 }
 
 @end

@@ -4,7 +4,7 @@
 @implementation ProfilesTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  return [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2.profilesSize;
+  return [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2.profilesCount;
 }
 
 @end

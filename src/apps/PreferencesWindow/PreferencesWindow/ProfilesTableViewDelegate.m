@@ -20,7 +20,7 @@
   result.name.action = @selector(valueChanged:);
   result.name.target = self.profilesTableViewController;
 
-  if (coreConfigurationModel2.profilesSize == 1) {
+  if (coreConfigurationModel2.profilesCount == 1) {
     result.selectedImage.hidden = YES;
     result.selected.hidden = YES;
     result.selectProfileButton.hidden = YES;
