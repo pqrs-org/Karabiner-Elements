@@ -58,6 +58,16 @@ void libkrbn_core_configuration_select_profile(libkrbn_core_configuration* _Nonn
 void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* _Nonnull p, size_t index);
 
+size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* _Nonnull p);
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* _Nonnull p, size_t index);
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_second(libkrbn_core_configuration* _Nonnull p, size_t index);
+void libkrbn_core_configuration_replace_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p,
+                                                                             size_t index,
+                                                                             const char* _Nonnull from,
+                                                                             const char* _Nonnull to);
+void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p);
+void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p, size_t index);
+
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* _Nonnull p, const char* _Nonnull value);
 int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(libkrbn_core_configuration* _Nonnull p);
