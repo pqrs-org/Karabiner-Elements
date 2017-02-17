@@ -70,13 +70,20 @@
 @property BOOL globalConfigurationShowInMenuBar;
 @property BOOL globalConfigurationShowProfileNameInMenuBar;
 
-@property(readonly) NSUInteger profilesSize;
+@property(readonly) NSUInteger profilesCount;
 - (NSString*)profileNameAtIndex:(NSUInteger)index;
 - (void)setProfileNameAtIndex:(NSUInteger)index name:(NSString*)name;
 - (BOOL)profileSelectedAtIndex:(NSUInteger)index;
 - (void)selectProfileAtIndex:(NSUInteger)index;
 - (void)addProfile;
 - (void)removeProfileAtIndex:(NSUInteger)index;
+
+@property(readonly) NSUInteger selectedProfileSimpleModificationsCount;
+- (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index;
+- (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index;
+- (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to;
+- (void)addSimpleModificationToSelectedProfile;
+- (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index;
 
 @property(copy) NSString* selectedProfileVirtualHIDKeyboardKeyboardType;
 @property NSInteger selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds;

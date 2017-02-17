@@ -400,7 +400,7 @@
   libkrbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(self.libkrbn_core_configuration, value);
 }
 
-- (NSUInteger)profilesSize {
+- (NSUInteger)profilesCount {
   return libkrbn_core_configuration_get_profiles_size(self.libkrbn_core_configuration);
 }
 
@@ -430,6 +430,38 @@
 
 - (void)removeProfileAtIndex:(NSUInteger)index {
   libkrbn_core_configuration_erase_profile(self.libkrbn_core_configuration, index);
+}
+
+- (NSUInteger)selectedProfileSimpleModificationsCount {
+  return libkrbn_core_configuration_get_selected_profile_simple_modifications_size(self.libkrbn_core_configuration);
+}
+
+- (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index {
+  const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_first(self.libkrbn_core_configuration, index);
+  if (p) {
+    return [NSString stringWithUTF8String:p];
+  }
+  return @"";
+}
+
+- (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index {
+  const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_second(self.libkrbn_core_configuration, index);
+  if (p) {
+    return [NSString stringWithUTF8String:p];
+  }
+  return @"";
+}
+
+- (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to {
+  libkrbn_core_configuration_replace_selected_profile_simple_modification(self.libkrbn_core_configuration, index, [from UTF8String], [to UTF8String]);
+}
+
+- (void)addSimpleModificationToSelectedProfile {
+  libkrbn_core_configuration_push_back_selected_profile_simple_modification(self.libkrbn_core_configuration);
+}
+
+- (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index {
+  libkrbn_core_configuration_erase_selected_profile_simple_modification(self.libkrbn_core_configuration, index);
 }
 
 - (NSString*)selectedProfileVirtualHIDKeyboardKeyboardType {
