@@ -574,6 +574,7 @@ TEST_CASE("profile.to_json") {
     // }
 
     profile.replace_fn_function_keys("f3", "to f3");
+    profile.replace_fn_function_keys("not found", "do nothing");
 
     profile.get_virtual_hid_keyboard().set_keyboard_type("iso");
 
