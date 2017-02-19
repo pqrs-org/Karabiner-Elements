@@ -32,12 +32,11 @@
   if ([tableColumn.identifier isEqualToString:@"SimpleModificationsToColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsToCellView" owner:self];
 
-    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-
     result.popUpButton.action = @selector(valueChanged:);
     result.popUpButton.target = self.simpleModificationsTableViewController;
     result.popUpButton.menu = [self.simpleModificationsMenuManager.toMenu copy];
 
+    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
     NSString* fromValue = [coreConfigurationModel2 selectedProfileSimpleModificationFirstAtIndex:row];
     if ([fromValue length] > 0) {
       result.popUpButton.enabled = YES;

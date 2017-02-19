@@ -34,26 +34,17 @@
 }
 
 - (void)valueChanged:(id)sender {
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
+  NSInteger row = [self.tableView rowForView:sender];
 
-  NSInteger rows = [self.tableView numberOfRows];
-  for (NSInteger i = 0; i < rows; ++i) {
-    SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:i makeIfNecessary:NO];
-    SimpleModificationsTableCellView* toCellView = [self.tableView viewAtColumn:1 row:i makeIfNecessary:NO];
+  SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
+  SimpleModificationsTableCellView* toCellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
 
-    NSString* fromValue = fromCellView.textField.stringValue;
+  NSString* fromValue = fromCellView.textField.stringValue;
+  NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
 
-    // If toCellView is not selected, set fromCellView value to toCellView.
-    NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
-    if (!toValue || [toValue isEqualToString:@""]) {
-      [SimpleModificationsTableViewController selectPopUpButtonMenu:toCellView.popUpButton representedObject:fromValue];
-      toValue = toCellView.popUpButton.selectedItem.representedObject;
-    }
-
-    [configurationManager.coreConfigurationModel.currentProfile replaceFnFunctionKey:fromValue to:toValue];
-  }
-
-  [configurationManager save];
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  [coreConfigurationModel2 setSelectedProfileFnFunctionKey:fromValue to:toValue];
+  [coreConfigurationModel2 save];
 }
 
 @end

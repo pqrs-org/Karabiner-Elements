@@ -18,11 +18,8 @@
   if ([tableColumn.identifier isEqualToString:@"FnFunctionKeysFromColumn"]) {
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysFromCellView" owner:self];
 
-    KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-    NSArray<NSDictionary*>* fnFunctionKeys = configurationManager.coreConfigurationModel.currentProfile.fnFunctionKeys;
-    if (0 <= row && row < (NSInteger)(fnFunctionKeys.count)) {
-      result.textField.stringValue = fnFunctionKeys[row][@"from"];
-    }
+    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+    result.textField.stringValue = [coreConfigurationModel2 selectedProfileFnFunctionKeyFirstAtIndex:row];
 
     return result;
   }
@@ -30,16 +27,13 @@
   if ([tableColumn.identifier isEqualToString:@"FnFunctionKeysToColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysToCellView" owner:self];
 
-    KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-    NSArray<NSDictionary*>* fnFunctionKeys = configurationManager.coreConfigurationModel.currentProfile.fnFunctionKeys;
-    if (0 <= row && row < (NSInteger)(fnFunctionKeys.count)) {
-      result.popUpButton.action = @selector(valueChanged:);
-      result.popUpButton.target = self.fnFunctionKeysTableViewController;
-      result.popUpButton.menu = [self.simpleModificationsMenuManager.toMenu copy];
+    result.popUpButton.action = @selector(valueChanged:);
+    result.popUpButton.target = self.fnFunctionKeysTableViewController;
+    result.popUpButton.menu = [self.simpleModificationsMenuManager.toMenu copy];
 
-      NSString* toValue = fnFunctionKeys[row][@"to"];
-      [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:toValue];
-    }
+    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+    NSString* toValue = [coreConfigurationModel2 selectedProfileFnFunctionKeySecondAtIndex:row];
+    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:toValue];
 
     return result;
   }
