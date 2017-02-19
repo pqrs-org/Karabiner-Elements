@@ -43,12 +43,16 @@ void libkrbn_core_configuration_terminate(libkrbn_core_configuration* _Nullable*
 bool libkrbn_core_configuration_is_loaded(libkrbn_core_configuration* _Nonnull p);
 bool libkrbn_core_configuration_save(libkrbn_core_configuration* _Nonnull p);
 
+// global_configuration
+
 bool libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_set_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* _Nonnull p, bool value);
 bool libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_set_global_configuration_show_in_menu_bar(libkrbn_core_configuration* _Nonnull p, bool value);
 bool libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(libkrbn_core_configuration* _Nonnull p, bool value);
+
+// profiles
 
 size_t libkrbn_core_configuration_get_profiles_size(libkrbn_core_configuration* _Nonnull p);
 const char* _Nullable libkrbn_core_configuration_get_profile_name(libkrbn_core_configuration* _Nonnull p, size_t index);
@@ -57,6 +61,8 @@ bool libkrbn_core_configuration_get_profile_selected(libkrbn_core_configuration*
 void libkrbn_core_configuration_select_profile(libkrbn_core_configuration* _Nonnull p, size_t index);
 void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* _Nonnull p, size_t index);
+
+// profile::simple_modifications
 
 size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* _Nonnull p);
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* _Nonnull p, size_t index);
@@ -67,6 +73,17 @@ void libkrbn_core_configuration_replace_selected_profile_simple_modification(lib
                                                                              const char* _Nonnull to);
 void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p, size_t index);
+
+// profile::fn_function_keys
+
+size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(libkrbn_core_configuration* _Nonnull p);
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_function_key_first(libkrbn_core_configuration* _Nonnull p, size_t index);
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_function_key_second(libkrbn_core_configuration* _Nonnull p, size_t index);
+void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn_core_configuration* _Nonnull p,
+                                                                         const char* _Nonnull from,
+                                                                         const char* _Nonnull to);
+
+// profile::virtual_hid_device
 
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* _Nonnull p, const char* _Nonnull value);

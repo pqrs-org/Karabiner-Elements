@@ -182,6 +182,43 @@ void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkr
   }
 }
 
+size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    return c->get_selected_profile().get_fn_function_keys().size();
+  }
+  return 0;
+}
+
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_function_key_first(libkrbn_core_configuration* p, size_t index) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    const auto& fn_function_keys = c->get_selected_profile().get_fn_function_keys();
+    if (index < fn_function_keys.size()) {
+      return fn_function_keys[index].first.c_str();
+    }
+  }
+  return nullptr;
+}
+
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_function_key_second(libkrbn_core_configuration* p, size_t index) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    const auto& fn_function_keys = c->get_selected_profile().get_fn_function_keys();
+    if (index < fn_function_keys.size()) {
+      return fn_function_keys[index].second.c_str();
+    }
+  }
+  return nullptr;
+}
+
+void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn_core_configuration* p,
+                                                                         const char* from,
+                                                                         const char* to) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    if (from && to) {
+      c->get_selected_profile().replace_fn_function_key(from, to);
+    }
+  }
+}
+
 const char* libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<core_configuration*>(p)) {
     return c->get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type().c_str();
