@@ -85,6 +85,11 @@
 - (void)addSimpleModificationToSelectedProfile;
 - (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index;
 
+@property(readonly) NSUInteger selectedProfileFnFunctionKeysCount;
+- (NSString*)selectedProfileFnFunctionKeyFirstAtIndex:(NSUInteger)index;
+- (NSString*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index;
+- (void)setSelectedProfileFnFunctionKey:(NSString*)from to:(NSString*)to;
+
 @property(copy) NSString* selectedProfileVirtualHIDKeyboardKeyboardType;
 @property NSInteger selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds;
 

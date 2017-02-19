@@ -464,6 +464,30 @@
   libkrbn_core_configuration_erase_selected_profile_simple_modification(self.libkrbn_core_configuration, index);
 }
 
+- (NSUInteger) selectedProfileFnFunctionKeysCount {
+  return libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(self.libkrbn_core_configuration);
+}
+
+- (NSString*)selectedProfileFnFunctionKeyFirstAtIndex:(NSUInteger)index {
+  const char* p = libkrbn_core_configuration_get_selected_profile_fn_function_key_first(self.libkrbn_core_configuration, index);
+  if (p) {
+    return [NSString stringWithUTF8String:p];
+  }
+  return @"";
+}
+
+- (NSString*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index {
+  const char* p = libkrbn_core_configuration_get_selected_profile_fn_function_key_second(self.libkrbn_core_configuration, index);
+  if (p) {
+    return [NSString stringWithUTF8String:p];
+  }
+  return @"";
+}
+
+- (void)setSelectedProfileFnFunctionKey:(NSString*)from to:(NSString*)to {
+  libkrbn_core_configuration_replace_selected_profile_fn_function_key(self.libkrbn_core_configuration, [from UTF8String], [to UTF8String]);
+}
+
 - (NSString*)selectedProfileVirtualHIDKeyboardKeyboardType {
   const char* p = libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(self.libkrbn_core_configuration);
   if (p) {
