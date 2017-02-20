@@ -782,14 +782,6 @@ public:
     return get_current_profile().dump();
   }
 
-  bool get_global_show_profile_name_in_menu_bar(void) {
-    auto value = json_["global"]["show_profile_name_in_menu_bar"];
-    if (value.is_boolean()) {
-      return value;
-    }
-    return false;
-  }
-
   // Note:
   // Be careful calling `save` method.
   // If the configuration file is corrupted temporarily (user editing the configuration file in editor),
