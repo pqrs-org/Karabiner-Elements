@@ -43,23 +43,31 @@
 }
 
 - (void)valueChanged:(id)sender {
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+
   NSInteger row = [self.tableView rowForView:sender];
-  if (row == -1) {
-    row = [self.externalKeyboardTableView rowForView:sender];
-  }
-  if (row == -1) {
-    NSLog(@"rowForView error @ [DevicesTableViewController valueChanged]");
+  if (row != -1) {
+    DevicesTableCellView* cellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
+    [coreConfigurationModel2 setSelectedProfileDeviceIgnore:cellView.deviceIdentifiers.vendorId
+                                                  productId:cellView.deviceIdentifiers.productId
+                                                 isKeyboard:cellView.deviceIdentifiers.isKeyboard
+                                           isPointingDevice:cellView.deviceIdentifiers.isPointingDevice
+                                                      value:(cellView.checkbox.state == NSOffState)];
+    [coreConfigurationModel2 save];
     return;
   }
-  DevicesTableCellView* cellViewCheckbox = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
-  DevicesTableCellView* cellViewExternalKeyboard = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
 
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-
-  [configurationManager.coreConfigurationModel.currentProfile setDeviceConfiguration:cellViewCheckbox.deviceIdentifiers
-                                                                              ignore:(cellViewCheckbox.checkbox.state != NSOnState)
-                                                      disableBuiltInKeyboardIfExists:(cellViewExternalKeyboard.checkbox.state == NSOnState)];
-  [configurationManager save];
+  row = [self.externalKeyboardTableView rowForView:sender];
+  if (row != -1) {
+    DevicesTableCellView* cellView = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
+    [coreConfigurationModel2 setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:cellView.deviceIdentifiers.vendorId
+                                                                          productId:cellView.deviceIdentifiers.productId
+                                                                         isKeyboard:cellView.deviceIdentifiers.isKeyboard
+                                                                   isPointingDevice:cellView.deviceIdentifiers.isPointingDevice
+                                                                              value:(cellView.checkbox.state == NSOnState)];
+    [coreConfigurationModel2 save];
+    return;
+  }
 }
 
 @end

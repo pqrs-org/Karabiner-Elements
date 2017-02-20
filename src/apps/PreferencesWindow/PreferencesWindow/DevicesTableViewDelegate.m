@@ -37,11 +37,14 @@
 
       result.checkbox.state = (model.ignore ? NSOffState : NSOnState);
 
-      KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-      for (KarabinerKitDeviceConfiguration* device in configurationManager.coreConfigurationModel.currentProfile.devices) {
-        if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
-          result.checkbox.state = (device.ignore ? NSOffState : NSOnState);
-        }
+      KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+      if ([coreConfigurationModel2 selectedProfileDeviceIgnore:model.deviceIdentifiers.vendorId
+                                                     productId:model.deviceIdentifiers.productId
+                                                    isKeyboard:model.deviceIdentifiers.isKeyboard
+                                              isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {
+        result.checkbox.state = NSOffState;
+      } else {
+        result.checkbox.state = NSOnState;
       }
 
       return result;
@@ -93,11 +96,14 @@
 
         result.deviceIdentifiers = model.deviceIdentifiers;
 
-        KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-        for (KarabinerKitDeviceConfiguration* device in configurationManager.coreConfigurationModel.currentProfile.devices) {
-          if ([device.deviceIdentifiers isEqualToDeviceIdentifiers:model.deviceIdentifiers]) {
-            result.checkbox.state = (device.disableBuiltInKeyboardIfExists ? NSOnState : NSOffState);
-          }
+        KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+        if ([coreConfigurationModel2 selectedProfileDeviceDisableBuiltInKeyboardIfExists:model.deviceIdentifiers.vendorId
+                                                                               productId:model.deviceIdentifiers.productId
+                                                                              isKeyboard:model.deviceIdentifiers.isKeyboard
+                                                                        isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {
+          result.checkbox.state = NSOnState;
+        } else {
+          result.checkbox.state = NSOffState;
         }
       }
 
