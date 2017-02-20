@@ -90,6 +90,31 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboa
 int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(libkrbn_core_configuration* _Nonnull p, uint32_t value);
 
+// profile::devices
+
+bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_configuration* _Nonnull p,
+                                                                   uint32_t vendor_id,
+                                                                   uint32_t product_id,
+                                                                   bool is_keyboard,
+                                                                   bool is_pointing_device);
+void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* _Nonnull p,
+                                                                   uint32_t vendor_id,
+                                                                   uint32_t product_id,
+                                                                   bool is_keyboard,
+                                                                   bool is_pointing_device,
+                                                                   bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* _Nonnull p,
+                                                                                                uint32_t vendor_id,
+                                                                                                uint32_t product_id,
+                                                                                                bool is_keyboard,
+                                                                                                bool is_pointing_device);
+void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* _Nonnull p,
+                                                                                                uint32_t vendor_id,
+                                                                                                uint32_t product_id,
+                                                                                                bool is_keyboard,
+                                                                                                bool is_pointing_device,
+                                                                                                bool value);
+
 // ----------------------------------------
 // libkrbn_configuration_monitor
 

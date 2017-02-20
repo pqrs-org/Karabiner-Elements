@@ -246,3 +246,51 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_caps_l
     c->get_selected_profile().get_virtual_hid_keyboard().set_caps_lock_delay_milliseconds(value);
   }
 }
+
+bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_configuration* p,
+                                                                   uint32_t vendor_id,
+                                                                   uint32_t product_id,
+                                                                   bool is_keyboard,
+                                                                   bool is_pointing_device) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    core_configuration::profile::device::identifiers identifiers(vendor_id, product_id, is_keyboard, is_pointing_device);
+    return c->get_selected_profile().get_device_ignore(identifiers);
+  }
+  return false;
+}
+
+void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* p,
+                                                                   uint32_t vendor_id,
+                                                                   uint32_t product_id,
+                                                                   bool is_keyboard,
+                                                                   bool is_pointing_device,
+                                                                   bool value) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    core_configuration::profile::device::identifiers identifiers(vendor_id, product_id, is_keyboard, is_pointing_device);
+    c->get_selected_profile().set_device_ignore(identifiers, value);
+  }
+}
+
+bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
+                                                                                                uint32_t vendor_id,
+                                                                                                uint32_t product_id,
+                                                                                                bool is_keyboard,
+                                                                                                bool is_pointing_device) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    core_configuration::profile::device::identifiers identifiers(vendor_id, product_id, is_keyboard, is_pointing_device);
+    return c->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(identifiers);
+  }
+  return false;
+}
+
+void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
+                                                                                                uint32_t vendor_id,
+                                                                                                uint32_t product_id,
+                                                                                                bool is_keyboard,
+                                                                                                bool is_pointing_device,
+                                                                                                bool value) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    core_configuration::profile::device::identifiers identifiers(vendor_id, product_id, is_keyboard, is_pointing_device);
+    c->get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
+  }
+}
