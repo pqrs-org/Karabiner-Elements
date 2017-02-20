@@ -532,6 +532,14 @@ public:
     const std::vector<device>& get_devices(void) const {
       return devices_;
     }
+    bool get_device_ignore(const device::identifiers& identifiers) {
+      for (const auto& d : devices_) {
+        if (d.get_identifiers() == identifiers) {
+          return d.get_ignore();
+        }
+      }
+      return false;
+    }
     void set_device_ignore(const device::identifiers& identifiers,
                            bool ignore) {
       for (auto&& device : devices_) {
@@ -546,6 +554,14 @@ public:
           {"ignore", ignore},
       });
       devices_.emplace_back(json);
+    }
+    bool get_device_disable_built_in_keyboard_if_exists(const device::identifiers& identifiers) {
+      for (const auto& d : devices_) {
+        if (d.get_identifiers() == identifiers) {
+          return d.get_disable_built_in_keyboard_if_exists();
+        }
+      }
+      return false;
     }
     void set_device_disable_built_in_keyboard_if_exists(const device::identifiers& identifiers,
                                                         bool disable_built_in_keyboard_if_exists) {
