@@ -464,7 +464,7 @@
   libkrbn_core_configuration_erase_selected_profile_simple_modification(self.libkrbn_core_configuration, index);
 }
 
-- (NSUInteger) selectedProfileFnFunctionKeysCount {
+- (NSUInteger)selectedProfileFnFunctionKeysCount {
   return libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(self.libkrbn_core_configuration);
 }
 
@@ -486,6 +486,54 @@
 
 - (void)setSelectedProfileFnFunctionKey:(NSString*)from to:(NSString*)to {
   libkrbn_core_configuration_replace_selected_profile_fn_function_key(self.libkrbn_core_configuration, [from UTF8String], [to UTF8String]);
+}
+
+- (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
+                          productId:(NSUInteger)productId
+                         isKeyboard:(BOOL)isKeyboard
+                   isPointingDevice:(BOOL)isPointingDevice {
+  return libkrbn_core_configuration_get_selected_profile_device_ignore(self.libkrbn_core_configuration,
+                                                                       (uint32_t)(vendorId),
+                                                                       (uint32_t)(productId),
+                                                                       isKeyboard,
+                                                                       isPointingDevice);
+}
+
+- (void)setSelectedProfileDeviceIgnore:(NSUInteger)vendorId
+                             productId:(NSUInteger)productId
+                            isKeyboard:(BOOL)isKeyboard
+                      isPointingDevice:(BOOL)isPointingDevice
+                                 value:(BOOL)value {
+  libkrbn_core_configuration_set_selected_profile_device_ignore(self.libkrbn_core_configuration,
+                                                                (uint32_t)(vendorId),
+                                                                (uint32_t)(productId),
+                                                                isKeyboard,
+                                                                isPointingDevice,
+                                                                value);
+}
+
+- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
+                                                  productId:(NSUInteger)productId
+                                                 isKeyboard:(BOOL)isKeyboard
+                                           isPointingDevice:(BOOL)isPointingDevice {
+  return libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(self.libkrbn_core_configuration,
+                                                                                                    (uint32_t)(vendorId),
+                                                                                                    (uint32_t)(productId),
+                                                                                                    isKeyboard,
+                                                                                                    isPointingDevice);
+}
+
+- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
+                                                     productId:(NSUInteger)productId
+                                                    isKeyboard:(BOOL)isKeyboard
+                                              isPointingDevice:(BOOL)isPointingDevice
+                                                         value:(BOOL)value {
+  libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(self.libkrbn_core_configuration,
+                                                                                             (uint32_t)(vendorId),
+                                                                                             (uint32_t)(productId),
+                                                                                             isKeyboard,
+                                                                                             isPointingDevice,
+                                                                                             value);
 }
 
 - (NSString*)selectedProfileVirtualHIDKeyboardKeyboardType {

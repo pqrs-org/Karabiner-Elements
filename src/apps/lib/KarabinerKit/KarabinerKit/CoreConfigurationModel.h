@@ -90,6 +90,25 @@
 - (NSString*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index;
 - (void)setSelectedProfileFnFunctionKey:(NSString*)from to:(NSString*)to;
 
+- (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
+                          productId:(NSUInteger)productId
+                         isKeyboard:(BOOL)isKeyboard
+                   isPointingDevice:(BOOL)isPointingDevice;
+- (void)setSelectedProfileDeviceIgnore:(NSUInteger)vendorId
+                             productId:(NSUInteger)productId
+                            isKeyboard:(BOOL)isKeyboard
+                      isPointingDevice:(BOOL)isPointingDevice
+                                 value:(BOOL)value;
+- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
+                                                  productId:(NSUInteger)productId
+                                                 isKeyboard:(BOOL)isKeyboard
+                                           isPointingDevice:(BOOL)isPointingDevice;
+- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
+                                                     productId:(NSUInteger)productId
+                                                    isKeyboard:(BOOL)isKeyboard
+                                              isPointingDevice:(BOOL)isPointingDevice
+                                                         value:(BOOL)value;
+
 @property(copy) NSString* selectedProfileVirtualHIDKeyboardKeyboardType;
 @property NSInteger selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds;
 
