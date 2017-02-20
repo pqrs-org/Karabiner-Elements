@@ -120,6 +120,13 @@ void libkrbn_core_configuration_select_profile(libkrbn_core_configuration* p, si
   }
 }
 
+const char* libkrbn_core_configuration_get_selected_profile_name(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<core_configuration*>(p)) {
+    return c->get_selected_profile().get_name().c_str();
+  }
+  return nullptr;
+}
+
 void libkrbn_core_configuration_push_back_profile(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<core_configuration*>(p)) {
     c->push_back_profile();
