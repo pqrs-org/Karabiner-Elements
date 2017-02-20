@@ -73,7 +73,7 @@ private:
     // Check for updates
     if (need_to_check_for_updates_) {
       need_to_check_for_updates_ = false;
-      if (core_configuration.get_global_check_for_updates_on_startup()) {
+      if (core_configuration.get_global_configuration().get_check_for_updates_on_startup()) {
         logger_.info("Check for updates...");
         update_utility::check_for_updates_in_background();
       }

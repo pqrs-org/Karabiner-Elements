@@ -67,7 +67,7 @@ TEST_CASE("valid") {
     REQUIRE(actual[1].second.disable_built_in_keyboard_if_exists == true);
   }
 
-  REQUIRE(configuration.get_global_check_for_updates_on_startup() == false);
+  REQUIRE(configuration.get_global_configuration().get_check_for_updates_on_startup() == false);
   REQUIRE(configuration.get_global_show_in_menu_bar() == false);
 
   REQUIRE(configuration.is_loaded() == true);
