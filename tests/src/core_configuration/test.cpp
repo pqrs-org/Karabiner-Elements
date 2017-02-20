@@ -68,7 +68,7 @@ TEST_CASE("valid") {
   }
 
   REQUIRE(configuration.get_global_configuration().get_check_for_updates_on_startup() == false);
-  REQUIRE(configuration.get_global_show_in_menu_bar() == false);
+  REQUIRE(configuration.get_global_configuration().get_show_in_menu_bar() == false);
 
   REQUIRE(configuration.is_loaded() == true);
 

@@ -81,7 +81,7 @@ private:
 
     // ----------------------------------------
     // Launch menu
-    if (core_configuration.get_global_show_in_menu_bar()) {
+    if (core_configuration.get_global_configuration().get_show_in_menu_bar()) {
       application_launcher::launch_menu();
     }
   }

@@ -782,14 +782,6 @@ public:
     return get_current_profile().dump();
   }
 
-  bool get_global_show_in_menu_bar(void) {
-    auto value = json_["global"]["show_in_menu_bar"];
-    if (value.is_boolean()) {
-      return value;
-    }
-    return true;
-  }
-
   bool get_global_show_profile_name_in_menu_bar(void) {
     auto value = json_["global"]["show_profile_name_in_menu_bar"];
     if (value.is_boolean()) {
