@@ -532,13 +532,11 @@ public:
     const std::vector<device>& get_devices(void) const {
       return devices_;
     }
-    void set_device(const device::identifiers& identifiers,
-                    bool ignore,
-                    bool disable_built_in_keyboard_if_exists) {
+    void set_device_ignore(const device::identifiers& identifiers,
+                           bool ignore) {
       for (auto&& device : devices_) {
         if (device.get_identifiers() == identifiers) {
           device.set_ignore(ignore);
-          device.set_disable_built_in_keyboard_if_exists(disable_built_in_keyboard_if_exists);
           return;
         }
       }
@@ -546,6 +544,20 @@ public:
       auto json = nlohmann::json({
           {"identifiers", identifiers.to_json()},
           {"ignore", ignore},
+      });
+      devices_.emplace_back(json);
+    }
+    void set_device_disable_built_in_keyboard_if_exists(const device::identifiers& identifiers,
+                                                        bool disable_built_in_keyboard_if_exists) {
+      for (auto&& device : devices_) {
+        if (device.get_identifiers() == identifiers) {
+          device.set_disable_built_in_keyboard_if_exists(disable_built_in_keyboard_if_exists);
+          return;
+        }
+      }
+
+      auto json = nlohmann::json({
+          {"identifiers", identifiers.to_json()},
           {"disable_built_in_keyboard_if_exists", disable_built_in_keyboard_if_exists},
       });
       devices_.emplace_back(json);
