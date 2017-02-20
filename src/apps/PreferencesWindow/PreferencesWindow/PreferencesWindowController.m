@@ -199,45 +199,37 @@
 }
 
 - (void)setupMiscTabControls {
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-  if (configurationManager) {
-    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = configurationManager.coreConfigurationModel2;
-    if (coreConfigurationModel2) {
-      if (coreConfigurationModel2.globalConfigurationCheckForUpdatesOnStartup) {
-        self.checkForUpdateOnStartupButton.state = NSOnState;
-      } else {
-        self.checkForUpdateOnStartupButton.state = NSOffState;
-      }
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
 
-      if (coreConfigurationModel2.globalConfigurationShowInMenuBar) {
-        self.showInMenuBarButton.state = NSOnState;
-      } else {
-        self.showInMenuBarButton.state = NSOffState;
-      }
+  if (coreConfigurationModel2.globalConfigurationCheckForUpdatesOnStartup) {
+    self.checkForUpdateOnStartupButton.state = NSOnState;
+  } else {
+    self.checkForUpdateOnStartupButton.state = NSOffState;
+  }
 
-      if (coreConfigurationModel2.globalConfigurationShowProfileNameInMenuBar) {
-        self.showProfileNameInMenuBarButton.state = NSOnState;
-      } else {
-        self.showProfileNameInMenuBarButton.state = NSOffState;
-      }
-    }
+  if (coreConfigurationModel2.globalConfigurationShowInMenuBar) {
+    self.showInMenuBarButton.state = NSOnState;
+  } else {
+    self.showInMenuBarButton.state = NSOffState;
+  }
+
+  if (coreConfigurationModel2.globalConfigurationShowProfileNameInMenuBar) {
+    self.showProfileNameInMenuBarButton.state = NSOnState;
+  } else {
+    self.showProfileNameInMenuBarButton.state = NSOffState;
   }
 }
 
 - (IBAction)changeMiscTabControls:(id)sender {
-  KarabinerKitConfigurationManager* configurationManager = [KarabinerKitConfigurationManager sharedManager];
-  if (configurationManager) {
-    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = configurationManager.coreConfigurationModel2;
-    if (coreConfigurationModel2) {
-      coreConfigurationModel2.globalConfigurationCheckForUpdatesOnStartup = (self.checkForUpdateOnStartupButton.state == NSOnState);
-      coreConfigurationModel2.globalConfigurationShowInMenuBar = (self.showInMenuBarButton.state == NSOnState);
-      coreConfigurationModel2.globalConfigurationShowProfileNameInMenuBar = (self.showProfileNameInMenuBarButton.state == NSOnState);
+  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
 
-      [coreConfigurationModel2 save];
+  coreConfigurationModel2.globalConfigurationCheckForUpdatesOnStartup = (self.checkForUpdateOnStartupButton.state == NSOnState);
+  coreConfigurationModel2.globalConfigurationShowInMenuBar = (self.showInMenuBarButton.state == NSOnState);
+  coreConfigurationModel2.globalConfigurationShowProfileNameInMenuBar = (self.showProfileNameInMenuBarButton.state == NSOnState);
 
-      libkrbn_launch_menu();
-    }
-  }
+  [coreConfigurationModel2 save];
+
+  libkrbn_launch_menu();
 }
 
 - (IBAction)checkForUpdatesStableOnly:(id)sender {
