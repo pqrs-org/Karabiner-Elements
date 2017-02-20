@@ -725,6 +725,22 @@ TEST_CASE("device.identifiers") {
     REQUIRE(identifiers.get_is_keyboard() == false);
     REQUIRE(identifiers.get_is_pointing_device() == false);
   }
+
+  // construct with vendor_id, product_id, ...
+  {
+    core_configuration::profile::device::identifiers identifiers(1234, 5678, true, false);
+    REQUIRE(identifiers.get_vendor_id() == 1234);
+    REQUIRE(identifiers.get_product_id() == 5678);
+    REQUIRE(identifiers.get_is_keyboard() == true);
+    REQUIRE(identifiers.get_is_pointing_device() == false);
+  }
+  {
+    core_configuration::profile::device::identifiers identifiers(4321, 8765, false, true);
+    REQUIRE(identifiers.get_vendor_id() == 4321);
+    REQUIRE(identifiers.get_product_id() == 8765);
+    REQUIRE(identifiers.get_is_keyboard() == false);
+    REQUIRE(identifiers.get_is_pointing_device() == true);
+  }
 }
 
 TEST_CASE("device.identifiers.to_json") {

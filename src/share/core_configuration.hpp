@@ -285,6 +285,17 @@ public:
           }
         }
 
+        identifiers(uint32_t vendor_id,
+                    uint32_t product_id,
+                    bool is_keyboard,
+                    bool is_pointing_device) : identifiers(nlohmann::json({
+                                                   {"vendor_id", vendor_id},
+                                                   {"product_id", product_id},
+                                                   {"is_keyboard", is_keyboard},
+                                                   {"is_pointing_device", is_pointing_device},
+                                               })) {
+        }
+
         nlohmann::json to_json(void) const {
           auto j = json_;
           j["vendor_id"] = vendor_id_;
