@@ -42,9 +42,9 @@
   NSString* fromValue = fromCellView.textField.stringValue;
   NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
 
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-  [coreConfigurationModel2 setSelectedProfileFnFunctionKey:fromValue to:toValue];
-  [coreConfigurationModel2 save];
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  [coreConfigurationModel setSelectedProfileFnFunctionKey:fromValue to:toValue];
+  [coreConfigurationModel save];
 }
 
 @end

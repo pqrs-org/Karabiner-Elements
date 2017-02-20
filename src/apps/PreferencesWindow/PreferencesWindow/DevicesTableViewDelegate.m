@@ -37,8 +37,8 @@
 
       result.checkbox.state = (model.ignore ? NSOffState : NSOnState);
 
-      KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-      if ([coreConfigurationModel2 selectedProfileDeviceIgnore:model.deviceIdentifiers.vendorId
+      KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+      if ([coreConfigurationModel selectedProfileDeviceIgnore:model.deviceIdentifiers.vendorId
                                                      productId:model.deviceIdentifiers.productId
                                                     isKeyboard:model.deviceIdentifiers.isKeyboard
                                               isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {
@@ -96,8 +96,8 @@
 
         result.deviceIdentifiers = model.deviceIdentifiers;
 
-        KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-        if ([coreConfigurationModel2 selectedProfileDeviceDisableBuiltInKeyboardIfExists:model.deviceIdentifiers.vendorId
+        KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+        if ([coreConfigurationModel selectedProfileDeviceDisableBuiltInKeyboardIfExists:model.deviceIdentifiers.vendorId
                                                                                productId:model.deviceIdentifiers.productId
                                                                               isKeyboard:model.deviceIdentifiers.isKeyboard
                                                                         isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {

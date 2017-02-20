@@ -5,7 +5,7 @@
 
 @interface KarabinerKitConfigurationManager : NSObject
 
-@property(readonly) KarabinerKitCoreConfigurationModel2* coreConfigurationModel2;
+@property(readonly) KarabinerKitCoreConfigurationModel* coreConfigurationModel;
 
 + (KarabinerKitConfigurationManager*)sharedManager;
 

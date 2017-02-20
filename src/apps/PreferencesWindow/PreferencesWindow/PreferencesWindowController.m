@@ -138,8 +138,8 @@
   // ----------------------------------------
   // Select item
 
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-  NSString* keyboardType = coreConfigurationModel2.selectedProfileVirtualHIDKeyboardKeyboardType;
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  NSString* keyboardType = coreConfigurationModel.selectedProfileVirtualHIDKeyboardKeyboardType;
 
   for (NSMenuItem* item in self.virtualHIDKeyboardTypePopupButton.itemArray) {
     if ([item.representedObject isEqualToString:keyboardType]) {
@@ -150,8 +150,8 @@
 }
 
 - (void)setupVirtualHIDKeyboardCapsLockDelayMilliseconds:(id)sender {
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-  NSInteger milliseconds = coreConfigurationModel2.selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds;
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  NSInteger milliseconds = coreConfigurationModel.selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds;
 
   if (sender != self.virtualHIDKeyboardCapsLockDelayMillisecondsText) {
     self.virtualHIDKeyboardCapsLockDelayMillisecondsText.stringValue = @(milliseconds).stringValue;
@@ -164,9 +164,9 @@
 - (IBAction)changeVirtualHIDKeyboardTYpe:(id)sender {
   NSMenuItem* selectedItem = self.virtualHIDKeyboardTypePopupButton.selectedItem;
   if (selectedItem) {
-    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-    coreConfigurationModel2.selectedProfileVirtualHIDKeyboardKeyboardType = selectedItem.representedObject;
-    [coreConfigurationModel2 save];
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    coreConfigurationModel.selectedProfileVirtualHIDKeyboardKeyboardType = selectedItem.representedObject;
+    [coreConfigurationModel save];
   }
 }
 
@@ -176,9 +176,9 @@
     sender.integerValue = 0;
   }
 
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-  coreConfigurationModel2.selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds = sender.integerValue;
-  [coreConfigurationModel2 save];
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  coreConfigurationModel.selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds = sender.integerValue;
+  [coreConfigurationModel save];
 
   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:sender];
 }
@@ -199,21 +199,21 @@
 }
 
 - (void)setupMiscTabControls {
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
 
-  if (coreConfigurationModel2.globalConfigurationCheckForUpdatesOnStartup) {
+  if (coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup) {
     self.checkForUpdateOnStartupButton.state = NSOnState;
   } else {
     self.checkForUpdateOnStartupButton.state = NSOffState;
   }
 
-  if (coreConfigurationModel2.globalConfigurationShowInMenuBar) {
+  if (coreConfigurationModel.globalConfigurationShowInMenuBar) {
     self.showInMenuBarButton.state = NSOnState;
   } else {
     self.showInMenuBarButton.state = NSOffState;
   }
 
-  if (coreConfigurationModel2.globalConfigurationShowProfileNameInMenuBar) {
+  if (coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
     self.showProfileNameInMenuBarButton.state = NSOnState;
   } else {
     self.showProfileNameInMenuBarButton.state = NSOffState;
@@ -221,13 +221,13 @@
 }
 
 - (IBAction)changeMiscTabControls:(id)sender {
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
 
-  coreConfigurationModel2.globalConfigurationCheckForUpdatesOnStartup = (self.checkForUpdateOnStartupButton.state == NSOnState);
-  coreConfigurationModel2.globalConfigurationShowInMenuBar = (self.showInMenuBarButton.state == NSOnState);
-  coreConfigurationModel2.globalConfigurationShowProfileNameInMenuBar = (self.showProfileNameInMenuBarButton.state == NSOnState);
+  coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup = (self.checkForUpdateOnStartupButton.state == NSOnState);
+  coreConfigurationModel.globalConfigurationShowInMenuBar = (self.showInMenuBarButton.state == NSOnState);
+  coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar = (self.showProfileNameInMenuBarButton.state == NSOnState);
 
-  [coreConfigurationModel2 save];
+  [coreConfigurationModel save];
 
   libkrbn_launch_menu();
 }

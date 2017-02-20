@@ -18,8 +18,8 @@
   if ([tableColumn.identifier isEqualToString:@"FnFunctionKeysFromColumn"]) {
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysFromCellView" owner:self];
 
-    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-    result.textField.stringValue = [coreConfigurationModel2 selectedProfileFnFunctionKeyFirstAtIndex:row];
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    result.textField.stringValue = [coreConfigurationModel selectedProfileFnFunctionKeyFirstAtIndex:row];
 
     return result;
   }
@@ -31,8 +31,8 @@
     result.popUpButton.target = self.fnFunctionKeysTableViewController;
     result.popUpButton.menu = [self.simpleModificationsMenuManager.toMenu copy];
 
-    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-    NSString* toValue = [coreConfigurationModel2 selectedProfileFnFunctionKeySecondAtIndex:row];
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    NSString* toValue = [coreConfigurationModel selectedProfileFnFunctionKeySecondAtIndex:row];
     [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:toValue];
 
     return result;

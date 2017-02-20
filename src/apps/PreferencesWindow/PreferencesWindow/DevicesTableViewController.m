@@ -43,29 +43,29 @@
 }
 
 - (void)valueChanged:(id)sender {
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
 
   NSInteger row = [self.tableView rowForView:sender];
   if (row != -1) {
     DevicesTableCellView* cellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
-    [coreConfigurationModel2 setSelectedProfileDeviceIgnore:cellView.deviceIdentifiers.vendorId
+    [coreConfigurationModel setSelectedProfileDeviceIgnore:cellView.deviceIdentifiers.vendorId
                                                   productId:cellView.deviceIdentifiers.productId
                                                  isKeyboard:cellView.deviceIdentifiers.isKeyboard
                                            isPointingDevice:cellView.deviceIdentifiers.isPointingDevice
                                                       value:(cellView.checkbox.state == NSOffState)];
-    [coreConfigurationModel2 save];
+    [coreConfigurationModel save];
     return;
   }
 
   row = [self.externalKeyboardTableView rowForView:sender];
   if (row != -1) {
     DevicesTableCellView* cellView = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
-    [coreConfigurationModel2 setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:cellView.deviceIdentifiers.vendorId
+    [coreConfigurationModel setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:cellView.deviceIdentifiers.vendorId
                                                                           productId:cellView.deviceIdentifiers.productId
                                                                          isKeyboard:cellView.deviceIdentifiers.isKeyboard
                                                                    isPointingDevice:cellView.deviceIdentifiers.isPointingDevice
                                                                               value:(cellView.checkbox.state == NSOnState)];
-    [coreConfigurationModel2 save];
+    [coreConfigurationModel save];
     return;
   }
 }

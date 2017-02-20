@@ -2,13 +2,13 @@
 #import "JsonUtility.h"
 #import "libkrbn.h"
 
-@interface KarabinerKitCoreConfigurationModel2 ()
+@interface KarabinerKitCoreConfigurationModel ()
 
 @property libkrbn_core_configuration* libkrbn_core_configuration;
 
 @end
 
-@implementation KarabinerKitCoreConfigurationModel2
+@implementation KarabinerKitCoreConfigurationModel
 
 - (instancetype)init {
   self = [super init];

@@ -3,7 +3,7 @@
 @import Cocoa;
 #import "DeviceModel.h"
 
-@interface KarabinerKitCoreConfigurationModel2 : NSObject
+@interface KarabinerKitCoreConfigurationModel : NSObject
 
 @property(readonly) BOOL isLoaded;
 - (BOOL)save;

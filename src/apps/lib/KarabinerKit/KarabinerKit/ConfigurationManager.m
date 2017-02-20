@@ -6,16 +6,16 @@
 @interface KarabinerKitConfigurationManager ()
 
 @property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
-@property(readwrite) KarabinerKitCoreConfigurationModel2* coreConfigurationModel2;
+@property(readwrite) KarabinerKitCoreConfigurationModel* coreConfigurationModel;
 
 @end
 
 static void configuration_file_updated_callback(const char* jsonString, void* refcon) {
   KarabinerKitConfigurationManager* manager = (__bridge KarabinerKitConfigurationManager*)(refcon);
 
-  KarabinerKitCoreConfigurationModel2* model = [KarabinerKitCoreConfigurationModel2 new];
-  if (!manager.coreConfigurationModel2 || model.isLoaded) {
-    manager.coreConfigurationModel2 = model;
+  KarabinerKitCoreConfigurationModel* model = [KarabinerKitCoreConfigurationModel new];
+  if (!manager.coreConfigurationModel || model.isLoaded) {
+    manager.coreConfigurationModel = model;
   }
 
   [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitConfigurationIsLoaded object:nil];

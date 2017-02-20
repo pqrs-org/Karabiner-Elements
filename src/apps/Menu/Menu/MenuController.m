@@ -12,7 +12,7 @@
 @implementation MenuController
 
 - (void)setup {
-  if (![KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2.globalConfigurationShowInMenuBar) {
+  if (![KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.globalConfigurationShowInMenuBar) {
     [NSApp terminate:nil];
   }
 
@@ -32,7 +32,7 @@
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
-                                                  if (![KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2.globalConfigurationShowInMenuBar) {
+                                                  if (![KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.globalConfigurationShowInMenuBar) {
                                                     [NSApp terminate:nil];
                                                   }
 
@@ -45,9 +45,9 @@
 }
 
 - (void)setStatusItemTitle {
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-  if (coreConfigurationModel2.globalConfigurationShowProfileNameInMenuBar) {
-    self.statusItem.button.title = coreConfigurationModel2.selectedProfileName;
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  if (coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
+    self.statusItem.button.title = coreConfigurationModel.selectedProfileName;
     return;
   }
 
@@ -67,16 +67,16 @@
   // --------------------
   // append
 
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-  for (NSUInteger i = 0; i < coreConfigurationModel2.profilesCount; ++i) {
-    NSMenuItem* newItem = [[NSMenuItem alloc] initWithTitle:[coreConfigurationModel2 profileNameAtIndex:i]
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  for (NSUInteger i = 0; i < coreConfigurationModel.profilesCount; ++i) {
+    NSMenuItem* newItem = [[NSMenuItem alloc] initWithTitle:[coreConfigurationModel profileNameAtIndex:i]
                                                      action:@selector(profileSelected:)
                                               keyEquivalent:@""];
 
     [newItem setTarget:self];
     [newItem setRepresentedObject:@(i)];
 
-    if ([coreConfigurationModel2 profileSelectedAtIndex:i]) {
+    if ([coreConfigurationModel profileSelectedAtIndex:i]) {
       [newItem setState:NSOnState];
     } else {
       [newItem setState:NSOffState];
@@ -88,9 +88,9 @@
 - (void)profileSelected:(id)sender {
   NSNumber* index = [sender representedObject];
 
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-  [coreConfigurationModel2 selectProfileAtIndex:[index unsignedIntegerValue]];
-  [coreConfigurationModel2 save];
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  [coreConfigurationModel selectProfileAtIndex:[index unsignedIntegerValue]];
+  [coreConfigurationModel save];
 
   [self setStatusItemTitle];
 }

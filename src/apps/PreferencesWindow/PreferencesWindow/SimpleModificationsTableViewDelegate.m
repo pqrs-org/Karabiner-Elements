@@ -17,13 +17,13 @@
   if ([tableColumn.identifier isEqualToString:@"SimpleModificationsFromColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsFromCellView" owner:self];
 
-    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
 
     result.popUpButton.action = @selector(valueChanged:);
     result.popUpButton.target = self.simpleModificationsTableViewController;
     result.popUpButton.menu = [self.simpleModificationsMenuManager.fromMenu copy];
 
-    NSString* fromValue = [coreConfigurationModel2 selectedProfileSimpleModificationFirstAtIndex:row];
+    NSString* fromValue = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row];
     [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:fromValue];
 
     return result;
@@ -36,15 +36,15 @@
     result.popUpButton.target = self.simpleModificationsTableViewController;
     result.popUpButton.menu = [self.simpleModificationsMenuManager.toMenu copy];
 
-    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-    NSString* fromValue = [coreConfigurationModel2 selectedProfileSimpleModificationFirstAtIndex:row];
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    NSString* fromValue = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row];
     if ([fromValue length] > 0) {
       result.popUpButton.enabled = YES;
     } else {
       result.popUpButton.enabled = NO;
     }
 
-    NSString* toValue = [coreConfigurationModel2 selectedProfileSimpleModificationSecondAtIndex:row];
+    NSString* toValue = [coreConfigurationModel selectedProfileSimpleModificationSecondAtIndex:row];
     [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:toValue];
 
     return result;

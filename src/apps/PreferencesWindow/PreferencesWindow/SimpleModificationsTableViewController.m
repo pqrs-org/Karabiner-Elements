@@ -61,25 +61,25 @@
     }
     toCellView.popUpButton.enabled = YES;
 
-    KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-    [coreConfigurationModel2 setSelectedProfileSimpleModificationAtIndex:row from:fromValue to:toValue];
-    [coreConfigurationModel2 save];
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    [coreConfigurationModel setSelectedProfileSimpleModificationAtIndex:row from:fromValue to:toValue];
+    [coreConfigurationModel save];
   }
 }
 
 - (void)removeItem:(id)sender {
   NSInteger row = [self.tableView rowForView:sender];
 
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-  [coreConfigurationModel2 removeSelectedProfileSimpleModificationAtIndex:row];
-  [coreConfigurationModel2 save];
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  [coreConfigurationModel removeSelectedProfileSimpleModificationAtIndex:row];
+  [coreConfigurationModel save];
 
   [self.tableView reloadData];
 }
 
 - (IBAction)addItem:(id)sender {
-  KarabinerKitCoreConfigurationModel2* coreConfigurationModel2 = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel2;
-  [coreConfigurationModel2 addSimpleModificationToSelectedProfile];
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  [coreConfigurationModel addSimpleModificationToSelectedProfile];
 
   [self.tableView reloadData];
 }
