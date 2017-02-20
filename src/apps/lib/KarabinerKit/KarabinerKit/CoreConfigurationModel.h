@@ -75,6 +75,7 @@
 - (void)setProfileNameAtIndex:(NSUInteger)index name:(NSString*)name;
 - (BOOL)profileSelectedAtIndex:(NSUInteger)index;
 - (void)selectProfileAtIndex:(NSUInteger)index;
+@property(readonly) NSString* selectedProfileName;
 - (void)addProfile;
 - (void)removeProfileAtIndex:(NSUInteger)index;
 

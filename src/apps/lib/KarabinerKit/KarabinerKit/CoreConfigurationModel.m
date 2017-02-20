@@ -424,6 +424,14 @@
   libkrbn_core_configuration_select_profile(self.libkrbn_core_configuration, index);
 }
 
+- (NSString*)selectedProfileName {
+  const char* p = libkrbn_core_configuration_get_selected_profile_name(self.libkrbn_core_configuration);
+  if (p) {
+    return [NSString stringWithUTF8String:p];
+  }
+  return @"";
+}
+
 - (void)addProfile {
   libkrbn_core_configuration_push_back_profile(self.libkrbn_core_configuration);
 }
