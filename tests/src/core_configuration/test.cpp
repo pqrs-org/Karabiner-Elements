@@ -642,6 +642,79 @@ TEST_CASE("profile.to_json") {
   }
 }
 
+TEST_CASE("simple_modifications") {
+  // empty json
+  {
+    nlohmann::json json;
+    core_configuration::profile::simple_modifications simple_modifications(json);
+    REQUIRE(simple_modifications.get_pairs().size() == 0);
+  }
+
+  // load values from json
+  {
+    nlohmann::json json({
+        {"a", "f1"},
+        {"b", "f2"},
+        {"dummy", "f3"},
+        {"f4", "dummy"},
+    });
+    core_configuration::profile::simple_modifications simple_modifications(json);
+    REQUIRE(simple_modifications.get_pairs().size() == 4);
+
+    {
+      std::vector<std::pair<std::string, std::string>> expected({
+          {"a", "f1"},
+          {"b", "f2"},
+          {"dummy", "f3"},
+          {"f4", "dummy"},
+      });
+      REQUIRE(simple_modifications.get_pairs() == expected);
+    }
+
+    {
+      std::unordered_map<krbn::key_code, krbn::key_code> expected({
+          {*(krbn::types::get_key_code("a")), *(krbn::types::get_key_code("f1"))},
+          {*(krbn::types::get_key_code("b")), *(krbn::types::get_key_code("f2"))},
+      });
+      REQUIRE(simple_modifications.to_key_code_map(logger::get_logger()) == expected);
+    }
+  }
+
+  // invalid values in json
+  {
+    core_configuration::profile::simple_modifications simple_modifications(10);
+    REQUIRE(simple_modifications.get_pairs().size() == 0);
+  }
+}
+
+TEST_CASE("simple_modifications.to_json") {
+  {
+    nlohmann::json json;
+    core_configuration::profile::simple_modifications simple_modifications(json);
+    REQUIRE(simple_modifications.to_json() == nlohmann::json::object());
+  }
+  {
+    nlohmann::json json({
+        {"a", "f1"},
+        {"b", "f2"},
+        {"dummy", "f3"},
+        {"f4", "dummy"},
+    });
+    core_configuration::profile::simple_modifications simple_modifications(json);
+    simple_modifications.push_back_pair();
+    simple_modifications.replace_pair(4, "a", "f5"); // will be ignored since "a" already exists.
+    simple_modifications.push_back_pair();
+    simple_modifications.replace_pair(5, "c", "f6");
+    REQUIRE(simple_modifications.to_json() == nlohmann::json({
+                                                  {"a", "f1"},
+                                                  {"b", "f2"},
+                                                  {"c", "f6"},
+                                                  {"dummy", "f3"},
+                                                  {"f4", "dummy"},
+                                              }));
+  }
+}
+
 TEST_CASE("virtual_hid_keyboard") {
   // empty json
   {

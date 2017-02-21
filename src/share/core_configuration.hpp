@@ -199,6 +199,31 @@ public:
         }
       }
 
+      std::unordered_map<krbn::key_code, krbn::key_code> to_key_code_map(spdlog::logger& logger) const {
+        std::unordered_map<krbn::key_code, krbn::key_code> map;
+
+        for (const auto& it : pairs_) {
+          auto& from_string = it.first;
+          auto& to_string = it.second;
+
+          auto from_key_code = krbn::types::get_key_code(from_string);
+          if (!from_key_code) {
+            logger.warn("unknown key_code:{0}", from_string);
+            continue;
+          }
+
+          auto to_key_code = krbn::types::get_key_code(to_string);
+          if (!to_key_code) {
+            logger.warn("unknown key_code:{0}", to_string);
+            continue;
+          }
+
+          map[*from_key_code] = *to_key_code;
+        }
+
+        return map;
+      }
+
     private:
       std::vector<std::pair<std::string, std::string>> pairs_;
     };
