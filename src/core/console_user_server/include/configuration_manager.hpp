@@ -52,7 +52,7 @@ private:
     grabber_client_.core_configuration_updated();
 
     grabber_client_.clear_simple_modifications();
-    for (const auto& pair : core_configuration.get_current_profile_simple_modifications()) {
+    for (const auto& pair : core_configuration.get_selected_profile().get_simple_modifications_key_code_map(logger_)) {
       grabber_client_.add_simple_modification(pair.first, pair.second);
     }
 

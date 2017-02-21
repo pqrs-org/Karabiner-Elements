@@ -539,6 +539,9 @@ public:
     void replace_simple_modification(size_t index, const std::string& from, const std::string& to) {
       simple_modifications_->replace_pair(index, from, to);
     }
+    const std::unordered_map<krbn::key_code, krbn::key_code> get_simple_modifications_key_code_map(spdlog::logger& logger) const {
+      return simple_modifications_->to_key_code_map(logger);
+    }
 
     const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) const {
       return fn_function_keys_->get_pairs();
@@ -737,12 +740,6 @@ public:
       }
     }
     return profiles_[0];
-  }
-
-  // std::vector<from,to>
-  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_simple_modifications(void) {
-    auto profile = get_current_profile();
-    return get_key_code_pair_from_json_object(profile["simple_modifications"]);
   }
 
   // std::vector<f1,display_brightness_decrement>

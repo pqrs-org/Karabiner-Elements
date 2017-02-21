@@ -21,11 +21,11 @@ TEST_CASE("valid") {
   core_configuration configuration(logger::get_logger(), "json/example.json");
 
   {
-    std::vector<std::pair<krbn::key_code, krbn::key_code>> expected{
-        std::make_pair(krbn::key_code(57), krbn::key_code(42)),
-        std::make_pair(krbn::key_code(41), krbn::key_code(44)),
+    std::unordered_map<krbn::key_code, krbn::key_code> expected{
+        {*(krbn::types::get_key_code("caps_lock")), *(krbn::types::get_key_code("delete_or_backspace"))},
+        {*(krbn::types::get_key_code("escape")), *(krbn::types::get_key_code("spacebar"))},
     };
-    REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+    REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
   }
   {
     std::vector<std::pair<krbn::key_code, krbn::key_code>> expected{
@@ -84,8 +84,8 @@ TEST_CASE("broken.json") {
     core_configuration configuration(logger::get_logger(), "json/broken.json");
 
     {
-      std::vector<std::pair<krbn::key_code, krbn::key_code>> expected;
-      REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+      std::unordered_map<krbn::key_code, krbn::key_code> expected;
+      REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
     }
     REQUIRE(configuration.is_loaded() == false);
 
@@ -107,8 +107,8 @@ TEST_CASE("broken.json") {
   {
     core_configuration configuration(logger::get_logger(), "a.out");
 
-    std::vector<std::pair<krbn::key_code, krbn::key_code>> expected;
-    REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+    std::unordered_map<krbn::key_code, krbn::key_code> expected;
+    REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
     REQUIRE(configuration.is_loaded() == false);
   }
 }
@@ -116,10 +116,10 @@ TEST_CASE("broken.json") {
 TEST_CASE("invalid_key_code_name.json") {
   core_configuration configuration(logger::get_logger(), "json/invalid_key_code_name.json");
 
-  std::vector<std::pair<krbn::key_code, krbn::key_code>> expected{
-      std::make_pair(krbn::key_code(41), krbn::key_code(44)),
+  std::unordered_map<krbn::key_code, krbn::key_code> expected{
+      {krbn::key_code(41), krbn::key_code(44)},
   };
-  REQUIRE(configuration.get_current_profile_simple_modifications() == expected);
+  REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
   REQUIRE(configuration.is_loaded() == true);
 }
 
