@@ -10,7 +10,7 @@
 
 @end
 
-static void configuration_file_updated_callback(const char* jsonString, void* refcon) {
+static void configuration_file_updated_callback(void* refcon) {
   KarabinerKitConfigurationManager* manager = (__bridge KarabinerKitConfigurationManager*)(refcon);
 
   KarabinerKitCoreConfigurationModel* model = [KarabinerKitCoreConfigurationModel new];

@@ -120,7 +120,7 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
 // libkrbn_configuration_monitor
 
 typedef void libkrbn_configuration_monitor;
-typedef void (*libkrbn_configuration_monitor_callback)(const char* _Nonnull json, void* _Nullable refcon);
+typedef void (*libkrbn_configuration_monitor_callback)(void* _Nullable refcon);
 bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor* _Nullable* _Nonnull out,
                                               libkrbn_configuration_monitor_callback _Nullable callback,
                                               void* _Nullable refcon);

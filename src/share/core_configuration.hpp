@@ -688,10 +688,6 @@ public:
     return j;
   }
 
-  std::string to_json_string(void) const {
-    return json_.dump();
-  }
-
   bool is_loaded(void) const { return loaded_; }
 
   const global_configuration& get_global_configuration(void) const {
