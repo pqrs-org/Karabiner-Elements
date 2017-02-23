@@ -61,7 +61,15 @@ private:
       grabber_client_.add_fn_function_key(pair.first, pair.second);
     }
 
-    grabber_client_.virtual_hid_keyboard_configuration_updated(core_configuration.get_current_profile_virtual_hid_keyboard());
+    {
+      krbn::virtual_hid_keyboard_configuration_struct virtual_hid_keyboard_configuration_struct;
+      if (auto keyboard_type = krbn::types::get_keyboard_type(core_configuration.get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type())) {
+        virtual_hid_keyboard_configuration_struct.keyboard_type = *keyboard_type;
+      }
+      virtual_hid_keyboard_configuration_struct.caps_lock_delay_milliseconds = core_configuration.get_selected_profile().get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
+
+      grabber_client_.virtual_hid_keyboard_configuration_updated(virtual_hid_keyboard_configuration_struct);
+    }
 
     grabber_client_.clear_devices();
     for (const auto& pair : core_configuration.get_current_profile_devices()) {

@@ -45,8 +45,8 @@ TEST_CASE("valid") {
     REQUIRE(configuration.get_selected_profile().get_fn_function_keys_key_code_map(logger::get_logger()) == expected);
   }
   {
-    auto actual = configuration.get_current_profile_virtual_hid_keyboard();
-    REQUIRE(actual.keyboard_type == krbn::keyboard_type::iso);
+    REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type() == "iso");
+    REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds() == 100);
   }
   {
     auto actual = configuration.get_current_profile_devices();

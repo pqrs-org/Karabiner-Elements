@@ -741,24 +741,6 @@ public:
     return profiles_[0];
   }
 
-  krbn::virtual_hid_keyboard_configuration_struct get_current_profile_virtual_hid_keyboard(void) {
-    krbn::virtual_hid_keyboard_configuration_struct virtual_hid_keyboard_configuration_struct;
-
-    auto profile = get_current_profile();
-    if (profile["virtual_hid_keyboard"].is_object()) {
-      std::string keyboard_type_name = profile["virtual_hid_keyboard"]["keyboard_type"];
-      if (auto keyboard_type = krbn::types::get_keyboard_type(keyboard_type_name)) {
-        virtual_hid_keyboard_configuration_struct.keyboard_type = *keyboard_type;
-      }
-
-      if (profile["virtual_hid_keyboard"]["caps_lock_delay_milliseconds"].is_number()) {
-        virtual_hid_keyboard_configuration_struct.caps_lock_delay_milliseconds = profile["virtual_hid_keyboard"]["caps_lock_delay_milliseconds"];
-      }
-    }
-
-    return virtual_hid_keyboard_configuration_struct;
-  }
-
   std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> get_current_profile_devices(void) {
     std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> v;
 
