@@ -37,22 +37,6 @@ const char* libkrbn_get_devices_json_file_path(void) {
   return constants::get_devices_json_file_path();
 }
 
-const char* _Nonnull libkrbn_get_default_profile_json_string(void) {
-  static std::mutex mutex;
-  static bool once = false;
-  static std::string result;
-
-  std::lock_guard<std::mutex> guard(mutex);
-
-  if (!once) {
-    once = true;
-
-    result = core_configuration::get_default_profile().dump();
-  }
-
-  return result.c_str();
-}
-
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name) {
   return process_utility::lock_single_application_with_user_pid_file(pid_file_name);
 }

@@ -622,7 +622,7 @@ public:
 
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(spdlog::logger& logger, const std::string& file_path) : logger_(logger), file_path_(file_path), loaded_(false) {
+  core_configuration(spdlog::logger& logger, const std::string& file_path) : file_path_(file_path), loaded_(false) {
     std::ifstream input(file_path_);
     if (input) {
       try {
@@ -645,7 +645,7 @@ public:
 
         loaded_ = true;
       } catch (std::exception& e) {
-        logger_.warn("parse error in {0}: {1}", file_path_, e.what());
+        logger.warn("parse error in {0}: {1}", file_path_, e.what());
         json_ = nlohmann::json();
       }
 
@@ -655,6 +655,7 @@ public:
       json_ = nlohmann::json();
     }
 
+    // Fallbacks
     if (!global_configuration_) {
       global_configuration_ = std::make_unique<global_configuration>(nullptr);
     }
@@ -663,24 +664,6 @@ public:
           {"name", "Default profile"},
           {"selected", true},
       }));
-    }
-
-    // ----------------------------------------
-    // Add default values if needed.
-
-    if (!json_["profiles"].is_array()) {
-      json_["profiles"] = nlohmann::json::array();
-    }
-    if (json_["profiles"].empty()) {
-      json_["profiles"].push_back(get_default_profile());
-    }
-
-    for (auto&& profile : json_["profiles"]) {
-      // Use default value if fn_function_keys is not set.
-      if (!profile["fn_function_keys"].is_object() || profile["fn_function_keys"].empty()) {
-        auto default_profile = get_default_profile();
-        profile["fn_function_keys"] = default_profile["fn_function_keys"];
-      }
     }
   }
 
@@ -757,47 +740,14 @@ public:
     return true;
   }
 
-  static nlohmann::json get_default_profile(void) {
-    nlohmann::json json;
-    json["name"] = "Default profile";
-    json["selected"] = true;
-    json["simple_modifications"] = nlohmann::json::object();
-    json["fn_function_keys"]["f1"] = "display_brightness_decrement";
-    json["fn_function_keys"]["f2"] = "display_brightness_increment";
-    json["fn_function_keys"]["f3"] = "mission_control";
-    json["fn_function_keys"]["f4"] = "launchpad";
-    json["fn_function_keys"]["f5"] = "illumination_decrement";
-    json["fn_function_keys"]["f6"] = "illumination_increment";
-    json["fn_function_keys"]["f7"] = "rewind";
-    json["fn_function_keys"]["f8"] = "play_or_pause";
-    json["fn_function_keys"]["f9"] = "fastforward";
-    json["fn_function_keys"]["f10"] = "mute";
-    json["fn_function_keys"]["f11"] = "volume_decrement";
-    json["fn_function_keys"]["f12"] = "volume_increment";
-    json["devices"] = nlohmann::json::array();
-    return json;
-  }
-
 private:
-  nlohmann::json get_current_profile(void) {
-    if (json_.is_object() && json_["profiles"].is_array()) {
-      for (auto&& profile : json_["profiles"]) {
-        if (profile.is_object() && profile["selected"]) {
-          return profile;
-        }
-      }
-    }
-    return get_default_profile();
-  }
-
-  spdlog::logger& logger_;
   std::string file_path_;
+
+  nlohmann::json json_;
+  bool loaded_;
 
   std::unique_ptr<global_configuration> global_configuration_;
   std::vector<profile> profiles_;
-
-  bool loaded_;
-  nlohmann::json json_;
 };
 
 inline void to_json(nlohmann::json& json, const core_configuration::global_configuration& global_configuration) {
