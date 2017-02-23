@@ -824,32 +824,6 @@ private:
     return get_default_profile();
   }
 
-  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_key_code_pair_from_json_object(const nlohmann::json& json) {
-    std::vector<std::pair<krbn::key_code, krbn::key_code>> v;
-
-    if (json.is_object()) {
-      for (auto it = json.begin(); it != json.end(); ++it) {
-        std::string from = it.key();
-        std::string to = it.value();
-
-        auto from_key_code = krbn::types::get_key_code(from);
-        if (!from_key_code) {
-          logger_.warn("unknown key_code:{0} in {1}", from, file_path_);
-          continue;
-        }
-        auto to_key_code = krbn::types::get_key_code(to);
-        if (!to_key_code) {
-          logger_.warn("unknown key_code:{0} in {1}", to, file_path_);
-          continue;
-        }
-
-        v.push_back(std::make_pair(*from_key_code, *to_key_code));
-      }
-    }
-
-    return v;
-  }
-
   spdlog::logger& logger_;
   std::string file_path_;
 
