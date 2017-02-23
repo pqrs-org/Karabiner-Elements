@@ -355,16 +355,16 @@ TEST_CASE("profile") {
     }
     {
       REQUIRE(profile.get_devices().size() == 3);
-      REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == 1234);
-      REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == krbn::product_id(5678));
       REQUIRE((profile.get_devices())[0].get_ignore() == true);
       REQUIRE((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == true);
-      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == 1234);
-      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == krbn::product_id(5678));
       REQUIRE((profile.get_devices())[1].get_ignore() == true);
       REQUIRE((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == 4321);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == 8765);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == krbn::vendor_id(4321));
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == krbn::product_id(8765));
       REQUIRE((profile.get_devices())[2].get_ignore() == false);
       REQUIRE((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == true);
     }
@@ -388,34 +388,34 @@ TEST_CASE("profile") {
       profile.set_device_ignore(identifiers, false);
       REQUIRE(profile.get_devices().size() == 3);
       // devices[0] is changed.
-      REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == 1234);
-      REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == krbn::product_id(5678));
       REQUIRE((profile.get_devices())[0].get_ignore() == false);
       REQUIRE((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == true);
       // devices[1] is not changed.
-      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == 1234);
-      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == krbn::product_id(5678));
       REQUIRE((profile.get_devices())[1].get_ignore() == true);
       REQUIRE((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == 4321);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == 8765);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == krbn::vendor_id(4321));
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == krbn::product_id(8765));
       REQUIRE((profile.get_devices())[2].get_ignore() == false);
       REQUIRE((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == true);
 
       profile.set_device_disable_built_in_keyboard_if_exists(identifiers, false);
       REQUIRE(profile.get_devices().size() == 3);
       // devices[0] is changed.
-      REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == 1234);
-      REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == krbn::product_id(5678));
       REQUIRE((profile.get_devices())[0].get_ignore() == false);
       REQUIRE((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == false);
       // devices[1] is not changed.
-      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == 1234);
-      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == krbn::product_id(5678));
       REQUIRE((profile.get_devices())[1].get_ignore() == true);
       REQUIRE((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == 4321);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == 8765);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == krbn::vendor_id(4321));
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == krbn::product_id(8765));
       REQUIRE((profile.get_devices())[2].get_ignore() == false);
       REQUIRE((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == true);
     }
@@ -437,18 +437,18 @@ TEST_CASE("profile") {
       }));
       profile.set_device_ignore(identifiers, true);
       REQUIRE(profile.get_devices().size() == 4);
-      REQUIRE((profile.get_devices())[3].get_identifiers().get_vendor_id() == 1111);
-      REQUIRE((profile.get_devices())[3].get_identifiers().get_product_id() == 2222);
+      REQUIRE((profile.get_devices())[3].get_identifiers().get_vendor_id() == krbn::vendor_id(1111));
+      REQUIRE((profile.get_devices())[3].get_identifiers().get_product_id() == krbn::product_id(2222));
       REQUIRE((profile.get_devices())[3].get_identifiers().get_is_keyboard() == false);
       REQUIRE((profile.get_devices())[3].get_identifiers().get_is_pointing_device() == true);
       REQUIRE((profile.get_devices())[3].get_ignore() == true);
       REQUIRE((profile.get_devices())[3].get_disable_built_in_keyboard_if_exists() == false);
 
-      identifiers.set_vendor_id(1112);
+      identifiers.set_vendor_id(krbn::vendor_id(1112));
       profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
       REQUIRE(profile.get_devices().size() == 5);
-      REQUIRE((profile.get_devices())[4].get_identifiers().get_vendor_id() == 1112);
-      REQUIRE((profile.get_devices())[4].get_identifiers().get_product_id() == 2222);
+      REQUIRE((profile.get_devices())[4].get_identifiers().get_vendor_id() == krbn::vendor_id(1112));
+      REQUIRE((profile.get_devices())[4].get_identifiers().get_product_id() == krbn::product_id(2222));
       REQUIRE((profile.get_devices())[4].get_identifiers().get_is_keyboard() == false);
       REQUIRE((profile.get_devices())[4].get_identifiers().get_is_pointing_device() == true);
       REQUIRE((profile.get_devices())[4].get_ignore() == false);
@@ -825,8 +825,8 @@ TEST_CASE("device.identifiers") {
   {
     nlohmann::json json;
     core_configuration::profile::device::identifiers identifiers(json);
-    REQUIRE(identifiers.get_vendor_id() == 0);
-    REQUIRE(identifiers.get_product_id() == 0);
+    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(0));
+    REQUIRE(identifiers.get_product_id() == krbn::product_id(0));
     REQUIRE(identifiers.get_is_keyboard() == false);
     REQUIRE(identifiers.get_is_pointing_device() == false);
   }
@@ -840,8 +840,8 @@ TEST_CASE("device.identifiers") {
         {"is_pointing_device", true},
     });
     core_configuration::profile::device::identifiers identifiers(json);
-    REQUIRE(identifiers.get_vendor_id() == 1234);
-    REQUIRE(identifiers.get_product_id() == 5678);
+    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(1234));
+    REQUIRE(identifiers.get_product_id() == krbn::product_id(5678));
     REQUIRE(identifiers.get_is_keyboard() == true);
     REQUIRE(identifiers.get_is_pointing_device() == true);
   }
@@ -855,24 +855,24 @@ TEST_CASE("device.identifiers") {
         {"is_pointing_device", nlohmann::json::array()},
     });
     core_configuration::profile::device::identifiers identifiers(json);
-    REQUIRE(identifiers.get_vendor_id() == 0);
-    REQUIRE(identifiers.get_product_id() == 0);
+    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(0));
+    REQUIRE(identifiers.get_product_id() == krbn::product_id(0));
     REQUIRE(identifiers.get_is_keyboard() == false);
     REQUIRE(identifiers.get_is_pointing_device() == false);
   }
 
   // construct with vendor_id, product_id, ...
   {
-    core_configuration::profile::device::identifiers identifiers(1234, 5678, true, false);
-    REQUIRE(identifiers.get_vendor_id() == 1234);
-    REQUIRE(identifiers.get_product_id() == 5678);
+    core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(1234), krbn::product_id(5678), true, false);
+    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(1234));
+    REQUIRE(identifiers.get_product_id() == krbn::product_id(5678));
     REQUIRE(identifiers.get_is_keyboard() == true);
     REQUIRE(identifiers.get_is_pointing_device() == false);
   }
   {
-    core_configuration::profile::device::identifiers identifiers(4321, 8765, false, true);
-    REQUIRE(identifiers.get_vendor_id() == 4321);
-    REQUIRE(identifiers.get_product_id() == 8765);
+    core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(4321), krbn::product_id(8765), false, true);
+    REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(4321));
+    REQUIRE(identifiers.get_product_id() == krbn::product_id(8765));
     REQUIRE(identifiers.get_is_keyboard() == false);
     REQUIRE(identifiers.get_is_pointing_device() == true);
   }
@@ -915,8 +915,8 @@ TEST_CASE("device") {
   {
     nlohmann::json json;
     core_configuration::profile::device device(json);
-    REQUIRE(device.get_identifiers().get_vendor_id() == 0);
-    REQUIRE(device.get_identifiers().get_product_id() == 0);
+    REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
+    REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
     REQUIRE(device.get_identifiers().get_is_keyboard() == false);
     REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device.get_ignore() == false);
@@ -944,8 +944,8 @@ TEST_CASE("device") {
         {"disable_built_in_keyboard_if_exists", true},
     });
     core_configuration::profile::device device(json);
-    REQUIRE(device.get_identifiers().get_vendor_id() == 1234);
-    REQUIRE(device.get_identifiers().get_product_id() == 5678);
+    REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
+    REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(5678));
     REQUIRE(device.get_identifiers().get_is_keyboard() == true);
     REQUIRE(device.get_identifiers().get_is_pointing_device() == true);
     REQUIRE(device.get_ignore() == true);
@@ -960,8 +960,8 @@ TEST_CASE("device") {
         {"disable_built_in_keyboard_if_exists", nlohmann::json::array()},
     });
     core_configuration::profile::device device(json);
-    REQUIRE(device.get_identifiers().get_vendor_id() == 0);
-    REQUIRE(device.get_identifiers().get_product_id() == 0);
+    REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
+    REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
     REQUIRE(device.get_identifiers().get_is_keyboard() == false);
     REQUIRE(device.get_identifiers().get_is_pointing_device() == false);
     REQUIRE(device.get_ignore() == false);

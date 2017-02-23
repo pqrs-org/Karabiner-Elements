@@ -280,20 +280,20 @@ public:
       class identifiers final {
       public:
         identifiers(const nlohmann::json& json) : json_(json),
-                                                  vendor_id_(0),
-                                                  product_id_(0),
+                                                  vendor_id_(krbn::vendor_id(0)),
+                                                  product_id_(krbn::product_id(0)),
                                                   is_keyboard_(false),
                                                   is_pointing_device_(false) {
           {
             const std::string key = "vendor_id";
             if (json.find(key) != json.end() && json[key].is_number()) {
-              vendor_id_ = json[key];
+              vendor_id_ = krbn::vendor_id(static_cast<uint32_t>(json[key]));
             }
           }
           {
             const std::string key = "product_id";
             if (json.find(key) != json.end() && json[key].is_number()) {
-              product_id_ = json[key];
+              product_id_ = krbn::product_id(static_cast<uint32_t>(json[key]));
             }
           }
           {
@@ -310,12 +310,12 @@ public:
           }
         }
 
-        identifiers(uint32_t vendor_id,
-                    uint32_t product_id,
+        identifiers(krbn::vendor_id vendor_id,
+                    krbn::product_id product_id,
                     bool is_keyboard,
                     bool is_pointing_device) : identifiers(nlohmann::json({
-                                                   {"vendor_id", vendor_id},
-                                                   {"product_id", product_id},
+                                                   {"vendor_id", static_cast<uint32_t>(vendor_id)},
+                                                   {"product_id", static_cast<uint32_t>(product_id)},
                                                    {"is_keyboard", is_keyboard},
                                                    {"is_pointing_device", is_pointing_device},
                                                })) {
@@ -323,24 +323,24 @@ public:
 
         nlohmann::json to_json(void) const {
           auto j = json_;
-          j["vendor_id"] = vendor_id_;
-          j["product_id"] = product_id_;
+          j["vendor_id"] = static_cast<uint32_t>(vendor_id_);
+          j["product_id"] = static_cast<uint32_t>(product_id_);
           j["is_keyboard"] = is_keyboard_;
           j["is_pointing_device"] = is_pointing_device_;
           return j;
         }
 
-        uint32_t get_vendor_id(void) const {
+        krbn::vendor_id get_vendor_id(void) const {
           return vendor_id_;
         }
-        void set_vendor_id(uint32_t value) {
+        void set_vendor_id(krbn::vendor_id value) {
           vendor_id_ = value;
         }
 
-        uint32_t get_product_id(void) const {
+        krbn::product_id get_product_id(void) const {
           return product_id_;
         }
-        void set_product_id(uint32_t value) {
+        void set_product_id(krbn::product_id value) {
           product_id_ = value;
         }
 
@@ -367,8 +367,8 @@ public:
 
       private:
         nlohmann::json json_;
-        uint32_t vendor_id_;
-        uint32_t product_id_;
+        krbn::vendor_id vendor_id_;
+        krbn::product_id product_id_;
         bool is_keyboard_;
         bool is_pointing_device_;
       };
