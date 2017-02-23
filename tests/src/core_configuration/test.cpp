@@ -28,21 +28,21 @@ TEST_CASE("valid") {
     REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
   }
   {
-    std::vector<std::pair<krbn::key_code, krbn::key_code>> expected{
-        std::make_pair(krbn::key_code::f1, krbn::key_code::display_brightness_decrement),
-        std::make_pair(krbn::key_code::f10, krbn::key_code::mute),
-        std::make_pair(krbn::key_code::f11, krbn::key_code::volume_decrement),
-        std::make_pair(krbn::key_code::f12, krbn::key_code::volume_increment),
-        std::make_pair(krbn::key_code::f2, krbn::key_code::display_brightness_increment),
-        std::make_pair(krbn::key_code::f3, krbn::key_code::mission_control),
-        std::make_pair(krbn::key_code::f4, krbn::key_code::launchpad),
-        std::make_pair(krbn::key_code::f5, krbn::key_code::illumination_decrement),
-        std::make_pair(krbn::key_code::f6, krbn::key_code::illumination_increment),
-        std::make_pair(krbn::key_code::f7, krbn::key_code::rewind),
-        std::make_pair(krbn::key_code::f8, krbn::key_code::play_or_pause),
-        std::make_pair(krbn::key_code::f9, krbn::key_code::fastforward),
+    std::unordered_map<krbn::key_code, krbn::key_code> expected{
+        {krbn::key_code::f1, krbn::key_code::display_brightness_decrement},
+        {krbn::key_code::f10, krbn::key_code::mute},
+        {krbn::key_code::f11, krbn::key_code::volume_decrement},
+        {krbn::key_code::f12, krbn::key_code::volume_increment},
+        {krbn::key_code::f2, krbn::key_code::display_brightness_increment},
+        {krbn::key_code::f3, krbn::key_code::mission_control},
+        {krbn::key_code::f4, krbn::key_code::launchpad},
+        {krbn::key_code::f5, krbn::key_code::illumination_decrement},
+        {krbn::key_code::f6, krbn::key_code::illumination_increment},
+        {krbn::key_code::f7, krbn::key_code::rewind},
+        {krbn::key_code::f8, krbn::key_code::play_or_pause},
+        {krbn::key_code::f9, krbn::key_code::fastforward},
     };
-    REQUIRE(configuration.get_current_profile_fn_function_keys() == expected);
+    REQUIRE(configuration.get_selected_profile().get_fn_function_keys_key_code_map(logger::get_logger()) == expected);
   }
   {
     auto actual = configuration.get_current_profile_virtual_hid_keyboard();

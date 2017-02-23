@@ -57,7 +57,7 @@ private:
     }
 
     grabber_client_.clear_fn_function_keys();
-    for (const auto& pair : core_configuration.get_current_profile_fn_function_keys()) {
+    for (const auto& pair : core_configuration.get_selected_profile().get_fn_function_keys_key_code_map(logger_)) {
       grabber_client_.add_fn_function_key(pair.first, pair.second);
     }
 

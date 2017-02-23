@@ -549,6 +549,9 @@ public:
     void replace_fn_function_key(const std::string& from, const std::string& to) {
       fn_function_keys_->replace_second(from, to);
     }
+    const std::unordered_map<krbn::key_code, krbn::key_code> get_fn_function_keys_key_code_map(spdlog::logger& logger) const {
+      return fn_function_keys_->to_key_code_map(logger);
+    }
 
     const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
       return *virtual_hid_keyboard_;
@@ -736,12 +739,6 @@ public:
       }
     }
     return profiles_[0];
-  }
-
-  // std::vector<f1,display_brightness_decrement>
-  std::vector<std::pair<krbn::key_code, krbn::key_code>> get_current_profile_fn_function_keys(void) {
-    auto profile = get_current_profile();
-    return get_key_code_pair_from_json_object(profile["fn_function_keys"]);
   }
 
   krbn::virtual_hid_keyboard_configuration_struct get_current_profile_virtual_hid_keyboard(void) {
