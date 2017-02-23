@@ -296,6 +296,25 @@ TEST_CASE("profile") {
                             {"ignore", true},
                             {"disable_built_in_keyboard_if_exists", true},
                         },
+                        // duplicated identifiers
+                        {
+                            {"identifiers", {
+                                                {
+                                                    "vendor_id", 1234,
+                                                },
+                                                {
+                                                    "product_id", 5678,
+                                                },
+                                                {
+                                                    "is_keyboard", true,
+                                                },
+                                                {
+                                                    "is_pointing_device", true,
+                                                },
+                                            }},
+                            {"ignore", true},
+                            {"disable_built_in_keyboard_if_exists", true},
+                        },
                         {
                             {"identifiers", {
                                                 {
@@ -335,15 +354,19 @@ TEST_CASE("profile") {
       REQUIRE(profile.get_fn_function_keys() == expected);
     }
     {
-      REQUIRE(profile.get_devices().size() == 2);
+      REQUIRE(profile.get_devices().size() == 3);
       REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == 1234);
       REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == 5678);
       REQUIRE((profile.get_devices())[0].get_ignore() == true);
       REQUIRE((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == true);
-      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == 4321);
-      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == 8765);
-      REQUIRE((profile.get_devices())[1].get_ignore() == false);
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == 1234);
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[1].get_ignore() == true);
       REQUIRE((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == 4321);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == 8765);
+      REQUIRE((profile.get_devices())[2].get_ignore() == false);
+      REQUIRE((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == true);
     }
 
     // set_device (existing identifiers)
@@ -363,14 +386,38 @@ TEST_CASE("profile") {
           },
       }));
       profile.set_device_ignore(identifiers, false);
-      REQUIRE(profile.get_devices().size() == 2);
+      REQUIRE(profile.get_devices().size() == 3);
+      // devices[0] is changed.
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == 1234);
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == 5678);
       REQUIRE((profile.get_devices())[0].get_ignore() == false);
       REQUIRE((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == true);
+      // devices[1] is not changed.
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == 1234);
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[1].get_ignore() == true);
+      REQUIRE((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == 4321);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == 8765);
+      REQUIRE((profile.get_devices())[2].get_ignore() == false);
+      REQUIRE((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == true);
 
       profile.set_device_disable_built_in_keyboard_if_exists(identifiers, false);
-      REQUIRE(profile.get_devices().size() == 2);
+      REQUIRE(profile.get_devices().size() == 3);
+      // devices[0] is changed.
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_vendor_id() == 1234);
+      REQUIRE((profile.get_devices())[0].get_identifiers().get_product_id() == 5678);
       REQUIRE((profile.get_devices())[0].get_ignore() == false);
       REQUIRE((profile.get_devices())[0].get_disable_built_in_keyboard_if_exists() == false);
+      // devices[1] is not changed.
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_vendor_id() == 1234);
+      REQUIRE((profile.get_devices())[1].get_identifiers().get_product_id() == 5678);
+      REQUIRE((profile.get_devices())[1].get_ignore() == true);
+      REQUIRE((profile.get_devices())[1].get_disable_built_in_keyboard_if_exists() == true);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == 4321);
+      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == 8765);
+      REQUIRE((profile.get_devices())[2].get_ignore() == false);
+      REQUIRE((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == true);
     }
     // set_device (new identifiers)
     {
@@ -389,23 +436,23 @@ TEST_CASE("profile") {
           },
       }));
       profile.set_device_ignore(identifiers, true);
-      REQUIRE(profile.get_devices().size() == 3);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_vendor_id() == 1111);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_product_id() == 2222);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_is_keyboard() == false);
-      REQUIRE((profile.get_devices())[2].get_identifiers().get_is_pointing_device() == true);
-      REQUIRE((profile.get_devices())[2].get_ignore() == true);
-      REQUIRE((profile.get_devices())[2].get_disable_built_in_keyboard_if_exists() == false);
-
-      identifiers.set_vendor_id(1112);
-      profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
       REQUIRE(profile.get_devices().size() == 4);
-      REQUIRE((profile.get_devices())[3].get_identifiers().get_vendor_id() == 1112);
+      REQUIRE((profile.get_devices())[3].get_identifiers().get_vendor_id() == 1111);
       REQUIRE((profile.get_devices())[3].get_identifiers().get_product_id() == 2222);
       REQUIRE((profile.get_devices())[3].get_identifiers().get_is_keyboard() == false);
       REQUIRE((profile.get_devices())[3].get_identifiers().get_is_pointing_device() == true);
-      REQUIRE((profile.get_devices())[3].get_ignore() == false);
-      REQUIRE((profile.get_devices())[3].get_disable_built_in_keyboard_if_exists() == true);
+      REQUIRE((profile.get_devices())[3].get_ignore() == true);
+      REQUIRE((profile.get_devices())[3].get_disable_built_in_keyboard_if_exists() == false);
+
+      identifiers.set_vendor_id(1112);
+      profile.set_device_disable_built_in_keyboard_if_exists(identifiers, true);
+      REQUIRE(profile.get_devices().size() == 5);
+      REQUIRE((profile.get_devices())[4].get_identifiers().get_vendor_id() == 1112);
+      REQUIRE((profile.get_devices())[4].get_identifiers().get_product_id() == 2222);
+      REQUIRE((profile.get_devices())[4].get_identifiers().get_is_keyboard() == false);
+      REQUIRE((profile.get_devices())[4].get_identifiers().get_is_pointing_device() == true);
+      REQUIRE((profile.get_devices())[4].get_ignore() == false);
+      REQUIRE((profile.get_devices())[4].get_disable_built_in_keyboard_if_exists() == true);
     }
   }
 
