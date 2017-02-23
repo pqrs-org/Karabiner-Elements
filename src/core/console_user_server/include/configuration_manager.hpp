@@ -72,8 +72,18 @@ private:
     }
 
     grabber_client_.clear_devices();
-    for (const auto& pair : core_configuration.get_current_profile_devices()) {
-      grabber_client_.add_device(pair.first, pair.second);
+    for (const auto& device : core_configuration.get_selected_profile().get_devices()) {
+      krbn::device_identifiers_struct identifiers;
+      identifiers.vendor_id = device.get_identifiers().get_vendor_id();
+      identifiers.product_id = device.get_identifiers().get_product_id();
+      identifiers.is_keyboard = device.get_identifiers().get_is_keyboard();
+      identifiers.is_pointing_device = device.get_identifiers().get_is_pointing_device();
+
+      krbn::device_configuration_struct configuration;
+      configuration.ignore = device.get_ignore();
+      configuration.disable_built_in_keyboard_if_exists = device.get_disable_built_in_keyboard_if_exists();
+
+      grabber_client_.add_device(identifiers, configuration);
     }
     grabber_client_.complete_devices();
 

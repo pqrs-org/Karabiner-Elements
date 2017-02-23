@@ -741,40 +741,6 @@ public:
     return profiles_[0];
   }
 
-  std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> get_current_profile_devices(void) {
-    std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> v;
-
-    auto profile = get_current_profile();
-    if (profile["devices"].is_array()) {
-      for (auto&& device : profile["devices"]) {
-        if (device["identifiers"].is_object() &&
-            device["identifiers"]["vendor_id"].is_number() &&
-            device["identifiers"]["product_id"].is_number() &&
-            device["identifiers"]["is_keyboard"].is_boolean() &&
-            device["identifiers"]["is_pointing_device"].is_boolean() &&
-            device["ignore"].is_boolean()) {
-          krbn::device_identifiers_struct device_identifiers_struct;
-          device_identifiers_struct.vendor_id = krbn::vendor_id(static_cast<uint32_t>(device["identifiers"]["vendor_id"]));
-          device_identifiers_struct.product_id = krbn::product_id(static_cast<uint32_t>(device["identifiers"]["product_id"]));
-          device_identifiers_struct.is_keyboard = device["identifiers"]["is_keyboard"];
-          device_identifiers_struct.is_pointing_device = device["identifiers"]["is_pointing_device"];
-
-          krbn::device_configuration_struct device_configuration_struct;
-          device_configuration_struct.ignore = device["ignore"];
-          device_configuration_struct.disable_built_in_keyboard_if_exists = false;
-          // disable_built_in_keyboard_if_exists is optional
-          if (device["disable_built_in_keyboard_if_exists"].is_boolean()) {
-            device_configuration_struct.disable_built_in_keyboard_if_exists = static_cast<bool>(device["disable_built_in_keyboard_if_exists"]);
-          }
-
-          v.push_back(std::make_pair(device_identifiers_struct, device_configuration_struct));
-        }
-      }
-    }
-
-    return v;
-  }
-
   // Note:
   // Be careful calling `save` method.
   // If the configuration file is corrupted temporarily (user editing the configuration file in editor),

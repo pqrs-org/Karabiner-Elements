@@ -49,22 +49,22 @@ TEST_CASE("valid") {
     REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds() == 100);
   }
   {
-    auto actual = configuration.get_current_profile_devices();
+    auto& actual = configuration.get_selected_profile().get_devices();
     REQUIRE(actual.size() == 2);
 
-    REQUIRE(actual[0].first.vendor_id == krbn::vendor_id(1133));
-    REQUIRE(actual[0].first.product_id == krbn::product_id(50475));
-    REQUIRE(actual[0].first.is_keyboard == true);
-    REQUIRE(actual[0].first.is_pointing_device == false);
-    REQUIRE(actual[0].second.ignore == false);
-    REQUIRE(actual[0].second.disable_built_in_keyboard_if_exists == false);
+    REQUIRE(actual[0].get_identifiers().get_vendor_id() == krbn::vendor_id(1133));
+    REQUIRE(actual[0].get_identifiers().get_product_id() == krbn::product_id(50475));
+    REQUIRE(actual[0].get_identifiers().get_is_keyboard() == true);
+    REQUIRE(actual[0].get_identifiers().get_is_pointing_device() == false);
+    REQUIRE(actual[0].get_ignore() == false);
+    REQUIRE(actual[0].get_disable_built_in_keyboard_if_exists() == false);
 
-    REQUIRE(actual[1].first.vendor_id == krbn::vendor_id(1452));
-    REQUIRE(actual[1].first.product_id == krbn::product_id(610));
-    REQUIRE(actual[1].first.is_keyboard == true);
-    REQUIRE(actual[1].first.is_pointing_device == false);
-    REQUIRE(actual[1].second.ignore == true);
-    REQUIRE(actual[1].second.disable_built_in_keyboard_if_exists == true);
+    REQUIRE(actual[1].get_identifiers().get_vendor_id() == krbn::vendor_id(1452));
+    REQUIRE(actual[1].get_identifiers().get_product_id() == krbn::product_id(610));
+    REQUIRE(actual[1].get_identifiers().get_is_keyboard() == true);
+    REQUIRE(actual[1].get_identifiers().get_is_pointing_device() == false);
+    REQUIRE(actual[1].get_ignore() == true);
+    REQUIRE(actual[1].get_disable_built_in_keyboard_if_exists() == true);
   }
 
   REQUIRE(configuration.get_global_configuration().get_check_for_updates_on_startup() == false);
