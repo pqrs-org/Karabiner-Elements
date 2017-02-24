@@ -622,8 +622,8 @@ public:
 
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(spdlog::logger& logger, const std::string& file_path) : file_path_(file_path), loaded_(false) {
-    std::ifstream input(file_path_);
+  core_configuration(spdlog::logger& logger, const std::string& file_path) : loaded_(false) {
+    std::ifstream input(file_path);
     if (input) {
       try {
         json_ = nlohmann::json::parse(input);
@@ -645,7 +645,7 @@ public:
 
         loaded_ = true;
       } catch (std::exception& e) {
-        logger.warn("parse error in {0}: {1}", file_path_, e.what());
+        logger.warn("parse error in {0}: {1}", file_path, e.what());
         json_ = nlohmann::json();
       }
 
@@ -730,8 +730,8 @@ public:
   // the user data will be lost by the `save` method.
   // Thus, we should call the `save` method only when it is neccessary.
 
-  bool save(void) {
-    std::ofstream output(file_path_);
+  bool save_to_file(const std::string& file_path) {
+    std::ofstream output(file_path);
     if (!output) {
       return false;
     }
@@ -741,8 +741,6 @@ public:
   }
 
 private:
-  std::string file_path_;
-
   nlohmann::json json_;
   bool loaded_;
 

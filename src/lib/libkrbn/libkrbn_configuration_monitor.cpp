@@ -10,7 +10,7 @@ public:
   libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
 
   libkrbn_configuration_monitor_class(libkrbn_configuration_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    auto core_configuration_file_path = constants::get_core_configuration_file_path();
+    auto core_configuration_file_path = constants::get_user_core_configuration_file_path();
 
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
         {constants::get_user_configuration_directory(), {core_configuration_file_path}},

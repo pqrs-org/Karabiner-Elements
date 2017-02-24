@@ -75,7 +75,7 @@ public:
     return directory;
   }
 
-  static const std::string& get_core_configuration_file_path(void) {
+  static const std::string& get_user_core_configuration_file_path(void) {
     static std::mutex mutex;
     static bool once = false;
     static std::string file_path;

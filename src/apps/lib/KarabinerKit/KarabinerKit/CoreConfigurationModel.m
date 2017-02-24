@@ -15,7 +15,7 @@
 
   if (self) {
     libkrbn_core_configuration* p = NULL;
-    if (libkrbn_core_configuration_initialize(&p, libkrbn_get_core_configuration_file_path())) {
+    if (libkrbn_core_configuration_initialize(&p, libkrbn_get_user_core_configuration_file_path())) {
       _libkrbn_core_configuration = p;
     }
   }

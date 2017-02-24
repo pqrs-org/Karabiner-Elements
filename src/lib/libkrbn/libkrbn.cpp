@@ -29,8 +29,8 @@ const char* libkrbn_get_distributed_notification_console_user_server_is_disabled
   return constants::get_distributed_notification_console_user_server_is_disabled();
 }
 
-const char* libkrbn_get_core_configuration_file_path(void) {
-  return constants::get_core_configuration_file_path().c_str();
+const char* libkrbn_get_user_core_configuration_file_path(void) {
+  return constants::get_user_core_configuration_file_path().c_str();
 }
 
 const char* libkrbn_get_devices_json_file_path(void) {

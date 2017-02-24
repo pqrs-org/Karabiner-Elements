@@ -28,7 +28,7 @@ void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
 
 bool libkrbn_core_configuration_save(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<core_configuration*>(p)) {
-    return c->save();
+    return c->save_to_file(constants::get_user_core_configuration_file_path());
   }
   return false;
 }

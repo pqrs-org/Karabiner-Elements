@@ -6,8 +6,8 @@ public:
     // Move karabiner.json.
     // ~/.karabiner.d/configuration/karabiner.json -> ~/.config/karabiner/karabiner.json
 
-    auto old_file_path = get_core_configuration_file_path_v1();
-    auto new_file_path = constants::get_core_configuration_file_path();
+    auto old_file_path = get_user_core_configuration_file_path_v1();
+    auto new_file_path = constants::get_user_core_configuration_file_path();
 
     if (!old_file_path.empty() && !new_file_path.empty()) {
       if (filesystem::exists(old_file_path) && !filesystem::exists(new_file_path)) {
@@ -27,7 +27,7 @@ public:
   }
 
 private:
-  static std::string get_core_configuration_file_path_v1(void) {
+  static std::string get_user_core_configuration_file_path_v1(void) {
     std::string file_path;
 
     if (auto home = std::getenv("HOME")) {

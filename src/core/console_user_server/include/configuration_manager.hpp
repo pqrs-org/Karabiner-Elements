@@ -20,7 +20,7 @@ public:
                                                           need_to_check_for_updates_(true) {
     filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
 
-    auto core_configuration_file_path = constants::get_core_configuration_file_path();
+    auto core_configuration_file_path = constants::get_user_core_configuration_file_path();
 
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
         {constants::get_user_configuration_directory(), {core_configuration_file_path}},
