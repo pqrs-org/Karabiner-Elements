@@ -30,9 +30,8 @@ public:
     client_ = std::make_unique<local_datagram_client>(constants::get_grabber_socket_file_path());
   }
 
-  void connect(krbn::connect_from connect_from) {
+  void connect(void) {
     krbn::operation_type_connect_struct s;
-    s.connect_from = connect_from;
     s.pid = getpid();
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }

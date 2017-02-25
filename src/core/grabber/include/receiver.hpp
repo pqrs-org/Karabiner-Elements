@@ -66,19 +66,15 @@ private:
           } else {
             auto p = reinterpret_cast<krbn::operation_type_connect_struct*>(&(buffer_[0]));
 
-            switch (p->connect_from) {
-            case krbn::connect_from::console_user_server:
-              logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
+            logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
-              device_grabber_.start_grabbing();
+            device_grabber_.start_grabbing();
 
-              // monitor the last process
-              console_user_server_process_monitor_ = nullptr;
-              console_user_server_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
-                                                                                       p->pid,
-                                                                                       std::bind(&receiver::console_user_server_exit_callback, this));
-              break;
-            }
+            // monitor the last process
+            console_user_server_process_monitor_ = nullptr;
+            console_user_server_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
+                                                                                     p->pid,
+                                                                                     std::bind(&receiver::console_user_server_exit_callback, this));
           }
           break;
 

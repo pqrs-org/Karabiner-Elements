@@ -33,7 +33,7 @@ public:
                   version_monitor_.manual_check();
 
                   grabber_client_ = std::make_unique<grabber_client>();
-                  grabber_client_->connect(krbn::connect_from::console_user_server);
+                  grabber_client_->connect();
                   logger::get_logger().info("grabber_client_ is connected");
                 }
 

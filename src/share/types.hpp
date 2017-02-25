@@ -33,10 +33,6 @@ enum class operation_type : uint8_t {
   complete_devices,
 };
 
-enum class connect_from : uint8_t {
-  console_user_server,
-};
-
 enum class event_type : uint32_t {
   key_down,
   key_up,
@@ -650,7 +646,6 @@ struct operation_type_connect_struct {
   operation_type_connect_struct(void) : operation_type(operation_type::connect) {}
 
   const operation_type operation_type;
-  connect_from connect_from;
   pid_t pid;
 };
 
