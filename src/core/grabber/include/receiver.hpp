@@ -66,9 +66,12 @@ private:
           } else {
             auto p = reinterpret_cast<krbn::operation_type_connect_struct*>(&(buffer_[0]));
 
+            // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
+            p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
+
             logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
-            device_grabber_.start_grabbing();
+            device_grabber_.start_grabbing(p->user_core_configuration_file_path);
 
             // monitor the last process
             console_user_server_process_monitor_ = nullptr;

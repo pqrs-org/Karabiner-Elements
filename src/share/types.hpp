@@ -11,6 +11,7 @@
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <boost/optional.hpp>
+#include <cstring>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -643,10 +644,15 @@ public:
 };
 
 struct operation_type_connect_struct {
-  operation_type_connect_struct(void) : operation_type(operation_type::connect) {}
+  operation_type_connect_struct(void) : operation_type(operation_type::connect) {
+    strlcpy(user_core_configuration_file_path,
+            constants::get_user_core_configuration_file_path().c_str(),
+            sizeof(user_core_configuration_file_path));
+  }
 
   const operation_type operation_type;
   pid_t pid;
+  char user_core_configuration_file_path[_POSIX_PATH_MAX];
 };
 
 struct operation_type_system_preferences_values_updated_struct {

@@ -87,7 +87,7 @@ public:
     });
   }
 
-  void start_grabbing(void) {
+  void start_grabbing(const std::string& user_core_configuration_file_path) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       mode_ = mode::grabbing;
 
