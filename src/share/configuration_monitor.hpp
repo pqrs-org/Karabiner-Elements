@@ -9,7 +9,7 @@
 
 class configuration_monitor final {
 public:
-  typedef std::function<void(core_configuration& core_configuration)> core_configuration_updated_callback;
+  typedef std::function<void(std::shared_ptr<core_configuration> core_configuration)> core_configuration_updated_callback;
 
   configuration_monitor(spdlog::logger& logger,
                         const std::string& user_core_configuration_file_path,
@@ -50,7 +50,7 @@ private:
       logger_.info("core_configuration is updated.", file_path);
       core_configuration_ = c;
       if (callback_) {
-        callback_(*core_configuration_);
+        callback_(core_configuration_);
       }
     }
   }

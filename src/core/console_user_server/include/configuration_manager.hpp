@@ -27,34 +27,38 @@ public:
   }
 
 private:
-  void core_configuration_updated_callback(core_configuration& core_configuration) {
+  void core_configuration_updated_callback(std::shared_ptr<core_configuration> core_configuration) {
+    if (!core_configuration) {
+      return;
+    }
+
     // ----------------------------------------
     // Send configuration to grabber.
 
     grabber_client_.core_configuration_updated();
 
     grabber_client_.clear_simple_modifications();
-    for (const auto& pair : core_configuration.get_selected_profile().get_simple_modifications_key_code_map(logger_)) {
+    for (const auto& pair : core_configuration->get_selected_profile().get_simple_modifications_key_code_map(logger_)) {
       grabber_client_.add_simple_modification(pair.first, pair.second);
     }
 
     grabber_client_.clear_fn_function_keys();
-    for (const auto& pair : core_configuration.get_selected_profile().get_fn_function_keys_key_code_map(logger_)) {
+    for (const auto& pair : core_configuration->get_selected_profile().get_fn_function_keys_key_code_map(logger_)) {
       grabber_client_.add_fn_function_key(pair.first, pair.second);
     }
 
     {
       krbn::virtual_hid_keyboard_configuration_struct virtual_hid_keyboard_configuration_struct;
-      if (auto keyboard_type = krbn::types::get_keyboard_type(core_configuration.get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type())) {
+      if (auto keyboard_type = krbn::types::get_keyboard_type(core_configuration->get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type())) {
         virtual_hid_keyboard_configuration_struct.keyboard_type = *keyboard_type;
       }
-      virtual_hid_keyboard_configuration_struct.caps_lock_delay_milliseconds = core_configuration.get_selected_profile().get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
+      virtual_hid_keyboard_configuration_struct.caps_lock_delay_milliseconds = core_configuration->get_selected_profile().get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
 
       grabber_client_.virtual_hid_keyboard_configuration_updated(virtual_hid_keyboard_configuration_struct);
     }
 
     grabber_client_.clear_devices();
-    for (const auto& device : core_configuration.get_selected_profile().get_devices()) {
+    for (const auto& device : core_configuration->get_selected_profile().get_devices()) {
       krbn::device_identifiers_struct identifiers;
       identifiers.vendor_id = device.get_identifiers().get_vendor_id();
       identifiers.product_id = device.get_identifiers().get_product_id();
@@ -73,7 +77,7 @@ private:
     // Check for updates
     if (need_to_check_for_updates_) {
       need_to_check_for_updates_ = false;
-      if (core_configuration.get_global_configuration().get_check_for_updates_on_startup()) {
+      if (core_configuration->get_global_configuration().get_check_for_updates_on_startup()) {
         logger_.info("Check for updates...");
         update_utility::check_for_updates_in_background();
       }
@@ -81,7 +85,7 @@ private:
 
     // ----------------------------------------
     // Launch menu
-    if (core_configuration.get_global_configuration().get_show_in_menu_bar()) {
+    if (core_configuration->get_global_configuration().get_show_in_menu_bar()) {
       application_launcher::launch_menu();
     }
   }
