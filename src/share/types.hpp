@@ -4,6 +4,7 @@
 
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "apple_hid_usage_tables.hpp"
+#include "constants.hpp"
 #include "system_preferences.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
