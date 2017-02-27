@@ -1,6 +1,7 @@
 #pragma once
 
 #include "application_launcher.hpp"
+#include "configuration_monitor.hpp"
 #include "constants.hpp"
 #include "core_configuration.hpp"
 #include "file_monitor.hpp"
@@ -20,32 +21,13 @@ public:
                                                           need_to_check_for_updates_(true) {
     filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
 
-    auto core_configuration_file_path = constants::get_user_core_configuration_file_path();
-
-    std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-        {constants::get_user_configuration_directory(), {core_configuration_file_path}},
-    };
-    file_monitor_ = std::make_unique<file_monitor>(logger_, targets,
-                                                   std::bind(&configuration_manager::core_configuration_file_updated_callback, this, std::placeholders::_1));
-
-    core_configuration_file_updated_callback(core_configuration_file_path);
-  }
-
-  ~configuration_manager(void) {
-    file_monitor_ = nullptr;
+    configuration_monitor_ = std::make_unique<configuration_monitor>(logger_,
+                                                                     constants::get_user_core_configuration_file_path(),
+                                                                     std::bind(&configuration_manager::core_configuration_updated_callback, this, std::placeholders::_1));
   }
 
 private:
-  void core_configuration_file_updated_callback(const std::string& file_path) {
-    core_configuration core_configuration(logger_, file_path);
-
-    // skip if karabiner.json is broken.
-    if (!core_configuration.is_loaded()) {
-      return;
-    }
-
-    logger_.info("karabiner.json was loaded.");
-
+  void core_configuration_updated_callback(core_configuration& core_configuration) {
     // ----------------------------------------
     // Send configuration to grabber.
 
@@ -107,7 +89,7 @@ private:
   spdlog::logger& logger_;
   grabber_client& grabber_client_;
 
-  std::unique_ptr<file_monitor> file_monitor_;
+  std::unique_ptr<configuration_monitor> configuration_monitor_;
 
   bool need_to_check_for_updates_;
 };
