@@ -1,5 +1,5 @@
+#include "configuration_monitor.hpp"
 #include "core_configuration.hpp"
-#include "file_monitor.hpp"
 #include "libkrbn.h"
 #include "libkrbn.hpp"
 
@@ -22,51 +22,22 @@ public:
   libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
 
   libkrbn_configuration_monitor_class(libkrbn_configuration_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    auto core_configuration_file_path = constants::get_user_core_configuration_file_path();
-
-    std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-        {constants::get_user_configuration_directory(), {core_configuration_file_path}},
-    };
-
-    file_monitor_ = std::make_unique<file_monitor>(libkrbn::get_logger(),
-                                                   targets,
-                                                   [this](const std::string& file_path) { cpp_callback(file_path); });
-
-    cpp_callback(core_configuration_file_path);
+    configuration_monitor_ = std::make_unique<configuration_monitor>(libkrbn::get_logger(),
+                                                                     constants::get_user_core_configuration_file_path(),
+                                                                     [this](const std::shared_ptr<core_configuration> core_configuration) {
+                                                                       if (callback_) {
+                                                                         auto* p = new libkrbn_core_configuration_class(core_configuration);
+                                                                         callback_(p, refcon_);
+                                                                       }
+                                                                     });
   }
 
 private:
-  void cpp_callback(const std::string& file_path) {
-    if (callback_) {
-      core_configuration core_configuration(libkrbn::get_logger(), file_path);
-      if (core_configuration.is_loaded()) {
-        callback_(refcon_);
-      }
-    }
-  }
-
   libkrbn_configuration_monitor_callback callback_;
   void* refcon_;
 
-  std::unique_ptr<file_monitor> file_monitor_;
+  std::unique_ptr<configuration_monitor> configuration_monitor_;
 };
-}
-
-bool libkrbn_core_configuration_initialize(libkrbn_core_configuration** out, const char* file_path) {
-  if (!out) {
-    return false;
-  }
-  // return if already initialized.
-  if (*out) {
-    return false;
-  }
-
-  if (!file_path) {
-    return false;
-  }
-
-  *out = reinterpret_cast<libkrbn_core_configuration*>(new libkrbn_core_configuration_class(std::make_shared<core_configuration>(libkrbn::get_logger(), file_path)));
-  return true;
 }
 
 void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
@@ -79,13 +50,6 @@ void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
 bool libkrbn_core_configuration_save(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().save_to_file(constants::get_user_core_configuration_file_path());
-  }
-  return false;
-}
-
-bool libkrbn_core_configuration_is_loaded(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().is_loaded();
   }
   return false;
 }

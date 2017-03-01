@@ -2,10 +2,12 @@
 
 @import Cocoa;
 #import "DeviceModel.h"
+#import "libkrbn.h"
 
 @interface KarabinerKitCoreConfigurationModel : NSObject
 
-@property(readonly) BOOL isLoaded;
+- (instancetype)initWithInitializedCoreConfiguration:(libkrbn_core_configuration*)initializedCoreConfiguration;
+
 - (BOOL)save;
 
 @property BOOL globalConfigurationCheckForUpdatesOnStartup;

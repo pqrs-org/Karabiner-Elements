@@ -35,10 +35,7 @@ void libkrbn_launch_preferences(void);
 // libkrbn_core_configuration
 
 typedef void libkrbn_core_configuration;
-bool libkrbn_core_configuration_initialize(libkrbn_core_configuration* _Nullable* _Nonnull out,
-                                           const char* _Nonnull file_path);
 void libkrbn_core_configuration_terminate(libkrbn_core_configuration* _Nullable* _Nonnull p);
-bool libkrbn_core_configuration_is_loaded(libkrbn_core_configuration* _Nonnull p);
 bool libkrbn_core_configuration_save(libkrbn_core_configuration* _Nonnull p);
 
 // global_configuration
@@ -118,7 +115,9 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
 // libkrbn_configuration_monitor
 
 typedef void libkrbn_configuration_monitor;
-typedef void (*libkrbn_configuration_monitor_callback)(void* _Nullable refcon);
+// You have to call `libkrbn_core_configuration_terminate(&initialized_core_configuration)`.
+typedef void (*libkrbn_configuration_monitor_callback)(libkrbn_core_configuration* _Nonnull initialized_core_configuration,
+                                                       void* _Nullable refcon);
 bool libkrbn_configuration_monitor_initialize(libkrbn_configuration_monitor* _Nullable* _Nonnull out,
                                               libkrbn_configuration_monitor_callback _Nullable callback,
                                               void* _Nullable refcon);

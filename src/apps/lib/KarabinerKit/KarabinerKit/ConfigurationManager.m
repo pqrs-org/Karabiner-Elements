@@ -10,13 +10,10 @@
 
 @end
 
-static void configuration_file_updated_callback(void* refcon) {
+static void configuration_file_updated_callback(libkrbn_core_configuration* initializedCoreConfiguration,
+                                                void* refcon) {
   KarabinerKitConfigurationManager* manager = (__bridge KarabinerKitConfigurationManager*)(refcon);
-
-  KarabinerKitCoreConfigurationModel* model = [KarabinerKitCoreConfigurationModel new];
-  if (!manager.coreConfigurationModel || model.isLoaded) {
-    manager.coreConfigurationModel = model;
-  }
+  manager.coreConfigurationModel = [[KarabinerKitCoreConfigurationModel alloc] initWithInitializedCoreConfiguration:initializedCoreConfiguration];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitConfigurationIsLoaded object:nil];
 }

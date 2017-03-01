@@ -32,6 +32,7 @@
 		34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */; };
 		34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC701D9663EC004C61E1 /* log_monitor.hpp */; };
 		34CFEC731D9663F6004C61E1 /* spdlog_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */; };
+		34F4D5191E672758007D5065 /* configuration_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34F4D5181E672758007D5065 /* configuration_monitor.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +62,7 @@
 		34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_monitor.hpp; path = ../../share/file_monitor.hpp; sourceTree = "<group>"; };
 		34CFEC701D9663EC004C61E1 /* log_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = log_monitor.hpp; path = ../../share/log_monitor.hpp; sourceTree = "<group>"; };
 		34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = spdlog_utility.hpp; path = ../../share/spdlog_utility.hpp; sourceTree = "<group>"; };
+		34F4D5181E672758007D5065 /* configuration_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_monitor.hpp; path = ../../share/configuration_monitor.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				3404CB7B1E3E5B2000629451 /* application_launcher.hpp */,
 				34B97B261DBB2C5A00EB3583 /* boost_defs.hpp */,
 				3476862D1E22A9F400A7DFAB /* cf_utility.hpp */,
+				34F4D5181E672758007D5065 /* configuration_monitor.hpp */,
 				3471130B1D87092D001AC60D /* constants.hpp */,
 				345F95411DA934C6002854B8 /* core_configuration.hpp */,
 				34CFEC6E1D9663E0004C61E1 /* file_monitor.hpp */,
@@ -143,6 +146,7 @@
 				3404CB7C1E3E5B2000629451 /* application_launcher.hpp in Headers */,
 				34B97B101DB8D2F600EB3583 /* thread_utility.hpp in Headers */,
 				34B97B271DBB2C5A00EB3583 /* boost_defs.hpp in Headers */,
+				34F4D5191E672758007D5065 /* configuration_monitor.hpp in Headers */,
 				347113081D870834001AC60D /* libkrbn.h in Headers */,
 				340C7F6A1E4253CA00F9B911 /* process_utility.hpp in Headers */,
 				345F95421DA934C6002854B8 /* core_configuration.hpp in Headers */,
