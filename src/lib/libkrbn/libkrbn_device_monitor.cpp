@@ -4,7 +4,7 @@
 #include "libkrbn.hpp"
 
 namespace {
-class libkrbn_device_monitor_class {
+class libkrbn_device_monitor_class final {
 public:
   libkrbn_device_monitor_class(const libkrbn_device_monitor_class&) = delete;
 

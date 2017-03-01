@@ -4,7 +4,7 @@
 #include "log_monitor.hpp"
 
 namespace {
-class libkrbn_log_monitor_class {
+class libkrbn_log_monitor_class final {
 public:
   libkrbn_log_monitor_class(const libkrbn_log_monitor_class&) = delete;
 

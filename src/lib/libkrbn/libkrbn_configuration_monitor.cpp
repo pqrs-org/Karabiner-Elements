@@ -5,7 +5,7 @@
 #include "libkrbn.hpp"
 
 namespace {
-class libkrbn_configuration_monitor_class {
+class libkrbn_configuration_monitor_class final {
 public:
   libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
 

@@ -4,7 +4,7 @@
 #include "version_monitor.hpp"
 
 namespace {
-class libkrbn_version_monitor_class {
+class libkrbn_version_monitor_class final {
 public:
   libkrbn_version_monitor_class(const libkrbn_version_monitor_class&) = delete;
 

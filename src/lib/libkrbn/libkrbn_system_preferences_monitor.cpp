@@ -5,7 +5,7 @@
 #include "system_preferences_monitor.hpp"
 
 namespace {
-class libkrbn_system_preferences_monitor_class {
+class libkrbn_system_preferences_monitor_class final {
 public:
   libkrbn_system_preferences_monitor_class(const libkrbn_system_preferences_monitor_class&) = delete;
 
