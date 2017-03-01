@@ -23,6 +23,15 @@
   return self;
 }
 
+- (void)dealloc {
+  if (self.libkrbn_core_configuration) {
+    libkrbn_core_configuration* p = self.libkrbn_core_configuration;
+    if (p) {
+      libkrbn_core_configuration_terminate(&p);
+    }
+  }
+}
+
 - (BOOL)isLoaded {
   return libkrbn_core_configuration_is_loaded(self.libkrbn_core_configuration);
 }
