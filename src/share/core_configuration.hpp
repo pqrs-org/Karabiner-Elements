@@ -269,6 +269,11 @@ public:
         caps_lock_delay_milliseconds_ = value;
       }
 
+      bool operator==(const virtual_hid_keyboard& other) const {
+        return keyboard_type_ == other.keyboard_type_ &&
+               caps_lock_delay_milliseconds_ == other.caps_lock_delay_milliseconds_;
+      }
+
     private:
       nlohmann::json json_;
       std::string keyboard_type_;

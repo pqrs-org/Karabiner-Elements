@@ -38,26 +38,20 @@ public:
     return virtual_hid_keyboard_initialized_;
   }
 
-  void initialize_virtual_hid_keyboard(const krbn::virtual_hid_keyboard_configuration_struct& configuration) {
+  void initialize_virtual_hid_keyboard(const pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization& properties) {
     if (virtual_hid_keyboard_initialized_ &&
-        virtual_hid_keyboard_configuration_struct_ == configuration) {
+        virtual_hid_keyboard_properties_ == properties) {
       return;
     }
 
-    virtual_hid_keyboard_configuration_struct_ = configuration;
+    virtual_hid_keyboard_properties_ = properties;
 
     virtual_hid_keyboard_initialized_ = call_method([this](void) {
-      auto keyboard_type = static_cast<int>(virtual_hid_keyboard_configuration_struct_.keyboard_type);
-      auto caps_lock_delay_milliseconds = virtual_hid_keyboard_configuration_struct_.caps_lock_delay_milliseconds;
       logger_.info("initialize_virtual_hid_keyboard");
-      logger_.info("  keyboard_type:{0}", keyboard_type);
-      logger_.info("  caps_lock_delay_milliseconds:{0}", caps_lock_delay_milliseconds);
+      logger_.info("  keyboard_type:{0}", static_cast<uint32_t>(virtual_hid_keyboard_properties_.keyboard_type));
+      logger_.info("  caps_lock_delay_milliseconds:{0}", static_cast<uint64_t>(virtual_hid_keyboard_properties_.caps_lock_delay_milliseconds));
 
-      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-      properties.keyboard_type = pqrs::karabiner_virtual_hid_device::properties::keyboard_type(keyboard_type);
-      properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(caps_lock_delay_milliseconds);
-
-      return pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect_, properties);
+      return pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect_, virtual_hid_keyboard_properties_);
     });
   }
 
@@ -205,5 +199,5 @@ private:
   std::mutex connect_mutex_;
 
   bool virtual_hid_keyboard_initialized_;
-  krbn::virtual_hid_keyboard_configuration_struct virtual_hid_keyboard_configuration_struct_;
+  pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization virtual_hid_keyboard_properties_;
 };

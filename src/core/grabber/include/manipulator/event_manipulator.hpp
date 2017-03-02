@@ -76,24 +76,21 @@ public:
     system_preferences_values_ = values;
   }
 
-  void clear_simple_modifications(void) {
-    simple_modifications_.clear();
+  void set_profile(const core_configuration::profile& profile) {
+    simple_modifications_key_code_map_ = profile.get_simple_modifications_key_code_map(logger::get_logger());
+    fn_function_keys_key_code_map_ = profile.get_fn_function_keys_key_code_map(logger::get_logger());
+
+    pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
+    if (auto k = krbn::types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
+      properties.keyboard_type = pqrs::karabiner_virtual_hid_device::properties::keyboard_type(*k);
+    }
+    properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(profile.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds());
+    virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
   }
 
-  void add_simple_modification(krbn::key_code from_key_code, krbn::key_code to_key_code) {
-    simple_modifications_.add(from_key_code, to_key_code);
-  }
-
-  void clear_fn_function_keys(void) {
-    fn_function_keys_.clear();
-  }
-
-  void add_fn_function_key(krbn::key_code from_key_code, krbn::key_code to_key_code) {
-    fn_function_keys_.add(from_key_code, to_key_code);
-  }
-
-  void initialize_virtual_hid_keyboard(const krbn::virtual_hid_keyboard_configuration_struct& configuration) {
-    virtual_hid_device_client_.initialize_virtual_hid_keyboard(configuration);
+  void unset_profile(void) {
+    simple_modifications_key_code_map_ = std::unordered_map<krbn::key_code, krbn::key_code>();
+    fn_function_keys_key_code_map_ = std::unordered_map<krbn::key_code, krbn::key_code>();
   }
 
   void initialize_virtual_hid_pointing(void) {
@@ -123,9 +120,10 @@ public:
         to_key_code = *key_code;
       }
     } else {
-      if (auto key_code = simple_modifications_.get(from_key_code)) {
-        manipulated_keys_.add(device_registry_entry_id, from_key_code, *key_code);
-        to_key_code = *key_code;
+      auto it = simple_modifications_key_code_map_.find(from_key_code);
+      if (it != simple_modifications_key_code_map_.end()) {
+        to_key_code = it->second;
+        manipulated_keys_.add(device_registry_entry_id, from_key_code, to_key_code);
       }
     }
 
@@ -179,8 +177,9 @@ public:
           if ((fn_pressed && keyboard_fn_state) ||
               (!fn_pressed && !keyboard_fn_state)) {
             // change f1-f12 keys to media controls
-            if (auto k = fn_function_keys_.get(to_key_code)) {
-              key_code = *k;
+            auto it = fn_function_keys_key_code_map_.find(to_key_code);
+            if (it != fn_function_keys_key_code_map_.end()) {
+              key_code = it->second;
             }
           }
         }
@@ -316,41 +315,6 @@ private:
     std::mutex mutex_;
   };
 
-  class simple_modifications final {
-  public:
-    simple_modifications(const simple_modifications&) = delete;
-
-    simple_modifications(void) {
-    }
-
-    void clear(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      map_.clear();
-    }
-
-    void add(krbn::key_code from_key_code, krbn::key_code to_key_code) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      map_[from_key_code] = to_key_code;
-    }
-
-    boost::optional<krbn::key_code> get(krbn::key_code from_key_code) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      auto it = map_.find(from_key_code);
-      if (it != map_.end()) {
-        return it->second;
-      }
-
-      return boost::none;
-    }
-
-  private:
-    std::unordered_map<krbn::key_code, krbn::key_code> map_;
-    std::mutex mutex_;
-  };
-
   bool post_modifier_flag_event(krbn::key_code key_code, bool pressed, uint64_t timestamp) {
     auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
 
@@ -414,8 +378,8 @@ private:
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;
 
-  simple_modifications simple_modifications_;
-  simple_modifications fn_function_keys_;
+  std::unordered_map<krbn::key_code, krbn::key_code> simple_modifications_key_code_map_;
+  std::unordered_map<krbn::key_code, krbn::key_code> fn_function_keys_key_code_map_;
 
   manipulated_keys manipulated_keys_;
   manipulated_keys manipulated_fn_keys_;

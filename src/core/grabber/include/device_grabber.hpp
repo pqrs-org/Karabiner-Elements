@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "apple_hid_usage_tables.hpp"
+#include "configuration_monitor.hpp"
 #include "constants.hpp"
 #include "event_manipulator.hpp"
 #include "event_tap_manager.hpp"
@@ -96,11 +97,24 @@ public:
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_manager here.
       event_tap_manager_ = std::make_unique<event_tap_manager>(std::bind(&device_grabber::caps_lock_state_changed_callback, this, std::placeholders::_1));
+
+      configuration_monitor_ = std::make_unique<configuration_monitor>(logger::get_logger(),
+                                                                       user_core_configuration_file_path,
+                                                                       [this](std::shared_ptr<core_configuration> core_configuration) {
+                                                                         core_configuration_ = core_configuration;
+
+                                                                         is_grabbable_callback_log_reducer_.reset();
+                                                                         event_manipulator_.set_profile(core_configuration_->get_selected_profile());
+                                                                         grab_devices();
+                                                                         output_devices_json();
+                                                                       });
     });
   }
 
   void stop_grabbing(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
+      configuration_monitor_ = nullptr;
+
       ungrab_devices();
 
       mode_ = mode::observing;
@@ -160,36 +174,6 @@ public:
           grab_devices();
         }
       }
-    });
-  }
-
-  void reset_log_reducer(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      is_grabbable_callback_log_reducer_.reset();
-    });
-  }
-
-  void clear_device_configurations(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      device_configurations_.clear();
-    });
-  }
-
-  void add_device_configuration(const krbn::device_identifiers_struct& device_identifiers_struct,
-                                const krbn::device_configuration_struct& device_configuration_struct) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      device_configurations_.push_back(std::make_pair(device_identifiers_struct, device_configuration_struct));
-    });
-  }
-
-  void complete_device_configurations(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      for (auto&& it : hids_) {
-        (it.second)->set_disable_built_in_keyboard_if_exists(get_disable_built_in_keyboard_if_exists(*(it.second)));
-      }
-
-      grab_devices();
-      output_devices_json();
     });
   }
 
@@ -467,18 +451,22 @@ private:
     return false;
   }
 
-  boost::optional<const krbn::device_configuration_struct&> find_device_configuration_struct(const human_interface_device& device) {
-    if (auto vendor_id = device.get_vendor_id()) {
-      if (auto product_id = device.get_product_id()) {
-        bool is_keyboard = device.is_keyboard();
-        bool is_pointing_device = device.is_pointing_device();
+  boost::optional<const core_configuration::profile::device&> find_device_configuration(const human_interface_device& device) {
+    if (core_configuration_) {
+      if (auto vendor_id = device.get_vendor_id()) {
+        if (auto product_id = device.get_product_id()) {
+          bool is_keyboard = device.is_keyboard();
+          bool is_pointing_device = device.is_pointing_device();
 
-        for (const auto& d : device_configurations_) {
-          if (d.first.vendor_id == *vendor_id &&
-              d.first.product_id == *product_id &&
-              d.first.is_keyboard == is_keyboard &&
-              d.first.is_pointing_device == is_pointing_device) {
-            return d.second;
+          core_configuration::profile::device::identifiers identifiers(*vendor_id,
+                                                                       *product_id,
+                                                                       is_keyboard,
+                                                                       is_pointing_device);
+
+          for (const auto& d : core_configuration_->get_selected_profile().get_devices()) {
+            if (d.get_identifiers() == identifiers) {
+              return d;
+            }
           }
         }
       }
@@ -487,8 +475,8 @@ private:
   }
 
   bool is_ignored_device(const human_interface_device& device) {
-    if (auto s = find_device_configuration_struct(device)) {
-      return s->ignore;
+    if (auto s = find_device_configuration(device)) {
+      return s->get_ignore();
     }
 
     if (device.is_pointing_device()) {
@@ -508,8 +496,8 @@ private:
   }
 
   bool get_disable_built_in_keyboard_if_exists(const human_interface_device& device) {
-    if (auto s = find_device_configuration_struct(device)) {
-      return s->disable_built_in_keyboard_if_exists;
+    if (auto s = find_device_configuration(device)) {
+      return s->get_disable_built_in_keyboard_if_exists();
     }
     return false;
   }
@@ -588,10 +576,11 @@ private:
 
   boost::signals2::connection virtual_hid_device_client_disconnected_connection;
 
+  std::unique_ptr<configuration_monitor> configuration_monitor_;
+  std::shared_ptr<core_configuration> core_configuration_;
+
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   IOHIDManagerRef _Nullable manager_;
-
-  std::vector<std::pair<krbn::device_identifiers_struct, krbn::device_configuration_struct>> device_configurations_;
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 

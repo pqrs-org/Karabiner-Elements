@@ -24,15 +24,6 @@ enum class operation_type : uint8_t {
   // console_user_server -> grabber
   connect,
   system_preferences_values_updated,
-  core_configuration_updated,
-  clear_simple_modifications,
-  add_simple_modification,
-  clear_fn_function_keys,
-  add_fn_function_key,
-  virtual_hid_keyboard_configuration_updated,
-  clear_devices,
-  add_device,
-  complete_devices,
 };
 
 enum class event_type : uint32_t {
@@ -227,18 +218,6 @@ struct virtual_hid_keyboard_configuration_struct {
 
   keyboard_type keyboard_type;
   uint32_t caps_lock_delay_milliseconds;
-};
-
-struct device_identifiers_struct {
-  vendor_id vendor_id;
-  product_id product_id;
-  bool is_keyboard;
-  bool is_pointing_device;
-};
-
-struct device_configuration_struct {
-  bool ignore;
-  bool disable_built_in_keyboard_if_exists;
 };
 
 class types final {
@@ -661,66 +640,5 @@ struct operation_type_system_preferences_values_updated_struct {
 
   const operation_type operation_type;
   system_preferences::values values;
-};
-
-struct operation_type_core_configuration_updated_struct {
-  operation_type_core_configuration_updated_struct(void) : operation_type(operation_type::core_configuration_updated) {}
-
-  const operation_type operation_type;
-};
-
-struct operation_type_clear_simple_modifications_struct {
-  operation_type_clear_simple_modifications_struct(void) : operation_type(operation_type::clear_simple_modifications) {}
-
-  const operation_type operation_type;
-};
-
-struct operation_type_add_simple_modification_struct {
-  operation_type_add_simple_modification_struct(void) : operation_type(operation_type::add_simple_modification) {}
-
-  const operation_type operation_type;
-  key_code from_key_code;
-  key_code to_key_code;
-};
-
-struct operation_type_clear_fn_function_keys_struct {
-  operation_type_clear_fn_function_keys_struct(void) : operation_type(operation_type::clear_fn_function_keys) {}
-
-  const operation_type operation_type;
-};
-
-struct operation_type_add_fn_function_key_struct {
-  operation_type_add_fn_function_key_struct(void) : operation_type(operation_type::add_fn_function_key) {}
-
-  const operation_type operation_type;
-  key_code from_key_code;
-  key_code to_key_code;
-};
-
-struct operation_type_virtual_hid_keyboard_configuration_updated_struct {
-  operation_type_virtual_hid_keyboard_configuration_updated_struct(void) : operation_type(operation_type::virtual_hid_keyboard_configuration_updated) {}
-
-  const operation_type operation_type;
-  virtual_hid_keyboard_configuration_struct virtual_hid_keyboard_configuration_struct;
-};
-
-struct operation_type_clear_devices_struct {
-  operation_type_clear_devices_struct(void) : operation_type(operation_type::clear_devices) {}
-
-  const operation_type operation_type;
-};
-
-struct operation_type_add_device_struct {
-  operation_type_add_device_struct(void) : operation_type(operation_type::add_device) {}
-
-  const operation_type operation_type;
-  device_identifiers_struct device_identifiers_struct;
-  device_configuration_struct device_configuration_struct;
-};
-
-struct operation_type_complete_devices_struct {
-  operation_type_complete_devices_struct(void) : operation_type(operation_type::complete_devices) {}
-
-  const operation_type operation_type;
 };
 }

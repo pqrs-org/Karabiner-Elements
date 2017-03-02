@@ -3,6 +3,7 @@
 #include "configuration_manager.hpp"
 #include "constants.hpp"
 #include "gcd_utility.hpp"
+#include "grabber_client.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
 #include "session.hpp"
@@ -44,8 +45,7 @@ public:
                 }
 
                 if (!configuration_manager_) {
-                  configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger(),
-                                                                                   *grabber_client_);
+                  configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger());
                 }
 
                 return;
