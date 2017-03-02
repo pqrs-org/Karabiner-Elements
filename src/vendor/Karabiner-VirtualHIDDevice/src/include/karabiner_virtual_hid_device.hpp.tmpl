@@ -136,6 +136,12 @@ public:
       keyboard_initialization(void) : keyboard_type(keyboard_type::none),
                                       caps_lock_delay_milliseconds(milliseconds(0)) {}
 
+      bool operator==(const keyboard_initialization& other) const {
+        return keyboard_type == other.keyboard_type &&
+               caps_lock_delay_milliseconds == other.caps_lock_delay_milliseconds;
+      }
+      bool operator!=(const keyboard_initialization& other) const { return !(*this == other); }
+
       keyboard_type keyboard_type;
       milliseconds caps_lock_delay_milliseconds;
     };

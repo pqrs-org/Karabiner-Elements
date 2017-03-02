@@ -1,3 +1,8 @@
+# Version 4.4.0
+
+* `operator==` and `operator!=` has been added into `keyboard_initialization`.
+
+
 # Version 4.3.0
 
 * kextunload calls in `uninstall.sh` and `update.sh` has been removed in order to avoid a macOS problem.

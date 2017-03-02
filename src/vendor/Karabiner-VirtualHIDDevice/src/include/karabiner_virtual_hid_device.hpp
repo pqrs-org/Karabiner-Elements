@@ -136,6 +136,12 @@ public:
       keyboard_initialization(void) : keyboard_type(keyboard_type::none),
                                       caps_lock_delay_milliseconds(milliseconds(0)) {}
 
+      bool operator==(const keyboard_initialization& other) const {
+        return keyboard_type == other.keyboard_type &&
+               caps_lock_delay_milliseconds == other.caps_lock_delay_milliseconds;
+      }
+      bool operator!=(const keyboard_initialization& other) const { return !(*this == other); }
+
       keyboard_type keyboard_type;
       milliseconds caps_lock_delay_milliseconds;
     };
@@ -159,7 +165,7 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040300";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040400";
   }
 };
 }
