@@ -200,26 +200,6 @@ enum class product_id : uint32_t {
 enum class location_id : uint32_t {
 };
 
-enum class keyboard_type : uint32_t {
-  none = 0,
-  ansi = 40,
-  iso = 41,
-  jis = 42,
-};
-
-struct virtual_hid_keyboard_configuration_struct {
-  virtual_hid_keyboard_configuration_struct(void) : keyboard_type(keyboard_type::ansi),
-                                                    caps_lock_delay_milliseconds(0) {}
-
-  bool operator==(const virtual_hid_keyboard_configuration_struct& other) const {
-    return keyboard_type == other.keyboard_type &&
-           caps_lock_delay_milliseconds == other.caps_lock_delay_milliseconds;
-  }
-
-  keyboard_type keyboard_type;
-  uint32_t caps_lock_delay_milliseconds;
-};
-
 class types final {
 public:
   static modifier_flag get_modifier_flag(key_code key_code) {
@@ -602,18 +582,18 @@ public:
     return boost::none;
   }
 
-  static const std::unordered_map<std::string, keyboard_type>& get_keyboard_type_map(void) {
-    static std::unordered_map<std::string, keyboard_type> map({
-        {"none", keyboard_type::none},
-        {"ansi", keyboard_type::ansi},
-        {"iso", keyboard_type::iso},
-        {"jis", keyboard_type::jis},
+  static const std::unordered_map<std::string, pqrs::karabiner_virtual_hid_device::properties::keyboard_type>& get_keyboard_type_map(void) {
+    static std::unordered_map<std::string, pqrs::karabiner_virtual_hid_device::properties::keyboard_type> map({
+        {"none", pqrs::karabiner_virtual_hid_device::properties::keyboard_type::none},
+        {"ansi", pqrs::karabiner_virtual_hid_device::properties::keyboard_type::ansi},
+        {"iso", pqrs::karabiner_virtual_hid_device::properties::keyboard_type::iso},
+        {"jis", pqrs::karabiner_virtual_hid_device::properties::keyboard_type::jis},
     });
 
     return map;
   }
 
-  static boost::optional<keyboard_type> get_keyboard_type(const std::string& name) {
+  static boost::optional<pqrs::karabiner_virtual_hid_device::properties::keyboard_type> get_keyboard_type(const std::string& name) {
     auto& map = get_keyboard_type_map();
     auto it = map.find(name);
     if (it == map.end()) {

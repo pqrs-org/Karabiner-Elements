@@ -82,7 +82,7 @@ public:
 
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
     if (auto k = krbn::types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
-      properties.keyboard_type = pqrs::karabiner_virtual_hid_device::properties::keyboard_type(*k);
+      properties.keyboard_type = *k;
     }
     properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(profile.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds());
     virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
