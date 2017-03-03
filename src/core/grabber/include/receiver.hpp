@@ -9,6 +9,7 @@
 #include "types.hpp"
 #include <vector>
 
+namespace krbn {
 class receiver final {
 public:
   receiver(const receiver&) = delete;
@@ -58,12 +59,12 @@ private:
       std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
 
       if (!ec && n > 0) {
-        switch (krbn::operation_type(buffer_[0])) {
-        case krbn::operation_type::connect:
-          if (n != sizeof(krbn::operation_type_connect_struct)) {
-            logger::get_logger().error("invalid size for krbn::operation_type::connect");
+        switch (operation_type(buffer_[0])) {
+        case operation_type::connect:
+          if (n != sizeof(operation_type_connect_struct)) {
+            logger::get_logger().error("invalid size for operation_type::connect");
           } else {
-            auto p = reinterpret_cast<krbn::operation_type_connect_struct*>(&(buffer_[0]));
+            auto p = reinterpret_cast<operation_type_connect_struct*>(&(buffer_[0]));
 
             // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
             p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
@@ -80,11 +81,11 @@ private:
           }
           break;
 
-        case krbn::operation_type::system_preferences_values_updated:
-          if (n < sizeof(krbn::operation_type_system_preferences_values_updated_struct)) {
-            logger::get_logger().error("invalid size for krbn::operation_type::system_preferences_values_updated ({0})", n);
+        case operation_type::system_preferences_values_updated:
+          if (n < sizeof(operation_type_system_preferences_values_updated_struct)) {
+            logger::get_logger().error("invalid size for operation_type::system_preferences_values_updated ({0})", n);
           } else {
-            auto p = reinterpret_cast<krbn::operation_type_system_preferences_values_updated_struct*>(&(buffer_[0]));
+            auto p = reinterpret_cast<operation_type_system_preferences_values_updated_struct*>(&(buffer_[0]));
             event_manipulator_.set_system_preferences_values(p->values);
             logger::get_logger().info("system_preferences_values_updated");
           }
@@ -111,3 +112,4 @@ private:
 
   std::unique_ptr<process_monitor> console_user_server_process_monitor_;
 };
+}

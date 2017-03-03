@@ -2,6 +2,7 @@
 
 #include <thread>
 
+namespace krbn {
 class thread_utility final {
 public:
   static std::thread::id get_main_thread_id(void) {
@@ -20,3 +21,4 @@ public:
     return get_main_thread_id() == std::this_thread::get_id();
   }
 };
+}

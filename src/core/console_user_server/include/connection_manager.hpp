@@ -11,6 +11,7 @@
 #include "version_monitor.hpp"
 #include <thread>
 
+namespace krbn {
 class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
@@ -104,3 +105,4 @@ private:
   std::unique_ptr<grabber_client> grabber_client_;
   std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
 };
+}

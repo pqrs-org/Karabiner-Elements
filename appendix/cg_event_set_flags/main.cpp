@@ -2,9 +2,10 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <iostream>
 
-static CFMachPortRef _Nullable event_tap;
+namespace {
+CFMachPortRef _Nullable event_tap;
 
-static CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event, void* _Nonnull refcon) {
+CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event, void* _Nonnull refcon) {
   if (type == kCGEventTapDisabledByTimeout) {
     CGEventTapEnable(event_tap, true);
     return event;
@@ -19,9 +20,10 @@ static CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventTyp
   }
   return event;
 }
+}
 
 int main(int argc, const char* argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
   // Observe all mouse events
   auto mask = CGEventMaskBit(kCGEventLeftMouseDown) |

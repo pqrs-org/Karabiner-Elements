@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <vector>
 
+namespace krbn {
 class human_interface_device final {
 public:
   enum class grabbable_state {
@@ -389,15 +390,15 @@ public:
     return iokit_utility::get_max_input_report_size(device_);
   }
 
-  boost::optional<krbn::vendor_id> get_vendor_id(void) const {
+  boost::optional<vendor_id> get_vendor_id(void) const {
     return iokit_utility::get_vendor_id(device_);
   }
 
-  boost::optional<krbn::product_id> get_product_id(void) const {
+  boost::optional<product_id> get_product_id(void) const {
     return iokit_utility::get_product_id(device_);
   }
 
-  boost::optional<krbn::location_id> get_location_id(void) const {
+  boost::optional<location_id> get_location_id(void) const {
     return iokit_utility::get_location_id(device_);
   }
 
@@ -524,8 +525,8 @@ public:
 #pragma mark - usage specific utilities
 
   // This method requires root privilege to use IOHIDDeviceGetValue for kHIDPage_LEDs usage.
-  boost::optional<krbn::led_state> get_caps_lock_led_state(void) const {
-    boost::optional<krbn::led_state> __block state = boost::none;
+  boost::optional<led_state> get_caps_lock_led_state(void) const {
+    boost::optional<led_state> __block state = boost::none;
 
     gcd_utility::dispatch_sync_in_main_queue(^{
       if (auto element = get_element(kHIDPage_LEDs, kHIDUsage_LED_CapsLock)) {
@@ -538,9 +539,9 @@ public:
         } else {
           auto integer_value = IOHIDValueGetIntegerValue(value);
           if (integer_value == max) {
-            state = krbn::led_state::on;
+            state = led_state::on;
           } else {
-            state = krbn::led_state::off;
+            state = led_state::off;
           }
         }
       }
@@ -550,12 +551,12 @@ public:
   }
 
   // This method requires root privilege to use IOHIDDeviceSetValue for kHIDPage_LEDs usage.
-  IOReturn set_caps_lock_led_state(krbn::led_state state) {
+  IOReturn set_caps_lock_led_state(led_state state) {
     // `IOHIDDeviceSetValue` will block forever with some buggy devices. (eg. Bit Touch)
     // This, we use a blacklist.
-    if (auto vendor_id = get_vendor_id()) {
-      if (auto product_id = get_product_id()) {
-        if ((*vendor_id == krbn::vendor_id(0x22ea) && *product_id == krbn::product_id(0xf)) /* Bit Touch (Bit Trade One LTD.) */ ||
+    if (auto v = get_vendor_id()) {
+      if (auto p = get_product_id()) {
+        if ((*v == vendor_id(0x22ea) && *p == product_id(0xf)) /* Bit Touch (Bit Trade One LTD.) */ ||
             false) {
           return kIOReturnSuccess;
         }
@@ -567,7 +568,7 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       if (auto element = get_element(kHIDPage_LEDs, kHIDUsage_LED_CapsLock)) {
         CFIndex integer_value = 0;
-        if (state == krbn::led_state::on) {
+        if (state == led_state::on) {
           integer_value = IOHIDElementGetLogicalMax(element);
         } else {
           integer_value = IOHIDElementGetLogicalMin(element);
@@ -710,25 +711,25 @@ private:
         auto e2 = IOHIDValueGetElement(v2);
 
         if (e1 && e2) {
-          auto modifier_flag1 = krbn::modifier_flag::zero;
-          auto modifier_flag2 = krbn::modifier_flag::zero;
+          auto modifier_flag1 = modifier_flag::zero;
+          auto modifier_flag2 = modifier_flag::zero;
 
           auto usage_page1 = IOHIDElementGetUsagePage(e1);
           auto usage1 = IOHIDElementGetUsage(e1);
           auto usage_page2 = IOHIDElementGetUsagePage(e2);
           auto usage2 = IOHIDElementGetUsage(e2);
 
-          if (auto key_code1 = krbn::types::get_key_code(usage_page1, usage1)) {
-            modifier_flag1 = krbn::types::get_modifier_flag(*key_code1);
+          if (auto key_code1 = types::get_key_code(usage_page1, usage1)) {
+            modifier_flag1 = types::get_modifier_flag(*key_code1);
           }
-          if (auto key_code2 = krbn::types::get_key_code(usage_page2, usage2)) {
-            modifier_flag2 = krbn::types::get_modifier_flag(*key_code2);
+          if (auto key_code2 = types::get_key_code(usage_page2, usage2)) {
+            modifier_flag2 = types::get_modifier_flag(*key_code2);
           }
 
           // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
 
-          if (modifier_flag1 == krbn::modifier_flag::zero &&
-              modifier_flag2 != krbn::modifier_flag::zero) {
+          if (modifier_flag1 == modifier_flag::zero &&
+              modifier_flag2 != modifier_flag::zero) {
             // v2 is modifier_flag
             auto integer_value2 = IOHIDValueGetIntegerValue(v2);
             if (integer_value2) {
@@ -739,8 +740,8 @@ private:
             }
           }
 
-          if (modifier_flag1 != krbn::modifier_flag::zero &&
-              modifier_flag2 == krbn::modifier_flag::zero) {
+          if (modifier_flag1 != modifier_flag::zero &&
+              modifier_flag2 == modifier_flag::zero) {
             // v1 is modifier_flag
             auto integer_value1 = IOHIDValueGetIntegerValue(v1);
             if (integer_value1) {
@@ -768,10 +769,10 @@ private:
         auto integer_value = IOHIDValueGetIntegerValue(value);
 
         // Update repeating_key_
-        if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
+        if (auto key_code = types::get_key_code(usage_page, usage)) {
           bool pressed = integer_value;
           if (pressed) {
-            if (krbn::types::get_modifier_flag(*key_code) != krbn::modifier_flag::zero) {
+            if (types::get_modifier_flag(*key_code) != modifier_flag::zero) {
               // The pressed key is a modifier key.
               repeating_key_ = boost::none;
             } else {
@@ -785,7 +786,7 @@ private:
         }
 
         // Update pressed_buttons_
-        if (auto pointing_button = krbn::types::get_pointing_button(usage_page, usage)) {
+        if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
           bool pressed = integer_value;
           if (pressed) {
             pressed_buttons_.push_back(*pointing_button);
@@ -884,8 +885,8 @@ private:
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
-  boost::optional<krbn::key_code> repeating_key_;
-  std::list<krbn::pointing_button> pressed_buttons_;
+  boost::optional<key_code> repeating_key_;
+  std::list<pointing_button> pressed_buttons_;
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
   report_callback report_callback_;
@@ -906,3 +907,4 @@ private:
   bool is_built_in_keyboard_;
   bool disable_built_in_keyboard_if_exists_;
 };
+}

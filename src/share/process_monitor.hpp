@@ -3,6 +3,7 @@
 #include "gcd_utility.hpp"
 #include <spdlog/spdlog.h>
 
+namespace krbn {
 class process_monitor final {
 public:
   typedef std::function<void(void)> exit_callback;
@@ -50,3 +51,4 @@ private:
 
   dispatch_source_t monitor_;
 };
+}

@@ -6,6 +6,7 @@
 #include "gcd_utility.hpp"
 #include <fstream>
 
+namespace krbn {
 class version_monitor final {
 public:
   typedef std::function<void(void)> callback;
@@ -73,3 +74,4 @@ private:
   std::string version_;
   std::unique_ptr<file_monitor> file_monitor_;
 };
+}

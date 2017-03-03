@@ -11,6 +11,7 @@
 #include "version_monitor.hpp"
 #include <sys/stat.h>
 
+namespace krbn {
 class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
@@ -57,3 +58,4 @@ private:
 
   std::unique_ptr<receiver> receiver_;
 };
+}

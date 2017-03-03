@@ -7,6 +7,7 @@
 #include <string>
 #include <sys/stat.h>
 
+namespace krbn {
 class filesystem final {
 public:
   static bool exists(const std::string& path) {
@@ -208,3 +209,4 @@ private:
     return pos;
   }
 };
+}

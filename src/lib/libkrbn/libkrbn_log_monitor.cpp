@@ -12,13 +12,15 @@ public:
     std::vector<std::string> targets = {
         "/var/log/karabiner/grabber_log",
     };
-    auto log_directory = constants::get_user_log_directory();
+    auto log_directory = krbn::constants::get_user_log_directory();
     if (!log_directory.empty()) {
       targets.push_back(log_directory + "/console_user_server_log");
     }
 
-    log_monitor_ = std::make_unique<log_monitor>(targets,
-                                                 [this](const std::string& line) { cpp_callback(line); });
+    log_monitor_ = std::make_unique<krbn::log_monitor>(targets,
+                                                       [this](const std::string& line) {
+                                                         cpp_callback(line);
+                                                       });
   }
 
   const std::vector<std::pair<uint64_t, std::string>>& get_initial_lines(void) const {
@@ -39,7 +41,7 @@ private:
   libkrbn_log_monitor_callback callback_;
   void* refcon_;
 
-  std::unique_ptr<log_monitor> log_monitor_;
+  std::unique_ptr<krbn::log_monitor> log_monitor_;
 };
 }
 

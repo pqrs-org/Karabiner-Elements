@@ -5,6 +5,7 @@
 #include <memory>
 #include <spdlog/spdlog.h>
 
+namespace krbn {
 class logger final {
 public:
   static spdlog::logger& get_logger(void) {
@@ -27,3 +28,4 @@ public:
     return *logger;
   }
 };
+}

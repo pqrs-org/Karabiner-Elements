@@ -10,12 +10,14 @@ public:
   libkrbn_system_preferences_monitor_class(const libkrbn_system_preferences_monitor_class&) = delete;
 
   libkrbn_system_preferences_monitor_class(libkrbn_system_preferences_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(libkrbn::get_logger(),
-                                                                               [this](const system_preferences::values& values) { cpp_callback(values); });
+    system_preferences_monitor_ = std::make_unique<krbn::system_preferences_monitor>(libkrbn::get_logger(),
+                                                                                     [this](const krbn::system_preferences::values& values) {
+                                                                                       cpp_callback(values);
+                                                                                     });
   }
 
 private:
-  void cpp_callback(const system_preferences::values& values) {
+  void cpp_callback(const krbn::system_preferences::values& values) {
     if (callback_) {
       libkrbn_system_preferences_values v;
       v.keyboard_fn_state = values.get_keyboard_fn_state();
@@ -26,7 +28,7 @@ private:
   libkrbn_system_preferences_monitor_callback callback_;
   void* refcon_;
 
-  std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
+  std::unique_ptr<krbn::system_preferences_monitor> system_preferences_monitor_;
 };
 }
 

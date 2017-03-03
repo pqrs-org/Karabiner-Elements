@@ -7,6 +7,7 @@
 #include <boost/optional.hpp>
 #include <spdlog/spdlog.h>
 
+namespace krbn {
 class system_preferences_monitor final {
 public:
   typedef std::function<void(const system_preferences::values& values)> values_updated_callback;
@@ -43,3 +44,4 @@ private:
 
   boost::optional<system_preferences::values> values_;
 };
+}

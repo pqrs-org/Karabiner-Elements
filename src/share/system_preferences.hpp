@@ -6,6 +6,7 @@
 #include <boost/optional.hpp>
 #include <cmath>
 
+namespace krbn {
 class system_preferences final {
 public:
   class values {
@@ -58,3 +59,4 @@ public:
     return false;
   }
 };
+}

@@ -10,6 +10,7 @@
 #include <CoreServices/CoreServices.h>
 #include <memory>
 
+namespace krbn {
 class configuration_manager final {
 public:
   configuration_manager(const configuration_manager&) = delete;
@@ -52,3 +53,4 @@ private:
 
   bool need_to_check_for_updates_;
 };
+}

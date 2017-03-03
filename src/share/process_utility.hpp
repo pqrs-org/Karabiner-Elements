@@ -7,6 +7,7 @@
 #include <string>
 #include <sys/file.h>
 
+namespace krbn {
 class process_utility final {
 public:
   static bool lock_single_application(const std::string& pid_file_path) {
@@ -64,3 +65,4 @@ private:
     return fd;
   }
 };
+}

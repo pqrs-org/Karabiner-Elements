@@ -9,6 +9,7 @@ END_BOOST_INCLUDE
 
 #include <thread>
 
+namespace krbn {
 class local_datagram_client final {
 public:
   local_datagram_client(const local_datagram_client&) = delete;
@@ -73,3 +74,4 @@ private:
   boost::asio::local::datagram_protocol::socket socket_;
   std::thread thread_;
 };
+}

@@ -4,11 +4,12 @@
 #include <thread>
 #include <vector>
 
+namespace krbn {
 namespace manipulator {
 class pointing_button_manager final {
 public:
   pointing_button_manager(void) {
-    const auto max_size = static_cast<size_t>(krbn::pointing_button::end_);
+    const auto max_size = static_cast<size_t>(pointing_button::end_);
     states_.resize(max_size);
     for (size_t i = 0; i < max_size; ++i) {
       states_[i] = std::make_unique<state>();
@@ -39,7 +40,7 @@ public:
     toggle_lock,
   };
 
-  void manipulate(krbn::pointing_button b, operation operation) {
+  void manipulate(pointing_button b, operation operation) {
     auto i = static_cast<size_t>(b);
     if (i < states_.size() && states_[i]) {
       switch (operation) {
@@ -62,8 +63,8 @@ public:
     }
   }
 
-  bool pressed(krbn::pointing_button b) const {
-    if (b == krbn::pointing_button::zero) {
+  bool pressed(pointing_button b) const {
+    if (b == pointing_button::zero) {
       return true;
     }
 
@@ -74,7 +75,7 @@ public:
     return false;
   }
 
-  bool pressed(const std::vector<krbn::pointing_button>& pointing_buttons) {
+  bool pressed(const std::vector<pointing_button>& pointing_buttons) {
     // return true if all modifier flags are pressed.
     for (const auto& b : pointing_buttons) {
       if (!pressed(b)) {
@@ -87,8 +88,8 @@ public:
   uint32_t get_hid_report_bits(void) const {
     uint32_t bits = 0;
 
-    auto button1 = static_cast<size_t>(krbn::pointing_button::button1);
-    auto button32 = static_cast<size_t>(krbn::pointing_button::button32);
+    auto button1 = static_cast<size_t>(pointing_button::button1);
+    auto button32 = static_cast<size_t>(pointing_button::button32);
 
     for (size_t i = button1; i < button32; ++i) {
       if (states_[i] && states_[i]->pressed()) {
@@ -156,4 +157,5 @@ private:
 
   std::vector<std::unique_ptr<state>> states_;
 };
+}
 }

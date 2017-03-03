@@ -35,7 +35,7 @@ public:
 };
 
 int main(int argc, const char* argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
   if (getuid() != 0) {
     logger::get_logger().error("eventtap requires root privilege to use kCGHIDEventTap.");

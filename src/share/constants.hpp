@@ -5,6 +5,7 @@
 #include <string>
 #include <thread>
 
+namespace krbn {
 class constants final {
 public:
   static const char* get_version_file_path(void) {
@@ -141,3 +142,4 @@ public:
     return "console_user_server_is_disabled";
   }
 };
+}

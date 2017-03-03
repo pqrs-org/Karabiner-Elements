@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <vector>
 
+namespace krbn {
 class grabber_client final {
 public:
   grabber_client(const grabber_client&) = delete;
@@ -31,13 +32,13 @@ public:
   }
 
   void connect(void) {
-    krbn::operation_type_connect_struct s;
+    operation_type_connect_struct s;
     s.pid = getpid();
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
   void system_preferences_values_updated(const system_preferences::values& values) {
-    krbn::operation_type_system_preferences_values_updated_struct s;
+    operation_type_system_preferences_values_updated_struct s;
     s.values = values;
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
@@ -45,3 +46,4 @@ public:
 private:
   std::unique_ptr<local_datagram_client> client_;
 };
+}

@@ -13,6 +13,7 @@
 		3445E06A1D801AF7004555F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0691D801AF7004555F9 /* main.m */; };
 		3445E06C1D801AF7004555F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06B1D801AF7004555F9 /* Assets.xcassets */; };
 		3445E06F1D801AF7004555F9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06D1D801AF7004555F9 /* MainMenu.xib */; };
+		3452ECA01E69951600A5144C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3452EC9F1E69951600A5144C /* SystemConfiguration.framework */; };
 		345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */; };
 		345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */; };
 		345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 345F954A1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m */; };
@@ -49,6 +50,7 @@
 		3445E06B1D801AF7004555F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3445E06E1D801AF7004555F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		3445E0701D801AF7004555F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3452EC9F1E69951600A5144C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		345F953E1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewDataSource.h; sourceTree = "<group>"; };
 		345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTableViewDataSource.m; sourceTree = "<group>"; };
 		345F95431DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTableViewDelegate.h; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3452ECA01E69951600A5144C /* SystemConfiguration.framework in Frameworks */,
 				34D4236B1E1A58D6000E4154 /* libKarabinerKit.a in Frameworks */,
 				347113131D870F5F001AC60D /* libc++.dylib in Frameworks */,
 			);
@@ -213,6 +216,7 @@
 				347113121D870F5F001AC60D /* libc++.dylib */,
 				34D4236A1E1A58D6000E4154 /* libKarabinerKit.a */,
 				347113111D870E87001AC60D /* libkrbn.h */,
+				3452EC9F1E69951600A5144C /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

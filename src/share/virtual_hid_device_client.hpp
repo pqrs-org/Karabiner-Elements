@@ -6,6 +6,7 @@
 #include "service_observer.hpp"
 #include <boost/signals2.hpp>
 
+namespace krbn {
 class virtual_hid_device_client final {
 public:
   boost::signals2::signal<void(void)> client_connected;
@@ -201,3 +202,4 @@ private:
   bool virtual_hid_keyboard_initialized_;
   pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization virtual_hid_keyboard_properties_;
 };
+}

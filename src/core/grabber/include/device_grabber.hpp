@@ -21,6 +21,7 @@
 #include <thread>
 #include <time.h>
 
+namespace krbn {
 class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
@@ -296,17 +297,17 @@ private:
     auto device_registry_entry_id = manipulator::device_registry_entry_id(device.get_registry_entry_id());
     auto timestamp = IOHIDValueGetTimeStamp(value);
 
-    if (auto key_code = krbn::types::get_key_code(usage_page, usage)) {
+    if (auto key_code = types::get_key_code(usage_page, usage)) {
       bool pressed = integer_value;
       event_manipulator_.handle_keyboard_event(device_registry_entry_id,
                                                timestamp,
                                                *key_code,
                                                pressed);
 
-    } else if (auto pointing_button = krbn::types::get_pointing_button(usage_page, usage)) {
+    } else if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
       event_manipulator_.handle_pointing_event(device_registry_entry_id,
                                                timestamp,
-                                               krbn::pointing_event::button,
+                                               pointing_event::button,
                                                *pointing_button,
                                                integer_value);
 
@@ -316,21 +317,21 @@ private:
         if (usage == kHIDUsage_GD_X) {
           event_manipulator_.handle_pointing_event(device_registry_entry_id,
                                                    timestamp,
-                                                   krbn::pointing_event::x,
+                                                   pointing_event::x,
                                                    boost::none,
                                                    integer_value);
         }
         if (usage == kHIDUsage_GD_Y) {
           event_manipulator_.handle_pointing_event(device_registry_entry_id,
                                                    timestamp,
-                                                   krbn::pointing_event::y,
+                                                   pointing_event::y,
                                                    boost::none,
                                                    integer_value);
         }
         if (usage == kHIDUsage_GD_Wheel) {
           event_manipulator_.handle_pointing_event(device_registry_entry_id,
                                                    timestamp,
-                                                   krbn::pointing_event::vertical_wheel,
+                                                   pointing_event::vertical_wheel,
                                                    boost::none,
                                                    integer_value);
         }
@@ -340,7 +341,7 @@ private:
         if (usage == kHIDUsage_Csmr_ACPan) {
           event_manipulator_.handle_pointing_event(device_registry_entry_id,
                                                    timestamp,
-                                                   krbn::pointing_event::horizontal_wheel,
+                                                   pointing_event::horizontal_wheel,
                                                    boost::none,
                                                    integer_value);
         }
@@ -420,7 +421,7 @@ private:
     // Update LED.
     for (const auto& it : hids_) {
       if ((it.second)->is_grabbed()) {
-        (it.second)->set_caps_lock_led_state(caps_lock_state ? krbn::led_state::on : krbn::led_state::off);
+        (it.second)->set_caps_lock_led_state(caps_lock_state ? led_state::on : led_state::off);
       }
     }
   }
@@ -483,10 +484,10 @@ private:
       return true;
     }
 
-    if (auto vendor_id = device.get_vendor_id()) {
-      if (auto product_id = device.get_product_id()) {
+    if (auto v = device.get_vendor_id()) {
+      if (auto p = device.get_product_id()) {
         // Touch Bar on MacBook Pro 2016
-        if (*vendor_id == krbn::vendor_id(0x05ac) && *product_id == krbn::product_id(0x8600)) {
+        if (*v == vendor_id(0x05ac) && *p == product_id(0x8600)) {
           return true;
         }
       }
@@ -592,3 +593,4 @@ private:
 
   bool suspended_;
 };
+}

@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <spdlog/spdlog.h>
 
+namespace krbn {
 class spdlog_utility final {
 public:
   static std::string get_pattern(void) {
@@ -141,3 +142,4 @@ public:
     std::deque<std::pair<spdlog::level::level_enum, std::string>> messages_;
   };
 };
+}

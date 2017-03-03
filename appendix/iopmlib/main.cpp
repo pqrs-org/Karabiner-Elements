@@ -1,5 +1,6 @@
 #include "iopm_client.hpp"
 
+namespace {
 class logger final {
 public:
   static spdlog::logger& get_logger(void) {
@@ -10,11 +11,12 @@ public:
     return *logger;
   }
 };
+}
 
 int main(int argc, const char* argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
-  iopm_client client(logger::get_logger(), [](uint32_t message_type) {
+  krbn::iopm_client client(logger::get_logger(), [](uint32_t message_type) {
     logger::get_logger().info("callback message_type:{0}", message_type);
   });
 

@@ -6,6 +6,7 @@
 #include <IOKit/pwr_mgt/IOPMLib.h>
 #include <spdlog/spdlog.h>
 
+namespace krbn {
 class iopm_client final {
 public:
   typedef std::function<void(uint32_t message_type)> system_power_event_callback;
@@ -106,3 +107,4 @@ private:
   io_object_t notifier_;
   io_connect_t connect_;
 };
+}

@@ -15,6 +15,7 @@
 #include <iostream>
 #include <mach/mach_time.h>
 
+namespace {
 class logger final {
 public:
   static spdlog::logger& get_logger(void) {
@@ -36,7 +37,7 @@ public:
       return;
     }
 
-    auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
+    auto device_matching_dictionaries = krbn::iokit_utility::create_device_matching_dictionaries({
         std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard),
     });
     if (device_matching_dictionaries) {
@@ -69,9 +70,9 @@ private:
       return;
     }
 
-    iokit_utility::log_matching_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_matching_device(logger::get_logger(), device);
 
-    hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
+    hids_[device] = std::make_unique<krbn::human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
 
     auto kr = dev->open();
@@ -121,7 +122,7 @@ private:
       return;
     }
 
-    iokit_utility::log_removal_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_removal_device(logger::get_logger(), device);
 
     auto it = hids_.find(device);
     if (it != hids_.end()) {
@@ -133,11 +134,12 @@ private:
   }
 
   IOHIDManagerRef _Nullable manager_;
-  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
+  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<krbn::human_interface_device>> hids_;
 };
+}
 
 int main(int argc, const char* argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
   if (getuid() != 0) {
     logger::get_logger().error("control_led requires root privilege.");

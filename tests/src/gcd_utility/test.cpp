@@ -15,29 +15,29 @@ TEST_CASE("main_queue_after_timer") {
     std::atomic<int>& __block value = v;
 
     {
-      gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
-                                                ^{
-                                                  ++value;
-                                                });
+      krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                      ^{
+                                                        ++value;
+                                                      });
       std::this_thread::sleep_for(std::chrono::milliseconds(200));
       REQUIRE(value == 1);
     }
 
     {
-      gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
-                                                ^{
-                                                  ++value;
-                                                });
+      krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                      ^{
+                                                        ++value;
+                                                      });
       std::this_thread::sleep_for(std::chrono::milliseconds(200));
       REQUIRE(value == 2);
     }
 
     {
       {
-        gcd_utility::main_queue_after_timer main_queue_after_timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
-                                                                   ^{
-                                                                     ++value;
-                                                                   });
+        krbn::gcd_utility::main_queue_after_timer main_queue_after_timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                                         ^{
+                                                                           ++value;
+                                                                         });
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
       }
       REQUIRE(value == 2);
@@ -54,6 +54,6 @@ TEST_CASE("main_queue_after_timer") {
 }
 
 int main(int argc, char* const argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
   return Catch::Session().run(argc, argv);
 }

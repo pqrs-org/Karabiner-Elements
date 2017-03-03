@@ -4,6 +4,7 @@
 
 #include "version_monitor.hpp"
 
+namespace {
 class logger final {
 public:
   static spdlog::logger& get_logger(void) {
@@ -14,11 +15,12 @@ public:
     return *logger;
   }
 };
+}
 
 int main(int argc, const char* argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
-  version_monitor monitor(logger::get_logger(), [] {
+  krbn::version_monitor monitor(logger::get_logger(), [] {
     logger::get_logger().info("version_changed_callback");
   });
 

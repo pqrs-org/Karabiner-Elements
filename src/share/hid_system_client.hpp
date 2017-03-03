@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 
+namespace krbn {
 class hid_system_client final {
 public:
   hid_system_client(const hid_system_client&) = delete;
@@ -168,3 +169,4 @@ private:
   io_connect_t connect_;
   std::mutex connect_mutex_;
 };
+}

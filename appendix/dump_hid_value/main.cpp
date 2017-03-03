@@ -15,6 +15,7 @@
 #include <iostream>
 #include <mach/mach_time.h>
 
+namespace {
 class logger final {
 public:
   static spdlog::logger& get_logger(void) {
@@ -36,7 +37,7 @@ public:
       return;
     }
 
-    auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
+    auto device_matching_dictionaries = krbn::iokit_utility::create_device_matching_dictionaries({
         std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard),
         std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse),
         std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer),
@@ -71,9 +72,9 @@ private:
       return;
     }
 
-    iokit_utility::log_matching_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_matching_device(logger::get_logger(), device);
 
-    hids_[device] = std::make_unique<human_interface_device>(logger::get_logger(), device);
+    hids_[device] = std::make_unique<krbn::human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
     dev->set_value_callback(boost::bind(&dump_hid_value::value_callback, this, _1, _2, _3, _4, _5, _6));
     dev->observe();
@@ -97,7 +98,7 @@ private:
       return;
     }
 
-    iokit_utility::log_removal_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_removal_device(logger::get_logger(), device);
 
     auto it = hids_.find(device);
     if (it != hids_.end()) {
@@ -108,7 +109,7 @@ private:
     }
   }
 
-  void value_callback(human_interface_device& device,
+  void value_callback(krbn::human_interface_device& device,
                       IOHIDValueRef _Nonnull value,
                       IOHIDElementRef _Nonnull element,
                       uint32_t usage_page,
@@ -148,11 +149,12 @@ private:
   }
 
   IOHIDManagerRef _Nullable manager_;
-  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
+  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<krbn::human_interface_device>> hids_;
 };
+}
 
 int main(int argc, const char* argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
   dump_hid_value d;
   CFRunLoopRun();

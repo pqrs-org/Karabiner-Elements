@@ -6,6 +6,7 @@
 #include <boost/optional.hpp>
 #include <string>
 
+namespace krbn {
 class cf_utility final {
 public:
   static boost::optional<std::string> to_string(CFTypeRef _Nullable value) {
@@ -35,3 +36,4 @@ public:
     return string;
   }
 };
+}

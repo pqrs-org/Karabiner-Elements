@@ -14,6 +14,7 @@
 #include <iostream>
 #include <mach/mach_time.h>
 
+namespace {
 class logger final {
 public:
   static spdlog::logger& get_logger(void) {
@@ -24,15 +25,16 @@ public:
     return *logger;
   }
 };
+}
 
 int main(int argc, const char* argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
   if (getuid() != 0) {
     logger::get_logger().error("dump_caps_lock_state requires root privilege.");
   }
 
-  hid_system_client client(logger::get_logger());
+  krbn::hid_system_client client(logger::get_logger());
   if (auto state = client.get_caps_lock_state()) {
     std::cout << "state: " << *state << std::endl;
   }

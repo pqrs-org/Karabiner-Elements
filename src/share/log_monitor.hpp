@@ -10,6 +10,7 @@
 #include <thread>
 #include <vector>
 
+namespace krbn {
 class log_monitor final {
 public:
   typedef std::function<void(const std::string& line)> new_log_line_callback;
@@ -185,3 +186,4 @@ private:
   std::vector<std::string> files_;
   std::deque<std::tuple<timer_count, uint64_t, std::string>> added_lines_;
 };
+}

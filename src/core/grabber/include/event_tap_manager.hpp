@@ -7,6 +7,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <boost/optional.hpp>
 
+namespace krbn {
 class event_tap_manager final {
 public:
   typedef std::function<void(bool)> caps_lock_state_changed_callback;
@@ -103,3 +104,4 @@ private:
   CFRunLoopSourceRef _Nullable run_loop_source_;
   boost::optional<CGEventFlags> last_flags_;
 };
+}

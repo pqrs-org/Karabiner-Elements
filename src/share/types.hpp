@@ -460,19 +460,19 @@ public:
     switch (usage_page) {
     case kHIDPage_KeyboardOrKeypad:
       if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
-        return krbn::key_code(usage);
+        return key_code(usage);
       }
       break;
 
     case kHIDPage_AppleVendorTopCase:
       if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
-        return krbn::key_code::fn;
+        return key_code::fn;
       }
       break;
 
     case kHIDPage_AppleVendorKeyboard:
       if (usage == kHIDUsage_AppleVendorKeyboard_Function) {
-        return krbn::key_code::fn;
+        return key_code::fn;
       }
       break;
     }
@@ -577,7 +577,7 @@ public:
 
   static boost::optional<pointing_button> get_pointing_button(uint32_t usage_page, uint32_t usage) {
     if (usage_page == kHIDPage_Button) {
-      return krbn::pointing_button(usage);
+      return pointing_button(usage);
     }
     return boost::none;
   }

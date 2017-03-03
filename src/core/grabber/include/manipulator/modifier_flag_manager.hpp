@@ -5,22 +5,23 @@
 #include <thread>
 #include <vector>
 
+namespace krbn {
 namespace manipulator {
 class modifier_flag_manager final {
 public:
   modifier_flag_manager(void) {
-    states_.resize(static_cast<size_t>(krbn::modifier_flag::prepared_modifier_flag_end_));
+    states_.resize(static_cast<size_t>(modifier_flag::prepared_modifier_flag_end_));
 
-    states_[static_cast<size_t>(krbn::modifier_flag::caps_lock)] = std::make_unique<state>("caps lock", "⇪");
-    states_[static_cast<size_t>(krbn::modifier_flag::left_control)] = std::make_unique<state>("control", "⌃");
-    states_[static_cast<size_t>(krbn::modifier_flag::left_shift)] = std::make_unique<state>("shift", "⇧");
-    states_[static_cast<size_t>(krbn::modifier_flag::left_option)] = std::make_unique<state>("option", "⌥");
-    states_[static_cast<size_t>(krbn::modifier_flag::left_command)] = std::make_unique<state>("command", "⌘");
-    states_[static_cast<size_t>(krbn::modifier_flag::right_control)] = std::make_unique<state>("control", "⌃");
-    states_[static_cast<size_t>(krbn::modifier_flag::right_shift)] = std::make_unique<state>("shift", "⇧");
-    states_[static_cast<size_t>(krbn::modifier_flag::right_option)] = std::make_unique<state>("option", "⌥");
-    states_[static_cast<size_t>(krbn::modifier_flag::right_command)] = std::make_unique<state>("command", "⌘");
-    states_[static_cast<size_t>(krbn::modifier_flag::fn)] = std::make_unique<state>("fn", "fn");
+    states_[static_cast<size_t>(modifier_flag::caps_lock)] = std::make_unique<state>("caps lock", "⇪");
+    states_[static_cast<size_t>(modifier_flag::left_control)] = std::make_unique<state>("control", "⌃");
+    states_[static_cast<size_t>(modifier_flag::left_shift)] = std::make_unique<state>("shift", "⇧");
+    states_[static_cast<size_t>(modifier_flag::left_option)] = std::make_unique<state>("option", "⌥");
+    states_[static_cast<size_t>(modifier_flag::left_command)] = std::make_unique<state>("command", "⌘");
+    states_[static_cast<size_t>(modifier_flag::right_control)] = std::make_unique<state>("control", "⌃");
+    states_[static_cast<size_t>(modifier_flag::right_shift)] = std::make_unique<state>("shift", "⇧");
+    states_[static_cast<size_t>(modifier_flag::right_option)] = std::make_unique<state>("option", "⌥");
+    states_[static_cast<size_t>(modifier_flag::right_command)] = std::make_unique<state>("command", "⌘");
+    states_[static_cast<size_t>(modifier_flag::fn)] = std::make_unique<state>("fn", "fn");
   }
 
   void reset(void) {
@@ -47,7 +48,7 @@ public:
     toggle_lock,
   };
 
-  void manipulate(krbn::modifier_flag k, operation operation) {
+  void manipulate(modifier_flag k, operation operation) {
     auto i = static_cast<size_t>(k);
     if (states_[i]) {
       switch (operation) {
@@ -70,8 +71,8 @@ public:
     }
   }
 
-  bool pressed(krbn::modifier_flag m) const {
-    if (m == krbn::modifier_flag::zero) {
+  bool pressed(modifier_flag m) const {
+    if (m == modifier_flag::zero) {
       return true;
     }
 
@@ -82,7 +83,7 @@ public:
     return false;
   }
 
-  bool pressed(const std::vector<krbn::modifier_flag>& modifier_flags) const {
+  bool pressed(const std::vector<modifier_flag>& modifier_flags) const {
     // return true if all modifier flags are pressed.
     for (const auto& m : modifier_flags) {
       if (!pressed(m)) {
@@ -95,66 +96,66 @@ public:
   uint8_t get_hid_report_bits(void) const {
     uint8_t bits = 0;
 
-    if (pressed(krbn::modifier_flag::left_control)) {
+    if (pressed(modifier_flag::left_control)) {
       bits |= (0x1 << 0);
     }
-    if (pressed(krbn::modifier_flag::left_shift)) {
+    if (pressed(modifier_flag::left_shift)) {
       bits |= (0x1 << 1);
     }
-    if (pressed(krbn::modifier_flag::left_option)) {
+    if (pressed(modifier_flag::left_option)) {
       bits |= (0x1 << 2);
     }
-    if (pressed(krbn::modifier_flag::left_command)) {
+    if (pressed(modifier_flag::left_command)) {
       bits |= (0x1 << 3);
     }
-    if (pressed(krbn::modifier_flag::right_control)) {
+    if (pressed(modifier_flag::right_control)) {
       bits |= (0x1 << 4);
     }
-    if (pressed(krbn::modifier_flag::right_shift)) {
+    if (pressed(modifier_flag::right_shift)) {
       bits |= (0x1 << 5);
     }
-    if (pressed(krbn::modifier_flag::right_option)) {
+    if (pressed(modifier_flag::right_option)) {
       bits |= (0x1 << 6);
     }
-    if (pressed(krbn::modifier_flag::right_command)) {
+    if (pressed(modifier_flag::right_command)) {
       bits |= (0x1 << 7);
     }
 
     return bits;
   }
 
-  IOOptionBits get_io_option_bits(krbn::key_code key_code) const {
+  IOOptionBits get_io_option_bits(key_code key_code) const {
     // OS X requires to set NX_NONCOALSESCEDMASK.
     IOOptionBits bits = NX_NONCOALSESCEDMASK;
 
-    if (pressed(krbn::modifier_flag::caps_lock)) {
+    if (pressed(modifier_flag::caps_lock)) {
       bits |= NX_ALPHASHIFTMASK;
     }
-    if (pressed(krbn::modifier_flag::left_control)) {
+    if (pressed(modifier_flag::left_control)) {
       bits |= NX_CONTROLMASK | NX_DEVICELCTLKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::right_control)) {
+    if (pressed(modifier_flag::right_control)) {
       bits |= NX_CONTROLMASK | NX_DEVICERCTLKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::left_shift)) {
+    if (pressed(modifier_flag::left_shift)) {
       bits |= NX_SHIFTMASK | NX_DEVICELSHIFTKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::right_shift)) {
+    if (pressed(modifier_flag::right_shift)) {
       bits |= NX_SHIFTMASK | NX_DEVICERSHIFTKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::left_option)) {
+    if (pressed(modifier_flag::left_option)) {
       bits |= NX_ALTERNATEMASK | NX_DEVICELALTKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::right_option)) {
+    if (pressed(modifier_flag::right_option)) {
       bits |= NX_ALTERNATEMASK | NX_DEVICERALTKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::left_command)) {
+    if (pressed(modifier_flag::left_command)) {
       bits |= NX_COMMANDMASK | NX_DEVICELCMDKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::right_command)) {
+    if (pressed(modifier_flag::right_command)) {
       bits |= NX_COMMANDMASK | NX_DEVICERCMDKEYMASK;
     }
-    if (pressed(krbn::modifier_flag::fn)) {
+    if (pressed(modifier_flag::fn)) {
       bits |= NX_SECONDARYFNMASK;
     }
 
@@ -165,58 +166,58 @@ public:
     //   Alfred will fail f16 key as trigger key unless fn flag.
 
     switch (key_code) {
-    case krbn::key_code::keypad_slash:
-    case krbn::key_code::keypad_asterisk:
-    case krbn::key_code::keypad_hyphen:
-    case krbn::key_code::keypad_plus:
-    case krbn::key_code::keypad_enter:
-    case krbn::key_code::keypad_1:
-    case krbn::key_code::keypad_2:
-    case krbn::key_code::keypad_3:
-    case krbn::key_code::keypad_4:
-    case krbn::key_code::keypad_5:
-    case krbn::key_code::keypad_6:
-    case krbn::key_code::keypad_7:
-    case krbn::key_code::keypad_8:
-    case krbn::key_code::keypad_9:
-    case krbn::key_code::keypad_0:
-    case krbn::key_code::keypad_period:
-    case krbn::key_code::keypad_equal_sign:
-    case krbn::key_code::keypad_comma:
+    case key_code::keypad_slash:
+    case key_code::keypad_asterisk:
+    case key_code::keypad_hyphen:
+    case key_code::keypad_plus:
+    case key_code::keypad_enter:
+    case key_code::keypad_1:
+    case key_code::keypad_2:
+    case key_code::keypad_3:
+    case key_code::keypad_4:
+    case key_code::keypad_5:
+    case key_code::keypad_6:
+    case key_code::keypad_7:
+    case key_code::keypad_8:
+    case key_code::keypad_9:
+    case key_code::keypad_0:
+    case key_code::keypad_period:
+    case key_code::keypad_equal_sign:
+    case key_code::keypad_comma:
       bits |= NX_NUMERICPADMASK;
       break;
 
-    case krbn::key_code::right_arrow:
-    case krbn::key_code::left_arrow:
-    case krbn::key_code::down_arrow:
-    case krbn::key_code::up_arrow:
+    case key_code::right_arrow:
+    case key_code::left_arrow:
+    case key_code::down_arrow:
+    case key_code::up_arrow:
       bits |= NX_NUMERICPADMASK | NX_SECONDARYFNMASK;
       break;
 
-    case krbn::key_code::f1:
-    case krbn::key_code::f2:
-    case krbn::key_code::f3:
-    case krbn::key_code::f4:
-    case krbn::key_code::f5:
-    case krbn::key_code::f6:
-    case krbn::key_code::f7:
-    case krbn::key_code::f8:
-    case krbn::key_code::f9:
-    case krbn::key_code::f10:
-    case krbn::key_code::f11:
-    case krbn::key_code::f12:
-    case krbn::key_code::f13:
-    case krbn::key_code::f14:
-    case krbn::key_code::f15:
-    case krbn::key_code::f16:
-    case krbn::key_code::f17:
-    case krbn::key_code::f18:
-    case krbn::key_code::f19:
-    case krbn::key_code::f20:
-    case krbn::key_code::f21:
-    case krbn::key_code::f22:
-    case krbn::key_code::f23:
-    case krbn::key_code::f24:
+    case key_code::f1:
+    case key_code::f2:
+    case key_code::f3:
+    case key_code::f4:
+    case key_code::f5:
+    case key_code::f6:
+    case key_code::f7:
+    case key_code::f8:
+    case key_code::f9:
+    case key_code::f10:
+    case key_code::f11:
+    case key_code::f12:
+    case key_code::f13:
+    case key_code::f14:
+    case key_code::f15:
+    case key_code::f16:
+    case key_code::f17:
+    case key_code::f18:
+    case key_code::f19:
+    case key_code::f20:
+    case key_code::f21:
+    case key_code::f22:
+    case key_code::f23:
+    case key_code::f24:
       bits |= NX_SECONDARYFNMASK;
       break;
 
@@ -229,7 +230,7 @@ public:
 
   CGEventFlags get_cg_event_flags_for_mouse_events(void) const {
     // The CGEventFlags and IOOptionBits are same for now.
-    return get_io_option_bits(krbn::key_code::vk_none);
+    return get_io_option_bits(key_code::vk_none);
   }
 
 private:
@@ -296,4 +297,5 @@ private:
 
   std::vector<std::unique_ptr<state>> states_;
 };
+}
 }

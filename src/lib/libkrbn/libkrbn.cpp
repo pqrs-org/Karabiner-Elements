@@ -14,31 +14,31 @@
 #include <string>
 
 void libkrbn_initialize(void) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 }
 
 const char* libkrbn_get_distributed_notification_observed_object(void) {
-  return constants::get_distributed_notification_observed_object();
+  return krbn::constants::get_distributed_notification_observed_object();
 }
 
 const char* libkrbn_get_distributed_notification_grabber_is_launched(void) {
-  return constants::get_distributed_notification_grabber_is_launched();
+  return krbn::constants::get_distributed_notification_grabber_is_launched();
 }
 
 const char* libkrbn_get_distributed_notification_console_user_server_is_disabled(void) {
-  return constants::get_distributed_notification_console_user_server_is_disabled();
+  return krbn::constants::get_distributed_notification_console_user_server_is_disabled();
 }
 
 const char* libkrbn_get_devices_json_file_path(void) {
-  return constants::get_devices_json_file_path();
+  return krbn::constants::get_devices_json_file_path();
 }
 
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name) {
-  return process_utility::lock_single_application_with_user_pid_file(pid_file_name);
+  return krbn::process_utility::lock_single_application_with_user_pid_file(pid_file_name);
 }
 
 void libkrbn_unlock_single_application(void) {
-  process_utility::unlock_single_application();
+  krbn::process_utility::unlock_single_application();
 }
 
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string) {
@@ -56,29 +56,29 @@ bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const c
 }
 
 void libkrbn_launchctl_manage_console_user_server(bool load) {
-  launchctl_utility::manage_console_user_server(load);
+  krbn::launchctl_utility::manage_console_user_server(load);
 }
 
 void libkrbn_check_for_updates_in_background(void) {
-  update_utility::check_for_updates_in_background();
+  krbn::update_utility::check_for_updates_in_background();
 }
 
 void libkrbn_check_for_updates_stable_only(void) {
-  update_utility::check_for_updates_stable_only();
+  krbn::update_utility::check_for_updates_stable_only();
 }
 
 void libkrbn_check_for_updates_with_beta_version(void) {
-  update_utility::check_for_updates_with_beta_version();
+  krbn::update_utility::check_for_updates_with_beta_version();
 }
 
 void libkrbn_launch_event_viewer(void) {
-  application_launcher::launch_event_viewer();
+  krbn::application_launcher::launch_event_viewer();
 }
 
 void libkrbn_launch_menu(void) {
-  application_launcher::launch_menu();
+  krbn::application_launcher::launch_menu();
 }
 
 void libkrbn_launch_preferences(void) {
-  application_launcher::launch_preferences();
+  krbn::application_launcher::launch_preferences();
 }

@@ -18,7 +18,7 @@ public:
 };
 
 TEST_CASE("valid") {
-  core_configuration configuration(logger::get_logger(), "json/example.json");
+  krbn::core_configuration configuration(logger::get_logger(), "json/example.json");
 
   {
     std::unordered_map<krbn::key_code, krbn::key_code> expected{
@@ -81,7 +81,7 @@ TEST_CASE("valid") {
 
 TEST_CASE("broken.json") {
   {
-    core_configuration configuration(logger::get_logger(), "json/broken.json");
+    krbn::core_configuration configuration(logger::get_logger(), "json/broken.json");
 
     {
       std::unordered_map<krbn::key_code, krbn::key_code> expected;
@@ -105,7 +105,7 @@ TEST_CASE("broken.json") {
     }
   }
   {
-    core_configuration configuration(logger::get_logger(), "a.out");
+    krbn::core_configuration configuration(logger::get_logger(), "a.out");
 
     std::unordered_map<krbn::key_code, krbn::key_code> expected;
     REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
@@ -114,7 +114,7 @@ TEST_CASE("broken.json") {
 }
 
 TEST_CASE("invalid_key_code_name.json") {
-  core_configuration configuration(logger::get_logger(), "json/invalid_key_code_name.json");
+  krbn::core_configuration configuration(logger::get_logger(), "json/invalid_key_code_name.json");
 
   std::unordered_map<krbn::key_code, krbn::key_code> expected{
       {krbn::key_code(41), krbn::key_code(44)},
@@ -127,7 +127,7 @@ TEST_CASE("global_configuration") {
   // empty json
   {
     nlohmann::json json;
-    core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::global_configuration global_configuration(json);
     REQUIRE(global_configuration.get_check_for_updates_on_startup() == true);
     REQUIRE(global_configuration.get_show_in_menu_bar() == true);
     REQUIRE(global_configuration.get_show_profile_name_in_menu_bar() == false);
@@ -140,7 +140,7 @@ TEST_CASE("global_configuration") {
         {"show_in_menu_bar", false},
         {"show_profile_name_in_menu_bar", true},
     });
-    core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::global_configuration global_configuration(json);
     REQUIRE(global_configuration.get_check_for_updates_on_startup() == false);
     REQUIRE(global_configuration.get_show_in_menu_bar() == false);
     REQUIRE(global_configuration.get_show_profile_name_in_menu_bar() == true);
@@ -153,7 +153,7 @@ TEST_CASE("global_configuration") {
         {"show_in_menu_bar", 0},
         {"show_profile_name_in_menu_bar", nlohmann::json::object()},
     });
-    core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::global_configuration global_configuration(json);
     REQUIRE(global_configuration.get_check_for_updates_on_startup() == true);
     REQUIRE(global_configuration.get_show_in_menu_bar() == true);
     REQUIRE(global_configuration.get_show_profile_name_in_menu_bar() == false);
@@ -163,7 +163,7 @@ TEST_CASE("global_configuration") {
 TEST_CASE("global_configuration.to_json") {
   {
     nlohmann::json json;
-    core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::global_configuration global_configuration(json);
     nlohmann::json expected({
         {"check_for_updates_on_startup", true},
         {"show_in_menu_bar", true},
@@ -178,7 +178,7 @@ TEST_CASE("global_configuration.to_json") {
     nlohmann::json json({
         {"dummy", {{"keep_me", true}}},
     });
-    core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::global_configuration global_configuration(json);
     global_configuration.set_check_for_updates_on_startup(false);
     global_configuration.set_show_in_menu_bar(false);
     global_configuration.set_show_profile_name_in_menu_bar(true);
@@ -239,7 +239,7 @@ TEST_CASE("profile") {
   // empty json
   {
     nlohmann::json json;
-    core_configuration::profile profile(json);
+    krbn::core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().size() == 0);
@@ -335,7 +335,7 @@ TEST_CASE("profile") {
                         },
                     }},
     });
-    core_configuration::profile profile(json);
+    krbn::core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string("profile 1"));
     REQUIRE(profile.get_selected() == true);
     {
@@ -371,7 +371,7 @@ TEST_CASE("profile") {
 
     // set_device (existing identifiers)
     {
-      auto identifiers = core_configuration::profile::device::identifiers(nlohmann::json({
+      auto identifiers = krbn::core_configuration::profile::device::identifiers(nlohmann::json({
           {
               "vendor_id", 1234,
           },
@@ -421,7 +421,7 @@ TEST_CASE("profile") {
     }
     // set_device (new identifiers)
     {
-      auto identifiers = core_configuration::profile::device::identifiers(nlohmann::json({
+      auto identifiers = krbn::core_configuration::profile::device::identifiers(nlohmann::json({
           {
               "vendor_id", 1111,
           },
@@ -465,7 +465,7 @@ TEST_CASE("profile") {
         {"fn_function_keys", nlohmann::json::array()},
         {"devices", ""},
     });
-    core_configuration::profile profile(json);
+    krbn::core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().size() == 0);
@@ -488,7 +488,7 @@ TEST_CASE("profile") {
                                      },
                                  }},
     });
-    core_configuration::profile profile(json);
+    krbn::core_configuration::profile profile(json);
     {
       std::vector<std::pair<std::string, std::string>> expected({
           {"key", "value"},
@@ -501,7 +501,7 @@ TEST_CASE("profile") {
 TEST_CASE("profile.to_json") {
   {
     nlohmann::json json;
-    core_configuration::profile profile(json);
+    krbn::core_configuration::profile profile(json);
     nlohmann::json expected({
         {"devices", nlohmann::json::array()},
         {"name", ""},
@@ -536,7 +536,7 @@ TEST_CASE("profile.to_json") {
                         },
                     }},
     });
-    core_configuration::profile profile(json);
+    krbn::core_configuration::profile profile(json);
     profile.set_name("profile 1");
     profile.set_selected(true);
 
@@ -693,7 +693,7 @@ TEST_CASE("simple_modifications") {
   // empty json
   {
     nlohmann::json json;
-    core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
     REQUIRE(simple_modifications.get_pairs().size() == 0);
   }
 
@@ -705,7 +705,7 @@ TEST_CASE("simple_modifications") {
         {"dummy", "f3"},
         {"f4", "dummy"},
     });
-    core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
     REQUIRE(simple_modifications.get_pairs().size() == 4);
 
     {
@@ -729,7 +729,7 @@ TEST_CASE("simple_modifications") {
 
   // invalid values in json
   {
-    core_configuration::profile::simple_modifications simple_modifications(10);
+    krbn::core_configuration::profile::simple_modifications simple_modifications(10);
     REQUIRE(simple_modifications.get_pairs().size() == 0);
   }
 }
@@ -737,7 +737,7 @@ TEST_CASE("simple_modifications") {
 TEST_CASE("simple_modifications.to_json") {
   {
     nlohmann::json json;
-    core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
     REQUIRE(simple_modifications.to_json() == nlohmann::json::object());
   }
   {
@@ -747,7 +747,7 @@ TEST_CASE("simple_modifications.to_json") {
         {"dummy", "f3"},
         {"f4", "dummy"},
     });
-    core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
     simple_modifications.push_back_pair();
     simple_modifications.replace_pair(4, "a", "f5"); // will be ignored since "a" already exists.
     simple_modifications.push_back_pair();
@@ -766,7 +766,7 @@ TEST_CASE("virtual_hid_keyboard") {
   // empty json
   {
     nlohmann::json json;
-    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
     REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string("ansi"));
     REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 0);
   }
@@ -777,7 +777,7 @@ TEST_CASE("virtual_hid_keyboard") {
         {"keyboard_type", "iso"},
         {"caps_lock_delay_milliseconds", 300},
     });
-    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
     REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string("iso"));
     REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 300);
   }
@@ -788,7 +788,7 @@ TEST_CASE("virtual_hid_keyboard") {
         {"keyboard_type", nlohmann::json::array()},
         {"caps_lock_delay_milliseconds", nlohmann::json::object()},
     });
-    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
     REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string("ansi"));
     REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 0);
   }
@@ -797,7 +797,7 @@ TEST_CASE("virtual_hid_keyboard") {
 TEST_CASE("virtual_hid_keyboard.to_json") {
   {
     nlohmann::json json;
-    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
     REQUIRE(virtual_hid_keyboard.to_json() == get_default_virtual_hid_keyboard_json());
 
     nlohmann::json actual = virtual_hid_keyboard;
@@ -807,7 +807,7 @@ TEST_CASE("virtual_hid_keyboard.to_json") {
     nlohmann::json json({
         {"dummy", {{"keep_me", true}}},
     });
-    core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
     virtual_hid_keyboard.set_caps_lock_delay_milliseconds(200);
     virtual_hid_keyboard.set_keyboard_type("iso");
 
@@ -824,7 +824,7 @@ TEST_CASE("device.identifiers") {
   // empty json
   {
     nlohmann::json json;
-    core_configuration::profile::device::identifiers identifiers(json);
+    krbn::core_configuration::profile::device::identifiers identifiers(json);
     REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(identifiers.get_product_id() == krbn::product_id(0));
     REQUIRE(identifiers.get_is_keyboard() == false);
@@ -839,7 +839,7 @@ TEST_CASE("device.identifiers") {
         {"is_keyboard", true},
         {"is_pointing_device", true},
     });
-    core_configuration::profile::device::identifiers identifiers(json);
+    krbn::core_configuration::profile::device::identifiers identifiers(json);
     REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(1234));
     REQUIRE(identifiers.get_product_id() == krbn::product_id(5678));
     REQUIRE(identifiers.get_is_keyboard() == true);
@@ -854,7 +854,7 @@ TEST_CASE("device.identifiers") {
         {"is_keyboard", 1},
         {"is_pointing_device", nlohmann::json::array()},
     });
-    core_configuration::profile::device::identifiers identifiers(json);
+    krbn::core_configuration::profile::device::identifiers identifiers(json);
     REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(identifiers.get_product_id() == krbn::product_id(0));
     REQUIRE(identifiers.get_is_keyboard() == false);
@@ -863,14 +863,14 @@ TEST_CASE("device.identifiers") {
 
   // construct with vendor_id, product_id, ...
   {
-    core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(1234), krbn::product_id(5678), true, false);
+    krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(1234), krbn::product_id(5678), true, false);
     REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(1234));
     REQUIRE(identifiers.get_product_id() == krbn::product_id(5678));
     REQUIRE(identifiers.get_is_keyboard() == true);
     REQUIRE(identifiers.get_is_pointing_device() == false);
   }
   {
-    core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(4321), krbn::product_id(8765), false, true);
+    krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(4321), krbn::product_id(8765), false, true);
     REQUIRE(identifiers.get_vendor_id() == krbn::vendor_id(4321));
     REQUIRE(identifiers.get_product_id() == krbn::product_id(8765));
     REQUIRE(identifiers.get_is_keyboard() == false);
@@ -881,7 +881,7 @@ TEST_CASE("device.identifiers") {
 TEST_CASE("device.identifiers.to_json") {
   {
     nlohmann::json json;
-    core_configuration::profile::device::identifiers identifiers(json);
+    krbn::core_configuration::profile::device::identifiers identifiers(json);
     nlohmann::json expected({
         {"vendor_id", 0},
         {"product_id", 0},
@@ -898,7 +898,7 @@ TEST_CASE("device.identifiers.to_json") {
         {"is_pointing_device", true},
         {"dummy", {{"keep_me", true}}},
     });
-    core_configuration::profile::device::identifiers identifiers(json);
+    krbn::core_configuration::profile::device::identifiers identifiers(json);
     nlohmann::json expected({
         {"dummy", {{"keep_me", true}}},
         {"vendor_id", 0},
@@ -914,7 +914,7 @@ TEST_CASE("device") {
   // empty json
   {
     nlohmann::json json;
-    core_configuration::profile::device device(json);
+    krbn::core_configuration::profile::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
     REQUIRE(device.get_identifiers().get_is_keyboard() == false);
@@ -943,7 +943,7 @@ TEST_CASE("device") {
         {"ignore", true},
         {"disable_built_in_keyboard_if_exists", true},
     });
-    core_configuration::profile::device device(json);
+    krbn::core_configuration::profile::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
     REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(5678));
     REQUIRE(device.get_identifiers().get_is_keyboard() == true);
@@ -959,7 +959,7 @@ TEST_CASE("device") {
         {"ignore", 1},
         {"disable_built_in_keyboard_if_exists", nlohmann::json::array()},
     });
-    core_configuration::profile::device device(json);
+    krbn::core_configuration::profile::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
     REQUIRE(device.get_identifiers().get_is_keyboard() == false);
@@ -972,7 +972,7 @@ TEST_CASE("device") {
 TEST_CASE("device.to_json") {
   {
     nlohmann::json json;
-    core_configuration::profile::device device(json);
+    krbn::core_configuration::profile::device device(json);
     nlohmann::json expected({
         {"identifiers", {
                             {
@@ -1009,7 +1009,7 @@ TEST_CASE("device.to_json") {
         {"ignore", true},
         {"dummy", {{"keep_me", true}}},
     });
-    core_configuration::profile::device device(json);
+    krbn::core_configuration::profile::device device(json);
     nlohmann::json expected({
         {"identifiers", {
                             {
@@ -1037,6 +1037,6 @@ TEST_CASE("device.to_json") {
 }
 
 int main(int argc, char* const argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
   return Catch::Session().run(argc, argv);
 }

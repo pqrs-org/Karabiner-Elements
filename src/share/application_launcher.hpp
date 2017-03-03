@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 
+namespace krbn {
 class application_launcher final {
 public:
   static void launch_event_viewer(void) {
@@ -16,3 +17,4 @@ public:
     system("open '/Applications/Karabiner-Elements.app'");
   }
 };
+}

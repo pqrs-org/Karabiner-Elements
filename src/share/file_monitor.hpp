@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+namespace krbn {
 class file_monitor final {
 public:
   typedef std::function<void(const std::string& file_path)> callback;
@@ -146,3 +147,4 @@ private:
   std::vector<std::string> files_;
   FSEventStreamRef stream_;
 };
+}

@@ -9,8 +9,8 @@ public:
   libkrbn_version_monitor_class(const libkrbn_version_monitor_class&) = delete;
 
   libkrbn_version_monitor_class(libkrbn_version_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    version_monitor_ = std::make_unique<version_monitor>(libkrbn::get_logger(),
-                                                         [this] { cpp_callback(); });
+    version_monitor_ = std::make_unique<krbn::version_monitor>(libkrbn::get_logger(),
+                                                               [this] { cpp_callback(); });
   }
 
 private:
@@ -23,7 +23,7 @@ private:
   libkrbn_version_monitor_callback callback_;
   void* refcon_;
 
-  std::unique_ptr<version_monitor> version_monitor_;
+  std::unique_ptr<krbn::version_monitor> version_monitor_;
 };
 }
 

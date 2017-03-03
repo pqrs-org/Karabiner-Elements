@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 
+namespace krbn {
 class gcd_utility final {
 public:
   class scoped_queue final {
@@ -110,3 +111,4 @@ private:
     return stream.str();
   }
 };
+}

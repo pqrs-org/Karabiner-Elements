@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+namespace krbn {
 namespace manipulator {
 enum class device_registry_entry_id : uint64_t {
 };
@@ -21,4 +22,5 @@ enum class add_data_type : uint32_t {
   modifier_flag,
 };
 enum class add_value : uint32_t {};
+}
 }

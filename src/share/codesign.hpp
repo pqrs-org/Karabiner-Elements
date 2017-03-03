@@ -7,6 +7,7 @@
 #include <boost/optional.hpp>
 #include <string>
 
+namespace krbn {
 class codesign {
 public:
   static boost::optional<std::string> get_common_name_of_process(pid_t pid) {
@@ -49,3 +50,4 @@ public:
     return common_name;
   }
 };
+}

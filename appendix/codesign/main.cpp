@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 #include <thread>
 
+namespace {
 class logger final {
 public:
   static spdlog::logger& get_logger(void) {
@@ -15,12 +16,13 @@ public:
     return *logger;
   }
 };
+}
 
 int main(int argc, const char* argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
   if (argc > 1) {
-    auto common_name = codesign::get_common_name_of_process(atoi(argv[1]));
+    auto common_name = krbn::codesign::get_common_name_of_process(atoi(argv[1]));
     logger::get_logger().info("common_name: {0}", common_name ? *common_name : "null");
   }
 

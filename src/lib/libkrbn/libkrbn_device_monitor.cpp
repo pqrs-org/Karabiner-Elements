@@ -10,14 +10,14 @@ public:
 
   libkrbn_device_monitor_class(libkrbn_device_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-        {constants::get_tmp_directory(), {constants::get_devices_json_file_path()}},
+        {krbn::constants::get_tmp_directory(), {krbn::constants::get_devices_json_file_path()}},
     };
 
-    file_monitor_ = std::make_unique<file_monitor>(libkrbn::get_logger(),
-                                                   targets,
-                                                   [this](const std::string& file_path) { cpp_callback(file_path); });
+    file_monitor_ = std::make_unique<krbn::file_monitor>(libkrbn::get_logger(),
+                                                         targets,
+                                                         [this](const std::string& file_path) { cpp_callback(file_path); });
 
-    cpp_callback(constants::get_devices_json_file_path());
+    cpp_callback(krbn::constants::get_devices_json_file_path());
   }
 
 private:
@@ -30,7 +30,7 @@ private:
   libkrbn_device_monitor_callback callback_;
   void* refcon_;
 
-  std::unique_ptr<file_monitor> file_monitor_;
+  std::unique_ptr<krbn::file_monitor> file_monitor_;
 };
 }
 

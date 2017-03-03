@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <string>
 
+namespace krbn {
 class update_utility final {
 public:
   static void check_for_updates_in_background(void) {
@@ -23,3 +24,4 @@ private:
     system(command.c_str());
   }
 };
+}

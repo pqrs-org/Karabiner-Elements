@@ -1,6 +1,8 @@
 #pragma once
 
 #include "constants.hpp"
+#include "filesystem.hpp"
+#include "session.hpp"
 #include "types.hpp"
 #include <fstream>
 #include <json/json.hpp>
@@ -72,6 +74,7 @@
 //     ]
 // }
 
+namespace krbn {
 class core_configuration final {
 public:
   class global_configuration final {
@@ -199,20 +202,20 @@ public:
         }
       }
 
-      std::unordered_map<krbn::key_code, krbn::key_code> to_key_code_map(spdlog::logger& logger) const {
-        std::unordered_map<krbn::key_code, krbn::key_code> map;
+      std::unordered_map<key_code, key_code> to_key_code_map(spdlog::logger& logger) const {
+        std::unordered_map<key_code, key_code> map;
 
         for (const auto& it : pairs_) {
           auto& from_string = it.first;
           auto& to_string = it.second;
 
-          auto from_key_code = krbn::types::get_key_code(from_string);
+          auto from_key_code = types::get_key_code(from_string);
           if (!from_key_code) {
             logger.warn("unknown key_code:{0}", from_string);
             continue;
           }
 
-          auto to_key_code = krbn::types::get_key_code(to_string);
+          auto to_key_code = types::get_key_code(to_string);
           if (!to_key_code) {
             logger.warn("unknown key_code:{0}", to_string);
             continue;
@@ -285,20 +288,20 @@ public:
       class identifiers final {
       public:
         identifiers(const nlohmann::json& json) : json_(json),
-                                                  vendor_id_(krbn::vendor_id(0)),
-                                                  product_id_(krbn::product_id(0)),
+                                                  vendor_id_(vendor_id(0)),
+                                                  product_id_(product_id(0)),
                                                   is_keyboard_(false),
                                                   is_pointing_device_(false) {
           {
             const std::string key = "vendor_id";
             if (json.find(key) != json.end() && json[key].is_number()) {
-              vendor_id_ = krbn::vendor_id(static_cast<uint32_t>(json[key]));
+              vendor_id_ = vendor_id(static_cast<uint32_t>(json[key]));
             }
           }
           {
             const std::string key = "product_id";
             if (json.find(key) != json.end() && json[key].is_number()) {
-              product_id_ = krbn::product_id(static_cast<uint32_t>(json[key]));
+              product_id_ = product_id(static_cast<uint32_t>(json[key]));
             }
           }
           {
@@ -315,8 +318,8 @@ public:
           }
         }
 
-        identifiers(krbn::vendor_id vendor_id,
-                    krbn::product_id product_id,
+        identifiers(vendor_id vendor_id,
+                    product_id product_id,
                     bool is_keyboard,
                     bool is_pointing_device) : identifiers(nlohmann::json({
                                                    {"vendor_id", static_cast<uint32_t>(vendor_id)},
@@ -335,17 +338,17 @@ public:
           return j;
         }
 
-        krbn::vendor_id get_vendor_id(void) const {
+        vendor_id get_vendor_id(void) const {
           return vendor_id_;
         }
-        void set_vendor_id(krbn::vendor_id value) {
+        void set_vendor_id(vendor_id value) {
           vendor_id_ = value;
         }
 
-        krbn::product_id get_product_id(void) const {
+        product_id get_product_id(void) const {
           return product_id_;
         }
-        void set_product_id(krbn::product_id value) {
+        void set_product_id(product_id value) {
           product_id_ = value;
         }
 
@@ -372,8 +375,8 @@ public:
 
       private:
         nlohmann::json json_;
-        krbn::vendor_id vendor_id_;
-        krbn::product_id product_id_;
+        vendor_id vendor_id_;
+        product_id product_id_;
         bool is_keyboard_;
         bool is_pointing_device_;
       };
@@ -544,7 +547,7 @@ public:
     void replace_simple_modification(size_t index, const std::string& from, const std::string& to) {
       simple_modifications_->replace_pair(index, from, to);
     }
-    const std::unordered_map<krbn::key_code, krbn::key_code> get_simple_modifications_key_code_map(spdlog::logger& logger) const {
+    const std::unordered_map<key_code, key_code> get_simple_modifications_key_code_map(spdlog::logger& logger) const {
       return simple_modifications_->to_key_code_map(logger);
     }
 
@@ -554,7 +557,7 @@ public:
     void replace_fn_function_key(const std::string& from, const std::string& to) {
       fn_function_keys_->replace_second(from, to);
     }
-    const std::unordered_map<krbn::key_code, krbn::key_code> get_fn_function_keys_key_code_map(spdlog::logger& logger) const {
+    const std::unordered_map<key_code, key_code> get_fn_function_keys_key_code_map(spdlog::logger& logger) const {
       return fn_function_keys_->to_key_code_map(logger);
     }
 
@@ -627,37 +630,53 @@ public:
 
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(spdlog::logger& logger, const std::string& file_path) : loaded_(false) {
-    std::ifstream input(file_path);
-    if (input) {
-      try {
-        json_ = nlohmann::json::parse(input);
+  core_configuration(spdlog::logger& logger, const std::string& file_path) : loaded_(true) {
+    bool valid_file_owner = false;
 
-        {
-          const std::string key = "global";
-          if (json_.find(key) != json_.end()) {
-            global_configuration_ = std::make_unique<global_configuration>(json_[key]);
+    // Load karabiner.json only when the owner is root or current session user.
+    if (filesystem::exists(file_path)) {
+      if (filesystem::is_owned(file_path, 0)) {
+        valid_file_owner = true;
+      } else {
+        if (auto console_user_id = session::get_current_console_user_id()) {
+          if (filesystem::is_owned(file_path, *console_user_id)) {
+            valid_file_owner = true;
           }
         }
-        {
-          const std::string key = "profiles";
-          if (json_.find(key) != json_.end() && json_[key].is_array()) {
-            for (const auto& profile_json : json_[key]) {
-              profiles_.emplace_back(profile_json);
-            }
-          }
-        }
-
-        loaded_ = true;
-      } catch (std::exception& e) {
-        logger.warn("parse error in {0}: {1}", file_path, e.what());
-        json_ = nlohmann::json();
       }
 
-    } else {
-      // If file is not found, use default values.
-      loaded_ = true;
-      json_ = nlohmann::json();
+      if (!valid_file_owner) {
+        logger.warn("{0} is not owned by a valid user.", file_path);
+        loaded_ = false;
+
+      } else {
+        std::ifstream input(file_path);
+        if (input) {
+          try {
+            json_ = nlohmann::json::parse(input);
+
+            {
+              const std::string key = "global";
+              if (json_.find(key) != json_.end()) {
+                global_configuration_ = std::make_unique<global_configuration>(json_[key]);
+              }
+            }
+            {
+              const std::string key = "profiles";
+              if (json_.find(key) != json_.end() && json_[key].is_array()) {
+                for (const auto& profile_json : json_[key]) {
+                  profiles_.emplace_back(profile_json);
+                }
+              }
+            }
+
+          } catch (std::exception& e) {
+            logger.warn("parse error in {0}: {1}", file_path, e.what());
+            json_ = nlohmann::json();
+            loaded_ = false;
+          }
+        }
+      }
     }
 
     // Fallbacks
@@ -775,4 +794,5 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile::dev
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::device& device) {
   json = device.to_json();
+}
 }

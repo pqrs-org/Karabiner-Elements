@@ -19,21 +19,22 @@ int main(int argc, const char* argv[]) {
   // ----------------------------------------
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
-  logger::get_logger().info("version {0}", karabiner_version);
+  auto& logger = krbn::logger::get_logger();
+  logger.info("version {0}", karabiner_version);
 
   {
-    std::string pid_file_path = std::string(constants::get_tmp_directory()) + "/karabiner_grabber.pid";
-    if (!process_utility::lock_single_application(pid_file_path)) {
+    std::string pid_file_path = std::string(krbn::constants::get_tmp_directory()) + "/karabiner_grabber.pid";
+    if (!krbn::process_utility::lock_single_application(pid_file_path)) {
       std::string message("Exit since another process is running.");
-      logger::get_logger().info(message);
+      logger.info(message);
       std::cerr << message << std::endl;
       return 0;
     }
   }
 
-  std::unique_ptr<version_monitor> version_monitor_ptr = std::make_unique<version_monitor>(logger::get_logger(), [] {
+  auto version_monitor_ptr = std::make_unique<krbn::version_monitor>(logger, [] {
     exit(0);
   });
 
@@ -41,18 +42,18 @@ int main(int argc, const char* argv[]) {
   system("/sbin/kextload /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext");
 
   // make socket directory.
-  mkdir(constants::get_tmp_directory(), 0755);
-  chown(constants::get_tmp_directory(), 0, 0);
-  chmod(constants::get_tmp_directory(), 0755);
+  mkdir(krbn::constants::get_tmp_directory(), 0755);
+  chown(krbn::constants::get_tmp_directory(), 0, 0);
+  chmod(krbn::constants::get_tmp_directory(), 0755);
 
-  unlink(constants::get_grabber_socket_file_path());
+  unlink(krbn::constants::get_grabber_socket_file_path());
 
-  std::unique_ptr<virtual_hid_device_client> virtual_hid_device_client_ptr = std::make_unique<virtual_hid_device_client>(logger::get_logger());
-  std::unique_ptr<manipulator::event_manipulator> event_manipulator_ptr = std::make_unique<manipulator::event_manipulator>(*virtual_hid_device_client_ptr);
-  std::unique_ptr<device_grabber> device_grabber_ptr = std::make_unique<device_grabber>(*virtual_hid_device_client_ptr, *event_manipulator_ptr);
-  connection_manager connection_manager(*version_monitor_ptr, *event_manipulator_ptr, *device_grabber_ptr);
+  auto virtual_hid_device_client_ptr = std::make_unique<krbn::virtual_hid_device_client>(logger);
+  auto event_manipulator_ptr = std::make_unique<krbn::manipulator::event_manipulator>(*virtual_hid_device_client_ptr);
+  auto device_grabber_ptr = std::make_unique<krbn::device_grabber>(*virtual_hid_device_client_ptr, *event_manipulator_ptr);
+  krbn::connection_manager connection_manager(*version_monitor_ptr, *event_manipulator_ptr, *device_grabber_ptr);
 
-  notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_grabber_is_launched());
+  krbn::notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
 
   CFRunLoopRun();
 

@@ -6,15 +6,15 @@
 namespace {
 class libkrbn_core_configuration_class final {
 public:
-  libkrbn_core_configuration_class(std::shared_ptr<core_configuration> core_configuration) : core_configuration_(core_configuration) {
+  libkrbn_core_configuration_class(std::shared_ptr<krbn::core_configuration> core_configuration) : core_configuration_(core_configuration) {
   }
 
-  core_configuration& get_core_configuration(void) {
+  krbn::core_configuration& get_core_configuration(void) {
     return *core_configuration_;
   }
 
 private:
-  std::shared_ptr<core_configuration> core_configuration_;
+  std::shared_ptr<krbn::core_configuration> core_configuration_;
 };
 
 class libkrbn_configuration_monitor_class final {
@@ -22,21 +22,21 @@ public:
   libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
 
   libkrbn_configuration_monitor_class(libkrbn_configuration_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    configuration_monitor_ = std::make_unique<configuration_monitor>(libkrbn::get_logger(),
-                                                                     constants::get_user_core_configuration_file_path(),
-                                                                     [this](const std::shared_ptr<core_configuration> core_configuration) {
-                                                                       if (callback_) {
-                                                                         auto* p = new libkrbn_core_configuration_class(core_configuration);
-                                                                         callback_(p, refcon_);
-                                                                       }
-                                                                     });
+    configuration_monitor_ = std::make_unique<krbn::configuration_monitor>(libkrbn::get_logger(),
+                                                                           krbn::constants::get_user_core_configuration_file_path(),
+                                                                           [this](const std::shared_ptr<krbn::core_configuration> core_configuration) {
+                                                                             if (callback_) {
+                                                                               auto* p = new libkrbn_core_configuration_class(core_configuration);
+                                                                               callback_(p, refcon_);
+                                                                             }
+                                                                           });
   }
 
 private:
   libkrbn_configuration_monitor_callback callback_;
   void* refcon_;
 
-  std::unique_ptr<configuration_monitor> configuration_monitor_;
+  std::unique_ptr<krbn::configuration_monitor> configuration_monitor_;
 };
 }
 
@@ -49,7 +49,7 @@ void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
 
 bool libkrbn_core_configuration_save(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().save_to_file(constants::get_user_core_configuration_file_path());
+    return c->get_core_configuration().save_to_file(krbn::constants::get_user_core_configuration_file_path());
   }
   return false;
 }
@@ -274,10 +274,10 @@ bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_
                                                                    bool is_keyboard,
                                                                    bool is_pointing_device) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
-                                                                 krbn::product_id(product_id),
-                                                                 is_keyboard,
-                                                                 is_pointing_device);
+    krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
+                                                                       krbn::product_id(product_id),
+                                                                       is_keyboard,
+                                                                       is_pointing_device);
     return c->get_core_configuration().get_selected_profile().get_device_ignore(identifiers);
   }
   return false;
@@ -290,10 +290,10 @@ void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_
                                                                    bool is_pointing_device,
                                                                    bool value) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
-                                                                 krbn::product_id(product_id),
-                                                                 is_keyboard,
-                                                                 is_pointing_device);
+    krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
+                                                                       krbn::product_id(product_id),
+                                                                       is_keyboard,
+                                                                       is_pointing_device);
     c->get_core_configuration().get_selected_profile().set_device_ignore(identifiers, value);
   }
 }
@@ -304,10 +304,10 @@ bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_key
                                                                                                 bool is_keyboard,
                                                                                                 bool is_pointing_device) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
-                                                                 krbn::product_id(product_id),
-                                                                 is_keyboard,
-                                                                 is_pointing_device);
+    krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
+                                                                       krbn::product_id(product_id),
+                                                                       is_keyboard,
+                                                                       is_pointing_device);
     return c->get_core_configuration().get_selected_profile().get_device_disable_built_in_keyboard_if_exists(identifiers);
   }
   return false;
@@ -320,10 +320,10 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
                                                                                                 bool is_pointing_device,
                                                                                                 bool value) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
-                                                                 krbn::product_id(product_id),
-                                                                 is_keyboard,
-                                                                 is_pointing_device);
+    krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
+                                                                       krbn::product_id(product_id),
+                                                                       is_keyboard,
+                                                                       is_pointing_device);
     c->get_core_configuration().get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
   }
 }

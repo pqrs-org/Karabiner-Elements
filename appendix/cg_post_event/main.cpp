@@ -4,7 +4,7 @@
 #include <thread>
 
 int main(int argc, const char* argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
 
   if (auto source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState)) {
     while (true) {

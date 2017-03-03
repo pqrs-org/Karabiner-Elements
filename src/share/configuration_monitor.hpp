@@ -7,6 +7,7 @@
 #include "filesystem.hpp"
 #include <spdlog/spdlog.h>
 
+namespace krbn {
 class configuration_monitor final {
 public:
   typedef std::function<void(std::shared_ptr<core_configuration> core_configuration)> core_configuration_updated_callback;
@@ -62,3 +63,4 @@ private:
   std::unique_ptr<file_monitor> file_monitor_;
   std::shared_ptr<core_configuration> core_configuration_;
 };
+}

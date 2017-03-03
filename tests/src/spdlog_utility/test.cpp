@@ -22,22 +22,22 @@ public:
 
 TEST_CASE("get_timestamp_number") {
   {
-    auto actual = spdlog_utility::get_sort_key("[2016-10-15 00:09:47.283] [info] [grabber] version 0.90.50");
+    auto actual = krbn::spdlog_utility::get_sort_key("[2016-10-15 00:09:47.283] [info] [grabber] version 0.90.50");
     REQUIRE(actual != boost::none);
     REQUIRE(*actual == 20161015000947283);
   }
   {
-    auto actual = spdlog_utility::get_sort_key("[]");
+    auto actual = krbn::spdlog_utility::get_sort_key("[]");
     REQUIRE(actual == boost::none);
   }
   {
-    auto actual = spdlog_utility::get_sort_key("[yyyy-mm-dd hh:mm:ss.mmm]");
+    auto actual = krbn::spdlog_utility::get_sort_key("[yyyy-mm-dd hh:mm:ss.mmm]");
     REQUIRE(actual == boost::none);
   }
 }
 
 TEST_CASE("log_reducer") {
-  spdlog_utility::log_reducer log_reducer(logger::get_logger());
+  krbn::spdlog_utility::log_reducer log_reducer(logger::get_logger());
 
   // reduce
   log_reducer.info("test1");
@@ -69,6 +69,6 @@ TEST_CASE("log_reducer") {
 }
 
 int main(int argc, char* const argv[]) {
-  thread_utility::register_main_thread();
+  krbn::thread_utility::register_main_thread();
   return Catch::Session().run(argc, argv);
 }

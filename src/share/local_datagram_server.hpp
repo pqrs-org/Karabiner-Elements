@@ -7,6 +7,7 @@ BEGIN_BOOST_INCLUDE
 #include <boost/bind.hpp>
 END_BOOST_INCLUDE
 
+namespace krbn {
 class local_datagram_server final {
 public:
   local_datagram_server(const local_datagram_server&) = delete;
@@ -57,3 +58,4 @@ private:
   boost::asio::local::datagram_protocol::socket socket_;
   boost::asio::deadline_timer deadline_;
 };
+}

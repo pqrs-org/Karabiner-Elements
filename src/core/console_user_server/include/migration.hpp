@@ -1,5 +1,6 @@
 #pragma once
 
+namespace krbn {
 class migration final {
 public:
   static void migrate_v1(void) {
@@ -38,3 +39,4 @@ private:
     return file_path;
   }
 };
+}

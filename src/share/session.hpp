@@ -6,6 +6,7 @@
 #include <SystemConfiguration/SystemConfiguration.h>
 #include <boost/optional.hpp>
 
+namespace krbn {
 class session final {
 public:
   static boost::optional<uid_t> get_current_console_user_id(void) {
@@ -32,3 +33,4 @@ public:
     return result;
   }
 };
+}

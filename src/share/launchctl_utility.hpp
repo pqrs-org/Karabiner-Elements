@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 
+namespace krbn {
 class launchctl_utility final {
 public:
   static void manage_console_user_server(bool load) {
@@ -45,3 +46,4 @@ public:
     }
   }
 };
+}

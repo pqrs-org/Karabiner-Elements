@@ -16,6 +16,7 @@
 #include <thread>
 #include <unordered_map>
 
+namespace krbn {
 namespace manipulator {
 class event_manipulator final {
 public:
@@ -81,7 +82,7 @@ public:
     fn_function_keys_key_code_map_ = profile.get_fn_function_keys_key_code_map(logger::get_logger());
 
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-    if (auto k = krbn::types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
+    if (auto k = types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
       properties.keyboard_type = *k;
     }
     properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(profile.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds());
@@ -89,8 +90,8 @@ public:
   }
 
   void unset_profile(void) {
-    simple_modifications_key_code_map_ = std::unordered_map<krbn::key_code, krbn::key_code>();
-    fn_function_keys_key_code_map_ = std::unordered_map<krbn::key_code, krbn::key_code>();
+    simple_modifications_key_code_map_ = std::unordered_map<key_code, key_code>();
+    fn_function_keys_key_code_map_ = std::unordered_map<key_code, key_code>();
   }
 
   void initialize_virtual_hid_pointing(void) {
@@ -102,15 +103,15 @@ public:
   }
 
   void set_caps_lock_state(bool state) {
-    modifier_flag_manager_.manipulate(krbn::modifier_flag::caps_lock,
+    modifier_flag_manager_.manipulate(modifier_flag::caps_lock,
                                       state ? modifier_flag_manager::operation::lock : modifier_flag_manager::operation::unlock);
   }
 
   void handle_keyboard_event(device_registry_entry_id device_registry_entry_id,
                              uint64_t timestamp,
-                             krbn::key_code from_key_code,
+                             key_code from_key_code,
                              bool pressed) {
-    krbn::key_code to_key_code = from_key_code;
+    key_code to_key_code = from_key_code;
 
     // ----------------------------------------
     // modify keys
@@ -135,27 +136,27 @@ public:
         to_key_code = *key_code;
       }
     } else {
-      boost::optional<krbn::key_code> key_code;
+      boost::optional<key_code> key_code;
 
-      if (modifier_flag_manager_.pressed(krbn::modifier_flag::fn)) {
+      if (modifier_flag_manager_.pressed(modifier_flag::fn)) {
         switch (to_key_code) {
-        case krbn::key_code::return_or_enter:
-          key_code = krbn::key_code::keypad_enter;
+        case key_code::return_or_enter:
+          key_code = key_code::keypad_enter;
           break;
-        case krbn::key_code::delete_or_backspace:
-          key_code = krbn::key_code::delete_forward;
+        case key_code::delete_or_backspace:
+          key_code = key_code::delete_forward;
           break;
-        case krbn::key_code::right_arrow:
-          key_code = krbn::key_code::end;
+        case key_code::right_arrow:
+          key_code = key_code::end;
           break;
-        case krbn::key_code::left_arrow:
-          key_code = krbn::key_code::home;
+        case key_code::left_arrow:
+          key_code = key_code::home;
           break;
-        case krbn::key_code::down_arrow:
-          key_code = krbn::key_code::page_down;
+        case key_code::down_arrow:
+          key_code = key_code::page_down;
           break;
-        case krbn::key_code::up_arrow:
-          key_code = krbn::key_code::page_up;
+        case key_code::up_arrow:
+          key_code = key_code::page_up;
           break;
         default:
           break;
@@ -172,7 +173,7 @@ public:
             keyboard_fn_state = system_preferences_values_.get_keyboard_fn_state();
           }
 
-          bool fn_pressed = modifier_flag_manager_.pressed(krbn::modifier_flag::fn);
+          bool fn_pressed = modifier_flag_manager_.pressed(modifier_flag::fn);
 
           if ((fn_pressed && keyboard_fn_state) ||
               (!fn_pressed && !keyboard_fn_state)) {
@@ -201,32 +202,32 @@ public:
 
   void handle_pointing_event(device_registry_entry_id device_registry_entry_id,
                              uint64_t timestamp,
-                             krbn::pointing_event pointing_event,
-                             boost::optional<krbn::pointing_button> pointing_button,
+                             pointing_event pointing_event,
+                             boost::optional<pointing_button> pointing_button,
                              CFIndex integer_value) {
     pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
 
     switch (pointing_event) {
-    case krbn::pointing_event::button:
-      if (pointing_button && *pointing_button != krbn::pointing_button::zero) {
+    case pointing_event::button:
+      if (pointing_button && *pointing_button != pointing_button::zero) {
         pointing_button_manager_.manipulate(*pointing_button,
                                             integer_value ? pointing_button_manager::operation::increase : pointing_button_manager::operation::decrease);
       }
       break;
 
-    case krbn::pointing_event::x:
+    case pointing_event::x:
       report.x = integer_value;
       break;
 
-    case krbn::pointing_event::y:
+    case pointing_event::y:
       report.y = integer_value;
       break;
 
-    case krbn::pointing_event::vertical_wheel:
+    case pointing_event::vertical_wheel:
       report.vertical_wheel = integer_value;
       break;
 
-    case krbn::pointing_event::horizontal_wheel:
+    case pointing_event::horizontal_wheel:
       report.horizontal_wheel = integer_value;
       break;
 
@@ -261,15 +262,15 @@ private:
     }
 
     void add(device_registry_entry_id device_registry_entry_id,
-             krbn::key_code from_key_code,
-             krbn::key_code to_key_code) {
+             key_code from_key_code,
+             key_code to_key_code) {
       std::lock_guard<std::mutex> guard(mutex_);
 
       manipulated_keys_.push_back(manipulated_key(device_registry_entry_id, from_key_code, to_key_code));
     }
 
-    boost::optional<krbn::key_code> find(device_registry_entry_id device_registry_entry_id,
-                                         krbn::key_code from_key_code) {
+    boost::optional<key_code> find(device_registry_entry_id device_registry_entry_id,
+                                   key_code from_key_code) {
       std::lock_guard<std::mutex> guard(mutex_);
 
       for (const auto& v : manipulated_keys_) {
@@ -282,7 +283,7 @@ private:
     }
 
     void remove(device_registry_entry_id device_registry_entry_id,
-                krbn::key_code from_key_code) {
+                key_code from_key_code) {
       std::lock_guard<std::mutex> guard(mutex_);
 
       manipulated_keys_.remove_if([&](const manipulated_key& v) {
@@ -295,31 +296,31 @@ private:
     class manipulated_key final {
     public:
       manipulated_key(device_registry_entry_id device_registry_entry_id,
-                      krbn::key_code from_key_code,
-                      krbn::key_code to_key_code) : device_registry_entry_id_(device_registry_entry_id),
-                                                    from_key_code_(from_key_code),
-                                                    to_key_code_(to_key_code) {
+                      key_code from_key_code,
+                      key_code to_key_code) : device_registry_entry_id_(device_registry_entry_id),
+                                              from_key_code_(from_key_code),
+                                              to_key_code_(to_key_code) {
       }
 
       device_registry_entry_id get_device_registry_entry_id(void) const { return device_registry_entry_id_; }
-      krbn::key_code get_from_key_code(void) const { return from_key_code_; }
-      krbn::key_code get_to_key_code(void) const { return to_key_code_; }
+      key_code get_from_key_code(void) const { return from_key_code_; }
+      key_code get_to_key_code(void) const { return to_key_code_; }
 
     private:
       device_registry_entry_id device_registry_entry_id_;
-      krbn::key_code from_key_code_;
-      krbn::key_code to_key_code_;
+      key_code from_key_code_;
+      key_code to_key_code_;
     };
 
     std::list<manipulated_key> manipulated_keys_;
     std::mutex mutex_;
   };
 
-  bool post_modifier_flag_event(krbn::key_code key_code, bool pressed, uint64_t timestamp) {
+  bool post_modifier_flag_event(key_code key_code, bool pressed, uint64_t timestamp) {
     auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
 
-    auto modifier_flag = krbn::types::get_modifier_flag(key_code);
-    if (modifier_flag != krbn::modifier_flag::zero) {
+    auto modifier_flag = types::get_modifier_flag(key_code);
+    if (modifier_flag != modifier_flag::zero) {
       modifier_flag_manager_.manipulate(modifier_flag, operation);
 
       post_key(key_code, pressed, timestamp);
@@ -329,11 +330,11 @@ private:
     return false;
   }
 
-  void post_key(krbn::key_code key_code, bool pressed, uint64_t timestamp) {
+  void post_key(key_code key_code, bool pressed, uint64_t timestamp) {
     add_delay_to_continuous_event(timestamp);
 
-    if (auto usage_page = krbn::types::get_usage_page(key_code)) {
-      if (auto usage = krbn::types::get_usage(key_code)) {
+    if (auto usage_page = types::get_usage_page(key_code)) {
+      if (auto usage = types::get_usage(key_code)) {
         pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
         keyboard_event.usage_page = *usage_page;
         keyboard_event.usage = *usage;
@@ -378,12 +379,13 @@ private:
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;
 
-  std::unordered_map<krbn::key_code, krbn::key_code> simple_modifications_key_code_map_;
-  std::unordered_map<krbn::key_code, krbn::key_code> fn_function_keys_key_code_map_;
+  std::unordered_map<key_code, key_code> simple_modifications_key_code_map_;
+  std::unordered_map<key_code, key_code> fn_function_keys_key_code_map_;
 
   manipulated_keys manipulated_keys_;
   manipulated_keys manipulated_fn_keys_;
 
   uint64_t last_timestamp_;
 };
+}
 }
