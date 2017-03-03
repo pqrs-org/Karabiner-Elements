@@ -39,9 +39,9 @@
 
       KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
       if ([coreConfigurationModel selectedProfileDeviceIgnore:model.deviceIdentifiers.vendorId
-                                                     productId:model.deviceIdentifiers.productId
-                                                    isKeyboard:model.deviceIdentifiers.isKeyboard
-                                              isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {
+                                                    productId:model.deviceIdentifiers.productId
+                                                   isKeyboard:model.deviceIdentifiers.isKeyboard
+                                             isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {
         result.checkbox.state = NSOffState;
       } else {
         result.checkbox.state = NSOnState;
@@ -98,9 +98,9 @@
 
         KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
         if ([coreConfigurationModel selectedProfileDeviceDisableBuiltInKeyboardIfExists:model.deviceIdentifiers.vendorId
-                                                                               productId:model.deviceIdentifiers.productId
-                                                                              isKeyboard:model.deviceIdentifiers.isKeyboard
-                                                                        isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {
+                                                                              productId:model.deviceIdentifiers.productId
+                                                                             isKeyboard:model.deviceIdentifiers.isKeyboard
+                                                                       isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {
           result.checkbox.state = NSOnState;
         } else {
           result.checkbox.state = NSOffState;

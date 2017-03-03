@@ -11,7 +11,7 @@
 
   // Do not include the last '\0' to data. (set length == strlen)
   NSData* data = [NSData dataWithBytesNoCopy:(void*)(string)
-                                      length:strlen(string)
+                         length:strlen(string)
                                 freeWhenDone:NO];
 
   NSError* error = nil;

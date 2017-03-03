@@ -49,10 +49,10 @@
   if (row != -1) {
     DevicesTableCellView* cellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
     [coreConfigurationModel setSelectedProfileDeviceIgnore:cellView.deviceIdentifiers.vendorId
-                                                  productId:cellView.deviceIdentifiers.productId
-                                                 isKeyboard:cellView.deviceIdentifiers.isKeyboard
-                                           isPointingDevice:cellView.deviceIdentifiers.isPointingDevice
-                                                      value:(cellView.checkbox.state == NSOffState)];
+                                                 productId:cellView.deviceIdentifiers.productId
+                                                isKeyboard:cellView.deviceIdentifiers.isKeyboard
+                                          isPointingDevice:cellView.deviceIdentifiers.isPointingDevice
+                                                     value:(cellView.checkbox.state == NSOffState)];
     [coreConfigurationModel save];
     return;
   }
@@ -61,10 +61,10 @@
   if (row != -1) {
     DevicesTableCellView* cellView = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
     [coreConfigurationModel setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:cellView.deviceIdentifiers.vendorId
-                                                                          productId:cellView.deviceIdentifiers.productId
-                                                                         isKeyboard:cellView.deviceIdentifiers.isKeyboard
-                                                                   isPointingDevice:cellView.deviceIdentifiers.isPointingDevice
-                                                                              value:(cellView.checkbox.state == NSOnState)];
+                                                                         productId:cellView.deviceIdentifiers.productId
+                                                                        isKeyboard:cellView.deviceIdentifiers.isKeyboard
+                                                                  isPointingDevice:cellView.deviceIdentifiers.isPointingDevice
+                                                                             value:(cellView.checkbox.state == NSOnState)];
     [coreConfigurationModel save];
     return;
   }
