@@ -13,7 +13,6 @@ void libkrbn_initialize(void);
 const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
 const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(void);
 const char* _Nonnull libkrbn_get_distributed_notification_console_user_server_is_disabled(void);
-const char* _Nonnull libkrbn_get_user_core_configuration_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name);
