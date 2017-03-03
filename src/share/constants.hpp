@@ -24,6 +24,14 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_devices.json";
   }
 
+  static const char* get_system_configuration_directory(void) {
+    return "/Library/Application Support/org.pqrs/config";
+  }
+
+  static const char* get_system_core_configuration_file_path(void) {
+    return "/Library/Application Support/org.pqrs/config/karabiner.json";
+  }
+
   static const std::string& get_user_configuration_directory(void) {
     static std::mutex mutex;
     static bool once = false;

@@ -18,6 +18,7 @@ public:
                                                                                user_core_configuration_file_path_(user_core_configuration_file_path),
                                                                                callback_(callback) {
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
+        {constants::get_system_configuration_directory(), {constants::get_system_core_configuration_file_path()}},
         {filesystem::dirname(user_core_configuration_file_path), {user_core_configuration_file_path}},
     };
 
@@ -25,12 +26,12 @@ public:
                                                    targets,
                                                    [this](const std::string& file_path) {
                                                      logger_.info("{0} is updated.", file_path);
-                                                     core_configuration_file_updated_callback(file_path);
+                                                     core_configuration_file_updated_callback();
                                                    });
 
     // file_monitor doesn't call the callback until target files are actually updated.
     // Thus, we call the callback manually at here.
-    core_configuration_file_updated_callback(user_core_configuration_file_path);
+    core_configuration_file_updated_callback();
   }
 
   ~configuration_monitor(void) {
@@ -45,10 +46,15 @@ public:
   }
 
 private:
-  void core_configuration_file_updated_callback(const std::string& file_path) {
-    auto c = std::make_shared<core_configuration>(logger_, user_core_configuration_file_path_);
+  void core_configuration_file_updated_callback(void) {
+    std::string file_path = constants::get_system_core_configuration_file_path();
+    if (filesystem::exists(user_core_configuration_file_path_)) {
+      file_path = user_core_configuration_file_path_;
+    }
+
+    auto c = std::make_shared<core_configuration>(logger_, file_path);
     if (!core_configuration_ || c->is_loaded()) {
-      logger_.info("core_configuration is updated.", file_path);
+      logger_.info("core_configuration is updated.");
       core_configuration_ = c;
       if (callback_) {
         callback_(core_configuration_);

@@ -30,6 +30,8 @@ public:
     }
     chmod(path, 0600);
 
+    start_grabbing_if_system_core_configuration_file_exists();
+
     exit_loop_ = false;
     thread_ = std::thread([this] { this->worker(); });
   }
@@ -100,6 +102,15 @@ private:
 
   void console_user_server_exit_callback(void) {
     device_grabber_.stop_grabbing();
+
+    start_grabbing_if_system_core_configuration_file_exists();
+  }
+
+  void start_grabbing_if_system_core_configuration_file_exists(void) {
+    auto file_path = constants::get_system_core_configuration_file_path();
+    if (filesystem::exists(file_path)) {
+      device_grabber_.start_grabbing(file_path);
+    }
   }
 
   manipulator::event_manipulator& event_manipulator_;
