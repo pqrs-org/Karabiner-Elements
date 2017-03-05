@@ -8,7 +8,10 @@ set -e
 # remove macports include paths
 unset CPATH
 
-git pull --rebase
+if [ "$1" != "--no-rebase" ]; then
+    git pull --rebase
+fi
+
 make
 
 DMG=$(ls *.dmg)
