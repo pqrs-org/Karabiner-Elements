@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3452ECAE1E6BF17800A5144C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3452ECAD1E6BF17800A5144C /* main.cpp */; };
+		3452ECC31E6C5BDB00A5144C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3452ECC21E6C5BDB00A5144C /* Carbon.framework */; };
+		3452ECC41E6C5BFB00A5144C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3452ECBF1E6C5BBD00A5144C /* SystemConfiguration.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,15 @@
 /* Begin PBXFileReference section */
 		3452ECAA1E6BF17800A5144C /* karabiner */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner; sourceTree = BUILT_PRODUCTS_DIR; };
 		3452ECAD1E6BF17800A5144C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		3452ECB51E6BF4BC00A5144C /* configuration_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_monitor.hpp; path = ../../../share/configuration_monitor.hpp; sourceTree = "<group>"; };
+		3452ECB61E6C5A1300A5144C /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../../share/constants.hpp; sourceTree = "<group>"; };
+		3452ECB71E6C5AB000A5144C /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = core_configuration.hpp; path = ../../../share/core_configuration.hpp; sourceTree = "<group>"; };
+		3452ECB81E6C5AB000A5144C /* file_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_monitor.hpp; path = ../../../share/file_monitor.hpp; sourceTree = "<group>"; };
+		3452ECB91E6C5AB000A5144C /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../../share/filesystem.hpp; sourceTree = "<group>"; };
+		3452ECBA1E6C5ABA00A5144C /* thread_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = thread_utility.hpp; path = ../../../share/thread_utility.hpp; sourceTree = "<group>"; };
+		3452ECBB1E6C5AEE00A5144C /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../../../share/types.hpp; sourceTree = "<group>"; };
+		3452ECBF1E6C5BBD00A5144C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		3452ECC21E6C5BDB00A5144C /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +43,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3452ECC31E6C5BDB00A5144C /* Carbon.framework in Frameworks */,
+				3452ECC41E6C5BFB00A5144C /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,6 +56,7 @@
 			children = (
 				3452ECAC1E6BF17800A5144C /* karabiner */,
 				3452ECAB1E6BF17800A5144C /* Products */,
+				3452ECBC1E6C5B9F00A5144C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,8 +72,32 @@
 			isa = PBXGroup;
 			children = (
 				3452ECAD1E6BF17800A5144C /* main.cpp */,
+				3452ECB41E6BF4AF00A5144C /* share */,
 			);
 			path = karabiner;
+			sourceTree = "<group>";
+		};
+		3452ECB41E6BF4AF00A5144C /* share */ = {
+			isa = PBXGroup;
+			children = (
+				3452ECB51E6BF4BC00A5144C /* configuration_monitor.hpp */,
+				3452ECB61E6C5A1300A5144C /* constants.hpp */,
+				3452ECB71E6C5AB000A5144C /* core_configuration.hpp */,
+				3452ECB81E6C5AB000A5144C /* file_monitor.hpp */,
+				3452ECB91E6C5AB000A5144C /* filesystem.hpp */,
+				3452ECBA1E6C5ABA00A5144C /* thread_utility.hpp */,
+				3452ECBB1E6C5AEE00A5144C /* types.hpp */,
+			);
+			name = share;
+			sourceTree = "<group>";
+		};
+		3452ECBC1E6C5B9F00A5144C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3452ECC21E6C5BDB00A5144C /* Carbon.framework */,
+				3452ECBF1E6C5BBD00A5144C /* SystemConfiguration.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -131,7 +169,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -147,7 +185,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
