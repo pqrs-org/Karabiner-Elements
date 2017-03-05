@@ -82,3 +82,7 @@ void libkrbn_launch_menu(void) {
 void libkrbn_launch_preferences(void) {
   krbn::application_launcher::launch_preferences();
 }
+
+bool libkrbn_system_core_configuration_file_path_exists(void) {
+  return krbn::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
+}

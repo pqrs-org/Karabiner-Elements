@@ -30,6 +30,8 @@ void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_menu(void);
 void libkrbn_launch_preferences(void);
 
+bool libkrbn_system_core_configuration_file_path_exists(void);
+
 // ----------------------------------------
 // libkrbn_core_configuration
 
