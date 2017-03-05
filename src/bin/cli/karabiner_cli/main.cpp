@@ -9,7 +9,7 @@ public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
-      logger = spdlog::stdout_logger_mt("karabiner", true);
+      logger = spdlog::stdout_logger_mt("karabiner_cli", true);
       logger->set_pattern("[%l] %v");
       logger->set_level(spdlog::level::err);
     }
@@ -21,7 +21,7 @@ public:
 int main(int argc, char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
-  cxxopts::Options options("karabiner", "A command line utility of Karabiner-Elements.");
+  cxxopts::Options options("karabiner_cli", "A command line utility of Karabiner-Elements.");
 
   options.add_options()("select-profile", "Select a profile by name.", cxxopts::value<std::string>());
   options.add_options()("copy-current-profile-to-system-default-profile", "Copy the current profile to system default profile.");
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 
   std::cout << options.help() << std::endl;
   std::cout << "Examples:" << std::endl;
-  std::cout << "  karabiner --select-profile 'Default profile'" << std::endl;
+  std::cout << "  karabiner_cli --select-profile 'Default profile'" << std::endl;
   std::cout << std::endl;
 
   return 1;

@@ -25,7 +25,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3452ECAA1E6BF17800A5144C /* karabiner */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner; sourceTree = BUILT_PRODUCTS_DIR; };
+		3452ECAA1E6BF17800A5144C /* karabiner_cli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner_cli; sourceTree = BUILT_PRODUCTS_DIR; };
 		3452ECAD1E6BF17800A5144C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3452ECB51E6BF4BC00A5144C /* configuration_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_monitor.hpp; path = ../../../share/configuration_monitor.hpp; sourceTree = "<group>"; };
 		3452ECB61E6C5A1300A5144C /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../../share/constants.hpp; sourceTree = "<group>"; };
@@ -54,7 +54,7 @@
 		3452ECA11E6BF17800A5144C = {
 			isa = PBXGroup;
 			children = (
-				3452ECAC1E6BF17800A5144C /* karabiner */,
+				3452ECAC1E6BF17800A5144C /* karabiner_cli */,
 				3452ECAB1E6BF17800A5144C /* Products */,
 				3452ECBC1E6C5B9F00A5144C /* Frameworks */,
 			);
@@ -63,18 +63,18 @@
 		3452ECAB1E6BF17800A5144C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3452ECAA1E6BF17800A5144C /* karabiner */,
+				3452ECAA1E6BF17800A5144C /* karabiner_cli */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		3452ECAC1E6BF17800A5144C /* karabiner */ = {
+		3452ECAC1E6BF17800A5144C /* karabiner_cli */ = {
 			isa = PBXGroup;
 			children = (
 				3452ECAD1E6BF17800A5144C /* main.cpp */,
 				3452ECB41E6BF4AF00A5144C /* share */,
 			);
-			path = karabiner;
+			path = karabiner_cli;
 			sourceTree = "<group>";
 		};
 		3452ECB41E6BF4AF00A5144C /* share */ = {
@@ -103,9 +103,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3452ECA91E6BF17800A5144C /* karabiner */ = {
+		3452ECA91E6BF17800A5144C /* karabiner_cli */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3452ECB11E6BF17800A5144C /* Build configuration list for PBXNativeTarget "karabiner" */;
+			buildConfigurationList = 3452ECB11E6BF17800A5144C /* Build configuration list for PBXNativeTarget "karabiner_cli" */;
 			buildPhases = (
 				3452ECA61E6BF17800A5144C /* Sources */,
 				3452ECA71E6BF17800A5144C /* Frameworks */,
@@ -115,9 +115,9 @@
 			);
 			dependencies = (
 			);
-			name = karabiner;
-			productName = karabiner;
-			productReference = 3452ECAA1E6BF17800A5144C /* karabiner */;
+			name = karabiner_cli;
+			productName = karabiner_cli;
+			productReference = 3452ECAA1E6BF17800A5144C /* karabiner_cli */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -135,7 +135,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3452ECA51E6BF17800A5144C /* Build configuration list for PBXProject "karabiner" */;
+			buildConfigurationList = 3452ECA51E6BF17800A5144C /* Build configuration list for PBXProject "karabiner_cli" */;
 			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -147,7 +147,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3452ECA91E6BF17800A5144C /* karabiner */,
+				3452ECA91E6BF17800A5144C /* karabiner_cli */,
 			);
 		};
 /* End PBXProject section */
@@ -228,7 +228,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3452ECA51E6BF17800A5144C /* Build configuration list for PBXProject "karabiner" */ = {
+		3452ECA51E6BF17800A5144C /* Build configuration list for PBXProject "karabiner_cli" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3452ECB01E6BF17800A5144C /* Release */,
@@ -236,7 +236,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3452ECB11E6BF17800A5144C /* Build configuration list for PBXNativeTarget "karabiner" */ = {
+		3452ECB11E6BF17800A5144C /* Build configuration list for PBXNativeTarget "karabiner_cli" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3452ECB31E6BF17800A5144C /* Release */,
