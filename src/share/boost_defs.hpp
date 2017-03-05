@@ -6,7 +6,7 @@
 #define BOOST_REGEX_NO_LIB
 #define BOOST_SYSTEM_NO_LIB
 
-// Build error in boost/asio.hpp @ 1.62.0 with -Wshorten-64-to-32
+// Build error in boost/asio.hpp @ 1.63.0 with -Wshorten-64-to-32
 
 #define BEGIN_BOOST_INCLUDE        \
   _Pragma("clang diagnostic push") \
