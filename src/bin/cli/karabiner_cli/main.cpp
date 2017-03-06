@@ -44,13 +44,12 @@ int main(int argc, char* argv[]) {
                                                 if (profiles[i].get_name() == name) {
                                                   core_configuration->select_profile(i);
                                                   core_configuration->save_to_file(krbn::constants::get_user_core_configuration_file_path());
-                                                  exit(0);
+                                                  return;
                                                 }
                                               }
                                               logger::get_logger().error("`{0}` is not found.", name);
-                                              exit(2);
                                             });
-        CFRunLoopRun();
+        return 0;
       }
     }
 
