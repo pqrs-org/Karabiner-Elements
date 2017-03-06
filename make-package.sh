@@ -19,11 +19,16 @@ mkdir -p pkgroot
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements"
 mkdir -p "$basedir"
 cp version "$basedir"
-cp src/scripts/uninstaller.applescript "$basedir"
 cp src/scripts/uninstall.sh "$basedir"
-cp src/scripts/uninstall_core.sh "$basedir/uninstall_core.sh"
+cp src/scripts/uninstall_core.sh "$basedir"
 cp -R "src/vendor/Karabiner-VirtualHIDDevice/dist" "$basedir/Karabiner-VirtualHIDDevice"
 cp -R "src/apps/Menu/build/Release/Karabiner-Menu.app" "$basedir"
+
+basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
+mkdir -p "$basedir"
+cp src/scripts/copy_current_profile_to_system_default_profile.applescript "$basedir"
+cp src/scripts/remove_system_default_profile.applescript "$basedir"
+cp src/scripts/uninstaller.applescript "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"

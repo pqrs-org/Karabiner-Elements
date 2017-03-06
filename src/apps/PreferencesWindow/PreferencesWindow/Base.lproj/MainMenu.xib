@@ -54,6 +54,9 @@
                 <outlet property="simpleModificationsMenuManager" destination="BTc-Hs-TSF" id="9bd-ge-hVm"/>
                 <outlet property="simpleModificationsTableView" destination="qEO-TG-yM2" id="Qcl-8d-0Fe"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="TxP-Ir-imi"/>
+                <outlet property="systemDefaultProfileCopyButton" destination="sAi-Da-rG4" id="lAn-qW-Hfe"/>
+                <outlet property="systemDefaultProfileRemoveButton" destination="RVr-L2-a5V" id="0CD-JT-7Vy"/>
+                <outlet property="systemDefaultProfileStateLabel" destination="V32-la-sHU" id="iw8-pw-4Si"/>
                 <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="HZj-Vf-nPo"/>
                 <outlet property="versionLabel" destination="sau-jf-Dqb" id="maD-61-nBB"/>
                 <outlet property="virtualHIDKeyboardCapsLockDelayMillisecondsStepper" destination="8oq-XL-Uqg" id="JVi-LV-1T5"/>
@@ -1369,7 +1372,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </view>
                                         </box>
                                         <box borderType="line" title="Uninstall" translatesAutoresizingMaskIntoConstraints="NO" id="bRw-jJ-vdo">
-                                            <rect key="frame" x="14" y="257" width="726" height="53"/>
+                                            <rect key="frame" x="14" y="262" width="726" height="53"/>
                                             <view key="contentView" id="E8s-vq-cpp">
                                                 <rect key="frame" x="1" y="1" width="724" height="37"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1396,7 +1399,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </view>
                                         </box>
                                         <box borderType="line" title="Web Sites" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-Lc-pSo">
-                                            <rect key="frame" x="14" y="188" width="726" height="53"/>
+                                            <rect key="frame" x="14" y="198" width="726" height="53"/>
                                             <view key="contentView" id="ibU-6J-Zdv">
                                                 <rect key="frame" x="1" y="1" width="724" height="37"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1433,7 +1436,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </view>
                                         </box>
                                         <box title="Miscellaneous" translatesAutoresizingMaskIntoConstraints="NO" id="BAq-6J-75B">
-                                            <rect key="frame" x="14" y="101" width="726" height="71"/>
+                                            <rect key="frame" x="14" y="11" width="726" height="71"/>
                                             <view key="contentView" id="9XA-gC-pTe">
                                                 <rect key="frame" x="2" y="2" width="722" height="54"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1468,22 +1471,90 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 </constraints>
                                             </view>
                                         </box>
+                                        <box borderType="line" title="System Default Configuration" translatesAutoresizingMaskIntoConstraints="NO" id="gUV-If-Nhn">
+                                            <rect key="frame" x="14" y="93" width="726" height="94"/>
+                                            <view key="contentView" id="TF9-1O-zm8">
+                                                <rect key="frame" x="1" y="1" width="724" height="78"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5oB-kz-f5x">
+                                                        <rect key="frame" x="15" y="36" width="694" height="34"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="gSI-ND-aKs">
+                                                            <font key="font" metaFont="system"/>
+                                                            <string key="title">You can use Karabiner-Elements even before login by setting the system default configuration.
+(These operations require the administrator privilege.)</string>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sAi-Da-rG4">
+                                                        <rect key="frame" x="12" y="2" width="400" height="28"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="390" id="362-hV-BO9"/>
+                                                        </constraints>
+                                                        <buttonCell key="cell" type="push" title="Copy the current configuration to the system default configuration" bezelStyle="rounded" image="ic_star_rate_18pt" imagePosition="left" alignment="left" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="B2t-va-0wM">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="systemDefaultProfileCopy:" target="5ke-qB-Wr5" id="hT6-vl-oM0"/>
+                                                        </connections>
+                                                    </button>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="V32-la-sHU">
+                                                        <rect key="frame" x="425" y="10" width="210" height="14"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="System default configuration is not set." id="Zh6-bD-UwV">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RVr-L2-a5V">
+                                                        <rect key="frame" x="432" y="2" width="260" height="28"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="250" id="VE8-pO-6em"/>
+                                                        </constraints>
+                                                        <buttonCell key="cell" type="push" title="Remove the system default configuration" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jwQ-69-bk6">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="systemDefaultProfileRemove:" target="5ke-qB-Wr5" id="hYb-bS-cqk"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="V32-la-sHU" firstAttribute="centerY" secondItem="sAi-Da-rG4" secondAttribute="centerY" id="62y-ta-7gz"/>
+                                                    <constraint firstItem="V32-la-sHU" firstAttribute="leading" secondItem="sAi-Da-rG4" secondAttribute="trailing" constant="20" id="6UO-9Y-3GJ"/>
+                                                    <constraint firstAttribute="bottom" secondItem="sAi-Da-rG4" secondAttribute="bottom" constant="8" id="OLg-nH-VoC"/>
+                                                    <constraint firstAttribute="trailing" secondItem="5oB-kz-f5x" secondAttribute="trailing" constant="17" id="Vpp-4N-PDE"/>
+                                                    <constraint firstItem="5oB-kz-f5x" firstAttribute="top" secondItem="TF9-1O-zm8" secondAttribute="top" constant="8" id="YbN-ME-LGY"/>
+                                                    <constraint firstItem="RVr-L2-a5V" firstAttribute="centerY" secondItem="sAi-Da-rG4" secondAttribute="centerY" id="cms-3v-nD3"/>
+                                                    <constraint firstItem="5oB-kz-f5x" firstAttribute="leading" secondItem="TF9-1O-zm8" secondAttribute="leading" constant="17" id="gLY-m9-5lT"/>
+                                                    <constraint firstItem="RVr-L2-a5V" firstAttribute="leading" secondItem="sAi-Da-rG4" secondAttribute="trailing" constant="30" id="iMZ-b1-81C"/>
+                                                    <constraint firstItem="sAi-Da-rG4" firstAttribute="top" secondItem="5oB-kz-f5x" secondAttribute="bottom" constant="10" id="qcL-jW-q47"/>
+                                                    <constraint firstItem="sAi-Da-rG4" firstAttribute="leading" secondItem="TF9-1O-zm8" secondAttribute="leading" constant="17" id="wk9-Lv-Hxg"/>
+                                                </constraints>
+                                            </view>
+                                        </box>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" constant="17" id="0eo-bc-F4Z"/>
+                                        <constraint firstItem="BAq-6J-75B" firstAttribute="top" secondItem="gUV-If-Nhn" secondAttribute="bottom" constant="15" id="DFT-q3-UWe"/>
                                         <constraint firstItem="sau-jf-Dqb" firstAttribute="leading" secondItem="DOX-q0-HoN" secondAttribute="trailing" constant="5" id="Fyg-bc-bgi"/>
                                         <constraint firstItem="3j8-8U-bBH" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="17" id="G3Y-Zf-g9c"/>
-                                        <constraint firstItem="ZAS-Lc-pSo" firstAttribute="top" secondItem="bRw-jJ-vdo" secondAttribute="bottom" constant="20" id="GKw-1j-4yw"/>
+                                        <constraint firstItem="ZAS-Lc-pSo" firstAttribute="top" secondItem="bRw-jJ-vdo" secondAttribute="bottom" constant="15" id="GKw-1j-4yw"/>
+                                        <constraint firstItem="gUV-If-Nhn" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="Gwc-SB-KPh"/>
                                         <constraint firstItem="sau-jf-Dqb" firstAttribute="centerY" secondItem="DOX-q0-HoN" secondAttribute="centerY" id="KYg-f5-u1g"/>
                                         <constraint firstItem="DOX-q0-HoN" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="17" id="Okn-qw-iEx"/>
                                         <constraint firstItem="DOX-q0-HoN" firstAttribute="top" secondItem="oZ9-PG-xey" secondAttribute="top" constant="8" id="Qji-lS-jHg"/>
                                         <constraint firstItem="BAq-6J-75B" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="UEh-kf-9oL"/>
                                         <constraint firstItem="ZAS-Lc-pSo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="aQo-bz-os7"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="cu0-mY-LNc"/>
-                                        <constraint firstItem="BAq-6J-75B" firstAttribute="top" secondItem="ZAS-Lc-pSo" secondAttribute="bottom" constant="20" id="epb-wg-d8d"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="fV2-yM-QGE"/>
+                                        <constraint firstItem="gUV-If-Nhn" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="ggg-s5-6ID"/>
                                         <constraint firstItem="ZAS-Lc-pSo" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="hgp-AD-qmh"/>
-                                        <constraint firstItem="bRw-jJ-vdo" firstAttribute="top" secondItem="3j8-8U-bBH" secondAttribute="bottom" constant="20" id="otG-Wg-M9X"/>
+                                        <constraint firstItem="bRw-jJ-vdo" firstAttribute="top" secondItem="3j8-8U-bBH" secondAttribute="bottom" constant="15" id="otG-Wg-M9X"/>
+                                        <constraint firstItem="gUV-If-Nhn" firstAttribute="top" secondItem="ZAS-Lc-pSo" secondAttribute="bottom" constant="15" id="rh2-qf-lBp"/>
                                         <constraint firstItem="BAq-6J-75B" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="yhU-hH-Shb"/>
                                         <constraint firstItem="3j8-8U-bBH" firstAttribute="top" secondItem="DOX-q0-HoN" secondAttribute="bottom" constant="10" id="zkN-OQ-f0K"/>
                                     </constraints>
@@ -1571,5 +1642,6 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
         <image name="ic_mouse_18pt" width="36" height="36"/>
         <image name="ic_refresh_18pt" width="36" height="36"/>
         <image name="ic_remove_circle_18pt" width="36" height="36"/>
+        <image name="ic_star_rate_18pt" width="36" height="36"/>
     </resources>
 </document>

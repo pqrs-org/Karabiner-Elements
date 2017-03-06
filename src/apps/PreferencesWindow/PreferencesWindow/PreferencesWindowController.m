@@ -26,6 +26,9 @@
 @property(weak) IBOutlet NSTextField* virtualHIDKeyboardCapsLockDelayMillisecondsText;
 @property(weak) IBOutlet NSStepper* virtualHIDKeyboardCapsLockDelayMillisecondsStepper;
 @property(weak) IBOutlet NSButton* checkForUpdateOnStartupButton;
+@property(weak) IBOutlet NSButton* systemDefaultProfileCopyButton;
+@property(weak) IBOutlet NSTextField* systemDefaultProfileStateLabel;
+@property(weak) IBOutlet NSButton* systemDefaultProfileRemoveButton;
 @property(weak) IBOutlet NSButton* showInMenuBarButton;
 @property(weak) IBOutlet NSButton* showProfileNameInMenuBarButton;
 @property(weak) IBOutlet ProfilesTableViewController* profilesTableViewController;
@@ -207,6 +210,14 @@
     self.checkForUpdateOnStartupButton.state = NSOffState;
   }
 
+  if (libkrbn_system_core_configuration_file_path_exists()) {
+    self.systemDefaultProfileStateLabel.hidden = YES;
+    self.systemDefaultProfileRemoveButton.hidden = NO;
+  } else {
+    self.systemDefaultProfileStateLabel.hidden = NO;
+    self.systemDefaultProfileRemoveButton.hidden = YES;
+  }
+
   if (coreConfigurationModel.globalConfigurationShowInMenuBar) {
     self.showInMenuBarButton.state = NSOnState;
   } else {
@@ -240,8 +251,24 @@
   libkrbn_check_for_updates_with_beta_version();
 }
 
+- (IBAction)systemDefaultProfileCopy:(id)sender {
+  // Ensure karabiner.json exists before copy.
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  [coreConfigurationModel save];
+
+  NSString* path = @"/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/copy_current_profile_to_system_default_profile.applescript";
+  [[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil] executeAndReturnError:nil];
+  [self setupMiscTabControls];
+}
+
+- (IBAction)systemDefaultProfileRemove:(id)sender {
+  NSString* path = @"/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/remove_system_default_profile.applescript";
+  [[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil] executeAndReturnError:nil];
+  [self setupMiscTabControls];
+}
+
 - (IBAction)launchUninstaller:(id)sender {
-  NSString* path = @"/Library/Application Support/org.pqrs/Karabiner-Elements/uninstaller.applescript";
+  NSString* path = @"/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstaller.applescript";
   [[[NSAppleScript alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:nil] executeAndReturnError:nil];
 }
 
