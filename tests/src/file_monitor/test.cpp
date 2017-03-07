@@ -64,10 +64,16 @@ TEST_CASE("file_monitor") {
     case 5:
       REQUIRE(line == "14");
       break;
+    case 6:
+      REQUIRE(line == "15");
+      break;
+    case 7:
+      REQUIRE(line == "16");
+      break;
     }
 
     if (line == "end") {
-      REQUIRE(i == 7);
+      REQUIRE(i == 8);
       std::cerr << std::endl;
       exit(0);
     }
