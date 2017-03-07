@@ -31,7 +31,7 @@ public:
           CFArrayAppendValue(directories_, directory);
           CFRelease(directory);
 
-          files_ = target.second;
+          files_.insert(files_.end(), target.second.begin(), target.second.end());
         }
       }
       register_stream();
@@ -49,6 +49,31 @@ public:
 
 private:
   void register_stream(void) {
+    // ----------------------------------------
+    // File System Events API does not call the callback if the root directory and files are moved at the same time.
+    //
+    // Example:
+    //
+    //   FSEventStreamCreate(... ,{"target/file1", "target/file2"})
+    //
+    //   $ mkdir target.new
+    //   $ echo  target.new/file1
+    //   $ mv    target.new target
+    //
+    //   In this case, the callback will not be called.
+    //
+    // Thus, we should call the callback manually.
+
+    if (callback_) {
+      for (const auto& file : files_) {
+        if (filesystem::exists(file)) {
+          callback_(file);
+        }
+      }
+    }
+
+    // ----------------------------------------
+
     FSEventStreamContext context{0};
     context.info = this;
 
