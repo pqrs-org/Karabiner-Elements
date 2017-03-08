@@ -15,18 +15,14 @@ public:
 
     file_monitor_ = std::make_unique<krbn::file_monitor>(libkrbn::get_logger(),
                                                          targets,
-                                                         [this](const std::string& file_path) { cpp_callback(file_path); });
-
-    cpp_callback(krbn::constants::get_devices_json_file_path());
+                                                         [this](const std::string&) {
+                                                           if (callback_) {
+                                                             callback_(refcon_);
+                                                           }
+                                                         });
   }
 
 private:
-  void cpp_callback(const std::string& file_path) {
-    if (callback_) {
-      callback_(refcon_);
-    }
-  }
-
   libkrbn_device_monitor_callback callback_;
   void* refcon_;
 

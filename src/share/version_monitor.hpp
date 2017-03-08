@@ -24,7 +24,11 @@ public:
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
         {version_file_directory, {version_file_path}},
     };
-    file_monitor_ = std::make_unique<file_monitor>(logger_, targets, std::bind(&version_monitor::version_file_updated_callback, this, std::placeholders::_1));
+    file_monitor_ = std::make_unique<file_monitor>(logger_,
+                                                   targets,
+                                                   [this](const std::string&) {
+                                                     check_version();
+                                                   });
   }
 
   ~version_monitor(void) {
@@ -35,18 +39,13 @@ public:
 
   void manual_check(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      logger_.info("Check version...");
       check_version();
     });
   }
 
 private:
-  void version_file_updated_callback(const std::string& file_path) {
-    logger_.info("Version file is updated.");
-    check_version();
-  }
-
   void check_version(void) {
+    logger_.info("Check version...");
     auto version = read_version_file();
     if (version_ != version) {
       logger_.info("Version is changed: '{0}' -> '{1}'", version_, version);

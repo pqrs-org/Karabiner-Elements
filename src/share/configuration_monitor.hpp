@@ -24,14 +24,23 @@ public:
 
     file_monitor_ = std::make_unique<file_monitor>(logger_,
                                                    targets,
-                                                   [this](const std::string& file_path) {
-                                                     logger_.info("{0} is updated.", file_path);
-                                                     core_configuration_file_updated_callback();
-                                                   });
+                                                   [this](const std::string&) {
+                                                     logger_.info("Load karabiner.json...");
 
-    // file_monitor doesn't call the callback until target files are actually updated.
-    // Thus, we call the callback manually at here.
-    core_configuration_file_updated_callback();
+                                                     std::string file_path = constants::get_system_core_configuration_file_path();
+                                                     if (filesystem::exists(user_core_configuration_file_path_)) {
+                                                       file_path = user_core_configuration_file_path_;
+                                                     }
+
+                                                     auto c = std::make_shared<core_configuration>(logger_, file_path);
+                                                     if (!core_configuration_ || c->is_loaded()) {
+                                                       logger_.info("core_configuration is updated.");
+                                                       core_configuration_ = c;
+                                                       if (callback_) {
+                                                         callback_(core_configuration_);
+                                                       }
+                                                     }
+                                                   });
   }
 
   ~configuration_monitor(void) {
@@ -46,22 +55,6 @@ public:
   }
 
 private:
-  void core_configuration_file_updated_callback(void) {
-    std::string file_path = constants::get_system_core_configuration_file_path();
-    if (filesystem::exists(user_core_configuration_file_path_)) {
-      file_path = user_core_configuration_file_path_;
-    }
-
-    auto c = std::make_shared<core_configuration>(logger_, file_path);
-    if (!core_configuration_ || c->is_loaded()) {
-      logger_.info("core_configuration is updated.");
-      core_configuration_ = c;
-      if (callback_) {
-        callback_(core_configuration_);
-      }
-    }
-  }
-
   spdlog::logger& logger_;
   std::string user_core_configuration_file_path_;
   core_configuration_updated_callback callback_;
