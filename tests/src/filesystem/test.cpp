@@ -36,6 +36,7 @@ TEST_CASE("is_directory") {
   REQUIRE(krbn::filesystem::is_directory("data/symlink") == false);
   REQUIRE(krbn::filesystem::is_directory("data/not_found") == false);
   REQUIRE(krbn::filesystem::is_directory("data/not_found_symlink") == false);
+  REQUIRE(krbn::filesystem::is_directory("data/directory") == true);
   REQUIRE(krbn::filesystem::is_directory("data/directory_symlink") == true);
 }
 
