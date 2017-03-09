@@ -755,6 +755,8 @@ public:
   // Thus, we should call the `save` method only when it is neccessary.
 
   bool save_to_file(const std::string& file_path) {
+    filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path), 0700);
+
     std::ofstream output(file_path);
     if (!output) {
       return false;
