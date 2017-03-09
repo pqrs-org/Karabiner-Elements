@@ -10,23 +10,33 @@
 
 TEST_CASE("exists") {
   REQUIRE(krbn::filesystem::exists("data/file") == true);
-  REQUIRE(krbn::filesystem::exists("data/not_found") == false);
   REQUIRE(krbn::filesystem::exists("data/symlink") == true);
+  REQUIRE(krbn::filesystem::exists("data/not_found") == false);
   REQUIRE(krbn::filesystem::exists("data/not_found_symlink") == false);
+  REQUIRE(krbn::filesystem::exists("data/directory") == true);
+  REQUIRE(krbn::filesystem::exists("data/directory_symlink") == true);
 }
 
 TEST_CASE("create_directory_with_intermediate_directories") {
   REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("/", 0700) == true);
   REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories(".", 0700) == true);
   REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("mkdir_example/a/b/c/d/e", 0700) == true);
+
+  REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("data/file", 0700) == false);
+  REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("data/symlink", 0700) == false);
+  REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("data/directory", 0700) == true);
+  REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("data/directory_symlink", 0700) == true);
 }
 
 TEST_CASE("is_directory") {
   REQUIRE(krbn::filesystem::is_directory("/") == true);
   REQUIRE(krbn::filesystem::is_directory(".") == true);
   REQUIRE(krbn::filesystem::is_directory("..") == true);
-  REQUIRE(krbn::filesystem::is_directory("/bin/ls") == false);
-  REQUIRE(krbn::filesystem::is_directory("/not_found") == false);
+  REQUIRE(krbn::filesystem::is_directory("data/file") == false);
+  REQUIRE(krbn::filesystem::is_directory("data/symlink") == false);
+  REQUIRE(krbn::filesystem::is_directory("data/not_found") == false);
+  REQUIRE(krbn::filesystem::is_directory("data/not_found_symlink") == false);
+  REQUIRE(krbn::filesystem::is_directory("data/directory_symlink") == true);
 }
 
 TEST_CASE("dirname") {
