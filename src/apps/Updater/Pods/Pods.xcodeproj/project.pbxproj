@@ -12,26 +12,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		10A7978D5EE42A029748D373A8AB4182 /* SUErrors.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUErrors.h; path = Sparkle.framework/Versions/A/Headers/SUErrors.h; sourceTree = "<group>"; };
-		19019EE1E33B981328FC5D4C08E7E47B /* SUUpdater.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUUpdater.h; path = Sparkle.framework/Versions/A/Headers/SUUpdater.h; sourceTree = "<group>"; };
-		1CEF3E6C24A81EF0BC2C9196FA8EC6A2 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
+		08F0E3ABE0F7FFF0B060E49C18859B20 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
+		098E6864A7B900C354092929510F6742 /* SUExport.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUExport.h; path = Sparkle.framework/Versions/A/Headers/SUExport.h; sourceTree = "<group>"; };
+		146EB1FFD3039CBBC121466BC10E749F /* SUVersionComparisonProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUVersionComparisonProtocol.h; path = Sparkle.framework/Versions/A/Headers/SUVersionComparisonProtocol.h; sourceTree = "<group>"; };
+		206FC0298653B913F6DE0E15DF72023A /* SUAppcastItem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUAppcastItem.h; path = Sparkle.framework/Versions/A/Headers/SUAppcastItem.h; sourceTree = "<group>"; };
 		270DD1219F1E6CF00379D39F252D87C6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
-		3C6157984E8576A200E70CA3BF7292D8 /* SUExport.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUExport.h; path = Sparkle.framework/Versions/A/Headers/SUExport.h; sourceTree = "<group>"; };
+		2A68FB6161EB6D13E0025D572C32A5C8 /* SUVersionDisplayProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUVersionDisplayProtocol.h; path = Sparkle.framework/Versions/A/Headers/SUVersionDisplayProtocol.h; sourceTree = "<group>"; };
 		3E7B26F433E1E330509307582B5902E1 /* Pods-Updater-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Updater-resources.sh"; sourceTree = "<group>"; };
-		49CB6CD136F041487B281723D6EAE960 /* SUStandardVersionComparator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUStandardVersionComparator.h; path = Sparkle.framework/Versions/A/Headers/SUStandardVersionComparator.h; sourceTree = "<group>"; };
-		55DFBF173507EA0032F2D92F2559A94A /* SUAppcast.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUAppcast.h; path = Sparkle.framework/Versions/A/Headers/SUAppcast.h; sourceTree = "<group>"; };
 		88BEBFAB4858D8A8344B9B908935696D /* Pods-Updater-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Updater-dummy.m"; sourceTree = "<group>"; };
 		8E0910F7CB64E5350F637DA85B584715 /* Pods-Updater.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Updater.release.xcconfig"; sourceTree = "<group>"; };
+		90E75E9DC7A922B4F94EA6E11741D6A8 /* SUErrors.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUErrors.h; path = Sparkle.framework/Versions/A/Headers/SUErrors.h; sourceTree = "<group>"; };
 		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		97276737B538A5DD6B4D5B0BB9A140CC /* Pods-Updater-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Updater-acknowledgements.plist"; sourceTree = "<group>"; };
-		AB0AD73A34EB787FC66463F102B74B11 /* SUVersionComparisonProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUVersionComparisonProtocol.h; path = Sparkle.framework/Versions/A/Headers/SUVersionComparisonProtocol.h; sourceTree = "<group>"; };
-		B42E1ED73D0B7B628BB292D57D7D78D8 /* SUVersionDisplayProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUVersionDisplayProtocol.h; path = Sparkle.framework/Versions/A/Headers/SUVersionDisplayProtocol.h; sourceTree = "<group>"; };
 		B97A1446BAF5D12FD9381448C642B5C5 /* Pods-Updater-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Updater-acknowledgements.markdown"; sourceTree = "<group>"; };
-		CC73CEBA87E2615DDA6A2B885D359BDD /* Sparkle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Sparkle.h; path = Sparkle.framework/Versions/A/Headers/Sparkle.h; sourceTree = "<group>"; };
+		BE06FF81E8B47CAE2929E9997A0FDD00 /* SUUpdaterDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUUpdaterDelegate.h; path = Sparkle.framework/Versions/A/Headers/SUUpdaterDelegate.h; sourceTree = "<group>"; };
+		C2C9D1B34A27BA4F6CC2A7CE29DF23D1 /* SUUpdater.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUUpdater.h; path = Sparkle.framework/Versions/A/Headers/SUUpdater.h; sourceTree = "<group>"; };
 		CD4DAA3341F19875CB949E74AD68BEEB /* libPods-Updater.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-Updater.a"; path = "libPods-Updater.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CFC2150FE91499A0C52A00AED7BC2471 /* Sparkle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Sparkle.h; path = Sparkle.framework/Versions/A/Headers/Sparkle.h; sourceTree = "<group>"; };
 		DAFF55F456C58679E5462BDB8788370E /* Pods-Updater-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Updater-frameworks.sh"; sourceTree = "<group>"; };
 		E3E1F946979A22626594F7192529A5DC /* Pods-Updater.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Updater.debug.xcconfig"; sourceTree = "<group>"; };
-		E9B2DA8A4C33F68E2E7B9942F5F8F1F2 /* SUAppcastItem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUAppcastItem.h; path = Sparkle.framework/Versions/A/Headers/SUAppcastItem.h; sourceTree = "<group>"; };
+		EDCF64026B6B952731DC763935DBB677 /* SUAppcast.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUAppcast.h; path = Sparkle.framework/Versions/A/Headers/SUAppcast.h; sourceTree = "<group>"; };
+		F8ACA9546912BB31E3554E432CC1AA43 /* SUStandardVersionComparator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SUStandardVersionComparator.h; path = Sparkle.framework/Versions/A/Headers/SUStandardVersionComparator.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,24 +55,6 @@
 			name = "OS X";
 			sourceTree = "<group>";
 		};
-		18CD8144EA31040C8D15534025D0234F /* Sparkle */ = {
-			isa = PBXGroup;
-			children = (
-				CC73CEBA87E2615DDA6A2B885D359BDD /* Sparkle.h */,
-				55DFBF173507EA0032F2D92F2559A94A /* SUAppcast.h */,
-				E9B2DA8A4C33F68E2E7B9942F5F8F1F2 /* SUAppcastItem.h */,
-				10A7978D5EE42A029748D373A8AB4182 /* SUErrors.h */,
-				3C6157984E8576A200E70CA3BF7292D8 /* SUExport.h */,
-				49CB6CD136F041487B281723D6EAE960 /* SUStandardVersionComparator.h */,
-				19019EE1E33B981328FC5D4C08E7E47B /* SUUpdater.h */,
-				AB0AD73A34EB787FC66463F102B74B11 /* SUVersionComparisonProtocol.h */,
-				B42E1ED73D0B7B628BB292D57D7D78D8 /* SUVersionDisplayProtocol.h */,
-				33E6FE038D743BCA7F705CE7D0FDA8F3 /* Frameworks */,
-			);
-			name = Sparkle;
-			path = Sparkle;
-			sourceTree = "<group>";
-		};
 		2D137E0D6C9E4DFBDBEF939D95DC6D3C /* Pods-Updater */ = {
 			isa = PBXGroup;
 			children = (
@@ -87,14 +70,6 @@
 			path = "Target Support Files/Pods-Updater";
 			sourceTree = "<group>";
 		};
-		33E6FE038D743BCA7F705CE7D0FDA8F3 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				1CEF3E6C24A81EF0BC2C9196FA8EC6A2 /* Sparkle.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		39E9EE8210D861DFD82346C1F5EB7218 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -103,15 +78,50 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6C4A8D6723EA64B63D81821C58551253 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				7DA37F5FD06B7D9792753E9152A8621A /* Sparkle */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		7DA37F5FD06B7D9792753E9152A8621A /* Sparkle */ = {
+			isa = PBXGroup;
+			children = (
+				CFC2150FE91499A0C52A00AED7BC2471 /* Sparkle.h */,
+				EDCF64026B6B952731DC763935DBB677 /* SUAppcast.h */,
+				206FC0298653B913F6DE0E15DF72023A /* SUAppcastItem.h */,
+				90E75E9DC7A922B4F94EA6E11741D6A8 /* SUErrors.h */,
+				098E6864A7B900C354092929510F6742 /* SUExport.h */,
+				F8ACA9546912BB31E3554E432CC1AA43 /* SUStandardVersionComparator.h */,
+				C2C9D1B34A27BA4F6CC2A7CE29DF23D1 /* SUUpdater.h */,
+				BE06FF81E8B47CAE2929E9997A0FDD00 /* SUUpdaterDelegate.h */,
+				146EB1FFD3039CBBC121466BC10E749F /* SUVersionComparisonProtocol.h */,
+				2A68FB6161EB6D13E0025D572C32A5C8 /* SUVersionDisplayProtocol.h */,
+				B51F172CB8B6401B0613A2D3DBE6BB0B /* Frameworks */,
+			);
+			name = Sparkle;
+			path = Sparkle;
+			sourceTree = "<group>";
+		};
 		7DB346D0F39D3F0E887471402A8071AB = {
 			isa = PBXGroup;
 			children = (
 				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
 				39E9EE8210D861DFD82346C1F5EB7218 /* Frameworks */,
-				F4B0EBD636559FA3974FBDF2E8D2899E /* Pods */,
+				6C4A8D6723EA64B63D81821C58551253 /* Pods */,
 				B700376E9DF479356577F3CF44C2897C /* Products */,
 				FA6CA9796C8ACD9722A9A0E52B5579E8 /* Targets Support Files */,
 			);
+			sourceTree = "<group>";
+		};
+		B51F172CB8B6401B0613A2D3DBE6BB0B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				08F0E3ABE0F7FFF0B060E49C18859B20 /* Sparkle.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		B700376E9DF479356577F3CF44C2897C /* Products */ = {
@@ -120,14 +130,6 @@
 				CD4DAA3341F19875CB949E74AD68BEEB /* libPods-Updater.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F4B0EBD636559FA3974FBDF2E8D2899E /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				18CD8144EA31040C8D15534025D0234F /* Sparkle */,
-			);
-			name = Pods;
 			sourceTree = "<group>";
 		};
 		FA6CA9796C8ACD9722A9A0E52B5579E8 /* Targets Support Files */ = {

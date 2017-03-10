@@ -6,6 +6,7 @@ This application makes use of the following third party libraries:
 Copyright (c) 2006-2013 Andy Matuschak.
 Copyright (c) 2009-2013 Elgato Systems GmbH.
 Copyright (c) 2011-2014 Kornel Lesiński.
+Copyright (c) 2015-2017 Mayur Pawashe.
 Copyright (c) 2014 C.W. Betts.
 Copyright (c) 2014 Petroules Corporation.
 Copyright (c) 2014 Big Nerd Ranch.

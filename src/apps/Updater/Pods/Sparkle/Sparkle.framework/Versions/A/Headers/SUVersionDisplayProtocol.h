@@ -7,9 +7,9 @@
 //
 
 #if __has_feature(modules)
-@import Cocoa;
+@import Foundation;
 #else
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #endif
 #import "SUExport.h"
 
@@ -24,6 +24,6 @@
     Both versions are provided so that important distinguishing information
     can be displayed while also leaving out unnecessary/confusing parts.
 */
-- (void)formatVersion:(NSString **)inOutVersionA andVersion:(NSString **)inOutVersionB;
+- (void)formatVersion:(NSString *_Nonnull*_Nonnull)inOutVersionA andVersion:(NSString *_Nonnull*_Nonnull)inOutVersionB;
 
 @end

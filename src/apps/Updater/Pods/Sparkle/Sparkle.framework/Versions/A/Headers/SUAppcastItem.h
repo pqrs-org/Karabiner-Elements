@@ -25,6 +25,7 @@ SU_EXPORT @interface SUAppcastItem : NSObject
 @property (copy, readonly) NSString *minimumSystemVersion;
 @property (copy, readonly) NSString *maximumSystemVersion;
 @property (strong, readonly) NSURL *fileURL;
+@property (nonatomic, readonly) uint64_t contentLength;
 @property (copy, readonly) NSString *versionString;
 @property (copy, readonly) NSString *displayVersionString;
 @property (copy, readonly) NSDictionary *deltaUpdates;
