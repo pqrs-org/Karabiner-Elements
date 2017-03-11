@@ -80,6 +80,8 @@ public:
   void set_profile(const core_configuration::profile& profile) {
     simple_modifications_key_code_map_ = profile.get_simple_modifications_key_code_map(logger::get_logger());
     fn_function_keys_key_code_map_ = profile.get_fn_function_keys_key_code_map(logger::get_logger());
+    standalone_keys_key_code_map_ = profile.get_standalone_keys_key_code_map(logger::get_logger());
+    one_to_many_mappings_key_code_map_ = profile.get_one_to_many_mappings_key_code_map_(logger::get_logger());
 
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
     if (auto k = types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
@@ -87,6 +89,7 @@ public:
     }
     properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(profile.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds());
     virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
+    standalone_keys_delay_milliseconds_ = profile.get_virtual_hid_keyboard().get_standalone_keys_delay_milliseconds();
   }
 
   void unset_profile(void) {
@@ -111,6 +114,19 @@ public:
                              uint64_t timestamp,
                              key_code from_key_code,
                              bool pressed) {
+    if (process_standalone_key(device_registry_entry_id, timestamp, from_key_code, pressed)) {
+      return;
+    }
+    _handle_keyboard_event(device_registry_entry_id, timestamp, from_key_code, pressed);
+  }
+
+  void _handle_keyboard_event(device_registry_entry_id device_registry_entry_id,
+                              uint64_t timestamp,
+                              krbn::key_code from_key_code,
+                              bool pressed) {
+    if (process_one_to_many_mappings(from_key_code, pressed, timestamp)) {
+        return;
+    }
     key_code to_key_code = from_key_code;
 
     // ----------------------------------------
@@ -193,9 +209,6 @@ public:
     }
 
     // ----------------------------------------
-    if (post_modifier_flag_event(to_key_code, pressed, timestamp)) {
-      return;
-    }
 
     post_key(to_key_code, pressed, timestamp);
   }
@@ -316,23 +329,83 @@ private:
     std::mutex mutex_;
   };
 
-  bool post_modifier_flag_event(key_code key_code, bool pressed, uint64_t timestamp) {
-    auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
-
-    auto modifier_flag = types::get_modifier_flag(key_code);
-    if (modifier_flag != modifier_flag::zero) {
-      modifier_flag_manager_.manipulate(modifier_flag, operation);
-
-      post_key(key_code, pressed, timestamp);
+  bool process_one_to_many_mappings(krbn::key_code key_code, bool pressed, uint64_t timestamp) {
+    auto it = one_to_many_mappings_key_code_map_.find(key_code);
+    if (it != one_to_many_mappings_key_code_map_.end()) {
+      auto to_key_codes = it->second;
+      for (auto it2 = to_key_codes.begin(); it2 != to_key_codes.end(); it2++) {
+        if ((krbn::types::get_modifier_flag(*it2) != krbn::modifier_flag::zero) == pressed) {
+          post_key(*it2, pressed, timestamp);
+        }
+      }
+      for (auto it2 = to_key_codes.begin(); it2 != to_key_codes.end(); it2++) {
+        if ((krbn::types::get_modifier_flag(*it2) != krbn::modifier_flag::zero) != pressed) {
+          post_key(*it2, pressed, timestamp);
+        }
+      }
       return true;
     }
+    return false;
+  }
 
+  bool process_standalone_key(device_registry_entry_id device_registry_entry_id,
+                              uint64_t timestamp,
+                              krbn::key_code from_key_code,
+                              bool pressed) {
+    if (pressed) {
+      if (standalone_keys_timer_ != nullptr) { // press the previous standalone key as the normal key
+        standalone_keys_timer_ = nullptr;
+        _handle_keyboard_event(device_registry_entry_id, timestamp, standalone_from_key_, pressed);
+        handle_keyboard_event(device_registry_entry_id, timestamp, from_key_code, pressed);
+        return true;
+      } else if (standalone_keys_key_code_map_.find(from_key_code) != standalone_keys_key_code_map_.end()) { // from_key_code in standalone keys
+        standalone_from_key_ = from_key_code;
+        standalone_keys_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
+            dispatch_time(DISPATCH_TIME_NOW, standalone_keys_delay_milliseconds_ * NSEC_PER_MSEC),
+            standalone_keys_delay_milliseconds_ * NSEC_PER_MSEC,
+            0,
+            ^{
+              standalone_keys_timer_ = nullptr;
+              _handle_keyboard_event(device_registry_entry_id, timestamp, from_key_code, pressed);
+            });
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (from_key_code == standalone_from_key_ && standalone_keys_timer_ != nullptr) {
+        standalone_keys_timer_ = nullptr;
+        auto to_standalone_key_code = standalone_keys_key_code_map_.find(from_key_code)->second;
+        post_key(to_standalone_key_code, true, timestamp);
+        post_key(to_standalone_key_code, false, timestamp);
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  bool post_standalone_key(krbn::key_code key_code, uint64_t timestamp) {
+    auto it = standalone_keys_key_code_map_.find(key_code);
+    if (it != standalone_keys_key_code_map_.end()) {
+      post_key(it->second, true, timestamp);
+      post_key(it->second, false, timestamp);
+      return true;
+    }
     return false;
   }
 
   void post_key(key_code key_code, bool pressed, uint64_t timestamp) {
     add_delay_to_continuous_event(timestamp);
 
+    // pre-process modifier keys
+    auto operation = pressed ? manipulator::modifier_flag_manager::operation::increase : manipulator::modifier_flag_manager::operation::decrease;
+    auto modifier_flag = krbn::types::get_modifier_flag(key_code);
+    if (modifier_flag != krbn::modifier_flag::zero) {
+      modifier_flag_manager_.manipulate(modifier_flag, operation);
+    }
+
+    // send key event
     if (auto usage_page = types::get_usage_page(key_code)) {
       if (auto usage = types::get_usage(key_code)) {
         pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
@@ -381,11 +454,16 @@ private:
 
   std::unordered_map<key_code, key_code> simple_modifications_key_code_map_;
   std::unordered_map<key_code, key_code> fn_function_keys_key_code_map_;
+  std::unordered_map<key_code, key_code> standalone_keys_key_code_map_;
+  std::unordered_map<key_code, std::vector<key_code>> one_to_many_mappings_key_code_map_;
+  key_code standalone_from_key_;
+  std::unique_ptr<gcd_utility::main_queue_timer> standalone_keys_timer_;
 
   manipulated_keys manipulated_keys_;
   manipulated_keys manipulated_fn_keys_;
 
   uint64_t last_timestamp_;
+  uint32_t standalone_keys_delay_milliseconds_;
 };
 }
 }
