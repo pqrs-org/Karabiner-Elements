@@ -606,7 +606,8 @@ public:
 
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(spdlog::logger& logger, const std::string& file_path) : loaded_(true) {
+  core_configuration(spdlog::logger& logger, const std::string& file_path) : loaded_(true),
+                                                                             global_configuration_(nlohmann::json()) {
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
@@ -634,7 +635,7 @@ public:
             {
               const std::string key = "global";
               if (json_.find(key) != json_.end()) {
-                global_configuration_ = std::make_unique<global_configuration>(json_[key]);
+                global_configuration_ = global_configuration(json_[key]);
               }
             }
             {
@@ -656,9 +657,6 @@ public:
     }
 
     // Fallbacks
-    if (!global_configuration_) {
-      global_configuration_ = std::make_unique<global_configuration>(nullptr);
-    }
     if (profiles_.empty()) {
       profiles_.emplace_back(nlohmann::json({
           {"name", "Default profile"},
@@ -669,7 +667,7 @@ public:
 
   nlohmann::json to_json(void) const {
     auto j = json_;
-    j["global"] = *global_configuration_;
+    j["global"] = global_configuration_;
     j["profiles"] = profiles_;
     return j;
   }
@@ -677,10 +675,10 @@ public:
   bool is_loaded(void) const { return loaded_; }
 
   const global_configuration& get_global_configuration(void) const {
-    return *global_configuration_;
+    return global_configuration_;
   }
   global_configuration& get_global_configuration(void) {
-    return *global_configuration_;
+    return global_configuration_;
   }
 
   const std::vector<profile>& get_profiles(void) const {
@@ -746,7 +744,7 @@ private:
   nlohmann::json json_;
   bool loaded_;
 
-  std::unique_ptr<global_configuration> global_configuration_;
+  global_configuration global_configuration_;
   std::vector<profile> profiles_;
 };
 
