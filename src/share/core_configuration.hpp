@@ -382,7 +382,7 @@ public:
       };
 
       device(const nlohmann::json& json) : json_(json),
-                                           identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json(nullptr)),
+                                           identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json()),
                                            ignore_(false),
                                            disable_built_in_keyboard_if_exists_(false) {
         {
@@ -436,7 +436,23 @@ public:
     };
 
     profile(const nlohmann::json& json) : json_(json),
-                                          selected_(false) {
+                                          selected_(false),
+                                          simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json()),
+                                          fn_function_keys_(nlohmann::json({
+                                              {"f1", "display_brightness_decrement"},
+                                              {"f2", "display_brightness_increment"},
+                                              {"f3", "mission_control"},
+                                              {"f4", "launchpad"},
+                                              {"f5", "illumination_decrement"},
+                                              {"f6", "illumination_increment"},
+                                              {"f7", "rewind"},
+                                              {"f8", "play_or_pause"},
+                                              {"f9", "fastforward"},
+                                              {"f10", "mute"},
+                                              {"f11", "volume_decrement"},
+                                              {"f12", "volume_increment"},
+                                          })),
+                                          virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json()) {
       {
         const std::string key = "name";
         if (json.find(key) != json.end() && json[key].is_string()) {
@@ -450,47 +466,14 @@ public:
         }
       }
       {
-        const std::string key = "simple_modifications";
-        if (json.find(key) != json.end()) {
-          simple_modifications_ = std::make_unique<simple_modifications>(json[key]);
-        } else {
-          simple_modifications_ = std::make_unique<simple_modifications>(nullptr);
-        }
-      }
-      {
         const std::string key = "fn_function_keys";
-
-        // default values
-        fn_function_keys_ = std::make_unique<simple_modifications>(nlohmann::json({
-            {"f1", "display_brightness_decrement"},
-            {"f2", "display_brightness_increment"},
-            {"f3", "mission_control"},
-            {"f4", "launchpad"},
-            {"f5", "illumination_decrement"},
-            {"f6", "illumination_increment"},
-            {"f7", "rewind"},
-            {"f8", "play_or_pause"},
-            {"f9", "fastforward"},
-            {"f10", "mute"},
-            {"f11", "volume_decrement"},
-            {"f12", "volume_increment"},
-        }));
-
         if (json.find(key) != json.end() && json[key].is_object()) {
           for (auto it = json[key].begin(); it != json[key].end(); ++it) {
             // it.key() is always std::string.
             if (it.value().is_string()) {
-              fn_function_keys_->replace_second(it.key(), it.value());
+              fn_function_keys_.replace_second(it.key(), it.value());
             }
           }
-        }
-      }
-      {
-        const std::string key = "virtual_hid_keyboard";
-        if (json.find(key) != json.end()) {
-          virtual_hid_keyboard_ = std::make_unique<virtual_hid_keyboard>(json[key]);
-        } else {
-          virtual_hid_keyboard_ = std::make_unique<virtual_hid_keyboard>(nullptr);
         }
       }
       {
@@ -507,9 +490,9 @@ public:
       auto j = json_;
       j["name"] = name_;
       j["selected"] = selected_;
-      j["simple_modifications"] = *simple_modifications_;
-      j["fn_function_keys"] = *fn_function_keys_;
-      j["virtual_hid_keyboard"] = *virtual_hid_keyboard_;
+      j["simple_modifications"] = simple_modifications_;
+      j["fn_function_keys"] = fn_function_keys_;
+      j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
       j["devices"] = devices_;
       return j;
     }
@@ -529,36 +512,36 @@ public:
     }
 
     const std::vector<std::pair<std::string, std::string>>& get_simple_modifications(void) const {
-      return simple_modifications_->get_pairs();
+      return simple_modifications_.get_pairs();
     }
     void push_back_simple_modification(void) {
-      simple_modifications_->push_back_pair();
+      simple_modifications_.push_back_pair();
     }
     void erase_simple_modification(size_t index) {
-      simple_modifications_->erase_pair(index);
+      simple_modifications_.erase_pair(index);
     }
     void replace_simple_modification(size_t index, const std::string& from, const std::string& to) {
-      simple_modifications_->replace_pair(index, from, to);
+      simple_modifications_.replace_pair(index, from, to);
     }
     const std::unordered_map<key_code, key_code> get_simple_modifications_key_code_map(spdlog::logger& logger) const {
-      return simple_modifications_->to_key_code_map(logger);
+      return simple_modifications_.to_key_code_map(logger);
     }
 
     const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) const {
-      return fn_function_keys_->get_pairs();
+      return fn_function_keys_.get_pairs();
     }
     void replace_fn_function_key(const std::string& from, const std::string& to) {
-      fn_function_keys_->replace_second(from, to);
+      fn_function_keys_.replace_second(from, to);
     }
     const std::unordered_map<key_code, key_code> get_fn_function_keys_key_code_map(spdlog::logger& logger) const {
-      return fn_function_keys_->to_key_code_map(logger);
+      return fn_function_keys_.to_key_code_map(logger);
     }
 
     const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
-      return *virtual_hid_keyboard_;
+      return virtual_hid_keyboard_;
     }
     virtual_hid_keyboard& get_virtual_hid_keyboard(void) {
-      return *virtual_hid_keyboard_;
+      return virtual_hid_keyboard_;
     }
 
     const std::vector<device>& get_devices(void) const {
@@ -615,9 +598,9 @@ public:
     nlohmann::json json_;
     std::string name_;
     bool selected_;
-    std::unique_ptr<simple_modifications> simple_modifications_;
-    std::unique_ptr<simple_modifications> fn_function_keys_;
-    std::unique_ptr<virtual_hid_keyboard> virtual_hid_keyboard_;
+    simple_modifications simple_modifications_;
+    simple_modifications fn_function_keys_;
+    virtual_hid_keyboard virtual_hid_keyboard_;
     std::vector<device> devices_;
   };
 
