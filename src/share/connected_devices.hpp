@@ -48,13 +48,13 @@ public:
       }
       descriptions(const nlohmann::json& json) {
         {
-          std::string key = "manufacturer";
+          const std::string key = "manufacturer";
           if (json.find(key) != json.end() && json[key].is_string()) {
             manufacturer_ = json[key];
           }
         }
         {
-          std::string key = "product";
+          const std::string key = "product";
           if (json.find(key) != json.end() && json[key].is_string()) {
             product_ = json[key];
           }
@@ -102,13 +102,13 @@ public:
                                          ignore_(false),
                                          is_built_in_keyboard_(false) {
       {
-        std::string key = "ignore";
+        const std::string key = "ignore";
         if (json.find(key) != json.end() && json[key].is_boolean()) {
           ignore_ = json[key];
         }
       }
       {
-        std::string key = "is_built_in_keyboard";
+        const std::string key = "is_built_in_keyboard";
         if (json.find(key) != json.end() && json[key].is_boolean()) {
           is_built_in_keyboard_ = json[key];
         }
