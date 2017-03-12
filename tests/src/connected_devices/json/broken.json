@@ -1,0 +1,14 @@
+[
+    {
+        "descriptions": {
+            "manufacturer": "manufacturer1",
+            "product": "product1"
+        },
+        "identifiers": {
+            "vendor_id": 1234,
+            "product_id": 5678,
+            "is_keyboard": true,
+            "is_pointing_device": false
+        },
+        "ignore": false,
+]

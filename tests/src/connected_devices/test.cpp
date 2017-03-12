@@ -194,6 +194,7 @@ TEST_CASE("connected_devices") {
       connected_devices.push_back_device(device);
     }
 
+    REQUIRE(connected_devices.is_loaded() == true);
     REQUIRE(connected_devices.get_devices().size() == 2);
     REQUIRE(connected_devices.get_devices()[0].get_ignore() == false);
     REQUIRE(connected_devices.get_devices()[1].get_ignore() == true);
@@ -206,9 +207,17 @@ TEST_CASE("connected_devices") {
   {
     krbn::connected_devices connected_devices(logger::get_logger(), "json/connected_devices.json");
 
+    REQUIRE(connected_devices.is_loaded() == true);
     REQUIRE(connected_devices.get_devices().size() == 2);
     REQUIRE(connected_devices.get_devices()[0].get_ignore() == false);
     REQUIRE(connected_devices.get_devices()[1].get_ignore() == true);
+  }
+
+  {
+    krbn::connected_devices connected_devices(logger::get_logger(), "json/broken.json");
+
+    REQUIRE(connected_devices.is_loaded() == false);
+    REQUIRE(connected_devices.get_devices().size() == 0);
   }
 }
 

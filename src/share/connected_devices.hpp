@@ -150,10 +150,10 @@ public:
     bool is_built_in_keyboard_;
   };
 
-  connected_devices(void) {
+  connected_devices(void) : loaded_(true) {
   }
 
-  connected_devices(spdlog::logger& logger, const std::string& file_path) {
+  connected_devices(spdlog::logger& logger, const std::string& file_path) : loaded_(true) {
     std::ifstream input(file_path);
     if (input) {
       try {
@@ -165,6 +165,7 @@ public:
         }
       } catch (std::exception& e) {
         logger.warn("parse error in {0}: {1}", file_path, e.what());
+        loaded_ = false;
       }
     }
   }
@@ -172,6 +173,8 @@ public:
   nlohmann::json to_json(void) const {
     return nlohmann::json(devices_);
   }
+
+  bool is_loaded(void) const { return loaded_; }
 
   const std::vector<device>& get_devices(void) const {
     return devices_;
@@ -184,6 +187,8 @@ public:
   }
 
 private:
+  bool loaded_;
+
   std::vector<device> devices_;
 };
 
