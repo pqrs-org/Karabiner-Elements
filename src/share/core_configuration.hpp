@@ -382,16 +382,9 @@ public:
       };
 
       device(const nlohmann::json& json) : json_(json),
+                                           identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json(nullptr)),
                                            ignore_(false),
                                            disable_built_in_keyboard_if_exists_(false) {
-        {
-          const std::string key = "identifiers";
-          if (json.find(key) != json.end() && json[key].is_object()) {
-            identifiers_ = std::make_unique<identifiers>(json[key]);
-          } else {
-            identifiers_ = std::make_unique<identifiers>(nullptr);
-          }
-        }
         {
           const std::string key = "ignore";
           if (json.find(key) != json.end() && json[key].is_boolean()) {
@@ -408,17 +401,17 @@ public:
 
       nlohmann::json to_json(void) const {
         auto j = json_;
-        j["identifiers"] = *identifiers_;
+        j["identifiers"] = identifiers_;
         j["ignore"] = ignore_;
         j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
         return j;
       }
 
       const identifiers& get_identifiers(void) const {
-        return *identifiers_;
+        return identifiers_;
       }
       identifiers& get_identifiers(void) {
-        return *identifiers_;
+        return identifiers_;
       }
 
       bool get_ignore(void) const {
@@ -437,7 +430,7 @@ public:
 
     private:
       nlohmann::json json_;
-      std::unique_ptr<identifiers> identifiers_;
+      identifiers identifiers_;
       bool ignore_;
       bool disable_built_in_keyboard_if_exists_;
     };
