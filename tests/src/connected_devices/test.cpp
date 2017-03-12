@@ -204,8 +204,7 @@ TEST_CASE("connected_devices") {
   }
 
   {
-    std::ifstream ifs("json/connected_devices.json");
-    krbn::connected_devices connected_devices(nlohmann::json::parse(ifs));
+    krbn::connected_devices connected_devices(logger::get_logger(), "json/connected_devices.json");
 
     REQUIRE(connected_devices.get_devices().size() == 2);
     REQUIRE(connected_devices.get_devices()[0].get_ignore() == false);

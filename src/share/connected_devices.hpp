@@ -153,10 +153,18 @@ public:
   connected_devices(void) {
   }
 
-  connected_devices(const nlohmann::json& json) {
-    if (json.is_array()) {
-      for (const auto& j : json) {
-        devices_.push_back(device(j));
+  connected_devices(spdlog::logger& logger, const std::string& file_path) {
+    std::ifstream input(file_path);
+    if (input) {
+      try {
+        auto json = nlohmann::json::parse(input);
+        if (json.is_array()) {
+          for (const auto& j : json) {
+            devices_.push_back(device(j));
+          }
+        }
+      } catch (std::exception& e) {
+        logger.warn("parse error in {0}: {1}", file_path, e.what());
       }
     }
   }
