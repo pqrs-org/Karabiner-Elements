@@ -1,7 +1,6 @@
 // -*- Mode: objc -*-
 
 @import Cocoa;
-#import "DeviceModel.h"
 #import "libkrbn.h"
 
 @interface KarabinerKitCoreConfigurationModel : NSObject
