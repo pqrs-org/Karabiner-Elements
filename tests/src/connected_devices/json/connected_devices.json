@@ -10,7 +10,7 @@
             "is_keyboard": true,
             "is_pointing_device": false
         },
-        "ignore": false,
+        "ignored": false,
         "is_built_in_keyboard": true
     },
     {
@@ -24,7 +24,7 @@
             "is_keyboard": false,
             "is_pointing_device": true
         },
-        "ignore": true,
+        "ignored": true,
         "is_built_in_keyboard": false
     }
 ]

@@ -16,7 +16,7 @@
 //             "product_id": 515,
 //             "vendor_id": 1278
 //         },
-//         "ignore": false,
+//         "ignored": false,
 //         "is_built_in_keyboard": false
 //     },
 //     {
@@ -30,7 +30,7 @@
 //             "product_id": 610,
 //             "vendor_id": 1452
 //         },
-//         "ignore": false,
+//         "ignored": false,
 //         "is_built_in_keyboard": true
 //     }
 // ]
@@ -91,20 +91,20 @@ public:
 
     device(const descriptions& descriptions,
            const core_configuration::profile::device::identifiers& identifiers,
-           bool ignore,
+           bool ignored,
            bool is_built_in_keyboard) : descriptions_(descriptions),
                                         identifiers_(identifiers),
-                                        ignore_(ignore),
+                                        ignored_(ignored),
                                         is_built_in_keyboard_(is_built_in_keyboard) {
     }
     device(const nlohmann::json& json) : descriptions_(json.find("descriptions") != json.end() ? json["descriptions"] : nlohmann::json()),
                                          identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json()),
-                                         ignore_(false),
+                                         ignored_(false),
                                          is_built_in_keyboard_(false) {
       {
-        const std::string key = "ignore";
+        const std::string key = "ignored";
         if (json.find(key) != json.end() && json[key].is_boolean()) {
-          ignore_ = json[key];
+          ignored_ = json[key];
         }
       }
       {
@@ -119,7 +119,7 @@ public:
       return nlohmann::json({
           {"descriptions", descriptions_},
           {"identifiers", identifiers_},
-          {"ignore", ignore_},
+          {"ignored", ignored_},
           {"is_built_in_keyboard", is_built_in_keyboard_},
       });
     }
@@ -132,11 +132,11 @@ public:
       return identifiers_;
     }
 
-    bool get_ignore(void) const {
-      return ignore_;
+    bool get_ignored(void) const {
+      return ignored_;
     }
-    void set_ignore(bool value) {
-      ignore_ = value;
+    void set_ignored(bool value) {
+      ignored_ = value;
     }
 
     bool get_is_built_in_keyboard(void) const {
@@ -146,7 +146,7 @@ public:
   private:
     descriptions descriptions_;
     core_configuration::profile::device::identifiers identifiers_;
-    bool ignore_;
+    bool ignored_;
     bool is_built_in_keyboard_;
   };
 

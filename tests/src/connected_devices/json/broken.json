@@ -10,5 +10,5 @@
             "is_keyboard": true,
             "is_pointing_device": false
         },
-        "ignore": false,
+        "ignored": false,
 ]
