@@ -16,7 +16,6 @@
 //             "product_id": 515,
 //             "vendor_id": 1278
 //         },
-//         "ignored": false,
 //         "is_built_in_keyboard": false
 //     },
 //     {
@@ -30,7 +29,6 @@
 //             "product_id": 610,
 //             "vendor_id": 1452
 //         },
-//         "ignored": false,
 //         "is_built_in_keyboard": true
 //     }
 // ]
@@ -91,22 +89,13 @@ public:
 
     device(const descriptions& descriptions,
            const core_configuration::profile::device::identifiers& identifiers,
-           bool ignored,
            bool is_built_in_keyboard) : descriptions_(descriptions),
                                         identifiers_(identifiers),
-                                        ignored_(ignored),
                                         is_built_in_keyboard_(is_built_in_keyboard) {
     }
     device(const nlohmann::json& json) : descriptions_(json.find("descriptions") != json.end() ? json["descriptions"] : nlohmann::json()),
                                          identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json()),
-                                         ignored_(false),
                                          is_built_in_keyboard_(false) {
-      {
-        const std::string key = "ignored";
-        if (json.find(key) != json.end() && json[key].is_boolean()) {
-          ignored_ = json[key];
-        }
-      }
       {
         const std::string key = "is_built_in_keyboard";
         if (json.find(key) != json.end() && json[key].is_boolean()) {
@@ -119,7 +108,6 @@ public:
       return nlohmann::json({
           {"descriptions", descriptions_},
           {"identifiers", identifiers_},
-          {"ignored", ignored_},
           {"is_built_in_keyboard", is_built_in_keyboard_},
       });
     }
@@ -132,13 +120,6 @@ public:
       return identifiers_;
     }
 
-    bool get_ignored(void) const {
-      return ignored_;
-    }
-    void set_ignored(bool value) {
-      ignored_ = value;
-    }
-
     bool get_is_built_in_keyboard(void) const {
       return is_built_in_keyboard_;
     }
@@ -146,7 +127,6 @@ public:
   private:
     descriptions descriptions_;
     core_configuration::profile::device::identifiers identifiers_;
-    bool ignored_;
     bool is_built_in_keyboard_;
   };
 

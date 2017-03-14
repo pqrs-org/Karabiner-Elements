@@ -62,16 +62,11 @@ TEST_CASE("connected_devices::device") {
                                                                        false);
     krbn::connected_devices::device device(descriptions,
                                            identifiers,
-                                           false,
                                            true);
 
     REQUIRE(device.get_descriptions() == descriptions);
     REQUIRE(device.get_identifiers() == identifiers);
-    REQUIRE(device.get_ignored() == false);
     REQUIRE(device.get_is_built_in_keyboard() == true);
-
-    device.set_ignored(true);
-    REQUIRE(device.get_ignored() == true);
 
     REQUIRE(device.to_json() == nlohmann::json(
                                     {{
@@ -99,9 +94,6 @@ TEST_CASE("connected_devices::device") {
                                                                 "is_pointing_device", false,
                                                             },
                                                         },
-                                     },
-                                     {
-                                         "ignored", true,
                                      },
                                      {
                                          "is_built_in_keyboard", true,
@@ -137,9 +129,6 @@ TEST_CASE("connected_devices::device") {
                             },
          },
          {
-             "ignored", true,
-         },
-         {
              "is_built_in_keyboard", true,
          }}));
 
@@ -149,7 +138,6 @@ TEST_CASE("connected_devices::device") {
     REQUIRE(device1.get_identifiers().get_product_id() == krbn::product_id(0));
     REQUIRE(device1.get_identifiers().get_is_keyboard() == false);
     REQUIRE(device1.get_identifiers().get_is_pointing_device() == false);
-    REQUIRE(device1.get_ignored() == false);
     REQUIRE(device1.get_is_built_in_keyboard() == false);
 
     REQUIRE(device2.get_descriptions().get_manufacturer() == "manufacturer2");
@@ -158,7 +146,6 @@ TEST_CASE("connected_devices::device") {
     REQUIRE(device2.get_identifiers().get_product_id() == krbn::product_id(5678));
     REQUIRE(device2.get_identifiers().get_is_keyboard() == true);
     REQUIRE(device2.get_identifiers().get_is_pointing_device() == false);
-    REQUIRE(device2.get_ignored() == true);
     REQUIRE(device2.get_is_built_in_keyboard() == true);
   }
 }
@@ -176,7 +163,6 @@ TEST_CASE("connected_devices") {
                                                                          false);
       krbn::connected_devices::device device(descriptions,
                                              identifiers,
-                                             false,
                                              true);
       connected_devices.push_back_device(device);
     }
@@ -189,15 +175,14 @@ TEST_CASE("connected_devices") {
                                                                          true);
       krbn::connected_devices::device device(descriptions,
                                              identifiers,
-                                             true,
                                              false);
       connected_devices.push_back_device(device);
     }
 
     REQUIRE(connected_devices.is_loaded() == true);
     REQUIRE(connected_devices.get_devices().size() == 2);
-    REQUIRE(connected_devices.get_devices()[0].get_ignored() == false);
-    REQUIRE(connected_devices.get_devices()[1].get_ignored() == true);
+    REQUIRE(connected_devices.get_devices()[0].get_is_built_in_keyboard() == true);
+    REQUIRE(connected_devices.get_devices()[1].get_is_built_in_keyboard() == false);
 
     std::ifstream ifs("json/connected_devices.json");
 
@@ -209,8 +194,8 @@ TEST_CASE("connected_devices") {
 
     REQUIRE(connected_devices.is_loaded() == true);
     REQUIRE(connected_devices.get_devices().size() == 2);
-    REQUIRE(connected_devices.get_devices()[0].get_ignored() == false);
-    REQUIRE(connected_devices.get_devices()[1].get_ignored() == true);
+    REQUIRE(connected_devices.get_devices()[0].get_is_built_in_keyboard() == true);
+    REQUIRE(connected_devices.get_devices()[1].get_is_built_in_keyboard() == false);
   }
 
   {

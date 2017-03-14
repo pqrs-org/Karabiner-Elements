@@ -14,7 +14,6 @@
 - (NSUInteger)productIdAtIndex:(NSUInteger)index;
 - (BOOL)isKeyboardAtIndex:(NSUInteger)index;
 - (BOOL)isPointingDeviceAtIndex:(NSUInteger)index;
-- (BOOL)ignoredAtIndex:(NSUInteger)index;
 - (BOOL)isBuiltInKeyboardAtIndex:(NSUInteger)index;
 
 @end

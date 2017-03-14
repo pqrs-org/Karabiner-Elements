@@ -77,10 +77,6 @@
   return libkrbn_connected_devices_get_identifiers_is_pointing_device(self.libkrbnConnectedDevices, index);
 }
 
-- (BOOL)ignoredAtIndex:(NSUInteger)index {
-  return libkrbn_connected_devices_get_ignored(self.libkrbnConnectedDevices, index);
-}
-
 - (BOOL)isBuiltInKeyboardAtIndex:(NSUInteger)index {
   return libkrbn_connected_devices_get_is_built_in_keyboard(self.libkrbnConnectedDevices, index);
 }

@@ -152,7 +152,6 @@ uint32_t libkrbn_connected_devices_get_identifiers_vendor_id(libkrbn_connected_d
 uint32_t libkrbn_connected_devices_get_identifiers_product_id(libkrbn_connected_devices* _Nonnull p, size_t index);
 bool libkrbn_connected_devices_get_identifiers_is_keyboard(libkrbn_connected_devices* _Nonnull p, size_t index);
 bool libkrbn_connected_devices_get_identifiers_is_pointing_device(libkrbn_connected_devices* _Nonnull p, size_t index);
-bool libkrbn_connected_devices_get_ignored(libkrbn_connected_devices* _Nonnull p, size_t index);
 bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* _Nonnull p, size_t index);
 
 typedef void libkrbn_connected_devices_monitor;
