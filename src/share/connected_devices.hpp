@@ -140,7 +140,7 @@ public:
         auto json = nlohmann::json::parse(input);
         if (json.is_array()) {
           for (const auto& j : json) {
-            devices_.push_back(device(j));
+            devices_.emplace_back(device(j));
           }
         }
       } catch (std::exception& e) {
@@ -161,6 +161,38 @@ public:
   }
   void push_back_device(const device& device) {
     devices_.push_back(device);
+
+    std::sort(devices_.begin(), devices_.end(), [](const class device& a,
+                                                   const class device& b) {
+      auto a_v = a.get_identifiers().get_vendor_id();
+      auto a_b = a.get_identifiers().get_product_id();
+      auto a_k = a.get_identifiers().get_is_keyboard();
+      auto a_p = a.get_identifiers().get_is_pointing_device();
+
+      auto b_v = b.get_identifiers().get_vendor_id();
+      auto b_b = b.get_identifiers().get_product_id();
+      auto b_k = b.get_identifiers().get_is_keyboard();
+      auto b_p = b.get_identifiers().get_is_pointing_device();
+
+      if (a_v == b_v) {
+        if (a_p == b_p) {
+          if (a_k == b_k) {
+            if (a_p == b_p) {
+              return true;
+            } else {
+              return a_p;
+            }
+          } else {
+            return a_k;
+          }
+        } else {
+          return a_p < b_p;
+        }
+      } else {
+        return a_v < b_v;
+      }
+      return true;
+    });
   }
   void clear(void) {
     devices_.clear();

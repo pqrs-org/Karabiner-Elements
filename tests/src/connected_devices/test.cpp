@@ -167,8 +167,8 @@ TEST_CASE("connected_devices") {
       connected_devices.push_back_device(device);
     }
     {
-      krbn::connected_devices::device::descriptions descriptions("manufacturer2",
-                                                                 "product2");
+      krbn::connected_devices::device::descriptions descriptions("manufacturer3",
+                                                                 "product3");
       krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(2345),
                                                                          krbn::product_id(6789),
                                                                          false,
@@ -178,11 +178,27 @@ TEST_CASE("connected_devices") {
                                              false);
       connected_devices.push_back_device(device);
     }
+    {
+      krbn::connected_devices::device::descriptions descriptions("manufacturer2",
+                                                                 "product2");
+      krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(1234),
+                                                                         krbn::product_id(5679),
+                                                                         false,
+                                                                         true);
+      krbn::connected_devices::device device(descriptions,
+                                             identifiers,
+                                             false);
+      connected_devices.push_back_device(device);
+    }
 
     REQUIRE(connected_devices.is_loaded() == true);
-    REQUIRE(connected_devices.get_devices().size() == 2);
-    REQUIRE(connected_devices.get_devices()[0].get_is_built_in_keyboard() == true);
-    REQUIRE(connected_devices.get_devices()[1].get_is_built_in_keyboard() == false);
+    REQUIRE(connected_devices.get_devices().size() == 3);
+    REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
+    REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_product_id() == krbn::product_id(5678));
+    REQUIRE(connected_devices.get_devices()[1].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
+    REQUIRE(connected_devices.get_devices()[1].get_identifiers().get_product_id() == krbn::product_id(5679));
+    REQUIRE(connected_devices.get_devices()[2].get_identifiers().get_vendor_id() == krbn::vendor_id(2345));
+    REQUIRE(connected_devices.get_devices()[2].get_identifiers().get_product_id() == krbn::product_id(6789));
 
     std::ifstream ifs("json/connected_devices.json");
 
@@ -193,7 +209,7 @@ TEST_CASE("connected_devices") {
     krbn::connected_devices connected_devices(logger::get_logger(), "json/connected_devices.json");
 
     REQUIRE(connected_devices.is_loaded() == true);
-    REQUIRE(connected_devices.get_devices().size() == 2);
+    REQUIRE(connected_devices.get_devices().size() == 3);
     REQUIRE(connected_devices.get_devices()[0].get_is_built_in_keyboard() == true);
     REQUIRE(connected_devices.get_devices()[1].get_is_built_in_keyboard() == false);
   }

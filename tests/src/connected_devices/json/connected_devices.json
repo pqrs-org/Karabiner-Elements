@@ -18,6 +18,19 @@
             "product": "product2"
         },
         "identifiers": {
+            "vendor_id": 1234,
+            "product_id": 5679,
+            "is_keyboard": false,
+            "is_pointing_device": true
+        },
+        "is_built_in_keyboard": false
+    },
+    {
+        "descriptions": {
+            "manufacturer": "manufacturer3",
+            "product": "product3"
+        },
+        "identifiers": {
             "vendor_id": 2345,
             "product_id": 6789,
             "is_keyboard": false,
