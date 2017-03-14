@@ -1,5 +1,4 @@
 #import "CoreConfigurationModel.h"
-#import "JsonUtility.h"
 
 @interface KarabinerKitCoreConfigurationModel ()
 
