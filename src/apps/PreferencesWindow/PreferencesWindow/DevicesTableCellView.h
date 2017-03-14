@@ -1,7 +1,7 @@
 // -*- Mode: objc -*-
 
 @import Cocoa;
-#import "KarabinerKit/DeviceModel.h"
+#import "KarabinerKit/KarabinerKit.h"
 
 @interface DevicesTableCellView : NSTableCellView
 
@@ -12,7 +12,11 @@
 // for DevicesIconsColumn
 @property(weak) IBOutlet NSImageView* keyboardImage;
 @property(weak) IBOutlet NSImageView* mouseImage;
+@property(readonly) NSUInteger deviceVendorId;
+@property(readonly) NSUInteger deviceProductId;
+@property(readonly) BOOL deviceIsKeyboard;
+@property(readonly) BOOL deviceIsPointingDevice;
 
-@property KarabinerKitDeviceIdentifiers* deviceIdentifiers;
+- (void)setDeviceIdentifiers:(KarabinerKitConnectedDevices*)connectedDevices index:(NSUInteger)index;
 
 @end

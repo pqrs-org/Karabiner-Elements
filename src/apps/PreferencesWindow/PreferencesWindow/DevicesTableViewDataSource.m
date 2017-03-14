@@ -4,7 +4,7 @@
 @implementation DevicesTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  return [KarabinerKitDeviceManager sharedManager].deviceModels.count;
+  return [KarabinerKitDeviceManager sharedManager].connectedDevices.devicesCount;
 }
 
 @end

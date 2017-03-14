@@ -13,107 +13,90 @@
 @implementation DevicesTableViewDelegate
 
 - (NSView*)tableView:(NSTableView*)tableView viewForTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)row {
-  NSArray<KarabinerKitDeviceModel*>* deviceModels = [KarabinerKitDeviceManager sharedManager].deviceModels;
-  if (0 <= row && row < (NSInteger)(deviceModels.count)) {
-    KarabinerKitDeviceModel* model = deviceModels[row];
+  if ([tableColumn.identifier isEqualToString:@"DevicesCheckboxColumn"]) {
+    DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesCheckboxCellView" owner:self];
+    KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
 
-    if ([tableColumn.identifier isEqualToString:@"DevicesCheckboxColumn"]) {
-      DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesCheckboxCellView" owner:self];
+    result.checkbox.title = [NSString stringWithFormat:@"%@ (%@)",
+                                                       [connectedDevices productAtIndex:row],
+                                                       [connectedDevices manufacturerAtIndex:row]];
+    result.checkbox.action = @selector(valueChanged:);
+    result.checkbox.target = self.devicesTableViewController;
 
-      NSString* productName = model.deviceDescriptions.product;
-      if ([productName length] == 0) {
-        productName = @"No product name";
-      }
-      NSString* manufacturerName = model.deviceDescriptions.manufacturer;
-      if ([manufacturerName length] == 0) {
-        manufacturerName = @"No manufacturer name";
-      }
-      result.checkbox.title = [NSString stringWithFormat:@"%@ (%@)", productName, manufacturerName];
+    [result setDeviceIdentifiers:connectedDevices index:row];
 
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    if ([coreConfigurationModel selectedProfileDeviceIgnore:result.deviceVendorId
+                                                  productId:result.deviceProductId
+                                                 isKeyboard:result.deviceIsKeyboard
+                                           isPointingDevice:result.deviceIsPointingDevice]) {
+      result.checkbox.state = NSOffState;
+    } else {
+      result.checkbox.state = NSOnState;
+    }
+
+    return result;
+  }
+
+  if ([tableColumn.identifier isEqualToString:@"DevicesVendorIdColumn"]) {
+    NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
+    KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+    result.textField.stringValue = [NSString stringWithFormat:@"0x%04lx", [connectedDevices vendorIdAtIndex:row]];
+    return result;
+  }
+
+  if ([tableColumn.identifier isEqualToString:@"DevicesProductIdColumn"]) {
+    NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
+    KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+    result.textField.stringValue = [NSString stringWithFormat:@"0x%04lx", [connectedDevices productIdAtIndex:row]];
+    return result;
+  }
+
+  if ([tableColumn.identifier isEqualToString:@"DevicesIconsColumn"]) {
+    DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesIconsCellView" owner:self];
+    KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+    result.keyboardImage.hidden = ![connectedDevices isKeyboardAtIndex:row];
+    result.mouseImage.hidden = ![connectedDevices isPointingDeviceAtIndex:row];
+    return result;
+  }
+
+  if ([tableColumn.identifier isEqualToString:@"DevicesExternalKeyboardColumn"]) {
+    DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesExternalKeyboardCellView" owner:self];
+    KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+
+    result.checkbox.title = [NSString stringWithFormat:@"%@ (%@) [0x%04lx,0x%04lx]",
+                                                       [connectedDevices productAtIndex:row],
+                                                       [connectedDevices manufacturerAtIndex:row],
+                                                       [connectedDevices vendorIdAtIndex:row],
+                                                       [connectedDevices productIdAtIndex:row]];
+    result.checkbox.state = NSOffState;
+
+    if ([connectedDevices isBuiltInKeyboardAtIndex:row]) {
+      result.checkbox.enabled = NO;
+    } else {
+      result.checkbox.enabled = YES;
       result.checkbox.action = @selector(valueChanged:);
       result.checkbox.target = self.devicesTableViewController;
 
-      result.deviceIdentifiers = model.deviceIdentifiers;
-
-      result.checkbox.state = (model.ignore ? NSOffState : NSOnState);
+      [result setDeviceIdentifiers:connectedDevices index:row];
 
       KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-      if ([coreConfigurationModel selectedProfileDeviceIgnore:model.deviceIdentifiers.vendorId
-                                                    productId:model.deviceIdentifiers.productId
-                                                   isKeyboard:model.deviceIdentifiers.isKeyboard
-                                             isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {
-        result.checkbox.state = NSOffState;
-      } else {
+      if ([coreConfigurationModel selectedProfileDeviceDisableBuiltInKeyboardIfExists:result.deviceVendorId
+                                                                            productId:result.deviceProductId
+                                                                           isKeyboard:result.deviceIsKeyboard
+                                                                     isPointingDevice:result.deviceIsPointingDevice]) {
         result.checkbox.state = NSOnState;
-      }
-
-      return result;
-    }
-
-    if ([tableColumn.identifier isEqualToString:@"DevicesVendorIdColumn"]) {
-      NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
-      result.textField.stringValue = [NSString stringWithFormat:@"0x%04x", model.deviceIdentifiers.vendorId];
-      return result;
-    }
-
-    if ([tableColumn.identifier isEqualToString:@"DevicesProductIdColumn"]) {
-      NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
-      result.textField.stringValue = [NSString stringWithFormat:@"0x%04x", model.deviceIdentifiers.productId];
-      return result;
-    }
-
-    if ([tableColumn.identifier isEqualToString:@"DevicesIconsColumn"]) {
-      DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesIconsCellView" owner:self];
-      result.keyboardImage.hidden = !(model.deviceIdentifiers.isKeyboard);
-      result.mouseImage.hidden = !(model.deviceIdentifiers.isPointingDevice);
-      return result;
-    }
-
-    if ([tableColumn.identifier isEqualToString:@"DevicesExternalKeyboardColumn"]) {
-      DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesExternalKeyboardCellView" owner:self];
-
-      // ----------------------------------------
-      NSString* productName = model.deviceDescriptions.product;
-      if ([productName length] == 0) {
-        productName = @"No product name";
-      }
-      NSString* manufacturerName = model.deviceDescriptions.manufacturer;
-      if ([manufacturerName length] == 0) {
-        manufacturerName = @"No manufacturer name";
-      }
-      result.checkbox.title = [NSString stringWithFormat:@"%@ (%@) [0x%04x,0x%04x]",
-                                                         productName, manufacturerName,
-                                                         model.deviceIdentifiers.vendorId,
-                                                         model.deviceIdentifiers.productId];
-      result.checkbox.state = NSOffState;
-
-      if (model.isBuiltInKeyboard) {
-        result.checkbox.enabled = NO;
       } else {
-        result.checkbox.enabled = YES;
-        result.checkbox.action = @selector(valueChanged:);
-        result.checkbox.target = self.devicesTableViewController;
-
-        result.deviceIdentifiers = model.deviceIdentifiers;
-
-        KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-        if ([coreConfigurationModel selectedProfileDeviceDisableBuiltInKeyboardIfExists:model.deviceIdentifiers.vendorId
-                                                                              productId:model.deviceIdentifiers.productId
-                                                                             isKeyboard:model.deviceIdentifiers.isKeyboard
-                                                                       isPointingDevice:model.deviceIdentifiers.isPointingDevice]) {
-          result.checkbox.state = NSOnState;
-        } else {
-          result.checkbox.state = NSOffState;
-        }
+        result.checkbox.state = NSOffState;
       }
-
-      // ----------------------------------------
-      result.keyboardImage.hidden = !(model.deviceIdentifiers.isKeyboard);
-      result.mouseImage.hidden = !(model.deviceIdentifiers.isPointingDevice);
-
-      // ----------------------------------------
-      return result;
     }
+
+    // ----------------------------------------
+    result.keyboardImage.hidden = ![connectedDevices isKeyboardAtIndex:row];
+    result.mouseImage.hidden = ![connectedDevices isPointingDeviceAtIndex:row];
+
+    // ----------------------------------------
+    return result;
   }
 
   return nil;
