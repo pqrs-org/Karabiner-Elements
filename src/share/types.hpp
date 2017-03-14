@@ -192,9 +192,11 @@ enum class led_state : uint32_t {
 };
 
 enum class vendor_id : uint32_t {
+  zero = 0,
 };
 
 enum class product_id : uint32_t {
+  zero = 0,
 };
 
 enum class location_id : uint32_t {
