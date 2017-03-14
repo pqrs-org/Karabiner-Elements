@@ -140,7 +140,28 @@ bool libkrbn_system_preferences_monitor_initialize(libkrbn_system_preferences_mo
 void libkrbn_system_preferences_monitor_terminate(libkrbn_system_preferences_monitor* _Nullable* _Nonnull p);
 
 // ----------------------------------------
-// libkrbn_device_monitor
+// libkrbn_connected_devices
+
+typedef void libkrbn_connected_devices;
+void libkrbn_connected_devices_terminate(libkrbn_connected_devices* _Nullable* _Nonnull p);
+
+size_t libkrbn_connected_devices_get_size(libkrbn_connected_devices* _Nonnull p);
+const char* _Nullable libkrbn_connected_devices_get_descriptions_manufacturer(libkrbn_connected_devices* _Nonnull p, size_t index);
+const char* _Nullable libkrbn_connected_devices_get_descriptions_product(libkrbn_connected_devices* _Nonnull p, size_t index);
+uint32_t libkrbn_connected_devices_get_identifiers_vendor_id(libkrbn_connected_devices* _Nonnull p, size_t index);
+uint32_t libkrbn_connected_devices_get_identifiers_product_id(libkrbn_connected_devices* _Nonnull p, size_t index);
+bool libkrbn_connected_devices_get_identifiers_is_keyboard(libkrbn_connected_devices* _Nonnull p, size_t index);
+bool libkrbn_connected_devices_get_identifiers_is_pointing_device(libkrbn_connected_devices* _Nonnull p, size_t index);
+bool libkrbn_connected_devices_get_ignored(libkrbn_connected_devices* _Nonnull p, size_t index);
+bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* _Nonnull p, size_t index);
+
+typedef void libkrbn_connected_devices_monitor;
+typedef void (*libkrbn_connected_devices_monitor_callback)(libkrbn_connected_devices* _Nonnull initialized_connected_devices,
+                                                           void* _Nullable refcon);
+bool libkrbn_connected_devices_monitor_initialize(libkrbn_connected_devices_monitor* _Nullable* _Nonnull out,
+                                                  libkrbn_connected_devices_monitor_callback _Nullable callback,
+                                                  void* _Nullable refcon);
+void libkrbn_connected_devices_monitor_terminate(libkrbn_connected_devices_monitor* _Nullable* _Nonnull p);
 
 typedef void libkrbn_device_monitor;
 typedef void (*libkrbn_device_monitor_callback)(void* _Nullable refcon);
