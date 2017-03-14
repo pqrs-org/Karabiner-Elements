@@ -6,7 +6,9 @@
 @interface KarabinerKitDeviceManager ()
 
 @property libkrbn_device_monitor* libkrbn_device_monitor;
+@property libkrbn_connected_devices_monitor* libkrbn_connected_devices_monitor;
 @property(copy, readwrite) NSArray<KarabinerKitDeviceModel*>* deviceModels;
+@property(readwrite) KarabinerKitConnectedDevices* connectedDevices;
 
 - (void)loadJsonFile;
 
@@ -18,6 +20,14 @@ static void devices_updated_callback(void* refcon) {
   [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitDevicesAreUpdated object:nil];
 }
 
+static void connected_devices_updated_callback(libkrbn_connected_devices* initializedConnectedDevices,
+                                               void* refcon) {
+  KarabinerKitDeviceManager* manager = (__bridge KarabinerKitDeviceManager*)(refcon);
+  manager.connectedDevices = [[KarabinerKitConnectedDevices alloc] initWithInitializedConnectedDevices:initializedConnectedDevices];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitDevicesAreUpdated object:nil];
+}
+
 @implementation KarabinerKitDeviceManager
 
 + (KarabinerKitDeviceManager*)sharedManager {
@@ -25,20 +35,36 @@ static void devices_updated_callback(void* refcon) {
   static KarabinerKitDeviceManager* manager;
   dispatch_once(&once, ^{
     manager = [KarabinerKitDeviceManager new];
-
-    libkrbn_device_monitor* p = NULL;
-    if (libkrbn_device_monitor_initialize(&p, devices_updated_callback, (__bridge void*)(manager))) {
-      manager.libkrbn_device_monitor = p;
-    }
   });
 
   return manager;
+}
+
+- (instancetype)init {
+  self = [super init];
+
+  if (self) {
+    libkrbn_device_monitor* p = NULL;
+    if (libkrbn_device_monitor_initialize(&p, devices_updated_callback, (__bridge void*)(self))) {
+      _libkrbn_device_monitor = p;
+    }
+
+    libkrbn_connected_devices_monitor* pp = NULL;
+    if (libkrbn_connected_devices_monitor_initialize(&pp, connected_devices_updated_callback, (__bridge void*)(self))) {
+      _libkrbn_connected_devices_monitor = pp;
+    }
+  }
+
+  return self;
 }
 
 - (void)dealloc {
   if (self.libkrbn_device_monitor) {
     libkrbn_device_monitor* p = self.libkrbn_device_monitor;
     libkrbn_device_monitor_terminate(&p);
+
+    libkrbn_connected_devices_monitor* pp = self.libkrbn_connected_devices_monitor;
+    libkrbn_connected_devices_monitor_terminate(&pp);
   }
 }
 

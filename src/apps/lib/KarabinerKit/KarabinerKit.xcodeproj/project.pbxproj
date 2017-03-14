@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3496EDB51E779059003D6EFD /* ConnectedDevices.h in Headers */ = {isa = PBXBuildFile; fileRef = 3496EDB31E779059003D6EFD /* ConnectedDevices.h */; };
+		3496EDB61E779059003D6EFD /* ConnectedDevices.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496EDB41E779059003D6EFD /* ConnectedDevices.m */; };
 		34D423481E18F06A000E4154 /* KarabinerKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D423471E18F06A000E4154 /* KarabinerKit.h */; };
 		34D4234A1E18F06A000E4154 /* KarabinerKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D423491E18F06A000E4154 /* KarabinerKit.m */; };
 		34D423521E18F2B5000E4154 /* CoreConfigurationModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D423501E18F2B5000E4154 /* CoreConfigurationModel.h */; };
@@ -25,6 +27,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3496EDB31E779059003D6EFD /* ConnectedDevices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectedDevices.h; sourceTree = "<group>"; };
+		3496EDB41E779059003D6EFD /* ConnectedDevices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectedDevices.m; sourceTree = "<group>"; };
 		34D423441E18F06A000E4154 /* libKarabinerKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libKarabinerKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		34D423471E18F06A000E4154 /* KarabinerKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KarabinerKit.h; sourceTree = "<group>"; };
 		34D423491E18F06A000E4154 /* KarabinerKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KarabinerKit.m; sourceTree = "<group>"; };
@@ -77,6 +81,8 @@
 			children = (
 				34D4237A1E1A9678000E4154 /* ConfigurationManager.h */,
 				34D4237B1E1A9678000E4154 /* ConfigurationManager.m */,
+				3496EDB31E779059003D6EFD /* ConnectedDevices.h */,
+				3496EDB41E779059003D6EFD /* ConnectedDevices.m */,
 				34D423501E18F2B5000E4154 /* CoreConfigurationModel.h */,
 				34D423511E18F2B5000E4154 /* CoreConfigurationModel.m */,
 				34D4235F1E1939C9000E4154 /* DeviceManager.h */,
@@ -115,6 +121,7 @@
 				34D423561E18F2D4000E4154 /* DeviceModel.h in Headers */,
 				34D423681E1939EC000E4154 /* NotificationKeys.h in Headers */,
 				34D4235E1E18F340000E4154 /* libkrbn.h in Headers */,
+				3496EDB51E779059003D6EFD /* ConnectedDevices.h in Headers */,
 				34D4237C1E1A9678000E4154 /* ConfigurationManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -175,6 +182,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3496EDB61E779059003D6EFD /* ConnectedDevices.m in Sources */,
 				34D4234A1E18F06A000E4154 /* KarabinerKit.m in Sources */,
 				34D423641E1939C9000E4154 /* DeviceManager.m in Sources */,
 				34D423661E1939C9000E4154 /* JsonUtility.m in Sources */,
