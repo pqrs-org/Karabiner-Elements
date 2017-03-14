@@ -3,6 +3,8 @@
 #include "boost_defs.hpp"
 
 #include "apple_hid_usage_tables.hpp"
+#include "connected_devices.hpp"
+#include "core_configuration.hpp"
 #include "gcd_utility.hpp"
 #include "iokit_utility.hpp"
 #include "spdlog_utility.hpp"
@@ -62,11 +64,9 @@ public:
                                                            is_grabbable_log_reducer_(logger),
                                                            observed_(false),
                                                            grabbed_(false),
-                                                           disabled_(false),
-                                                           is_built_in_keyboard_(false),
-                                                           disable_built_in_keyboard_if_exists_(false) {
+                                                           disabled_(false) {
     // ----------------------------------------
-    // retain device_
+    // Retain device_
 
     CFRetain(device_);
 
@@ -76,14 +76,46 @@ public:
       logger_.error("iokit_utility::get_registry_entry_id error @ {0}", __PRETTY_FUNCTION__);
     }
 
-    if (auto product = iokit_utility::get_product(device_)) {
-      if (product->find("Apple Internal ") != std::string::npos) {
-        is_built_in_keyboard_ = true;
+    // Create connected_device_.
+    {
+      std::string manufacturer;
+      std::string product;
+      if (auto m = iokit_utility::get_manufacturer(device_)) {
+        manufacturer = *m;
       }
+      if (auto p = iokit_utility::get_product(device_)) {
+        product = *p;
+      }
+      connected_devices::device::descriptions descriptions(manufacturer, product);
+
+      auto vendor_id = vendor_id::zero;
+      auto product_id = product_id::zero;
+      bool is_keyboard = IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
+      bool is_pointing_device = IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer) ||
+                                IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
+      if (auto v = iokit_utility::get_vendor_id(device_)) {
+        vendor_id = *v;
+      }
+      if (auto p = iokit_utility::get_product_id(device_)) {
+        product_id = *p;
+      }
+      krbn::core_configuration::profile::device::identifiers identifiers(vendor_id,
+                                                                         product_id,
+                                                                         is_keyboard,
+                                                                         is_pointing_device);
+
+      bool is_built_in_keyboard = false;
+      if (descriptions.get_product().find("Apple Internal ") != std::string::npos) {
+        is_built_in_keyboard = true;
+      }
+
+      connected_device_ = std::make_unique<connected_devices::device>(descriptions,
+                                                                      identifiers,
+                                                                      is_built_in_keyboard);
     }
 
     // ----------------------------------------
-    // setup elements_
+    // Setup elements_
 
     if (auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone)) {
       for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
@@ -127,7 +159,7 @@ public:
       close();
 
       // ----------------------------------------
-      // release queue_
+      // Release queue_
 
       if (queue_) {
         CFRelease(queue_);
@@ -135,7 +167,7 @@ public:
       }
 
       // ----------------------------------------
-      // release elements_
+      // Release elements_
 
       for (const auto& it : elements_) {
         CFRelease(it.second);
@@ -143,7 +175,7 @@ public:
       elements_.clear();
 
       // ----------------------------------------
-      // release device_
+      // Release device_
 
       CFRelease(device_);
     });
@@ -592,31 +624,20 @@ public:
     return r;
   }
 
-  bool get_disable_built_in_keyboard_if_exists(void) const {
-    bool __block value;
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      value = disable_built_in_keyboard_if_exists_;
-    });
-    return value;
-  }
-
-  void set_disable_built_in_keyboard_if_exists(bool value) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      disable_built_in_keyboard_if_exists_ = value;
-    });
+  const connected_devices::device get_connected_device(void) const {
+    return *connected_device_;
   }
 
   bool is_keyboard(void) const {
-    return IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
+    return connected_device_->get_identifiers().get_is_keyboard();
   }
 
   bool is_pointing_device(void) const {
-    return IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer) ||
-           IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
+    return connected_device_->get_identifiers().get_is_pointing_device();
   }
 
   bool is_built_in_keyboard(void) const {
-    return is_built_in_keyboard_;
+    return connected_device_->get_is_built_in_keyboard();
   }
 
   bool is_pqrs_device(void) const {
@@ -904,7 +925,6 @@ private:
   // (== `grabbed_` and does not call `value_callback_`)
   bool disabled_;
 
-  bool is_built_in_keyboard_;
-  bool disable_built_in_keyboard_if_exists_;
+  std::unique_ptr<connected_devices::device> connected_device_;
 };
 }

@@ -107,7 +107,6 @@ public:
                                                                          is_grabbable_callback_log_reducer_.reset();
                                                                          event_manipulator_.set_profile(core_configuration_->get_selected_profile());
                                                                          grab_devices();
-                                                                         output_devices_json();
                                                                        });
     });
   }
@@ -209,7 +208,6 @@ private:
     iokit_utility::log_matching_device(logger::get_logger(), device);
 
     auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
-    dev->set_disable_built_in_keyboard_if_exists(get_disable_built_in_keyboard_if_exists(*dev));
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
     dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
@@ -454,21 +452,9 @@ private:
 
   boost::optional<const core_configuration::profile::device&> find_device_configuration(const human_interface_device& device) {
     if (core_configuration_) {
-      if (auto vendor_id = device.get_vendor_id()) {
-        if (auto product_id = device.get_product_id()) {
-          bool is_keyboard = device.is_keyboard();
-          bool is_pointing_device = device.is_pointing_device();
-
-          core_configuration::profile::device::identifiers identifiers(*vendor_id,
-                                                                       *product_id,
-                                                                       is_keyboard,
-                                                                       is_pointing_device);
-
-          for (const auto& d : core_configuration_->get_selected_profile().get_devices()) {
-            if (d.get_identifiers() == identifiers) {
-              return d;
-            }
-          }
+      for (const auto& d : core_configuration_->get_selected_profile().get_devices()) {
+        if (d.get_identifiers() == device.get_connected_device().get_identifiers()) {
+          return d;
         }
       }
     }
@@ -505,7 +491,7 @@ private:
 
   bool need_to_disable_built_in_keyboard(void) {
     for (const auto& it : hids_) {
-      if ((it.second)->get_disable_built_in_keyboard_if_exists()) {
+      if (get_disable_built_in_keyboard_if_exists(*(it.second))) {
         return true;
       }
     }
@@ -523,51 +509,19 @@ private:
   }
 
   void output_devices_json(void) {
-    nlohmann::json json;
-    json = nlohmann::json::array();
+    connected_devices connected_devices;
 
     for (const auto& it : hids_) {
       if ((it.second)->is_pqrs_device()) {
         continue;
       }
 
-      nlohmann::json j({
-          {"identifiers", {}},
-          {"descriptions", {}},
-      });
-      if (auto vendor_id = (it.second)->get_vendor_id()) {
-        j["identifiers"]["vendor_id"] = static_cast<uint32_t>(*vendor_id);
-      } else {
-        j["identifiers"]["vendor_id"] = 0;
-      }
-      if (auto product_id = (it.second)->get_product_id()) {
-        j["identifiers"]["product_id"] = static_cast<uint32_t>(*product_id);
-      } else {
-        j["identifiers"]["product_id"] = 0;
-      }
-      j["identifiers"]["is_keyboard"] = (it.second)->is_keyboard();
-      j["identifiers"]["is_pointing_device"] = (it.second)->is_pointing_device();
-      if (auto manufacturer = (it.second)->get_manufacturer()) {
-        j["descriptions"]["manufacturer"] = boost::trim_copy(*manufacturer);
-      } else {
-        j["descriptions"]["manufacturer"] = "";
-      }
-      if (auto product = (it.second)->get_product()) {
-        j["descriptions"]["product"] = boost::trim_copy(*product);
-      } else {
-        j["descriptions"]["product"] = "";
-      }
-      j["ignore"] = is_ignored_device(*(it.second));
-      j["is_built_in_keyboard"] = (it.second)->is_built_in_keyboard();
-
-      if (!j.empty()) {
-        json.push_back(j);
-      }
+      connected_devices.push_back_device(it.second->get_connected_device());
     }
 
     std::ofstream stream(constants::get_devices_json_file_path());
     if (stream) {
-      stream << std::setw(4) << json << std::endl;
+      stream << std::setw(4) << connected_devices.to_json() << std::endl;
       chmod(constants::get_devices_json_file_path(), 0644);
     }
   }
