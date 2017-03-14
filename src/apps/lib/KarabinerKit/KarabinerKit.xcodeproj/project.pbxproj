@@ -13,8 +13,6 @@
 		34D4234A1E18F06A000E4154 /* KarabinerKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D423491E18F06A000E4154 /* KarabinerKit.m */; };
 		34D423521E18F2B5000E4154 /* CoreConfigurationModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D423501E18F2B5000E4154 /* CoreConfigurationModel.h */; };
 		34D423531E18F2B5000E4154 /* CoreConfigurationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D423511E18F2B5000E4154 /* CoreConfigurationModel.m */; };
-		34D423561E18F2D4000E4154 /* DeviceModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D423541E18F2D4000E4154 /* DeviceModel.h */; };
-		34D423571E18F2D4000E4154 /* DeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D423551E18F2D4000E4154 /* DeviceModel.m */; };
 		34D4235A1E18F303000E4154 /* libkrbn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34D423591E18F303000E4154 /* libkrbn.a */; };
 		34D4235E1E18F340000E4154 /* libkrbn.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D4235D1E18F340000E4154 /* libkrbn.h */; };
 		34D423631E1939C9000E4154 /* DeviceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D4235F1E1939C9000E4154 /* DeviceManager.h */; };
@@ -34,8 +32,6 @@
 		34D423491E18F06A000E4154 /* KarabinerKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KarabinerKit.m; sourceTree = "<group>"; };
 		34D423501E18F2B5000E4154 /* CoreConfigurationModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreConfigurationModel.h; sourceTree = "<group>"; };
 		34D423511E18F2B5000E4154 /* CoreConfigurationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreConfigurationModel.m; sourceTree = "<group>"; };
-		34D423541E18F2D4000E4154 /* DeviceModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceModel.h; sourceTree = "<group>"; };
-		34D423551E18F2D4000E4154 /* DeviceModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceModel.m; sourceTree = "<group>"; };
 		34D423591E18F303000E4154 /* libkrbn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkrbn.a; path = ../../../../lib/libkrbn/build/Release/libkrbn.a; sourceTree = "<group>"; };
 		34D4235D1E18F340000E4154 /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		34D4235F1E1939C9000E4154 /* DeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceManager.h; sourceTree = "<group>"; };
@@ -87,8 +83,6 @@
 				34D423511E18F2B5000E4154 /* CoreConfigurationModel.m */,
 				34D4235F1E1939C9000E4154 /* DeviceManager.h */,
 				34D423601E1939C9000E4154 /* DeviceManager.m */,
-				34D423541E18F2D4000E4154 /* DeviceModel.h */,
-				34D423551E18F2D4000E4154 /* DeviceModel.m */,
 				34D423611E1939C9000E4154 /* JsonUtility.h */,
 				34D423621E1939C9000E4154 /* JsonUtility.m */,
 				34D423471E18F06A000E4154 /* KarabinerKit.h */,
@@ -118,7 +112,6 @@
 				34D423631E1939C9000E4154 /* DeviceManager.h in Headers */,
 				34D423481E18F06A000E4154 /* KarabinerKit.h in Headers */,
 				34D423651E1939C9000E4154 /* JsonUtility.h in Headers */,
-				34D423561E18F2D4000E4154 /* DeviceModel.h in Headers */,
 				34D423681E1939EC000E4154 /* NotificationKeys.h in Headers */,
 				34D4235E1E18F340000E4154 /* libkrbn.h in Headers */,
 				3496EDB51E779059003D6EFD /* ConnectedDevices.h in Headers */,
@@ -188,7 +181,6 @@
 				34D423661E1939C9000E4154 /* JsonUtility.m in Sources */,
 				34D423531E18F2B5000E4154 /* CoreConfigurationModel.m in Sources */,
 				34D4237D1E1A9678000E4154 /* ConfigurationManager.m in Sources */,
-				34D423571E18F2D4000E4154 /* DeviceModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

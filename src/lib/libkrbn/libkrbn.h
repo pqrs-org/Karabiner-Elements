@@ -163,13 +163,6 @@ bool libkrbn_connected_devices_monitor_initialize(libkrbn_connected_devices_moni
                                                   void* _Nullable refcon);
 void libkrbn_connected_devices_monitor_terminate(libkrbn_connected_devices_monitor* _Nullable* _Nonnull p);
 
-typedef void libkrbn_device_monitor;
-typedef void (*libkrbn_device_monitor_callback)(void* _Nullable refcon);
-bool libkrbn_device_monitor_initialize(libkrbn_device_monitor* _Nullable* _Nonnull out,
-                                       libkrbn_device_monitor_callback _Nullable callback,
-                                       void* _Nullable refcon);
-void libkrbn_device_monitor_terminate(libkrbn_device_monitor* _Nullable* _Nonnull p);
-
 // ----------------------------------------
 // libkrbn_log_monitor
 
