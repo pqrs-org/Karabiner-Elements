@@ -165,25 +165,25 @@ public:
     std::sort(devices_.begin(), devices_.end(), [](const class device& a,
                                                    const class device& b) {
       auto a_v = a.get_identifiers().get_vendor_id();
-      auto a_b = a.get_identifiers().get_product_id();
-      auto a_k = a.get_identifiers().get_is_keyboard();
-      auto a_p = a.get_identifiers().get_is_pointing_device();
+      auto a_p = a.get_identifiers().get_product_id();
+      auto a_kb = a.get_identifiers().get_is_keyboard();
+      auto a_pd = a.get_identifiers().get_is_pointing_device();
 
       auto b_v = b.get_identifiers().get_vendor_id();
-      auto b_b = b.get_identifiers().get_product_id();
-      auto b_k = b.get_identifiers().get_is_keyboard();
-      auto b_p = b.get_identifiers().get_is_pointing_device();
+      auto b_p = b.get_identifiers().get_product_id();
+      auto b_kb = b.get_identifiers().get_is_keyboard();
+      auto b_pd = b.get_identifiers().get_is_pointing_device();
 
       if (a_v == b_v) {
         if (a_p == b_p) {
-          if (a_k == b_k) {
-            if (a_p == b_p) {
+          if (a_kb == b_kb) {
+            if (a_pd == b_pd) {
               return true;
             } else {
-              return a_p;
+              return a_pd;
             }
           } else {
-            return a_k;
+            return a_kb;
           }
         } else {
           return a_p < b_p;
