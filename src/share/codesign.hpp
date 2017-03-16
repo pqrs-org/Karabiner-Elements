@@ -26,7 +26,7 @@ public:
           if (SecCodeCopySigningInformation(guest, kSecCSSigningInformation, &information) == errSecSuccess) {
             if (auto certificates = static_cast<CFArrayRef>(CFDictionaryGetValue(information, kSecCodeInfoCertificates))) {
               if (CFArrayGetCount(certificates) > 0) {
-                auto certificate = static_cast<SecCertificateRef>(const_cast<void*>(CFArrayGetValueAtIndex(certificates, 0)));
+                auto certificate = cf_utility::get_value<SecCertificateRef>(certificates, 0);
                 CFStringRef common_name_string;
                 if (SecCertificateCopyCommonName(certificate, &common_name_string) == errSecSuccess) {
                   common_name = cf_utility::to_string(common_name_string);

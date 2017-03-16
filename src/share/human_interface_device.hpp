@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "apple_hid_usage_tables.hpp"
+#include "cf_utility.hpp"
 #include "connected_devices.hpp"
 #include "core_configuration.hpp"
 #include "gcd_utility.hpp"
@@ -120,7 +121,7 @@ public:
     if (auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone)) {
       for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
         // Add to elements_.
-        auto element = static_cast<IOHIDElementRef>(const_cast<void*>(CFArrayGetValueAtIndex(elements, i)));
+        auto element = cf_utility::get_value<IOHIDElementRef>(elements, i);
         auto usage_page = IOHIDElementGetUsagePage(element);
         auto usage = IOHIDElementGetUsage(element);
 
