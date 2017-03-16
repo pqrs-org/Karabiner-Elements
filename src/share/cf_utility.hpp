@@ -44,12 +44,23 @@ public:
     return CFArrayCreateMutable(nullptr, capacity, &kCFTypeArrayCallBacks);
   }
 
-  template<typename T>
+  template <typename T>
   static T _Nullable get_value(CFArrayRef _Nonnull array, CFIndex index) {
     if (array && index < CFArrayGetCount(array)) {
       return static_cast<T>(const_cast<void*>(CFArrayGetValueAtIndex(array, index)));
     }
     return nullptr;
+  }
+
+  template <typename T>
+  static bool exists(CFArrayRef _Nonnull array, T _Nonnull value) {
+    if (array) {
+      CFRange range = {0, CFArrayGetCount(array)};
+      if (CFArrayContainsValue(array, range, value)) {
+        return true;
+      }
+    }
+    return false;
   }
 };
 }
