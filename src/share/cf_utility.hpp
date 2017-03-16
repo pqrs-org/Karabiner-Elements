@@ -35,5 +35,21 @@ public:
 
     return string;
   }
+
+  static CFArrayRef _Nonnull create_empty_cfarray(void) {
+    return CFArrayCreate(nullptr, nullptr, 0, &kCFTypeArrayCallBacks);
+  }
+
+  static CFMutableArrayRef _Nonnull create_cfmutablearray(CFIndex capacity = 0) {
+    return CFArrayCreateMutable(nullptr, capacity, &kCFTypeArrayCallBacks);
+  }
+
+  template<typename T>
+  static T _Nullable get_value(CFArrayRef _Nonnull array, CFIndex index) {
+    if (array && index < CFArrayGetCount(array)) {
+      return static_cast<T>(const_cast<void*>(CFArrayGetValueAtIndex(array, index)));
+    }
+    return nullptr;
+  }
 };
 }
