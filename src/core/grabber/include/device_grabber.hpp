@@ -510,19 +510,16 @@ private:
 
   void output_devices_json(void) {
     connected_devices connected_devices;
-
     for (const auto& it : hids_) {
       if ((it.second)->is_pqrs_device()) {
         continue;
       }
-
       connected_devices.push_back_device(it.second->get_connected_device());
     }
 
-    std::ofstream stream(constants::get_devices_json_file_path());
-    if (stream) {
-      stream << std::setw(4) << connected_devices.to_json() << std::endl;
-      chmod(constants::get_devices_json_file_path(), 0644);
+    auto file_path = constants::get_devices_json_file_path();
+    if (connected_devices.save_to_file(file_path)) {
+      chmod(file_path, 0644);
     }
   }
 
