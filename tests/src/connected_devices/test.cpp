@@ -153,6 +153,10 @@ TEST_CASE("connected_devices::device") {
 TEST_CASE("connected_devices") {
   {
     krbn::connected_devices connected_devices;
+    REQUIRE(connected_devices.to_json() == nlohmann::json::array());
+  }
+  {
+    krbn::connected_devices connected_devices;
 
     {
       krbn::connected_devices::device::descriptions descriptions("manufacturer1",
