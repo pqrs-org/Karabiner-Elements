@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core_configuration.hpp"
+#include <algorithm>
 
 // Json example:
 //
@@ -124,6 +125,10 @@ public:
       return is_built_in_keyboard_;
     }
 
+    bool operator==(const device& other) const {
+      return identifiers_ == other.identifiers_;
+    }
+
   private:
     descriptions descriptions_;
     core_configuration::profile::device::identifiers identifiers_;
@@ -160,6 +165,10 @@ public:
     return devices_;
   }
   void push_back_device(const device& device) {
+    if (std::find(std::begin(devices_), std::end(devices_), device) != std::end(devices_)) {
+      return;
+    }
+
     devices_.push_back(device);
 
     std::sort(devices_.begin(), devices_.end(), [](const class device& a,

@@ -167,6 +167,18 @@ TEST_CASE("connected_devices") {
       connected_devices.push_back_device(device);
     }
     {
+      krbn::connected_devices::device::descriptions descriptions("manufacturer1 (ignored)",
+                                                                 "product1 (ignored)");
+      krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(1234),
+                                                                         krbn::product_id(5678),
+                                                                         true,
+                                                                         false);
+      krbn::connected_devices::device device(descriptions,
+                                             identifiers,
+                                             true);
+      connected_devices.push_back_device(device);
+    }
+    {
       krbn::connected_devices::device::descriptions descriptions("manufacturer3",
                                                                  "product3");
       krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(2345),
