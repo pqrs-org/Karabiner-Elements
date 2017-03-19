@@ -187,7 +187,7 @@ public:
         if (a_p == b_p) {
           if (a_kb == b_kb) {
             if (a_pd == b_pd) {
-              return true;
+              return false;
             } else {
               return a_pd;
             }
