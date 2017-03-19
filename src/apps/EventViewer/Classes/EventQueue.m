@@ -258,19 +258,6 @@ enum {
   return @"";
 }
 
-- (NSString*)charactersToString:(NSEvent*)event {
-  // We ignore special characters.
-  NSString* string = [self specialKeycodeToString:event];
-  if (string) return @"";
-
-  @try {
-    return [event characters];
-  }
-  @catch (NSException* exception) {
-  }
-  return @"";
-}
-
 - (NSString*)buttonToString:(NSEvent*)event {
   NSInteger number = [event buttonNumber];
   if (number == 0) return @"left";
@@ -307,17 +294,11 @@ enum {
     }
   }
 
-  // Show `characters` at last because `characters` might be newline. (== newline truncates message.)
-  NSString* misc = [NSString stringWithFormat:@"characters:%@",
-                                              [[self charactersToString:event] stringByPaddingToLength:4
-                                                                                            withString:@" "
-                                                                                       startingAtIndex:0]];
-
   [self push:eventType
         code:[NSString stringWithFormat:@"0x%x", (int)([event keyCode])]
         name:[self keycodeToString:event]
        flags:[self modifierFlagsToString:[event modifierFlags]]
-        misc:misc];
+        misc:@""];
 }
 
 - (void)pushSystemDefinedEvent:(NSEvent*)event {
