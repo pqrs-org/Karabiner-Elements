@@ -51,4 +51,4 @@ private:
 
   dispatch_source_t monitor_;
 };
-}
+} // namespace krbn

@@ -46,4 +46,4 @@ public:
 private:
   std::unique_ptr<local_datagram_client> client_;
 };
-}
+} // namespace krbn

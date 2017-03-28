@@ -209,4 +209,4 @@ private:
     return pos;
   }
 };
-}
+} // namespace krbn

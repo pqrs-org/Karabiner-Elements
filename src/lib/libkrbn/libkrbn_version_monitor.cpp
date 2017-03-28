@@ -25,7 +25,7 @@ private:
 
   std::unique_ptr<krbn::version_monitor> version_monitor_;
 };
-}
+} // namespace
 
 bool libkrbn_version_monitor_initialize(libkrbn_version_monitor** out, libkrbn_version_monitor_callback callback, void* refcon) {
   if (!out) return false;

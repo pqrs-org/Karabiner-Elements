@@ -73,4 +73,4 @@ private:
   std::string version_;
   std::unique_ptr<file_monitor> file_monitor_;
 };
-}
+} // namespace krbn

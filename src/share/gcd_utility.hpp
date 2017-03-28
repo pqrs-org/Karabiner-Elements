@@ -111,4 +111,4 @@ private:
     return stream.str();
   }
 };
-}
+} // namespace krbn

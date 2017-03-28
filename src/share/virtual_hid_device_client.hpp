@@ -202,4 +202,4 @@ private:
   bool virtual_hid_keyboard_initialized_;
   pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization virtual_hid_keyboard_properties_;
 };
-}
+} // namespace krbn

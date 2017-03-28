@@ -544,4 +544,4 @@ private:
 
   bool suspended_;
 };
-}
+} // namespace krbn

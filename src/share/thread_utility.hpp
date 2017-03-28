@@ -21,4 +21,4 @@ public:
     return get_main_thread_id() == std::this_thread::get_id();
   }
 };
-}
+} // namespace krbn

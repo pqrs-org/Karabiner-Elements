@@ -50,4 +50,4 @@ public:
     return common_name;
   }
 };
-}
+} // namespace krbn

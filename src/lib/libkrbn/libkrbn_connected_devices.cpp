@@ -37,7 +37,7 @@ private:
 
   std::unique_ptr<krbn::connected_devices_monitor> connected_devices_monitor_;
 };
-}
+} // namespace
 
 void libkrbn_connected_devices_terminate(libkrbn_connected_devices** p) {
   if (p && *p) {

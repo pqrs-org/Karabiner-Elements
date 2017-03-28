@@ -123,4 +123,4 @@ private:
 
   std::unique_ptr<process_monitor> console_user_server_process_monitor_;
 };
-}
+} // namespace krbn

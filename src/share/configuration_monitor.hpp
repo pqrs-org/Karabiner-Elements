@@ -72,4 +72,4 @@ private:
   std::unique_ptr<file_monitor> file_monitor_;
   std::shared_ptr<core_configuration> core_configuration_;
 };
-}
+} // namespace krbn

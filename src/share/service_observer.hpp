@@ -117,4 +117,4 @@ private:
   io_iterator_t matched_notification_;
   io_iterator_t terminated_notification_;
 };
-}
+} // namespace krbn

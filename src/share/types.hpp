@@ -623,4 +623,4 @@ struct operation_type_system_preferences_values_updated_struct {
   const operation_type operation_type;
   system_preferences::values values;
 };
-}
+} // namespace krbn

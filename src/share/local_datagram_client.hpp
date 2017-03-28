@@ -74,4 +74,4 @@ private:
   boost::asio::local::datagram_protocol::socket socket_;
   std::thread thread_;
 };
-}
+} // namespace krbn

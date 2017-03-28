@@ -64,4 +64,4 @@ public:
     }
   }
 };
-}
+} // namespace krbn

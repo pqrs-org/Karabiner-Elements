@@ -46,4 +46,4 @@ public:
     }
   }
 };
-}
+} // namespace krbn

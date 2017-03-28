@@ -17,4 +17,4 @@ public:
     system("open '/Applications/Karabiner-Elements.app'");
   }
 };
-}
+} // namespace krbn

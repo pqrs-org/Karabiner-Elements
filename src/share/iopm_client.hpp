@@ -107,4 +107,4 @@ private:
   io_object_t notifier_;
   io_connect_t connect_;
 };
-}
+} // namespace krbn

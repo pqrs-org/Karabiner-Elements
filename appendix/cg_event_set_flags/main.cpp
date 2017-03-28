@@ -20,7 +20,7 @@ CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type,
   }
   return event;
 }
-}
+} // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();

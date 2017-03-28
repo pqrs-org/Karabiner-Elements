@@ -157,5 +157,5 @@ private:
 
   std::vector<std::unique_ptr<state>> states_;
 };
-}
-}
+} // namespace manipulator
+} // namespace krbn

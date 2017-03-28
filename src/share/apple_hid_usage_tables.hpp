@@ -37,4 +37,4 @@ enum {
   kHIDUsage_AV_TopCase_ClamshellLatched = 0x000a,
   kHIDUsage_AV_TopCase_Reserved_MouseData = 0x00c0
 };
-}
+} // namespace krbn

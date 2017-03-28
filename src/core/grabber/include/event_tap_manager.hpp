@@ -104,4 +104,4 @@ private:
   CFRunLoopSourceRef _Nullable run_loop_source_;
   boost::optional<CGEventFlags> last_flags_;
 };
-}
+} // namespace krbn

@@ -43,7 +43,7 @@ private:
 
   std::unique_ptr<krbn::log_monitor> log_monitor_;
 };
-}
+} // namespace
 
 bool libkrbn_log_monitor_initialize(libkrbn_log_monitor** out, libkrbn_log_monitor_callback callback, void* refcon) {
   if (!out) return false;

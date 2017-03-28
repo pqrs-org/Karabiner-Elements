@@ -361,4 +361,4 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile::dev
 inline void to_json(nlohmann::json& json, const core_configuration::profile::device& device) {
   json = device.to_json();
 }
-}
+} // namespace krbn

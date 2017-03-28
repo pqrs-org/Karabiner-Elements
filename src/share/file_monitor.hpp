@@ -172,4 +172,4 @@ private:
   std::vector<std::string> files_;
   FSEventStreamRef stream_;
 };
-}
+} // namespace krbn

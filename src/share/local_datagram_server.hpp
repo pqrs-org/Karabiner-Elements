@@ -58,4 +58,4 @@ private:
   boost::asio::local::datagram_protocol::socket socket_;
   boost::asio::deadline_timer deadline_;
 };
-}
+} // namespace krbn

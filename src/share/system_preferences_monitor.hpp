@@ -44,4 +44,4 @@ private:
 
   boost::optional<system_preferences::values> values_;
 };
-}
+} // namespace krbn

@@ -67,4 +67,4 @@ private:
 
   std::unique_ptr<receiver> receiver_;
 };
-}
+} // namespace krbn

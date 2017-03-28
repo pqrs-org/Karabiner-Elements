@@ -12,8 +12,7 @@ public:
         }
       }
 
-      std::sort(pairs_.begin(), pairs_.end(), [](const std::pair<std::string, std::string>& a,
-                                                 const std::pair<std::string, std::string>& b) {
+      std::sort(pairs_.begin(), pairs_.end(), [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b) {
         return SI::natural::compare<std::string>(a.first, b.first);
       });
     }

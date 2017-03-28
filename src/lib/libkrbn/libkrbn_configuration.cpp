@@ -38,7 +38,7 @@ private:
 
   std::unique_ptr<krbn::configuration_monitor> configuration_monitor_;
 };
-}
+} // namespace
 
 void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
   if (p && *p) {

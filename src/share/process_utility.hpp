@@ -65,4 +65,4 @@ private:
     return fd;
   }
 };
-}
+} // namespace krbn

@@ -142,4 +142,4 @@ public:
     std::deque<std::pair<spdlog::level::level_enum, std::string>> messages_;
   };
 };
-}
+} // namespace krbn

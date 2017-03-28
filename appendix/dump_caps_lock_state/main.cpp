@@ -25,7 +25,7 @@ public:
     return *logger;
   }
 };
-}
+} // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();

@@ -928,4 +928,4 @@ private:
 
   std::unique_ptr<connected_devices::device> connected_device_;
 };
-}
+} // namespace krbn

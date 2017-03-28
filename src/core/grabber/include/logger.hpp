@@ -28,4 +28,4 @@ public:
     return *logger;
   }
 };
-}
+} // namespace krbn

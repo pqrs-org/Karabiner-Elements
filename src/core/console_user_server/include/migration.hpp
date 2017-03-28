@@ -39,4 +39,4 @@ private:
     return file_path;
   }
 };
-}
+} // namespace krbn

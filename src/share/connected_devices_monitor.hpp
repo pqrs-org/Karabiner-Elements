@@ -63,4 +63,4 @@ private:
   std::unique_ptr<file_monitor> file_monitor_;
   std::shared_ptr<connected_devices> connected_devices_;
 };
-}
+} // namespace krbn

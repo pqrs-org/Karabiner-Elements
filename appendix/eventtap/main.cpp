@@ -21,7 +21,7 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
   }
   return event;
 }
-}
+} // namespace
 
 class logger final {
 public:

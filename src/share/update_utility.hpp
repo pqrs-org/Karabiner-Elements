@@ -24,4 +24,4 @@ private:
     system(command.c_str());
   }
 };
-}
+} // namespace krbn

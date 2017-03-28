@@ -185,4 +185,4 @@ private:
   std::vector<std::string> files_;
   std::deque<std::tuple<timer_count, uint64_t, std::string>> added_lines_;
 };
-}
+} // namespace krbn

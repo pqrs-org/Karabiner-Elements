@@ -387,5 +387,5 @@ private:
 
   uint64_t last_timestamp_;
 };
-}
-}
+} // namespace manipulator
+} // namespace krbn

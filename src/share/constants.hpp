@@ -150,4 +150,4 @@ public:
     return "console_user_server_is_disabled";
   }
 };
-}
+} // namespace krbn

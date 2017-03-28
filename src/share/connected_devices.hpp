@@ -171,8 +171,7 @@ public:
 
     devices_.push_back(device);
 
-    std::sort(devices_.begin(), devices_.end(), [](const class device& a,
-                                                   const class device& b) {
+    std::sort(devices_.begin(), devices_.end(), [](const class device& a, const class device& b) {
       auto a_v = a.get_identifiers().get_vendor_id();
       auto a_p = a.get_identifiers().get_product_id();
       auto a_kb = a.get_identifiers().get_is_keyboard();
@@ -232,4 +231,4 @@ inline void to_json(nlohmann::json& json, const connected_devices::device::descr
 inline void to_json(nlohmann::json& json, const connected_devices::device& device) {
   json = device.to_json();
 }
-}
+} // namespace krbn

@@ -22,5 +22,5 @@ enum class add_data_type : uint32_t {
   modifier_flag,
 };
 enum class add_value : uint32_t {};
-}
-}
+} // namespace manipulator
+} // namespace krbn

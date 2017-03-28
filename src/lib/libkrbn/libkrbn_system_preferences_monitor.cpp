@@ -30,7 +30,7 @@ private:
 
   std::unique_ptr<krbn::system_preferences_monitor> system_preferences_monitor_;
 };
-}
+} // namespace
 
 bool libkrbn_system_preferences_monitor_initialize(libkrbn_system_preferences_monitor* _Nullable* _Nonnull out,
                                                    libkrbn_system_preferences_monitor_callback _Nullable callback,

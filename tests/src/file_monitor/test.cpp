@@ -21,7 +21,7 @@ public:
 };
 
 std::atomic<time_t> last_callback_time;
-}
+} // namespace
 
 TEST_CASE("file_monitor") {
   std::vector<std::pair<std::string, std::vector<std::string>>> targets({

@@ -169,4 +169,4 @@ private:
   io_connect_t connect_;
   std::mutex connect_mutex_;
 };
-}
+} // namespace krbn

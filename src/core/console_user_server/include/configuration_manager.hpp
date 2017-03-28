@@ -53,4 +53,4 @@ private:
 
   bool need_to_check_for_updates_;
 };
-}
+} // namespace krbn
