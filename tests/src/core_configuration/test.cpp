@@ -789,6 +789,20 @@ TEST_CASE("complex_modification.event") {
                                          krbn::core_configuration::profile::complex_modification::event::modifier::any,
                                      }));
   }
+  {
+    nlohmann::json json({
+        {
+            "key", nlohmann::json::array(),
+        },
+        {
+            "modifiers", "dummy",
+        },
+    });
+    krbn::core_configuration::profile::complex_modification::event event(json);
+    REQUIRE(event.get_type() == krbn::core_configuration::profile::complex_modification::event::type::none);
+    REQUIRE(event.get_value() == "");
+    REQUIRE(event.get_modifiers().size() == 0);
+  }
 }
 
 TEST_CASE("virtual_hid_keyboard") {
