@@ -233,7 +233,7 @@ std::vector<std::pair<std::string, std::string>> get_default_fn_function_keys_pa
       {"f12", "volume_increment"},
   });
 }
-}
+} // namespace
 
 TEST_CASE("profile") {
   // empty json
@@ -759,6 +759,35 @@ TEST_CASE("simple_modifications.to_json") {
                                                   {"dummy", "f3"},
                                                   {"f4", "dummy"},
                                               }));
+  }
+}
+
+TEST_CASE("complex_modification.event") {
+  {
+    nlohmann::json json;
+    krbn::core_configuration::profile::complex_modification::event event(json);
+    REQUIRE(event.get_type() == krbn::core_configuration::profile::complex_modification::event::type::none);
+    REQUIRE(event.get_modifiers().size() == 0);
+  }
+  {
+    nlohmann::json json({
+        {
+            "key", "spacebar",
+        },
+        {
+            "modifiers", {
+                             "shift", "left_command", "any",
+                         },
+        },
+    });
+    krbn::core_configuration::profile::complex_modification::event event(json);
+    REQUIRE(event.get_type() == krbn::core_configuration::profile::complex_modification::event::type::key);
+    REQUIRE(event.get_value() == "spacebar");
+    REQUIRE(event.get_modifiers() == std::vector<krbn::core_configuration::profile::complex_modification::event::modifier>({
+                                         krbn::core_configuration::profile::complex_modification::event::modifier::shift,
+                                         krbn::core_configuration::profile::complex_modification::event::modifier::left_command,
+                                         krbn::core_configuration::profile::complex_modification::event::modifier::any,
+                                     }));
   }
 }
 

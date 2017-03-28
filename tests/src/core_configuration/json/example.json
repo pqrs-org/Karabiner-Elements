@@ -25,6 +25,52 @@
                 "f11": "volume_decrement",
                 "f12": "volume_increment"
             },
+            "complex_modification": {
+                "rules": [
+                    {
+                        "conditions": {
+                        },
+                        "manipulations": [
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key": "spacebar",
+                                    "modifiers": [
+                                        "shift",
+                                        "control",
+                                        "any"
+                                    ]
+                                },
+                                "to": [
+                                    {
+                                        "key": "escape"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key": "spacebar"
+                                },
+                                "to": [
+                                    {
+                                        "modifiers": [
+                                            "left_shift"
+                                        ]
+                                    }
+                                ],
+                                "standalone_to": [
+                                    {
+                                        "key": "spacebar"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "parameters": {
+                }
+            },
             "virtual_hid_keyboard": {
                 "keyboard_type": "iso",
                 "caps_lock_delay_milliseconds": 100
