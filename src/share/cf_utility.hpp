@@ -9,6 +9,17 @@
 namespace krbn {
 class cf_utility final {
 public:
+  template <typename T>
+  class deleter final {
+  public:
+    using pointer = T;
+    void operator()(T _Nullable ref) {
+      if (ref) {
+        CFRelease(ref);
+      }
+    }
+  };
+
   static boost::optional<std::string> to_string(CFTypeRef _Nullable value) {
     if (!value) {
       return boost::none;
