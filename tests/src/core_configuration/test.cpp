@@ -771,9 +771,7 @@ TEST_CASE("complex_modification.event") {
   }
   {
     nlohmann::json json({
-        {
-            "key", "spacebar",
-        },
+        {"key", "spacebar"},
         {
             "modifiers", {
                              "shift", "left_command", "any",
@@ -791,9 +789,7 @@ TEST_CASE("complex_modification.event") {
   }
   {
     nlohmann::json json({
-        {
-            "key", nlohmann::json::array(),
-        },
+        {"key", nlohmann::json::array()},
         {
             "modifiers", "dummy",
         },
@@ -802,6 +798,50 @@ TEST_CASE("complex_modification.event") {
     REQUIRE(event.get_type() == krbn::core_configuration::profile::complex_modification::event::type::none);
     REQUIRE(event.get_value() == "");
     REQUIRE(event.get_modifiers().size() == 0);
+  }
+}
+
+TEST_CASE("complex_modification.rule.manipulation") {
+  {
+    nlohmann::json json;
+    auto manipulation = krbn::core_configuration::profile::complex_modification::rule::manipulation::factory::make(json);
+    REQUIRE(manipulation == nullptr);
+  }
+  {
+    nlohmann::json json({
+        {"type", "basic"},
+        {
+            "from", {
+                        {
+                            "key", "escape",
+                        },
+                        {
+                            "modifiers", {
+                                             "left_shift", "left_option", "any",
+                                         },
+                        },
+                    },
+        },
+        {
+            "to", {
+                      {
+                          {
+                              "pointing_button", "button1",
+                          },
+                      },
+                  },
+        },
+    });
+    auto manipulation = krbn::core_configuration::profile::complex_modification::rule::manipulation::factory::make(json);
+    REQUIRE(manipulation->get_type() == krbn::core_configuration::profile::complex_modification::rule::manipulation::type::basic);
+    auto basic = dynamic_cast<krbn::core_configuration::profile::complex_modification::rule::manipulation::basic&>(*manipulation);
+    REQUIRE(basic.get_from().get_type() == krbn::core_configuration::profile::complex_modification::event::type::key);
+    REQUIRE(basic.get_from().get_value() == "escape");
+    REQUIRE(basic.get_from().get_modifiers() == std::vector<krbn::core_configuration::profile::complex_modification::event::modifier>({
+                                                    krbn::core_configuration::profile::complex_modification::event::modifier::left_shift,
+                                                    krbn::core_configuration::profile::complex_modification::event::modifier::left_option,
+                                                    krbn::core_configuration::profile::complex_modification::event::modifier::any,
+                                                }));
   }
 }
 

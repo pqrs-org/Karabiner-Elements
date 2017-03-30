@@ -128,22 +128,28 @@ public:
     };
 
     class manipulation {
+    public:
       enum class type {
+        none,
         basic,
       };
 
-    public:
       class base {
-      public:
+      protected:
         base(const nlohmann::json& json, type type) : json_(json),
                                                       type_(type) {
         }
 
+      public:
         virtual ~base(void) {
         }
 
         nlohmann::json to_json(void) const {
           return json_;
+        }
+
+        type get_type(void) const {
+          return type_;
         }
 
       protected:
@@ -168,9 +174,32 @@ public:
         virtual ~basic(void) {
         }
 
+        const event& get_from(void) const {
+          return from_;
+        }
+
+        const std::vector<event>& get_to(void) const {
+          return to_;
+        }
+
       private:
         event from_;
         std::vector<event> to_;
+      };
+
+      class factory final {
+      public:
+        static std::unique_ptr<manipulation::base> make(const nlohmann::json& json) {
+          {
+            const std::string key = "type";
+            if (json.find(key) != std::end(json) && json[key].is_string()) {
+              if (json[key] == "basic") {
+                return std::make_unique<manipulation::basic>(json);
+              }
+            }
+          }
+          return nullptr;
+        }
       };
     };
 
