@@ -61,6 +61,15 @@ public:
       return event_type_;
     }
 
+    bool operator==(const queued_event& other) const {
+      return get_type() == other.get_type() &&
+             get_scope() == other.get_scope() &&
+             get_time() == other.get_time() &&
+             get_key_code() == other.get_key_code() &&
+             get_pointing_button() == other.get_pointing_button() &&
+             get_event_type() == other.get_event_type();
+    }
+
   private:
     type type_;
     scope scope_;
@@ -80,18 +89,20 @@ public:
     switch (scope) {
     case scope::input:
       input_events_.emplace_back(scope, time, key_code, event_type);
+      sort_events(input_events_);
       break;
     case scope::output:
       output_events_.emplace_back(scope, time, key_code, event_type);
+      sort_events(output_events_);
       break;
     }
   }
 
-  const std::vector<queued_event> get_input_events(void) const {
+  const std::vector<queued_event>& get_input_events(void) const {
     return input_events_;
   }
 
-  const std::vector<queued_event> get_output_events(void) const {
+  const std::vector<queued_event>& get_output_events(void) const {
     return output_events_;
   }
 
