@@ -61,10 +61,7 @@ public:
 
   static CFDictionaryRef _Nullable create_matching_dictionary(CFStringRef _Nonnull usage_page_key, uint32_t usage_page,
                                                               CFStringRef _Nonnull usage_key, uint32_t usage) {
-    if (auto device_matching_dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                                                    0,
-                                                                    &kCFTypeDictionaryKeyCallBacks,
-                                                                    &kCFTypeDictionaryValueCallBacks)) {
+    if (auto device_matching_dictionary = cf_utility::create_cfmutabledictionary()) {
       // usage_page
       if (usage_page) {
         if (auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage_page)) {

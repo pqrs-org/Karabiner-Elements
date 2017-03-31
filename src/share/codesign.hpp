@@ -13,10 +13,7 @@ public:
   static boost::optional<std::string> get_common_name_of_process(pid_t pid) {
     boost::optional<std::string> common_name;
 
-    if (auto attributes = CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                                    0,
-                                                    &kCFTypeDictionaryKeyCallBacks,
-                                                    &kCFTypeDictionaryValueCallBacks)) {
+    if (auto attributes = cf_utility::create_cfmutabledictionary()) {
       if (auto pid_number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &pid)) {
         CFDictionarySetValue(attributes, kSecGuestAttributePid, pid_number);
 
