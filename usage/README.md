@@ -53,7 +53,7 @@ oIf your keyboard is not ANSI layout, you have to set the keyboard type of virtu
 
 # Learn about `karabiner.json`
 
-Karabiner-Elements configuration will be saved to `~/.config/karabiner/karabiner.json`.
+Karabiner-Elements configuration will be saved to `~/.karabiner.d/configuration/karabiner.json`.
 
 You don't need to care about this file for normal usage.
 We describe about `karabiner.json` for advanced usage.
