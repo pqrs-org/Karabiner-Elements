@@ -7,7 +7,6 @@
 #include <chrono>
 
 namespace krbn {
-namespace manipulator {
 class event_queue final {
 public:
   enum class scope {
@@ -193,5 +192,4 @@ private:
   std::vector<queued_event> input_events_;
   std::vector<queued_event> output_events_;
 };
-} // namespace manipulator
 } // namespace krbn
