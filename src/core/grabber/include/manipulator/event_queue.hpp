@@ -28,6 +28,7 @@ public:
                  event_type event_type) : type_(type::key),
                                           scope_(scope),
                                           time_(time),
+                                          valid_(true),
                                           key_code_(key_code),
                                           event_type_(event_type) {
     }
@@ -42,6 +43,13 @@ public:
 
     std::chrono::nanoseconds get_time(void) const {
       return time_;
+    }
+
+    bool get_valid(void) const {
+      return valid_;
+    }
+    void set_valid(bool value) {
+      valid_ = value;
     }
 
     boost::optional<key_code> get_key_code(void) const {
@@ -75,6 +83,7 @@ public:
     type type_;
     scope scope_;
     std::chrono::nanoseconds time_;
+    bool valid_;
 
     union {
       key_code key_code_;

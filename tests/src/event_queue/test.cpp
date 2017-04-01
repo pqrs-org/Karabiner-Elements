@@ -44,6 +44,8 @@ TEST_CASE("push_back_event") {
                                                                                                *(krbn::types::get_key_code("a")),
                                                                                                krbn::event_type::key_up),
                                               }));
+
+    REQUIRE(event_queue.get_input_events()[0].get_valid() == true);
   }
 
   // reorder events
