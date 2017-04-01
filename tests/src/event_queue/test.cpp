@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_RUNNER
 #include "../../vendor/catch/catch.hpp"
 
-#include "event_queue.hpp"
+#include "manipulator/event_queue.hpp"
 #include "thread_utility.hpp"
 
 TEST_CASE("push_back_event") {
