@@ -4,7 +4,7 @@
 
 namespace krbn {
 namespace manipulator {
-namespace detail {
+namespace details {
 
 class event_definition final {
 public:
@@ -95,6 +95,6 @@ private:
   std::string value_;
   std::vector<modifier> modifiers_;
 };
-} // namespace detail
+} // namespace details
 } // namespace manipulator
 } // namespace krbn
