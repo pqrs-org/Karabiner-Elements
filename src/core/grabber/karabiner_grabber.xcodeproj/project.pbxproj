@@ -41,6 +41,9 @@
 		345AC0021D620C8C009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0041D62163F009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
 		345CCB4F1E902963005B61A8 /* event_queue.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_queue.hpp; path = include/manipulator/event_queue.hpp; sourceTree = SOURCE_ROOT; };
+		345CCB511E914BDA005B61A8 /* base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = base.hpp; path = include/manipulator/details/base.hpp; sourceTree = SOURCE_ROOT; };
+		345CCB521E914BDA005B61A8 /* basic.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = basic.hpp; path = include/manipulator/details/basic.hpp; sourceTree = SOURCE_ROOT; };
+		345CCB531E914FD8005B61A8 /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = include/manipulator/details/types.hpp; sourceTree = SOURCE_ROOT; };
 		3463EABD1E2E866000427A81 /* version_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = version_monitor.hpp; path = ../../share/version_monitor.hpp; sourceTree = SOURCE_ROOT; };
 		3469EB701D814F140005D30D /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filesystem.hpp; path = ../../share/filesystem.hpp; sourceTree = SOURCE_ROOT; };
 		347113141D871C6C001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = process_monitor.hpp; path = ../../share/process_monitor.hpp; sourceTree = SOURCE_ROOT; };
@@ -110,6 +113,16 @@
 			path = grabber;
 			sourceTree = "<group>";
 		};
+		345CCB501E914BCA005B61A8 /* details */ = {
+			isa = PBXGroup;
+			children = (
+				345CCB511E914BDA005B61A8 /* base.hpp */,
+				345CCB521E914BDA005B61A8 /* basic.hpp */,
+				345CCB531E914FD8005B61A8 /* types.hpp */,
+			);
+			name = details;
+			sourceTree = "<group>";
+		};
 		3495C6801D3CE652007CB9E7 /* share */ = {
 			isa = PBXGroup;
 			children = (
@@ -145,6 +158,7 @@
 		34A88AA31D69C84900DD480B /* manipulator */ = {
 			isa = PBXGroup;
 			children = (
+				345CCB501E914BCA005B61A8 /* details */,
 				349950681D89A25D004FE466 /* event_manipulator.hpp */,
 				345CCB4F1E902963005B61A8 /* event_queue.hpp */,
 				34A88AA41D69C85600DD480B /* modifier_flag_manager.hpp */,
