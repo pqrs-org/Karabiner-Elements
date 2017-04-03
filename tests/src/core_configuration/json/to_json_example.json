@@ -29,8 +29,8 @@
             "complex_modification": {
                 "rules": [
                     {
-                        "conditions": {
-                        },
+                        "conditions": [
+                        ],
                         "manipulators": [
                             {
                                 "type": "basic",
