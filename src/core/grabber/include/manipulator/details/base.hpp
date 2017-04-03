@@ -1,17 +1,17 @@
 #pragma once
 
-#include "event_queue.hpp"
+#include "manipulator/event_queue.hpp"
 
 namespace krbn {
 namespace manipulator {
-namespace detail {
+namespace details {
 class base {
 public:
   virtual ~base(void) {
   }
 
-  virtual manipulate(event_queue& event_queue) = 0;
+  virtual void manipulate(event_queue& event_queue) = 0;
 };
-} // namespace detail
+} // namespace details
 } // namespace manipulator
 } // namespace krbn
