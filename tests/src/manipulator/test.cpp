@@ -49,6 +49,8 @@ TEST_CASE("manipulator.manipulator_factory") {
     auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) == nullptr);
+    REQUIRE(manipulator->get_valid() == true);
+    REQUIRE(manipulator->active() == false);
   }
   {
     nlohmann::json json({
@@ -78,6 +80,8 @@ TEST_CASE("manipulator.manipulator_factory") {
     auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) == nullptr);
+    REQUIRE(manipulator->get_valid() == true);
+    REQUIRE(manipulator->active() == false);
 
     auto basic = dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get());
     REQUIRE(basic->get_from().get_type() == krbn::manipulator::details::event_definition::type::key);

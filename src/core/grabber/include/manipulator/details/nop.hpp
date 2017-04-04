@@ -15,7 +15,11 @@ public:
   virtual ~nop(void) {
   }
 
-  virtual void manipulate(event_queue& event_queue) {
+  virtual void manipulate(event_queue& event_queue, std::chrono::nanoseconds time) {
+  }
+
+  virtual bool active(void) const {
+    return false;
   }
 };
 } // namespace details
