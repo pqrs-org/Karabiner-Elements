@@ -1,6 +1,10 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
+#include <boost/optional.hpp>
 #include <json/json.hpp>
+#include <unordered_set>
 
 namespace krbn {
 namespace manipulator {
@@ -16,6 +20,7 @@ public:
 
   enum class modifier {
     any,
+    caps_lock,
     command,
     control,
     fn,
@@ -32,22 +37,62 @@ public:
   };
 
   event_definition(const nlohmann::json& json) : type_(type::none) {
-    // Set type_ and value_.
+    // Set type_ and values.
     do {
       {
         const std::string key = "key";
         if (json.find(key) != std::end(json) && json[key].is_string()) {
-          type_ = type::key;
-          value_ = json[key];
-          break;
+          if (auto key_code = types::get_key_code(json[key])) {
+            type_ = type::key;
+            key_code_ = *key_code;
+
+            // if key_code is modifier, push it into modifiers_.
+            switch (types::get_modifier_flag(*key_code)) {
+            case modifier_flag::caps_lock:
+              modifiers_.insert(modifier::caps_lock);
+              break;
+            case modifier_flag::fn:
+              modifiers_.insert(modifier::fn);
+              break;
+            case modifier_flag::left_command:
+              modifiers_.insert(modifier::left_command);
+              break;
+            case modifier_flag::left_control:
+              modifiers_.insert(modifier::left_control);
+              break;
+            case modifier_flag::left_option:
+              modifiers_.insert(modifier::left_option);
+              break;
+            case modifier_flag::left_shift:
+              modifiers_.insert(modifier::left_shift);
+              break;
+            case modifier_flag::right_command:
+              modifiers_.insert(modifier::right_command);
+              break;
+            case modifier_flag::right_control:
+              modifiers_.insert(modifier::right_control);
+              break;
+            case modifier_flag::right_option:
+              modifiers_.insert(modifier::right_option);
+              break;
+            case modifier_flag::right_shift:
+              modifiers_.insert(modifier::right_shift);
+              break;
+            case modifier_flag::zero:
+            case modifier_flag::end_:
+              break;
+            }
+          }
         }
       }
       {
         const std::string key = "pointing_button";
         if (json.find(key) != std::end(json) && json[key].is_string()) {
-          type_ = type::pointing_button;
-          value_ = json[key];
-          break;
+          if (auto pointing_button = types::get_pointing_button(json[key])) {
+            type_ = type::pointing_button;
+            pointing_button_ = *pointing_button;
+            break;
+          }
         }
       }
     } while (false);
@@ -57,44 +102,57 @@ public:
       const std::string key = "modifiers";
       if (json.find(key) != std::end(json) && json[key].is_array()) {
         for (const auto& j : json[key]) {
-          if (j.is_string()) {
-            if (j == "any") { modifiers_.push_back(modifier::any); }
-            if (j == "command") { modifiers_.push_back(modifier::command); }
-            if (j == "control") { modifiers_.push_back(modifier::control); }
-            if (j == "fn") { modifiers_.push_back(modifier::fn); }
-            if (j == "left_command") { modifiers_.push_back(modifier::left_command); }
-            if (j == "left_control") { modifiers_.push_back(modifier::left_control); }
-            if (j == "left_option") { modifiers_.push_back(modifier::left_option); }
-            if (j == "left_shift") { modifiers_.push_back(modifier::left_shift); }
-            if (j == "option") { modifiers_.push_back(modifier::option); }
-            if (j == "right_command") { modifiers_.push_back(modifier::right_command); }
-            if (j == "right_control") { modifiers_.push_back(modifier::right_control); }
-            if (j == "right_option") { modifiers_.push_back(modifier::right_option); }
-            if (j == "right_shift") { modifiers_.push_back(modifier::right_shift); }
-            if (j == "shift") { modifiers_.push_back(modifier::shift); }
+                if (j.is_string()) {
+                  if (j == "any") { modifiers_.insert(modifier::any); }
+                  if (j == "command") { modifiers_.insert(modifier::command); }
+                  if (j == "control") { modifiers_.insert(modifier::control); }
+                  if (j == "fn") { modifiers_.insert(modifier::fn); }
+                  if (j == "left_command") { modifiers_.insert(modifier::left_command); }
+                  if (j == "left_control") { modifiers_.insert(modifier::left_control); }
+                  if (j == "left_option") { modifiers_.insert(modifier::left_option); }
+                  if (j == "left_shift") { modifiers_.insert(modifier::left_shift); }
+                  if (j == "option") { modifiers_.insert(modifier::option); }
+                  if (j == "right_command") { modifiers_.insert(modifier::right_command); }
+                  if (j == "right_control") { modifiers_.insert(modifier::right_control); }
+                  if (j == "right_option") { modifiers_.insert(modifier::right_option); }
+                  if (j == "right_shift") { modifiers_.insert(modifier::right_shift); }
+                  if (j == "shift") { modifiers_.insert(modifier::shift); }
+                }
+              }
+            }
           }
         }
-      }
-    }
-  }
 
-  type get_type(void) const {
-    return type_;
-  }
+        type get_type(void) const {
+          return type_;
+        }
 
-  const std::string& get_value(void) const {
-    return value_;
-  }
+        boost::optional<key_code> get_key_code(void) const {
+          if (type_ == type::key) {
+            return key_code_;
+          }
+          return boost::none;
+        }
 
-  const std::vector<modifier>& get_modifiers(void) const {
-    return modifiers_;
-  }
+        boost::optional<pointing_button> get_pointing_button(void) const {
+          if (type_ == type::pointing_button) {
+            return pointing_button_;
+          }
+          return boost::none;
+        }
 
-private:
-  type type_;
-  std::string value_;
-  std::vector<modifier> modifiers_;
-};
-} // namespace details
-} // namespace manipulator
+        const std::unordered_set<modifier>& get_modifiers(void) const {
+          return modifiers_;
+        }
+
+      private:
+        type type_;
+        union {
+          key_code key_code_;
+          pointing_button pointing_button_;
+        };
+        std::unordered_set<modifier> modifiers_;
+      };
+    } // namespace details
+  }   // namespace manipulator
 } // namespace krbn
