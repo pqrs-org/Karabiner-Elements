@@ -10,7 +10,7 @@ namespace manipulator {
 class modifier_flag_manager final {
 public:
   modifier_flag_manager(void) {
-    states_.resize(static_cast<size_t>(modifier_flag::prepared_modifier_flag_end_));
+    states_.resize(static_cast<size_t>(modifier_flag::end_));
 
     states_[static_cast<size_t>(modifier_flag::caps_lock)] = std::make_unique<state>("caps lock", "⇪");
     states_[static_cast<size_t>(modifier_flag::left_control)] = std::make_unique<state>("control", "⌃");
