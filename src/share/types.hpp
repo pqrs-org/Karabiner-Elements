@@ -172,7 +172,6 @@ enum class pointing_event : uint32_t {
 
 enum class modifier_flag : uint32_t {
   zero,
-  none,
   caps_lock,
   left_control,
   left_shift,
@@ -183,7 +182,7 @@ enum class modifier_flag : uint32_t {
   right_option,
   right_command,
   fn,
-  prepared_modifier_flag_end_
+  end_,
 };
 
 enum class led_state : uint32_t {
@@ -575,6 +574,58 @@ public:
     default:
       return pqrs::karabiner_virtual_hid_device::usage(key_code);
     }
+  }
+
+  static const std::unordered_map<std::string, pointing_button>& get_pointing_button_map(void) {
+    static std::unordered_map<std::string, pointing_button> map({
+        // From IOHIDUsageTables.h
+
+        {"button1", pointing_button::button1},
+        {"button2", pointing_button::button2},
+        {"button3", pointing_button::button3},
+        {"button4", pointing_button::button4},
+        {"button5", pointing_button::button5},
+        {"button6", pointing_button::button6},
+        {"button7", pointing_button::button7},
+        {"button8", pointing_button::button8},
+
+        {"button9", pointing_button::button9},
+        {"button10", pointing_button::button10},
+        {"button11", pointing_button::button11},
+        {"button12", pointing_button::button12},
+        {"button13", pointing_button::button13},
+        {"button14", pointing_button::button14},
+        {"button15", pointing_button::button15},
+        {"button16", pointing_button::button16},
+
+        {"button17", pointing_button::button17},
+        {"button18", pointing_button::button18},
+        {"button19", pointing_button::button19},
+        {"button20", pointing_button::button20},
+        {"button21", pointing_button::button21},
+        {"button22", pointing_button::button22},
+        {"button23", pointing_button::button23},
+        {"button24", pointing_button::button24},
+
+        {"button25", pointing_button::button25},
+        {"button26", pointing_button::button26},
+        {"button27", pointing_button::button27},
+        {"button28", pointing_button::button28},
+        {"button29", pointing_button::button29},
+        {"button30", pointing_button::button30},
+        {"button31", pointing_button::button31},
+        {"button32", pointing_button::button32},
+    });
+    return map;
+  }
+
+  static boost::optional<pointing_button> get_pointing_button(const std::string& name) {
+    auto& map = get_pointing_button_map();
+    auto it = map.find(name);
+    if (it == map.end()) {
+      return boost::none;
+    }
+    return it->second;
   }
 
   static boost::optional<pointing_button> get_pointing_button(uint32_t usage_page, uint32_t usage) {
