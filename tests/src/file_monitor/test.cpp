@@ -14,7 +14,8 @@ public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
-      logger = spdlog::stdout_logger_mt("file_monitor", true);
+      logger = spdlog::stdout_color_mt("file_monitor");
+      logger->set_level(spdlog::level::off);
     }
     return *logger;
   }

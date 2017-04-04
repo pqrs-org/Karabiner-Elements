@@ -16,7 +16,7 @@ public:
     std::lock_guard<std::mutex> guard(mutex);
 
     if (!logger) {
-      logger = spdlog::stdout_logger_mt("libkrbn", true);
+      logger = spdlog::stdout_color_mt("libkrbn");
     }
     return *logger;
   }

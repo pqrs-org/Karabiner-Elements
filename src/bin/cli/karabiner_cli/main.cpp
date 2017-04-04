@@ -9,7 +9,7 @@ public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
-      logger = spdlog::stdout_logger_mt("karabiner_cli", true);
+      logger = spdlog::stdout_color_mt("karabiner_cli");
       logger->set_pattern("[%l] %v");
       logger->set_level(spdlog::level::err);
     }

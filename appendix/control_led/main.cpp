@@ -21,7 +21,7 @@ public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
-      logger = spdlog::stdout_logger_mt("control_led", true);
+      logger = spdlog::stdout_color_mt("control_led");
     }
     return *logger;
   }

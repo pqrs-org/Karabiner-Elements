@@ -10,11 +10,11 @@ public:
 
   libkrbn_log_monitor_class(libkrbn_log_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
     std::vector<std::string> targets = {
-        "/var/log/karabiner/grabber_log",
+        "/var/log/karabiner/grabber.log",
     };
     auto log_directory = krbn::constants::get_user_log_directory();
     if (!log_directory.empty()) {
-      targets.push_back(log_directory + "/console_user_server_log");
+      targets.push_back(log_directory + "/console_user_server.log");
     }
 
     log_monitor_ = std::make_unique<krbn::log_monitor>(targets,

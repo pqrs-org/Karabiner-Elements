@@ -30,11 +30,11 @@
 #endif
 
 #if defined(__GNUC__)  || defined(__clang__)
-#define DEPRECATED __attribute__((deprecated))
+#define SPDLOG_DEPRECATED __attribute__((deprecated))
 #elif defined(_MSC_VER)
-#define DEPRECATED __declspec(deprecated)
+#define SPDLOG_DEPRECATED __declspec(deprecated)
 #else
-#define DEPRECATED
+#define SPDLOG_DEPRECATED
 #endif
 
 
@@ -57,7 +57,7 @@ using formatter_ptr = std::shared_ptr<spdlog::formatter>;
 #if defined(SPDLOG_NO_ATOMIC_LEVELS)
 using level_t = details::null_atomic_int;
 #else
-using level_t = std::atomic_int;
+using level_t = std::atomic<int>;
 #endif
 
 using log_err_handler = std::function<void(const std::string &err_msg)>;

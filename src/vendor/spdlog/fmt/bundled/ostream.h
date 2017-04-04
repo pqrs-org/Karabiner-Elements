@@ -10,8 +10,7 @@
 #ifndef FMT_OSTREAM_H_
 #define FMT_OSTREAM_H_
 
-// Commented out by spdlog to use header only
-// #include "fmt/format.h"
+#include "format.h"
 #include <ostream>
 
 namespace fmt
@@ -77,15 +76,12 @@ struct ConvertToIntImpl<T, true>
         value = sizeof(convert(get<DummyStream>() << get<T>())) == sizeof(No)
     };
 };
-
-// Write the content of w to os.
-void write(std::ostream &os, Writer &w);
 }  // namespace internal
 
 // Formats a value.
 template <typename Char, typename ArgFormatter, typename T>
-void format_arg(BasicFormatter<Char, ArgFormatter> &f,
-                const Char *&format_str, const T &value)
+void format(BasicFormatter<Char, ArgFormatter> &f,
+            const Char *&format_str, const T &value)
 {
     internal::MemoryBuffer<Char, internal::INLINE_BUFFER_SIZE> buffer;
 
@@ -109,6 +105,18 @@ void format_arg(BasicFormatter<Char, ArgFormatter> &f,
  */
 FMT_API void print(std::ostream &os, CStringRef format_str, ArgList args);
 FMT_VARIADIC(void, print, std::ostream &, CStringRef)
+
+/**
+  \rst
+  Prints formatted data to the stream *os*.
+
+  **Example**::
+
+    fprintf(cerr, "Don't %s!", "panic");
+  \endrst
+ */
+FMT_API int fprintf(std::ostream &os, CStringRef format_str, ArgList args);
+FMT_VARIADIC(int, fprintf, std::ostream &, CStringRef)
 }  // namespace fmt
 
 #ifdef FMT_HEADER_ONLY

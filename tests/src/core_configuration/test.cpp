@@ -11,7 +11,8 @@ public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
-      logger = spdlog::stdout_logger_mt("core_configuration", true);
+      logger = spdlog::stdout_color_mt("core_configuration");
+      logger->set_level(spdlog::level::off);
     }
     return *logger;
   }

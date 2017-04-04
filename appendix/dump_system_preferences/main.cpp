@@ -8,7 +8,7 @@ public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
-      logger = spdlog::stdout_logger_mt("dump_system_preferences", true);
+      logger = spdlog::stdout_color_mt("dump_system_preferences");
     }
     return *logger;
   }

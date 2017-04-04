@@ -12,9 +12,20 @@
 #include <spdlog/details/registry.h>
 #include <spdlog/sinks/file_sinks.h>
 #include <spdlog/sinks/stdout_sinks.h>
+#ifdef SPDLOG_ENABLE_SYSLOG
 #include <spdlog/sinks/syslog_sink.h>
+#endif
+
+#ifdef _WIN32
+#include <spdlog/sinks/wincolor_sink.h>
+#else
 #include <spdlog/sinks/ansicolor_sink.h>
+#endif
+
+
+#ifdef __ANDROID__
 #include <spdlog/sinks/android_sink.h>
+#endif
 
 #include <chrono>
 #include <functional>
@@ -50,52 +61,104 @@ inline std::shared_ptr<spdlog::logger> spdlog::basic_logger_st(const std::string
 // Create multi/single threaded rotating file logger
 inline std::shared_ptr<spdlog::logger> spdlog::rotating_logger_mt(const std::string& logger_name, const filename_t& filename, size_t max_file_size, size_t max_files)
 {
-    return create<spdlog::sinks::rotating_file_sink_mt>(logger_name, filename, SPDLOG_FILENAME_T("txt"), max_file_size, max_files);
+    return create<spdlog::sinks::rotating_file_sink_mt>(logger_name, filename, max_file_size, max_files);
 }
 
 inline std::shared_ptr<spdlog::logger> spdlog::rotating_logger_st(const std::string& logger_name, const filename_t& filename, size_t max_file_size, size_t max_files)
 {
-    return create<spdlog::sinks::rotating_file_sink_st>(logger_name, filename, SPDLOG_FILENAME_T("txt"), max_file_size, max_files);
+    return create<spdlog::sinks::rotating_file_sink_st>(logger_name, filename, max_file_size, max_files);
 }
 
 // Create file logger which creates new file at midnight):
 inline std::shared_ptr<spdlog::logger> spdlog::daily_logger_mt(const std::string& logger_name, const filename_t& filename, int hour, int minute)
 {
-    return create<spdlog::sinks::daily_file_sink_mt>(logger_name, filename, SPDLOG_FILENAME_T("txt"), hour, minute);
+    return create<spdlog::sinks::daily_file_sink_mt>(logger_name, filename, hour, minute);
 }
 
 inline std::shared_ptr<spdlog::logger> spdlog::daily_logger_st(const std::string& logger_name, const filename_t& filename, int hour, int minute)
 {
-    return create<spdlog::sinks::daily_file_sink_st>(logger_name, filename, SPDLOG_FILENAME_T("txt"), hour, minute);
+    return create<spdlog::sinks::daily_file_sink_st>(logger_name, filename, hour, minute);
 }
 
-// Create stdout/stderr loggers (with optinal color support)
-inline std::shared_ptr<spdlog::logger> create_console_logger(const std::string& logger_name, spdlog::sink_ptr sink, bool color)
+
+//
+// stdout/stderr loggers
+//
+inline std::shared_ptr<spdlog::logger> spdlog::stdout_logger_mt(const std::string& logger_name)
 {
-    if (color) //use color wrapper sink
-        sink = std::make_shared<spdlog::sinks::ansicolor_sink>(sink);
+    return spdlog::details::registry::instance().create(logger_name, spdlog::sinks::stdout_sink_mt::instance());
+}
+
+inline std::shared_ptr<spdlog::logger> spdlog::stdout_logger_st(const std::string& logger_name)
+{
+    return spdlog::details::registry::instance().create(logger_name, spdlog::sinks::stdout_sink_st::instance());
+}
+
+inline std::shared_ptr<spdlog::logger> spdlog::stderr_logger_mt(const std::string& logger_name)
+{
+    return spdlog::details::registry::instance().create(logger_name, spdlog::sinks::stderr_sink_mt::instance());
+}
+
+inline std::shared_ptr<spdlog::logger> spdlog::stderr_logger_st(const std::string& logger_name)
+{
+    return spdlog::details::registry::instance().create(logger_name, spdlog::sinks::stderr_sink_st::instance());
+}
+
+//
+// stdout/stderr color loggers
+//
+#ifdef _WIN32
+inline std::shared_ptr<spdlog::logger> spdlog::stdout_color_mt(const std::string& logger_name)
+{
+    auto sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
     return spdlog::details::registry::instance().create(logger_name, sink);
 }
 
-inline std::shared_ptr<spdlog::logger> spdlog::stdout_logger_mt(const std::string& logger_name, bool color)
+inline std::shared_ptr<spdlog::logger> spdlog::stdout_color_st(const std::string& logger_name)
 {
-    return create_console_logger(logger_name, sinks::stdout_sink_mt::instance(), color);
+    auto sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_st>();
+    return spdlog::details::registry::instance().create(logger_name, sink);
 }
 
-inline std::shared_ptr<spdlog::logger> spdlog::stdout_logger_st(const std::string& logger_name, bool color)
+inline std::shared_ptr<spdlog::logger> spdlog::stderr_color_mt(const std::string& logger_name)
 {
-    return create_console_logger(logger_name, sinks::stdout_sink_st::instance(), color);
+    auto sink = std::make_shared<spdlog::sinks::wincolor_stderr_sink_mt>();
+    return spdlog::details::registry::instance().create(logger_name, sink);
 }
 
-inline std::shared_ptr<spdlog::logger> spdlog::stderr_logger_mt(const std::string& logger_name, bool color)
+
+inline std::shared_ptr<spdlog::logger> spdlog::stderr_color_st(const std::string& logger_name)
 {
-    return create_console_logger(logger_name, sinks::stderr_sink_mt::instance(), color);
+    auto sink = std::make_shared<spdlog::sinks::wincolor_stderr_sink_st>();
+    return spdlog::details::registry::instance().create(logger_name, sink);
 }
 
-inline std::shared_ptr<spdlog::logger> spdlog::stderr_logger_st(const std::string& logger_name, bool color)
+#else //ansi terminal colors
+
+inline std::shared_ptr<spdlog::logger> spdlog::stdout_color_mt(const std::string& logger_name)
 {
-    return create_console_logger(logger_name, sinks::stderr_sink_st::instance(), color);
+    auto sink = std::make_shared<spdlog::sinks::ansicolor_sink>(spdlog::sinks::stdout_sink_mt::instance());
+    return spdlog::details::registry::instance().create(logger_name, sink);
 }
+
+inline std::shared_ptr<spdlog::logger> spdlog::stdout_color_st(const std::string& logger_name)
+{
+    auto sink = std::make_shared<spdlog::sinks::ansicolor_sink>(spdlog::sinks::stdout_sink_st::instance());
+    return spdlog::details::registry::instance().create(logger_name, sink);
+}
+
+inline std::shared_ptr<spdlog::logger> spdlog::stderr_color_mt(const std::string& logger_name)
+{
+    auto sink = std::make_shared<spdlog::sinks::ansicolor_sink>(spdlog::sinks::stderr_sink_mt::instance());
+    return spdlog::details::registry::instance().create(logger_name, sink);
+}
+
+inline std::shared_ptr<spdlog::logger> spdlog::stderr_color_st(const std::string& logger_name)
+{
+    auto sink = std::make_shared<spdlog::sinks::ansicolor_sink>(spdlog::sinks::stderr_sink_st::instance());
+    return spdlog::details::registry::instance().create(logger_name, sink);
+}
+#endif
 
 #ifdef SPDLOG_ENABLE_SYSLOG
 // Create syslog logger
@@ -105,7 +168,7 @@ inline std::shared_ptr<spdlog::logger> spdlog::syslog_logger(const std::string& 
 }
 #endif
 
-#if defined(__ANDROID__)
+#ifdef __ANDROID__
 inline std::shared_ptr<spdlog::logger> spdlog::android_logger(const std::string& logger_name, const std::string& tag)
 {
     return create<spdlog::sinks::android_sink>(logger_name, tag);

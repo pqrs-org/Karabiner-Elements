@@ -21,7 +21,7 @@ public:
   static spdlog::logger& get_logger(void) {
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
-      logger = spdlog::stdout_logger_mt("dump_hid_report", true);
+      logger = spdlog::stdout_color_mt("dump_hid_report");
     }
     return *logger;
   }

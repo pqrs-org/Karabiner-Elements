@@ -121,43 +121,41 @@ inline void spdlog::logger::log(level::level_enum lvl, const T& msg)
 }
 
 
-template <typename... Args>
-inline void spdlog::logger::trace(const char* fmt, const Args&... args)
+template <typename Arg1, typename... Args>
+inline void spdlog::logger::trace(const char* fmt, const Arg1 &arg1, const Args&... args)
 {
-    log(level::trace, fmt, args...);
+    log(level::trace, fmt, arg1, args...);
 }
 
-template <typename... Args>
-inline void spdlog::logger::debug(const char* fmt, const Args&... args)
+template <typename Arg1, typename... Args>
+inline void spdlog::logger::debug(const char* fmt, const Arg1 &arg1, const Args&... args)
 {
-    log(level::debug, fmt, args...);
+    log(level::debug, fmt, arg1, args...);
 }
 
-template <typename... Args>
-inline void spdlog::logger::info(const char* fmt, const Args&... args)
+template <typename Arg1, typename... Args>
+inline void spdlog::logger::info(const char* fmt, const Arg1 &arg1, const Args&... args)
 {
-    log(level::info, fmt, args...);
+    log(level::info, fmt, arg1, args...);
 }
 
-
-template <typename... Args>
-inline void spdlog::logger::warn(const char* fmt, const Args&... args)
+template <typename Arg1, typename... Args>
+inline void spdlog::logger::warn(const char* fmt, const Arg1 &arg1, const Args&... args)
 {
-    log(level::warn, fmt, args...);
+    log(level::warn, fmt, arg1, args...);
 }
 
-template <typename... Args>
-inline void spdlog::logger::error(const char* fmt, const Args&... args)
+template <typename Arg1, typename... Args>
+inline void spdlog::logger::error(const char* fmt, const Arg1 &arg1, const Args&... args)
 {
-    log(level::err, fmt, args...);
+    log(level::err, fmt, arg1, args...);
 }
 
-template <typename... Args>
-inline void spdlog::logger::critical(const char* fmt, const Args&... args)
+template <typename Arg1, typename... Args>
+inline void spdlog::logger::critical(const char* fmt, const Arg1 &arg1, const Args&... args)
 {
-    log(level::critical, fmt, args...);
+    log(level::critical, fmt, arg1, args...);
 }
-
 
 template<typename T>
 inline void spdlog::logger::trace(const T& msg)
@@ -290,4 +288,9 @@ inline bool spdlog::logger::_should_flush_on(const details::log_msg &msg)
 {
     const auto flush_level = _flush_level.load(std::memory_order_relaxed);
     return (msg.level >= flush_level) && (msg.level != level::off);
+}
+
+inline const std::vector<spdlog::sink_ptr>& spdlog::logger::sinks() const
+{
+    return _sinks;
 }
