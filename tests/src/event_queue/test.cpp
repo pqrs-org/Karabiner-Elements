@@ -46,6 +46,7 @@ TEST_CASE("push_back_event") {
                                               }));
 
     REQUIRE(event_queue.get_input_events()[0].get_valid() == true);
+    REQUIRE(event_queue.get_input_events()[0].get_lazy() == false);
   }
 
   // reorder events

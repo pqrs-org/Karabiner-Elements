@@ -29,6 +29,7 @@ public:
                                           scope_(scope),
                                           time_(time),
                                           valid_(true),
+                                          lazy_(false),
                                           key_code_(key_code),
                                           event_type_(event_type) {
     }
@@ -50,6 +51,13 @@ public:
     }
     void set_valid(bool value) {
       valid_ = value;
+    }
+
+    bool get_lazy(void) const {
+      return lazy_;
+    }
+    void set_lazy(bool value) {
+      lazy_ = value;
     }
 
     boost::optional<key_code> get_key_code(void) const {
@@ -84,6 +92,7 @@ public:
     scope scope_;
     std::chrono::nanoseconds time_;
     bool valid_;
+    bool lazy_;
 
     union {
       key_code key_code_;
