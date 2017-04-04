@@ -49,7 +49,7 @@ You can set keyboard type in Virtual Keyboard tab.
 
 <img src="img/keyboard_type.png" width="400">
 
-oIf your keyboard is not ANSI layout, you have to set the keyboard type of virtual keyboard.
+If your keyboard is not ANSI layout, you have to set the keyboard type of virtual keyboard.
 
 # Learn about `karabiner.json`
 
