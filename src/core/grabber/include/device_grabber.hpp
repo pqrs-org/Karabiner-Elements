@@ -278,7 +278,7 @@ private:
 
     // ----------------------------------------
     if (mode_ == mode::grabbing) {
-      enable_devices();
+      grab_devices();
     }
   }
 
