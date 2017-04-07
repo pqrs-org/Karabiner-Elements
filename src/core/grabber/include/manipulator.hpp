@@ -9,7 +9,7 @@
 
 namespace krbn {
 namespace manipulator {
-enum class device_registry_entry_id : uint64_t {
+enum class device_id : uint64_t {
 };
 } // namespace manipulator
 } // namespace krbn

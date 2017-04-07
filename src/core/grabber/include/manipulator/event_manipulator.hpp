@@ -107,7 +107,7 @@ public:
                                       state ? modifier_flag_manager::operation::lock : modifier_flag_manager::operation::unlock);
   }
 
-  void handle_keyboard_event(device_registry_entry_id device_registry_entry_id,
+  void handle_keyboard_event(device_id device_id,
                              uint64_t timestamp,
                              key_code from_key_code,
                              bool pressed) {
@@ -116,23 +116,23 @@ public:
     // ----------------------------------------
     // modify keys
     if (!pressed) {
-      if (auto key_code = manipulated_keys_.find(device_registry_entry_id, from_key_code)) {
-        manipulated_keys_.remove(device_registry_entry_id, from_key_code);
+      if (auto key_code = manipulated_keys_.find(device_id, from_key_code)) {
+        manipulated_keys_.remove(device_id, from_key_code);
         to_key_code = *key_code;
       }
     } else {
       auto it = simple_modifications_key_code_map_.find(from_key_code);
       if (it != simple_modifications_key_code_map_.end()) {
         to_key_code = it->second;
-        manipulated_keys_.add(device_registry_entry_id, from_key_code, to_key_code);
+        manipulated_keys_.add(device_id, from_key_code, to_key_code);
       }
     }
 
     // ----------------------------------------
     // modify fn+arrow, function keys
     if (!pressed) {
-      if (auto key_code = manipulated_fn_keys_.find(device_registry_entry_id, to_key_code)) {
-        manipulated_fn_keys_.remove(device_registry_entry_id, to_key_code);
+      if (auto key_code = manipulated_fn_keys_.find(device_id, to_key_code)) {
+        manipulated_fn_keys_.remove(device_id, to_key_code);
         to_key_code = *key_code;
       }
     } else {
@@ -187,7 +187,7 @@ public:
       }
 
       if (key_code) {
-        manipulated_fn_keys_.add(device_registry_entry_id, to_key_code, *key_code);
+        manipulated_fn_keys_.add(device_id, to_key_code, *key_code);
         to_key_code = *key_code;
       }
     }
@@ -200,7 +200,7 @@ public:
     post_key(to_key_code, pressed, timestamp);
   }
 
-  void handle_pointing_event(device_registry_entry_id device_registry_entry_id,
+  void handle_pointing_event(device_id device_id,
                              uint64_t timestamp,
                              pointing_event pointing_event,
                              boost::optional<pointing_button> pointing_button,
@@ -261,20 +261,20 @@ private:
       manipulated_keys_.clear();
     }
 
-    void add(device_registry_entry_id device_registry_entry_id,
+    void add(device_id device_id,
              key_code from_key_code,
              key_code to_key_code) {
       std::lock_guard<std::mutex> guard(mutex_);
 
-      manipulated_keys_.push_back(manipulated_key(device_registry_entry_id, from_key_code, to_key_code));
+      manipulated_keys_.push_back(manipulated_key(device_id, from_key_code, to_key_code));
     }
 
-    boost::optional<key_code> find(device_registry_entry_id device_registry_entry_id,
+    boost::optional<key_code> find(device_id device_id,
                                    key_code from_key_code) {
       std::lock_guard<std::mutex> guard(mutex_);
 
       for (const auto& v : manipulated_keys_) {
-        if (v.get_device_registry_entry_id() == device_registry_entry_id &&
+        if (v.get_device_id() == device_id &&
             v.get_from_key_code() == from_key_code) {
           return v.get_to_key_code();
         }
@@ -282,12 +282,12 @@ private:
       return boost::none;
     }
 
-    void remove(device_registry_entry_id device_registry_entry_id,
+    void remove(device_id device_id,
                 key_code from_key_code) {
       std::lock_guard<std::mutex> guard(mutex_);
 
       manipulated_keys_.remove_if([&](const manipulated_key& v) {
-        return v.get_device_registry_entry_id() == device_registry_entry_id &&
+        return v.get_device_id() == device_id &&
                v.get_from_key_code() == from_key_code;
       });
     }
@@ -295,19 +295,19 @@ private:
   private:
     class manipulated_key final {
     public:
-      manipulated_key(device_registry_entry_id device_registry_entry_id,
+      manipulated_key(device_id device_id,
                       key_code from_key_code,
-                      key_code to_key_code) : device_registry_entry_id_(device_registry_entry_id),
+                      key_code to_key_code) : device_id_(device_id),
                                               from_key_code_(from_key_code),
                                               to_key_code_(to_key_code) {
       }
 
-      device_registry_entry_id get_device_registry_entry_id(void) const { return device_registry_entry_id_; }
+      device_id get_device_id(void) const { return device_id_; }
       key_code get_from_key_code(void) const { return from_key_code_; }
       key_code get_to_key_code(void) const { return to_key_code_; }
 
     private:
-      device_registry_entry_id device_registry_entry_id_;
+      device_id device_id_;
       key_code from_key_code_;
       key_code to_key_code_;
     };
