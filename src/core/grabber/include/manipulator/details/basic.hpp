@@ -12,6 +12,7 @@ namespace details {
 class basic final : public base {
 public:
   basic(const nlohmann::json& json) : base(),
+                                      active_(false),
                                       from_(json.find("from") != std::end(json) ? json["from"] : nlohmann::json()) {
     {
       const std::string key = "to";
@@ -30,7 +31,7 @@ public:
   }
 
   virtual bool active(void) const {
-    return false;
+    return active_;
   }
 
   const event_definition& get_from(void) const {
@@ -42,6 +43,7 @@ public:
   }
 
 private:
+  bool active_;
   event_definition from_;
   std::vector<event_definition> to_;
 };
