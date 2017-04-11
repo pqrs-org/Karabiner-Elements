@@ -4,7 +4,6 @@
 
 #include "types.hpp"
 #include <boost/optional.hpp>
-#include <chrono>
 
 namespace krbn {
 namespace manipulator {
@@ -23,11 +22,11 @@ public:
     };
 
     queued_event(scope scope,
-                 std::chrono::nanoseconds time,
+                 uint64_t time_stamp,
                  key_code key_code,
                  event_type event_type) : type_(type::key),
                                           scope_(scope),
-                                          time_(time),
+                                          time_stamp_(time_stamp),
                                           valid_(true),
                                           lazy_(false),
                                           key_code_(key_code),
@@ -42,8 +41,8 @@ public:
       return scope_;
     }
 
-    std::chrono::nanoseconds get_time(void) const {
-      return time_;
+    uint64_t get_time_stamp(void) const {
+      return time_stamp_;
     }
 
     bool get_valid(void) const {
@@ -81,7 +80,7 @@ public:
     bool operator==(const queued_event& other) const {
       return get_type() == other.get_type() &&
              get_scope() == other.get_scope() &&
-             get_time() == other.get_time() &&
+             get_time_stamp() == other.get_time_stamp() &&
              get_key_code() == other.get_key_code() &&
              get_pointing_button() == other.get_pointing_button() &&
              get_event_type() == other.get_event_type();
@@ -90,7 +89,7 @@ public:
   private:
     type type_;
     scope scope_;
-    std::chrono::nanoseconds time_;
+    uint64_t time_stamp_;
     bool valid_;
     bool lazy_;
 
@@ -102,16 +101,29 @@ public:
   };
 
   void push_back_event(scope scope,
-                       std::chrono::nanoseconds time,
+                       uint64_t time_stamp,
+                       uint32_t usage_page,
+                       uint32_t usage,
+                       CFIndex integer_value) {
+    if (auto key_code = types::get_key_code(usage_page, usage)) {
+      push_back_event(scope,
+                      time_stamp,
+                      *key_code,
+                      integer_value ? event_type::key_down : event_type::key_up);
+    }
+  }
+
+  void push_back_event(scope scope,
+                       uint64_t time_stamp,
                        key_code key_code,
                        event_type event_type) {
     switch (scope) {
     case scope::input:
-      input_events_.emplace_back(scope, time, key_code, event_type);
+      input_events_.emplace_back(scope, time_stamp, key_code, event_type);
       sort_events(input_events_);
       break;
     case scope::output:
-      output_events_.emplace_back(scope, time, key_code, event_type);
+      output_events_.emplace_back(scope, time_stamp, key_code, event_type);
       sort_events(output_events_);
       break;
     }
@@ -125,8 +137,7 @@ public:
     return output_events_;
   }
 
-private:
-  void sort_events(std::vector<queued_event>& events) {
+  static bool compare(const queued_event& v1, const queued_event& v2) {
     // Some devices are send modifier flag and key at the same HID report.
     // For example, a key sends control+up-arrow by this reports.
     //
@@ -166,46 +177,49 @@ private:
     // These events will not be interpreted as intended in this order.
     // Thus, we have to reorder the events.
 
-    std::sort(std::begin(events), std::end(events), [](const queued_event& v1, const queued_event& v2) {
-      if (v1.get_time() == v2.get_time()) {
-        auto modifier_flag1 = modifier_flag::zero;
-        auto modifier_flag2 = modifier_flag::zero;
+    if (v1.get_time_stamp() == v2.get_time_stamp()) {
+      auto modifier_flag1 = modifier_flag::zero;
+      auto modifier_flag2 = modifier_flag::zero;
 
-        if (auto key_code1 = v1.get_key_code()) {
-          modifier_flag1 = types::get_modifier_flag(*key_code1);
-        }
-        if (auto key_code2 = v2.get_key_code()) {
-          modifier_flag2 = types::get_modifier_flag(*key_code2);
-        }
+      if (auto key_code1 = v1.get_key_code()) {
+        modifier_flag1 = types::get_modifier_flag(*key_code1);
+      }
+      if (auto key_code2 = v2.get_key_code()) {
+        modifier_flag2 = types::get_modifier_flag(*key_code2);
+      }
 
-        // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
+      // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
 
-        if (modifier_flag1 == modifier_flag::zero &&
-            modifier_flag2 != modifier_flag::zero) {
-          // v2 is modifier_flag
-          if (v2.get_event_type() == event_type::key_up) {
-            return true;
-          } else {
-            // reorder to v2,v1 if v2 is pressed.
-            return false;
-          }
-        }
-
-        if (modifier_flag1 != modifier_flag::zero &&
-            modifier_flag2 == modifier_flag::zero) {
-          // v1 is modifier_flag
-          if (v1.get_event_type() == event_type::key_up) {
-            // reorder to v2,v1 if v1 is released.
-            return false;
-          } else {
-            return true;
-          }
+      if (modifier_flag1 == modifier_flag::zero &&
+          modifier_flag2 != modifier_flag::zero) {
+        // v2 is modifier_flag
+        if (v2.get_event_type() == event_type::key_up) {
+          return true;
+        } else {
+          // reorder to v2,v1 if v2 is pressed.
+          return false;
         }
       }
 
-      // keep order
-      return v1.get_time() <= v2.get_time();
-    });
+      if (modifier_flag1 != modifier_flag::zero &&
+          modifier_flag2 == modifier_flag::zero) {
+        // v1 is modifier_flag
+        if (v1.get_event_type() == event_type::key_up) {
+          // reorder to v2,v1 if v1 is released.
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+
+    // keep order
+    return v1.get_time_stamp() < v2.get_time_stamp();
+  }
+
+private:
+  void sort_events(std::vector<queued_event>& events) {
+    std::sort(std::begin(events), std::end(events), event_queue::compare);
   }
 
   std::vector<queued_event> input_events_;
