@@ -258,10 +258,13 @@ private:
 
     iokit_utility::log_removal_device(logger::get_logger(), device);
 
+    boost::optional<manipulator::device_id> device_id;
+
     auto it = hids_.find(device);
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
+        device_id = manipulator::device_id(dev->get_registry_entry_id());
         hids_.erase(it);
       }
     }
@@ -272,6 +275,11 @@ private:
       event_manipulator_.initialize_virtual_hid_pointing();
     } else {
       event_manipulator_.terminate_virtual_hid_pointing();
+    }
+
+    if (device_id) {
+      event_manipulator_.erase_all_active_modifier_flags(*device_id, true);
+      event_manipulator_.erase_all_active_pointing_buttons(*device_id, true);
     }
 
     event_manipulator_.stop_key_repeat();
@@ -351,10 +359,9 @@ private:
     }
 
     // reset modifier_flags state if all keys are released.
-    if (get_all_devices_pressed_keys_count() == 0) {
-      event_manipulator_.reset_modifier_flag_state();
-      event_manipulator_.reset_pointing_button_state();
-      event_manipulator_.stop_key_repeat();
+    if (device.get_pressed_keys_count() == 0) {
+      event_manipulator_.erase_all_active_modifier_flags(device_id, false);
+      event_manipulator_.erase_all_active_pointing_buttons(device_id, false);
     }
   }
 

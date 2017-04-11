@@ -1,5 +1,6 @@
 #pragma once
 
+#include "manipulator.hpp"
 #include "types.hpp"
 #include <thread>
 #include <vector>
@@ -8,91 +9,102 @@ namespace krbn {
 namespace manipulator {
 class pointing_button_manager final {
 public:
-  pointing_button_manager(void) {
-    const auto max_size = static_cast<size_t>(pointing_button::end_);
-    states_.resize(max_size);
-    for (size_t i = 0; i < max_size; ++i) {
-      states_[i] = std::make_unique<state>();
+  class active_pointing_button final {
+  public:
+    enum class type {
+      increase,
+      decrease,
+    };
+
+    active_pointing_button(type type,
+                           pointing_button pointing_button,
+                           device_id device_id) : type_(type),
+                                                  pointing_button_(pointing_button),
+                                                  device_id_(device_id) {
     }
+
+    type get_type(void) const {
+      return type_;
+    }
+
+    pointing_button get_pointing_button(void) const {
+      return pointing_button_;
+    }
+
+    device_id get_device_id(void) const {
+      return device_id_;
+    }
+
+    int get_count(void) const {
+      if (type_ == type::increase) {
+        return 1;
+      } else {
+        return -1;
+      }
+    }
+
+    bool operator==(const active_pointing_button& other) const {
+      return get_type() == other.get_type() &&
+             get_pointing_button() == other.get_pointing_button() &&
+             get_device_id() == other.get_device_id();
+    }
+
+  private:
+    type type_;
+    pointing_button pointing_button_;
+    device_id device_id_;
+  };
+
+  void push_back_active_pointing_button(const active_pointing_button& button) {
+    active_pointing_buttons_.push_back(button);
+  }
+
+  void erase_active_pointing_button(const active_pointing_button& button) {
+    auto it = std::find(std::begin(active_pointing_buttons_),
+                        std::end(active_pointing_buttons_),
+                        button);
+    if (it != std::end(active_pointing_buttons_)) {
+      active_pointing_buttons_.erase(it);
+    }
+  }
+
+  void erase_all_active_pointing_buttons(device_id device_id) {
+    active_pointing_buttons_.erase(std::remove_if(std::begin(active_pointing_buttons_),
+                                                  std::end(active_pointing_buttons_),
+                                                  [&](const active_pointing_button& b) {
+                                                    return b.get_device_id() == device_id;
+                                                  }),
+                                   std::end(active_pointing_buttons_));
+  }
+
+  void erase_all_active_pointing_buttons_except_lock(device_id device_id) {
+    erase_all_active_pointing_buttons(device_id);
   }
 
   void reset(void) {
-    for (const auto& s : states_) {
-      if (s) {
-        s->reset();
-      }
-    }
+    active_pointing_buttons_.clear();
   }
 
-  void unlock(void) {
-    for (const auto& s : states_) {
-      if (s) {
-        s->unlock();
+  bool is_pressed(pointing_button pointing_button) const {
+    int count = 0;
+
+    for (const auto& f : active_pointing_buttons_) {
+      if (f.get_pointing_button() == pointing_button) {
+        count += f.get_count();
       }
     }
-  }
 
-  enum class operation {
-    increase,
-    decrease,
-    lock,
-    unlock,
-    toggle_lock,
-  };
-
-  void manipulate(pointing_button b, operation operation) {
-    auto i = static_cast<size_t>(b);
-    if (i < states_.size() && states_[i]) {
-      switch (operation) {
-      case operation::increase:
-        states_[i]->increase();
-        break;
-      case operation::decrease:
-        states_[i]->decrease();
-        break;
-      case operation::lock:
-        states_[i]->lock();
-        break;
-      case operation::unlock:
-        states_[i]->unlock();
-        break;
-      case operation::toggle_lock:
-        states_[i]->toggle_lock();
-        break;
-      }
-    }
-  }
-
-  bool pressed(pointing_button b) const {
-    if (b == pointing_button::zero) {
-      return true;
-    }
-
-    auto i = static_cast<size_t>(b);
-    if (i < states_.size() && states_[i]) {
-      return states_[i]->pressed();
-    }
-    return false;
-  }
-
-  bool pressed(const std::vector<pointing_button>& pointing_buttons) {
-    // return true if all modifier flags are pressed.
-    for (const auto& b : pointing_buttons) {
-      if (!pressed(b)) {
-        return false;
-      }
-    }
-    return true;
+    return count > 0;
   }
 
   uint32_t get_hid_report_bits(void) const {
     uint32_t bits = 0;
 
-    auto button1 = static_cast<size_t>(pointing_button::button1);
-    auto button32 = static_cast<size_t>(pointing_button::button32);
+    auto button1 = static_cast<uint32_t>(pointing_button::button1);
+    auto button32 = static_cast<uint32_t>(pointing_button::button32);
 
     for (size_t i = button1; i < button32; ++i) {
-      if (states_[i] && states_[i]->pressed()) {
+      if (is_pressed(pointing_button(i))) {
         bits |= static_cast<uint32_t>(1 << (i - button1));
       }
     }
@@ -101,61 +113,7 @@ public:
   }
 
 private:
-  class state final {
-  public:
-    state(void) : count_(0),
-                  lock_count_(0) {}
-
-    bool pressed(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      return (count_ + lock_count_) > 0;
-    }
-
-    void reset(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      count_ = 0;
-    }
-
-    void increase(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      ++count_;
-    }
-
-    void decrease(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      --count_;
-    }
-
-    void lock(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      lock_count_ = 1;
-    }
-
-    void unlock(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      lock_count_ = 0;
-    }
-
-    void toggle_lock(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      lock_count_ = lock_count_ == 0 ? 1 : 0;
-    }
-
-  private:
-    int count_;
-    int lock_count_;
-
-    std::mutex mutex_;
-  };
-
-  std::vector<std::unique_ptr<state>> states_;
+  std::vector<active_pointing_button> active_pointing_buttons_;
 };
 } // namespace manipulator
 } // namespace krbn
