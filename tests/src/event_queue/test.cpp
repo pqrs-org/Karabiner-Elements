@@ -116,13 +116,13 @@ TEST_CASE("compare") {
                                                            *(krbn::types::get_key_code("escape")),
                                                            krbn::event_type::key_down);
   krbn::manipulator::event_queue::queued_event spacebar_up(krbn::manipulator::event_queue::scope::input,
-                                                             300,
-                                                             *(krbn::types::get_key_code("spacebar")),
-                                                             krbn::event_type::key_up);
+                                                           300,
+                                                           *(krbn::types::get_key_code("spacebar")),
+                                                           krbn::event_type::key_up);
   krbn::manipulator::event_queue::queued_event right_shift_up(krbn::manipulator::event_queue::scope::input,
-                                                                300,
-                                                                *(krbn::types::get_key_code("right_shift")),
-                                                                krbn::event_type::key_up);
+                                                              300,
+                                                              *(krbn::types::get_key_code("right_shift")),
+                                                              krbn::event_type::key_up);
 
   REQUIRE(krbn::manipulator::event_queue::compare(spacebar_down, spacebar_down) == false);
 
@@ -140,6 +140,68 @@ TEST_CASE("compare") {
 
   REQUIRE(krbn::manipulator::event_queue::compare(spacebar_up, right_shift_down) == false);
   REQUIRE(krbn::manipulator::event_queue::compare(right_shift_down, spacebar_up) == true);
+}
+
+TEST_CASE("push_back_event.usage_page") {
+  krbn::manipulator::event_queue event_queue;
+
+  event_queue.push_back_event(krbn::manipulator::event_queue::scope::input,
+                              100,
+                              kHIDPage_KeyboardOrKeypad,
+                              kHIDUsage_KeyboardTab,
+                              1);
+  event_queue.push_back_event(krbn::manipulator::event_queue::scope::input,
+                              200,
+                              kHIDPage_KeyboardOrKeypad,
+                              kHIDUsage_KeyboardTab,
+                              0);
+  event_queue.push_back_event(krbn::manipulator::event_queue::scope::input,
+                              300,
+                              kHIDPage_Button,
+                              2,
+                              1);
+  event_queue.push_back_event(krbn::manipulator::event_queue::scope::input,
+                              400,
+                              kHIDPage_Button,
+                              2,
+                              0);
+  event_queue.push_back_event(krbn::manipulator::event_queue::scope::input,
+                              500,
+                              kHIDPage_GenericDesktop,
+                              kHIDUsage_GD_X,
+                              10);
+  event_queue.push_back_event(krbn::manipulator::event_queue::scope::input,
+                              600,
+                              kHIDPage_GenericDesktop,
+                              kHIDUsage_GD_Y,
+                              -10);
+
+  REQUIRE(event_queue.get_input_events() == std::vector<krbn::manipulator::event_queue::queued_event>({
+                                                krbn::manipulator::event_queue::queued_event(krbn::manipulator::event_queue::scope::input,
+                                                                                             100,
+                                                                                             *(krbn::types::get_key_code("tab")),
+                                                                                             krbn::event_type::key_down),
+                                                krbn::manipulator::event_queue::queued_event(krbn::manipulator::event_queue::scope::input,
+                                                                                             200,
+                                                                                             *(krbn::types::get_key_code("tab")),
+                                                                                             krbn::event_type::key_up),
+                                                krbn::manipulator::event_queue::queued_event(krbn::manipulator::event_queue::scope::input,
+                                                                                             300,
+                                                                                             krbn::pointing_button::button2,
+                                                                                             krbn::event_type::key_down),
+                                                krbn::manipulator::event_queue::queued_event(krbn::manipulator::event_queue::scope::input,
+                                                                                             400,
+                                                                                             krbn::pointing_button::button2,
+                                                                                             krbn::event_type::key_up),
+                                                krbn::manipulator::event_queue::queued_event(krbn::manipulator::event_queue::scope::input,
+                                                                                             500,
+                                                                                             krbn::manipulator::event_queue::queued_event::type::pointing_x,
+                                                                                             10),
+                                                krbn::manipulator::event_queue::queued_event(krbn::manipulator::event_queue::scope::input,
+                                                                                             600,
+                                                                                             krbn::manipulator::event_queue::queued_event::type::pointing_y,
+                                                                                             -10),
+                                            }));
 }
 
 int main(int argc, char* const argv[]) {

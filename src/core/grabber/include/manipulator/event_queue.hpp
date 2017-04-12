@@ -17,24 +17,48 @@ public:
   class queued_event final {
   public:
     enum class type {
-      key,
+      key_code,
       pointing_button,
+      pointing_x,
+      pointing_y,
+      pointing_vertical_wheel,
+      pointing_horizontal_wheel,
     };
 
     queued_event(scope scope,
                  uint64_t time_stamp,
                  key_code key_code,
-                 event_type event_type) : type_(type::key),
-                                          scope_(scope),
+                 event_type event_type) : scope_(scope),
                                           time_stamp_(time_stamp),
+                                          type_(type::key_code),
                                           valid_(true),
                                           lazy_(false),
                                           key_code_(key_code),
                                           event_type_(event_type) {
     }
 
-    type get_type(void) const {
-      return type_;
+    queued_event(scope scope,
+                 uint64_t time_stamp,
+                 pointing_button pointing_button,
+                 event_type event_type) : scope_(scope),
+                                          time_stamp_(time_stamp),
+                                          type_(type::pointing_button),
+                                          valid_(true),
+                                          lazy_(false),
+                                          pointing_button_(pointing_button),
+                                          event_type_(event_type) {
+    }
+
+    queued_event(scope scope,
+                 uint64_t time_stamp,
+                 type type,
+                 int integer_value) : scope_(scope),
+                                      time_stamp_(time_stamp),
+                                      type_(type),
+                                      valid_(true),
+                                      lazy_(false),
+                                      integer_value_(integer_value),
+                                      event_type_(event_type::key_down) {
     }
 
     scope get_scope(void) const {
@@ -43,6 +67,10 @@ public:
 
     uint64_t get_time_stamp(void) const {
       return time_stamp_;
+    }
+
+    type get_type(void) const {
+      return type_;
     }
 
     bool get_valid(void) const {
@@ -60,7 +88,7 @@ public:
     }
 
     boost::optional<key_code> get_key_code(void) const {
-      if (type_ == type::key) {
+      if (type_ == type::key_code) {
         return key_code_;
       }
       return boost::none;
@@ -78,24 +106,25 @@ public:
     }
 
     bool operator==(const queued_event& other) const {
-      return get_type() == other.get_type() &&
-             get_scope() == other.get_scope() &&
+      return get_scope() == other.get_scope() &&
              get_time_stamp() == other.get_time_stamp() &&
+             get_type() == other.get_type() &&
              get_key_code() == other.get_key_code() &&
              get_pointing_button() == other.get_pointing_button() &&
              get_event_type() == other.get_event_type();
     }
 
   private:
-    type type_;
     scope scope_;
     uint64_t time_stamp_;
+    type type_;
     bool valid_;
     bool lazy_;
 
     union {
-      key_code key_code_;
-      pointing_button pointing_button_;
+      key_code key_code_;               // For type::key_code
+      pointing_button pointing_button_; // For type::pointing_button
+      int integer_value_;               // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
     };
     event_type event_type_;
   };
@@ -104,29 +133,86 @@ public:
                        uint64_t time_stamp,
                        uint32_t usage_page,
                        uint32_t usage,
-                       CFIndex integer_value) {
+                       int integer_value) {
     if (auto key_code = types::get_key_code(usage_page, usage)) {
       push_back_event(scope,
                       time_stamp,
                       *key_code,
                       integer_value ? event_type::key_down : event_type::key_up);
+    } else if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
+      push_back_event(scope,
+                      time_stamp,
+                      *pointing_button,
+                      integer_value ? event_type::key_down : event_type::key_up);
+    } else {
+      switch (usage_page) {
+      case kHIDPage_GenericDesktop:
+        switch (usage) {
+        case kHIDUsage_GD_X:
+          push_back_event(scope,
+                          time_stamp,
+                          queued_event::type::pointing_x,
+                          integer_value);
+          break;
+
+        case kHIDUsage_GD_Y:
+          push_back_event(scope,
+                          time_stamp,
+                          queued_event::type::pointing_y,
+                          integer_value);
+          break;
+
+        case kHIDUsage_GD_Wheel:
+          push_back_event(scope,
+                          time_stamp,
+                          queued_event::type::pointing_vertical_wheel,
+                          integer_value);
+          break;
+        }
+        break;
+
+      case kHIDPage_Consumer:
+        switch (usage) {
+        case kHIDUsage_Csmr_ACPan:
+          push_back_event(scope,
+                          time_stamp,
+                          queued_event::type::pointing_horizontal_wheel,
+                          integer_value);
+          break;
+        }
+        break;
+      }
     }
   }
 
+  // For type::key_code
   void push_back_event(scope scope,
                        uint64_t time_stamp,
                        key_code key_code,
                        event_type event_type) {
-    switch (scope) {
-    case scope::input:
-      input_events_.emplace_back(scope, time_stamp, key_code, event_type);
-      sort_events(input_events_);
-      break;
-    case scope::output:
-      output_events_.emplace_back(scope, time_stamp, key_code, event_type);
-      sort_events(output_events_);
-      break;
-    }
+    auto& events = (scope == scope::input ? input_events_ : output_events_);
+    events.emplace_back(scope, time_stamp, key_code, event_type);
+    sort_events(events);
+  }
+
+  // For type::pointing_button
+  void push_back_event(scope scope,
+                       uint64_t time_stamp,
+                       pointing_button pointing_button,
+                       event_type event_type) {
+    auto& events = (scope == scope::input ? input_events_ : output_events_);
+    events.emplace_back(scope, time_stamp, pointing_button, event_type);
+    sort_events(events);
+  }
+
+  // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+  void push_back_event(scope scope,
+                       uint64_t time_stamp,
+                       queued_event::type type,
+                       int integer_value) {
+    auto& events = (scope == scope::input ? input_events_ : output_events_);
+    events.emplace_back(scope, time_stamp, type, integer_value);
+    sort_events(events);
   }
 
   const std::vector<queued_event>& get_input_events(void) const {
@@ -219,7 +305,7 @@ public:
 
 private:
   void sort_events(std::vector<queued_event>& events) {
-    std::sort(std::begin(events), std::end(events), event_queue::compare);
+    std::stable_sort(std::begin(events), std::end(events), event_queue::compare);
   }
 
   std::vector<queued_event> input_events_;
