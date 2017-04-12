@@ -12,6 +12,7 @@
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "manipulator.hpp"
+#include "physical_keyboard_repeat_detector.hpp"
 #include "spdlog_utility.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
@@ -280,6 +281,8 @@ private:
     if (device_id) {
       event_manipulator_.erase_all_active_modifier_flags(*device_id, true);
       event_manipulator_.erase_all_active_pointing_buttons(*device_id, true);
+
+      physical_keyboard_repeat_detector_.erase(*device_id);
     }
 
     event_manipulator_.stop_key_repeat();
@@ -296,7 +299,16 @@ private:
                       uint32_t usage_page,
                       uint32_t usage,
                       CFIndex integer_value) {
+    if (auto key_code = types::get_key_code(usage_page, usage)) {
+      bool pressed = integer_value;
+      physical_keyboard_repeat_detector_.set(device.get_device_id(), *key_code, pressed ? event_type::key_down : event_type::key_up);
+    }
+
     if (!device.is_grabbed()) {
+      return;
+    }
+
+    if (device.get_disabled()) {
       return;
     }
 
@@ -305,6 +317,7 @@ private:
 
     if (auto key_code = types::get_key_code(usage_page, usage)) {
       bool pressed = integer_value;
+
       event_manipulator_.handle_keyboard_event(device_id,
                                                timestamp,
                                                *key_code,
@@ -376,6 +389,9 @@ private:
       }
     }
 
+    // ----------------------------------------
+    // Ungrabbable while event_manipulator_ is not ready.
+
     auto ready_state = event_manipulator_.is_ready();
     if (ready_state != manipulator::event_manipulator::ready_state::ready) {
       std::string message = "event_manipulator_ is not ready. ";
@@ -393,6 +409,17 @@ private:
       is_grabbable_callback_log_reducer_.warn(message);
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
     }
+
+    // ----------------------------------------
+    // Ungrabbable while key repeating
+
+    if (physical_keyboard_repeat_detector_.is_repeating(device.get_device_id())) {
+      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + device.get_name_for_log() + " while a key is repeating.");
+      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+    }
+
+    // ----------------------------------------
+
     return human_interface_device::grabbable_state::grabbable;
   }
 
@@ -540,6 +567,7 @@ private:
 
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   IOHIDManagerRef _Nullable manager_;
+  physical_keyboard_repeat_detector physical_keyboard_repeat_detector_;
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 

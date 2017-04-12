@@ -379,6 +379,10 @@ public:
     });
   }
 
+  bool get_disabled(void) const {
+    return disabled_;
+  }
+
   void disable(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       if (is_pqrs_device()) {
@@ -522,14 +526,6 @@ public:
 
     // ----------------------------------------
     // We are going to grab the device.
-
-    if (repeating_key_) {
-      // We should not grab the device while a key is repeating since we cannot stop the key repeating.
-      // (To stop the key repeating, we have to send a hid report to the device. But we cannot do it.)
-
-      is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while a key is repeating.");
-      return grabbable_state::ungrabbable_temporarily;
-    }
 
     if (!pressed_buttons_.empty()) {
       // We should not grab the device while a button is pressed since we cannot release the button.
@@ -786,23 +782,6 @@ private:
         auto usage = IOHIDElementGetUsage(element);
         auto integer_value = IOHIDValueGetIntegerValue(value);
 
-        // Update repeating_key_
-        if (auto key_code = types::get_key_code(usage_page, usage)) {
-          bool pressed = integer_value;
-          if (pressed) {
-            if (types::get_modifier_flag(*key_code) != modifier_flag::zero) {
-              // The pressed key is a modifier key.
-              repeating_key_ = boost::none;
-            } else {
-              repeating_key_ = *key_code;
-            }
-          } else {
-            if (repeating_key_ && *repeating_key_ == *key_code) {
-              repeating_key_ = boost::none;
-            }
-          }
-        }
-
         // Update pressed_buttons_
         if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
           bool pressed = integer_value;
@@ -827,7 +806,7 @@ private:
         }
 
         // Call value_callback_.
-        if (value_callback_ && !disabled_) {
+        if (value_callback_) {
           value_callback_(*this, value, element, usage_page, usage, integer_value);
         }
       }
@@ -903,7 +882,6 @@ private:
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
-  boost::optional<key_code> repeating_key_;
   std::list<pointing_button> pressed_buttons_;
   std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
