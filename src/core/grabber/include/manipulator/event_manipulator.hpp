@@ -57,7 +57,7 @@ public:
     virtual_hid_device_client_.terminate_virtual_hid_pointing();
   }
 
-  void erase_all_active_modifier_flags(manipulator::device_id device_id, bool include_lock) {
+  void erase_all_active_modifier_flags(device_id device_id, bool include_lock) {
     if (include_lock) {
       modifier_flag_manager_.erase_all_active_modifier_flags(device_id);
     } else {
@@ -68,7 +68,7 @@ public:
     // Post modifier flag event
   }
 
-  void erase_all_active_pointing_buttons(manipulator::device_id device_id, bool include_lock) {
+  void erase_all_active_pointing_buttons(device_id device_id, bool include_lock) {
     auto previous_bits = pointing_button_manager_.get_hid_report_bits();
 
     if (include_lock) {

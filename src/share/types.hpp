@@ -15,6 +15,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -24,6 +25,10 @@ enum class operation_type : uint8_t {
   // console_user_server -> grabber
   connect,
   system_preferences_values_updated,
+};
+
+enum class device_id : uint32_t {
+  zero = 0,
 };
 
 enum class event_type : uint32_t {
@@ -203,6 +208,16 @@ enum class location_id : uint32_t {
 
 class types final {
 public:
+  static device_id get_new_device_id(void) {
+    static std::mutex mutex;
+    static auto id = device_id::zero;
+
+    std::lock_guard<std::mutex> guard(mutex);
+
+    id = device_id(static_cast<uint32_t>(id) + 1);
+    return id;
+  }
+
   static modifier_flag get_modifier_flag(key_code key_code) {
     switch (static_cast<uint32_t>(key_code)) {
     case kHIDUsage_KeyboardLeftControl:

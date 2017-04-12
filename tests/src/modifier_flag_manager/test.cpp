@@ -9,19 +9,19 @@ TEST_CASE("manipulator.modifier_flag_manager") {
 
   krbn::manipulator::modifier_flag_manager::active_modifier_flag left_shift_1(krbn::manipulator::modifier_flag_manager::active_modifier_flag::type::increase,
                                                                               krbn::modifier_flag::left_shift,
-                                                                              krbn::manipulator::device_id(1));
+                                                                              krbn::device_id(1));
 
   krbn::manipulator::modifier_flag_manager::active_modifier_flag decrease_left_shift_1(krbn::manipulator::modifier_flag_manager::active_modifier_flag::type::decrease,
                                                                                        krbn::modifier_flag::left_shift,
-                                                                                       krbn::manipulator::device_id(1));
+                                                                                       krbn::device_id(1));
 
   krbn::manipulator::modifier_flag_manager::active_modifier_flag lock_left_shift_1(krbn::manipulator::modifier_flag_manager::active_modifier_flag::type::increase_lock,
                                                                                    krbn::modifier_flag::left_shift,
-                                                                                   krbn::manipulator::device_id(1));
+                                                                                   krbn::device_id(1));
 
   krbn::manipulator::modifier_flag_manager::active_modifier_flag left_shift_2(krbn::manipulator::modifier_flag_manager::active_modifier_flag::type::increase,
                                                                               krbn::modifier_flag::left_shift,
-                                                                              krbn::manipulator::device_id(2));
+                                                                              krbn::device_id(2));
 
   // ----------------------------------------
   // Push back
@@ -97,10 +97,10 @@ TEST_CASE("manipulator.modifier_flag_manager") {
   modifier_flag_manager.push_back_active_modifier_flag(left_shift_2);
   REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
 
-  modifier_flag_manager.erase_all_active_modifier_flags(krbn::manipulator::device_id(1));
+  modifier_flag_manager.erase_all_active_modifier_flags(krbn::device_id(1));
   REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
 
-  modifier_flag_manager.erase_all_active_modifier_flags(krbn::manipulator::device_id(2));
+  modifier_flag_manager.erase_all_active_modifier_flags(krbn::device_id(2));
   REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
 
   // ----------------------------------------
@@ -110,7 +110,7 @@ TEST_CASE("manipulator.modifier_flag_manager") {
   modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
   REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
 
-  modifier_flag_manager.erase_all_active_modifier_flags_except_lock(krbn::manipulator::device_id(1));
+  modifier_flag_manager.erase_all_active_modifier_flags_except_lock(krbn::device_id(1));
   REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == true);
 
   modifier_flag_manager.erase_active_modifier_flag(lock_left_shift_1);

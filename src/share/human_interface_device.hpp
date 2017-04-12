@@ -60,7 +60,7 @@ public:
   human_interface_device(spdlog::logger& logger,
                          IOHIDDeviceRef _Nonnull device) : logger_(logger),
                                                            device_(device),
-                                                           registry_entry_id_(0),
+                                                           device_id_(types::get_new_device_id()),
                                                            queue_(nullptr),
                                                            is_grabbable_log_reducer_(logger),
                                                            observed_(false),
@@ -70,12 +70,6 @@ public:
     // Retain device_
 
     CFRetain(device_);
-
-    if (auto registry_entry_id = iokit_utility::get_registry_entry_id(device_)) {
-      registry_entry_id_ = *registry_entry_id;
-    } else {
-      logger_.error("iokit_utility::get_registry_entry_id error @ {0}", __PRETTY_FUNCTION__);
-    }
 
     // Create connected_device_.
     {
@@ -182,7 +176,9 @@ public:
     });
   }
 
-  uint64_t get_registry_entry_id(void) const { return registry_entry_id_; }
+  device_id get_device_id(void) const {
+    return device_id_;
+  }
 
   IOReturn open(IOOptionBits options = kIOHIDOptionsTypeNone) {
     IOReturn __block r;
@@ -468,7 +464,7 @@ public:
     }
 
     std::stringstream stream;
-    stream << "(registry_entry_id:" << registry_entry_id_ << ")";
+    stream << "(device_id:" << static_cast<uint32_t>(device_id_) << ")";
     return stream.str();
   }
 
@@ -903,7 +899,7 @@ private:
   spdlog::logger& logger_;
 
   IOHIDDeviceRef _Nonnull device_;
-  uint64_t registry_entry_id_;
+  device_id device_id_;
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 

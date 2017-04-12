@@ -6,10 +6,3 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
-
-namespace krbn {
-namespace manipulator {
-enum class device_id : uint64_t {
-};
-} // namespace manipulator
-} // namespace krbn

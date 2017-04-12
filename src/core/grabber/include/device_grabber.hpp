@@ -258,13 +258,13 @@ private:
 
     iokit_utility::log_removal_device(logger::get_logger(), device);
 
-    boost::optional<manipulator::device_id> device_id;
+    boost::optional<device_id> device_id;
 
     auto it = hids_.find(device);
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
-        device_id = manipulator::device_id(dev->get_registry_entry_id());
+        device_id = dev->get_device_id();
         hids_.erase(it);
       }
     }
@@ -300,7 +300,7 @@ private:
       return;
     }
 
-    auto device_id = manipulator::device_id(device.get_registry_entry_id());
+    auto device_id = device.get_device_id();
     auto timestamp = IOHIDValueGetTimeStamp(value);
 
     if (auto key_code = types::get_key_code(usage_page, usage)) {
