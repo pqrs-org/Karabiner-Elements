@@ -37,7 +37,6 @@ TEST_CASE("is_repeating") {
 
   physical_keyboard_repeat_detector.set(krbn::device_id(1), *(krbn::types::get_key_code("escape")), krbn::event_type::key_up);
   REQUIRE(physical_keyboard_repeat_detector.is_repeating(krbn::device_id(1)) == false);
-
 }
 
 int main(int argc, char* const argv[]) {
