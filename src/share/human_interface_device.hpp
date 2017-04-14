@@ -115,8 +115,8 @@ public:
       for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
         // Add to elements_.
         auto element = cf_utility::get_value<IOHIDElementRef>(elements, i);
-        auto usage_page = IOHIDElementGetUsagePage(element);
-        auto usage = IOHIDElementGetUsage(element);
+        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(element));
+        auto usage = hid_usage(IOHIDElementGetUsage(element));
 
         auto key = elements_key(usage_page, usage);
         if (elements_.find(key) == elements_.end()) {
@@ -525,7 +525,7 @@ public:
     boost::optional<led_state> __block state = boost::none;
 
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (auto element = get_element(kHIDPage_LEDs, kHIDUsage_LED_CapsLock)) {
+      if (auto element = get_element(hid_usage_page::leds, hid_usage::led_caps_lock)) {
         auto max = IOHIDElementGetLogicalMax(element);
 
         IOHIDValueRef value;
@@ -562,7 +562,7 @@ public:
     IOReturn __block r = kIOReturnError;
 
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (auto element = get_element(kHIDPage_LEDs, kHIDUsage_LED_CapsLock)) {
+      if (auto element = get_element(hid_usage_page::leds, hid_usage::led_caps_lock)) {
         CFIndex integer_value = 0;
         if (state == led_state::on) {
           integer_value = IOHIDElementGetLogicalMax(element);
@@ -796,11 +796,11 @@ private:
     }
   }
 
-  uint64_t elements_key(uint32_t usage_page, uint32_t usage) const {
-    return ((static_cast<uint64_t>(usage_page) << 32) | usage);
+  uint64_t elements_key(hid_usage_page usage_page, hid_usage usage) const {
+    return ((static_cast<uint64_t>(usage_page) << 32) | static_cast<uint32_t>(usage));
   }
 
-  IOHIDElementRef _Nullable get_element(uint32_t usage_page, uint32_t usage) const {
+  IOHIDElementRef _Nullable get_element(hid_usage_page usage_page, hid_usage usage) const {
     auto key = elements_key(usage_page, usage);
     auto it = elements_.find(key);
     if (it == elements_.end()) {

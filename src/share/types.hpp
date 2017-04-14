@@ -35,6 +35,7 @@ enum class hid_usage_page : uint32_t {
   zero = 0,
   generic_desktop = kHIDPage_GenericDesktop,
   keyboard_or_keypad = kHIDPage_KeyboardOrKeypad,
+  leds = kHIDPage_LEDs,
   button = kHIDPage_Button,
   consumer = kHIDPage_Consumer,
   apple_vendor_keyboard = kHIDPage_AppleVendorKeyboard,
@@ -51,6 +52,8 @@ enum class hid_usage : uint32_t {
   gd_y = kHIDUsage_GD_Y,
   gd_z = kHIDUsage_GD_Z,
   gd_wheel = kHIDUsage_GD_Wheel,
+
+  led_caps_lock = kHIDUsage_LED_CapsLock,
 
   csmr_consumercontrol = kHIDUsage_Csmr_ConsumerControl,
   csmr_acpan = kHIDUsage_Csmr_ACPan,
