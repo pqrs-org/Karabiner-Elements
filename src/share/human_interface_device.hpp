@@ -62,7 +62,6 @@ public:
                                                            device_(device),
                                                            device_id_(types::get_new_device_id()),
                                                            queue_(nullptr),
-                                                           is_grabbable_log_reducer_(logger),
                                                            observed_(false),
                                                            grabbed_(false),
                                                            disabled_(false) {
@@ -304,8 +303,6 @@ public:
 
       cancel_grab_timer();
 
-      is_grabbable_log_reducer_.reset();
-
       grab_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
           // We have to set an initial wait since OS X will lost the device if we called IOHIDDeviceOpen(kIOHIDOptionsTypeSeizeDevice) in device_matching_callback.
           // (The device will be unusable after karabiner_grabber is quitted if we don't wait here.)
@@ -510,11 +507,6 @@ public:
       }
     }
 
-    // ----------------------------------------
-    // We are going to grab the device.
-
-
-    // ----------------------------------------
     return grabbable_state::grabbable;
   }
 
@@ -846,7 +838,6 @@ private:
   grabbed_callback grabbed_callback_;
   ungrabbed_callback ungrabbed_callback_;
   disabled_callback disabled_callback_;
-  spdlog_utility::log_reducer is_grabbable_log_reducer_;
   std::unique_ptr<gcd_utility::main_queue_timer> grab_timer_;
   bool observed_;
   bool grabbed_;
