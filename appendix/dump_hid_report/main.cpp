@@ -38,9 +38,9 @@ public:
     }
 
     auto device_matching_dictionaries = krbn::iokit_utility::create_device_matching_dictionaries({
-        std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard),
-        std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse),
-        std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer),
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
     });
     if (device_matching_dictionaries) {
       IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);

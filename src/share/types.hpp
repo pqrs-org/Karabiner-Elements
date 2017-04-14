@@ -31,6 +31,34 @@ enum class device_id : uint32_t {
   zero = 0,
 };
 
+enum class hid_usage_page : uint32_t {
+  zero = 0,
+  generic_desktop = kHIDPage_GenericDesktop,
+  keyboard_or_keypad = kHIDPage_KeyboardOrKeypad,
+  button = kHIDPage_Button,
+  consumer = kHIDPage_Consumer,
+  apple_vendor_keyboard = kHIDPage_AppleVendorKeyboard,
+  apple_vendor_top_case = kHIDPage_AppleVendorTopCase,
+};
+
+enum class hid_usage : uint32_t {
+  zero = 0,
+
+  gd_pointer = kHIDUsage_GD_Pointer,
+  gd_mouse = kHIDUsage_GD_Mouse,
+  gd_keyboard = kHIDUsage_GD_Keyboard,
+  gd_x = kHIDUsage_GD_X,
+  gd_y = kHIDUsage_GD_Y,
+  gd_z = kHIDUsage_GD_Z,
+  gd_wheel = kHIDUsage_GD_Wheel,
+
+  csmr_consumercontrol = kHIDUsage_Csmr_ConsumerControl,
+  csmr_acpan = kHIDUsage_Csmr_ACPan,
+
+  apple_vendor_keyboard_function = kHIDUsage_AppleVendorKeyboard_Function,
+  av_top_case_keyboard_fn = kHIDUsage_AV_TopCase_KeyboardFn,
+};
+
 enum class event_type : uint32_t {
   key_down,
   key_up,
@@ -472,26 +500,32 @@ public:
     return it->second;
   }
 
-  static boost::optional<key_code> get_key_code(uint32_t usage_page, uint32_t usage) {
+  static boost::optional<key_code> get_key_code(hid_usage_page usage_page, hid_usage usage) {
+    auto u = static_cast<uint32_t>(usage);
+
     switch (usage_page) {
-    case kHIDPage_KeyboardOrKeypad:
-      if (kHIDUsage_KeyboardErrorUndefined < usage && usage < kHIDUsage_Keyboard_Reserved) {
-        return key_code(usage);
+    case hid_usage_page::keyboard_or_keypad:
+      if (kHIDUsage_KeyboardErrorUndefined < u && u < kHIDUsage_Keyboard_Reserved) {
+        return key_code(u);
       }
       break;
 
-    case kHIDPage_AppleVendorTopCase:
-      if (usage == kHIDUsage_AV_TopCase_KeyboardFn) {
+    case hid_usage_page::apple_vendor_top_case:
+      if (usage == hid_usage::av_top_case_keyboard_fn) {
         return key_code::fn;
       }
       break;
 
-    case kHIDPage_AppleVendorKeyboard:
-      if (usage == kHIDUsage_AppleVendorKeyboard_Function) {
+    case hid_usage_page::apple_vendor_keyboard:
+      if (usage == hid_usage::apple_vendor_keyboard_function) {
         return key_code::fn;
       }
+      break;
+
+    default:
       break;
     }
+
     return boost::none;
   }
 
@@ -643,8 +677,8 @@ public:
     return it->second;
   }
 
-  static boost::optional<pointing_button> get_pointing_button(uint32_t usage_page, uint32_t usage) {
-    if (usage_page == kHIDPage_Button) {
+  static boost::optional<pointing_button> get_pointing_button(hid_usage_page usage_page, hid_usage usage) {
+    if (usage_page == hid_usage_page::button) {
       return pointing_button(usage);
     }
     return boost::none;

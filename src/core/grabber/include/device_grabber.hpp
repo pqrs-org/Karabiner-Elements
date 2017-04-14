@@ -59,9 +59,9 @@ public:
     }
 
     auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
-        std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard),
-        // std::make_pair(kHIDPage_Consumer, kHIDUsage_Csmr_ConsumerControl),
-        // std::make_pair(kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse),
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+        // std::make_pair(krbn::hid_usage_page::consumer, krbn::hid_usage::csmr_consumercontrol),
+        // std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
     });
     if (device_matching_dictionaries) {
       IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
@@ -298,8 +298,8 @@ private:
   void value_callback(human_interface_device& device,
                       IOHIDValueRef _Nonnull value,
                       IOHIDElementRef _Nonnull element,
-                      uint32_t usage_page,
-                      uint32_t usage,
+                      hid_usage_page usage_page,
+                      hid_usage usage,
                       CFIndex integer_value) {
     if (auto key_code = types::get_key_code(usage_page, usage)) {
       bool pressed = integer_value;
@@ -336,22 +336,22 @@ private:
 
     } else {
       switch (usage_page) {
-      case kHIDPage_GenericDesktop:
-        if (usage == kHIDUsage_GD_X) {
+      case hid_usage_page::generic_desktop:
+        if (usage == hid_usage::gd_x) {
           event_manipulator_.handle_pointing_event(device_id,
                                                    timestamp,
                                                    pointing_event::x,
                                                    boost::none,
                                                    integer_value);
         }
-        if (usage == kHIDUsage_GD_Y) {
+        if (usage == hid_usage::gd_y) {
           event_manipulator_.handle_pointing_event(device_id,
                                                    timestamp,
                                                    pointing_event::y,
                                                    boost::none,
                                                    integer_value);
         }
-        if (usage == kHIDUsage_GD_Wheel) {
+        if (usage == hid_usage::gd_wheel) {
           event_manipulator_.handle_pointing_event(device_id,
                                                    timestamp,
                                                    pointing_event::vertical_wheel,
@@ -360,8 +360,8 @@ private:
         }
         break;
 
-      case kHIDPage_Consumer:
-        if (usage == kHIDUsage_Csmr_ACPan) {
+      case hid_usage_page::consumer:
+        if (usage == hid_usage::csmr_acpan) {
           event_manipulator_.handle_pointing_event(device_id,
                                                    timestamp,
                                                    pointing_event::horizontal_wheel,

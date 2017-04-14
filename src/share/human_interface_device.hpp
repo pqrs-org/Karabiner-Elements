@@ -37,8 +37,8 @@ public:
   typedef std::function<void(human_interface_device& device,
                              IOHIDValueRef _Nonnull value,
                              IOHIDElementRef _Nonnull element,
-                             uint32_t usage_page,
-                             uint32_t usage,
+                             hid_usage_page usage_page,
+                             hid_usage usage,
                              CFIndex integer_value)>
       value_callback;
 
@@ -699,10 +699,10 @@ private:
           auto modifier_flag1 = modifier_flag::zero;
           auto modifier_flag2 = modifier_flag::zero;
 
-          auto usage_page1 = IOHIDElementGetUsagePage(e1);
-          auto usage1 = IOHIDElementGetUsage(e1);
-          auto usage_page2 = IOHIDElementGetUsagePage(e2);
-          auto usage2 = IOHIDElementGetUsage(e2);
+          auto usage_page1 = hid_usage_page(IOHIDElementGetUsagePage(e1));
+          auto usage1 = hid_usage(IOHIDElementGetUsage(e1));
+          auto usage_page2 = hid_usage_page(IOHIDElementGetUsagePage(e2));
+          auto usage2 = hid_usage(IOHIDElementGetUsage(e2));
 
           if (auto key_code1 = types::get_key_code(usage_page1, usage1)) {
             modifier_flag1 = types::get_modifier_flag(*key_code1);
@@ -749,8 +749,8 @@ private:
     for (const auto& value : retained_values) {
       auto element = IOHIDValueGetElement(value);
       if (element) {
-        auto usage_page = IOHIDElementGetUsagePage(element);
-        auto usage = IOHIDElementGetUsage(element);
+        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(element));
+        auto usage = hid_usage(IOHIDElementGetUsage(element));
         auto integer_value = IOHIDValueGetIntegerValue(value);
 
         // Call value_callback_.

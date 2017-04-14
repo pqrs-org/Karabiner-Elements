@@ -86,8 +86,8 @@ public:
   }
 
   bool update(device_id device_id,
-              uint32_t usage_page,
-              uint32_t usage,
+              hid_usage_page usage_page,
+              hid_usage usage,
               CFIndex integer_value) {
     if (auto key_code = types::get_key_code(usage_page, usage)) {
       if (integer_value) {

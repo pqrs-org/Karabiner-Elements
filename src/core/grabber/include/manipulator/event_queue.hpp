@@ -113,8 +113,8 @@ public:
   };
 
   void push_back_event(uint64_t time_stamp,
-                       uint32_t usage_page,
-                       uint32_t usage,
+                       hid_usage_page usage_page,
+                       hid_usage usage,
                        int integer_value) {
     if (auto key_code = types::get_key_code(usage_page, usage)) {
       push_back_event(time_stamp,
@@ -126,36 +126,45 @@ public:
                       integer_value ? event_type::key_down : event_type::key_up);
     } else {
       switch (usage_page) {
-      case kHIDPage_GenericDesktop:
+      case hid_usage_page::generic_desktop:
         switch (usage) {
-        case kHIDUsage_GD_X:
+        case hid_usage::gd_x:
           push_back_event(time_stamp,
                           queued_event::type::pointing_x,
                           integer_value);
           break;
 
-        case kHIDUsage_GD_Y:
+        case hid_usage::gd_y:
           push_back_event(time_stamp,
                           queued_event::type::pointing_y,
                           integer_value);
           break;
 
-        case kHIDUsage_GD_Wheel:
+        case hid_usage::gd_wheel:
           push_back_event(time_stamp,
                           queued_event::type::pointing_vertical_wheel,
                           integer_value);
           break;
+
+        default:
+          break;
         }
         break;
 
-      case kHIDPage_Consumer:
+      case hid_usage_page::consumer:
         switch (usage) {
-        case kHIDUsage_Csmr_ACPan:
+        case hid_usage::csmr_acpan:
           push_back_event(time_stamp,
                           queued_event::type::pointing_horizontal_wheel,
                           integer_value);
           break;
+
+        default:
+          break;
         }
+        break;
+
+      default:
         break;
       }
     }

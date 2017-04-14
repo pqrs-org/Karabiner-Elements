@@ -125,28 +125,28 @@ TEST_CASE("push_back_event.usage_page") {
   krbn::manipulator::event_queue event_queue;
 
   event_queue.push_back_event(100,
-                              kHIDPage_KeyboardOrKeypad,
-                              kHIDUsage_KeyboardTab,
+                              krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                              krbn::hid_usage(kHIDUsage_KeyboardTab),
                               1);
   event_queue.push_back_event(200,
-                              kHIDPage_KeyboardOrKeypad,
-                              kHIDUsage_KeyboardTab,
+                              krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                              krbn::hid_usage(kHIDUsage_KeyboardTab),
                               0);
   event_queue.push_back_event(300,
-                              kHIDPage_Button,
-                              2,
+                              krbn::hid_usage_page(kHIDPage_Button),
+                              krbn::hid_usage(2),
                               1);
   event_queue.push_back_event(400,
-                              kHIDPage_Button,
-                              2,
+                              krbn::hid_usage_page(kHIDPage_Button),
+                              krbn::hid_usage(2),
                               0);
   event_queue.push_back_event(500,
-                              kHIDPage_GenericDesktop,
-                              kHIDUsage_GD_X,
+                              krbn::hid_usage_page(kHIDPage_GenericDesktop),
+                              krbn::hid_usage(kHIDUsage_GD_X),
                               10);
   event_queue.push_back_event(600,
-                              kHIDPage_GenericDesktop,
-                              kHIDUsage_GD_Y,
+                              krbn::hid_usage_page(kHIDPage_GenericDesktop),
+                              krbn::hid_usage(kHIDUsage_GD_Y),
                               -10);
 
   std::vector<krbn::manipulator::event_queue::queued_event> expected({
