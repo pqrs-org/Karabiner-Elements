@@ -85,24 +85,29 @@ public:
     return false;
   }
 
-  void update(device_id device_id,
+  bool update(device_id device_id,
               uint32_t usage_page,
               uint32_t usage,
-              int integer_value) {
+              CFIndex integer_value) {
     if (auto key_code = types::get_key_code(usage_page, usage)) {
       if (integer_value) {
         emplace_back_pressed_key(device_id, *key_code);
       } else {
         erase_all_pressed_keys(device_id, *key_code);
       }
+      return true;
+    }
 
-    } else if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
+    if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
       if (integer_value) {
         emplace_back_pressed_key(device_id, *pointing_button);
       } else {
         erase_all_pressed_keys(device_id, *pointing_button);
       }
+      return true;
     }
+
+    return false;
   }
 
   void emplace_back_pressed_key(device_id device_id,

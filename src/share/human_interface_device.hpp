@@ -472,20 +472,6 @@ public:
     return stream.str();
   }
 
-  size_t get_pressed_keys_count(void) const {
-    size_t __block count = 0;
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      count = pressed_key_usages_.size();
-    });
-    return count;
-  }
-
-  void clear_pressed_keys(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      pressed_key_usages_.clear();
-    });
-  }
-
   void set_is_grabbable_callback(const is_grabbable_callback& callback) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       is_grabbable_callback_ = callback;
@@ -527,13 +513,6 @@ public:
     // ----------------------------------------
     // We are going to grab the device.
 
-    if (!pressed_buttons_.empty()) {
-      // We should not grab the device while a button is pressed since we cannot release the button.
-      // (To release the button, we have to send a hid report to the device. But we cannot do it.)
-
-      is_grabbable_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while mouse buttons are pressed.");
-      return grabbable_state::ungrabbable_temporarily;
-    }
 
     // ----------------------------------------
     return grabbable_state::grabbable;
@@ -782,29 +761,6 @@ private:
         auto usage = IOHIDElementGetUsage(element);
         auto integer_value = IOHIDValueGetIntegerValue(value);
 
-        // Update pressed_buttons_
-        if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
-          bool pressed = integer_value;
-          if (pressed) {
-            pressed_buttons_.push_back(*pointing_button);
-          } else {
-            pressed_buttons_.remove(*pointing_button);
-          }
-        }
-
-        // Update pressed_key_usages_.
-        if ((usage_page == kHIDPage_KeyboardOrKeypad) ||
-            (usage_page == kHIDPage_AppleVendorTopCase && usage == kHIDUsage_AV_TopCase_KeyboardFn) ||
-            (usage_page == kHIDPage_Button)) {
-          bool pressed = integer_value;
-          uint64_t u = (static_cast<uint64_t>(usage_page) << 32) | usage;
-          if (pressed) {
-            pressed_key_usages_.push_back(u);
-          } else {
-            pressed_key_usages_.remove(u);
-          }
-        }
-
         // Call value_callback_.
         if (value_callback_) {
           value_callback_(*this, value, element, usage_page, usage, integer_value);
@@ -882,8 +838,6 @@ private:
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
-  std::list<pointing_button> pressed_buttons_;
-  std::list<uint64_t> pressed_key_usages_;
   value_callback value_callback_;
   report_callback report_callback_;
   std::vector<uint8_t> report_buffer_;

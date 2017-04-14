@@ -73,31 +73,23 @@ TEST_CASE("pressed_physical_keys_counter") {
 TEST_CASE("pressed_physical_keys_counter.usage_page") {
   krbn::pressed_physical_keys_counter pressed_physical_keys_counter;
 
-  pressed_physical_keys_counter.update(krbn::device_id(1),
-                                       kHIDPage_KeyboardOrKeypad,
-                                       kHIDUsage_KeyboardTab,
-                                       1);
-  REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
-  REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
-
-  pressed_physical_keys_counter.update(krbn::device_id(1),
-                                       kHIDPage_KeyboardOrKeypad,
-                                       kHIDUsage_KeyboardTab,
-                                       0);
+  REQUIRE(pressed_physical_keys_counter.update(krbn::device_id(1), kHIDPage_KeyboardOrKeypad, kHIDUsage_KeyboardErrorRollOver, 1) == false);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
   REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
 
-  pressed_physical_keys_counter.update(krbn::device_id(1),
-                                       kHIDPage_Button,
-                                       1,
-                                       1);
+  REQUIRE(pressed_physical_keys_counter.update(krbn::device_id(1), kHIDPage_KeyboardOrKeypad, kHIDUsage_KeyboardTab, 1) == true);
+  REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
+  REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
+
+  REQUIRE(pressed_physical_keys_counter.update(krbn::device_id(1), kHIDPage_KeyboardOrKeypad, kHIDUsage_KeyboardTab, 0) == true);
+  REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
+  REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
+
+  REQUIRE(pressed_physical_keys_counter.update(krbn::device_id(1), kHIDPage_Button, 1, 1) == true);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
   REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == true);
 
-  pressed_physical_keys_counter.update(krbn::device_id(1),
-                                       kHIDPage_Button,
-                                       1,
-                                       0);
+  REQUIRE(pressed_physical_keys_counter.update(krbn::device_id(1), kHIDPage_Button, 1, 0) == true);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
   REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
 }
