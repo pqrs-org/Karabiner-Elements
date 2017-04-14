@@ -75,6 +75,16 @@ public:
     return true;
   }
 
+  bool is_pointing_button_pressed(device_id device_id) {
+    for (const auto& k : pressed_keys_) {
+      if (k.get_device_id() == device_id &&
+          k.get_type() == pressed_key::type::pointing_button) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void emplace_back_pressed_key(device_id device_id,
                                 key_code key_code) {
     pressed_keys_.emplace_back(device_id, key_code);

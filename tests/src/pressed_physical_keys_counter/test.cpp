@@ -8,15 +8,23 @@ TEST_CASE("pressed_physical_keys_counter") {
   krbn::pressed_physical_keys_counter pressed_physical_keys_counter;
 
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
+  REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
 
   // ----------------------------------------
 
   pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
+  REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(2)) == true);
 
   pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
+
+  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), krbn::pointing_button::button4);
+  REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == true);
+
+  pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1), krbn::pointing_button::button4);
+  REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
 
   // ----------------------------------------
   // Push twice
