@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "event_queue.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
 #include <vector>
@@ -85,24 +86,21 @@ public:
     return false;
   }
 
-  bool update(device_id device_id,
-              hid_usage_page usage_page,
-              hid_usage usage,
-              CFIndex integer_value) {
-    if (auto key_code = types::get_key_code(usage_page, usage)) {
-      if (integer_value) {
-        emplace_back_pressed_key(device_id, *key_code);
+  bool update(const event_queue::queued_event& queued_event) {
+    if (auto key_code = queued_event.get_key_code()) {
+      if (queued_event.get_event_type() == event_type::key_down) {
+        emplace_back_pressed_key(queued_event.get_device_id(), *key_code);
       } else {
-        erase_all_pressed_keys(device_id, *key_code);
+        erase_all_pressed_keys(queued_event.get_device_id(), *key_code);
       }
       return true;
     }
 
-    if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
-      if (integer_value) {
-        emplace_back_pressed_key(device_id, *pointing_button);
+    if (auto pointing_button = queued_event.get_pointing_button()) {
+      if (queued_event.get_event_type() == event_type::key_down) {
+        emplace_back_pressed_key(queued_event.get_device_id(), *pointing_button);
       } else {
-        erase_all_pressed_keys(device_id, *pointing_button);
+        erase_all_pressed_keys(queued_event.get_device_id(), *pointing_button);
       }
       return true;
     }

@@ -6,6 +6,7 @@
 #include "cf_utility.hpp"
 #include "connected_devices.hpp"
 #include "core_configuration.hpp"
+#include "event_queue.hpp"
 #include "gcd_utility.hpp"
 #include "iokit_utility.hpp"
 #include "spdlog_utility.hpp"
@@ -35,11 +36,8 @@ public:
   };
 
   typedef std::function<void(human_interface_device& device,
-                             IOHIDValueRef _Nonnull value,
-                             IOHIDElementRef _Nonnull element,
-                             hid_usage_page usage_page,
-                             hid_usage usage,
-                             CFIndex integer_value)>
+                             event_queue& event_queue,
+                             size_t previous_events_size)>
       value_callback;
 
   typedef std::function<void(human_interface_device& device,
@@ -493,9 +491,10 @@ public:
     });
   }
 
-  void set_value_callback(const value_callback& callback) {
+  void set_value_callback(const value_callback& callback, event_queue& event_queue) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       value_callback_ = callback;
+      event_queue_ = &event_queue;
     });
   }
 
@@ -629,142 +628,32 @@ private:
   }
 
   void queue_value_available_callback(void) {
-    // We have to separate modifier flags queue and generic queue.
-    //
-    // Some devices are send modifier flag and key at the same report.
-    // For example, a key sends control+up-arrow by this reports.
-    //
-    //   modifiers: 0x0
-    //   keys: 0x0 0x0 0x0 0x0 0x0 0x0
-    //
-    //   modifiers: 0x1
-    //   keys: 0x52 0x0 0x0 0x0 0x0 0x0
-    //
-    // In this case, macOS does not guarantee the value event order to be modifier first.
-    // At least macOS 10.12 or prior sends the up-arrow event first.
-    //
-    //   ----------------------------------------
-    //   Example of hid value events in a single queue at control+up-arrow
-    //
-    //   1. up-arrow keydown
-    //     usage_page:0x7
-    //     usage:0x4f
-    //     integer_value:1
-    //
-    //   2. control keydown
-    //     usage_page:0x7
-    //     usage:0xe1
-    //     integer_value:1
-    //
-    //   3. up-arrow keyup
-    //     usage_page:0x7
-    //     usage:0x4f
-    //     integer_value:0
-    //
-    //   4. control keyup
-    //     usage_page:0x7
-    //     usage:0xe1
-    //     integer_value:0
-    //   ----------------------------------------
-    //
-    // These events will not be interpreted as intended in this order.
-    // Thus, we have to reorder the events.
-
-    std::vector<IOHIDValueRef> retained_values;
-
-    // ----------------------------------------
-    // Drain all values in queue at first.
+    size_t previous_events_size = event_queue_ ? event_queue_->get_events().size() : 0;
 
     while (true) {
-      auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.);
-      if (!value) {
+      if (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
+        auto element = IOHIDValueGetElement(value);
+        if (element) {
+          auto time_stamp = IOHIDValueGetTimeStamp(value);
+          auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(element));
+          auto usage = hid_usage(IOHIDElementGetUsage(element));
+          auto integer_value = IOHIDValueGetIntegerValue(value);
+
+          if (event_queue_) {
+            event_queue_->push_back_event(device_id_, time_stamp, usage_page, usage, integer_value);
+          }
+        }
+
+        CFRelease(value);
+
+      } else {
         break;
       }
-
-      retained_values.push_back(value);
     }
 
-    // ----------------------------------------
-    // Sort values
-
-    std::sort(retained_values.begin(), retained_values.end(), [](const IOHIDValueRef& v1, const IOHIDValueRef& v2) {
-      auto t1 = IOHIDValueGetTimeStamp(v1);
-      auto t2 = IOHIDValueGetTimeStamp(v2);
-
-      if (t1 == t2) {
-        auto e1 = IOHIDValueGetElement(v1);
-        auto e2 = IOHIDValueGetElement(v2);
-
-        if (e1 && e2) {
-          auto modifier_flag1 = modifier_flag::zero;
-          auto modifier_flag2 = modifier_flag::zero;
-
-          auto usage_page1 = hid_usage_page(IOHIDElementGetUsagePage(e1));
-          auto usage1 = hid_usage(IOHIDElementGetUsage(e1));
-          auto usage_page2 = hid_usage_page(IOHIDElementGetUsagePage(e2));
-          auto usage2 = hid_usage(IOHIDElementGetUsage(e2));
-
-          if (auto key_code1 = types::get_key_code(usage_page1, usage1)) {
-            modifier_flag1 = types::get_modifier_flag(*key_code1);
-          }
-          if (auto key_code2 = types::get_key_code(usage_page2, usage2)) {
-            modifier_flag2 = types::get_modifier_flag(*key_code2);
-          }
-
-          // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
-
-          if (modifier_flag1 == modifier_flag::zero &&
-              modifier_flag2 != modifier_flag::zero) {
-            // v2 is modifier_flag
-            auto integer_value2 = IOHIDValueGetIntegerValue(v2);
-            if (integer_value2) {
-              // reorder to v2,v1 if v2 is pressed.
-              return false;
-            } else {
-              return true;
-            }
-          }
-
-          if (modifier_flag1 != modifier_flag::zero &&
-              modifier_flag2 == modifier_flag::zero) {
-            // v1 is modifier_flag
-            auto integer_value1 = IOHIDValueGetIntegerValue(v1);
-            if (integer_value1) {
-              return true;
-            } else {
-              // reorder to v2,v1 if v1 is released.
-              return false;
-            }
-          }
-        }
-      }
-
-      // keep order
-      return t1 <= t2;
-    });
-
-    // ----------------------------------------
-    // Then process the callback.
-
-    for (const auto& value : retained_values) {
-      auto element = IOHIDValueGetElement(value);
-      if (element) {
-        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(element));
-        auto usage = hid_usage(IOHIDElementGetUsage(element));
-        auto integer_value = IOHIDValueGetIntegerValue(value);
-
-        // Call value_callback_.
-        if (value_callback_) {
-          value_callback_(*this, value, element, usage_page, usage, integer_value);
-        }
-      }
-    }
-
-    // ----------------------------------------
-    // Release retained values
-
-    for (const auto& value : retained_values) {
-      CFRelease(value);
+    // Call value_callback_.
+    if (value_callback_ && event_queue_) {
+      value_callback_(*this, *event_queue_, previous_events_size);
     }
   }
 
@@ -829,6 +718,8 @@ private:
   device_id device_id_;
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
+
+  event_queue* _Nullable event_queue_;
 
   value_callback value_callback_;
   report_callback report_callback_;

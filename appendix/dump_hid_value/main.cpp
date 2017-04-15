@@ -76,7 +76,7 @@ private:
 
     hids_[device] = std::make_unique<krbn::human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
-    dev->set_value_callback(boost::bind(&dump_hid_value::value_callback, this, _1, _2, _3, _4, _5, _6));
+    dev->set_value_callback(boost::bind(&dump_hid_value::value_callback, this, _1, _2, _3), event_queue_);
     dev->observe();
   }
 
@@ -110,46 +110,68 @@ private:
   }
 
   void value_callback(krbn::human_interface_device& device,
-                      IOHIDValueRef _Nonnull value,
-                      IOHIDElementRef _Nonnull element,
-                      krbn::hid_usage_page usage_page,
-                      krbn::hid_usage usage,
-                      CFIndex integer_value) {
-    if (usage_page == krbn::hid_usage_page::button) {
-      std::cout << "Button: " << std::dec << static_cast<uint32_t>(usage) << " (" << integer_value << ")" << std::endl;
-      return;
-    }
-    if (usage_page == krbn::hid_usage_page::generic_desktop && usage == krbn::hid_usage::gd_x) {
-      std::cout << "Pointing X: " << std::dec << integer_value << std::endl;
-      return;
-    }
-    if (usage_page == krbn::hid_usage_page::generic_desktop && usage == krbn::hid_usage::gd_y) {
-      std::cout << "Pointing Y: " << std::dec << integer_value << std::endl;
-      return;
-    }
-    if (usage_page == krbn::hid_usage_page::generic_desktop && usage == krbn::hid_usage::gd_z) {
-      std::cout << "Pointing Z: " << std::dec << integer_value << std::endl;
-      return;
-    }
-    if (usage_page == krbn::hid_usage_page::generic_desktop && usage == krbn::hid_usage::gd_wheel) {
-      std::cout << "Wheel: " << std::dec << integer_value << std::endl;
-      return;
-    }
-    if (usage_page == krbn::hid_usage_page::consumer && usage == krbn::hid_usage::csmr_acpan) {
-      std::cout << "Horizontal Wheel: " << std::dec << integer_value << std::endl;
+                      krbn::event_queue& event_queue,
+                      size_t previous_events_size) {
+    if (event_queue.get_events().size() < previous_events_size) {
       return;
     }
 
-    std::cout << "element" << std::endl
-              << "  usage_page:0x" << std::hex << static_cast<uint32_t>(usage_page) << std::endl
-              << "  usage:0x" << std::hex << static_cast<uint32_t>(usage) << std::endl
-              << "  type:" << IOHIDElementGetType(element) << std::endl
-              << "  length:" << IOHIDValueGetLength(value) << std::endl
-              << "  integer_value:" << integer_value << std::endl;
+    auto queued_event_iterator = event_queue.get_events().begin() + previous_events_size;
+    while (queued_event_iterator != std::end(event_queue.get_events())) {
+      switch (queued_event_iterator->get_type()) {
+      case krbn::event_queue::queued_event::type::key_code:
+        if (auto key_code = queued_event_iterator->get_key_code()) {
+          std::cout << "Key: " << std::dec << static_cast<uint32_t>(*key_code) << " "
+                    << (queued_event_iterator->get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
+                    << std::endl;
+        }
+        break;
+
+      case krbn::event_queue::queued_event::type::pointing_button:
+        if (auto pointing_button = queued_event_iterator->get_pointing_button()) {
+          std::cout << "Button: " << std::dec << static_cast<uint32_t>(*pointing_button) << " "
+                    << (queued_event_iterator->get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
+                    << std::endl;
+        }
+        break;
+
+      case krbn::event_queue::queued_event::type::pointing_x:
+      case krbn::event_queue::queued_event::type::pointing_y:
+      case krbn::event_queue::queued_event::type::pointing_vertical_wheel:
+      case krbn::event_queue::queued_event::type::pointing_horizontal_wheel:
+        if (auto integer_value = queued_event_iterator->get_integer_value()) {
+          switch (queued_event_iterator->get_type()) {
+          case krbn::event_queue::queued_event::type::pointing_x:
+            std::cout << "Pointing X: ";
+            break;
+          case krbn::event_queue::queued_event::type::pointing_y:
+            std::cout << "Pointing Y: ";
+            break;
+          case krbn::event_queue::queued_event::type::pointing_vertical_wheel:
+            std::cout << "Vertical Wheel: ";
+            break;
+          case krbn::event_queue::queued_event::type::pointing_horizontal_wheel:
+            std::cout << "Horizontal Wheel: ";
+            break;
+          default:
+            break;
+          }
+
+          std::cout << std::dec << *integer_value << std::endl;
+        }
+        break;
+      }
+
+      queued_event_iterator->set_valid(false);
+      std::advance(queued_event_iterator, 1);
+    }
+
+    event_queue.erase_all_invalid_events();
   }
 
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<krbn::human_interface_device>> hids_;
+  krbn::event_queue event_queue_;
 };
 } // namespace
 

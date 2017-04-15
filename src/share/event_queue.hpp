@@ -46,13 +46,13 @@ public:
     queued_event(device_id device_id,
                  uint64_t time_stamp,
                  type type,
-                 int integer_value) : device_id_(device_id),
-                                      time_stamp_(time_stamp),
-                                      type_(type),
-                                      valid_(true),
-                                      lazy_(false),
-                                      integer_value_(integer_value),
-                                      event_type_(event_type::key_down) {
+                 int64_t integer_value) : device_id_(device_id),
+                                          time_stamp_(time_stamp),
+                                          type_(type),
+                                          valid_(true),
+                                          lazy_(false),
+                                          integer_value_(integer_value),
+                                          event_type_(event_type::key_down) {
     }
 
     device_id get_device_id(void) const {
@@ -95,7 +95,7 @@ public:
       return boost::none;
     }
 
-    boost::optional<int> get_integer_value(void) const {
+    boost::optional<int64_t> get_integer_value(void) const {
       if (type_ == type::pointing_x ||
           type_ == type::pointing_y ||
           type_ == type::pointing_vertical_wheel ||
@@ -128,7 +128,7 @@ public:
     union {
       key_code key_code_;               // For type::key_code
       pointing_button pointing_button_; // For type::pointing_button
-      int integer_value_;               // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+      int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
     };
     event_type event_type_;
   };
@@ -137,7 +137,7 @@ public:
                        uint64_t time_stamp,
                        hid_usage_page usage_page,
                        hid_usage usage,
-                       int integer_value) {
+                       int64_t integer_value) {
     if (auto key_code = types::get_key_code(usage_page, usage)) {
       push_back_event(device_id,
                       time_stamp,
@@ -220,7 +220,7 @@ public:
   void push_back_event(device_id device_id,
                        uint64_t time_stamp,
                        queued_event::type type,
-                       int integer_value) {
+                       int64_t integer_value) {
     events_.emplace_back(device_id, time_stamp, type, integer_value);
     sort_events();
   }
