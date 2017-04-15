@@ -6,7 +6,6 @@
 #include <boost/optional.hpp>
 
 namespace krbn {
-namespace manipulator {
 class event_queue final {
 public:
   class queued_event final {
@@ -285,5 +284,4 @@ private:
 
   std::vector<queued_event> events_;
 };
-} // namespace manipulator
 } // namespace krbn

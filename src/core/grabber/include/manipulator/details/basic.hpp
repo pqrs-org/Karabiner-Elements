@@ -2,7 +2,6 @@
 
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
-#include "manipulator/event_queue.hpp"
 #include <json/json.hpp>
 #include <unordered_map>
 

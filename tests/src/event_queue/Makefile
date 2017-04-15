@@ -2,8 +2,7 @@ include ../Makefile.common
 
 CXXFLAGS += \
 	-I../../../src/share \
-	-I../../../src/vendor \
-	-I../../../src/core/grabber/include
+	-I../../../src/vendor
 
 include ../Makefile.rules
 

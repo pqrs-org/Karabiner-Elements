@@ -40,7 +40,7 @@
 		34492B881DB12C9A0084F167 /* spdlog_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = spdlog_utility.hpp; path = ../../share/spdlog_utility.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0021D620C8C009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = notification_center.hpp; path = ../../share/notification_center.hpp; sourceTree = SOURCE_ROOT; };
 		345AC0041D62163F009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = boost_defs.hpp; path = ../../share/boost_defs.hpp; sourceTree = SOURCE_ROOT; };
-		345CCB4F1E902963005B61A8 /* event_queue.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_queue.hpp; path = include/manipulator/event_queue.hpp; sourceTree = SOURCE_ROOT; };
+		345CCB4F1E902963005B61A8 /* event_queue.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_queue.hpp; path = ../../share/event_queue.hpp; sourceTree = SOURCE_ROOT; };
 		345CCB511E914BDA005B61A8 /* base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = base.hpp; path = include/manipulator/details/base.hpp; sourceTree = SOURCE_ROOT; };
 		345CCB521E914BDA005B61A8 /* basic.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = basic.hpp; path = include/manipulator/details/basic.hpp; sourceTree = SOURCE_ROOT; };
 		345CCB531E914FD8005B61A8 /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = include/manipulator/details/types.hpp; sourceTree = SOURCE_ROOT; };
@@ -135,6 +135,7 @@
 				341424E81E685E5F00DFE6EC /* configuration_monitor.hpp */,
 				349863321E784DC800DF3644 /* connected_devices.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
+				345CCB4F1E902963005B61A8 /* event_queue.hpp */,
 				3469EB701D814F140005D30D /* filesystem.hpp */,
 				3431346E1DB70C900008F284 /* gcd_utility.hpp */,
 				34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */,
@@ -163,7 +164,6 @@
 			children = (
 				345CCB501E914BCA005B61A8 /* details */,
 				349950681D89A25D004FE466 /* event_manipulator.hpp */,
-				345CCB4F1E902963005B61A8 /* event_queue.hpp */,
 				345CCB541E929D65005B61A8 /* manipulator_factory.hpp */,
 				34A88AA41D69C85600DD480B /* modifier_flag_manager.hpp */,
 				34D2FC841D9C120F00168D20 /* pointing_button_manager.hpp */,

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "manipulator/event_queue.hpp"
+#include "event_queue.hpp"
 
 namespace krbn {
 namespace manipulator {
