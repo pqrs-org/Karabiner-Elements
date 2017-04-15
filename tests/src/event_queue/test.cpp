@@ -9,30 +9,38 @@ TEST_CASE("push_back_event") {
   {
     krbn::event_queue event_queue;
 
-    event_queue.push_back_event(100,
+    event_queue.push_back_event(krbn::device_id(1),
+                                100,
                                 *(krbn::types::get_key_code("a")),
                                 krbn::event_type::key_down);
-    event_queue.push_back_event(200,
+    event_queue.push_back_event(krbn::device_id(1),
+                                200,
                                 *(krbn::types::get_key_code("left_shift")),
                                 krbn::event_type::key_down);
-    event_queue.push_back_event(300,
+    event_queue.push_back_event(krbn::device_id(1),
+                                300,
                                 *(krbn::types::get_key_code("left_shift")),
                                 krbn::event_type::key_up);
-    event_queue.push_back_event(400,
+    event_queue.push_back_event(krbn::device_id(1),
+                                400,
                                 *(krbn::types::get_key_code("a")),
                                 krbn::event_type::key_up);
 
     std::vector<krbn::event_queue::queued_event> expected({
-        krbn::event_queue::queued_event(100,
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        100,
                                         *(krbn::types::get_key_code("a")),
                                         krbn::event_type::key_down),
-        krbn::event_queue::queued_event(200,
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        200,
                                         *(krbn::types::get_key_code("left_shift")),
                                         krbn::event_type::key_down),
-        krbn::event_queue::queued_event(300,
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        300,
                                         *(krbn::types::get_key_code("left_shift")),
                                         krbn::event_type::key_up),
-        krbn::event_queue::queued_event(400,
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        400,
                                         *(krbn::types::get_key_code("a")),
                                         krbn::event_type::key_up),
     });
@@ -47,37 +55,47 @@ TEST_CASE("push_back_event") {
     krbn::event_queue event_queue;
 
     // push "a" and "left_shift" (key_down) at the same time.
-    event_queue.push_back_event(100,
+    event_queue.push_back_event(krbn::device_id(1),
+                                100,
                                 *(krbn::types::get_key_code("a")),
                                 krbn::event_type::key_down);
-    event_queue.push_back_event(100,
+    event_queue.push_back_event(krbn::device_id(1),
+                                100,
                                 *(krbn::types::get_key_code("left_shift")),
                                 krbn::event_type::key_down);
-    event_queue.push_back_event(200,
+    event_queue.push_back_event(krbn::device_id(1),
+                                200,
                                 *(krbn::types::get_key_code("spacebar")),
                                 krbn::event_type::key_down);
     // push "a" and "left_shift" (key_up) at the same time.
-    event_queue.push_back_event(300,
+    event_queue.push_back_event(krbn::device_id(1),
+                                300,
                                 *(krbn::types::get_key_code("left_shift")),
                                 krbn::event_type::key_up);
-    event_queue.push_back_event(300,
+    event_queue.push_back_event(krbn::device_id(1),
+                                300,
                                 *(krbn::types::get_key_code("a")),
                                 krbn::event_type::key_up);
 
     std::vector<krbn::event_queue::queued_event> expected({
-        krbn::event_queue::queued_event(100,
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        100,
                                         *(krbn::types::get_key_code("left_shift")),
                                         krbn::event_type::key_down),
-        krbn::event_queue::queued_event(100,
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        100,
                                         *(krbn::types::get_key_code("a")),
                                         krbn::event_type::key_down),
-        krbn::event_queue::queued_event(200,
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        200,
                                         *(krbn::types::get_key_code("spacebar")),
                                         krbn::event_type::key_down),
-        krbn::event_queue::queued_event(300,
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        300,
                                         *(krbn::types::get_key_code("a")),
                                         krbn::event_type::key_up),
-        krbn::event_queue::queued_event(300,
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        300,
                                         *(krbn::types::get_key_code("left_shift")),
                                         krbn::event_type::key_up),
 
@@ -87,19 +105,24 @@ TEST_CASE("push_back_event") {
 }
 
 TEST_CASE("compare") {
-  krbn::event_queue::queued_event spacebar_down(100,
+  krbn::event_queue::queued_event spacebar_down(krbn::device_id(1),
+                                                100,
                                                 *(krbn::types::get_key_code("spacebar")),
                                                 krbn::event_type::key_down);
-  krbn::event_queue::queued_event right_shift_down(100,
+  krbn::event_queue::queued_event right_shift_down(krbn::device_id(1),
+                                                   100,
                                                    *(krbn::types::get_key_code("right_shift")),
                                                    krbn::event_type::key_down);
-  krbn::event_queue::queued_event escape_down(200,
+  krbn::event_queue::queued_event escape_down(krbn::device_id(1),
+                                              200,
                                               *(krbn::types::get_key_code("escape")),
                                               krbn::event_type::key_down);
-  krbn::event_queue::queued_event spacebar_up(300,
+  krbn::event_queue::queued_event spacebar_up(krbn::device_id(1),
+                                              300,
                                               *(krbn::types::get_key_code("spacebar")),
                                               krbn::event_type::key_up);
-  krbn::event_queue::queued_event right_shift_up(300,
+  krbn::event_queue::queued_event right_shift_up(krbn::device_id(1),
+                                                 300,
                                                  *(krbn::types::get_key_code("right_shift")),
                                                  krbn::event_type::key_up);
 
@@ -124,48 +147,65 @@ TEST_CASE("compare") {
 TEST_CASE("push_back_event.usage_page") {
   krbn::event_queue event_queue;
 
-  event_queue.push_back_event(100,
+  event_queue.push_back_event(krbn::device_id(1),
+                              0,
+                              krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                              krbn::hid_usage(kHIDUsage_KeyboardErrorRollOver),
+                              1);
+  event_queue.push_back_event(krbn::device_id(1),
+                              100,
                               krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
                               krbn::hid_usage(kHIDUsage_KeyboardTab),
                               1);
-  event_queue.push_back_event(200,
+  event_queue.push_back_event(krbn::device_id(1),
+                              200,
                               krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
                               krbn::hid_usage(kHIDUsage_KeyboardTab),
                               0);
-  event_queue.push_back_event(300,
+  event_queue.push_back_event(krbn::device_id(1),
+                              300,
                               krbn::hid_usage_page(kHIDPage_Button),
                               krbn::hid_usage(2),
                               1);
-  event_queue.push_back_event(400,
+  event_queue.push_back_event(krbn::device_id(1),
+                              400,
                               krbn::hid_usage_page(kHIDPage_Button),
                               krbn::hid_usage(2),
                               0);
-  event_queue.push_back_event(500,
+  event_queue.push_back_event(krbn::device_id(1),
+                              500,
                               krbn::hid_usage_page(kHIDPage_GenericDesktop),
                               krbn::hid_usage(kHIDUsage_GD_X),
                               10);
-  event_queue.push_back_event(600,
+  event_queue.push_back_event(krbn::device_id(1),
+                              600,
                               krbn::hid_usage_page(kHIDPage_GenericDesktop),
                               krbn::hid_usage(kHIDUsage_GD_Y),
                               -10);
 
   std::vector<krbn::event_queue::queued_event> expected({
-      krbn::event_queue::queued_event(100,
+      krbn::event_queue::queued_event(krbn::device_id(1),
+                                      100,
                                       *(krbn::types::get_key_code("tab")),
                                       krbn::event_type::key_down),
-      krbn::event_queue::queued_event(200,
+      krbn::event_queue::queued_event(krbn::device_id(1),
+                                      200,
                                       *(krbn::types::get_key_code("tab")),
                                       krbn::event_type::key_up),
-      krbn::event_queue::queued_event(300,
+      krbn::event_queue::queued_event(krbn::device_id(1),
+                                      300,
                                       krbn::pointing_button::button2,
                                       krbn::event_type::key_down),
-      krbn::event_queue::queued_event(400,
+      krbn::event_queue::queued_event(krbn::device_id(1),
+                                      400,
                                       krbn::pointing_button::button2,
                                       krbn::event_type::key_up),
-      krbn::event_queue::queued_event(500,
+      krbn::event_queue::queued_event(krbn::device_id(1),
+                                      500,
                                       krbn::event_queue::queued_event::type::pointing_x,
                                       10),
-      krbn::event_queue::queued_event(600,
+      krbn::event_queue::queued_event(krbn::device_id(1),
+                                      600,
                                       krbn::event_queue::queued_event::type::pointing_y,
                                       -10),
   });
