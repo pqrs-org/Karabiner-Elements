@@ -162,11 +162,10 @@ private:
         break;
       }
 
-      queued_event_iterator->set_valid(false);
       std::advance(queued_event_iterator, 1);
     }
 
-    event_queue.erase_all_invalid_events();
+    event_queue.clear_events();
   }
 
   IOHIDManagerRef _Nullable manager_;

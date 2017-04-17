@@ -133,6 +133,11 @@ public:
     event_type event_type_;
   };
 
+  event_queue(const event_queue&) = delete;
+
+  event_queue(void) {
+  }
+
   void push_back_event(device_id device_id,
                        uint64_t time_stamp,
                        hid_usage_page usage_page,
@@ -223,6 +228,10 @@ public:
                        int64_t integer_value) {
     events_.emplace_back(device_id, time_stamp, type, integer_value);
     sort_events();
+  }
+
+  void clear_events(void) {
+    events_.clear();
   }
 
   void erase_all_invalid_events(void) {
