@@ -19,16 +19,86 @@ public:
       pointing_horizontal_wheel,
     };
 
+    class event {
+    public:
+      event(key_code key_code,
+            event_type event_type) : type_(type::key_code),
+                                     key_code_(key_code),
+                                     event_type_(event_type) {
+      }
+
+      event(pointing_button pointing_button,
+            event_type event_type) : type_(type::pointing_button),
+                                     pointing_button_(pointing_button),
+                                     event_type_(event_type) {
+      }
+
+      event(type type,
+            int64_t integer_value) : type_(type),
+                                     integer_value_(integer_value),
+                                     event_type_(event_type::key_down) {
+      }
+
+      type get_type(void) const {
+        return type_;
+      }
+
+      boost::optional<key_code> get_key_code(void) const {
+        if (type_ == type::key_code) {
+          return key_code_;
+        }
+        return boost::none;
+      }
+
+      boost::optional<pointing_button> get_pointing_button(void) const {
+        if (type_ == type::pointing_button) {
+          return pointing_button_;
+        }
+        return boost::none;
+      }
+
+      boost::optional<int64_t> get_integer_value(void) const {
+        if (type_ == type::pointing_x ||
+            type_ == type::pointing_y ||
+            type_ == type::pointing_vertical_wheel ||
+            type_ == type::pointing_horizontal_wheel) {
+          return integer_value_;
+        }
+        return boost::none;
+      }
+
+      event_type get_event_type(void) const {
+        return event_type_;
+      }
+
+      bool operator==(const event& other) const {
+        return get_type() == other.get_type() &&
+               get_key_code() == other.get_key_code() &&
+               get_pointing_button() == other.get_pointing_button() &&
+               get_integer_value() == other.get_integer_value() &&
+               get_event_type() == other.get_event_type();
+      }
+
+    private:
+      type type_;
+
+      union {
+        key_code key_code_;               // For type::key_code
+        pointing_button pointing_button_; // For type::pointing_button
+        int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+      };
+
+      event_type event_type_;
+    };
+
     queued_event(device_id device_id,
                  uint64_t time_stamp,
                  key_code key_code,
                  event_type event_type) : device_id_(device_id),
                                           time_stamp_(time_stamp),
-                                          type_(type::key_code),
                                           valid_(true),
                                           lazy_(false),
-                                          key_code_(key_code),
-                                          event_type_(event_type) {
+                                          event_(key_code, event_type) {
     }
 
     queued_event(device_id device_id,
@@ -36,11 +106,9 @@ public:
                  pointing_button pointing_button,
                  event_type event_type) : device_id_(device_id),
                                           time_stamp_(time_stamp),
-                                          type_(type::pointing_button),
                                           valid_(true),
                                           lazy_(false),
-                                          pointing_button_(pointing_button),
-                                          event_type_(event_type) {
+                                          event_(pointing_button, event_type) {
     }
 
     queued_event(device_id device_id,
@@ -48,11 +116,9 @@ public:
                  type type,
                  int64_t integer_value) : device_id_(device_id),
                                           time_stamp_(time_stamp),
-                                          type_(type),
                                           valid_(true),
                                           lazy_(false),
-                                          integer_value_(integer_value),
-                                          event_type_(event_type::key_down) {
+                                          event_(type, integer_value) {
     }
 
     device_id get_device_id(void) const {
@@ -61,10 +127,6 @@ public:
 
     uint64_t get_time_stamp(void) const {
       return time_stamp_;
-    }
-
-    type get_type(void) const {
-      return type_;
     }
 
     bool get_valid(void) const {
@@ -81,56 +143,24 @@ public:
       lazy_ = value;
     }
 
-    boost::optional<key_code> get_key_code(void) const {
-      if (type_ == type::key_code) {
-        return key_code_;
-      }
-      return boost::none;
-    }
-
-    boost::optional<pointing_button> get_pointing_button(void) const {
-      if (type_ == type::pointing_button) {
-        return pointing_button_;
-      }
-      return boost::none;
-    }
-
-    boost::optional<int64_t> get_integer_value(void) const {
-      if (type_ == type::pointing_x ||
-          type_ == type::pointing_y ||
-          type_ == type::pointing_vertical_wheel ||
-          type_ == type::pointing_horizontal_wheel) {
-        return integer_value_;
-      }
-      return boost::none;
-    }
-
-    event_type get_event_type(void) const {
-      return event_type_;
+    const event& get_event(void) const {
+      return event_;
     }
 
     bool operator==(const queued_event& other) const {
       return get_device_id() == other.get_device_id() &&
              get_time_stamp() == other.get_time_stamp() &&
-             get_type() == other.get_type() &&
-             get_key_code() == other.get_key_code() &&
-             get_pointing_button() == other.get_pointing_button() &&
-             get_event_type() == other.get_event_type();
+             get_valid() == other.get_valid() &&
+             get_lazy() == other.get_lazy() &&
+             get_event() == other.get_event();
     }
 
   private:
     device_id device_id_;
     uint64_t time_stamp_;
-    type type_;
     bool valid_;
     bool lazy_;
-
-    union {
-      key_code key_code_;               // For type::key_code
-      pointing_button pointing_button_; // For type::pointing_button
-      int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
-    };
-    event_type event_type_;
+    event event_;
   };
 
   event_queue(const event_queue&) = delete;
@@ -291,10 +321,10 @@ public:
       auto modifier_flag1 = modifier_flag::zero;
       auto modifier_flag2 = modifier_flag::zero;
 
-      if (auto key_code1 = v1.get_key_code()) {
+      if (auto key_code1 = v1.get_event().get_key_code()) {
         modifier_flag1 = types::get_modifier_flag(*key_code1);
       }
-      if (auto key_code2 = v2.get_key_code()) {
+      if (auto key_code2 = v2.get_event().get_key_code()) {
         modifier_flag2 = types::get_modifier_flag(*key_code2);
       }
 
@@ -303,7 +333,7 @@ public:
       if (modifier_flag1 == modifier_flag::zero &&
           modifier_flag2 != modifier_flag::zero) {
         // v2 is modifier_flag
-        if (v2.get_event_type() == event_type::key_up) {
+        if (v2.get_event().get_event_type() == event_type::key_up) {
           return true;
         } else {
           // reorder to v2,v1 if v2 is pressed.
@@ -314,7 +344,7 @@ public:
       if (modifier_flag1 != modifier_flag::zero &&
           modifier_flag2 == modifier_flag::zero) {
         // v1 is modifier_flag
-        if (v1.get_event_type() == event_type::key_up) {
+        if (v1.get_event().get_event_type() == event_type::key_up) {
           // reorder to v2,v1 if v1 is released.
           return false;
         } else {

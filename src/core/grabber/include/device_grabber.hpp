@@ -306,49 +306,49 @@ private:
         auto device_id = queued_event_iterator->get_device_id();
         auto time_stamp = queued_event_iterator->get_time_stamp();
 
-        if (auto key_code = queued_event_iterator->get_key_code()) {
-          physical_keyboard_repeat_detector_.set(device_id, *key_code, queued_event_iterator->get_event_type());
+        if (auto key_code = queued_event_iterator->get_event().get_key_code()) {
+          physical_keyboard_repeat_detector_.set(device_id, *key_code, queued_event_iterator->get_event().get_event_type());
         }
         bool pressed_physical_keys_counter_updated = pressed_physical_keys_counter_.update(*queued_event_iterator);
 
         if (device.is_grabbed() && !device.get_disabled()) {
-          if (auto key_code = queued_event_iterator->get_key_code()) {
+          if (auto key_code = queued_event_iterator->get_event().get_key_code()) {
             event_manipulator_.handle_keyboard_event(device_id,
                                                      time_stamp,
                                                      *key_code,
-                                                     queued_event_iterator->get_event_type() == event_type::key_down);
+                                                     queued_event_iterator->get_event().get_event_type() == event_type::key_down);
 
-          } else if (auto pointing_button = queued_event_iterator->get_pointing_button()) {
+          } else if (auto pointing_button = queued_event_iterator->get_event().get_pointing_button()) {
             event_manipulator_.handle_pointing_event(device_id,
                                                      time_stamp,
                                                      pointing_event::button,
                                                      *pointing_button,
-                                                     queued_event_iterator->get_event_type() == event_type::key_down);
+                                                     queued_event_iterator->get_event().get_event_type() == event_type::key_down);
 
           } else {
-            if (auto integer_value = queued_event_iterator->get_integer_value()) {
-              if (queued_event_iterator->get_type() == event_queue::queued_event::type::pointing_x) {
+            if (auto integer_value = queued_event_iterator->get_event().get_integer_value()) {
+              if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::type::pointing_x) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::x,
                                                          boost::none,
                                                          *integer_value);
 
-              } else if (queued_event_iterator->get_type() == event_queue::queued_event::type::pointing_y) {
+              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::type::pointing_y) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::y,
                                                          boost::none,
                                                          *integer_value);
 
-              } else if (queued_event_iterator->get_type() == event_queue::queued_event::type::pointing_vertical_wheel) {
+              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::type::pointing_vertical_wheel) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::vertical_wheel,
                                                          boost::none,
                                                          *integer_value);
 
-              } else if (queued_event_iterator->get_type() == event_queue::queued_event::type::pointing_horizontal_wheel) {
+              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::type::pointing_horizontal_wheel) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::horizontal_wheel,

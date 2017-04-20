@@ -87,8 +87,8 @@ public:
   }
 
   bool update(const event_queue::queued_event& queued_event) {
-    if (auto key_code = queued_event.get_key_code()) {
-      if (queued_event.get_event_type() == event_type::key_down) {
+    if (auto key_code = queued_event.get_event().get_key_code()) {
+      if (queued_event.get_event().get_event_type() == event_type::key_down) {
         emplace_back_pressed_key(queued_event.get_device_id(), *key_code);
       } else {
         erase_all_pressed_keys(queued_event.get_device_id(), *key_code);
@@ -96,8 +96,8 @@ public:
       return true;
     }
 
-    if (auto pointing_button = queued_event.get_pointing_button()) {
-      if (queued_event.get_event_type() == event_type::key_down) {
+    if (auto pointing_button = queued_event.get_event().get_pointing_button()) {
+      if (queued_event.get_event().get_event_type() == event_type::key_down) {
         emplace_back_pressed_key(queued_event.get_device_id(), *pointing_button);
       } else {
         erase_all_pressed_keys(queued_event.get_device_id(), *pointing_button);
