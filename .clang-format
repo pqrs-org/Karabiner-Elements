@@ -4,3 +4,4 @@ DerivePointerBinding: true
 AllowShortIfStatementsOnASingleLine: true
 AllowShortBlocksOnASingleLine: true
 PointerAlignment: Left
+IndentCaseLabels: true
