@@ -93,32 +93,13 @@ public:
 
     queued_event(device_id device_id,
                  uint64_t time_stamp,
-                 key_code key_code,
-                 event_type event_type) : device_id_(device_id),
-                                          time_stamp_(time_stamp),
-                                          valid_(true),
-                                          lazy_(false),
-                                          event_(key_code, event_type) {
-    }
-
-    queued_event(device_id device_id,
-                 uint64_t time_stamp,
-                 pointing_button pointing_button,
-                 event_type event_type) : device_id_(device_id),
-                                          time_stamp_(time_stamp),
-                                          valid_(true),
-                                          lazy_(false),
-                                          event_(pointing_button, event_type) {
-    }
-
-    queued_event(device_id device_id,
-                 uint64_t time_stamp,
-                 type type,
-                 int64_t integer_value) : device_id_(device_id),
-                                          time_stamp_(time_stamp),
-                                          valid_(true),
-                                          lazy_(false),
-                                          event_(type, integer_value) {
+                 const class event& event,
+                 const class event& original_event) : device_id_(device_id),
+                                                      time_stamp_(time_stamp),
+                                                      valid_(true),
+                                                      lazy_(false),
+                                                      event_(event),
+                                                      original_event_(original_event) {
     }
 
     device_id get_device_id(void) const {
@@ -147,12 +128,17 @@ public:
       return event_;
     }
 
+    const event& get_original_event(void) const {
+      return original_event_;
+    }
+
     bool operator==(const queued_event& other) const {
       return get_device_id() == other.get_device_id() &&
              get_time_stamp() == other.get_time_stamp() &&
              get_valid() == other.get_valid() &&
              get_lazy() == other.get_lazy() &&
-             get_event() == other.get_event();
+             get_event() == other.get_event() &&
+             get_original_event() == other.get_original_event();
     }
 
   private:
@@ -161,6 +147,7 @@ public:
     bool valid_;
     bool lazy_;
     event event_;
+    event original_event_;
   };
 
   event_queue(const event_queue&) = delete;
@@ -168,95 +155,71 @@ public:
   event_queue(void) {
   }
 
-  void push_back_event(device_id device_id,
-                       uint64_t time_stamp,
-                       hid_usage_page usage_page,
-                       hid_usage usage,
-                       int64_t integer_value) {
+  // from physical device
+  void emplace_back_event(device_id device_id,
+                          uint64_t time_stamp,
+                          hid_usage_page usage_page,
+                          hid_usage usage,
+                          int64_t integer_value) {
     if (auto key_code = types::get_key_code(usage_page, usage)) {
-      push_back_event(device_id,
-                      time_stamp,
-                      *key_code,
-                      integer_value ? event_type::key_down : event_type::key_up);
+      queued_event::event event(*key_code, integer_value ? event_type::key_down : event_type::key_up);
+      emplace_back_event(device_id, time_stamp, event, event);
+
     } else if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
-      push_back_event(device_id,
-                      time_stamp,
-                      *pointing_button,
-                      integer_value ? event_type::key_down : event_type::key_up);
+      queued_event::event event(*pointing_button, integer_value ? event_type::key_down : event_type::key_up);
+      emplace_back_event(device_id, time_stamp, event, event);
+
     } else {
       switch (usage_page) {
-      case hid_usage_page::generic_desktop:
-        switch (usage) {
-        case hid_usage::gd_x:
-          push_back_event(device_id,
-                          time_stamp,
-                          queued_event::type::pointing_x,
-                          integer_value);
+        case hid_usage_page::generic_desktop:
+          switch (usage) {
+            case hid_usage::gd_x: {
+              queued_event::event event(queued_event::type::pointing_x, integer_value);
+              emplace_back_event(device_id, time_stamp, event, event);
+              break;
+            }
+
+            case hid_usage::gd_y: {
+              queued_event::event event(queued_event::type::pointing_y, integer_value);
+              emplace_back_event(device_id, time_stamp, event, event);
+              break;
+            }
+
+            case hid_usage::gd_wheel: {
+              queued_event::event event(queued_event::type::pointing_vertical_wheel, integer_value);
+              emplace_back_event(device_id, time_stamp, event, event);
+              break;
+            }
+
+            default:
+              break;
+          }
           break;
 
-        case hid_usage::gd_y:
-          push_back_event(device_id,
-                          time_stamp,
-                          queued_event::type::pointing_y,
-                          integer_value);
-          break;
+        case hid_usage_page::consumer:
+          switch (usage) {
+            case hid_usage::csmr_acpan: {
+              queued_event::event event(queued_event::type::pointing_horizontal_wheel, integer_value);
+              emplace_back_event(device_id, time_stamp, event, event);
+              break;
+            }
 
-        case hid_usage::gd_wheel:
-          push_back_event(device_id,
-                          time_stamp,
-                          queued_event::type::pointing_vertical_wheel,
-                          integer_value);
+            default:
+              break;
+          }
           break;
 
         default:
           break;
-        }
-        break;
-
-      case hid_usage_page::consumer:
-        switch (usage) {
-        case hid_usage::csmr_acpan:
-          push_back_event(device_id,
-                          time_stamp,
-                          queued_event::type::pointing_horizontal_wheel,
-                          integer_value);
-          break;
-
-        default:
-          break;
-        }
-        break;
-
-      default:
-        break;
       }
     }
   }
 
-  // For type::key_code
-  void push_back_event(device_id device_id,
-                       uint64_t time_stamp,
-                       key_code key_code,
-                       event_type event_type) {
-    events_.emplace_back(device_id, time_stamp, key_code, event_type);
-    sort_events();
-  }
-
-  // For type::pointing_button
-  void push_back_event(device_id device_id,
-                       uint64_t time_stamp,
-                       pointing_button pointing_button,
-                       event_type event_type) {
-    events_.emplace_back(device_id, time_stamp, pointing_button, event_type);
-    sort_events();
-  }
-
-  // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
-  void push_back_event(device_id device_id,
-                       uint64_t time_stamp,
-                       queued_event::type type,
-                       int64_t integer_value) {
-    events_.emplace_back(device_id, time_stamp, type, integer_value);
+  void emplace_back_event(device_id device_id,
+                          uint64_t time_stamp,
+                          const queued_event::event& event,
+                          const queued_event::event& original_event) {
+    events_.emplace_back(device_id, time_stamp, event, original_event);
     sort_events();
   }
 
