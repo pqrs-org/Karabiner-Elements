@@ -119,47 +119,47 @@ private:
     auto queued_event_iterator = event_queue.get_events().begin() + previous_events_size;
     while (queued_event_iterator != std::end(event_queue.get_events())) {
       switch (queued_event_iterator->get_event().get_type()) {
-      case krbn::event_queue::queued_event::type::key_code:
-        if (auto key_code = queued_event_iterator->get_event().get_key_code()) {
-          std::cout << "Key: " << std::dec << static_cast<uint32_t>(*key_code) << " "
-                    << (queued_event_iterator->get_event().get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
-                    << std::endl;
-        }
-        break;
-
-      case krbn::event_queue::queued_event::type::pointing_button:
-        if (auto pointing_button = queued_event_iterator->get_event().get_pointing_button()) {
-          std::cout << "Button: " << std::dec << static_cast<uint32_t>(*pointing_button) << " "
-                    << (queued_event_iterator->get_event().get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
-                    << std::endl;
-        }
-        break;
-
-      case krbn::event_queue::queued_event::type::pointing_x:
-      case krbn::event_queue::queued_event::type::pointing_y:
-      case krbn::event_queue::queued_event::type::pointing_vertical_wheel:
-      case krbn::event_queue::queued_event::type::pointing_horizontal_wheel:
-        if (auto integer_value = queued_event_iterator->get_event().get_integer_value()) {
-          switch (queued_event_iterator->get_event().get_type()) {
-          case krbn::event_queue::queued_event::type::pointing_x:
-            std::cout << "Pointing X: ";
-            break;
-          case krbn::event_queue::queued_event::type::pointing_y:
-            std::cout << "Pointing Y: ";
-            break;
-          case krbn::event_queue::queued_event::type::pointing_vertical_wheel:
-            std::cout << "Vertical Wheel: ";
-            break;
-          case krbn::event_queue::queued_event::type::pointing_horizontal_wheel:
-            std::cout << "Horizontal Wheel: ";
-            break;
-          default:
-            break;
+        case krbn::event_queue::queued_event::type::key_code:
+          if (auto key_code = queued_event_iterator->get_event().get_key_code()) {
+            std::cout << "Key: " << std::dec << static_cast<uint32_t>(*key_code) << " "
+                      << (queued_event_iterator->get_event().get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
+                      << std::endl;
           }
+          break;
 
-          std::cout << std::dec << *integer_value << std::endl;
-        }
-        break;
+        case krbn::event_queue::queued_event::type::pointing_button:
+          if (auto pointing_button = queued_event_iterator->get_event().get_pointing_button()) {
+            std::cout << "Button: " << std::dec << static_cast<uint32_t>(*pointing_button) << " "
+                      << (queued_event_iterator->get_event().get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
+                      << std::endl;
+          }
+          break;
+
+        case krbn::event_queue::queued_event::type::pointing_x:
+        case krbn::event_queue::queued_event::type::pointing_y:
+        case krbn::event_queue::queued_event::type::pointing_vertical_wheel:
+        case krbn::event_queue::queued_event::type::pointing_horizontal_wheel:
+          if (auto integer_value = queued_event_iterator->get_event().get_integer_value()) {
+            switch (queued_event_iterator->get_event().get_type()) {
+              case krbn::event_queue::queued_event::type::pointing_x:
+                std::cout << "Pointing X: ";
+                break;
+              case krbn::event_queue::queued_event::type::pointing_y:
+                std::cout << "Pointing Y: ";
+                break;
+              case krbn::event_queue::queued_event::type::pointing_vertical_wheel:
+                std::cout << "Vertical Wheel: ";
+                break;
+              case krbn::event_queue::queued_event::type::pointing_horizontal_wheel:
+                std::cout << "Horizontal Wheel: ";
+                break;
+              default:
+                break;
+            }
+
+            std::cout << std::dec << *integer_value << std::endl;
+          }
+          break;
       }
 
       std::advance(queued_event_iterator, 1);

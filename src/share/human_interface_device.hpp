@@ -309,15 +309,15 @@ public:
           0,
           ^{
             switch (is_grabbable()) {
-            case grabbable_state::grabbable:
-              break;
+              case grabbable_state::grabbable:
+                break;
 
-            case grabbable_state::ungrabbable_temporarily:
-              return;
+              case grabbable_state::ungrabbable_temporarily:
+                return;
 
-            case grabbable_state::ungrabbable_permanently:
-              cancel_grab_timer();
-              return;
+              case grabbable_state::ungrabbable_permanently:
+                cancel_grab_timer();
+                return;
             }
 
             // ----------------------------------------

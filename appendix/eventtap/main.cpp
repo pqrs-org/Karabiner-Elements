@@ -10,14 +10,14 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
   std::cout << "CGEventGetFlags 0x" << std::hex << CGEventGetFlags(event) << std::dec << std::endl;
 
   switch (type) {
-  case kCGEventKeyDown:
-    std::cout << "kCGEventKeyDown" << std::endl;
-    break;
-  case kCGEventKeyUp:
-    std::cout << "kCGEventKeyUp" << std::endl;
-  default:
-    std::cout << "callback:" << type << std::endl;
-    break;
+    case kCGEventKeyDown:
+      std::cout << "kCGEventKeyDown" << std::endl;
+      break;
+    case kCGEventKeyUp:
+      std::cout << "kCGEventKeyUp" << std::endl;
+    default:
+      std::cout << "callback:" << type << std::endl;
+      break;
   }
   return event;
 }

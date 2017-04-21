@@ -46,31 +46,31 @@ TEST_CASE("file_monitor") {
     std::getline(ifstream, line);
 
     switch (i) {
-    case 0:
-      REQUIRE(line == "11");
-      break;
-    case 1:
-      REQUIRE(line == "12");
-      break;
-    case 2:
-      REQUIRE(line == "21");
-      break;
-    case 3:
-      REQUIRE(line == "22");
-      break;
-    case 4:
-      REQUIRE(line == "13");
-      break;
-    // Note: `rm target/sub/file2` does not call this callback.
-    case 5:
-      REQUIRE(line == "14");
-      break;
-    case 6:
-      REQUIRE(line == "15");
-      break;
-    case 7:
-      REQUIRE(line == "16");
-      break;
+      case 0:
+        REQUIRE(line == "11");
+        break;
+      case 1:
+        REQUIRE(line == "12");
+        break;
+      case 2:
+        REQUIRE(line == "21");
+        break;
+      case 3:
+        REQUIRE(line == "22");
+        break;
+      case 4:
+        REQUIRE(line == "13");
+        break;
+      // Note: `rm target/sub/file2` does not call this callback.
+      case 5:
+        REQUIRE(line == "14");
+        break;
+      case 6:
+        REQUIRE(line == "15");
+        break;
+      case 7:
+        REQUIRE(line == "16");
+        break;
     }
 
     if (line == "end") {

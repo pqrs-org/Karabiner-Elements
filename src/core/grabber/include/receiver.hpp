@@ -62,39 +62,39 @@ private:
 
       if (!ec && n > 0) {
         switch (operation_type(buffer_[0])) {
-        case operation_type::connect:
-          if (n != sizeof(operation_type_connect_struct)) {
-            logger::get_logger().error("invalid size for operation_type::connect");
-          } else {
-            auto p = reinterpret_cast<operation_type_connect_struct*>(&(buffer_[0]));
+          case operation_type::connect:
+            if (n != sizeof(operation_type_connect_struct)) {
+              logger::get_logger().error("invalid size for operation_type::connect");
+            } else {
+              auto p = reinterpret_cast<operation_type_connect_struct*>(&(buffer_[0]));
 
-            // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
-            p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
+              // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
+              p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
 
-            logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
+              logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
-            device_grabber_.start_grabbing(p->user_core_configuration_file_path);
+              device_grabber_.start_grabbing(p->user_core_configuration_file_path);
 
-            // monitor the last process
-            console_user_server_process_monitor_ = nullptr;
-            console_user_server_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
-                                                                                     p->pid,
-                                                                                     std::bind(&receiver::console_user_server_exit_callback, this));
-          }
-          break;
+              // monitor the last process
+              console_user_server_process_monitor_ = nullptr;
+              console_user_server_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
+                                                                                       p->pid,
+                                                                                       std::bind(&receiver::console_user_server_exit_callback, this));
+            }
+            break;
 
-        case operation_type::system_preferences_values_updated:
-          if (n < sizeof(operation_type_system_preferences_values_updated_struct)) {
-            logger::get_logger().error("invalid size for operation_type::system_preferences_values_updated ({0})", n);
-          } else {
-            auto p = reinterpret_cast<operation_type_system_preferences_values_updated_struct*>(&(buffer_[0]));
-            event_manipulator_.set_system_preferences_values(p->values);
-            logger::get_logger().info("system_preferences_values_updated");
-          }
-          break;
+          case operation_type::system_preferences_values_updated:
+            if (n < sizeof(operation_type_system_preferences_values_updated_struct)) {
+              logger::get_logger().error("invalid size for operation_type::system_preferences_values_updated ({0})", n);
+            } else {
+              auto p = reinterpret_cast<operation_type_system_preferences_values_updated_struct*>(&(buffer_[0]));
+              event_manipulator_.set_system_preferences_values(p->values);
+              logger::get_logger().info("system_preferences_values_updated");
+            }
+            break;
 
-        default:
-          break;
+          default:
+            break;
         }
       }
     }

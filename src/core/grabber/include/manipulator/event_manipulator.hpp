@@ -164,26 +164,26 @@ public:
 
       if (modifier_flag_manager_.is_pressed(modifier_flag::fn)) {
         switch (to_key_code) {
-        case key_code::return_or_enter:
-          key_code = key_code::keypad_enter;
-          break;
-        case key_code::delete_or_backspace:
-          key_code = key_code::delete_forward;
-          break;
-        case key_code::right_arrow:
-          key_code = key_code::end;
-          break;
-        case key_code::left_arrow:
-          key_code = key_code::home;
-          break;
-        case key_code::down_arrow:
-          key_code = key_code::page_down;
-          break;
-        case key_code::up_arrow:
-          key_code = key_code::page_up;
-          break;
-        default:
-          break;
+          case key_code::return_or_enter:
+            key_code = key_code::keypad_enter;
+            break;
+          case key_code::delete_or_backspace:
+            key_code = key_code::delete_forward;
+            break;
+          case key_code::right_arrow:
+            key_code = key_code::end;
+            break;
+          case key_code::left_arrow:
+            key_code = key_code::home;
+            break;
+          case key_code::down_arrow:
+            key_code = key_code::page_down;
+            break;
+          case key_code::up_arrow:
+            key_code = key_code::page_up;
+            break;
+          default:
+            break;
         }
       }
 
@@ -232,37 +232,37 @@ public:
     pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
 
     switch (pointing_event) {
-    case pointing_event::button:
-      if (pointing_button && *pointing_button != pointing_button::zero) {
-        pointing_button_manager::active_pointing_button active_pointing_button(pointing_button_manager::active_pointing_button::type::increase,
-                                                                               *pointing_button,
-                                                                               device_id);
-        if (integer_value) {
-          pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
-        } else {
-          pointing_button_manager_.erase_active_pointing_button(active_pointing_button);
+      case pointing_event::button:
+        if (pointing_button && *pointing_button != pointing_button::zero) {
+          pointing_button_manager::active_pointing_button active_pointing_button(pointing_button_manager::active_pointing_button::type::increase,
+                                                                                 *pointing_button,
+                                                                                 device_id);
+          if (integer_value) {
+            pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
+          } else {
+            pointing_button_manager_.erase_active_pointing_button(active_pointing_button);
+          }
         }
-      }
-      break;
+        break;
 
-    case pointing_event::x:
-      report.x = integer_value;
-      break;
+      case pointing_event::x:
+        report.x = integer_value;
+        break;
 
-    case pointing_event::y:
-      report.y = integer_value;
-      break;
+      case pointing_event::y:
+        report.y = integer_value;
+        break;
 
-    case pointing_event::vertical_wheel:
-      report.vertical_wheel = integer_value;
-      break;
+      case pointing_event::vertical_wheel:
+        report.vertical_wheel = integer_value;
+        break;
 
-    case pointing_event::horizontal_wheel:
-      report.horizontal_wheel = integer_value;
-      break;
+      case pointing_event::horizontal_wheel:
+        report.horizontal_wheel = integer_value;
+        break;
 
-    default:
-      break;
+      default:
+        break;
     }
 
     auto bits = pointing_button_manager_.get_hid_report_bits();

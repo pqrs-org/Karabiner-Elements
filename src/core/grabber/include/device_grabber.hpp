@@ -391,14 +391,14 @@ private:
     if (ready_state != manipulator::event_manipulator::ready_state::ready) {
       std::string message = "event_manipulator_ is not ready. ";
       switch (ready_state) {
-      case manipulator::event_manipulator::ready_state::ready:
-        break;
-      case manipulator::event_manipulator::ready_state::virtual_hid_device_client_is_not_ready:
-        message += "(virtual_hid_device_client is not ready) ";
-        break;
-      case manipulator::event_manipulator::ready_state::virtual_hid_keyboard_is_not_ready:
-        message += "(virtual_hid_keyboard is not ready) ";
-        break;
+        case manipulator::event_manipulator::ready_state::ready:
+          break;
+        case manipulator::event_manipulator::ready_state::virtual_hid_device_client_is_not_ready:
+          message += "(virtual_hid_device_client is not ready) ";
+          break;
+        case manipulator::event_manipulator::ready_state::virtual_hid_keyboard_is_not_ready:
+          message += "(virtual_hid_keyboard is not ready) ";
+          break;
       }
       message += "Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);

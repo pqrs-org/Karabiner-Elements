@@ -270,14 +270,14 @@ enum {
 - (int)buttonToKernelValue:(NSEvent*)event {
   NSInteger number = [event buttonNumber];
   switch (number) {
-  case 0:
-    return 0x00000004;
-  case 1:
-    return 0x00000001;
-  case 2:
-    return 0x00000002;
-  default:
-    return (1 << number);
+    case 0:
+      return 0x00000004;
+    case 1:
+      return 0x00000001;
+    case 2:
+      return 0x00000002;
+    default:
+      return (1 << number);
   }
 }
 
@@ -309,12 +309,12 @@ enum {
 
     NSString* eventType = nil;
     switch (keyState) {
-    case NX_KEYDOWN:
-      eventType = @"SysKeyDown";
-      break;
-    case NX_KEYUP:
-      eventType = @"SysKeyUp";
-      break;
+      case NX_KEYDOWN:
+        eventType = @"SysKeyDown";
+        break;
+      case NX_KEYUP:
+        eventType = @"SysKeyUp";
+        break;
     }
     if (!eventType) {
       return;
@@ -361,55 +361,55 @@ enum {
 
 - (void)pushFromNSApplication:(NSEvent*)event {
   switch ([event type]) {
-  case NSKeyDown:
-    [self pushKeyEvent:event eventType:@"KeyDown"];
-    break;
+    case NSKeyDown:
+      [self pushKeyEvent:event eventType:@"KeyDown"];
+      break;
 
-  case NSKeyUp:
-    [self pushKeyEvent:event eventType:@"KeyUp"];
-    break;
+    case NSKeyUp:
+      [self pushKeyEvent:event eventType:@"KeyUp"];
+      break;
 
-  case NSFlagsChanged:
-    [self pushKeyEvent:event eventType:@"FlagsChanged"];
-    break;
+    case NSFlagsChanged:
+      [self pushKeyEvent:event eventType:@"FlagsChanged"];
+      break;
 
-  case NSSystemDefined:
-    [self pushSystemDefinedEvent:event];
-    break;
+    case NSSystemDefined:
+      [self pushSystemDefinedEvent:event];
+      break;
 
-  default:
-    // Do nothing
-    break;
+    default:
+      // Do nothing
+      break;
   }
 }
 
 - (void)pushMouseEvent:(NSEvent*)event {
   switch ([event type]) {
-  case NSLeftMouseDown:
-  case NSRightMouseDown:
-  case NSOtherMouseDown:
-    [self pushMouseEvent:event eventType:@"MouseDown"];
-    break;
+    case NSLeftMouseDown:
+    case NSRightMouseDown:
+    case NSOtherMouseDown:
+      [self pushMouseEvent:event eventType:@"MouseDown"];
+      break;
 
-  case NSLeftMouseUp:
-  case NSRightMouseUp:
-  case NSOtherMouseUp:
-    [self pushMouseEvent:event eventType:@"MouseUp"];
-    break;
+    case NSLeftMouseUp:
+    case NSRightMouseUp:
+    case NSOtherMouseUp:
+      [self pushMouseEvent:event eventType:@"MouseUp"];
+      break;
 
-  case NSLeftMouseDragged:
-  case NSRightMouseDragged:
-  case NSOtherMouseDragged:
-    [self pushMouseEvent:event eventType:@"MouseDragged"];
-    break;
+    case NSLeftMouseDragged:
+    case NSRightMouseDragged:
+    case NSOtherMouseDragged:
+      [self pushMouseEvent:event eventType:@"MouseDragged"];
+      break;
 
-  case NSScrollWheel:
-    [self pushScrollWheelEvent:event eventType:@"ScrollWheel"];
-    break;
+    case NSScrollWheel:
+      [self pushScrollWheelEvent:event eventType:@"ScrollWheel"];
+      break;
 
-  default:
-    // Do nothing
-    break;
+    default:
+      // Do nothing
+      break;
   }
 }
 

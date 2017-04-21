@@ -62,37 +62,37 @@ private:
 
   void callback(io_service_t service, uint32_t message_type, void* message_argument) {
     switch (message_type) {
-    case kIOMessageSystemWillSleep:
-      logger_.info("iopm_client::callback kIOMessageSystemWillSleep");
-      if (connect_) {
-        auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
-        if (kr != kIOReturnSuccess) {
-          logger_.error("IOAllowPowerChange error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+      case kIOMessageSystemWillSleep:
+        logger_.info("iopm_client::callback kIOMessageSystemWillSleep");
+        if (connect_) {
+          auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
+          if (kr != kIOReturnSuccess) {
+            logger_.error("IOAllowPowerChange error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+          }
         }
-      }
-      break;
+        break;
 
-    case kIOMessageSystemWillPowerOn:
-      logger_.info("iopm_client::callback kIOMessageSystemWillPowerOn");
-      break;
+      case kIOMessageSystemWillPowerOn:
+        logger_.info("iopm_client::callback kIOMessageSystemWillPowerOn");
+        break;
 
-    case kIOMessageSystemHasPoweredOn:
-      logger_.info("iopm_client::callback kIOMessageSystemHasPoweredOn");
-      break;
+      case kIOMessageSystemHasPoweredOn:
+        logger_.info("iopm_client::callback kIOMessageSystemHasPoweredOn");
+        break;
 
-    case kIOMessageCanSystemSleep:
-      logger_.info("iopm_client::callback kIOMessageCanSystemSleep");
-      if (connect_) {
-        auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
-        if (kr != kIOReturnSuccess) {
-          logger_.error("IOAllowPowerChange error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+      case kIOMessageCanSystemSleep:
+        logger_.info("iopm_client::callback kIOMessageCanSystemSleep");
+        if (connect_) {
+          auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
+          if (kr != kIOReturnSuccess) {
+            logger_.error("IOAllowPowerChange error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+          }
         }
-      }
-      break;
+        break;
 
-    case kIOMessageSystemWillNotSleep:
-      logger_.info("iopm_client::callback kIOMessageSystemWillNotSleep");
-      break;
+      case kIOMessageSystemWillNotSleep:
+        logger_.info("iopm_client::callback kIOMessageSystemWillNotSleep");
+        break;
     }
 
     if (system_power_event_callback_) {
