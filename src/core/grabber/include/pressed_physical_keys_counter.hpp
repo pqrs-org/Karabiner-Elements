@@ -12,11 +12,6 @@ class pressed_physical_keys_counter final {
 public:
   class pressed_key final {
   public:
-    enum class type {
-      key_code,
-      pointing_button,
-    };
-
     pressed_key(device_id device_id,
                 const event_queue::queued_event::event& original_event) : device_id_(device_id),
                                                                           original_event_(original_event) {
