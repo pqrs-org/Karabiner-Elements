@@ -21,8 +21,8 @@ krbn::event_queue::queued_event::event event_tab_up(*(krbn::types::get_key_code(
 krbn::event_queue::queued_event::event event_button2_down(krbn::pointing_button::button2, krbn::event_type::key_down);
 krbn::event_queue::queued_event::event event_button2_up(krbn::pointing_button::button2, krbn::event_type::key_up);
 
-krbn::event_queue::queued_event::event event_x_p10(krbn::event_queue::queued_event::type::pointing_x, 10);
-krbn::event_queue::queued_event::event event_y_m10(krbn::event_queue::queued_event::type::pointing_y, -10);
+krbn::event_queue::queued_event::event event_x_p10(krbn::event_queue::queued_event::event::type::pointing_x, 10);
+krbn::event_queue::queued_event::event event_y_m10(krbn::event_queue::queued_event::event::type::pointing_y, -10);
 } // namespace
 
 TEST_CASE("emplace_back_event") {

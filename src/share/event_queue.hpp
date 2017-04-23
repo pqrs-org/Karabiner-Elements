@@ -10,17 +10,17 @@ class event_queue final {
 public:
   class queued_event final {
   public:
-    enum class type {
-      key_code,
-      pointing_button,
-      pointing_x,
-      pointing_y,
-      pointing_vertical_wheel,
-      pointing_horizontal_wheel,
-    };
-
     class event {
     public:
+      enum class type {
+        key_code,
+        pointing_button,
+        pointing_x,
+        pointing_y,
+        pointing_vertical_wheel,
+        pointing_horizontal_wheel,
+      };
+
       event(key_code key_code,
             event_type event_type) : type_(type::key_code),
                                      key_code_(key_code),
@@ -174,19 +174,19 @@ public:
         case hid_usage_page::generic_desktop:
           switch (usage) {
             case hid_usage::gd_x: {
-              queued_event::event event(queued_event::type::pointing_x, integer_value);
+              queued_event::event event(queued_event::event::type::pointing_x, integer_value);
               emplace_back_event(device_id, time_stamp, event, event);
               break;
             }
 
             case hid_usage::gd_y: {
-              queued_event::event event(queued_event::type::pointing_y, integer_value);
+              queued_event::event event(queued_event::event::type::pointing_y, integer_value);
               emplace_back_event(device_id, time_stamp, event, event);
               break;
             }
 
             case hid_usage::gd_wheel: {
-              queued_event::event event(queued_event::type::pointing_vertical_wheel, integer_value);
+              queued_event::event event(queued_event::event::type::pointing_vertical_wheel, integer_value);
               emplace_back_event(device_id, time_stamp, event, event);
               break;
             }
@@ -199,7 +199,7 @@ public:
         case hid_usage_page::consumer:
           switch (usage) {
             case hid_usage::csmr_acpan: {
-              queued_event::event event(queued_event::type::pointing_horizontal_wheel, integer_value);
+              queued_event::event event(queued_event::event::type::pointing_horizontal_wheel, integer_value);
               emplace_back_event(device_id, time_stamp, event, event);
               break;
             }

@@ -4,6 +4,30 @@
 #include "pressed_physical_keys_counter.hpp"
 #include "thread_utility.hpp"
 
+namespace {
+krbn::event_queue::queued_event::event event_a_down(*(krbn::types::get_key_code("a")), krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_a_up(*(krbn::types::get_key_code("a")), krbn::event_type::key_up);
+krbn::event_queue::queued_event::event event_escape_down(*(krbn::types::get_key_code("escape")), krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_escape_up(*(krbn::types::get_key_code("escape")), krbn::event_type::key_up);
+krbn::event_queue::queued_event::event event_left_shift_down(*(krbn::types::get_key_code("left_shift")), krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_left_shift_up(*(krbn::types::get_key_code("left_shift")), krbn::event_type::key_up);
+krbn::event_queue::queued_event::event event_right_shift_down(*(krbn::types::get_key_code("right_shift")), krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_right_shift_up(*(krbn::types::get_key_code("right_shift")), krbn::event_type::key_up);
+krbn::event_queue::queued_event::event event_spacebar_down(*(krbn::types::get_key_code("spacebar")), krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_spacebar_up(*(krbn::types::get_key_code("spacebar")), krbn::event_type::key_up);
+krbn::event_queue::queued_event::event event_tab_down(*(krbn::types::get_key_code("tab")), krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_tab_up(*(krbn::types::get_key_code("tab")), krbn::event_type::key_up);
+
+krbn::event_queue::queued_event::event event_button1_down(krbn::pointing_button::button1, krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_button1_up(krbn::pointing_button::button1, krbn::event_type::key_up);
+krbn::event_queue::queued_event::event event_button2_down(krbn::pointing_button::button2, krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_button2_up(krbn::pointing_button::button2, krbn::event_type::key_up);
+krbn::event_queue::queued_event::event event_button3_down(krbn::pointing_button::button3, krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_button3_up(krbn::pointing_button::button3, krbn::event_type::key_up);
+krbn::event_queue::queued_event::event event_button4_down(krbn::pointing_button::button4, krbn::event_type::key_down);
+krbn::event_queue::queued_event::event event_button4_up(krbn::pointing_button::button4, krbn::event_type::key_up);
+} // namespace
+
 TEST_CASE("pressed_physical_keys_counter") {
   krbn::pressed_physical_keys_counter pressed_physical_keys_counter;
 
@@ -12,61 +36,61 @@ TEST_CASE("pressed_physical_keys_counter") {
 
   // ----------------------------------------
 
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_spacebar_down);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
   REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(2)) == true);
 
-  pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
+  pressed_physical_keys_counter.erase_all_matched_events(krbn::device_id(1), event_spacebar_up);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
 
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), krbn::pointing_button::button4);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_button4_down);
   REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == true);
 
-  pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1), krbn::pointing_button::button4);
+  pressed_physical_keys_counter.erase_all_matched_events(krbn::device_id(1), event_button4_up);
   REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
 
   // ----------------------------------------
   // Push twice
 
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_spacebar_down);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_spacebar_down);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
 
-  pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
+  pressed_physical_keys_counter.erase_all_matched_events(krbn::device_id(1), event_spacebar_up);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
 
   // ----------------------------------------
   // Mixed values
 
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), *(krbn::types::get_key_code("tab")));
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), krbn::pointing_button::button1);
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), krbn::pointing_button::button2);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_spacebar_down);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_tab_down);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_button1_down);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_button2_down);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
 
-  pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
+  pressed_physical_keys_counter.erase_all_matched_events(krbn::device_id(1), event_spacebar_up);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
 
-  pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1), *(krbn::types::get_key_code("tab")));
+  pressed_physical_keys_counter.erase_all_matched_events(krbn::device_id(1), event_tab_up);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
 
-  pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1), krbn::pointing_button::button1);
+  pressed_physical_keys_counter.erase_all_matched_events(krbn::device_id(1), event_button1_up);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
 
-  pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1), krbn::pointing_button::button2);
+  pressed_physical_keys_counter.erase_all_matched_events(krbn::device_id(1), event_button2_up);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
 
   // ----------------------------------------
   // Erase by device_id
 
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), *(krbn::types::get_key_code("spacebar")));
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), *(krbn::types::get_key_code("tab")));
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), krbn::pointing_button::button1);
-  pressed_physical_keys_counter.emplace_back_pressed_key(krbn::device_id(1), krbn::pointing_button::button2);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_spacebar_down);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_tab_down);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_button1_down);
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_button2_down);
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == false);
 
-  pressed_physical_keys_counter.erase_all_pressed_keys(krbn::device_id(1));
+  pressed_physical_keys_counter.erase_all_matched_events(krbn::device_id(1));
   REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
 }
 

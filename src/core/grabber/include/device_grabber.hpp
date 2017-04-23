@@ -282,7 +282,7 @@ private:
       event_manipulator_.erase_all_active_pointing_buttons(*device_id, true);
 
       physical_keyboard_repeat_detector_.erase(*device_id);
-      pressed_physical_keys_counter_.erase_all_pressed_keys(*device_id);
+      pressed_physical_keys_counter_.erase_all_matched_events(*device_id);
     }
 
     event_manipulator_.stop_key_repeat();
@@ -327,28 +327,28 @@ private:
 
           } else {
             if (auto integer_value = queued_event_iterator->get_event().get_integer_value()) {
-              if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::type::pointing_x) {
+              if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::event::type::pointing_x) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::x,
                                                          boost::none,
                                                          *integer_value);
 
-              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::type::pointing_y) {
+              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::event::type::pointing_y) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::y,
                                                          boost::none,
                                                          *integer_value);
 
-              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::type::pointing_vertical_wheel) {
+              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::vertical_wheel,
                                                          boost::none,
                                                          *integer_value);
 
-              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::type::pointing_horizontal_wheel) {
+              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::horizontal_wheel,
