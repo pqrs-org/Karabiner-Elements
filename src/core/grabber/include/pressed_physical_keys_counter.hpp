@@ -10,29 +10,9 @@
 namespace krbn {
 class pressed_physical_keys_counter final {
 public:
-  class pressed_key final {
-  public:
-    pressed_key(device_id device_id,
-                const event_queue::queued_event::event& original_event) : device_id_(device_id),
-                                                                          original_event_(original_event) {
-    }
-
-    device_id get_device_id(void) const {
-      return device_id_;
-    }
-
-    const event_queue::queued_event::event& get_original_event(void) const {
-      return original_event_;
-    }
-
-  private:
-    device_id device_id_;
-    event_queue::queued_event::event original_event_;
-  };
-
   bool empty(device_id device_id) {
-    for (const auto& k : pressed_keys_) {
-      if (k.get_device_id() == device_id) {
+    for (const auto& pair : pressed_keys_) {
+      if (pair.first == device_id) {
         return false;
       }
     }
@@ -40,9 +20,9 @@ public:
   }
 
   bool is_pointing_button_pressed(device_id device_id) {
-    for (const auto& k : pressed_keys_) {
-      if (k.get_device_id() == device_id &&
-          k.get_original_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
+    for (const auto& pair : pressed_keys_) {
+      if (pair.first == device_id &&
+          pair.second.get_type() == event_queue::queued_event::event::type::pointing_button) {
         return true;
       }
     }
@@ -77,8 +57,8 @@ public:
   void erase_all_matched_events(device_id device_id) {
     pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
                                        std::end(pressed_keys_),
-                                       [&](const pressed_key& k) {
-                                         return k.get_device_id() == device_id;
+                                       [&](const auto& pair) {
+                                         return pair.first == device_id;
                                        }),
                         std::end(pressed_keys_));
   }
@@ -87,16 +67,16 @@ public:
                                 const event_queue::queued_event::event& original_event) {
     pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
                                        std::end(pressed_keys_),
-                                       [&](const pressed_key& k) {
+                                       [&](const auto& pair) {
                                          // key_code or pointing_button
-                                         return k.get_device_id() == device_id &&
-                                                k.get_original_event().get_key_code() == original_event.get_key_code() &&
-                                                k.get_original_event().get_pointing_button() == original_event.get_pointing_button();
+                                         return pair.first == device_id &&
+                                                pair.second.get_key_code() == original_event.get_key_code() &&
+                                                pair.second.get_pointing_button() == original_event.get_pointing_button();
                                        }),
                         std::end(pressed_keys_));
   }
 
 private:
-  std::vector<pressed_key> pressed_keys_;
+  std::vector<std::pair<device_id, event_queue::queued_event::event>> pressed_keys_;
 };
 } // namespace krbn
