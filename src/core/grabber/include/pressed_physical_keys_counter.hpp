@@ -51,7 +51,9 @@ public:
 
   void emplace_back_event(device_id device_id,
                           const event_queue::queued_event::event& original_event) {
-    pressed_keys_.emplace_back(device_id, original_event);
+    if (original_event.get_event_type() == event_type::key_down) {
+      pressed_keys_.emplace_back(device_id, original_event);
+    }
   }
 
   void erase_all_matched_events(device_id device_id) {
@@ -65,15 +67,17 @@ public:
 
   void erase_all_matched_events(device_id device_id,
                                 const event_queue::queued_event::event& original_event) {
-    pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
-                                       std::end(pressed_keys_),
-                                       [&](const auto& pair) {
-                                         // key_code or pointing_button
-                                         return pair.first == device_id &&
-                                                pair.second.get_key_code() == original_event.get_key_code() &&
-                                                pair.second.get_pointing_button() == original_event.get_pointing_button();
-                                       }),
-                        std::end(pressed_keys_));
+    if (original_event.get_event_type() == event_type::key_up) {
+      pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
+                                         std::end(pressed_keys_),
+                                         [&](const auto& pair) {
+                                           // key_code or pointing_button
+                                           return pair.first == device_id &&
+                                                  pair.second.get_key_code() == original_event.get_key_code() &&
+                                                  pair.second.get_pointing_button() == original_event.get_pointing_button();
+                                         }),
+                          std::end(pressed_keys_));
+    }
   }
 
 private:

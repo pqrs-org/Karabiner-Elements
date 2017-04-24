@@ -51,6 +51,12 @@ TEST_CASE("pressed_physical_keys_counter") {
   REQUIRE(pressed_physical_keys_counter.is_pointing_button_pressed(krbn::device_id(1)) == false);
 
   // ----------------------------------------
+  // Up event will be ignored
+
+  pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_spacebar_up);
+  REQUIRE(pressed_physical_keys_counter.empty(krbn::device_id(1)) == true);
+
+  // ----------------------------------------
   // Push twice
 
   pressed_physical_keys_counter.emplace_back_event(krbn::device_id(1), event_spacebar_down);
