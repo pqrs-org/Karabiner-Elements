@@ -70,6 +70,16 @@ public:
       event_type get_event_type(void) const {
         return event_type_;
       }
+      void invert_event_type(void) {
+        if (type_ == type::key_code ||
+            type_ == type::pointing_button) {
+          if (event_type_ == event_type::key_down) {
+            event_type_ = event_type::key_up;
+          } else {
+            event_type_ = event_type::key_down;
+          }
+        }
+      }
 
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
@@ -96,6 +106,7 @@ public:
                  const class event& event,
                  const class event& original_event) : device_id_(device_id),
                                                       time_stamp_(time_stamp),
+                                                      manipulated_(false),
                                                       valid_(true),
                                                       lazy_(false),
                                                       event_(event),
@@ -108,6 +119,13 @@ public:
 
     uint64_t get_time_stamp(void) const {
       return time_stamp_;
+    }
+
+    bool get_manipulated(void) const {
+      return manipulated_;
+    }
+    void set_manipulated(bool value) {
+      manipulated_ = value;
     }
 
     bool get_valid(void) const {
@@ -144,6 +162,7 @@ public:
   private:
     device_id device_id_;
     uint64_t time_stamp_;
+    bool manipulated_;
     bool valid_;
     bool lazy_;
     event event_;

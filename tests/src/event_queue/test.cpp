@@ -25,6 +25,24 @@ krbn::event_queue::queued_event::event event_x_p10(krbn::event_queue::queued_eve
 krbn::event_queue::queued_event::event event_y_m10(krbn::event_queue::queued_event::event::type::pointing_y, -10);
 } // namespace
 
+TEST_CASE("event") {
+  {
+    krbn::event_queue::queued_event::event event = event_a_down;
+    event.invert_event_type();
+    REQUIRE(event == event_a_up);
+  }
+  {
+    krbn::event_queue::queued_event::event event = event_button2_up;
+    event.invert_event_type();
+    REQUIRE(event == event_button2_down);
+  }
+  {
+    krbn::event_queue::queued_event::event event = event_x_p10;
+    event.invert_event_type();
+    REQUIRE(event == event_x_p10);
+  }
+}
+
 TEST_CASE("emplace_back_event") {
   // normal order
   {
