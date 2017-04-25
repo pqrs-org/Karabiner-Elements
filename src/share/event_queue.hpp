@@ -21,22 +21,17 @@ public:
         pointing_horizontal_wheel,
       };
 
-      event(key_code key_code,
-            event_type event_type) : type_(type::key_code),
-                                     key_code_(key_code),
-                                     event_type_(event_type) {
+      event(key_code key_code) : type_(type::key_code),
+                                 key_code_(key_code) {
       }
 
-      event(pointing_button pointing_button,
-            event_type event_type) : type_(type::pointing_button),
-                                     pointing_button_(pointing_button),
-                                     event_type_(event_type) {
+      event(pointing_button pointing_button) : type_(type::pointing_button),
+                                               pointing_button_(pointing_button) {
       }
 
       event(type type,
             int64_t integer_value) : type_(type),
-                                     integer_value_(integer_value),
-                                     event_type_(event_type::key_down) {
+                                     integer_value_(integer_value) {
       }
 
       type get_type(void) const {
@@ -67,26 +62,11 @@ public:
         return boost::none;
       }
 
-      event_type get_event_type(void) const {
-        return event_type_;
-      }
-      void invert_event_type(void) {
-        if (type_ == type::key_code ||
-            type_ == type::pointing_button) {
-          if (event_type_ == event_type::key_down) {
-            event_type_ = event_type::key_up;
-          } else {
-            event_type_ = event_type::key_down;
-          }
-        }
-      }
-
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
                get_key_code() == other.get_key_code() &&
                get_pointing_button() == other.get_pointing_button() &&
-               get_integer_value() == other.get_integer_value() &&
-               get_event_type() == other.get_event_type();
+               get_integer_value() == other.get_integer_value();
       }
 
     private:
@@ -97,19 +77,19 @@ public:
         pointing_button pointing_button_; // For type::pointing_button
         int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
       };
-
-      event_type event_type_;
     };
 
     queued_event(device_id device_id,
                  uint64_t time_stamp,
                  const class event& event,
+                 event_type event_type,
                  const class event& original_event) : device_id_(device_id),
                                                       time_stamp_(time_stamp),
                                                       manipulated_(false),
                                                       valid_(true),
                                                       lazy_(false),
                                                       event_(event),
+                                                      event_type_(event_type),
                                                       original_event_(original_event) {
     }
 
@@ -146,6 +126,10 @@ public:
       return event_;
     }
 
+    event_type get_event_type(void) const {
+      return event_type_;
+    }
+
     const event& get_original_event(void) const {
       return original_event_;
     }
@@ -166,6 +150,7 @@ public:
     bool valid_;
     bool lazy_;
     event event_;
+    event_type event_type_;
     event original_event_;
   };
 
@@ -181,12 +166,20 @@ public:
                           hid_usage usage,
                           int64_t integer_value) {
     if (auto key_code = types::get_key_code(usage_page, usage)) {
-      queued_event::event event(*key_code, integer_value ? event_type::key_down : event_type::key_up);
-      emplace_back_event(device_id, time_stamp, event, event);
+      queued_event::event event(*key_code);
+      emplace_back_event(device_id,
+                         time_stamp,
+                         event,
+                         integer_value ? event_type::key_down : event_type::key_up,
+                         event);
 
     } else if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
-      queued_event::event event(*pointing_button, integer_value ? event_type::key_down : event_type::key_up);
-      emplace_back_event(device_id, time_stamp, event, event);
+      queued_event::event event(*pointing_button);
+      emplace_back_event(device_id,
+                         time_stamp,
+                         event,
+                         integer_value ? event_type::key_down : event_type::key_up,
+                         event);
 
     } else {
       switch (usage_page) {
@@ -194,19 +187,31 @@ public:
           switch (usage) {
             case hid_usage::gd_x: {
               queued_event::event event(queued_event::event::type::pointing_x, integer_value);
-              emplace_back_event(device_id, time_stamp, event, event);
+              emplace_back_event(device_id,
+                                 time_stamp,
+                                 event,
+                                 event_type::key_down,
+                                 event);
               break;
             }
 
             case hid_usage::gd_y: {
               queued_event::event event(queued_event::event::type::pointing_y, integer_value);
-              emplace_back_event(device_id, time_stamp, event, event);
+              emplace_back_event(device_id,
+                                 time_stamp,
+                                 event,
+                                 event_type::key_down,
+                                 event);
               break;
             }
 
             case hid_usage::gd_wheel: {
               queued_event::event event(queued_event::event::type::pointing_vertical_wheel, integer_value);
-              emplace_back_event(device_id, time_stamp, event, event);
+              emplace_back_event(device_id,
+                                 time_stamp,
+                                 event,
+                                 event_type::key_down,
+                                 event);
               break;
             }
 
@@ -219,7 +224,11 @@ public:
           switch (usage) {
             case hid_usage::csmr_acpan: {
               queued_event::event event(queued_event::event::type::pointing_horizontal_wheel, integer_value);
-              emplace_back_event(device_id, time_stamp, event, event);
+              emplace_back_event(device_id,
+                                 time_stamp,
+                                 event,
+                                 event_type::key_down,
+                                 event);
               break;
             }
 
@@ -237,8 +246,13 @@ public:
   void emplace_back_event(device_id device_id,
                           uint64_t time_stamp,
                           const queued_event::event& event,
+                          event_type event_type,
                           const queued_event::event& original_event) {
-    events_.emplace_back(device_id, time_stamp, event, original_event);
+    events_.emplace_back(device_id,
+                         time_stamp,
+                         event,
+                         event_type,
+                         original_event);
     sort_events();
   }
 
@@ -315,7 +329,7 @@ public:
       if (modifier_flag1 == modifier_flag::zero &&
           modifier_flag2 != modifier_flag::zero) {
         // v2 is modifier_flag
-        if (v2.get_event().get_event_type() == event_type::key_up) {
+        if (v2.get_event_type() == event_type::key_up) {
           return true;
         } else {
           // reorder to v2,v1 if v2 is pressed.
@@ -326,7 +340,7 @@ public:
       if (modifier_flag1 != modifier_flag::zero &&
           modifier_flag2 == modifier_flag::zero) {
         // v1 is modifier_flag
-        if (v1.get_event().get_event_type() == event_type::key_up) {
+        if (v1.get_event_type() == event_type::key_up) {
           // reorder to v2,v1 if v1 is released.
           return false;
         } else {
