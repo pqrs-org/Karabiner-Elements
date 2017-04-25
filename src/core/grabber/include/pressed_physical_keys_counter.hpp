@@ -35,12 +35,12 @@ public:
 
     if (key_code || pointing_button) {
       auto device_id = queued_event.get_device_id();
-      auto original_event = queued_event.get_original_event();
+      auto event = queued_event.get_event();
 
-      if (queued_event.get_original_event().get_event_type() == event_type::key_down) {
-        emplace_back_event(device_id, original_event);
+      if (queued_event.get_event_type() == event_type::key_down) {
+        emplace_back_event(device_id, event);
       } else {
-        erase_all_matched_events(device_id, original_event);
+        erase_all_matched_events(device_id, event);
       }
 
       return true;
@@ -50,10 +50,8 @@ public:
   }
 
   void emplace_back_event(device_id device_id,
-                          const event_queue::queued_event::event& original_event) {
-    if (original_event.get_event_type() == event_type::key_down) {
-      pressed_keys_.emplace_back(device_id, original_event);
-    }
+                          const event_queue::queued_event::event& event) {
+    pressed_keys_.emplace_back(device_id, event);
   }
 
   void erase_all_matched_events(device_id device_id) {
@@ -66,21 +64,18 @@ public:
   }
 
   void erase_all_matched_events(device_id device_id,
-                                const event_queue::queued_event::event& original_event) {
-    if (original_event.get_event_type() == event_type::key_up) {
-      pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
-                                         std::end(pressed_keys_),
-                                         [&](const auto& pair) {
-                                           // key_code or pointing_button
-                                           return pair.first == device_id &&
-                                                  pair.second.get_key_code() == original_event.get_key_code() &&
-                                                  pair.second.get_pointing_button() == original_event.get_pointing_button();
-                                         }),
-                          std::end(pressed_keys_));
-    }
+                                const event_queue::queued_event::event& event) {
+    pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
+                                       std::end(pressed_keys_),
+                                       [&](const auto& pair) {
+                                         // key_code or pointing_button
+                                         return pair.first == device_id &&
+                                                pair.second == event;
+                                       }),
+                        std::end(pressed_keys_));
   }
 
 private:
   std::vector<std::pair<device_id, event_queue::queued_event::event>> pressed_keys_;
-};
+}; // namespace krbn
 } // namespace krbn
