@@ -4,16 +4,21 @@
 #include "manipulator/manipulator_factory.hpp"
 #include "thread_utility.hpp"
 
+namespace {
+auto spacebar_key_code = *(krbn::types::get_key_code("spacebar"));
+}
+
 TEST_CASE("manipulator.details.event_definition") {
   {
     nlohmann::json json;
     krbn::manipulator::details::event_definition event_definition(json);
     REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::none);
     REQUIRE(event_definition.get_modifiers().size() == 0);
+    REQUIRE(!(event_definition.to_event()));
   }
   {
     nlohmann::json json({
-        {"key", "spacebar"},
+        {"key_code", "spacebar"},
         {
             "modifiers", {
                              "shift", "left_command", "any",
@@ -21,18 +26,19 @@ TEST_CASE("manipulator.details.event_definition") {
         },
     });
     krbn::manipulator::details::event_definition event_definition(json);
-    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::key);
-    REQUIRE(*(event_definition.get_key_code()) == *(krbn::types::get_key_code("spacebar")));
+    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::key_code);
+    REQUIRE(*(event_definition.get_key_code()) == spacebar_key_code);
     REQUIRE(!(event_definition.get_pointing_button()));
     REQUIRE(event_definition.get_modifiers() == std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
                                                     krbn::manipulator::details::event_definition::modifier::shift,
                                                     krbn::manipulator::details::event_definition::modifier::left_command,
                                                     krbn::manipulator::details::event_definition::modifier::any,
                                                 }));
+    REQUIRE(*(event_definition.to_event()) == krbn::event_queue::queued_event::event(spacebar_key_code));
   }
   {
     nlohmann::json json({
-        {"key", "right_option"},
+        {"key_code", "right_option"},
         {
             "modifiers", {
                              "shift", "left_command", "any",
@@ -42,7 +48,7 @@ TEST_CASE("manipulator.details.event_definition") {
         },
     });
     krbn::manipulator::details::event_definition event_definition(json);
-    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::key);
+    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::key_code);
     REQUIRE(*(event_definition.get_key_code()) == *(krbn::types::get_key_code("right_option")));
     REQUIRE(!(event_definition.get_pointing_button()));
     REQUIRE(event_definition.get_modifiers() == std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
@@ -54,7 +60,7 @@ TEST_CASE("manipulator.details.event_definition") {
   }
   {
     nlohmann::json json({
-        {"key", nlohmann::json::array()},
+        {"key_code", nlohmann::json::array()},
         {
             "modifiers", "dummy",
         },
@@ -82,7 +88,7 @@ TEST_CASE("manipulator.manipulator_factory") {
         {
             "from", {
                         {
-                            "key", "escape",
+                            "key_code", "escape",
                         },
                         {
                             "modifiers", {
@@ -108,7 +114,7 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(manipulator->active() == false);
 
     auto basic = dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get());
-    REQUIRE(basic->get_from().get_type() == krbn::manipulator::details::event_definition::type::key);
+    REQUIRE(basic->get_from().get_type() == krbn::manipulator::details::event_definition::type::key_code);
     REQUIRE(*(basic->get_from().get_key_code()) == *(krbn::types::get_key_code("escape")));
     REQUIRE(!(basic->get_from().get_pointing_button()));
     REQUIRE(basic->get_from().get_modifiers() == std::unordered_set<krbn::manipulator::details::event_definition::modifier>({

@@ -33,7 +33,7 @@
                             {
                                 "type": "basic",
                                 "from": {
-                                    "key": "spacebar",
+                                    "key_code": "spacebar",
                                     "modifiers": [
                                         "shift",
                                         "control",
@@ -42,14 +42,14 @@
                                 },
                                 "to": [
                                     {
-                                        "key": "escape"
+                                        "key_code": "escape"
                                     }
                                 ]
                             },
                             {
                                 "type": "basic",
                                 "from": {
-                                    "key": "spacebar"
+                                    "key_code": "spacebar"
                                 },
                                 "to": [
                                     {
@@ -60,7 +60,7 @@
                                 ],
                                 "standalone_to": [
                                     {
-                                        "key": "spacebar"
+                                        "key_code": "spacebar"
                                     }
                                 ]
                             }

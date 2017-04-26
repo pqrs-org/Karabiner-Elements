@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "event_queue.hpp"
 #include <boost/optional.hpp>
 #include <json/json.hpp>
 #include <unordered_set>
@@ -14,7 +15,7 @@ class event_definition final {
 public:
   enum class type {
     none,
-    key,
+    key_code,
     pointing_button,
   };
 
@@ -40,10 +41,10 @@ public:
     // Set type_ and values.
     do {
       {
-        const std::string key = "key";
+        const std::string key = "key_code";
         if (json.find(key) != std::end(json) && json[key].is_string()) {
           if (auto key_code = types::get_key_code(json[key])) {
-            type_ = type::key;
+            type_ = type::key_code;
             key_code_ = *key_code;
 
             // if key_code is modifier, push it into modifiers_.
@@ -128,7 +129,7 @@ public:
   }
 
   boost::optional<key_code> get_key_code(void) const {
-    if (type_ == type::key) {
+    if (type_ == type::key_code) {
       return key_code_;
     }
     return boost::none;
@@ -143,6 +144,17 @@ public:
 
   const std::unordered_set<modifier>& get_modifiers(void) const {
     return modifiers_;
+  }
+
+  boost::optional<event_queue::queued_event::event> to_event(void) const {
+    switch (type_) {
+      case type::none:
+        return boost::none;
+      case type::key_code:
+        return event_queue::queued_event::event(key_code_);
+      case type::pointing_button:
+        return event_queue::queued_event::event(pointing_button_);
+    }
   }
 
 private:
