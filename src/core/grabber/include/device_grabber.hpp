@@ -307,7 +307,7 @@ private:
         auto time_stamp = queued_event_iterator->get_time_stamp();
 
         if (auto key_code = queued_event_iterator->get_event().get_key_code()) {
-          physical_keyboard_repeat_detector_.set(device_id, *key_code, queued_event_iterator->get_event().get_event_type());
+          physical_keyboard_repeat_detector_.set(device_id, *key_code, queued_event_iterator->get_event_type());
         }
         bool pressed_physical_keys_counter_updated = pressed_physical_keys_counter_.update(*queued_event_iterator);
 
@@ -316,14 +316,14 @@ private:
             event_manipulator_.handle_keyboard_event(device_id,
                                                      time_stamp,
                                                      *key_code,
-                                                     queued_event_iterator->get_event().get_event_type() == event_type::key_down);
+                                                     queued_event_iterator->get_event_type() == event_type::key_down);
 
           } else if (auto pointing_button = queued_event_iterator->get_event().get_pointing_button()) {
             event_manipulator_.handle_pointing_event(device_id,
                                                      time_stamp,
                                                      pointing_event::button,
                                                      *pointing_button,
-                                                     queued_event_iterator->get_event().get_event_type() == event_type::key_down);
+                                                     queued_event_iterator->get_event_type() == event_type::key_down);
 
           } else {
             if (auto integer_value = queued_event_iterator->get_event().get_integer_value()) {

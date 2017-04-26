@@ -122,7 +122,7 @@ private:
         case krbn::event_queue::queued_event::event::type::key_code:
           if (auto key_code = queued_event_iterator->get_event().get_key_code()) {
             std::cout << "Key: " << std::dec << static_cast<uint32_t>(*key_code) << " "
-                      << (queued_event_iterator->get_event().get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
+                      << (queued_event_iterator->get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
                       << std::endl;
           }
           break;
@@ -130,7 +130,7 @@ private:
         case krbn::event_queue::queued_event::event::type::pointing_button:
           if (auto pointing_button = queued_event_iterator->get_event().get_pointing_button()) {
             std::cout << "Button: " << std::dec << static_cast<uint32_t>(*pointing_button) << " "
-                      << (queued_event_iterator->get_event().get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
+                      << (queued_event_iterator->get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
                       << std::endl;
           }
           break;
