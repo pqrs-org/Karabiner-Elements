@@ -4,7 +4,6 @@
 
 #include "gcd_utility.hpp"
 #include "logger.hpp"
-#include "manipulator.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
 #include "system_preferences.hpp"

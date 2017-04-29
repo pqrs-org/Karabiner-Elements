@@ -1,6 +1,5 @@
 #pragma once
 
-#include "manipulator.hpp"
 #include "types.hpp"
 #include <thread>
 #include <vector>
