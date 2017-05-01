@@ -18,7 +18,7 @@ You can download the latest Karabiner-Elements from https://pqrs.org/latest/kara
 
 # Usage
 
-Detailed usage instructions are provided in [the README](usage/README.md).
+Detailed usage instructions are provided in [the Usage README](usage/README.md).
 
 ## Features
 
