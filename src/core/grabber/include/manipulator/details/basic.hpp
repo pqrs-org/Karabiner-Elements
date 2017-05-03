@@ -72,11 +72,11 @@ public:
                                    return pair.first == queued_event.get_device_id() &&
                                           pair.second == queued_event.get_original_event();
                                  });
-          if (it == std::end(manipulated_original_events_)) {
+          if (it != std::end(manipulated_original_events_)) {
+            manipulated_original_events_.erase(it);
+          } else {
             is_target = false;
           }
-
-          manipulated_original_events_.erase(it);
         }
 
         if (is_target) {
