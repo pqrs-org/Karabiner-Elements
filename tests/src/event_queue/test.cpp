@@ -254,6 +254,23 @@ TEST_CASE("emplace_back_event.usage_page") {
   REQUIRE(event_queue.get_events() == expected);
 }
 
+TEST_CASE("increase_time_stamp") {
+  {
+    krbn::event_queue::queued_event queued_event(krbn::device_id(1),
+                                                 100,
+                                                 event_tab,
+                                                 krbn::event_type::key_down,
+                                                 event_tab);
+    REQUIRE(queued_event.get_time_stamp() == 100);
+
+    queued_event.increase_time_stamp(0);
+    REQUIRE(queued_event.get_time_stamp() == 100);
+
+    queued_event.increase_time_stamp(10);
+    REQUIRE(queued_event.get_time_stamp() == 110);
+  }
+}
+
 int main(int argc, char* const argv[]) {
   krbn::thread_utility::register_main_thread();
   return Catch::Session().run(argc, argv);
