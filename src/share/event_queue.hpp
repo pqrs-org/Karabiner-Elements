@@ -140,9 +140,11 @@ public:
     bool operator==(const queued_event& other) const {
       return get_device_id() == other.get_device_id() &&
              get_time_stamp() == other.get_time_stamp() &&
+             get_manipulated() == other.get_manipulated() &&
              get_valid() == other.get_valid() &&
              get_lazy() == other.get_lazy() &&
              get_event() == other.get_event() &&
+             get_event_type() == other.get_event_type() &&
              get_original_event() == other.get_original_event();
     }
 

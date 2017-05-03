@@ -22,14 +22,19 @@ public:
     }
   }
 
+  basic(const event_definition& from,
+        const event_definition& to) : from_(from),
+                                      to_({to}) {
+  }
+
   virtual ~basic(void) {
   }
 
-  virtual void manipulate(event_queue& event_queue, std::chrono::nanoseconds time) {
+  virtual void manipulate(event_queue& event_queue, uint64_t time_stamp) {
     auto& events = event_queue.get_events();
 
-    for (auto it = std::begin(events); it != std::end(events); ++it) {
-      auto& queued_event = *it;
+    for (auto events_it = std::begin(events); events_it != std::end(events); ++events_it) {
+      auto& queued_event = *events_it;
 
       if (queued_event.get_manipulated() ||
           !queued_event.get_valid()) {
@@ -80,35 +85,42 @@ public:
           for (size_t i = 0; i < to_.size(); ++i) {
             if (auto event = to_[i].to_event()) {
               if (queued_event.get_event_type() == event_type::key_down) {
-                it = events.emplace(it,
-                                    queued_event.get_device_id(),
-                                    queued_event.get_time_stamp(),
-                                    *event,
-                                    event_type::key_down,
-                                    queued_event.get_original_event());
+                events_it = events.emplace(events_it + 1,
+                                           queued_event.get_device_id(),
+                                           queued_event.get_time_stamp(),
+                                           *event,
+                                           event_type::key_down,
+                                           queued_event.get_original_event());
+                events_it->set_manipulated(true);
 
                 if (i != to_.size() - 1) {
-                  it = events.emplace(it,
-                                      queued_event.get_device_id(),
-                                      queued_event.get_time_stamp(),
-                                      *event,
-                                      event_type::key_up,
-                                      queued_event.get_original_event());
+                  events_it = events.emplace(events_it + 1,
+                                             queued_event.get_device_id(),
+                                             queued_event.get_time_stamp(),
+                                             *event,
+                                             event_type::key_up,
+                                             queued_event.get_original_event());
+                  events_it->set_manipulated(true);
                 }
 
               } else {
                 // event_type::key_up
 
                 if (i == to_.size() - 1) {
-                  it = events.emplace(it,
-                                      queued_event.get_device_id(),
-                                      queued_event.get_time_stamp(),
-                                      *event,
-                                      event_type::key_up,
-                                      queued_event.get_original_event());
+                  events_it = events.emplace(events_it + 1,
+                                             queued_event.get_device_id(),
+                                             queued_event.get_time_stamp(),
+                                             *event,
+                                             event_type::key_up,
+                                             queued_event.get_original_event());
+                  events_it->set_manipulated(true);
                 }
               }
             }
+          }
+
+          for (auto it = events_it + 1; it != std::end(events); ++it) {
+            it->increase_time_stamp(to_.size() - 1);
           }
         }
       }

@@ -14,7 +14,7 @@ public:
   virtual ~nop(void) {
   }
 
-  virtual void manipulate(event_queue& event_queue, std::chrono::nanoseconds time) {
+  virtual void manipulate(event_queue& event_queue, uint64_t time_stamp) {
   }
 
   virtual bool active(void) const {

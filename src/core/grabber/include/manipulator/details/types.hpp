@@ -124,6 +124,14 @@ public:
     }
   }
 
+  event_definition(key_code key_code) : type_(type::key_code),
+                                        key_code_(key_code) {
+  }
+
+  event_definition(pointing_button pointing_button) : type_(type::pointing_button),
+                                                      pointing_button_(pointing_button) {
+  }
+
   type get_type(void) const {
     return type_;
   }
