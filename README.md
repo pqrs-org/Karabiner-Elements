@@ -3,11 +3,11 @@
 
 # Karabiner-Elements
 
-Karabiner-Elements is the subset of the next generation Karabiner for macOS Sierra.
+Karabiner-Elements provides a subset of the features planned for the next generation [Karabiner](https://pqrs.org/osx/karabiner) for macOS Sierra. The current version of Karabiner does not work with Sierra, so Karabiner-Elements was created to keep Sierra users up and running until a new version of Karabiner is published.
 
 ## Project Status
 
-Karabiner-Elements works fine.
+Karabiner-Elements is ready to use today. It provides a useful subset of Karabiner's features that you can begin using immediately.
 
 You can download the latest Karabiner-Elements from https://pqrs.org/latest/karabiner-elements-latest.dmg
 
@@ -18,13 +18,21 @@ You can download the latest Karabiner-Elements from https://pqrs.org/latest/kara
 
 # Usage
 
-Detailed usage instructions are available [here](usage/README.md).
+Detailed usage instructions are provided in [the Usage README](usage/README.md).
 
 ## Features
 
-* Simple key modification (change keys to another keys)
-* Support Secure Keyboard Entry (eg. Terminal, Password prompt)
-* Modifier flags sharing with all connected keyboards.
+* Secure Keyboard Entry: Support [secure entry](https://security.stackexchange.com/questions/47749/how-secure-is-secure-keyboard-entry-in-mac-os-xs-terminal) in the Terminal, Password prompt etc.
+* Modifier Flag Sync: Synchronize modifier flags across all connected keyboards.
+* Simple Modifications: Map normal keys to arbitrary key functions.
+* Function Keys: Map function keys to arbitrary key functions.
+* Devices: Apply modifications to specified keyboards only.
+* Virtual Keyboard: Set the virtual keyboard's type (ANSI, ISO, JIS) and its Caps Lock Delay.
+* Profiles: Support the creation of multiple profiles that the user can switch between.
+* Inverted Function Keys: Invert the functionality of the function keys with regard to the <kbd>fn</kbd> modifier.
+* Log Keyboard Events: Render the keyboard events log.
+* Log Application Events: Render the Karabiner-Elements event log.
+* Misc: Enable automatic updates, delete Karabiner Elements etc.
 
 ## Limitations
 
