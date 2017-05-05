@@ -82,12 +82,14 @@ public:
         if (is_target) {
           queued_event.set_valid(false);
 
+          uint64_t to_time_stamp = queued_event.get_time_stamp();
+
           for (size_t i = 0; i < to_.size(); ++i) {
             if (auto event = to_[i].to_event()) {
               if (queued_event.get_event_type() == event_type::key_down) {
                 events_it = events.emplace(events_it + 1,
                                            queued_event.get_device_id(),
-                                           queued_event.get_time_stamp(),
+                                           to_time_stamp + i,
                                            *event,
                                            event_type::key_down,
                                            queued_event.get_original_event());
@@ -96,7 +98,7 @@ public:
                 if (i != to_.size() - 1) {
                   events_it = events.emplace(events_it + 1,
                                              queued_event.get_device_id(),
-                                             queued_event.get_time_stamp(),
+                                             to_time_stamp + i,
                                              *event,
                                              event_type::key_up,
                                              queued_event.get_original_event());
@@ -109,7 +111,7 @@ public:
                 if (i == to_.size() - 1) {
                   events_it = events.emplace(events_it + 1,
                                              queued_event.get_device_id(),
-                                             queued_event.get_time_stamp(),
+                                             to_time_stamp + i,
                                              *event,
                                              event_type::key_up,
                                              queued_event.get_original_event());
@@ -129,6 +131,34 @@ public:
 
   virtual bool active(void) const {
     return !manipulated_original_events_.empty();
+  }
+
+  virtual void inactivate_by_device_id(event_queue& event_queue,
+                                       device_id device_id,
+                                       uint64_t time_stamp) {
+    while (true) {
+      auto it = std::find_if(std::begin(manipulated_original_events_),
+                             std::end(manipulated_original_events_),
+                             [&](const auto& pair) {
+                               return pair.first == device_id;
+                             });
+      if (it == std::end(manipulated_original_events_)) {
+        break;
+      }
+
+      if (to_.size() > 0) {
+        if (auto event = to_.back().to_event()) {
+          event_queue.emplace_back_event(device_id,
+                                         time_stamp,
+                                         *event,
+                                         event_type::key_up,
+                                         it->second);
+          event_queue.get_events().back().set_manipulated(true);
+        }
+      }
+
+      manipulated_original_events_.erase(it);
+    }
   }
 
   const event_definition& get_from(void) const {

@@ -14,12 +14,30 @@ public:
     manipulators_.push_back(std::move(ptr));
   }
 
-  void manipulate(event_queue& event_queue, uint64_t time_stamp) {
+  void manipulate(event_queue& event_queue,
+                  uint64_t time_stamp) {
     for (auto&& m : manipulators_) {
-      m->manipulate(event_queue, time_stamp);
+      m->manipulate(event_queue,
+                    time_stamp);
     }
 
-    // Remove invalid manipulators
+    remove_invalid_manipulators();
+  }
+
+  void inactivate_by_device_id(event_queue& event_queue,
+                               device_id device_id,
+                               uint64_t time_stamp) {
+    for (auto&& m : manipulators_) {
+      m->inactivate_by_device_id(event_queue,
+                                 device_id,
+                                 time_stamp);
+    }
+
+    remove_invalid_manipulators();
+  }
+
+private:
+  void remove_invalid_manipulators(void) {
     manipulators_.erase(std::remove_if(std::begin(manipulators_),
                                        std::end(manipulators_),
                                        [](const auto& it) {
@@ -29,7 +47,6 @@ public:
                         std::end(manipulators_));
   }
 
-private:
   std::vector<std::unique_ptr<details::base>> manipulators_;
 };
 } // namespace manipulator

@@ -14,11 +14,17 @@ public:
   virtual ~nop(void) {
   }
 
-  virtual void manipulate(event_queue& event_queue, uint64_t time_stamp) {
+  virtual void manipulate(event_queue& event_queue,
+                          uint64_t time_stamp) {
   }
 
   virtual bool active(void) const {
     return false;
+  }
+
+  virtual void inactivate_by_device_id(event_queue& event_queue,
+                                       device_id device_id,
+                                       uint64_t time_stamp) {
   }
 };
 } // namespace details

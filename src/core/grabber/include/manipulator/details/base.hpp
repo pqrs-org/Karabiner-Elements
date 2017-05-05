@@ -14,9 +14,14 @@ public:
   virtual ~base(void) {
   }
 
-  virtual void manipulate(event_queue& event_queue, uint64_t time_stamp) = 0;
+  virtual void manipulate(event_queue& event_queue,
+                          uint64_t time_stamp) = 0;
 
   virtual bool active(void) const = 0;
+
+  virtual void inactivate_by_device_id(event_queue& event_queue,
+                                       device_id device_id,
+                                       uint64_t time_stamp) = 0;
 
   bool get_valid(void) const {
     return valid_;
