@@ -77,5 +77,5 @@ public:
 
 private:
   std::vector<std::pair<device_id, event_queue::queued_event::event>> pressed_keys_;
-}; // namespace krbn
+};
 } // namespace krbn
