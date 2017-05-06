@@ -58,8 +58,14 @@ public:
         if (queued_event.get_event_type() == event_type::key_down) {
           // TODO: check modifier flags
 
-          manipulated_original_events_.emplace_back(queued_event.get_device_id(),
-                                                    queued_event.get_original_event());
+          if (!valid_) {
+            is_target = false;
+          }
+
+          if (is_target) {
+            manipulated_original_events_.emplace_back(queued_event.get_device_id(),
+                                                      queued_event.get_original_event());
+          }
 
         } else {
           // event_type::key_up

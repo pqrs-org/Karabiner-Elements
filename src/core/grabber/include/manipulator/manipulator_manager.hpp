@@ -36,6 +36,18 @@ public:
     remove_invalid_manipulators();
   }
 
+  void invalidate(void) {
+    for (auto&& m : manipulators_) {
+      m->set_valid(false);
+    }
+
+    remove_invalid_manipulators();
+  }
+
+  size_t get_manipulators_size(void) {
+    return manipulators_.size();
+  }
+
 private:
   void remove_invalid_manipulators(void) {
     manipulators_.erase(std::remove_if(std::begin(manipulators_),

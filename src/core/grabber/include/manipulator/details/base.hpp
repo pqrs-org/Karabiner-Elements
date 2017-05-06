@@ -30,7 +30,7 @@ public:
     valid_ = value;
   }
 
-private:
+protected:
   bool valid_;
 };
 } // namespace details
