@@ -4,6 +4,7 @@
 
 #include "gcd_utility.hpp"
 #include "logger.hpp"
+#include "manipulator_manager.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
 #include "system_preferences.hpp"
@@ -45,7 +46,6 @@ public:
   }
 
   void reset(void) {
-    manipulated_keys_.clear();
     manipulated_fn_keys_.clear();
 
     modifier_flag_manager_.reset();
@@ -95,7 +95,18 @@ public:
   }
 
   void set_profile(const core_configuration::profile& profile) {
-    simple_modifications_key_code_map_ = profile.get_simple_modifications_key_code_map(logger::get_logger());
+    // Update simple_modifications_manipulator_manager_
+    {
+      simple_modifications_manipulator_manager_.invalidate();
+
+      for (const auto& pair : profile.get_simple_modifications_key_code_map(logger::get_logger())) {
+        auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(pair.first),
+                                                                         manipulator::details::event_definition(pair.second));
+        std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
+        simple_modifications_manipulator_manager_.push_back_manipulator(std::move(ptr));
+      }
+    }
+
     fn_function_keys_key_code_map_ = profile.get_fn_function_keys_key_code_map(logger::get_logger());
 
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
@@ -107,7 +118,7 @@ public:
   }
 
   void unset_profile(void) {
-    simple_modifications_key_code_map_ = std::unordered_map<key_code, key_code>();
+    simple_modifications_manipulator_manager_.invalidate();
     fn_function_keys_key_code_map_ = std::unordered_map<key_code, key_code>();
   }
 
@@ -130,26 +141,27 @@ public:
     }
   }
 
+  void apply_simple_modifications(event_queue& event_queue,
+                                  size_t previous_events_size,
+                                  uint64_t time_stamp) {
+    simple_modifications_manipulator_manager_.manipulate(event_queue,
+                                                         previous_events_size,
+                                                         time_stamp);
+  }
+
+  void inactivate_manipulators_by_device_id(event_queue& event_queue,
+                                            device_id device_id,
+                                            uint64_t time_stamp) {
+    simple_modifications_manipulator_manager_.inactivate_by_device_id(event_queue,
+                                                                      device_id,
+                                                                      time_stamp);
+  }
+
   void handle_keyboard_event(device_id device_id,
                              uint64_t timestamp,
                              key_code from_key_code,
                              bool pressed) {
     key_code to_key_code = from_key_code;
-
-    // ----------------------------------------
-    // modify keys
-    if (!pressed) {
-      if (auto key_code = manipulated_keys_.find(device_id, from_key_code)) {
-        manipulated_keys_.remove(device_id, from_key_code);
-        to_key_code = *key_code;
-      }
-    } else {
-      auto it = simple_modifications_key_code_map_.find(from_key_code);
-      if (it != simple_modifications_key_code_map_.end()) {
-        to_key_code = it->second;
-        manipulated_keys_.add(device_id, from_key_code, to_key_code);
-      }
-    }
 
     // ----------------------------------------
     // modify fn+arrow, function keys
@@ -416,10 +428,10 @@ private:
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;
 
-  std::unordered_map<key_code, key_code> simple_modifications_key_code_map_;
+  manipulator_manager simple_modifications_manipulator_manager_;
+
   std::unordered_map<key_code, key_code> fn_function_keys_key_code_map_;
 
-  manipulated_keys manipulated_keys_;
   manipulated_keys manipulated_fn_keys_;
 
   uint64_t last_timestamp_;
