@@ -15,9 +15,11 @@ public:
   }
 
   void manipulate(event_queue& event_queue,
+                  size_t previous_events_size,
                   uint64_t time_stamp) {
     for (auto&& m : manipulators_) {
       m->manipulate(event_queue,
+                    previous_events_size,
                     time_stamp);
     }
 

@@ -30,10 +30,16 @@ public:
   virtual ~basic(void) {
   }
 
-  virtual void manipulate(event_queue& event_queue, uint64_t time_stamp) {
+  virtual void manipulate(event_queue& event_queue,
+                          size_t previous_events_size,
+                          uint64_t time_stamp) {
     auto& events = event_queue.get_events();
 
-    for (auto events_it = std::begin(events); events_it != std::end(events); ++events_it) {
+    if (events.size() < previous_events_size) {
+      return;
+    }
+
+    for (auto events_it = std::begin(events) + previous_events_size; events_it != std::end(events); ++events_it) {
       auto& queued_event = *events_it;
 
       if (queued_event.get_manipulated() ||

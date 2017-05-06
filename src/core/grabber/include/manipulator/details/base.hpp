@@ -15,6 +15,7 @@ public:
   }
 
   virtual void manipulate(event_queue& event_queue,
+                          size_t previous_events_size,
                           uint64_t time_stamp) = 0;
 
   virtual bool active(void) const = 0;
