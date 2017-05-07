@@ -178,7 +178,9 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    manipulator_manager.manipulate(event_queue, 0, 500);
+    krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+
+    manipulator_manager.manipulate(event_queue, 0, modifier_flag_manager, 500);
 
     std::vector<krbn::event_queue::queued_event> expected;
 
@@ -265,7 +267,9 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    manipulator_manager.manipulate(event_queue, 1, 500);
+    krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+
+    manipulator_manager.manipulate(event_queue, 1, modifier_flag_manager, 500);
 
     std::vector<krbn::event_queue::queued_event> expected;
 
@@ -370,7 +374,9 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    manipulator_manager.manipulate(event_queue, 0, 500);
+    krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+
+    manipulator_manager.manipulate(event_queue, 0, modifier_flag_manager, 500);
 
     std::vector<krbn::event_queue::queued_event> expected;
 
@@ -433,7 +439,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     REQUIRE(event_queue.get_events() == expected);
 
     // Apply `manipulate` twice.
-    manipulator_manager.manipulate(event_queue, 0, 600);
+    manipulator_manager.manipulate(event_queue, 0, modifier_flag_manager, 600);
 
     REQUIRE(event_queue.get_events() == expected);
   }
@@ -463,7 +469,9 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    manipulator_manager.manipulate(event_queue, 0, 200);
+    krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+
+    manipulator_manager.manipulate(event_queue, 0, modifier_flag_manager, 200);
 
     std::vector<krbn::event_queue::queued_event> expected;
 
@@ -511,9 +519,11 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    manipulator_manager.manipulate(event_queue, 0, 400);
+    krbn::manipulator::modifier_flag_manager modifier_flag_manager;
 
-    manipulator_manager.inactivate_by_device_id(event_queue, krbn::device_id(1), 500);
+    manipulator_manager.manipulate(event_queue, 0, modifier_flag_manager, 400);
+
+    manipulator_manager.inactivate_by_device_id(krbn::device_id(1), event_queue, modifier_flag_manager, 500);
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
@@ -563,7 +573,7 @@ TEST_CASE("manipulator.manipulator_manager") {
       REQUIRE(event_queue.get_events() == expected);
     }
 
-    manipulator_manager.inactivate_by_device_id(event_queue, krbn::device_id(2), 500);
+    manipulator_manager.inactivate_by_device_id(krbn::device_id(2), event_queue, modifier_flag_manager, 500);
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
@@ -656,7 +666,9 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    manipulator_manager.manipulate(event_queue, 0, 200);
+    krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+
+    manipulator_manager.manipulate(event_queue, 0, modifier_flag_manager, 200);
 
     manipulator_manager.invalidate();
 
@@ -690,7 +702,7 @@ TEST_CASE("manipulator.manipulator_manager") {
                                    krbn::event_type::key_up,
                                    krbn::event_queue::queued_event::event(spacebar_key_code));
 
-    manipulator_manager.manipulate(event_queue, 0, 400);
+    manipulator_manager.manipulate(event_queue, 0, modifier_flag_manager, 400);
 
     REQUIRE(manipulator_manager.get_manipulators_size() == 0);
   }

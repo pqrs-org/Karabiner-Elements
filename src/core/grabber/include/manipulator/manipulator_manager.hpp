@@ -16,22 +16,26 @@ public:
 
   void manipulate(event_queue& event_queue,
                   size_t previous_events_size,
+                  modifier_flag_manager& modifier_flag_manager,
                   uint64_t time_stamp) {
     for (auto&& m : manipulators_) {
       m->manipulate(event_queue,
                     previous_events_size,
+                    modifier_flag_manager,
                     time_stamp);
     }
 
     remove_invalid_manipulators();
   }
 
-  void inactivate_by_device_id(event_queue& event_queue,
-                               device_id device_id,
+  void inactivate_by_device_id(device_id device_id,
+                               event_queue& event_queue,
+                               modifier_flag_manager& modifier_flag_manager,
                                uint64_t time_stamp) {
     for (auto&& m : manipulators_) {
-      m->inactivate_by_device_id(event_queue,
-                                 device_id,
+      m->inactivate_by_device_id(device_id,
+                                 event_queue,
+                                 modifier_flag_manager,
                                  time_stamp);
     }
 
