@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "event_queue.hpp"
+#include "manipulator/modifier_flag_manager.hpp"
 #include <boost/optional.hpp>
 #include <json/json.hpp>
 #include <unordered_set>
@@ -35,6 +36,7 @@ public:
     right_option,
     right_shift,
     shift,
+    end_,
   };
 
   event_definition(const nlohmann::json& json) : type_(type::none) {
@@ -47,41 +49,9 @@ public:
             type_ = type::key_code;
             key_code_ = *key_code;
 
-            // if key_code is modifier, push it into modifiers_.
-            switch (types::get_modifier_flag(*key_code)) {
-              case modifier_flag::caps_lock:
-                modifiers_.insert(modifier::caps_lock);
-                break;
-              case modifier_flag::fn:
-                modifiers_.insert(modifier::fn);
-                break;
-              case modifier_flag::left_command:
-                modifiers_.insert(modifier::left_command);
-                break;
-              case modifier_flag::left_control:
-                modifiers_.insert(modifier::left_control);
-                break;
-              case modifier_flag::left_option:
-                modifiers_.insert(modifier::left_option);
-                break;
-              case modifier_flag::left_shift:
-                modifiers_.insert(modifier::left_shift);
-                break;
-              case modifier_flag::right_command:
-                modifiers_.insert(modifier::right_command);
-                break;
-              case modifier_flag::right_control:
-                modifiers_.insert(modifier::right_control);
-                break;
-              case modifier_flag::right_option:
-                modifiers_.insert(modifier::right_option);
-                break;
-              case modifier_flag::right_shift:
-                modifiers_.insert(modifier::right_shift);
-                break;
-              case modifier_flag::zero:
-              case modifier_flag::end_:
-                break;
+            auto m = get_modifier(types::get_modifier_flag(*key_code));
+            if (m != modifier::end_) {
+              modifiers_.insert(m);
             }
           }
         }
@@ -124,8 +94,17 @@ public:
     }
   }
 
-  event_definition(key_code key_code) : type_(type::key_code),
-                                        key_code_(key_code) {
+  event_definition(key_code key_code,
+                   const std::unordered_set<modifier> modifiers) : type_(type::key_code),
+                                                                   key_code_(key_code),
+                                                                   modifiers_(modifiers) {
+    auto m = get_modifier(types::get_modifier_flag(key_code));
+    if (m != modifier::end_) {
+      modifiers_.insert(m);
+    }
+  }
+
+  event_definition(key_code key_code) : event_definition(key_code, std::unordered_set<modifier>()) {
   }
 
   event_definition(pointing_button pointing_button) : type_(type::pointing_button),
@@ -162,6 +141,146 @@ public:
         return event_queue::queued_event::event(key_code_);
       case type::pointing_button:
         return event_queue::queued_event::event(pointing_button_);
+    }
+  }
+
+  bool test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
+    bool has_any = (modifiers_.find(modifier::any) != std::end(modifiers_));
+    bool has_command = (modifiers_.find(modifier::command) != std::end(modifiers_));
+    bool has_control = (modifiers_.find(modifier::control) != std::end(modifiers_));
+    bool has_option = (modifiers_.find(modifier::option) != std::end(modifiers_));
+    bool has_shift = (modifiers_.find(modifier::shift) != std::end(modifiers_));
+
+    for (int i = 0; i < static_cast<int>(modifier::end_); ++i) {
+      auto m = modifier(i);
+
+      if (m == modifier::any) {
+        continue;
+      }
+
+      if (modifiers_.find(m) != std::end(modifiers_)) {
+        if (!test_modifier(modifier_flag_manager, m)) {
+          return false;
+        }
+      } else {
+        // m is not a member of modifiers_.
+        if (!has_any) {
+          // Strict matching
+
+          if (m == modifier::command ||
+              m == modifier::control ||
+              m == modifier::option ||
+              m == modifier::shift ||
+              (has_command && (m == modifier::left_command || m == modifier::right_command)) ||
+              (has_control && (m == modifier::left_control || m == modifier::right_control)) ||
+              (has_option && (m == modifier::left_option || m == modifier::right_option)) ||
+              (has_shift && (m == modifier::left_shift || m == modifier::right_shift))) {
+            continue;
+          }
+
+          if (test_modifier(modifier_flag_manager, m)) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  static bool test_modifier(const modifier_flag_manager& modifier_flag_manager,
+                            modifier modifier) {
+    switch (modifier) {
+      case modifier::any:
+        // Do nothing
+        return true;
+
+      case modifier::caps_lock:
+        return modifier_flag_manager.is_pressed(modifier_flag::caps_lock);
+
+      case modifier::command:
+        return modifier_flag_manager.is_pressed(modifier_flag::left_command) ||
+               modifier_flag_manager.is_pressed(modifier_flag::right_command);
+
+      case modifier::control:
+        return modifier_flag_manager.is_pressed(modifier_flag::left_control) ||
+               modifier_flag_manager.is_pressed(modifier_flag::right_control);
+
+      case modifier::fn:
+        return modifier_flag_manager.is_pressed(modifier_flag::fn);
+
+      case modifier::left_command:
+        return modifier_flag_manager.is_pressed(modifier_flag::left_command);
+
+      case modifier::left_control:
+        return modifier_flag_manager.is_pressed(modifier_flag::left_control);
+
+      case modifier::left_option:
+        return modifier_flag_manager.is_pressed(modifier_flag::left_option);
+
+      case modifier::left_shift:
+        return modifier_flag_manager.is_pressed(modifier_flag::left_shift);
+
+      case modifier::option:
+        return modifier_flag_manager.is_pressed(modifier_flag::left_option) ||
+               modifier_flag_manager.is_pressed(modifier_flag::right_option);
+
+      case modifier::right_command:
+        return modifier_flag_manager.is_pressed(modifier_flag::right_command);
+
+      case modifier::right_control:
+        return modifier_flag_manager.is_pressed(modifier_flag::right_control);
+
+      case modifier::right_option:
+        return modifier_flag_manager.is_pressed(modifier_flag::right_option);
+
+      case modifier::right_shift:
+        return modifier_flag_manager.is_pressed(modifier_flag::right_shift);
+
+      case modifier::shift:
+        return modifier_flag_manager.is_pressed(modifier_flag::left_shift) ||
+               modifier_flag_manager.is_pressed(modifier_flag::right_shift);
+
+      case modifier::end_:
+        return false;
+    }
+  }
+
+  static modifier get_modifier(modifier_flag modifier_flag) {
+    switch (modifier_flag) {
+      case modifier_flag::caps_lock:
+        return modifier::caps_lock;
+
+      case modifier_flag::fn:
+        return modifier::fn;
+
+      case modifier_flag::left_command:
+        return modifier::left_command;
+
+      case modifier_flag::left_control:
+        return modifier::left_control;
+
+      case modifier_flag::left_option:
+        return modifier::left_option;
+
+      case modifier_flag::left_shift:
+        return modifier::left_shift;
+
+      case modifier_flag::right_command:
+        return modifier::right_command;
+
+      case modifier_flag::right_control:
+        return modifier::right_control;
+
+      case modifier_flag::right_option:
+        return modifier::right_option;
+
+      case modifier_flag::right_shift:
+        return modifier::right_shift;
+
+      case modifier_flag::zero:
+      case modifier_flag::end_:
+        return modifier::end_;
     }
   }
 
