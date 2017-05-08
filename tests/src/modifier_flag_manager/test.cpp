@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_RUNNER
 #include "../../vendor/catch/catch.hpp"
 
-#include "manipulator/modifier_flag_manager.hpp"
+#include "modifier_flag_manager.hpp"
 #include "thread_utility.hpp"
 
 TEST_CASE("manipulator.modifier_flag_manager") {
