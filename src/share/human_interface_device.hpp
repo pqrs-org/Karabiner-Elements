@@ -36,8 +36,7 @@ public:
   };
 
   typedef std::function<void(human_interface_device& device,
-                             event_queue& event_queue,
-                             size_t previous_events_size)>
+                             event_queue& event_queue)>
       value_callback;
 
   typedef std::function<void(human_interface_device& device,
@@ -91,10 +90,10 @@ public:
       if (auto p = iokit_utility::get_product_id(device_)) {
         product_id = *p;
       }
-      krbn::core_configuration::profile::device::identifiers identifiers(vendor_id,
-                                                                         product_id,
-                                                                         is_keyboard,
-                                                                         is_pointing_device);
+      core_configuration::profile::device::identifiers identifiers(vendor_id,
+                                                                   product_id,
+                                                                   is_keyboard,
+                                                                   is_pointing_device);
 
       bool is_built_in_keyboard = false;
       if (descriptions.get_product().find("Apple Internal ") != std::string::npos) {
@@ -491,10 +490,9 @@ public:
     });
   }
 
-  void set_value_callback(const value_callback& callback, event_queue& event_queue) {
+  void set_value_callback(const value_callback& callback) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       value_callback_ = callback;
-      event_queue_ = &event_queue;
     });
   }
 
@@ -628,8 +626,6 @@ private:
   }
 
   void queue_value_available_callback(void) {
-    size_t previous_events_size = event_queue_ ? event_queue_->get_events().size() : 0;
-
     while (true) {
       if (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
         auto element = IOHIDValueGetElement(value);
@@ -639,9 +635,7 @@ private:
           auto usage = hid_usage(IOHIDElementGetUsage(element));
           auto integer_value = IOHIDValueGetIntegerValue(value);
 
-          if (event_queue_) {
-            event_queue_->emplace_back_event(device_id_, time_stamp, usage_page, usage, integer_value);
-          }
+          input_event_queue_.emplace_back_event(device_id_, time_stamp, usage_page, usage, integer_value);
         }
 
         CFRelease(value);
@@ -652,8 +646,8 @@ private:
     }
 
     // Call value_callback_.
-    if (value_callback_ && event_queue_) {
-      value_callback_(*this, *event_queue_, previous_events_size);
+    if (value_callback_) {
+      value_callback_(*this, input_event_queue_);
     }
   }
 
@@ -719,7 +713,7 @@ private:
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
-  event_queue* _Nullable event_queue_;
+  event_queue input_event_queue_;
 
   value_callback value_callback_;
   report_callback report_callback_;
