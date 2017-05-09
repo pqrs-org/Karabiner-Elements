@@ -30,114 +30,98 @@ public:
   virtual ~basic(void) {
   }
 
-  virtual void manipulate(event_queue& event_queue,
-                          size_t previous_events_size,
-                          modifier_flag_manager& modifier_flag_manager,
+  virtual void manipulate(event_queue::queued_event& front_input_event,
+                          const event_queue& input_event_queue,
+                          event_queue& output_event_queue,
                           uint64_t time_stamp) {
-    auto& events = event_queue.get_events();
-
-    if (events.size() < previous_events_size) {
+    if (!front_input_event.get_valid()) {
       return;
     }
 
-    for (auto events_it = std::begin(events) + previous_events_size; events_it != std::end(events); ++events_it) {
-      auto& queued_event = *events_it;
+    bool is_target = false;
 
-      if (queued_event.get_manipulated() ||
-          !queued_event.get_valid()) {
-        continue;
+    if (auto key_code = front_input_event.get_event().get_key_code()) {
+      if (from_.get_key_code() == key_code) {
+        is_target = true;
       }
+    }
+    if (auto pointing_button = front_input_event.get_event().get_pointing_button()) {
+      if (from_.get_pointing_button() == pointing_button) {
+        is_target = true;
+      }
+    }
 
-      bool is_target = false;
+    if (is_target) {
+      if (front_input_event.get_event_type() == event_type::key_down) {
 
-      if (auto key_code = queued_event.get_event().get_key_code()) {
-        if (from_.get_key_code() == key_code) {
-          is_target = true;
+        if (!valid_) {
+          is_target = false;
         }
-      }
-      if (auto pointing_button = queued_event.get_event().get_pointing_button()) {
-        if (from_.get_pointing_button() == pointing_button) {
-          is_target = true;
+
+        if (!from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
+          is_target = false;
+        }
+
+        if (is_target) {
+          manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
+                                                    front_input_event.get_original_event());
+        }
+
+      } else {
+        // event_type::key_up
+
+        // Check original_event in order to determine the correspond key_down is manipulated.
+
+        auto it = std::find_if(std::begin(manipulated_original_events_),
+                               std::end(manipulated_original_events_),
+                               [&](const auto& pair) {
+                                 return pair.first == front_input_event.get_device_id() &&
+                                        pair.second == front_input_event.get_original_event();
+                               });
+        if (it != std::end(manipulated_original_events_)) {
+          manipulated_original_events_.erase(it);
+        } else {
+          is_target = false;
         }
       }
 
       if (is_target) {
-        if (queued_event.get_event_type() == event_type::key_down) {
-          // TODO: check modifier flags
+        front_input_event.set_valid(false);
 
-          if (!valid_) {
-            is_target = false;
-          }
+        uint64_t to_time_stamp = front_input_event.get_time_stamp();
 
-          if (is_target) {
-            manipulated_original_events_.emplace_back(queued_event.get_device_id(),
-                                                      queued_event.get_original_event());
-          }
+        for (size_t i = 0; i < to_.size(); ++i) {
+          if (auto event = to_[i].to_event()) {
+            if (front_input_event.get_event_type() == event_type::key_down) {
+              output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                    to_time_stamp + i,
+                                                    *event,
+                                                    event_type::key_down,
+                                                    front_input_event.get_original_event());
 
-        } else {
-          // event_type::key_up
+              if (i != to_.size() - 1) {
+                output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                      to_time_stamp + i,
+                                                      *event,
+                                                      event_type::key_up,
+                                                      front_input_event.get_original_event());
+              }
 
-          // Check original_event in order to determine the correspond key_down is manipulated.
+            } else {
+              // event_type::key_up
 
-          auto it = std::find_if(std::begin(manipulated_original_events_),
-                                 std::end(manipulated_original_events_),
-                                 [&](const auto& pair) {
-                                   return pair.first == queued_event.get_device_id() &&
-                                          pair.second == queued_event.get_original_event();
-                                 });
-          if (it != std::end(manipulated_original_events_)) {
-            manipulated_original_events_.erase(it);
-          } else {
-            is_target = false;
-          }
-        }
-
-        if (is_target) {
-          queued_event.set_valid(false);
-
-          uint64_t to_time_stamp = queued_event.get_time_stamp();
-
-          for (size_t i = 0; i < to_.size(); ++i) {
-            if (auto event = to_[i].to_event()) {
-              if (queued_event.get_event_type() == event_type::key_down) {
-                events_it = events.emplace(events_it + 1,
-                                           queued_event.get_device_id(),
-                                           to_time_stamp + i,
-                                           *event,
-                                           event_type::key_down,
-                                           queued_event.get_original_event());
-                events_it->set_manipulated(true);
-
-                if (i != to_.size() - 1) {
-                  events_it = events.emplace(events_it + 1,
-                                             queued_event.get_device_id(),
-                                             to_time_stamp + i,
-                                             *event,
-                                             event_type::key_up,
-                                             queued_event.get_original_event());
-                  events_it->set_manipulated(true);
-                }
-
-              } else {
-                // event_type::key_up
-
-                if (i == to_.size() - 1) {
-                  events_it = events.emplace(events_it + 1,
-                                             queued_event.get_device_id(),
-                                             to_time_stamp + i,
-                                             *event,
-                                             event_type::key_up,
-                                             queued_event.get_original_event());
-                  events_it->set_manipulated(true);
-                }
+              if (i == to_.size() - 1) {
+                output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                      to_time_stamp + i,
+                                                      *event,
+                                                      event_type::key_up,
+                                                      front_input_event.get_original_event());
               }
             }
           }
-
-          for (auto it = events_it + 1; it != std::end(events); ++it) {
-            it->increase_time_stamp(to_.size() - 1);
-          }
         }
+
+        output_event_queue.increase_time_stamp_delay(to_.size() - 1);
       }
     }
   }
@@ -147,8 +131,7 @@ public:
   }
 
   virtual void inactivate_by_device_id(device_id device_id,
-                                       event_queue& event_queue,
-                                       modifier_flag_manager& modifier_flag_manager,
+                                       event_queue& output_event_queue,
                                        uint64_t time_stamp) {
     while (true) {
       auto it = std::find_if(std::begin(manipulated_original_events_),
@@ -162,12 +145,11 @@ public:
 
       if (to_.size() > 0) {
         if (auto event = to_.back().to_event()) {
-          event_queue.emplace_back_event(device_id,
-                                         time_stamp,
-                                         *event,
-                                         event_type::key_up,
-                                         it->second);
-          event_queue.get_events().back().set_manipulated(true);
+          output_event_queue.emplace_back_event(device_id,
+                                                time_stamp,
+                                                *event,
+                                                event_type::key_up,
+                                                it->second);
         }
       }
 

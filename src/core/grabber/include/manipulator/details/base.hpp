@@ -1,7 +1,7 @@
 #pragma once
 
 #include "event_queue.hpp"
-#include "manipulator/modifier_flag_manager.hpp"
+#include "modifier_flag_manager.hpp"
 
 namespace krbn {
 namespace manipulator {
@@ -15,16 +15,15 @@ public:
   virtual ~base(void) {
   }
 
-  virtual void manipulate(event_queue& event_queue,
-                          size_t previous_events_size,
-                          modifier_flag_manager& modifier_flag_manager,
+  virtual void manipulate(event_queue::queued_event& front_input_event,
+                          const event_queue& input_event_queue,
+                          event_queue& output_event_queue,
                           uint64_t time_stamp) = 0;
 
   virtual bool active(void) const = 0;
 
   virtual void inactivate_by_device_id(device_id device_id,
-                                       event_queue& event_queue,
-                                       modifier_flag_manager& modifier_flag_manager,
+                                       event_queue& output_event_queue,
                                        uint64_t time_stamp) = 0;
 
   bool get_valid(void) const {

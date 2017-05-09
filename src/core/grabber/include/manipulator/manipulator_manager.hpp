@@ -14,28 +14,35 @@ public:
     manipulators_.push_back(std::move(ptr));
   }
 
-  void manipulate(event_queue& event_queue,
-                  size_t previous_events_size,
-                  modifier_flag_manager& modifier_flag_manager,
+  void manipulate(event_queue& input_event_queue,
+                  event_queue& output_event_queue,
                   uint64_t time_stamp) {
-    for (auto&& m : manipulators_) {
-      m->manipulate(event_queue,
-                    previous_events_size,
-                    modifier_flag_manager,
-                    time_stamp);
+    while (!input_event_queue.empty()) {
+      auto& front_input_event = input_event_queue.get_front_event();
+
+      for (auto&& m : manipulators_) {
+        m->manipulate(front_input_event,
+                      input_event_queue,
+                      output_event_queue,
+                      time_stamp);
+      }
+
+      if (input_event_queue.get_front_event().get_valid()) {
+        output_event_queue.push_back_event(input_event_queue.get_front_event());
+      }
+
+      input_event_queue.erase_front_event();
     }
 
     remove_invalid_manipulators();
   }
 
   void inactivate_by_device_id(device_id device_id,
-                               event_queue& event_queue,
-                               modifier_flag_manager& modifier_flag_manager,
+                               event_queue& output_event_queue,
                                uint64_t time_stamp) {
     for (auto&& m : manipulators_) {
       m->inactivate_by_device_id(device_id,
-                                 event_queue,
-                                 modifier_flag_manager,
+                                 output_event_queue,
                                  time_stamp);
     }
 

@@ -3,7 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "event_queue.hpp"
-#include "manipulator/modifier_flag_manager.hpp"
+#include "modifier_flag_manager.hpp"
 #include <boost/optional.hpp>
 #include <json/json.hpp>
 #include <unordered_set>

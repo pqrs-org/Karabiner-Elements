@@ -141,19 +141,19 @@ public:
     }
   }
 
-  void apply_simple_modifications(event_queue& event_queue,
-                                  size_t previous_events_size,
+  void apply_simple_modifications(event_queue& input_event_queue,
+                                  event_queue& output_event_queue,
                                   uint64_t time_stamp) {
-    simple_modifications_manipulator_manager_.manipulate(event_queue,
-                                                         previous_events_size,
+    simple_modifications_manipulator_manager_.manipulate(input_event_queue,
+                                                         output_event_queue,
                                                          time_stamp);
   }
 
-  void inactivate_manipulators_by_device_id(event_queue& event_queue,
-                                            device_id device_id,
+  void inactivate_manipulators_by_device_id(device_id device_id,
+                                            event_queue& output_event_queue,
                                             uint64_t time_stamp) {
-    simple_modifications_manipulator_manager_.inactivate_by_device_id(event_queue,
-                                                                      device_id,
+    simple_modifications_manipulator_manager_.inactivate_by_device_id(device_id,
+                                                                      output_event_queue,
                                                                       time_stamp);
   }
 
