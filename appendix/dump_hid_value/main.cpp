@@ -76,7 +76,7 @@ private:
 
     hids_[device] = std::make_unique<krbn::human_interface_device>(logger::get_logger(), device);
     auto& dev = hids_[device];
-    dev->set_value_callback(boost::bind(&dump_hid_value::value_callback, this, _1, _2, _3), event_queue_);
+    dev->set_value_callback(boost::bind(&dump_hid_value::value_callback, this, _1, _2));
     dev->observe();
   }
 
@@ -110,27 +110,21 @@ private:
   }
 
   void value_callback(krbn::human_interface_device& device,
-                      krbn::event_queue& event_queue,
-                      size_t previous_events_size) {
-    if (event_queue.get_events().size() < previous_events_size) {
-      return;
-    }
-
-    auto queued_event_iterator = event_queue.get_events().begin() + previous_events_size;
-    while (queued_event_iterator != std::end(event_queue.get_events())) {
-      switch (queued_event_iterator->get_event().get_type()) {
+                      krbn::event_queue& event_queue) {
+    for (const auto& queued_event : event_queue.get_events()) {
+      switch (queued_event.get_event().get_type()) {
         case krbn::event_queue::queued_event::event::type::key_code:
-          if (auto key_code = queued_event_iterator->get_event().get_key_code()) {
+          if (auto key_code = queued_event.get_event().get_key_code()) {
             std::cout << "Key: " << std::dec << static_cast<uint32_t>(*key_code) << " "
-                      << (queued_event_iterator->get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
+                      << (queued_event.get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
                       << std::endl;
           }
           break;
 
         case krbn::event_queue::queued_event::event::type::pointing_button:
-          if (auto pointing_button = queued_event_iterator->get_event().get_pointing_button()) {
+          if (auto pointing_button = queued_event.get_event().get_pointing_button()) {
             std::cout << "Button: " << std::dec << static_cast<uint32_t>(*pointing_button) << " "
-                      << (queued_event_iterator->get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
+                      << (queued_event.get_event_type() == krbn::event_type::key_down ? "(down)" : "(up)")
                       << std::endl;
           }
           break;
@@ -139,8 +133,8 @@ private:
         case krbn::event_queue::queued_event::event::type::pointing_y:
         case krbn::event_queue::queued_event::event::type::pointing_vertical_wheel:
         case krbn::event_queue::queued_event::event::type::pointing_horizontal_wheel:
-          if (auto integer_value = queued_event_iterator->get_event().get_integer_value()) {
-            switch (queued_event_iterator->get_event().get_type()) {
+          if (auto integer_value = queued_event.get_event().get_integer_value()) {
+            switch (queued_event.get_event().get_type()) {
               case krbn::event_queue::queued_event::event::type::pointing_x:
                 std::cout << "Pointing X: ";
                 break;
@@ -161,8 +155,6 @@ private:
           }
           break;
       }
-
-      std::advance(queued_event_iterator, 1);
     }
 
     event_queue.clear_events();
