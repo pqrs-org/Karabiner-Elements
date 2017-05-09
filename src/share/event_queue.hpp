@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "modifier_flag_manager.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
 
@@ -85,7 +86,6 @@ public:
                  event_type event_type,
                  const class event& original_event) : device_id_(device_id),
                                                       time_stamp_(time_stamp),
-                                                      manipulated_(false),
                                                       valid_(true),
                                                       lazy_(false),
                                                       event_(event),
@@ -99,16 +99,6 @@ public:
 
     uint64_t get_time_stamp(void) const {
       return time_stamp_;
-    }
-    void increase_time_stamp(uint64_t value) {
-      time_stamp_ += value;
-    }
-
-    bool get_manipulated(void) const {
-      return manipulated_;
-    }
-    void set_manipulated(bool value) {
-      manipulated_ = value;
     }
 
     bool get_valid(void) const {
@@ -140,7 +130,6 @@ public:
     bool operator==(const queued_event& other) const {
       return get_device_id() == other.get_device_id() &&
              get_time_stamp() == other.get_time_stamp() &&
-             get_manipulated() == other.get_manipulated() &&
              get_valid() == other.get_valid() &&
              get_lazy() == other.get_lazy() &&
              get_event() == other.get_event() &&
@@ -151,7 +140,6 @@ public:
   private:
     device_id device_id_;
     uint64_t time_stamp_;
-    bool manipulated_;
     bool valid_;
     bool lazy_;
     event event_;
@@ -161,7 +149,7 @@ public:
 
   event_queue(const event_queue&) = delete;
 
-  event_queue(void) {
+  event_queue(void) : time_stamp_delay_(0) {
   }
 
   // from physical device
@@ -253,29 +241,75 @@ public:
                           const queued_event::event& event,
                           event_type event_type,
                           const queued_event::event& original_event) {
+    time_stamp += time_stamp_delay_;
+
     events_.emplace_back(device_id,
                          time_stamp,
                          event,
                          event_type,
                          original_event);
+
     sort_events();
+
+    // Update modifier_flag_manager
+
+    if (auto key_code = event.get_key_code()) {
+      auto modifier_flag = types::get_modifier_flag(*key_code);
+      if (modifier_flag != modifier_flag::zero) {
+        modifier_flag_manager::active_modifier_flag active_modifier_flag(modifier_flag_manager::active_modifier_flag::type::increase,
+                                                                         modifier_flag,
+                                                                         device_id);
+        if (event_type == event_type::key_down) {
+          modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
+        } else {
+          modifier_flag_manager_.erase_active_modifier_flag(active_modifier_flag);
+        }
+      }
+    }
+  }
+
+  void push_back_event(const queued_event& queued_event) {
+    emplace_back_event(queued_event.get_device_id(),
+                       queued_event.get_time_stamp(),
+                       queued_event.get_event(),
+                       queued_event.get_event_type(),
+                       queued_event.get_original_event());
   }
 
   void clear_events(void) {
     events_.clear();
+    time_stamp_delay_ = 0;
   }
 
-  void erase_all_invalid_events(void) {
-    events_.erase(std::remove_if(std::begin(events_),
-                                 std::end(events_),
-                                 [&](const queued_event& e) {
-                                   return !e.get_valid();
-                                 }),
-                  std::end(events_));
+  queued_event& get_front_event(void) {
+    return events_.front();
   }
 
-  std::vector<queued_event>& get_events(void) {
+  void erase_front_event(void) {
+    events_.erase(std::begin(events_));
+    if (events_.empty()) {
+      time_stamp_delay_ = 0;
+    }
+  }
+
+  bool empty(void) const {
+    return events_.empty();
+  }
+
+  const std::vector<queued_event>& get_events(void) const {
     return events_;
+  }
+
+  const modifier_flag_manager& get_modifier_flag_manager(void) const {
+    return modifier_flag_manager_;
+  }
+
+  uint64_t get_time_stamp_delay(void) const {
+    return time_stamp_delay_;
+  }
+
+  void increase_time_stamp_delay(uint64_t value) {
+    time_stamp_delay_ += value;
   }
 
   static bool compare(const queued_event& v1, const queued_event& v2) {
@@ -364,5 +398,7 @@ private:
   }
 
   std::vector<queued_event> events_;
+  modifier_flag_manager modifier_flag_manager_;
+  uint64_t time_stamp_delay_;
 };
 } // namespace krbn
