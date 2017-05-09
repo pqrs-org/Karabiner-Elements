@@ -254,20 +254,65 @@ TEST_CASE("emplace_back_event.usage_page") {
   REQUIRE(event_queue.get_events() == expected);
 }
 
-TEST_CASE("increase_time_stamp") {
+TEST_CASE("increase_time_stamp_delay") {
   {
-    krbn::event_queue::queued_event queued_event(krbn::device_id(1),
-                                                 100,
-                                                 event_tab,
-                                                 krbn::event_type::key_down,
-                                                 event_tab);
-    REQUIRE(queued_event.get_time_stamp() == 100);
+    krbn::event_queue event_queue;
 
-    queued_event.increase_time_stamp(0);
-    REQUIRE(queued_event.get_time_stamp() == 100);
+    event_queue.emplace_back_event(krbn::device_id(1),
+                                   100,
+                                   event_tab,
+                                   krbn::event_type::key_down,
+                                   event_tab);
 
-    queued_event.increase_time_stamp(10);
-    REQUIRE(queued_event.get_time_stamp() == 110);
+    event_queue.increase_time_stamp_delay(10);
+
+    event_queue.emplace_back_event(krbn::device_id(1),
+                                   200,
+                                   event_tab,
+                                   krbn::event_type::key_up,
+                                   event_tab);
+
+    event_queue.emplace_back_event(krbn::device_id(1),
+                                   300,
+                                   krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                                   krbn::hid_usage(kHIDUsage_KeyboardTab),
+                                   1);
+
+    event_queue.push_back_event(krbn::event_queue::queued_event(krbn::device_id(1),
+                                                                400,
+                                                                event_tab,
+                                                                krbn::event_type::key_up,
+                                                                event_tab));
+
+    std::vector<krbn::event_queue::queued_event> expected({
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        100,
+                                        event_tab,
+                                        krbn::event_type::key_down,
+                                        event_tab),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        210,
+                                        event_tab,
+                                        krbn::event_type::key_up,
+                                        event_tab),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        310,
+                                        event_tab,
+                                        krbn::event_type::key_down,
+                                        event_tab),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        410,
+                                        event_tab,
+                                        krbn::event_type::key_up,
+                                        event_tab),
+    });
+
+    REQUIRE(event_queue.get_events() == expected);
+
+    while (!event_queue.empty()) {
+      event_queue.erase_front_event();
+    }
+    REQUIRE(event_queue.get_time_stamp_delay() == 0);
   }
 }
 
