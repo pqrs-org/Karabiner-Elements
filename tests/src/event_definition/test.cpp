@@ -56,6 +56,50 @@ TEST_CASE("event_definition.test_modifiers") {
   using krbn::manipulator::details::event_definition;
 
   {
+    std::unordered_set<event_definition::modifier> modifiers;
+    event_definition event_definition(spacebar_key_code, modifiers);
+
+    REQUIRE(*(event_definition.get_key_code()) == spacebar_key_code);
+    REQUIRE(event_definition.get_modifiers() == modifiers);
+
+    {
+      krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+    }
+    {
+      krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+      modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == false);
+    }
+  }
+
+  {
+    std::unordered_set<event_definition::modifier> modifiers({
+        event_definition::modifier::any,
+    });
+    event_definition event_definition(spacebar_key_code, modifiers);
+
+    REQUIRE(*(event_definition.get_key_code()) == spacebar_key_code);
+    REQUIRE(event_definition.get_modifiers() == modifiers);
+
+    {
+      krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+    }
+    {
+      krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+      modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+    }
+    {
+      krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+      modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
+      modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+    }
+  }
+
+  {
     std::unordered_set<event_definition::modifier> modifiers({
         event_definition::modifier::left_shift,
     });
