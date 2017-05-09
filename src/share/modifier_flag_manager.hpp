@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace krbn {
-namespace manipulator {
 class modifier_flag_manager final {
 public:
   class active_modifier_flag final {
@@ -116,5 +115,4 @@ public:
 private:
   std::vector<active_modifier_flag> active_modifier_flags_;
 };
-} // namespace manipulator
 } // namespace krbn
