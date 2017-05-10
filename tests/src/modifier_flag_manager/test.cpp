@@ -5,23 +5,23 @@
 #include "thread_utility.hpp"
 
 TEST_CASE("manipulator.modifier_flag_manager") {
-  krbn::manipulator::modifier_flag_manager modifier_flag_manager;
+  krbn::modifier_flag_manager modifier_flag_manager;
 
-  krbn::manipulator::modifier_flag_manager::active_modifier_flag left_shift_1(krbn::manipulator::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                              krbn::modifier_flag::left_shift,
-                                                                              krbn::device_id(1));
+  krbn::modifier_flag_manager::active_modifier_flag left_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
+                                                                 krbn::modifier_flag::left_shift,
+                                                                 krbn::device_id(1));
 
-  krbn::manipulator::modifier_flag_manager::active_modifier_flag decrease_left_shift_1(krbn::manipulator::modifier_flag_manager::active_modifier_flag::type::decrease,
-                                                                                       krbn::modifier_flag::left_shift,
-                                                                                       krbn::device_id(1));
+  krbn::modifier_flag_manager::active_modifier_flag decrease_left_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::decrease,
+                                                                          krbn::modifier_flag::left_shift,
+                                                                          krbn::device_id(1));
 
-  krbn::manipulator::modifier_flag_manager::active_modifier_flag lock_left_shift_1(krbn::manipulator::modifier_flag_manager::active_modifier_flag::type::increase_lock,
-                                                                                   krbn::modifier_flag::left_shift,
-                                                                                   krbn::device_id(1));
+  krbn::modifier_flag_manager::active_modifier_flag lock_left_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase_lock,
+                                                                      krbn::modifier_flag::left_shift,
+                                                                      krbn::device_id(1));
 
-  krbn::manipulator::modifier_flag_manager::active_modifier_flag left_shift_2(krbn::manipulator::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                              krbn::modifier_flag::left_shift,
-                                                                              krbn::device_id(2));
+  krbn::modifier_flag_manager::active_modifier_flag left_shift_2(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
+                                                                 krbn::modifier_flag::left_shift,
+                                                                 krbn::device_id(2));
 
   // ----------------------------------------
   // Push back

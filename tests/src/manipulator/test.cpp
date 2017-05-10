@@ -60,7 +60,6 @@ TEST_CASE("manipulator.details.event_definition") {
     REQUIRE(*(event_definition.get_key_code()) == right_option_key_code);
     REQUIRE(!(event_definition.get_pointing_button()));
     REQUIRE(event_definition.get_modifiers() == std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
-                                                    krbn::manipulator::details::event_definition::modifier::right_option,
                                                     krbn::manipulator::details::event_definition::modifier::shift,
                                                     krbn::manipulator::details::event_definition::modifier::left_command,
                                                     krbn::manipulator::details::event_definition::modifier::any,
@@ -233,7 +232,11 @@ TEST_CASE("manipulator.manipulator_manager") {
       manipulator_manager.push_back_manipulator(std::move(ptr));
     }
     {
-      auto manipulator = std::make_unique<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(tab_key_code),
+      auto manipulator = std::make_unique<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(
+                                                                               tab_key_code,
+                                                                               std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
+                                                                                   krbn::manipulator::details::event_definition::modifier::any,
+                                                                                     })),
                                                                              krbn::manipulator::details::event_definition(a_key_code));
       std::unique_ptr<krbn::manipulator::details::base> ptr = std::move(manipulator);
       manipulator_manager.push_back_manipulator(std::move(ptr));
@@ -241,6 +244,12 @@ TEST_CASE("manipulator.manipulator_manager") {
     {
       auto manipulator = std::make_unique<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(escape_key_code),
                                                                              krbn::manipulator::details::event_definition(left_shift_key_code));
+      std::unique_ptr<krbn::manipulator::details::base> ptr = std::move(manipulator);
+      manipulator_manager.push_back_manipulator(std::move(ptr));
+    }
+    {
+      auto manipulator = std::make_unique<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(left_shift_key_code),
+                                                                             krbn::manipulator::details::event_definition(tab_key_code));
       std::unique_ptr<krbn::manipulator::details::base> ptr = std::move(manipulator);
       manipulator_manager.push_back_manipulator(std::move(ptr));
     }
@@ -269,39 +278,86 @@ TEST_CASE("manipulator.manipulator_manager") {
                                          krbn::event_queue::queued_event::event(escape_key_code),
                                          krbn::event_type::key_up,
                                          krbn::event_queue::queued_event::event(escape_key_code));
+    input_event_queue.emplace_back_event(krbn::device_id(1),
+                                         500,
+                                         krbn::event_queue::queued_event::event(left_shift_key_code),
+                                         krbn::event_type::key_down,
+                                         krbn::event_queue::queued_event::event(left_shift_key_code));
+    input_event_queue.emplace_back_event(krbn::device_id(1),
+                                         600,
+                                         krbn::event_queue::queued_event::event(left_shift_key_code),
+                                         krbn::event_type::key_up,
+                                         krbn::event_queue::queued_event::event(left_shift_key_code));
+    input_event_queue.emplace_back_event(krbn::device_id(1),
+                                         700,
+                                         krbn::event_queue::queued_event::event(right_shift_key_code),
+                                         krbn::event_type::key_down,
+                                         krbn::event_queue::queued_event::event(right_shift_key_code));
+    input_event_queue.emplace_back_event(krbn::device_id(1),
+                                         800,
+                                         krbn::event_queue::queued_event::event(spacebar_key_code),
+                                         krbn::event_type::key_down,
+                                         krbn::event_queue::queued_event::event(spacebar_key_code));
+    input_event_queue.emplace_back_event(krbn::device_id(1),
+                                         900,
+                                         krbn::event_queue::queued_event::event(tab_key_code),
+                                         krbn::event_type::key_down,
+                                         krbn::event_queue::queued_event::event(tab_key_code));
 
     // ----------------------------------------
     // test
 
     krbn::event_queue output_event_queue;
 
-    manipulator_manager.manipulate(input_event_queue, output_event_queue, 500);
+    manipulator_manager.manipulate(input_event_queue, output_event_queue, 1000);
 
-    std::vector<krbn::event_queue::queued_event> expected;
-
-    expected.emplace_back(krbn::device_id(1),
-                          100,
-                          krbn::event_queue::queued_event::event(tab_key_code),
-                          krbn::event_type::key_down,
-                          krbn::event_queue::queued_event::event(spacebar_key_code));
-
-    expected.emplace_back(krbn::device_id(1),
-                          200,
-                          krbn::event_queue::queued_event::event(left_shift_key_code),
-                          krbn::event_type::key_down,
-                          krbn::event_queue::queued_event::event(escape_key_code));
-
-    expected.emplace_back(krbn::device_id(1),
-                          300,
-                          krbn::event_queue::queued_event::event(tab_key_code),
-                          krbn::event_type::key_up,
-                          krbn::event_queue::queued_event::event(spacebar_key_code));
-
-    expected.emplace_back(krbn::device_id(1),
-                          400,
-                          krbn::event_queue::queued_event::event(left_shift_key_code),
-                          krbn::event_type::key_up,
-                          krbn::event_queue::queued_event::event(escape_key_code));
+    std::vector<krbn::event_queue::queued_event> expected({
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        100,
+                                        krbn::event_queue::queued_event::event(tab_key_code),
+                                        krbn::event_type::key_down,
+                                        krbn::event_queue::queued_event::event(spacebar_key_code)),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        200,
+                                        krbn::event_queue::queued_event::event(left_shift_key_code),
+                                        krbn::event_type::key_down,
+                                        krbn::event_queue::queued_event::event(escape_key_code)),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        300,
+                                        krbn::event_queue::queued_event::event(tab_key_code),
+                                        krbn::event_type::key_up,
+                                        krbn::event_queue::queued_event::event(spacebar_key_code)),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        400,
+                                        krbn::event_queue::queued_event::event(left_shift_key_code),
+                                        krbn::event_type::key_up,
+                                        krbn::event_queue::queued_event::event(escape_key_code)),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        500,
+                                        krbn::event_queue::queued_event::event(tab_key_code),
+                                        krbn::event_type::key_down,
+                                        krbn::event_queue::queued_event::event(left_shift_key_code)),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        600,
+                                        krbn::event_queue::queued_event::event(tab_key_code),
+                                        krbn::event_type::key_up,
+                                        krbn::event_queue::queued_event::event(left_shift_key_code)),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        700,
+                                        krbn::event_queue::queued_event::event(right_shift_key_code),
+                                        krbn::event_type::key_down,
+                                        krbn::event_queue::queued_event::event(right_shift_key_code)),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        800,
+                                        krbn::event_queue::queued_event::event(spacebar_key_code),
+                                        krbn::event_type::key_down,
+                                        krbn::event_queue::queued_event::event(spacebar_key_code)),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        900,
+                                        krbn::event_queue::queued_event::event(a_key_code),
+                                        krbn::event_type::key_down,
+                                        krbn::event_queue::queued_event::event(tab_key_code)),
+    });
 
     REQUIRE(input_event_queue.get_events().empty());
     REQUIRE(output_event_queue.get_events() == expected);
