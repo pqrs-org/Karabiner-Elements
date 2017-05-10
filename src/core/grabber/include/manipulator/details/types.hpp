@@ -48,11 +48,6 @@ public:
           if (auto key_code = types::get_key_code(json[key])) {
             type_ = type::key_code;
             key_code_ = *key_code;
-
-            auto m = get_modifier(types::get_modifier_flag(*key_code));
-            if (m != modifier::end_) {
-              modifiers_.insert(m);
-            }
           }
         }
       }
@@ -98,10 +93,6 @@ public:
                    const std::unordered_set<modifier> modifiers) : type_(type::key_code),
                                                                    key_code_(key_code),
                                                                    modifiers_(modifiers) {
-    auto m = get_modifier(types::get_modifier_flag(key_code));
-    if (m != modifier::end_) {
-      modifiers_.insert(m);
-    }
   }
 
   event_definition(key_code key_code) : event_definition(key_code, std::unordered_set<modifier>()) {
