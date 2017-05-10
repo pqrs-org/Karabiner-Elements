@@ -10,6 +10,35 @@ namespace manipulator {
 namespace details {
 class basic final : public base {
 public:
+  class manipulated_original_event final {
+  public:
+    manipulated_original_event(device_id device_id,
+                               const event_queue::queued_event::event& original_event,
+                               const std::vector<modifier_flag> from_modifiers) : device_id_(device_id),
+                                                                                  original_event_(original_event),
+                                                                                  from_modifiers_(from_modifiers) {
+    }
+
+    device_id get_device_id(void) const {
+      return device_id_;
+    }
+
+    const event_queue::queued_event::event& get_original_event(void) const {
+      return original_event_;
+    }
+
+    bool operator==(const manipulated_original_event& other) const {
+      // Do not compare `from_modifiers_`.
+      return get_device_id() == other.get_device_id() &&
+             get_original_event() == other.get_original_event();
+    }
+
+  private:
+    device_id device_id_;
+    event_queue::queued_event::event original_event_;
+    std::vector<modifier_flag> from_modifiers_;
+  };
+
   basic(const nlohmann::json& json) : base(),
                                       from_(json.find("from") != std::end(json) ? json["from"] : nlohmann::json()) {
     {
@@ -64,7 +93,8 @@ public:
 
         if (is_target) {
           manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
-                                                    front_input_event.get_original_event());
+                                                    front_input_event.get_original_event(),
+                                                    std::vector<modifier_flag>());
         }
 
       } else {
@@ -74,9 +104,9 @@ public:
 
         auto it = std::find_if(std::begin(manipulated_original_events_),
                                std::end(manipulated_original_events_),
-                               [&](const auto& pair) {
-                                 return pair.first == front_input_event.get_device_id() &&
-                                        pair.second == front_input_event.get_original_event();
+                               [&](const auto& manipulated_original_event) {
+                                 return manipulated_original_event.get_device_id() == front_input_event.get_device_id() &&
+                                        manipulated_original_event.get_original_event() == front_input_event.get_original_event();
                                });
         if (it != std::end(manipulated_original_events_)) {
           manipulated_original_events_.erase(it);
@@ -136,8 +166,8 @@ public:
     while (true) {
       auto it = std::find_if(std::begin(manipulated_original_events_),
                              std::end(manipulated_original_events_),
-                             [&](const auto& pair) {
-                               return pair.first == device_id;
+                             [&](const auto& manipulated_original_event) {
+                               return manipulated_original_event.get_device_id() == device_id;
                              });
       if (it == std::end(manipulated_original_events_)) {
         break;
@@ -149,7 +179,7 @@ public:
                                                 time_stamp,
                                                 *event,
                                                 event_type::key_up,
-                                                it->second);
+                                                it->get_original_event());
         }
       }
 
@@ -169,7 +199,7 @@ private:
   event_definition from_;
   std::vector<event_definition> to_;
 
-  std::vector<std::pair<device_id, event_queue::queued_event::event>> manipulated_original_events_;
+  std::vector<manipulated_original_event> manipulated_original_events_;
 };
 } // namespace details
 } // namespace manipulator
