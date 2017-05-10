@@ -58,9 +58,9 @@ public:
     }
 
     auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-        // std::make_pair(krbn::hid_usage_page::consumer, krbn::hid_usage::csmr_consumercontrol),
-        // std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
+        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
+        // std::make_pair(hid_usage_page::consumer, hid_usage::csmr_consumercontrol),
+        // std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
     });
     if (device_matching_dictionaries) {
       IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
@@ -216,9 +216,7 @@ private:
     dev->set_value_callback(std::bind(&device_grabber::value_callback,
                                       this,
                                       std::placeholders::_1,
-                                      std::placeholders::_2,
-                                      std::placeholders::_3),
-                            input_event_queue_);
+                                      std::placeholders::_2));
     dev->observe();
 
     hids_[device] = std::move(dev);
@@ -292,82 +290,71 @@ private:
     }
   }
 
-  void value_callback(krbn::human_interface_device& device,
-                      krbn::event_queue& event_queue,
-                      size_t previous_events_size) {
-    if (event_queue.get_events().size() < previous_events_size) {
-      return;
-    }
-
+  void value_callback(human_interface_device& device,
+                      event_queue& event_queue) {
     bool pressed_physical_keys_counter_updated = false;
 
     // Update physical_keyboard_repeat_detector_, pressed_physical_keys_counter_
     {
-      auto queued_event_iterator = event_queue.get_events().begin() + previous_events_size;
-      while (queued_event_iterator != std::end(event_queue.get_events())) {
-        if (queued_event_iterator->get_valid()) {
-          auto device_id = queued_event_iterator->get_device_id();
-
-          if (auto key_code = queued_event_iterator->get_event().get_key_code()) {
-            physical_keyboard_repeat_detector_.set(device_id, *key_code, queued_event_iterator->get_event_type());
+      for (const auto& queued_event : event_queue.get_events()) {
+        if (queued_event.get_valid()) {
+          if (auto key_code = queued_event.get_event().get_key_code()) {
+            physical_keyboard_repeat_detector_.set(queued_event.get_device_id(), *key_code, queued_event.get_event_type());
           }
-          if (pressed_physical_keys_counter_.update(*queued_event_iterator)) {
+          if (pressed_physical_keys_counter_.update(queued_event)) {
             pressed_physical_keys_counter_updated = true;
           }
         }
-
-        std::advance(queued_event_iterator, 1);
       }
     }
 
     if (device.is_grabbed() && !device.get_disabled()) {
       event_manipulator_.apply_simple_modifications(event_queue,
-                                                    previous_events_size,
+                                                    simple_modifications_applied_event_queue_,
                                                     mach_absolute_time());
 
-      auto queued_event_iterator = event_queue.get_events().begin() + previous_events_size;
-      while (queued_event_iterator != std::end(event_queue.get_events())) {
-        if (queued_event_iterator->get_valid()) {
-          auto device_id = queued_event_iterator->get_device_id();
-          auto time_stamp = queued_event_iterator->get_time_stamp();
+      for (const auto& queued_event : simple_modifications_applied_event_queue_.get_events()) {
+        if (queued_event.get_valid()) {
+          auto device_id = queued_event.get_device_id();
+          auto time_stamp = queued_event.get_time_stamp();
 
-          if (auto key_code = queued_event_iterator->get_event().get_key_code()) {
+          if (auto key_code = queued_event.get_event().get_key_code()) {
             event_manipulator_.handle_keyboard_event(device_id,
                                                      time_stamp,
                                                      *key_code,
-                                                     queued_event_iterator->get_event_type() == event_type::key_down);
+                                                     queued_event.get_event_type() == event_type::key_down);
 
-          } else if (auto pointing_button = queued_event_iterator->get_event().get_pointing_button()) {
+          } else if (auto pointing_button = queued_event.get_event().get_pointing_button()) {
             event_manipulator_.handle_pointing_event(device_id,
                                                      time_stamp,
                                                      pointing_event::button,
                                                      *pointing_button,
-                                                     queued_event_iterator->get_event_type() == event_type::key_down);
+                                                     queued_event.get_event_type() == event_type::key_down);
 
           } else {
-            if (auto integer_value = queued_event_iterator->get_event().get_integer_value()) {
-              if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::event::type::pointing_x) {
+            if (auto integer_value = queued_event.get_event().get_integer_value()) {
+              if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_x) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::x,
                                                          boost::none,
                                                          *integer_value);
 
-              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::event::type::pointing_y) {
+              } else if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_y) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::y,
                                                          boost::none,
                                                          *integer_value);
 
-              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel) {
+              } else if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::vertical_wheel,
                                                          boost::none,
                                                          *integer_value);
 
-              } else if (queued_event_iterator->get_event().get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
+              } else if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
                 event_manipulator_.handle_pointing_event(device_id,
                                                          time_stamp,
                                                          pointing_event::horizontal_wheel,
@@ -377,8 +364,6 @@ private:
             }
           }
         }
-
-        std::advance(queued_event_iterator, 1);
       }
 
       // reset modifier_flags state if all keys are released.
@@ -389,7 +374,7 @@ private:
       }
     }
 
-    event_queue.clear_events();
+    simple_modifications_applied_event_queue_.clear_events();
   }
 
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
@@ -588,7 +573,7 @@ private:
   pressed_physical_keys_counter pressed_physical_keys_counter_;
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
-  event_queue input_event_queue_;
+  event_queue simple_modifications_applied_event_queue_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> led_monitor_timer_;
 
