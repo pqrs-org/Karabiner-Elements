@@ -649,6 +649,8 @@ private:
     if (value_callback_) {
       value_callback_(*this, input_event_queue_);
     }
+
+    input_event_queue_.clear_events();
   }
 
   static void static_input_report_callback(void* _Nullable context,
