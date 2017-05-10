@@ -100,7 +100,11 @@ public:
       simple_modifications_manipulator_manager_.invalidate();
 
       for (const auto& pair : profile.get_simple_modifications_key_code_map(logger::get_logger())) {
-        auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(pair.first),
+        auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+                                                                             pair.first,
+                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                                 manipulator::details::event_definition::modifier::any,
+                                                                             })),
                                                                          manipulator::details::event_definition(pair.second));
         std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
         simple_modifications_manipulator_manager_.push_back_manipulator(std::move(ptr));
