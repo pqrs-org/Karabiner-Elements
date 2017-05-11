@@ -132,6 +132,15 @@ enum class key_code : uint32_t {
   volume_decrement = kHIDUsage_KeyboardVolumeDown,
   volume_increment = kHIDUsage_KeyboardVolumeUp,
 
+  left_control = kHIDUsage_KeyboardLeftControl,
+  left_shift = kHIDUsage_KeyboardLeftShift,
+  left_option = kHIDUsage_KeyboardLeftAlt,
+  left_command = kHIDUsage_KeyboardLeftGUI,
+  right_control = kHIDUsage_KeyboardRightControl,
+  right_shift = kHIDUsage_KeyboardRightShift,
+  right_option = kHIDUsage_KeyboardRightAlt,
+  right_command = kHIDUsage_KeyboardRightGUI,
+
   // 0x1000 - are karabiner own virtual key codes or keys not in keyboard_or_keypad usage page.
   extra_ = 0x1000,
   // A pseudo key that does not send any event.
@@ -155,6 +164,11 @@ enum class key_code : uint32_t {
   apple_top_case_display_brightness_decrement,
   apple_top_case_display_brightness_increment,
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const key_code& value) {
+  stream << "key_code (" << static_cast<uint32_t>(value) << ")";
+  return stream;
+}
 
 enum class pointing_button : uint32_t {
   zero,
@@ -250,27 +264,67 @@ public:
   }
 
   static modifier_flag get_modifier_flag(key_code key_code) {
-    switch (static_cast<uint32_t>(key_code)) {
-      case kHIDUsage_KeyboardLeftControl:
+    switch (key_code) {
+      case key_code::left_control:
         return modifier_flag::left_control;
-      case kHIDUsage_KeyboardLeftShift:
+      case key_code::left_shift:
         return modifier_flag::left_shift;
-      case kHIDUsage_KeyboardLeftAlt:
+      case key_code::left_option:
         return modifier_flag::left_option;
-      case kHIDUsage_KeyboardLeftGUI:
+      case key_code::left_command:
         return modifier_flag::left_command;
-      case kHIDUsage_KeyboardRightControl:
+      case key_code::right_control:
         return modifier_flag::right_control;
-      case kHIDUsage_KeyboardRightShift:
+      case key_code::right_shift:
         return modifier_flag::right_shift;
-      case kHIDUsage_KeyboardRightAlt:
+      case key_code::right_option:
         return modifier_flag::right_option;
-      case kHIDUsage_KeyboardRightGUI:
+      case key_code::right_command:
         return modifier_flag::right_command;
-      case static_cast<uint32_t>(key_code::fn):
+      case key_code::fn:
         return modifier_flag::fn;
       default:
         return modifier_flag::zero;
+    }
+  }
+
+  static boost::optional<key_code> get_key_code(modifier_flag modifier_flag) {
+    switch (modifier_flag) {
+      case modifier_flag::zero:
+        return boost::none;
+
+      case modifier_flag::caps_lock:
+        return key_code::caps_lock;
+
+      case modifier_flag::left_control:
+        return key_code::left_control;
+
+      case modifier_flag::left_shift:
+        return key_code::left_shift;
+
+      case modifier_flag::left_option:
+        return key_code::left_option;
+
+      case modifier_flag::left_command:
+        return key_code::left_command;
+
+      case modifier_flag::right_control:
+        return key_code::right_control;
+
+      case modifier_flag::right_shift:
+        return key_code::right_shift;
+
+      case modifier_flag::right_option:
+        return key_code::right_option;
+
+      case modifier_flag::right_command:
+        return key_code::right_command;
+
+      case modifier_flag::fn:
+        return key_code::fn;
+
+      case modifier_flag::end_:
+        return boost::none;
     }
   }
 
