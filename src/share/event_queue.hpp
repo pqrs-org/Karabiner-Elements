@@ -84,13 +84,14 @@ public:
                  uint64_t time_stamp,
                  const class event& event,
                  event_type event_type,
-                 const class event& original_event) : device_id_(device_id),
-                                                      time_stamp_(time_stamp),
-                                                      valid_(true),
-                                                      lazy_(false),
-                                                      event_(event),
-                                                      event_type_(event_type),
-                                                      original_event_(original_event) {
+                 const class event& original_event,
+                 bool lazy = false) : device_id_(device_id),
+                                      time_stamp_(time_stamp),
+                                      valid_(true),
+                                      lazy_(lazy),
+                                      event_(event),
+                                      event_type_(event_type),
+                                      original_event_(original_event) {
     }
 
     device_id get_device_id(void) const {
@@ -240,14 +241,16 @@ public:
                           uint64_t time_stamp,
                           const queued_event::event& event,
                           event_type event_type,
-                          const queued_event::event& original_event) {
+                          const queued_event::event& original_event,
+                          bool lazy = false) {
     time_stamp += time_stamp_delay_;
 
     events_.emplace_back(device_id,
                          time_stamp,
                          event,
                          event_type,
-                         original_event);
+                         original_event,
+                         lazy);
 
     sort_events();
 
@@ -273,7 +276,8 @@ public:
                        queued_event.get_time_stamp(),
                        queued_event.get_event(),
                        queued_event.get_event_type(),
-                       queued_event.get_original_event());
+                       queued_event.get_original_event(),
+                       queued_event.get_lazy());
   }
 
   void clear_events(void) {

@@ -659,24 +659,34 @@ TEST_CASE("manipulator.manipulator_manager") {
 
       expected.emplace_back(krbn::device_id(1),
                             400,
+                            krbn::event_queue::queued_event::event(fn_key_code),
+                            krbn::event_type::key_up,
+                            krbn::event_queue::queued_event::event(spacebar_key_code));
+
+      expected.emplace_back(krbn::device_id(1),
+                            401,
                             krbn::event_queue::queued_event::event(tab_key_code),
                             krbn::event_type::key_down,
                             krbn::event_queue::queued_event::event(spacebar_key_code));
 
       expected.emplace_back(krbn::device_id(1),
-                            500,
+                            402,
+                            krbn::event_queue::queued_event::event(fn_key_code),
+                            krbn::event_type::key_down,
+                            krbn::event_queue::queued_event::event(spacebar_key_code));
+      expected.back().set_lazy(true);
+
+      expected.emplace_back(krbn::device_id(1),
+                            502,
                             krbn::event_queue::queued_event::event(fn_key_code),
                             krbn::event_type::key_up,
                             krbn::event_queue::queued_event::event(fn_key_code));
 
       expected.emplace_back(krbn::device_id(1),
-                            600,
+                            602,
                             krbn::event_queue::queued_event::event(tab_key_code),
                             krbn::event_type::key_up,
                             krbn::event_queue::queued_event::event(spacebar_key_code));
-
-      REQUIRE(input_event_queue.get_events().empty());
-      REQUIRE(output_event_queue.get_events() == expected);
     }
   }
 }

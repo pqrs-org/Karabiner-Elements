@@ -28,6 +28,10 @@ public:
       return original_event_;
     }
 
+    const std::unordered_set<modifier_flag>& get_from_modifiers(void) const {
+      return from_modifiers_;
+    }
+
     bool operator==(const manipulated_original_event& other) const {
       // Do not compare `from_modifiers_`.
       return get_device_id() == other.get_device_id() &&
@@ -82,8 +86,9 @@ public:
     }
 
     if (is_target) {
+      std::unordered_set<modifier_flag> from_modifiers;
+
       if (front_input_event.get_event_type() == event_type::key_down) {
-        std::unordered_set<modifier_flag> from_modifiers;
 
         if (!valid_) {
           is_target = false;
@@ -113,6 +118,7 @@ public:
                                         manipulated_original_event.get_original_event() == front_input_event.get_original_event();
                                });
         if (it != std::end(manipulated_original_events_)) {
+          from_modifiers = it->get_from_modifiers();
           manipulated_original_events_.erase(it);
         } else {
           is_target = false;
@@ -122,23 +128,47 @@ public:
       if (is_target) {
         front_input_event.set_valid(false);
 
-        uint64_t to_time_stamp = front_input_event.get_time_stamp();
+        uint64_t time_stamp_delay = 0;
+        bool persist_from_modifier_manipulation = false;
+
+        // Release from_modifiers
+
+        if (front_input_event.get_event_type() == event_type::key_down) {
+          for (const auto& m : from_modifiers) {
+            if (auto key_code = types::get_key_code(m)) {
+              event_queue::queued_event event(front_input_event.get_device_id(),
+                                              front_input_event.get_time_stamp() + time_stamp_delay++,
+                                              event_queue::queued_event::event(*key_code),
+                                              event_type::key_up,
+                                              front_input_event.get_original_event());
+              output_event_queue.push_back_event(event);
+            }
+          }
+        }
+
+        // Send events
 
         for (size_t i = 0; i < to_.size(); ++i) {
           if (auto event = to_[i].to_event()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
               output_event_queue.emplace_back_event(front_input_event.get_device_id(),
-                                                    to_time_stamp + i,
+                                                    front_input_event.get_time_stamp() + time_stamp_delay++,
                                                     *event,
                                                     event_type::key_down,
                                                     front_input_event.get_original_event());
 
               if (i != to_.size() - 1) {
                 output_event_queue.emplace_back_event(front_input_event.get_device_id(),
-                                                      to_time_stamp + i,
+                                                      front_input_event.get_time_stamp() + time_stamp_delay++,
                                                       *event,
                                                       event_type::key_up,
                                                       front_input_event.get_original_event());
+
+                if (auto key_code = event->get_key_code()) {
+                  if (types::get_modifier_flag(*key_code) != modifier_flag::zero) {
+                    persist_from_modifier_manipulation = true;
+                  }
+                }
               }
 
             } else {
@@ -146,7 +176,7 @@ public:
 
               if (i == to_.size() - 1) {
                 output_event_queue.emplace_back_event(front_input_event.get_device_id(),
-                                                      to_time_stamp + i,
+                                                      front_input_event.get_time_stamp() + time_stamp_delay++,
                                                       *event,
                                                       event_type::key_up,
                                                       front_input_event.get_original_event());
@@ -155,7 +185,26 @@ public:
           }
         }
 
-        output_event_queue.increase_time_stamp_delay(to_.size() - 1);
+        // Restore from_modifiers
+
+        if ((front_input_event.get_event_type() == event_type::key_down) ||
+            (front_input_event.get_event_type() == event_type::key_up && persist_from_modifier_manipulation)) {
+          for (const auto& m : from_modifiers) {
+            if (auto key_code = types::get_key_code(m)) {
+              event_queue::queued_event event(front_input_event.get_device_id(),
+                                              front_input_event.get_time_stamp() + time_stamp_delay++,
+                                              event_queue::queued_event::event(*key_code),
+                                              event_type::key_down,
+                                              front_input_event.get_original_event());
+              if (!persist_from_modifier_manipulation) {
+                event.set_lazy(true);
+              }
+              output_event_queue.push_back_event(event);
+            }
+          }
+        }
+
+        output_event_queue.increase_time_stamp_delay(time_stamp_delay - 1);
       }
     }
   }

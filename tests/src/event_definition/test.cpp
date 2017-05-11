@@ -3,6 +3,7 @@
 
 #include "manipulator/details/types.hpp"
 #include "thread_utility.hpp"
+#include <boost/optional/optional_io.hpp>
 
 namespace {
 auto a_key_code = *(krbn::types::get_key_code("a"));
@@ -109,9 +110,7 @@ TEST_CASE("event_definition.test_modifiers") {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      if (event_definition.test_modifiers(modifier_flag_manager) != boost::none) {
-        REQUIRE(false);
-      }
+      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == boost::none);
     }
   }
 
