@@ -71,8 +71,40 @@ enum class event_type : uint32_t {
 
 enum class key_code : uint32_t {
   // 0x00 - 0xff are keys in keyboard_or_keypad usage page.
+
+  a = kHIDUsage_KeyboardA,
+  b = kHIDUsage_KeyboardB,
+  c = kHIDUsage_KeyboardC,
+  d = kHIDUsage_KeyboardD,
+  e = kHIDUsage_KeyboardE,
+  f = kHIDUsage_KeyboardF,
+  g = kHIDUsage_KeyboardG,
+  h = kHIDUsage_KeyboardH,
+  i = kHIDUsage_KeyboardI,
+  j = kHIDUsage_KeyboardJ,
+  k = kHIDUsage_KeyboardK,
+  l = kHIDUsage_KeyboardL,
+  m = kHIDUsage_KeyboardM,
+  n = kHIDUsage_KeyboardN,
+  o = kHIDUsage_KeyboardO,
+  p = kHIDUsage_KeyboardP,
+  q = kHIDUsage_KeyboardQ,
+  r = kHIDUsage_KeyboardR,
+  s = kHIDUsage_KeyboardS,
+  t = kHIDUsage_KeyboardT,
+  u = kHIDUsage_KeyboardU,
+  v = kHIDUsage_KeyboardV,
+  w = kHIDUsage_KeyboardW,
+  x = kHIDUsage_KeyboardX,
+  y = kHIDUsage_KeyboardY,
+  z = kHIDUsage_KeyboardZ,
+
   return_or_enter = kHIDUsage_KeyboardReturnOrEnter,
+  escape = kHIDUsage_KeyboardEscape,
   delete_or_backspace = kHIDUsage_KeyboardDeleteOrBackspace,
+  tab = kHIDUsage_KeyboardTab,
+  spacebar = kHIDUsage_KeyboardSpacebar,
+
   caps_lock = kHIDUsage_KeyboardCapsLock,
 
   f1 = kHIDUsage_KeyboardF1,
