@@ -140,7 +140,8 @@ public:
                                               front_input_event.get_time_stamp() + time_stamp_delay++,
                                               event_queue::queued_event::event(*key_code),
                                               event_type::key_up,
-                                              front_input_event.get_original_event());
+                                              front_input_event.get_original_event(),
+                                              true);
               output_event_queue.push_back_event(event);
             }
           }
@@ -195,10 +196,8 @@ public:
                                               front_input_event.get_time_stamp() + time_stamp_delay++,
                                               event_queue::queued_event::event(*key_code),
                                               event_type::key_down,
-                                              front_input_event.get_original_event());
-              if (!persist_from_modifier_manipulation) {
-                event.set_lazy(true);
-              }
+                                              front_input_event.get_original_event(),
+                                              !persist_from_modifier_manipulation);
               output_event_queue.push_back_event(event);
             }
           }

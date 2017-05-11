@@ -661,7 +661,8 @@ TEST_CASE("manipulator.manipulator_manager") {
                             400,
                             krbn::event_queue::queued_event::event(fn_key_code),
                             krbn::event_type::key_up,
-                            krbn::event_queue::queued_event::event(spacebar_key_code));
+                            krbn::event_queue::queued_event::event(spacebar_key_code),
+                            true);
 
       expected.emplace_back(krbn::device_id(1),
                             401,
@@ -673,8 +674,8 @@ TEST_CASE("manipulator.manipulator_manager") {
                             402,
                             krbn::event_queue::queued_event::event(fn_key_code),
                             krbn::event_type::key_down,
-                            krbn::event_queue::queued_event::event(spacebar_key_code));
-      expected.back().set_lazy(true);
+                            krbn::event_queue::queued_event::event(spacebar_key_code),
+                            true);
 
       expected.emplace_back(krbn::device_id(1),
                             502,
