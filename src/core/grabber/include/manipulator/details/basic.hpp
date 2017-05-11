@@ -3,6 +3,7 @@
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include <json/json.hpp>
+#include <unordered_set>
 #include <vector>
 
 namespace krbn {
@@ -14,9 +15,9 @@ public:
   public:
     manipulated_original_event(device_id device_id,
                                const event_queue::queued_event::event& original_event,
-                               const std::vector<modifier_flag> from_modifiers) : device_id_(device_id),
-                                                                                  original_event_(original_event),
-                                                                                  from_modifiers_(from_modifiers) {
+                               const std::unordered_set<modifier_flag> from_modifiers) : device_id_(device_id),
+                                                                                         original_event_(original_event),
+                                                                                         from_modifiers_(from_modifiers) {
     }
 
     device_id get_device_id(void) const {
@@ -36,7 +37,7 @@ public:
   private:
     device_id device_id_;
     event_queue::queued_event::event original_event_;
-    std::vector<modifier_flag> from_modifiers_;
+    std::unordered_set<modifier_flag> from_modifiers_;
   };
 
   basic(const nlohmann::json& json) : base(),
@@ -82,19 +83,22 @@ public:
 
     if (is_target) {
       if (front_input_event.get_event_type() == event_type::key_down) {
+        std::unordered_set<modifier_flag> from_modifiers;
 
         if (!valid_) {
           is_target = false;
         }
 
-        if (!from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
+        if (auto modifiers = from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
+          from_modifiers = *modifiers;
+        } else {
           is_target = false;
         }
 
         if (is_target) {
           manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
                                                     front_input_event.get_original_event(),
-                                                    std::vector<modifier_flag>());
+                                                    from_modifiers);
         }
 
       } else {

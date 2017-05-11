@@ -135,12 +135,14 @@ public:
     }
   }
 
-  bool test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
+  boost::optional<std::unordered_set<modifier_flag>> test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
     bool has_any = (modifiers_.find(modifier::any) != std::end(modifiers_));
     bool has_command = (modifiers_.find(modifier::command) != std::end(modifiers_));
     bool has_control = (modifiers_.find(modifier::control) != std::end(modifiers_));
     bool has_option = (modifiers_.find(modifier::option) != std::end(modifiers_));
     bool has_shift = (modifiers_.find(modifier::shift) != std::end(modifiers_));
+
+    std::unordered_set<modifier_flag> modifier_flags;
 
     for (int i = 0; i < static_cast<int>(modifier::end_); ++i) {
       auto m = modifier(i);
@@ -150,9 +152,14 @@ public:
       }
 
       if (modifiers_.find(m) != std::end(modifiers_)) {
-        if (!test_modifier(modifier_flag_manager, m)) {
-          return false;
+        auto pair = test_modifier(modifier_flag_manager, m);
+        if (!pair.first) {
+          return boost::none;
         }
+        if (pair.second != modifier_flag::zero) {
+          modifier_flags.insert(pair.second);
+        }
+
       } else {
         // m is not a member of modifiers_.
         if (!has_any) {
@@ -169,71 +176,84 @@ public:
             continue;
           }
 
-          if (test_modifier(modifier_flag_manager, m)) {
-            return false;
+          auto pair = test_modifier(modifier_flag_manager, m);
+          if (pair.first) {
+            return boost::none;
           }
         }
       }
     }
 
-    return true;
+    return modifier_flags;
   }
 
-  static bool test_modifier(const modifier_flag_manager& modifier_flag_manager,
-                            modifier modifier) {
+  static std::pair<bool, modifier_flag> test_modifier(const modifier_flag_manager& modifier_flag_manager,
+                                                      modifier modifier) {
+    if (modifier == modifier::any) {
+      return std::make_pair(true, modifier_flag::zero);
+    }
+
+    auto modifier_flags = get_modifier_flags(modifier);
+    if (!modifier_flags.empty()) {
+      for (const auto& m : modifier_flags) {
+        if (modifier_flag_manager.is_pressed(m)) {
+          return std::make_pair(true, m);
+        }
+      }
+    }
+
+    return std::make_pair(false, modifier_flag::zero);
+  }
+
+  static std::vector<modifier_flag> get_modifier_flags(modifier modifier) {
     switch (modifier) {
       case modifier::any:
-        // Do nothing
-        return true;
+        return {};
 
       case modifier::caps_lock:
-        return modifier_flag_manager.is_pressed(modifier_flag::caps_lock);
+        return {modifier_flag::caps_lock};
 
       case modifier::command:
-        return modifier_flag_manager.is_pressed(modifier_flag::left_command) ||
-               modifier_flag_manager.is_pressed(modifier_flag::right_command);
+        return {modifier_flag::left_command, modifier_flag::right_command};
 
       case modifier::control:
-        return modifier_flag_manager.is_pressed(modifier_flag::left_control) ||
-               modifier_flag_manager.is_pressed(modifier_flag::right_control);
+        return {modifier_flag::left_control, modifier_flag::right_control};
 
       case modifier::fn:
-        return modifier_flag_manager.is_pressed(modifier_flag::fn);
+        return {modifier_flag::fn};
 
       case modifier::left_command:
-        return modifier_flag_manager.is_pressed(modifier_flag::left_command);
+        return {modifier_flag::left_command};
 
       case modifier::left_control:
-        return modifier_flag_manager.is_pressed(modifier_flag::left_control);
+        return {modifier_flag::left_control};
 
       case modifier::left_option:
-        return modifier_flag_manager.is_pressed(modifier_flag::left_option);
+        return {modifier_flag::left_option};
 
       case modifier::left_shift:
-        return modifier_flag_manager.is_pressed(modifier_flag::left_shift);
+        return {modifier_flag::left_shift};
 
       case modifier::option:
-        return modifier_flag_manager.is_pressed(modifier_flag::left_option) ||
-               modifier_flag_manager.is_pressed(modifier_flag::right_option);
+        return {modifier_flag::left_option, modifier_flag::right_option};
 
       case modifier::right_command:
-        return modifier_flag_manager.is_pressed(modifier_flag::right_command);
+        return {modifier_flag::right_command};
 
       case modifier::right_control:
-        return modifier_flag_manager.is_pressed(modifier_flag::right_control);
+        return {modifier_flag::right_control};
 
       case modifier::right_option:
-        return modifier_flag_manager.is_pressed(modifier_flag::right_option);
+        return {modifier_flag::right_option};
 
       case modifier::right_shift:
-        return modifier_flag_manager.is_pressed(modifier_flag::right_shift);
+        return {modifier_flag::right_shift};
 
       case modifier::shift:
-        return modifier_flag_manager.is_pressed(modifier_flag::left_shift) ||
-               modifier_flag_manager.is_pressed(modifier_flag::right_shift);
+        return {modifier_flag::left_shift, modifier_flag::right_shift};
 
       case modifier::end_:
-        return false;
+        return {};
     }
   }
 

@@ -233,10 +233,10 @@ TEST_CASE("manipulator.manipulator_manager") {
     }
     {
       auto manipulator = std::make_unique<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(
-                                                                               tab_key_code,
-                                                                               std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
-                                                                                   krbn::manipulator::details::event_definition::modifier::any,
-                                                                                     })),
+                                                                                 tab_key_code,
+                                                                                 std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
+                                                                                     krbn::manipulator::details::event_definition::modifier::any,
+                                                                                 })),
                                                                              krbn::manipulator::details::event_definition(a_key_code));
       std::unique_ptr<krbn::manipulator::details::base> ptr = std::move(manipulator);
       manipulator_manager.push_back_manipulator(std::move(ptr));

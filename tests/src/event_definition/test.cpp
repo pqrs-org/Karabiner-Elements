@@ -14,20 +14,20 @@ auto spacebar_key_code = *(krbn::types::get_key_code("spacebar"));
 auto tab_key_code = *(krbn::types::get_key_code("tab"));
 
 krbn::modifier_flag_manager::active_modifier_flag left_command_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                              krbn::modifier_flag::left_command,
-                                                                              krbn::device_id(1));
+                                                                 krbn::modifier_flag::left_command,
+                                                                 krbn::device_id(1));
 krbn::modifier_flag_manager::active_modifier_flag left_control_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                              krbn::modifier_flag::left_control,
-                                                                              krbn::device_id(1));
+                                                                 krbn::modifier_flag::left_control,
+                                                                 krbn::device_id(1));
 krbn::modifier_flag_manager::active_modifier_flag left_option_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                             krbn::modifier_flag::left_option,
-                                                                             krbn::device_id(1));
+                                                                krbn::modifier_flag::left_option,
+                                                                krbn::device_id(1));
 krbn::modifier_flag_manager::active_modifier_flag left_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                            krbn::modifier_flag::left_shift,
-                                                                            krbn::device_id(1));
+                                                               krbn::modifier_flag::left_shift,
+                                                               krbn::device_id(1));
 krbn::modifier_flag_manager::active_modifier_flag right_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
-                                                                             krbn::modifier_flag::right_shift,
-                                                                             krbn::device_id(1));
+                                                                krbn::modifier_flag::right_shift,
+                                                                krbn::device_id(1));
 } // namespace
 
 TEST_CASE("event_definition.get_modifier") {
@@ -44,11 +44,51 @@ TEST_CASE("event_definition.test_modifier") {
     krbn::modifier_flag_manager modifier_flag_manager;
     modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
 
-    REQUIRE(event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::left_shift) == false);
-    REQUIRE(event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::left_command) == true);
-    REQUIRE(event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::right_command) == false);
-    REQUIRE(event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::command) == true);
-    REQUIRE(event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::shift) == false);
+    {
+      auto actual = event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::left_shift);
+      auto expected = std::make_pair(false, krbn::modifier_flag::zero);
+      REQUIRE(actual == expected);
+    }
+    {
+      auto actual = event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::left_command);
+      auto expected = std::make_pair(true, krbn::modifier_flag::left_command);
+      REQUIRE(actual == expected);
+    }
+    {
+      auto actual = event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::right_command);
+      auto expected = std::make_pair(false, krbn::modifier_flag::zero);
+      REQUIRE(actual == expected);
+    }
+    {
+      auto actual = event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::command);
+      auto expected = std::make_pair(true, krbn::modifier_flag::left_command);
+      REQUIRE(actual == expected);
+    }
+    {
+      auto actual = event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::shift);
+      auto expected = std::make_pair(false, krbn::modifier_flag::zero);
+      REQUIRE(actual == expected);
+    }
+  }
+  {
+    krbn::modifier_flag_manager modifier_flag_manager;
+    modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
+
+    {
+      auto actual = event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::left_shift);
+      auto expected = std::make_pair(false, krbn::modifier_flag::zero);
+      REQUIRE(actual == expected);
+    }
+    {
+      auto actual = event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::right_shift);
+      auto expected = std::make_pair(true, krbn::modifier_flag::right_shift);
+      REQUIRE(actual == expected);
+    }
+    {
+      auto actual = event_definition::test_modifier(modifier_flag_manager, event_definition::modifier::shift);
+      auto expected = std::make_pair(true, krbn::modifier_flag::right_shift);
+      REQUIRE(actual == expected);
+    }
   }
 }
 
@@ -64,12 +104,14 @@ TEST_CASE("event_definition.test_modifiers") {
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({}));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == false);
+      if (event_definition.test_modifiers(modifier_flag_manager) != boost::none) {
+        REQUIRE(false);
+      }
     }
   }
 
@@ -82,12 +124,14 @@ TEST_CASE("event_definition.test_modifiers") {
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({}));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == false);
+      if (event_definition.test_modifiers(modifier_flag_manager) != boost::none) {
+        REQUIRE(false);
+      }
     }
   }
 
@@ -102,18 +146,18 @@ TEST_CASE("event_definition.test_modifiers") {
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({}));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({}));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({}));
     }
   }
 
@@ -129,18 +173,24 @@ TEST_CASE("event_definition.test_modifiers") {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == false);
+      if (event_definition.test_modifiers(modifier_flag_manager) != boost::none) {
+        REQUIRE(false);
+      }
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({
+                                                                             krbn::modifier_flag::left_shift,
+                                                                         }));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
       modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == false);
+      if (event_definition.test_modifiers(modifier_flag_manager) != boost::none) {
+        REQUIRE(false);
+      }
     }
   }
 
@@ -156,30 +206,40 @@ TEST_CASE("event_definition.test_modifiers") {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == false);
+      if (event_definition.test_modifiers(modifier_flag_manager) != boost::none) {
+        REQUIRE(false);
+      }
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({
+                                                                             krbn::modifier_flag::left_shift,
+                                                                         }));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({
+                                                                             krbn::modifier_flag::right_shift,
+                                                                         }));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
       modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({
+                                                                             krbn::modifier_flag::left_shift,
+                                                                         }));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
       modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == false);
+      if (event_definition.test_modifiers(modifier_flag_manager) != boost::none) {
+        REQUIRE(false);
+      }
     }
   }
 
@@ -196,30 +256,40 @@ TEST_CASE("event_definition.test_modifiers") {
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == false);
+      if (event_definition.test_modifiers(modifier_flag_manager) != boost::none) {
+        REQUIRE(false);
+      }
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({
+                                                                             krbn::modifier_flag::left_shift,
+                                                                         }));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({
+                                                                             krbn::modifier_flag::right_shift,
+                                                                         }));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
       modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({
+                                                                             krbn::modifier_flag::left_shift,
+                                                                         }));
     }
     {
       krbn::modifier_flag_manager modifier_flag_manager;
       modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
       modifier_flag_manager.push_back_active_modifier_flag(left_shift_1);
       modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
-      REQUIRE(event_definition.test_modifiers(modifier_flag_manager) == true);
+      REQUIRE(*event_definition.test_modifiers(modifier_flag_manager) == std::unordered_set<krbn::modifier_flag>({
+                                                                             krbn::modifier_flag::left_shift,
+                                                                         }));
     }
   }
 }
