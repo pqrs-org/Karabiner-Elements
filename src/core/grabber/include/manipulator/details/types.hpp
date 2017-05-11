@@ -45,7 +45,8 @@ public:
       {
         const std::string key = "key_code";
         if (json.find(key) != std::end(json) && json[key].is_string()) {
-          if (auto key_code = types::get_key_code(json[key])) {
+          const std::string& name = json[key];
+          if (auto key_code = types::get_key_code(name)) {
             type_ = type::key_code;
             key_code_ = *key_code;
           }
