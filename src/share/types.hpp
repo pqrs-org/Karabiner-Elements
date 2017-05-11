@@ -5,6 +5,7 @@
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
+#include "stream_utility.hpp"
 #include "system_preferences.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
@@ -17,6 +18,7 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace krbn {
@@ -164,11 +166,6 @@ enum class key_code : uint32_t {
   apple_top_case_display_brightness_decrement,
   apple_top_case_display_brightness_increment,
 };
-
-inline std::ostream& operator<<(std::ostream& stream, const key_code& value) {
-  stream << "key_code (" << static_cast<uint32_t>(value) << ")";
-  return stream;
-}
 
 enum class pointing_button : uint32_t {
   zero,
@@ -780,4 +777,28 @@ struct operation_type_system_preferences_values_updated_struct {
   const operation_type operation_type;
   system_preferences::values values;
 };
+
+// stream output
+
+#define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                        \
+  inline std::ostream& operator<<(std::ostream& stream, const TYPE& value) {                                                                  \
+    return stream_utility::output_enum(stream, #TYPE, value);                                                                                 \
+  }                                                                                                                                           \
+                                                                                                                                              \
+  template <template <class T, class A> class container>                                                                                      \
+  std::ostream& operator<<(std::ostream& stream, const container<TYPE, std::allocator<TYPE>>& values) {                                       \
+    return stream_utility::output_enums(stream, values);                                                                                      \
+  }                                                                                                                                           \
+                                                                                                                                              \
+  template <template <class T, class H, class K, class A> class container>                                                                    \
+  std::ostream& operator<<(std::ostream& stream, const container<TYPE, std::hash<TYPE>, std::equal_to<TYPE>, std::allocator<TYPE>>& values) { \
+    return stream_utility::output_enums(stream, values);                                                                                      \
+  }
+
+KRBN_TYPES_STREAM_OUTPUT(key_code);
+KRBN_TYPES_STREAM_OUTPUT(modifier_flag);
+KRBN_TYPES_STREAM_OUTPUT(pointing_button);
+
+#undef KRBN_TYPES_STREAM_OUTPUT
+
 } // namespace krbn

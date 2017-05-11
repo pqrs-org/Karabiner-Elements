@@ -24,9 +24,7 @@ TEST_CASE("get_key_code") {
   {
     auto actual = krbn::types::get_key_code(krbn::hid_usage_page(kHIDPage_Button),
                                             krbn::hid_usage(1));
-    if (actual != boost::none) {
-      REQUIRE(false);
-    }
+    REQUIRE(actual == boost::none);
   }
 }
 
@@ -67,9 +65,7 @@ TEST_CASE("get_pointing_button") {
   {
     auto actual = krbn::types::get_pointing_button(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
                                                    krbn::hid_usage(kHIDUsage_KeyboardTab));
-    if (actual != boost::none) {
-      REQUIRE(false);
-    }
+    REQUIRE(actual == boost::none);
   }
 }
 
