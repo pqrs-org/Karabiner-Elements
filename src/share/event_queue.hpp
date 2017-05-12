@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "modifier_flag_manager.hpp"
+#include "stream_utility.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
 
@@ -405,4 +406,42 @@ private:
   modifier_flag_manager modifier_flag_manager_;
   uint64_t time_stamp_delay_;
 };
+
+// For unit tests
+
+std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event& event) {
+  stream << "{"
+         << "\"type\":";
+  stream_utility::output_enum(stream, event.get_type());
+
+  if (auto key_code = event.get_key_code()) {
+    stream << ",\"key_code\":" << *key_code;
+  }
+
+  if (auto pointing_button = event.get_pointing_button()) {
+    stream << ",\"pointing_button\":" << *pointing_button;
+  }
+
+  if (auto integer_value = event.get_integer_value()) {
+    stream << ",\"integer_value\":" << *integer_value;
+  }
+
+  stream << "}";
+
+  return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event& value) {
+  stream << "{"
+         << "\"device_id\":" << value.get_device_id()
+         << ",\"time_stamp\":" << value.get_time_stamp()
+         << ",\"valid\":" << value.get_valid()
+         << ",\"lazy\":" << value.get_lazy()
+         << ",\"event\":" << value.get_event()
+         << ",\"event_type\":" << value.get_event_type()
+         << ",\"original_event\":" << value.get_original_event()
+         << "}";
+  return stream;
+}
+
 } // namespace krbn
