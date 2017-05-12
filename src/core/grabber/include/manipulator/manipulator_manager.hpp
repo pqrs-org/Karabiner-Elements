@@ -20,6 +20,21 @@ public:
     while (!input_event_queue.empty()) {
       auto& front_input_event = input_event_queue.get_front_event();
 
+      if (front_input_event.get_lazy()) {
+        bool lazy_events = true;
+
+        // Find a not lazy event
+        for (const auto& e : input_event_queue.get_events()) {
+          if (!e.get_lazy()) {
+            lazy_events = false;
+          }
+        }
+
+        if (lazy_events) {
+          break;
+        }
+      }
+
       for (auto&& m : manipulators_) {
         m->manipulate(front_input_event,
                       input_event_queue,
