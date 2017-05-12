@@ -814,7 +814,7 @@ struct operation_type_system_preferences_values_updated_struct {
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                        \
   inline std::ostream& operator<<(std::ostream& stream, const TYPE& value) {                                                                  \
-    return stream_utility::output_enum(stream, #TYPE, value);                                                                                 \
+    return stream_utility::output_enum(stream, value);                                                                                        \
   }                                                                                                                                           \
                                                                                                                                               \
   template <template <class T, class A> class container>                                                                                      \
@@ -827,6 +827,8 @@ struct operation_type_system_preferences_values_updated_struct {
     return stream_utility::output_enums(stream, values);                                                                                      \
   }
 
+KRBN_TYPES_STREAM_OUTPUT(device_id);
+KRBN_TYPES_STREAM_OUTPUT(event_type);
 KRBN_TYPES_STREAM_OUTPUT(key_code);
 KRBN_TYPES_STREAM_OUTPUT(modifier_flag);
 KRBN_TYPES_STREAM_OUTPUT(pointing_button);
