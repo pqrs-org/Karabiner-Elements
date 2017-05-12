@@ -1,6 +1,7 @@
 #pragma once
 
 #include "manipulator/manipulator_factory.hpp"
+#include "logger.hpp"
 
 namespace krbn {
 namespace manipulator {
@@ -17,6 +18,11 @@ public:
   void manipulate(event_queue& input_event_queue,
                   event_queue& output_event_queue,
                   uint64_t time_stamp) {
+      
+      
+    // auto& logger = krbn::logger::get_logger();
+    // logger.info("manipulateor size(): {0}", manipulators_.size());
+      
     while (!input_event_queue.empty()) {
       auto& front_input_event = input_event_queue.get_front_event();
 

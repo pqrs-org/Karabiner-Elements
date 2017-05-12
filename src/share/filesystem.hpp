@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include <limits.h>
 #include <array>
 #include <boost/optional.hpp>
 #include <string>

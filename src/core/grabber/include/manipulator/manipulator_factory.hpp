@@ -6,8 +6,10 @@
 #include "manipulator/details/types.hpp"
 #include <memory>
 
+
 namespace krbn {
 namespace manipulator {
+  
 class manipulator_factory final {
 public:
   static std::unique_ptr<details::base> make_manipulator(const nlohmann::json& json) {

@@ -165,6 +165,7 @@ public:
                              uint64_t timestamp,
                              key_code from_key_code,
                              bool pressed) {
+
     key_code to_key_code = from_key_code;
 
     // ----------------------------------------

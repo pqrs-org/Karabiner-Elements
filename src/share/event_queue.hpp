@@ -408,7 +408,7 @@ private:
 };
 
 // For unit tests
-
+/*
 std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event& event) {
   stream << "{"
          << "\"type\":";
@@ -443,5 +443,6 @@ std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event& 
          << "}";
   return stream;
 }
+ */
 
 } // namespace krbn
