@@ -52,13 +52,13 @@ public:
     remove_invalid_manipulators();
   }
 
-  void inactivate_by_device_id(device_id device_id,
-                               event_queue& output_event_queue,
-                               uint64_t time_stamp) {
+  void run_device_ungrabbed_callback(device_id device_id,
+                                     event_queue& output_event_queue,
+                                     uint64_t time_stamp) {
     for (auto&& m : manipulators_) {
-      m->inactivate_by_device_id(device_id,
-                                 output_event_queue,
-                                 time_stamp);
+      m->device_ungrabbed_callback(device_id,
+                                   output_event_queue,
+                                   time_stamp);
     }
 
     remove_invalid_manipulators();

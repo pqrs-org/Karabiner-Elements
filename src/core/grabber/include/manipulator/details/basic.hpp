@@ -212,9 +212,9 @@ public:
     return !manipulated_original_events_.empty();
   }
 
-  virtual void inactivate_by_device_id(device_id device_id,
-                                       event_queue& output_event_queue,
-                                       uint64_t time_stamp) {
+  virtual void device_ungrabbed_callback(device_id device_id,
+                                         event_queue& output_event_queue,
+                                         uint64_t time_stamp) {
     while (true) {
       auto it = std::find_if(std::begin(manipulated_original_events_),
                              std::end(manipulated_original_events_),

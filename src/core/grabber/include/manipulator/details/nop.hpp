@@ -24,9 +24,9 @@ public:
     return false;
   }
 
-  virtual void inactivate_by_device_id(device_id device_id,
-                                       event_queue& output_event_queue,
-                                       uint64_t time_stamp) {
+  virtual void device_ungrabbed_callback(device_id device_id,
+                                         event_queue& output_event_queue,
+                                         uint64_t time_stamp) {
   }
 };
 } // namespace details

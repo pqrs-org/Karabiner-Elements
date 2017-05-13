@@ -395,7 +395,7 @@ TEST_CASE("manipulator.manipulator_manager") {
 
   {
     // ----------------------------------------
-    // manipulator_manager (inactivate_by_device_id)
+    // manipulator_manager (device_ungrabbed_callback)
 
     krbn::manipulator::manipulator_manager manipulator_manager;
     {
@@ -432,7 +432,7 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     manipulator_manager.manipulate(input_event_queue, output_event_queue, 400);
 
-    manipulator_manager.inactivate_by_device_id(krbn::device_id(1), output_event_queue, 500);
+    manipulator_manager.run_device_ungrabbed_callback(krbn::device_id(1), output_event_queue, 500);
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
@@ -459,7 +459,7 @@ TEST_CASE("manipulator.manipulator_manager") {
       REQUIRE(output_event_queue.get_events() == expected);
     }
 
-    manipulator_manager.inactivate_by_device_id(krbn::device_id(2), output_event_queue, 500);
+    manipulator_manager.run_device_ungrabbed_callback(krbn::device_id(2), output_event_queue, 500);
 
     {
       std::vector<krbn::event_queue::queued_event> expected;

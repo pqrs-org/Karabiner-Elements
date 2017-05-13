@@ -153,12 +153,12 @@ public:
                                                          time_stamp);
   }
 
-  void inactivate_manipulators_by_device_id(device_id device_id,
-                                            event_queue& output_event_queue,
-                                            uint64_t time_stamp) {
-    simple_modifications_manipulator_manager_.inactivate_by_device_id(device_id,
-                                                                      output_event_queue,
-                                                                      time_stamp);
+  void run_device_ungrabbed_callback(device_id device_id,
+                                     event_queue& output_event_queue,
+                                     uint64_t time_stamp) {
+    simple_modifications_manipulator_manager_.run_device_ungrabbed_callback(device_id,
+                                                                            output_event_queue,
+                                                                            time_stamp);
   }
 
   void handle_keyboard_event(device_id device_id,
