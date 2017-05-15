@@ -34,10 +34,10 @@ public:
 
   static const std::string& get_user_configuration_directory(void) {
     static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
     static bool once = false;
     static std::string directory;
-
-    std::lock_guard<std::mutex> guard(mutex);
 
     if (!once) {
       once = true;
@@ -60,10 +60,10 @@ public:
 
   static const std::string& get_user_data_directory(void) {
     static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
     static bool once = false;
     static std::string directory;
-
-    std::lock_guard<std::mutex> guard(mutex);
 
     if (!once) {
       once = true;
@@ -86,10 +86,10 @@ public:
 
   static const std::string& get_user_core_configuration_file_path(void) {
     static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
     static bool once = false;
     static std::string file_path;
-
-    std::lock_guard<std::mutex> guard(mutex);
 
     if (!once) {
       once = true;
@@ -104,10 +104,10 @@ public:
 
   static const std::string& get_user_log_directory(void) {
     static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
     static bool once = false;
     static std::string directory;
-
-    std::lock_guard<std::mutex> guard(mutex);
 
     if (!once) {
       once = true;
@@ -122,10 +122,10 @@ public:
 
   static const std::string& get_user_pid_directory(void) {
     static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
     static bool once = false;
     static std::string directory;
-
-    std::lock_guard<std::mutex> guard(mutex);
 
     if (!once) {
       once = true;

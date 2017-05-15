@@ -102,9 +102,9 @@ public:
 private:
   static std::string get_next_queue_label(void) {
     static std::mutex mutex;
-    static int id = 0;
-
     std::lock_guard<std::mutex> guard(mutex);
+
+    static int id = 0;
 
     std::stringstream stream;
     stream << "org.pqrs.gcd_utility." << id++;

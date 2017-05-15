@@ -284,9 +284,9 @@ class types final {
 public:
   static device_id get_new_device_id(void) {
     static std::mutex mutex;
-    static auto id = device_id::zero;
-
     std::lock_guard<std::mutex> guard(mutex);
+
+    static auto id = device_id::zero;
 
     id = device_id(static_cast<uint32_t>(id) + 1);
     return id;

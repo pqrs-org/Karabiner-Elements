@@ -11,9 +11,9 @@ class libkrbn final {
 public:
   static spdlog::logger& get_logger(void) {
     static std::mutex mutex;
-    static std::shared_ptr<spdlog::logger> logger;
-
     std::lock_guard<std::mutex> guard(mutex);
+
+    static std::shared_ptr<spdlog::logger> logger;
 
     if (!logger) {
       logger = spdlog::stdout_color_mt("libkrbn");
