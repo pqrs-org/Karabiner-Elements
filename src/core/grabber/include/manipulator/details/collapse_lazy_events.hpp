@@ -18,6 +18,22 @@ public:
                           const event_queue& input_event_queue,
                           event_queue& output_event_queue,
                           uint64_t time_stamp) {
+    auto& input_events = input_event_queue.get_events();
+
+    // Erase invalidation_reserved_events_ item if it is not included in input_events.
+
+    for (auto it = std::begin(invalidation_reserved_events_); it != std::end(invalidation_reserved_events_);) {
+      if (std::find(std::begin(input_events),
+                    std::end(input_events),
+                    *it) == std::end(input_events)) {
+        it = invalidation_reserved_events_.erase(it);
+      } else {
+        std::advance(it, 1);
+      }
+    }
+
+    // Check front_input_event state.
+
     if (!front_input_event.get_valid()) {
       return;
     }
@@ -39,7 +55,7 @@ public:
       return;
     }
 
-    for (const auto& e : input_event_queue.get_events()) {
+    for (const auto& e : input_events) {
       if (!e.get_valid()) {
         continue;
       }
@@ -58,7 +74,7 @@ public:
   }
 
   virtual bool active(void) const {
-    return false;
+    return !invalidation_reserved_events_.empty();
   }
 
   virtual void device_ungrabbed_callback(device_id device_id,
