@@ -11,6 +11,7 @@
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
+#include "manipulator/details/collapse_lazy_events.hpp"
 #include "physical_keyboard_repeat_detector.hpp"
 #include "pressed_physical_keys_counter.hpp"
 #include "spdlog_utility.hpp"
@@ -35,6 +36,12 @@ public:
                                                                       suspended_(false) {
     virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
         boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
+
+    {
+      auto manipulator = std::make_unique<krbn::manipulator::details::collapse_lazy_events>();
+      std::unique_ptr<krbn::manipulator::details::base> ptr = std::move(manipulator);
+      collapse_lazy_events_manipulator_manager_.push_back_manipulator(std::move(ptr));
+    }
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
     // The behavior causes LED state mismatch because device_grabber does not change the caps lock state of physical keyboards.
@@ -313,7 +320,13 @@ private:
                                                     simple_modifications_applied_event_queue_,
                                                     mach_absolute_time());
 
-      for (const auto& queued_event : simple_modifications_applied_event_queue_.get_events()) {
+      collapse_lazy_events_manipulator_manager_.manipulate(simple_modifications_applied_event_queue_,
+                                                           lazy_collapsed_event_queue_,
+                                                           mach_absolute_time());
+
+      for (const auto& queued_event : lazy_collapsed_event_queue_.get_events()) {
+        // logger::get_logger().info("event_time: {0} current_time:{1}", queued_event.get_time_stamp(), mach_absolute_time());
+
         if (queued_event.get_valid()) {
           auto device_id = queued_event.get_device_id();
           auto time_stamp = queued_event.get_time_stamp();
@@ -373,8 +386,6 @@ private:
         event_manipulator_.erase_all_active_pointing_buttons(device.get_device_id(), false);
       }
     }
-
-    simple_modifications_applied_event_queue_.clear_events();
   }
 
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
@@ -574,6 +585,9 @@ private:
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   event_queue simple_modifications_applied_event_queue_;
+
+  manipulator::manipulator_manager collapse_lazy_events_manipulator_manager_;
+  event_queue lazy_collapsed_event_queue_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> led_monitor_timer_;
 
