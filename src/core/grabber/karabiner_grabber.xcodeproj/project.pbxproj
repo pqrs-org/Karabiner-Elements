@@ -79,6 +79,12 @@
 		5E1FEF471EC59E7600B01724 /* pressed_physical_keys_counter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pressed_physical_keys_counter.hpp; path = include/pressed_physical_keys_counter.hpp; sourceTree = SOURCE_ROOT; };
 		5E1FEF4A1EC5DA6900B01724 /* basic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basic.cpp; path = include/manipulator/details/basic.cpp; sourceTree = SOURCE_ROOT; };
 		5E1FEF4C1EC5E13400B01724 /* device_grabber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device_grabber.cpp; path = include/device_grabber.cpp; sourceTree = SOURCE_ROOT; };
+		5EFDD3DF1EC9B4E600040ABE /* global_configuration.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = global_configuration.hpp; sourceTree = "<group>"; };
+		5EFDD3E11EC9B4E600040ABE /* complex_modification.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = complex_modification.hpp; sourceTree = "<group>"; };
+		5EFDD3E21EC9B4E600040ABE /* device.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = device.hpp; sourceTree = "<group>"; };
+		5EFDD3E31EC9B4E600040ABE /* simple_modifications.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_modifications.hpp; sourceTree = "<group>"; };
+		5EFDD3E41EC9B4E600040ABE /* virtual_hid_keyboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_keyboard.hpp; sourceTree = "<group>"; };
+		5EFDD3E51EC9B5CE00040ABE /* core_configuration.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = core_configuration.hpp; path = ../../share/core_configuration.hpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,11 +143,13 @@
 		3495C6801D3CE652007CB9E7 /* share */ = {
 			isa = PBXGroup;
 			children = (
+				5EFDD3DE1EC9B4E600040ABE /* core_configuration */,
 				34EED7101D6FA38400399AD1 /* apple_hid_usage_tables.hpp */,
 				345AC0041D62163F009D1FB4 /* boost_defs.hpp */,
 				3476862C1E22A7A700A7DFAB /* cf_utility.hpp */,
 				341424E81E685E5F00DFE6EC /* configuration_monitor.hpp */,
 				349863321E784DC800DF3644 /* connected_devices.hpp */,
+				5EFDD3E51EC9B5CE00040ABE /* core_configuration.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
 				345CCB4F1E902963005B61A8 /* event_queue.hpp */,
 				3469EB701D814F140005D30D /* filesystem.hpp */,
@@ -195,17 +203,38 @@
 		34E450271D2AB18400C5AC13 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				5E1FEF4C1EC5E13400B01724 /* device_grabber.cpp */,
 				5E1FEF461EC59E7600B01724 /* physical_keyboard_repeat_detector.hpp */,
 				5E1FEF471EC59E7600B01724 /* pressed_physical_keys_counter.hpp */,
 				34A88A901D6840C200DD480B /* connection_manager.hpp */,
 				34A88A881D6840C200DD480B /* device_grabber.hpp */,
+				5E1FEF4C1EC5E13400B01724 /* device_grabber.cpp */,
 				34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */,
 				34A88A8C1D6840C200DD480B /* logger.hpp */,
 				34A88A891D6840C200DD480B /* receiver.hpp */,
 				34A88AA31D69C84900DD480B /* manipulator */,
 			);
 			name = include;
+			sourceTree = "<group>";
+		};
+		5EFDD3DE1EC9B4E600040ABE /* core_configuration */ = {
+			isa = PBXGroup;
+			children = (
+				5EFDD3DF1EC9B4E600040ABE /* global_configuration.hpp */,
+				5EFDD3E01EC9B4E600040ABE /* profile */,
+			);
+			name = core_configuration;
+			path = ../../share/core_configuration;
+			sourceTree = SOURCE_ROOT;
+		};
+		5EFDD3E01EC9B4E600040ABE /* profile */ = {
+			isa = PBXGroup;
+			children = (
+				5EFDD3E11EC9B4E600040ABE /* complex_modification.hpp */,
+				5EFDD3E21EC9B4E600040ABE /* device.hpp */,
+				5EFDD3E31EC9B4E600040ABE /* simple_modifications.hpp */,
+				5EFDD3E41EC9B4E600040ABE /* virtual_hid_keyboard.hpp */,
+			);
+			path = profile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

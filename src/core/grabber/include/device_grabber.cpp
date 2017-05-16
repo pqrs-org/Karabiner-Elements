@@ -23,14 +23,15 @@
 
 using namespace krbn;
 
-device_grabber * _Nullable device_grabber::grabber = NULL;
+device_grabber * _Nullable device_grabber::grabber = nullptr;
 
 device_grabber::device_grabber(virtual_hid_device_client& virtual_hid_device_client,
-                               manipulator::event_manipulator& event_manipulator)  : virtual_hid_device_client_(virtual_hid_device_client),
-event_manipulator_(event_manipulator),
-mode_(mode::observing),
-is_grabbable_callback_log_reducer_(logger::get_logger()),
-suspended_(false)  {
+                               manipulator::event_manipulator& event_manipulator) :
+                                virtual_hid_device_client_(virtual_hid_device_client),
+                                event_manipulator_(event_manipulator),
+                                mode_(mode::observing),
+                                is_grabbable_callback_log_reducer_(logger::get_logger()),
+                                suspended_(false)  {
     virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
         boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
 
@@ -104,7 +105,6 @@ suspended_(false)  {
                                                                        user_core_configuration_file_path,
                                                                        [this](std::shared_ptr<core_configuration> core_configuration) {
                                                                          core_configuration_ = core_configuration;
-
                                                                          is_grabbable_callback_log_reducer_.reset();
                                                                          event_manipulator_.set_profile(core_configuration_->get_selected_profile());
                                                                          grab_devices();
@@ -196,13 +196,16 @@ suspended_(false)  {
   }
 
   void device_grabber::device_matching_callback(IOHIDDeviceRef _Nonnull device) {
+    
+    logger::get_logger().info("-----> in matching device");
+    
     if (!device) {
       return;
     }
-
+    
     iokit_utility::log_matching_device(logger::get_logger(), device);
 
-    auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
+    auto dev = std::make_shared<human_interface_device>(logger::get_logger(), device);
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
     dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
@@ -212,9 +215,17 @@ suspended_(false)  {
                                       std::placeholders::_1,
                                       std::placeholders::_2));
     dev->observe();
-
-    hids_[device] = std::move(dev);
-
+    hids_[device] = dev;
+    
+    boost::optional<device_id> device_id_ = hids_[device]->get_device_id();
+    
+    //logger::get_logger().info("-----> matching device id ptr: {:#x}", reinterpret_cast<uintptr_t>(dev.get()));
+    //logger::get_logger().info("-----> matching device id: {0}", static_cast<uint32_t>(dev->get_device_id()));
+    
+    if (device_id_) {
+      id2dev[*device_id_] = dev;
+    }
+    
     output_devices_json();
 
     if (is_pointing_device_connected()) {
@@ -230,6 +241,9 @@ suspended_(false)  {
   }
 
   void device_grabber::static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
+    
+    logger::get_logger().info("-----> in removal device");
+    
     if (result != kIOReturnSuccess) {
       return;
     }
@@ -256,6 +270,17 @@ suspended_(false)  {
       auto& dev = it->second;
       if (dev) {
         device_id = dev->get_device_id();
+        logger::get_logger().info("-----> removal device id: {0}", static_cast<uint32_t>(*device_id));
+        if (device_id) {
+          auto item = id2dev.find(*device_id);
+          if (item != id2dev.end()) {
+            // release shared ptr
+            item->second.reset();
+            id2dev.erase(item);
+          }
+        }
+        
+        it->second.reset();
         hids_.erase(it);
       }
     }
@@ -552,3 +577,15 @@ suspended_(false)  {
       chmod(file_path, 0644);
     }
   }
+
+boost::optional<std::weak_ptr<human_interface_device>> device_grabber::get_hid_by_id(device_id device_id_) {
+  auto it = id2dev.find(device_id_);
+  std::weak_ptr<human_interface_device> ptr;
+  
+  if (it != id2dev.end()) {
+    ptr = it->second;
+    return boost::optional<std::weak_ptr<human_interface_device>>(ptr);
+  } else {
+    return boost::optional<std::weak_ptr<human_interface_device>>();
+  }
+}

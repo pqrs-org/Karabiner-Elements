@@ -4,23 +4,12 @@
 
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
-//#include "event_manipulator.hpp"
-//#include "event_tap_manager.hpp"
-//#include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
-//#include "iokit_utility.hpp"
 #include "virtual_hid_device_client.hpp"
 #include "physical_keyboard_repeat_detector.hpp"
 #include "pressed_physical_keys_counter.hpp"
-//#include "types.hpp"
 
 #include <IOKit/hid/IOHIDManager.h>
-#include <boost/algorithm/string.hpp>
-#include <fstream>
-#include <json/json.hpp>
-#include <thread>
-#include <time.h>
-
 
 namespace krbn {
   
@@ -30,18 +19,18 @@ namespace krbn {
   
 class event_queue;
 class event_tap_manager;
-//class human_interface_device;
-//class virtual_hid_device_client;
-//class pressed_physical_keys_counter;
-//class physical_keyboard_repeat_detector;
   
 class device_grabber final {
 public:
+
+  
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(virtual_hid_device_client& virtual_hid_device_client,
                  manipulator::event_manipulator& event_manipulator);
   
+  static device_grabber * _Nullable get_grabber() { return grabber; }
+
   
   ~device_grabber(void);
 
@@ -54,12 +43,17 @@ public:
   
   void suspend(void) ;
   void resume(void);
+  
+  boost::optional<std::weak_ptr<human_interface_device>> get_hid_by_id(device_id device_id_);
+  
 private:
   enum class mode {
     observing,
     grabbing,
   };
 
+  static device_grabber * _Nullable grabber;
+  
   void virtual_hid_device_client_disconnected_callback(void);
   static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device);
   void device_matching_callback(IOHIDDeviceRef _Nonnull device);
@@ -82,7 +76,9 @@ private:
   bool get_disable_built_in_keyboard_if_exists(const human_interface_device& device) ;
   bool need_to_disable_built_in_keyboard(void) ;
   void enable_devices(void);
-  void output_devices_json(void) ;
+  void output_devices_json(void);
+  
+  
 
   virtual_hid_device_client& virtual_hid_device_client_;
   manipulator::event_manipulator& event_manipulator_;
@@ -106,11 +102,9 @@ private:
   spdlog_utility::log_reducer is_grabbable_callback_log_reducer_;
 
   bool suspended_;
-    
-public:
-  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
   
-  static device_grabber * _Nullable grabber;
-  static device_grabber * _Nullable get_grabber() { return grabber; }
+  std::unordered_map<IOHIDDeviceRef, std::shared_ptr<human_interface_device>> hids_;
+  std::unordered_map<device_id, std::shared_ptr<human_interface_device>> id2dev;
+  
 };
 } // namespace krbn
