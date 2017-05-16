@@ -113,6 +113,7 @@ public:
                                                                          core_configuration_ = core_configuration;
 
                                                                          is_grabbable_callback_log_reducer_.reset();
+                                                                         set_profile(core_configuration_->get_selected_profile());
                                                                          event_manipulator_.set_profile(core_configuration_->get_selected_profile());
                                                                          grab_devices();
                                                                        });
@@ -183,6 +184,28 @@ public:
         }
       }
     });
+  }
+
+  void set_profile(const core_configuration::profile& profile) {
+    // Update simple_modifications_manipulator_manager_
+    {
+      simple_modifications_manipulator_manager_.invalidate();
+
+      for (const auto& pair : profile.get_simple_modifications_key_code_map(logger::get_logger())) {
+        auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+                                                                             pair.first,
+                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                                 manipulator::details::event_definition::modifier::any,
+                                                                             })),
+                                                                         manipulator::details::event_definition(pair.second));
+        std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
+        simple_modifications_manipulator_manager_.push_back_manipulator(std::move(ptr));
+      }
+    }
+  }
+
+  void unset_profile(void) {
+    simple_modifications_manipulator_manager_.invalidate();
   }
 
 private:
@@ -316,9 +339,9 @@ private:
     }
 
     if (device.is_grabbed() && !device.get_disabled()) {
-      event_manipulator_.apply_simple_modifications(event_queue,
-                                                    simple_modifications_applied_event_queue_,
-                                                    mach_absolute_time());
+      simple_modifications_manipulator_manager_.manipulate(event_queue,
+                                                           simple_modifications_applied_event_queue_,
+                                                           mach_absolute_time());
 
       collapse_lazy_events_manipulator_manager_.manipulate(simple_modifications_applied_event_queue_,
                                                            lazy_collapsed_event_queue_,
@@ -378,6 +401,8 @@ private:
           }
         }
       }
+
+      lazy_collapsed_event_queue_.clear_events();
 
       // reset modifier_flags state if all keys are released.
       if (pressed_physical_keys_counter_updated &&
@@ -458,6 +483,18 @@ private:
   void ungrabbed_callback(human_interface_device& device) {
     // stop key repeat
     event_manipulator_.stop_key_repeat();
+
+    simple_modifications_manipulator_manager_.run_device_ungrabbed_callback(device.get_device_id(),
+                                                                            simple_modifications_applied_event_queue_,
+                                                                            mach_absolute_time());
+
+    collapse_lazy_events_manipulator_manager_.manipulate(simple_modifications_applied_event_queue_,
+                                                         lazy_collapsed_event_queue_,
+                                                         mach_absolute_time());
+
+    collapse_lazy_events_manipulator_manager_.run_device_ungrabbed_callback(device.get_device_id(),
+                                                                            lazy_collapsed_event_queue_,
+                                                                            mach_absolute_time());
   }
 
   void disabled_callback(human_interface_device& device) {
@@ -584,6 +621,8 @@ private:
   pressed_physical_keys_counter pressed_physical_keys_counter_;
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
+
+  manipulator::manipulator_manager simple_modifications_manipulator_manager_;
   event_queue simple_modifications_applied_event_queue_;
 
   manipulator::manipulator_manager collapse_lazy_events_manipulator_manager_;

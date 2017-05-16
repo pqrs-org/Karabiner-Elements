@@ -95,22 +95,6 @@ public:
   }
 
   void set_profile(const core_configuration::profile& profile) {
-    // Update simple_modifications_manipulator_manager_
-    {
-      simple_modifications_manipulator_manager_.invalidate();
-
-      for (const auto& pair : profile.get_simple_modifications_key_code_map(logger::get_logger())) {
-        auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
-                                                                             pair.first,
-                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
-                                                                                 manipulator::details::event_definition::modifier::any,
-                                                                             })),
-                                                                         manipulator::details::event_definition(pair.second));
-        std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
-        simple_modifications_manipulator_manager_.push_back_manipulator(std::move(ptr));
-      }
-    }
-
     fn_function_keys_key_code_map_ = profile.get_fn_function_keys_key_code_map(logger::get_logger());
 
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
@@ -122,7 +106,6 @@ public:
   }
 
   void unset_profile(void) {
-    simple_modifications_manipulator_manager_.invalidate();
     fn_function_keys_key_code_map_ = std::unordered_map<key_code, key_code>();
   }
 
@@ -143,22 +126,6 @@ public:
     } else {
       modifier_flag_manager_.erase_active_modifier_flag(active_modifier_flag);
     }
-  }
-
-  void apply_simple_modifications(event_queue& input_event_queue,
-                                  event_queue& output_event_queue,
-                                  uint64_t time_stamp) {
-    simple_modifications_manipulator_manager_.manipulate(input_event_queue,
-                                                         output_event_queue,
-                                                         time_stamp);
-  }
-
-  void run_device_ungrabbed_callback(device_id device_id,
-                                     event_queue& output_event_queue,
-                                     uint64_t time_stamp) {
-    simple_modifications_manipulator_manager_.run_device_ungrabbed_callback(device_id,
-                                                                            output_event_queue,
-                                                                            time_stamp);
   }
 
   void handle_keyboard_event(device_id device_id,
@@ -431,8 +398,6 @@ private:
 
   system_preferences::values system_preferences_values_;
   std::mutex system_preferences_values_mutex_;
-
-  manipulator_manager simple_modifications_manipulator_manager_;
 
   std::unordered_map<key_code, key_code> fn_function_keys_key_code_map_;
 

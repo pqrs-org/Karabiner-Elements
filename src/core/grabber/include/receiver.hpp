@@ -47,6 +47,7 @@ public:
     server_ = nullptr;
     console_user_server_process_monitor_ = nullptr;
     device_grabber_.stop_grabbing();
+    device_grabber_.unset_profile();
     event_manipulator_.unset_profile();
   }
 
