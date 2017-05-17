@@ -50,8 +50,7 @@ public:
 
     // Determine front_input_event should be collapsed.
 
-    if (!front_input_event.get_lazy() ||
-        front_input_event.get_event_type() != event_type::key_down) {
+    if (!front_input_event.get_lazy()){
       return;
     }
 
@@ -60,7 +59,7 @@ public:
         continue;
       }
 
-      if (e.get_event_type() == event_type::key_up &&
+      if (e.get_event_type() != front_input_event.get_event_type() &&
           e.get_event() == front_input_event.get_event()) {
         front_input_event.set_valid(false);
         invalidation_reserved_events_.push_back(e);
