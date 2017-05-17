@@ -3,6 +3,15 @@
 @import Cocoa;
 #import "libkrbn.h"
 
+@interface VendorProductIdPair: NSObject
+
+@property (assign) NSUInteger vendorId;
+@property (assign) NSUInteger productId;
+
+- (instancetype) initWithVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId;
+
+@end
+
 @interface KarabinerKitCoreConfigurationModel : NSObject
 
 - (instancetype)initWithInitializedCoreConfiguration:(libkrbn_core_configuration*)initializedCoreConfiguration;
@@ -25,6 +34,11 @@
 @property(readonly) NSUInteger selectedProfileSimpleModificationsCount;
 - (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index;
 - (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index;
+- (NSUInteger)selectedProfileSimpleModificationVendorIdAtIndex:(NSUInteger)index;
+- (NSUInteger)selectedProfileSimpleModificationProductIdAtIndex:(NSUInteger)index;
+- (BOOL)selectedProfileSimpleModificationDisabledAtIndex:(NSUInteger)index;
+- (NSArray *)selectedProfileSimpleModificationVendorProductIdPairs;
+
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to;
 - (void)addSimpleModificationToSelectedProfile;
 - (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index;

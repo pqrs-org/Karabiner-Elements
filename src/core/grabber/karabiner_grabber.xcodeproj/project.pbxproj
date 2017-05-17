@@ -13,6 +13,7 @@
 		34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E9F62E1D2134770007AE90 /* Carbon.framework */; };
 		5E1FEF4B1EC5DA6900B01724 /* basic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E1FEF4A1EC5DA6900B01724 /* basic.cpp */; };
 		5E1FEF4D1EC5E13400B01724 /* device_grabber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E1FEF4C1EC5E13400B01724 /* device_grabber.cpp */; };
+		5EFDD3E81ECADCFD00040ABE /* simple_modifications.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EFDD3E71ECADCFD00040ABE /* simple_modifications.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -79,12 +80,14 @@
 		5E1FEF471EC59E7600B01724 /* pressed_physical_keys_counter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pressed_physical_keys_counter.hpp; path = include/pressed_physical_keys_counter.hpp; sourceTree = SOURCE_ROOT; };
 		5E1FEF4A1EC5DA6900B01724 /* basic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basic.cpp; path = include/manipulator/details/basic.cpp; sourceTree = SOURCE_ROOT; };
 		5E1FEF4C1EC5E13400B01724 /* device_grabber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device_grabber.cpp; path = include/device_grabber.cpp; sourceTree = SOURCE_ROOT; };
+		5E695C171ECB6F0A002E849C /* general_logger.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = general_logger.hpp; path = ../../share/general_logger.hpp; sourceTree = "<group>"; };
 		5EFDD3DF1EC9B4E600040ABE /* global_configuration.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = global_configuration.hpp; sourceTree = "<group>"; };
 		5EFDD3E11EC9B4E600040ABE /* complex_modification.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = complex_modification.hpp; sourceTree = "<group>"; };
 		5EFDD3E21EC9B4E600040ABE /* device.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = device.hpp; sourceTree = "<group>"; };
 		5EFDD3E31EC9B4E600040ABE /* simple_modifications.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_modifications.hpp; sourceTree = "<group>"; };
 		5EFDD3E41EC9B4E600040ABE /* virtual_hid_keyboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_keyboard.hpp; sourceTree = "<group>"; };
 		5EFDD3E51EC9B5CE00040ABE /* core_configuration.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = core_configuration.hpp; path = ../../share/core_configuration.hpp; sourceTree = SOURCE_ROOT; };
+		5EFDD3E71ECADCFD00040ABE /* simple_modifications.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simple_modifications.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -172,6 +175,7 @@
 				34A88AA61D6DF89900DD480B /* types.hpp */,
 				3463EABD1E2E866000427A81 /* version_monitor.hpp */,
 				348FC00A1D9B76830083F98F /* virtual_hid_device_client.hpp */,
+				5E695C171ECB6F0A002E849C /* general_logger.hpp */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -232,6 +236,7 @@
 				5EFDD3E11EC9B4E600040ABE /* complex_modification.hpp */,
 				5EFDD3E21EC9B4E600040ABE /* device.hpp */,
 				5EFDD3E31EC9B4E600040ABE /* simple_modifications.hpp */,
+				5EFDD3E71ECADCFD00040ABE /* simple_modifications.cpp */,
 				5EFDD3E41EC9B4E600040ABE /* virtual_hid_keyboard.hpp */,
 			);
 			path = profile;
@@ -295,6 +300,7 @@
 				5E1FEF4D1EC5E13400B01724 /* device_grabber.cpp in Sources */,
 				5E1FEF4B1EC5DA6900B01724 /* basic.cpp in Sources */,
 				34A88A961D6858D300DD480B /* main.cpp in Sources */,
+				5EFDD3E81ECADCFD00040ABE /* simple_modifications.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

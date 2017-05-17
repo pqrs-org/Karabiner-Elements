@@ -1,0 +1,93 @@
+{
+    "global": {
+        "check_for_updates_on_startup": true,
+        "show_in_menu_bar": false,
+        "show_profile_name_in_menu_bar": false
+    },
+    "profiles": [
+        {
+            "devices": [
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": 1957,
+                        "vendor_id": 1118
+                    },
+                    "ignore": false
+                },
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": 610,
+                        "vendor_id": 1452
+                    },
+                    "ignore": false
+                },
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": 34304,
+                        "vendor_id": 1452
+                    },
+                    "ignore": true
+                }
+            ],
+            "fn_function_keys": {
+                "f1": "display_brightness_decrement",
+                "f10": "mute",
+                "f11": "volume_decrement",
+                "f12": "volume_increment",
+                "f2": "display_brightness_increment",
+                "f3": "mission_control",
+                "f4": "launchpad",
+                "f5": "illumination_decrement",
+                "f6": "illumination_increment",
+                "f7": "rewind",
+                "f8": "play_or_pause",
+                "f9": "fastforward"
+            },
+            "name": "Internal Keyboard",
+            "selected": true,
+            "simple_modifications": [
+                { 
+                  "from": "left_command",
+                  "to": "left_option",
+                  "vendor_id": 1,
+                  "product_id":2,
+                  "disabled": true
+                },
+                { 
+                  "from": "left_option",
+                  "to": "left_command",
+                  "vendor_id": 1,
+                  "product_id": 2,
+                  "disabled": true
+                },
+                { 
+                  "from": "right_control",
+                  "to": "fn",
+                  "vendor_id": 2,
+                  "product_id": 1, 
+                  "disabled": true
+                },
+                { 
+                  "from": "right_option",
+                  "to": "delete_forward",
+                  "vendor_id": 2,
+                  "product_id": 1,
+                  "disabled": true
+                }
+            ],
+            "virtual_hid_keyboard": {
+                "caps_lock_delay_milliseconds": 0,
+                "keyboard_type": "ansi"
+            }
+        }
+    ]
+}

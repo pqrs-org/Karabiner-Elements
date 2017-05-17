@@ -44,8 +44,6 @@
   // ----------------------------------------
   // Setup
 
-  [self.simpleModificationsMenuManager setup];
-  [self.simpleModificationsTableViewController setup];
   [self.fnFunctionKeysTableViewController setup];
   [self.devicesTableViewController setup];
   [self setupVirtualHIDKeyboardTypePopUpButton];
@@ -53,12 +51,17 @@
   [self.profilesTableViewController setup];
   [self setupMiscTabControls];
   [self.logFileTextViewController monitor];
-
+  [self.simpleModificationsMenuManager setup];
+  [self.simpleModificationsTableViewController setup];
+  [self.simpleModificationsMenuManager setupVendor];
+  
   @weakify(self);
   [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
+                                                  NSLog(@"kKarabinerKitConfigurationIsLoaded call-back");
+                                                  
                                                   @strongify(self);
                                                   if (!self) return;
 

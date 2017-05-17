@@ -6,6 +6,20 @@
 
 @end
 
+@implementation VendorProductIdPair
+
+- (instancetype) initWithVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId {
+  self = [super init];
+  if (self) {
+    self.vendorId = vendorId;
+    self.productId = productId;
+  }
+  return self;
+}
+
+@end
+
+
 @implementation KarabinerKitCoreConfigurationModel
 
 - (instancetype)initWithInitializedCoreConfiguration:(libkrbn_core_configuration*)initializedCoreConfiguration {
@@ -102,7 +116,8 @@
 - (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index {
   const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_first(self.libkrbnCoreConfiguration, index);
   if (p) {
-    return [NSString stringWithUTF8String:p];
+    NSString *s = [NSString stringWithUTF8String:p];
+    return s;
   }
   return @"";
 }
@@ -110,9 +125,25 @@
 - (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index {
   const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_second(self.libkrbnCoreConfiguration, index);
   if (p) {
-    return [NSString stringWithUTF8String:p];
+    NSString *s = [NSString stringWithUTF8String:p];
+    return s;
   }
   return @"";
+}
+
+- (NSUInteger)selectedProfileSimpleModificationVendorIdAtIndex:(NSUInteger)index {
+  NSUInteger id_ = libkrbn_core_configuration_get_selected_profile_simple_modification_vendor_id(self.libkrbnCoreConfiguration, index);
+  return id_;
+}
+
+- (NSUInteger)selectedProfileSimpleModificationProductIdAtIndex:(NSUInteger)index {
+  NSUInteger id_ = libkrbn_core_configuration_get_selected_profile_simple_modification_product_id(self.libkrbnCoreConfiguration, index);
+  return id_;
+}
+
+- (BOOL)selectedProfileSimpleModificationDisabledAtIndex:(NSUInteger)index {
+  BOOL disabled = libkrbn_core_configuration_get_selected_profile_simple_modification_disabled(self.libkrbnCoreConfiguration, index);
+  return disabled;
 }
 
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to {
@@ -121,6 +152,27 @@
 
 - (void)addSimpleModificationToSelectedProfile {
   libkrbn_core_configuration_push_back_selected_profile_simple_modification(self.libkrbnCoreConfiguration);
+}
+
+- (NSArray *)selectedProfileSimpleModificationVendorProductIdPairs {
+  size_t count = 0;
+  NSMutableArray *pairs = nil;
+  struct vendor_product_pair *vp_pairs = libkrbn_core_configuration_get_selected_profile_simple_modification_vendor_product_pairs(self.libkrbnCoreConfiguration, &count);
+  
+  NSLog(@"Count of pair: %lu", count);
+  if (vp_pairs) {
+    pairs = [[NSMutableArray alloc] initWithCapacity:count];
+    if (pairs) {
+      for (size_t i = 0; i < count; ++ i) {
+        id p = [[VendorProductIdPair alloc] initWithVendorId:vp_pairs[i].vendor_id productId:vp_pairs[i].product_id];
+        [pairs addObject: p];
+      }
+    }
+    
+    free(vp_pairs);
+  }
+  
+  return pairs;
 }
 
 - (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index {

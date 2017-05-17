@@ -7,6 +7,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+  
+struct vendor_product_pair {
+  uint32_t vendor_id;
+  uint32_t product_id;
+};
 
 void libkrbn_initialize(void);
 
@@ -68,6 +73,10 @@ void libkrbn_core_configuration_replace_selected_profile_simple_modification(lib
                                                                              size_t index,
                                                                              const char* _Nonnull from,
                                                                              const char* _Nonnull to);
+const uint32_t libkrbn_core_configuration_get_selected_profile_simple_modification_vendor_id(libkrbn_core_configuration* _Nonnull p, size_t index);
+const uint32_t libkrbn_core_configuration_get_selected_profile_simple_modification_product_id(libkrbn_core_configuration* _Nonnull p, size_t index);
+const bool libkrbn_core_configuration_get_selected_profile_simple_modification_disabled(libkrbn_core_configuration* _Nonnull p, size_t index);
+struct vendor_product_pair* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_vendor_product_pairs(libkrbn_core_configuration* _Nonnull p, size_t* _Nonnull count);
 void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p);
 void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p, size_t index);
 

@@ -4,11 +4,14 @@
 #include "filesystem.hpp"
 #include "session.hpp"
 #include "types.hpp"
+#include "general_logger.hpp"
+
 #include <fstream>
 #include <json/json.hpp>
 #include <natural_sort/natural_sort.hpp>
 #include <spdlog/spdlog.h>
 #include <string>
+#include <map>
 #include <unordered_map>
 
 // Example: tests/src/core_configuration/json/example.json
@@ -101,7 +104,7 @@ public:
       selected_ = value;
     }
 
-    const std::vector<std::pair<std::string, std::string>>& get_simple_modifications(void) const {
+    const std::vector<simple_modifications::key_mapping>& get_simple_modifications(void) const {
       return simple_modifications_.get_pairs();
     }
     void push_back_simple_modification(void) {
@@ -113,18 +116,18 @@ public:
     void replace_simple_modification(size_t index, const std::string& from, const std::string& to) {
       simple_modifications_.replace_pair(index, from, to);
     }
-    const std::unordered_map<key_code, key_code> get_simple_modifications_key_code_map(spdlog::logger& logger) const {
-      return simple_modifications_.to_key_code_map(logger);
+    const std::unordered_map<key_code, key_code> get_simple_modifications_key_code_map(spdlog::logger& log) const {
+      return simple_modifications_.to_key_code_map(log);
     }
 
-    const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) const {
+    const std::vector<simple_modifications::key_mapping>& get_fn_function_keys(void) const {
       return fn_function_keys_.get_pairs();
     }
     void replace_fn_function_key(const std::string& from, const std::string& to) {
       fn_function_keys_.replace_second(from, to);
     }
-    const std::unordered_map<key_code, key_code> get_fn_function_keys_key_code_map(spdlog::logger& logger) const {
-      return fn_function_keys_.to_key_code_map(logger);
+    const std::unordered_map<key_code, key_code> get_fn_function_keys_key_code_map(spdlog::logger& log) const {
+      return fn_function_keys_.to_key_code_map(log);
     }
 
     const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
@@ -211,6 +214,8 @@ public:
           }
         }
       }
+      
+      logger.info("File owner valid: {}", valid_file_owner);
 
       if (!valid_file_owner) {
         logger.warn("{0} is not owned by a valid user.", file_path);
@@ -218,10 +223,14 @@ public:
 
       } else {
         std::ifstream input(file_path);
+        
+        logger.info("Reading config file: {}", file_path);
+        
         if (input) {
           try {
+            logger.info("Start to parse config file");
             json_ = nlohmann::json::parse(input);
-
+            logger.info("Parse config file done");
             {
               const std::string key = "global";
               if (json_.find(key) != json_.end()) {
@@ -242,6 +251,8 @@ public:
             json_ = nlohmann::json();
             loaded_ = false;
           }
+        } else {
+          logger.info("Failed reading config file {}", file_path);
         }
       }
     }
