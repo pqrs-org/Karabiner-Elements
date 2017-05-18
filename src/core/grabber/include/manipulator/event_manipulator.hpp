@@ -7,7 +7,6 @@
 #include "manipulator_manager.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
-#include "system_preferences.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <IOKit/hidsystem/ev_keymap.h>
@@ -46,8 +45,6 @@ public:
   }
 
   void reset(void) {
-    manipulated_fn_keys_.clear();
-
     modifier_flag_manager_.reset();
 
     pointing_button_manager_.reset();
@@ -88,15 +85,7 @@ public:
     }
   }
 
-  void set_system_preferences_values(const system_preferences::values& values) {
-    std::lock_guard<std::mutex> guard(system_preferences_values_mutex_);
-
-    system_preferences_values_ = values;
-  }
-
   void set_profile(const core_configuration::profile& profile) {
-    fn_function_keys_key_code_map_ = profile.get_fn_function_keys_key_code_map(logger::get_logger());
-
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
     if (auto k = types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
       properties.keyboard_type = *k;
@@ -106,7 +95,6 @@ public:
   }
 
   void unset_profile(void) {
-    fn_function_keys_key_code_map_ = std::unordered_map<key_code, key_code>();
   }
 
   void initialize_virtual_hid_pointing(void) {
@@ -130,80 +118,13 @@ public:
 
   void handle_keyboard_event(device_id device_id,
                              uint64_t timestamp,
-                             key_code from_key_code,
+                             key_code key_code,
                              bool pressed) {
-    key_code to_key_code = from_key_code;
-
-    // ----------------------------------------
-    // modify fn+arrow, function keys
-    if (!pressed) {
-      if (auto key_code = manipulated_fn_keys_.find(device_id, to_key_code)) {
-        manipulated_fn_keys_.remove(device_id, to_key_code);
-        to_key_code = *key_code;
-      }
-    } else {
-      boost::optional<key_code> key_code;
-
-      if (modifier_flag_manager_.is_pressed(modifier_flag::fn)) {
-        switch (to_key_code) {
-          case key_code::return_or_enter:
-            key_code = key_code::keypad_enter;
-            break;
-          case key_code::delete_or_backspace:
-            key_code = key_code::delete_forward;
-            break;
-          case key_code::right_arrow:
-            key_code = key_code::end;
-            break;
-          case key_code::left_arrow:
-            key_code = key_code::home;
-            break;
-          case key_code::down_arrow:
-            key_code = key_code::page_down;
-            break;
-          case key_code::up_arrow:
-            key_code = key_code::page_up;
-            break;
-          default:
-            break;
-        }
-      }
-
-      // f1-f12
-      {
-        auto key_code_value = static_cast<uint32_t>(to_key_code);
-        if (kHIDUsage_KeyboardF1 <= key_code_value && key_code_value <= kHIDUsage_KeyboardF12) {
-          bool keyboard_fn_state = false;
-          {
-            std::lock_guard<std::mutex> guard(system_preferences_values_mutex_);
-            keyboard_fn_state = system_preferences_values_.get_keyboard_fn_state();
-          }
-
-          bool fn_pressed = modifier_flag_manager_.is_pressed(modifier_flag::fn);
-
-          if ((fn_pressed && keyboard_fn_state) ||
-              (!fn_pressed && !keyboard_fn_state)) {
-            // change f1-f12 keys to media controls
-            auto it = fn_function_keys_key_code_map_.find(to_key_code);
-            if (it != fn_function_keys_key_code_map_.end()) {
-              key_code = it->second;
-            }
-          }
-        }
-      }
-
-      if (key_code) {
-        manipulated_fn_keys_.add(device_id, to_key_code, *key_code);
-        to_key_code = *key_code;
-      }
-    }
-
-    // ----------------------------------------
-    if (post_modifier_flag_event(device_id, to_key_code, pressed, timestamp)) {
+    if (post_modifier_flag_event(device_id, key_code, pressed, timestamp)) {
       return;
     }
 
-    post_key(to_key_code, pressed, timestamp);
+    post_key(key_code, pressed, timestamp);
   }
 
   void handle_pointing_event(device_id device_id,
@@ -260,74 +181,6 @@ public:
   }
 
 private:
-  class manipulated_keys final {
-  public:
-    manipulated_keys(const manipulated_keys&) = delete;
-
-    manipulated_keys(void) {
-    }
-
-    void clear(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      manipulated_keys_.clear();
-    }
-
-    void add(device_id device_id,
-             key_code from_key_code,
-             key_code to_key_code) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      manipulated_keys_.push_back(manipulated_key(device_id, from_key_code, to_key_code));
-    }
-
-    boost::optional<key_code> find(device_id device_id,
-                                   key_code from_key_code) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      for (const auto& v : manipulated_keys_) {
-        if (v.get_device_id() == device_id &&
-            v.get_from_key_code() == from_key_code) {
-          return v.get_to_key_code();
-        }
-      }
-      return boost::none;
-    }
-
-    void remove(device_id device_id,
-                key_code from_key_code) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      manipulated_keys_.remove_if([&](const manipulated_key& v) {
-        return v.get_device_id() == device_id &&
-               v.get_from_key_code() == from_key_code;
-      });
-    }
-
-  private:
-    class manipulated_key final {
-    public:
-      manipulated_key(device_id device_id,
-                      key_code from_key_code,
-                      key_code to_key_code) : device_id_(device_id),
-                                              from_key_code_(from_key_code),
-                                              to_key_code_(to_key_code) {
-      }
-
-      device_id get_device_id(void) const { return device_id_; }
-      key_code get_from_key_code(void) const { return from_key_code_; }
-      key_code get_to_key_code(void) const { return to_key_code_; }
-
-    private:
-      device_id device_id_;
-      key_code from_key_code_;
-      key_code to_key_code_;
-    };
-
-    std::list<manipulated_key> manipulated_keys_;
-    std::mutex mutex_;
-  };
-
   bool post_modifier_flag_event(device_id device_id,
                                 key_code key_code,
                                 bool pressed,
@@ -395,13 +248,6 @@ private:
   virtual_hid_device_client& virtual_hid_device_client_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
-
-  system_preferences::values system_preferences_values_;
-  std::mutex system_preferences_values_mutex_;
-
-  std::unordered_map<key_code, key_code> fn_function_keys_key_code_map_;
-
-  manipulated_keys manipulated_fn_keys_;
 
   uint64_t last_timestamp_;
 };

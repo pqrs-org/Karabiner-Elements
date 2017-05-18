@@ -64,7 +64,7 @@ public:
     remove_invalid_manipulators();
   }
 
-  void invalidate(void) {
+  void invalidate_manipulators(void) {
     for (auto&& m : manipulators_) {
       m->set_valid(false);
     }

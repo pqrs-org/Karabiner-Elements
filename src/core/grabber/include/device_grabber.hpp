@@ -15,6 +15,7 @@
 #include "physical_keyboard_repeat_detector.hpp"
 #include "pressed_physical_keys_counter.hpp"
 #include "spdlog_utility.hpp"
+#include "system_preferences.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
 #include <boost/algorithm/string.hpp>
@@ -31,6 +32,7 @@ public:
   device_grabber(virtual_hid_device_client& virtual_hid_device_client,
                  manipulator::event_manipulator& event_manipulator) : virtual_hid_device_client_(virtual_hid_device_client),
                                                                       event_manipulator_(event_manipulator),
+                                                                      profile_(nlohmann::json()),
                                                                       mode_(mode::observing),
                                                                       is_grabbable_callback_log_reducer_(logger::get_logger()),
                                                                       suspended_(false) {
@@ -187,25 +189,23 @@ public:
   }
 
   void set_profile(const core_configuration::profile& profile) {
-    // Update simple_modifications_manipulator_manager_
-    {
-      simple_modifications_manipulator_manager_.invalidate();
+    profile_ = profile;
 
-      for (const auto& pair : profile.get_simple_modifications_key_code_map(logger::get_logger())) {
-        auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
-                                                                             pair.first,
-                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
-                                                                                 manipulator::details::event_definition::modifier::any,
-                                                                             })),
-                                                                         manipulator::details::event_definition(pair.second));
-        std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
-        simple_modifications_manipulator_manager_.push_back_manipulator(std::move(ptr));
-      }
-    }
+    update_simple_modifications_manipulators();
+    update_fn_function_keys_manipulators();
   }
 
   void unset_profile(void) {
-    simple_modifications_manipulator_manager_.invalidate();
+    profile_ = core_configuration::profile(nlohmann::json());
+
+    simple_modifications_manipulator_manager_.invalidate_manipulators();
+    fn_function_keys_manipulator_manager_.invalidate_manipulators();
+  }
+
+  void set_system_preferences_values(const system_preferences::values& values) {
+    system_preferences_values_ = values;
+
+    update_fn_function_keys_manipulators();
   }
 
 private:
@@ -343,7 +343,11 @@ private:
                                                            simple_modifications_applied_event_queue_,
                                                            mach_absolute_time());
 
-      collapse_lazy_events_manipulator_manager_.manipulate(simple_modifications_applied_event_queue_,
+      fn_function_keys_manipulator_manager_.manipulate(simple_modifications_applied_event_queue_,
+                                                       fn_function_keys_applied_event_queue_,
+                                                       mach_absolute_time());
+
+      collapse_lazy_events_manipulator_manager_.manipulate(fn_function_keys_applied_event_queue_,
                                                            lazy_collapsed_event_queue_,
                                                            mach_absolute_time());
 
@@ -488,7 +492,15 @@ private:
                                                                             simple_modifications_applied_event_queue_,
                                                                             mach_absolute_time());
 
-    collapse_lazy_events_manipulator_manager_.manipulate(simple_modifications_applied_event_queue_,
+    fn_function_keys_manipulator_manager_.manipulate(simple_modifications_applied_event_queue_,
+                                                     fn_function_keys_applied_event_queue_,
+                                                     mach_absolute_time());
+
+    fn_function_keys_manipulator_manager_.run_device_ungrabbed_callback(device.get_device_id(),
+                                                                        fn_function_keys_applied_event_queue_,
+                                                                        mach_absolute_time());
+
+    collapse_lazy_events_manipulator_manager_.manipulate(fn_function_keys_applied_event_queue_,
                                                          lazy_collapsed_event_queue_,
                                                          mach_absolute_time());
 
@@ -607,6 +619,113 @@ private:
     }
   }
 
+  void update_simple_modifications_manipulators(void) {
+    simple_modifications_manipulator_manager_.invalidate_manipulators();
+
+    for (const auto& pair : profile_.get_simple_modifications_key_code_map(logger::get_logger())) {
+      auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+                                                                           pair.first,
+                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                               manipulator::details::event_definition::modifier::any,
+                                                                           })),
+                                                                       manipulator::details::event_definition(pair.second));
+      std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
+      simple_modifications_manipulator_manager_.push_back_manipulator(std::move(ptr));
+    }
+  }
+
+  void update_fn_function_keys_manipulators(void) {
+    fn_function_keys_manipulator_manager_.invalidate_manipulators();
+
+    std::unordered_set<manipulator::details::event_definition::modifier> from_modifiers;
+    std::unordered_set<manipulator::details::event_definition::modifier> to_modifiers;
+
+    if (system_preferences_values_.get_keyboard_fn_state()) {
+      // f1 -> f1
+      // fn+f1 -> display_brightness_decrement
+
+      from_modifiers.insert(manipulator::details::event_definition::modifier::fn);
+      from_modifiers.insert(manipulator::details::event_definition::modifier::any);
+      to_modifiers.insert(manipulator::details::event_definition::modifier::fn);
+
+    } else {
+      // f1 -> display_brightness_decrement
+      // fn+f1 -> f1
+
+      from_modifiers.insert(manipulator::details::event_definition::modifier::any);
+
+      // fn+f1 ... fn+f12 -> f1 .. f12
+
+      for (const auto& key_code : std::vector<key_code>({
+               key_code::f1,
+               key_code::f2,
+               key_code::f3,
+               key_code::f4,
+               key_code::f5,
+               key_code::f6,
+               key_code::f7,
+               key_code::f8,
+               key_code::f9,
+               key_code::f10,
+               key_code::f11,
+               key_code::f12,
+           })) {
+        auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+                                                                             key_code,
+                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                                 manipulator::details::event_definition::modifier::fn,
+                                                                                 manipulator::details::event_definition::modifier::any,
+                                                                             })),
+                                                                         manipulator::details::event_definition(
+                                                                             key_code,
+                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                                 manipulator::details::event_definition::modifier::fn,
+                                                                             })));
+        std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
+        fn_function_keys_manipulator_manager_.push_back_manipulator(std::move(ptr));
+      }
+    }
+
+    // from_modifiers+f1 -> display_brightness_decrement ...
+
+    for (const auto& pair : profile_.get_fn_function_keys_key_code_map(logger::get_logger())) {
+      auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+                                                                           pair.first,
+                                                                           from_modifiers),
+                                                                       manipulator::details::event_definition(
+                                                                           pair.second,
+                                                                           to_modifiers));
+      std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
+      fn_function_keys_manipulator_manager_.push_back_manipulator(std::move(ptr));
+    }
+
+    // fn+return_or_enter -> keypad_enter ...
+
+    auto pairs = std::vector<std::pair<key_code, key_code>>({
+        std::make_pair(key_code::return_or_enter, key_code::keypad_enter),
+        std::make_pair(key_code::delete_or_backspace, key_code::delete_forward),
+        std::make_pair(key_code::right_arrow, key_code::end),
+        std::make_pair(key_code::left_arrow, key_code::home),
+        std::make_pair(key_code::down_arrow, key_code::page_down),
+        std::make_pair(key_code::up_arrow, key_code::page_up),
+    });
+    for (const auto& p : pairs) {
+      auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+                                                                           p.first,
+                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                               manipulator::details::event_definition::modifier::fn,
+                                                                               manipulator::details::event_definition::modifier::any,
+                                                                           })),
+                                                                       manipulator::details::event_definition(
+                                                                           p.second,
+                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                               manipulator::details::event_definition::modifier::fn,
+                                                                           })));
+      std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
+      fn_function_keys_manipulator_manager_.push_back_manipulator(std::move(ptr));
+    }
+  }
+
   virtual_hid_device_client& virtual_hid_device_client_;
   manipulator::event_manipulator& event_manipulator_;
 
@@ -622,8 +741,14 @@ private:
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 
+  core_configuration::profile profile_;
+  system_preferences::values system_preferences_values_;
+
   manipulator::manipulator_manager simple_modifications_manipulator_manager_;
   event_queue simple_modifications_applied_event_queue_;
+
+  manipulator::manipulator_manager fn_function_keys_manipulator_manager_;
+  event_queue fn_function_keys_applied_event_queue_;
 
   manipulator::manipulator_manager collapse_lazy_events_manipulator_manager_;
   event_queue lazy_collapsed_event_queue_;

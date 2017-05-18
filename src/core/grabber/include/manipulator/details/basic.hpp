@@ -152,6 +152,12 @@ public:
         for (size_t i = 0; i < to_.size(); ++i) {
           if (auto event = to_[i].to_event()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
+              enqueue_to_modifiers(to_[i],
+                                   event_type::key_down,
+                                   front_input_event,
+                                   time_stamp_delay,
+                                   output_event_queue);
+
               output_event_queue.emplace_back_event(front_input_event.get_device_id(),
                                                     front_input_event.get_time_stamp() + time_stamp_delay++,
                                                     *event,
@@ -171,6 +177,12 @@ public:
                   }
                 }
               }
+
+              enqueue_to_modifiers(to_[i],
+                                   event_type::key_up,
+                                   front_input_event,
+                                   time_stamp_delay,
+                                   output_event_queue);
 
             } else {
               // event_type::key_up
@@ -245,6 +257,31 @@ public:
 
   const std::vector<event_definition>& get_to(void) const {
     return to_;
+  }
+
+  void enqueue_to_modifiers(const event_definition& to,
+                            event_type event_type,
+                            const event_queue::queued_event& front_input_event,
+                            uint64_t& time_stamp_delay,
+                            event_queue& output_event_queue) {
+    for (const auto& modifier : to.get_modifiers()) {
+      // `event_definition::get_modifiers` might return two modifier_flags.
+      // (eg. `modifier_flag::left_shift` and `modifier_flag::right_shift` for `modifier::shift`.)
+      // We use the first modifier_flag.
+
+      auto modifier_flags = event_definition::get_modifier_flags(modifier);
+      if (!modifier_flags.empty()) {
+        auto modifier_flag = modifier_flags.front();
+        if (auto key_code = types::get_key_code(modifier_flag)) {
+          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                event_queue::queued_event::event(*key_code),
+                                                event_type,
+                                                front_input_event.get_original_event(),
+                                                true);
+        }
+      }
+    }
   }
 
 private:
