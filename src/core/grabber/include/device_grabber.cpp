@@ -584,8 +584,8 @@ boost::optional<std::weak_ptr<human_interface_device>> device_grabber::get_hid_b
   
   if (it != id2dev.end()) {
     ptr = it->second;
-    return boost::optional<std::weak_ptr<human_interface_device>>(ptr);
+    return boost::make_optional(ptr);
   } else {
-    return boost::optional<std::weak_ptr<human_interface_device>>();
+    return boost::none;
   }
 }

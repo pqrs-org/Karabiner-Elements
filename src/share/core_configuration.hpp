@@ -334,10 +334,14 @@ public:
 
     std::ofstream output(file_path);
     if (!output) {
+      glogger::get_logger().info("Failed to save to configuration file: {}", file_path);
       return false;
     }
 
     output << std::setw(4) << to_json() << std::endl;
+    
+    glogger::get_logger().info("Saved to configuration file: {}", file_path);
+    
     return true;
   }
 

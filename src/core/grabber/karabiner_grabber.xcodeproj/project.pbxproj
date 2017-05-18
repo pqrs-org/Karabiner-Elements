@@ -363,6 +363,7 @@
 		3441491A1D212A1600C8ECFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				PRODUCT_NAME = karabiner_grabber;
 			};
 			name = Release;

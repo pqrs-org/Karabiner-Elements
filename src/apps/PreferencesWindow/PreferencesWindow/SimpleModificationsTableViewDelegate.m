@@ -56,38 +56,24 @@
     
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     
-    result.popUpButton.action = @selector(valueChanged:);
+    result.popUpButton.action = @selector(vendorProductIdChanged:);
     result.popUpButton.target = self.simpleModificationsTableViewController;
     result.popUpButton.menu = [self.simpleModificationsMenuManager.vendorIdMenu copy];
     
     NSUInteger vid = [coreConfigurationModel selectedProfileSimpleModificationVendorIdAtIndex:row];
     NSUInteger pid = [coreConfigurationModel selectedProfileSimpleModificationProductIdAtIndex:row];
-    NSString *repObj = [NSString stringWithFormat:@"0x%04lx, 0x%04lx", vid, pid];
     
-    NSLog(@"Vid/Pid: %@", repObj);
-        
-    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:repObj];
+    VendorProductIdPair *pair = [[VendorProductIdPair alloc] initWithVendorId: vid productId: pid];
+    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:pair];
+    
+    //NSLog(@"Vid/Pid: %@", repObj);
+    
+    //[coreConfigurationModel setSelectedProfileSimpleModificationVendorProductIdAtIndex:row vendorId:vid productId:pid];
+    //[coreConfigurationModel save];
     
     return result;
   }
   
-  if ([tableColumn.identifier isEqualToString:@"SimpleModificationsProductIdColumn"]) {
-    SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsProductIdCellView" owner:self];
-    
-    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    
-    result.popUpButton.action = @selector(valueChanged:);
-    result.popUpButton.target = self.simpleModificationsTableViewController;
-    result.popUpButton.menu = [self.simpleModificationsMenuManager.productIdMenu copy];
-    
-    NSUInteger id_ = [coreConfigurationModel selectedProfileSimpleModificationProductIdAtIndex:row];
-    NSString *repObj = [NSString stringWithFormat:@"%lu", id_];
-
-    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:repObj];
-    
-    return result;
-  }
-
   if ([tableColumn.identifier isEqualToString:@"SimpleModificationsDeleteColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsDeleteCellView" owner:self];
     result.removeButton.action = @selector(removeItem:);

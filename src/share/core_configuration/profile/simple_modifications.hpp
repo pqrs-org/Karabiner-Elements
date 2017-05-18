@@ -122,6 +122,27 @@ public:
     virtual ~key_mapping() {
       krbn::glogger::get_logger().info("dealloc key_mapping: {}", this->str());
     }
+    
+    boost::optional<std::pair<key_code, key_code>> to_key_code() const {
+      auto& from_string = get_from();
+      auto& to_string = get_to();
+      
+      auto from_key_code = types::get_key_code(from_string);
+      if (!from_key_code) {
+         krbn::glogger::get_logger().warn("unknown key_code:{0}", from_string);
+      }
+      
+      auto to_key_code = types::get_key_code(to_string);
+      if (!to_key_code) {
+        krbn::glogger::get_logger().warn("unknown key_code:{0}", to_string);
+      }
+      
+      if (from_key_code && to_key_code) {
+        return boost::make_optional(std::make_pair(*from_key_code, *to_key_code));
+      } else {
+        return boost::none;
+      }
+    }
 
   private:
     nlohmann::json json;

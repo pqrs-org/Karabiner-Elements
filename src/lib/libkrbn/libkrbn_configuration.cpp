@@ -2,9 +2,9 @@
 #include "core_configuration.hpp"
 #include "libkrbn.h"
 #include "libkrbn.hpp"
+#include "core_configuration.hpp"
 #include <string>
 #include <set>
-#include <boost/optional.hpp>
 
 namespace {
 class libkrbn_core_configuration_class final {
@@ -176,7 +176,7 @@ size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size
 const char* libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* p, size_t index) {
   auto km = get_key_mapping(p, index);
   if (km) {
-    libkrbn::get_logger().info("in get_first: {}", (*km).get_from());
+    //libkrbn::get_logger().info("in get_first: {}", (*km).get_from());
     return km->get_from().c_str();
   }
   return nullptr;
@@ -185,7 +185,7 @@ const char* libkrbn_core_configuration_get_selected_profile_simple_modification_
 const char* libkrbn_core_configuration_get_selected_profile_simple_modification_second(libkrbn_core_configuration* p, size_t index) {
   auto km = get_key_mapping(p, index);
   if (km) {
-    libkrbn::get_logger().info("in get_second: {}", km->get_from());
+    //libkrbn::get_logger().info("in get_second: {}", km->get_from());
     return km->get_to().c_str();
   }
   return nullptr;
@@ -238,17 +238,32 @@ void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkr
   }
 }
 
+void libkrbn_core_configuration_replace_selected_profile_simple_modification_vendor_product_id(libkrbn_core_configuration* _Nonnull p,
+                                                                                               size_t index,
+                                                                                               uint32_t vendorId,
+                                                                                               uint32_t productId) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    auto &kms = c->get_core_configuration().get_selected_profile().get_simple_modifications();
+    if (index < kms.size()) {
+      const_cast<krbn::core_configuration::profile::simple_modifications::key_mapping &>(kms[index]).set_vendor_id(krbn::vendor_id(vendorId));
+      const_cast<krbn::core_configuration::profile::simple_modifications::key_mapping &>(kms[index]).set_product_id(krbn::product_id(productId));
+      libkrbn::get_logger().info("Update vid, pid: {}, {}", vendorId, productId);
+    }
+  }
+}
+
+
 vendor_product_pair* libkrbn_core_configuration_get_selected_profile_simple_modification_vendor_product_pairs(libkrbn_core_configuration* p,
                                                                                                                     size_t* count) {
   vendor_product_pair *vp_pairs = nullptr;
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    const auto& simple_modifications = c->get_core_configuration().get_selected_profile().get_simple_modifications();
+    const auto& devices = c->get_core_configuration().get_selected_profile().get_devices();
     
     std::set<std::pair<uint32_t, uint32_t>> pairs;
     
-    for (auto &km : simple_modifications) {
-      uint32_t vid = static_cast<uint32_t>(km.get_vendor_id());
-      uint32_t pid = static_cast<uint32_t>(km.get_product_id());
+    for (auto &device : devices) {
+      uint32_t vid = static_cast<uint32_t>(device.get_identifiers().get_vendor_id());
+      uint32_t pid = static_cast<uint32_t>(device.get_identifiers().get_product_id());
       pairs.emplace(vid, pid);
     }
     

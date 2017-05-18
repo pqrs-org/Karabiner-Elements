@@ -5,10 +5,11 @@
 
 @interface VendorProductIdPair: NSObject
 
-@property (assign) NSUInteger vendorId;
-@property (assign) NSUInteger productId;
+@property (assign, readonly) NSUInteger vendorId;
+@property (assign, readonly) NSUInteger productId;
 
 - (instancetype) initWithVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId;
+- (NSString *) toString;
 
 @end
 
@@ -40,6 +41,7 @@
 - (NSArray *)selectedProfileSimpleModificationVendorProductIdPairs;
 
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to;
+- (void)setSelectedProfileSimpleModificationVendorProductIdAtIndex:(NSUInteger)index vendorId:(NSUInteger)vid productId:(NSUInteger)pid;
 - (void)addSimpleModificationToSelectedProfile;
 - (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index;
 

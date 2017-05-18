@@ -1,8 +1,45 @@
 #include "basic.hpp"
 #include "device_grabber.hpp"
+#include "types.hpp"
 #include "logger.hpp"
 
 using namespace krbn::manipulator::details;
+
+std::pair<uint32_t, uint32_t> get_vendor_product_id_by_device_id(krbn::device_id id) {
+  uint32_t vid = 0;
+  uint32_t pid = 0;
+  
+  auto hid = krbn::device_grabber::get_grabber()->get_hid_by_id(id);
+  if (hid) {
+    auto hid_ptr = (*hid).lock();
+    
+    vid = static_cast<uint32_t>(hid_ptr->get_vendor_id().value_or(krbn::vendor_id::zero));
+    pid = static_cast<uint32_t>(hid_ptr->get_product_id().value_or(krbn::product_id::zero));
+  }
+  
+  return std::make_pair(vid, pid);
+}
+
+bool basic::is_bypass_vendor_product_id_check() {
+  bool not_to_check = this->vendor_id_ == 0 && this->product_id_ == 0;
+  
+  if (not_to_check) {
+    krbn::logger::get_logger().debug("bypass vendor/product id check");
+  }
+  return not_to_check;
+}
+
+bool basic::is_vendor_product_id_matched(uint32_t vendor_id, uint32_t product_id) {
+  bool is_matched = (vendor_id == this->vendor_id_ && product_id == this->product_id_);
+  
+  if (is_matched) {
+    krbn::logger::get_logger().debug("vendor/product id matched");
+  } else {
+    krbn::logger::get_logger().debug("vendor/product id NOT matched: [{}, {}], [{}, {}]", vendor_id, product_id, this->vendor_id_, this->product_id_);
+  }
+  
+  return is_matched;
+}
 
 void basic::manipulate(event_queue::queued_event& front_input_event,
                        const event_queue& input_event_queue,
@@ -10,7 +47,7 @@ void basic::manipulate(event_queue::queued_event& front_input_event,
                        uint64_t time_stamp) {
   
   //uint32_t _device_id = static_cast<uint32_t>(front_input_event.get_device_id());
-  uint32_t _key_code = static_cast<uint32_t>(*front_input_event.get_event().get_key_code());
+  //uint32_t _key_code = static_cast<uint32_t>(*front_input_event.get_event().get_key_code());
   
   //auto& logger = krbn::logger::get_logger();
   //logger.info("in manipulate(): device_id: {0:#x}, key_code: {1:#x}", _device_id, _key_code);
@@ -32,6 +69,12 @@ void basic::manipulate(event_queue::queued_event& front_input_event,
     }
   }
   
+  auto vp_id = get_vendor_product_id_by_device_id(front_input_event.get_device_id());
+  if (!is_bypass_vendor_product_id_check() && !is_vendor_product_id_matched(vp_id.first, vp_id.second)) {
+    is_target = false;
+  }
+  
+  /*
   auto hid = krbn::device_grabber::get_grabber()->get_hid_by_id(front_input_event.get_device_id());
   bool is_built_in_kb = hid && (*hid).lock()->is_built_in_keyboard();
   //logger.info("get_hid_by_id({}): {}", _device_id, is_built_in_kb);
@@ -47,6 +90,7 @@ void basic::manipulate(event_queue::queued_event& front_input_event,
   if ((_key_code == kHIDUsage_KeyboardLeftAlt || _key_code == kHIDUsage_KeyboardLeftGUI) && is_built_in_kb) {
     is_target = false;
   }
+  */
   
   if (is_target) {
     std::unordered_set<modifier_flag> from_modifiers;
@@ -110,8 +154,10 @@ void basic::manipulate(event_queue::queued_event& front_input_event,
         }
       }
       
-      // Send events
       
+      
+      // Send events
+      krbn::logger::get_logger().info("Key is replaced");
       for (size_t i = 0; i < to_.size(); ++i) {
         if (auto event = to_[i].to_event()) {
           if (front_input_event.get_event_type() == event_type::key_down) {

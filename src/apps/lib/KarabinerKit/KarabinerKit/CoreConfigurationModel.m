@@ -6,15 +6,50 @@
 
 @end
 
+@interface VendorProductIdPair ()
+
+@property(readwrite) NSUInteger vendorId;
+@property(readwrite) NSUInteger productId;
+
+@end
+
 @implementation VendorProductIdPair
 
-- (instancetype) initWithVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId {
+@synthesize vendorId;
+@synthesize productId;
+
+- (instancetype) initWithVendorId:(NSUInteger)vendorId_ productId:(NSUInteger)productId_ {
   self = [super init];
   if (self) {
-    self.vendorId = vendorId;
-    self.productId = productId;
+    self.vendorId = vendorId_;
+    self.productId = productId_;
   }
+
   return self;
+}
+
+- (NSUInteger) hash {
+  NSUInteger prime = 37;
+  NSUInteger result = 1;
+  
+  result = prime * result + (int) (vendorId ^ (vendorId >> 32));
+  result = prime * result + (int) (productId ^ (productId >> 32));
+  
+  return result;
+}
+
+- (BOOL) isEqual:(id)object {
+  if (![object isKindOfClass:[self class]]) {
+    return false;
+  }
+  VendorProductIdPair *o = (VendorProductIdPair *)object;
+  
+  return self.vendorId == o.vendorId && self.productId == o.productId;
+}
+
+- (NSString *) toString {
+  NSString *str = [NSString stringWithFormat:@"0x%04lx, 0x%04lx", self.vendorId, self.productId];
+  return str;
 }
 
 @end
@@ -148,6 +183,10 @@
 
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to {
   libkrbn_core_configuration_replace_selected_profile_simple_modification(self.libkrbnCoreConfiguration, index, [from UTF8String], [to UTF8String]);
+}
+
+- (void)setSelectedProfileSimpleModificationVendorProductIdAtIndex:(NSUInteger)index vendorId:(NSUInteger)vendorId productId:(NSUInteger)productId {
+  libkrbn_core_configuration_replace_selected_profile_simple_modification_vendor_product_id(self.libkrbnCoreConfiguration, index, (uint32_t)vendorId, (uint32_t)productId);
 }
 
 - (void)addSimpleModificationToSelectedProfile {

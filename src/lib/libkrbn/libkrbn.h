@@ -73,6 +73,12 @@ void libkrbn_core_configuration_replace_selected_profile_simple_modification(lib
                                                                              size_t index,
                                                                              const char* _Nonnull from,
                                                                              const char* _Nonnull to);
+  
+void libkrbn_core_configuration_replace_selected_profile_simple_modification_vendor_product_id(libkrbn_core_configuration* _Nonnull p,
+                                                                                            size_t index,
+                                                                                            uint32_t vendorId,
+                                                                                            uint32_t productId);
+  
 const uint32_t libkrbn_core_configuration_get_selected_profile_simple_modification_vendor_id(libkrbn_core_configuration* _Nonnull p, size_t index);
 const uint32_t libkrbn_core_configuration_get_selected_profile_simple_modification_product_id(libkrbn_core_configuration* _Nonnull p, size_t index);
 const bool libkrbn_core_configuration_get_selected_profile_simple_modification_disabled(libkrbn_core_configuration* _Nonnull p, size_t index);

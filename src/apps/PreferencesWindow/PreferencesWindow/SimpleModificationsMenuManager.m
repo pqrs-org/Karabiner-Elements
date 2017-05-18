@@ -24,13 +24,16 @@
   if (pairs != nil) {
     for (id id_ in pairs) {
       VendorProductIdPair *pair = (VendorProductIdPair *)id_;
-      NSString *str = [NSString stringWithFormat:@"0x%04lx, 0x%04lx", pair.vendorId, pair.productId];
-      
+      NSString *str = [pair toString];
       NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:str action:NULL keyEquivalent:@""];
-      item.representedObject = str;
+      item.representedObject = pair;
       [self.vendorIdMenu addItem:item];
     }
   }
+  
+  NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"Not Specified" action:NULL keyEquivalent:@""];
+  item.representedObject = [[VendorProductIdPair alloc] initWithVendorId: 0 productId: 0];
+  [self.vendorIdMenu addItem:item];
 }
 
 - (void)setup {

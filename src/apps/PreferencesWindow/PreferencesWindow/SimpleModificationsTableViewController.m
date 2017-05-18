@@ -12,11 +12,11 @@
 
 @implementation SimpleModificationsTableViewController
 
-+ (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton representedObject:(NSString*)representedObject {
++ (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton representedObject:(NSObject*)representedObject {
   NSArray* items = popUpButton.itemArray;
   if (items) {
     for (NSMenuItem* item in items) {
-      if ([item.representedObject isEqualToString:representedObject]) {
+      if ([item.representedObject isEqual:representedObject]) {
         [popUpButton selectItem:item];
         return;
       }
@@ -63,6 +63,28 @@
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     [coreConfigurationModel setSelectedProfileSimpleModificationAtIndex:row from:fromValue to:toValue];
+    [coreConfigurationModel save];
+  }
+}
+
+- (void)vendorProductIdChanged:(id)sender {
+  NSInteger row = [self.tableView rowForView:sender];
+  
+  SimpleModificationsTableCellView* vendorProductIdCellView = [self.tableView viewAtColumn:2 row:row makeIfNecessary:NO];
+  
+  VendorProductIdPair* pair = vendorProductIdCellView.popUpButton.selectedItem.representedObject;
+  if (pair) {
+    // If toCellView is not selected, set fromCellView value to toCellView.
+    /*
+    NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
+    if (!toValue || [toValue isEqualToString:@""]) {
+      [SimpleModificationsTableViewController selectPopUpButtonMenu:toCellView.popUpButton representedObject:fromValue];
+      toValue = toCellView.popUpButton.selectedItem.representedObject;
+    }
+    toCellView.popUpButton.enabled = YES;
+    */
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    [coreConfigurationModel setSelectedProfileSimpleModificationVendorProductIdAtIndex:row vendorId:pair.vendorId productId:pair.productId];
     [coreConfigurationModel save];
   }
 }
