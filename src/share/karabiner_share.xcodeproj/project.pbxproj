@@ -13,7 +13,6 @@
 		5EFDD42E1ECB005D00040ABE /* device.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5EFDD41B1ECB005D00040ABE /* device.hpp */; };
 		5EFDD4301ECB005D00040ABE /* simple_modifications.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5EFDD41D1ECB005D00040ABE /* simple_modifications.hpp */; };
 		5EFDD4311ECB005D00040ABE /* virtual_hid_keyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5EFDD41E1ECB005D00040ABE /* virtual_hid_keyboard.hpp */; };
-		5EFDD43D1ECB00A700040ABE /* simple_modifications.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EFDD41C1ECB005D00040ABE /* simple_modifications.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -149,7 +148,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5EFDD43D1ECB00A700040ABE /* simple_modifications.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

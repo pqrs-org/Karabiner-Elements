@@ -38,7 +38,6 @@
 		5E695C061ECB66E2002E849C /* global_configuration.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF31ECB66E2002E849C /* global_configuration.hpp */; };
 		5E695C071ECB66E2002E849C /* complex_modification.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF51ECB66E2002E849C /* complex_modification.hpp */; };
 		5E695C081ECB66E2002E849C /* device.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF61ECB66E2002E849C /* device.hpp */; };
-		5E695C091ECB66E2002E849C /* simple_modifications.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E695BF71ECB66E2002E849C /* simple_modifications.cpp */; };
 		5E695C0A1ECB66E2002E849C /* simple_modifications.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF81ECB66E2002E849C /* simple_modifications.hpp */; };
 		5E695C0B1ECB66E2002E849C /* virtual_hid_keyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF91ECB66E2002E849C /* virtual_hid_keyboard.hpp */; };
 		5E695C191ECB6FA2002E849C /* general_logger.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695C181ECB6FA2002E849C /* general_logger.hpp */; };
@@ -270,7 +269,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E695C091ECB66E2002E849C /* simple_modifications.cpp in Sources */,
 				3457BEED1E54B42D00B6A620 /* libkrbn_configuration.cpp in Sources */,
 				346FC7FF1E3F8C2E0090B203 /* libkrbn_version_monitor.cpp in Sources */,
 				34B97B2C1DBCD2CB00EB3583 /* libkrbn_connected_devices.cpp in Sources */,
