@@ -153,19 +153,6 @@ public:
     bool disabled;
   };
   
-  /*
-  simple_modifications(const nlohmann::json& json);
-  nlohmann::json to_json(void) const;
-  const std::vector<key_mapping>& get_pairs(void) const;
-  void push_back_pair(void);
-  void erase_pair(size_t index);
-  
-  void replace_pair(size_t index, const std::string& from, const std::string& to);
-  void replace_second(const std::string& from, const std::string& to) ;
-
-  std::unordered_map<key_code, key_code> to_key_code_map(spdlog::logger& logger) const;
-  */
-  
   simple_modifications(const nlohmann::json& json) {
     if (json.is_array()) {
       for (auto it = json.begin(); it != json.end(); ++it) {
