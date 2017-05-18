@@ -12,6 +12,7 @@
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "manipulator/details/collapse_lazy_events.hpp"
+#include "manipulator/manipulator_managers_connector.hpp"
 #include "physical_keyboard_repeat_detector.hpp"
 #include "pressed_physical_keys_counter.hpp"
 #include "spdlog_utility.hpp"
@@ -44,6 +45,16 @@ public:
       std::unique_ptr<krbn::manipulator::details::base> ptr = std::move(manipulator);
       collapse_lazy_events_manipulator_manager_.push_back_manipulator(std::move(ptr));
     }
+
+    manipulator_managers_connector_.emplace_back_connection(simple_modifications_manipulator_manager_,
+                                                            merged_input_event_queue_,
+                                                            simple_modifications_applied_event_queue_);
+    manipulator_managers_connector_.emplace_back_connection(fn_function_keys_manipulator_manager_,
+                                                            simple_modifications_applied_event_queue_,
+                                                            fn_function_keys_applied_event_queue_);
+    manipulator_managers_connector_.emplace_back_connection(collapse_lazy_events_manipulator_manager_,
+                                                            fn_function_keys_applied_event_queue_,
+                                                            lazy_collapsed_event_queue_);
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
     // The behavior causes LED state mismatch because device_grabber does not change the caps lock state of physical keyboards.
@@ -198,8 +209,7 @@ public:
   void unset_profile(void) {
     profile_ = core_configuration::profile(nlohmann::json());
 
-    simple_modifications_manipulator_manager_.invalidate_manipulators();
-    fn_function_keys_manipulator_manager_.invalidate_manipulators();
+    manipulator_managers_connector_.invalidate_manipulators();
   }
 
   void set_system_preferences_values(const system_preferences::values& values) {
@@ -339,17 +349,11 @@ private:
     }
 
     if (device.is_grabbed() && !device.get_disabled()) {
-      simple_modifications_manipulator_manager_.manipulate(event_queue,
-                                                           simple_modifications_applied_event_queue_,
-                                                           mach_absolute_time());
+      for (const auto& queued_event : event_queue.get_events()) {
+        merged_input_event_queue_.push_back_event(queued_event);
+      }
 
-      fn_function_keys_manipulator_manager_.manipulate(simple_modifications_applied_event_queue_,
-                                                       fn_function_keys_applied_event_queue_,
-                                                       mach_absolute_time());
-
-      collapse_lazy_events_manipulator_manager_.manipulate(fn_function_keys_applied_event_queue_,
-                                                           lazy_collapsed_event_queue_,
-                                                           mach_absolute_time());
+      manipulator_managers_connector_.manipulate(mach_absolute_time());
 
       for (const auto& queued_event : lazy_collapsed_event_queue_.get_events()) {
         // logger::get_logger().info("event_time: {0} current_time:{1}", queued_event.get_time_stamp(), mach_absolute_time());
@@ -488,25 +492,8 @@ private:
     // stop key repeat
     event_manipulator_.stop_key_repeat();
 
-    simple_modifications_manipulator_manager_.run_device_ungrabbed_callback(device.get_device_id(),
-                                                                            simple_modifications_applied_event_queue_,
-                                                                            mach_absolute_time());
-
-    fn_function_keys_manipulator_manager_.manipulate(simple_modifications_applied_event_queue_,
-                                                     fn_function_keys_applied_event_queue_,
-                                                     mach_absolute_time());
-
-    fn_function_keys_manipulator_manager_.run_device_ungrabbed_callback(device.get_device_id(),
-                                                                        fn_function_keys_applied_event_queue_,
-                                                                        mach_absolute_time());
-
-    collapse_lazy_events_manipulator_manager_.manipulate(fn_function_keys_applied_event_queue_,
-                                                         lazy_collapsed_event_queue_,
-                                                         mach_absolute_time());
-
-    collapse_lazy_events_manipulator_manager_.run_device_ungrabbed_callback(device.get_device_id(),
-                                                                            lazy_collapsed_event_queue_,
-                                                                            mach_absolute_time());
+    manipulator_managers_connector_.run_device_ungrabbed_callback(device.get_device_id(),
+                                                                  mach_absolute_time());
   }
 
   void disabled_callback(human_interface_device& device) {
@@ -743,6 +730,10 @@ private:
 
   core_configuration::profile profile_;
   system_preferences::values system_preferences_values_;
+
+  manipulator::manipulator_managers_connector manipulator_managers_connector_;
+
+  event_queue merged_input_event_queue_;
 
   manipulator::manipulator_manager simple_modifications_manipulator_manager_;
   event_queue simple_modifications_applied_event_queue_;
