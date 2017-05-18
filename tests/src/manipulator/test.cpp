@@ -410,20 +410,32 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // manipulator_manager (device_ungrabbed_callback)
 
-    krbn::manipulator::manipulator_manager manipulator_manager;
+    krbn::manipulator::manipulator_manager manipulator_manager1;
     {
       auto manipulator = std::make_unique<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::spacebar),
                                                                              krbn::manipulator::details::event_definition(krbn::key_code::tab));
       std::unique_ptr<krbn::manipulator::details::base> ptr = std::move(manipulator);
-      manipulator_manager.push_back_manipulator(std::move(ptr));
+      manipulator_manager1.push_back_manipulator(std::move(ptr));
+    }
+
+    krbn::manipulator::manipulator_manager manipulator_manager2;
+    {
+      auto manipulator = std::make_unique<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::tab),
+                                                                             krbn::manipulator::details::event_definition(krbn::key_code::escape));
+      std::unique_ptr<krbn::manipulator::details::base> ptr = std::move(manipulator);
+      manipulator_manager2.push_back_manipulator(std::move(ptr));
     }
 
     krbn::event_queue input_event_queue;
+    krbn::event_queue middle_event_queue;
     krbn::event_queue output_event_queue;
 
     krbn::manipulator::manipulator_managers_connector connector;
-    connector.emplace_back_connection(manipulator_manager,
+    connector.emplace_back_connection(manipulator_manager1,
                                       input_event_queue,
+                                      middle_event_queue);
+    connector.emplace_back_connection(manipulator_manager2,
+                                      middle_event_queue,
                                       output_event_queue);
 
     // ----------------------------------------
@@ -455,17 +467,17 @@ TEST_CASE("manipulator.manipulator_manager") {
       std::vector<krbn::event_queue::queued_event> expected({
           krbn::event_queue::queued_event(krbn::device_id(1),
                                           100,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::tab),
+                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
                                           krbn::event_type::key_down,
                                           krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
           krbn::event_queue::queued_event(krbn::device_id(2),
                                           200,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::tab),
+                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
                                           krbn::event_type::key_down,
                                           krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
           krbn::event_queue::queued_event(krbn::device_id(1),
                                           300,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::tab),
+                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
                                           krbn::event_type::key_up,
                                           krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
       });
@@ -480,22 +492,22 @@ TEST_CASE("manipulator.manipulator_manager") {
       std::vector<krbn::event_queue::queued_event> expected({
           krbn::event_queue::queued_event(krbn::device_id(1),
                                           100,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::tab),
+                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
                                           krbn::event_type::key_down,
                                           krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
           krbn::event_queue::queued_event(krbn::device_id(2),
                                           200,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::tab),
+                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
                                           krbn::event_type::key_down,
                                           krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
           krbn::event_queue::queued_event(krbn::device_id(1),
                                           300,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::tab),
+                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
                                           krbn::event_type::key_up,
                                           krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
           krbn::event_queue::queued_event(krbn::device_id(2),
                                           500,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::tab),
+                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
                                           krbn::event_type::key_up,
                                           krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
       });
