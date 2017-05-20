@@ -51,6 +51,42 @@ TEST_CASE("main_queue_after_timer") {
     }
 
     {
+      class wrapper final {
+      public:
+        wrapper(void) : value_(0) {
+        }
+
+        void set_timer(void) {
+          timer_ = std::make_unique<krbn::gcd_utility::main_queue_after_timer>(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                                               ^{
+                                                                                 // block binds `this`.
+
+                                                                                 REQUIRE(timer_);
+                                                                                 REQUIRE(timer_->fired());
+
+                                                                                 ++value_;
+                                                                               });
+        }
+
+        int get_value(void) const {
+          return value_;
+        }
+
+      private:
+        std::unique_ptr<krbn::gcd_utility::main_queue_after_timer> timer_;
+        int value_;
+      };
+
+      wrapper w;
+      REQUIRE(w.get_value() == 0);
+
+      w.set_timer();
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(200));
+      REQUIRE(w.get_value() == 1);
+    }
+
+    {
       {
         krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
                                                         ^{
