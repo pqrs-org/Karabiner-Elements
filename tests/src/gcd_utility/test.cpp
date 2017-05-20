@@ -19,26 +19,46 @@ TEST_CASE("main_queue_after_timer") {
                                                       ^{
                                                         ++value;
                                                       });
+      REQUIRE(!timer.fired());
+
       std::this_thread::sleep_for(std::chrono::milliseconds(200));
       REQUIRE(value == 1);
+
+      REQUIRE(timer.fired());
     }
 
     {
-      krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
-                                                      ^{
-                                                        ++value;
-                                                      });
+      class wrapper final {
+      public:
+        std::shared_ptr<krbn::gcd_utility::main_queue_after_timer> timer;
+      };
+
+      wrapper w;
+      wrapper* p = &w;
+      w.timer = std::make_shared<krbn::gcd_utility::main_queue_after_timer>(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                                            ^{
+                                                                              // w is copied before timer was constructed.
+                                                                              REQUIRE(w.timer.get() == nullptr);
+
+                                                                              // p refers `w` in the timer.
+                                                                              REQUIRE(p->timer);
+                                                                              REQUIRE(p->timer->fired());
+
+                                                                              ++value;
+                                                                            });
       std::this_thread::sleep_for(std::chrono::milliseconds(200));
       REQUIRE(value == 2);
     }
 
     {
       {
-        krbn::gcd_utility::main_queue_after_timer main_queue_after_timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
-                                                                         ^{
-                                                                           ++value;
-                                                                         });
+        krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                        ^{
+                                                          ++value;
+                                                        });
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+        // timer will be canceled.
       }
       REQUIRE(value == 2);
 
