@@ -19,6 +19,13 @@ public:
                                                       service_(IO_OBJECT_NULL),
                                                       connect_(IO_OBJECT_NULL),
                                                       virtual_hid_keyboard_initialized_(false) {
+  }
+
+  ~virtual_hid_device_client(void) {
+    close_connection();
+  }
+
+  void connect(void) {
     if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name())) {
       service_observer_ = std::make_unique<service_observer>(logger_,
                                                              matching_dictionary,
@@ -26,10 +33,6 @@ public:
                                                              std::bind(&virtual_hid_device_client::terminated_callback, this, std::placeholders::_1));
       CFRelease(matching_dictionary);
     }
-  }
-
-  ~virtual_hid_device_client(void) {
-    close_connection();
   }
 
   bool is_connected(void) const {

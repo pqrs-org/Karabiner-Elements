@@ -49,6 +49,7 @@ int main(int argc, const char* argv[]) {
   unlink(krbn::constants::get_grabber_socket_file_path());
 
   auto virtual_hid_device_client_ptr = std::make_unique<krbn::virtual_hid_device_client>(logger);
+  virtual_hid_device_client_ptr->connect();
   auto event_manipulator_ptr = std::make_unique<krbn::manipulator::event_manipulator>(*virtual_hid_device_client_ptr);
   auto device_grabber_ptr = std::make_unique<krbn::device_grabber>(*virtual_hid_device_client_ptr, *event_manipulator_ptr);
   krbn::connection_manager connection_manager(*version_monitor_ptr, *event_manipulator_ptr, *device_grabber_ptr);
