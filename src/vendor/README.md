@@ -13,5 +13,5 @@
   * version: 4a695f9c6e81322abc4cea0f0e4b9007bcddd34a
   * url: https://github.com/scopeInfinity/NaturalSort
 * cxxopts:
-  * version: 1be5f10daf6f08296eff399e82aa94d16800ef4e
+  * version: 9db62cb338aeaed1fec5806f6b5d9781f5e19e4c
   * url: https://github.com/jarro2783/cxxopts
