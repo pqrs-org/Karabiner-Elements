@@ -11,6 +11,7 @@ all:
 	$(MAKE) -C iopmlib
 	$(MAKE) -C session
 	$(MAKE) -C version_monitor
+	$(MAKE) -C virtual_device_client
 
 clean:
 	$(MAKE) -C cg_event_set_flags clean
@@ -25,3 +26,4 @@ clean:
 	$(MAKE) -C iopmlib clean
 	$(MAKE) -C session clean
 	$(MAKE) -C version_monitor clean
+	$(MAKE) -C virtual_device_client clean
