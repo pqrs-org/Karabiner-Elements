@@ -24,6 +24,14 @@ public:
                                      nullptr, 0);
   }
 
+  static IOReturn is_virtual_hid_keyboard_ready(mach_port_t connection, bool& ready) {
+    size_t output_struct_count = sizeof(ready);
+    return IOConnectCallStructMethod(connection,
+                                     static_cast<uint32_t>(karabiner_virtual_hid_device::user_client_method::is_virtual_hid_keyboard_ready),
+                                     nullptr, 0,
+                                     &ready, &output_struct_count);
+  }
+
   static IOReturn dispatch_keyboard_event(mach_port_t connection, const karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event) {
     return IOConnectCallStructMethod(connection,
                                      static_cast<uint32_t>(karabiner_virtual_hid_device::user_client_method::dispatch_keyboard_event),
@@ -75,4 +83,4 @@ public:
                                      nullptr, 0);
   }
 };
-}
+} // namespace pqrs

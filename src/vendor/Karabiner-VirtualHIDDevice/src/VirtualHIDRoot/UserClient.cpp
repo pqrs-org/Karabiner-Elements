@@ -70,6 +70,14 @@ IOExternalMethodDispatch VIRTUAL_HID_ROOT_USERCLIENT_CLASS::methods_[static_cast
         0                                                                                     // No struct output value.
     },
     {
+        // is_virtual_hid_keyboard_ready
+        reinterpret_cast<IOExternalMethodAction>(&staticIsVirtualHIDKeyboardReady), // Method pointer.
+        0,                                                                          // No scalar input value.
+        0,                                                                          // No struct input value.
+        0,                                                                          // No scalar output value.
+        sizeof(bool)                                                                // One struct output value.
+    },
+    {
         // dispatch_keyboard_event
         reinterpret_cast<IOExternalMethodAction>(&staticDispatchKeyboardEventCallback), // Method pointer.
         0,                                                                              // No scalar input value.
@@ -402,6 +410,37 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::resetVirtualHIDPointingCallback(void
 
   pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
   return postPointingInputReportCallback(report);
+}
+
+#pragma mark - is_virtual_hid_keyboard_ready
+
+IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticIsVirtualHIDKeyboardReady(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
+                                                                            void* reference,
+                                                                            IOExternalMethodArguments* arguments) {
+  if (!target) {
+    return kIOReturnBadArgument;
+  }
+
+  if (!arguments) {
+    return kIOReturnBadArgument;
+  }
+
+  if (auto ready = static_cast<bool*>(arguments->structureOutput)) {
+    return target->isVirtualHIDKeyboardReady(*ready);
+  }
+
+  return kIOReturnBadArgument;
+}
+
+IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::isVirtualHIDKeyboardReady(bool& ready) {
+  ready = true;
+  if (!virtualHIDKeyboard_) {
+    ready = false;
+  }
+  if (!virtualHIDEventService_) {
+    ready = false;
+  }
+  return kIOReturnSuccess;
 }
 
 #pragma mark - dispatch_keyboard_event

@@ -151,6 +151,7 @@ public:
     // VirtualHIDKeyboard
     initialize_virtual_hid_keyboard,
     terminate_virtual_hid_keyboard,
+    is_virtual_hid_keyboard_ready,
     dispatch_keyboard_event,
     post_keyboard_input_report,
     reset_virtual_hid_keyboard,
@@ -165,7 +166,7 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040400";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040500";
   }
 };
 }

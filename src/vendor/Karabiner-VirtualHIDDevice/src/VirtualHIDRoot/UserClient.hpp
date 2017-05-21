@@ -50,6 +50,11 @@ private:
                                                             IOExternalMethodArguments* arguments);
   IOReturn terminateVirtualHIDKeyboardCallback(void);
 
+  static IOReturn staticIsVirtualHIDKeyboardReady(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
+                                                  void* reference,
+                                                  IOExternalMethodArguments* arguments);
+  IOReturn isVirtualHIDKeyboardReady(bool& ready);
+
   static IOReturn staticDispatchKeyboardEventCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                       void* reference,
                                                       IOExternalMethodArguments* arguments);
