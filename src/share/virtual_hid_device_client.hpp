@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
+#include "iokit_utility.hpp"
 #include "service_observer.hpp"
 #include <boost/signals2.hpp>
 
@@ -120,12 +121,12 @@ private:
 
         auto kr = IOServiceOpen(service_, mach_task_self(), kIOHIDServerConnectType, &connect_);
         if (kr != KERN_SUCCESS) {
-          logger_.error("IOServiceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+          logger_.error("IOServiceOpen error: {1} ({2}) @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_error_name(kr), kr);
           connect_ = IO_OBJECT_NULL;
+        } else {
+          logger_.info("IOServiceOpen is succeeded @ {0}", __PRETTY_FUNCTION__);
+          connected = true;
         }
-
-        logger_.info("IOServiceOpen is succeeded @ {0}", __PRETTY_FUNCTION__);
-        connected = true;
       }
 
       IOObjectRelease(service);
