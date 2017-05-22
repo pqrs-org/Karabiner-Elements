@@ -117,7 +117,8 @@ public:
     std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
   };
 
-  post_event_to_virtual_devices(void) : base() {
+  post_event_to_virtual_devices(virtual_hid_device_client& virtual_hid_device_client) : base(),
+                                                                                        queue_(virtual_hid_device_client) {
   }
 
   virtual ~post_event_to_virtual_devices(void) {
@@ -136,8 +137,8 @@ public:
           keyboard_event.usage_page = *usage_page;
           keyboard_event.usage = *usage;
           keyboard_event.value = front_input_event.get_event_type() == event_type::key_down;
-          queued_.emplace_back_event(keyboard_event,
-                                     front_input_event.get_time_stamp());
+          queue_.emplace_back_event(keyboard_event,
+                                    front_input_event.get_time_stamp());
         }
       }
       return;
