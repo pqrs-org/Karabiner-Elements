@@ -2,6 +2,7 @@
 
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
+#include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <mach/mach_time.h>
 
@@ -10,27 +11,6 @@ namespace manipulator {
 namespace details {
 class post_event_to_virtual_devices final : public base {
 public:
-  post_event_to_virtual_devices(void) : base() {
-  }
-
-  virtual ~post_event_to_virtual_devices(void) {
-  }
-
-  virtual void manipulate(event_queue::queued_event& front_input_event,
-                          const event_queue& input_event_queue,
-                          event_queue& output_event_queue,
-                          uint64_t time_stamp) {
-  }
-
-  virtual bool active(void) const {
-    return false;
-  }
-
-  virtual void device_ungrabbed_callback(device_id device_id,
-                                         event_queue& output_event_queue,
-                                         uint64_t time_stamp) {
-  }
-
   class queue final {
   public:
     class event final {
@@ -96,6 +76,10 @@ public:
       post_events();
     }
 
+    bool empty(void) const {
+      return events_.empty();
+    }
+
   private:
     void post_events(void) {
       if (timer_ && timer_->fired()) {
@@ -132,6 +116,46 @@ public:
     std::vector<event> events_;
     std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
   };
+
+  post_event_to_virtual_devices(void) : base() {
+  }
+
+  virtual ~post_event_to_virtual_devices(void) {
+  }
+
+  virtual void manipulate(event_queue::queued_event& front_input_event,
+                          const event_queue& input_event_queue,
+                          event_queue& output_event_queue,
+                          uint64_t time_stamp) {
+    front_input_event.set_valid(false);
+
+    if (auto key_code = front_input_event.get_event().get_key_code()) {
+      if (auto usage_page = types::get_usage_page(*key_code)) {
+        if (auto usage = types::get_usage(*key_code)) {
+          pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
+          keyboard_event.usage_page = *usage_page;
+          keyboard_event.usage = *usage;
+          keyboard_event.value = front_input_event.get_event_type() == event_type::key_down;
+          queued_.emplace_back_event(keyboard_event,
+                                     front_input_event.get_time_stamp());
+        }
+      }
+      return;
+    }
+  }
+
+  virtual bool active(void) const {
+    return !queue_.empty();
+  }
+
+  virtual void device_ungrabbed_callback(device_id device_id,
+                                         event_queue& output_event_queue,
+                                         uint64_t time_stamp) {
+    // Do nothing
+  }
+
+private:
+  queue queue_;
 };
 } // namespace details
 } // namespace manipulator
