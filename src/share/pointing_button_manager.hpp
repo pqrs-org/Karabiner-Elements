@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace krbn {
-namespace manipulator {
 class pointing_button_manager final {
 public:
   class active_pointing_button final {
@@ -114,5 +113,4 @@ public:
 private:
   std::vector<active_pointing_button> active_pointing_buttons_;
 };
-} // namespace manipulator
 } // namespace krbn
