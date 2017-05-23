@@ -59,11 +59,11 @@ public:
       }
       {
         const std::string key = "fn_function_keys";
-        if (json.find(key) != json.end() && json[key].is_object()) {
+        if (json.find(key) != json.end() && json[key].is_array()) {
           for (auto it = json[key].begin(); it != json[key].end(); ++it) {
-            // it.key() is always std::string.
-            if (it.value().is_string()) {
-              fn_function_keys_.replace_second(it.key(), it.value());
+            auto &fn_key = *it;
+            if (fn_key.is_object()) {
+              fn_function_keys_.replace_second(fn_key["from"], fn_key["to"]);
             }
           }
         }
