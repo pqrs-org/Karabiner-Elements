@@ -30,22 +30,21 @@ public:
 
     profile(const nlohmann::json& json) : json_(json),
                                           selected_(false),
-                                          simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json()),
-                                          fn_function_keys_(nlohmann::json({
-                                              {"f1", "display_brightness_decrement"},
-                                              {"f2", "display_brightness_increment"},
-                                              {"f3", "mission_control"},
-                                              {"f4", "launchpad"},
-                                              {"f5", "illumination_decrement"},
-                                              {"f6", "illumination_increment"},
-                                              {"f7", "rewind"},
-                                              {"f8", "play_or_pause"},
-                                              {"f9", "fastforward"},
-                                              {"f10", "mute"},
-                                              {"f11", "volume_decrement"},
-                                              {"f12", "volume_increment"},
-                                          })),
-                                          virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json()) {
+                                          simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json()), fn_function_keys_(nlohmann::json({
+                                                                                 {{"from", "f1"}, {"to", "display_brightness_decrement"}},
+                                                                                 {{"from", "f2"}, {"to", "display_brightness_increment"}},
+                                                                                 {{"from", "f3"}, {"to", "mission_control"}},
+                                                                                 {{"from", "f4"}, {"to", "launchpad"}},
+                                                                                 {{"from", "f5"}, {"to", "illumination_decrement"}},
+                                                                                 {{"from", "f6"}, {"to", "illumination_increment"}},
+                                                                                 {{"from", "f7"}, {"to", "rewind"}},
+                                                                                 {{"from", "f8"}, {"to", "play_or_pause"}},
+                                                                                 {{"from", "f9"}, {"to", "fastforward"}},
+                                                                                 {{"from", "f10"}, {"to", "mute"}},
+                                                                                 {{"from", "f11"}, {"to", "volume_decrement"}},
+                                                                                 {{"from", "f12"}, {"to", "volume_increment"}}
+                                                                               })),
+                                              virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json()) {
       {
         const std::string key = "name";
         if (json.find(key) != json.end() && json[key].is_string()) {
