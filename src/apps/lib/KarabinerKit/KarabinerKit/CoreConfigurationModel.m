@@ -214,6 +214,27 @@
   return pairs;
 }
 
+
+- (void)selectedProfileDeviceProductManufacturerByVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId product:(NSMutableString *)product manufacturer:(NSMutableString *)manufacturer {
+  const char *product_ = NULL;
+  const char *manufacturer_ = NULL;
+  
+  libkrbn_core_configuration_get_selected_profile_device_product_manufacturer(self.libkrbnCoreConfiguration,
+                                                                              (uint32_t)vendorId,
+                                                                              (uint32_t)productId,
+                                                                              &product_,
+                                                                              &manufacturer_);
+  [product setString: [NSString stringWithUTF8String: product_]];
+  [manufacturer setString: [NSString stringWithUTF8String: manufacturer_]];
+}
+
+- (NSString *)getDeviceNameByVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId {
+  size_t size = 50;
+  char *buf = (char *)malloc(size);
+  
+  return [NSString stringWithUTF8String:buf];
+}
+
 - (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index {
   libkrbn_core_configuration_erase_selected_profile_simple_modification(self.libkrbnCoreConfiguration, index);
 }

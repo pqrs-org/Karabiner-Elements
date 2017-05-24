@@ -39,6 +39,7 @@
 - (NSUInteger)selectedProfileSimpleModificationProductIdAtIndex:(NSUInteger)index;
 - (BOOL)selectedProfileSimpleModificationDisabledAtIndex:(NSUInteger)index;
 - (NSArray *)selectedProfileSimpleModificationVendorProductIdPairs;
+- (NSString *)getDeviceNameByVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId;
 
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to;
 - (void)setSelectedProfileSimpleModificationVendorProductIdAtIndex:(NSUInteger)index vendorId:(NSUInteger)vid productId:(NSUInteger)pid;
@@ -49,6 +50,9 @@
 - (NSString*)selectedProfileFnFunctionKeyFirstAtIndex:(NSUInteger)index;
 - (NSString*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index;
 - (void)setSelectedProfileFnFunctionKey:(NSString*)from to:(NSString*)to;
+
+- (void)selectedProfileDeviceProductManufacturerByVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId product:(NSMutableString *)product manufacturer:(NSMutableString *)manufacturer;
+
 
 - (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
                           productId:(NSUInteger)productId

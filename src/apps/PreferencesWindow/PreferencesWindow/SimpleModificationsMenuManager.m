@@ -6,7 +6,6 @@
 @property(readwrite) NSMenu* fromMenu;
 @property(readwrite) NSMenu* toMenu;
 @property(readwrite) NSMenu* vendorIdMenu;
-@property(readwrite) NSMenu* productIdMenu;
 
 @end
 
@@ -16,8 +15,6 @@
   NSLog(@"In SetupVendor()");
   self.vendorIdMenu = [NSMenu new];
   self.vendorIdMenu.autoenablesItems = NO;
-  self.productIdMenu = [NSMenu new];
-  self.productIdMenu.autoenablesItems = NO;
   
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   NSArray *pairs = [coreConfigurationModel selectedProfileSimpleModificationVendorProductIdPairs];

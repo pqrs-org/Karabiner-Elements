@@ -90,10 +90,13 @@ public:
       if (auto p = iokit_utility::get_product_id(device_)) {
         product_id = *p;
       }
+      
       core_configuration::profile::device::identifiers identifiers(vendor_id,
                                                                    product_id,
                                                                    is_keyboard,
-                                                                   is_pointing_device);
+                                                                   is_pointing_device,
+                                                                   product,
+                                                                   manufacturer);
 
       bool is_built_in_keyboard = false;
       if (descriptions.get_product().find("Apple Internal ") != std::string::npos) {

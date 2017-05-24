@@ -71,9 +71,12 @@
   NSInteger row = [self.tableView rowForView:sender];
   
   SimpleModificationsTableCellView* vendorProductIdCellView = [self.tableView viewAtColumn:2 row:row makeIfNecessary:NO];
-  
+  SimpleModificationsTableCellView* devNameCellView = [self.tableView viewAtColumn:3 row:row makeIfNecessary:NO];
+  NSPopUpButton* popUpButton = devNameCellView.popUpButton;
+
   VendorProductIdPair* pair = vendorProductIdCellView.popUpButton.selectedItem.representedObject;
   if (pair) {
+    
     // If toCellView is not selected, set fromCellView value to toCellView.
     /*
     NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
@@ -86,6 +89,14 @@
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     [coreConfigurationModel setSelectedProfileSimpleModificationVendorProductIdAtIndex:row vendorId:pair.vendorId productId:pair.productId];
     [coreConfigurationModel save];
+    
+    NSMutableString *product = [[NSMutableString alloc] init];
+    NSMutableString *manufacturer = [[NSMutableString alloc] init];
+    
+    [coreConfigurationModel selectedProfileDeviceProductManufacturerByVendorId:pair.vendorId productId:pair.productId product:product manufacturer:manufacturer];
+    
+    [popUpButton removeAllItems];
+    [popUpButton addItemWithTitle: product];
   }
 }
 

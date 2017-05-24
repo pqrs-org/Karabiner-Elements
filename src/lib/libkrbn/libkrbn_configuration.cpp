@@ -252,7 +252,6 @@ void libkrbn_core_configuration_replace_selected_profile_simple_modification_ven
   }
 }
 
-
 vendor_product_pair* libkrbn_core_configuration_get_selected_profile_simple_modification_vendor_product_pairs(libkrbn_core_configuration* p,
                                                                                                                     size_t* count) {
   vendor_product_pair *vp_pairs = nullptr;
@@ -359,7 +358,7 @@ bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device);
+                                                                       is_pointing_device, "", "");
     return c->get_core_configuration().get_selected_profile().get_device_ignore(identifiers);
   }
   return false;
@@ -375,7 +374,7 @@ void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device);
+                                                                       is_pointing_device, "", "");
     c->get_core_configuration().get_selected_profile().set_device_ignore(identifiers, value);
   }
 }
@@ -389,7 +388,7 @@ bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_key
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device);
+                                                                       is_pointing_device, "", "");
     return c->get_core_configuration().get_selected_profile().get_device_disable_built_in_keyboard_if_exists(identifiers);
   }
   return false;
@@ -405,8 +404,33 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device);
+                                                                       is_pointing_device, "", "");
     c->get_core_configuration().get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
+  }
+}
+
+void libkrbn_core_configuration_get_selected_profile_device_product_manufacturer(libkrbn_core_configuration* _Nonnull p,
+                                                                                 uint32_t vendor_id,
+                                                                                 uint32_t product_id,
+                                                                                 const char * _Nonnull * _Nullable product,
+                                                                                 const char * _Nonnull * _Nullable manufacturer) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    auto &devices = c->get_core_configuration().get_selected_profile().get_devices();
+    for (auto &device : devices) {
+      uint32_t vid = static_cast<uint32_t>(device.get_identifiers().get_vendor_id());
+      uint32_t pid = static_cast<uint32_t>(device.get_identifiers().get_product_id());
+      
+      if (vid == vendor_id && pid == product_id) {
+        auto &identifiers = device.get_identifiers();
+        *product = identifiers.get_product().c_str();
+        *manufacturer = identifiers.get_manufacturer().c_str();
+        
+        return;
+      }
+    }
+    // not found
+    *product = "UNKNOWN";
+    *manufacturer = "UNKNOWN";
   }
 }
 

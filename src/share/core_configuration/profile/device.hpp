@@ -8,7 +8,9 @@ public:
                                               vendor_id_(vendor_id(0)),
                                               product_id_(product_id(0)),
                                               is_keyboard_(false),
-                                              is_pointing_device_(false) {
+                                              is_pointing_device_(false),
+                                              product_(""),
+                                              manufacturer_("") {
       {
         const std::string key = "vendor_id";
         if (json.find(key) != json.end() && json[key].is_number()) {
@@ -33,17 +35,33 @@ public:
           is_pointing_device_ = json[key];
         }
       }
+      {
+        const std::string key = "product";
+        if (json.find(key) != json.end() && json[key].is_string()) {
+          product_ = json[key];
+        }
+      }
+      {
+        const std::string key = "manufacturer";
+        if (json.find(key) != json.end() && json[key].is_string()) {
+          manufacturer_ = json[key];
+        }
+      }
     }
 
     identifiers(vendor_id vendor_id,
                 product_id product_id,
                 bool is_keyboard,
-                bool is_pointing_device) : identifiers(nlohmann::json({
-                                               {"vendor_id", static_cast<uint32_t>(vendor_id)},
-                                               {"product_id", static_cast<uint32_t>(product_id)},
-                                               {"is_keyboard", is_keyboard},
-                                               {"is_pointing_device", is_pointing_device},
-                                           })) {
+                bool is_pointing_device,
+                const std::string &product,
+                const std::string &manufacturer) : identifiers(nlohmann::json({
+                                                           {"vendor_id", static_cast<uint32_t>(vendor_id)},
+                                                           {"product_id", static_cast<uint32_t>(product_id)},
+                                                           {"is_keyboard", is_keyboard},
+                                                           {"is_pointing_device", is_pointing_device},
+                                                           {"product", product},
+                                                           {"manufacturer", manufacturer},
+                                                       })) {
     }
 
     nlohmann::json to_json(void) const {
@@ -52,6 +70,8 @@ public:
       j["product_id"] = static_cast<uint32_t>(product_id_);
       j["is_keyboard"] = is_keyboard_;
       j["is_pointing_device"] = is_pointing_device_;
+      j["product"] = product_;
+      j["manufacturer"] = manufacturer_;
       return j;
     }
 
@@ -82,6 +102,20 @@ public:
     void set_is_pointing_device(bool value) {
       is_pointing_device_ = value;
     }
+    
+    const std::string &get_product(void) const {
+      return product_;
+    }
+    void set_product(const std::string &product) {
+      product_ = product;
+    }
+    
+    const std::string &get_manufacturer(void) const {
+      return manufacturer_;
+    }
+    void set_manufacturer(const std::string &manufacturer) {
+      manufacturer_ = manufacturer;
+    }
 
     bool operator==(const identifiers& other) const {
       return vendor_id_ == other.vendor_id_ &&
@@ -96,6 +130,8 @@ public:
     product_id product_id_;
     bool is_keyboard_;
     bool is_pointing_device_;
+    std::string product_;
+    std::string manufacturer_;
   };
 
   device(const nlohmann::json& json) : json_(json),
@@ -114,6 +150,7 @@ public:
         disable_built_in_keyboard_if_exists_ = json[key];
       }
     }
+
   }
 
   nlohmann::json to_json(void) const {

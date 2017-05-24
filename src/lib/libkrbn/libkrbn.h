@@ -127,6 +127,12 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
                                                                                                 bool is_pointing_device,
                                                                                                 bool value);
 
+void libkrbn_core_configuration_get_selected_profile_device_product_manufacturer(libkrbn_core_configuration* _Nonnull p,
+                                                                                                  uint32_t vendor_id,
+                                                                                                  uint32_t product_id,
+                                                                                                  const char * _Nonnull * _Nullable product,
+                                                                                                  const char * _Nonnull * _Nullable manufacturer);
+
 // ----------------------------------------
 // libkrbn_configuration_monitor
 

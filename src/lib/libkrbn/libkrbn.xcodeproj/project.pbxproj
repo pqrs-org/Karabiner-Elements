@@ -76,7 +76,6 @@
 		5E695BF31ECB66E2002E849C /* global_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = global_configuration.hpp; sourceTree = "<group>"; };
 		5E695BF51ECB66E2002E849C /* complex_modification.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = complex_modification.hpp; sourceTree = "<group>"; };
 		5E695BF61ECB66E2002E849C /* device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = device.hpp; sourceTree = "<group>"; };
-		5E695BF71ECB66E2002E849C /* simple_modifications.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simple_modifications.cpp; sourceTree = "<group>"; };
 		5E695BF81ECB66E2002E849C /* simple_modifications.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = simple_modifications.hpp; sourceTree = "<group>"; };
 		5E695BF91ECB66E2002E849C /* virtual_hid_keyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_keyboard.hpp; sourceTree = "<group>"; };
 		5E695C181ECB6FA2002E849C /* general_logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = general_logger.hpp; path = ../../share/general_logger.hpp; sourceTree = "<group>"; };
@@ -169,7 +168,6 @@
 			children = (
 				5E695BF51ECB66E2002E849C /* complex_modification.hpp */,
 				5E695BF61ECB66E2002E849C /* device.hpp */,
-				5E695BF71ECB66E2002E849C /* simple_modifications.cpp */,
 				5E695BF81ECB66E2002E849C /* simple_modifications.hpp */,
 				5E695BF91ECB66E2002E849C /* virtual_hid_keyboard.hpp */,
 			);

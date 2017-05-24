@@ -365,7 +365,7 @@
         <window title="Karabiner-Elements Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="335" y="390" width="800" height="500"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <value key="minSize" type="size" width="800" height="500"/>
             <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="800" height="500"/>
@@ -501,8 +501,8 @@
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
                                                             </tableColumn>
-                                                            <tableColumn identifier="SimpleModificationsProductIdColumn" width="109" minWidth="10" maxWidth="3.4028234663852886e+38" id="ybi-b4-Dvc">
-                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Product Id">
+                                                            <tableColumn identifier="SimpleModificationsDeviceNameColumn" width="181" minWidth="10" maxWidth="3.4028234663852886e+38" id="ybi-b4-Dvc">
+                                                                <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Device Name">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -514,15 +514,15 @@
                                                                 </textFieldCell>
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
-                                                                    <tableCellView identifier="SimpleModificationsProductIdCellView" id="Ere-Oe-rul" customClass="SimpleModificationsTableCellView">
-                                                                        <rect key="frame" x="470" y="1" width="109" height="26"/>
+                                                                    <tableCellView identifier="SimpleModificationsDeviceNameCellView" id="Ere-Oe-rul" customClass="SimpleModificationsTableCellView">
+                                                                        <rect key="frame" x="470" y="1" width="181" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <popUpButton identifier="ProductID" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fmd-CZ-ba5">
-                                                                                <rect key="frame" x="16" y="0.0" width="76" height="26"/>
+                                                                            <popUpButton identifier="deviceName" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fmd-CZ-ba5">
+                                                                                <rect key="frame" x="1" y="0.0" width="180" height="26"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                                                <popUpButtonCell key="cell" type="push" title="ProductId" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="fCg-eM-zEq" id="gnl-5i-jCx">
-                                                                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                                                <popUpButtonCell key="cell" type="push" title="ProductId" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" inset="2" selectedItem="fCg-eM-zEq" id="gnl-5i-jCx">
+                                                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                                     <font key="font" metaFont="menu"/>
                                                                                     <menu key="menu" id="s20-yO-0Cf">
                                                                                         <items>
@@ -534,10 +534,13 @@
                                                                                 </popUpButtonCell>
                                                                             </popUpButton>
                                                                         </subviews>
+                                                                        <connections>
+                                                                            <outlet property="popUpButton" destination="fmd-CZ-ba5" id="Gyt-Dx-cVB"/>
+                                                                        </connections>
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
                                                             </tableColumn>
-                                                            <tableColumn identifier="SimpleModificationsDeleteColumn" width="86" minWidth="10" maxWidth="3.4028234663852886e+38" id="9uY-pP-ozU">
+                                                            <tableColumn identifier="SimpleModificationsDeleteColumn" width="50" minWidth="10" maxWidth="3.4028234663852886e+38" id="9uY-pP-ozU">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Delete">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -551,11 +554,11 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="SimpleModificationsDeleteCellView" id="Tg2-rB-0jS" customClass="SimpleModificationsTableCellView">
-                                                                        <rect key="frame" x="582" y="1" width="86" height="26"/>
+                                                                        <rect key="frame" x="654" y="1" width="50" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zfo-6t-308">
-                                                                                <rect key="frame" x="22" y="-4" width="42" height="32"/>
+                                                                                <rect key="frame" x="4" y="-4" width="42" height="32"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="width" constant="30" id="Db7-EN-ted"/>
                                                                                 </constraints>

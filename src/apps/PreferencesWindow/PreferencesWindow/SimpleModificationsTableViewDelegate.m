@@ -66,10 +66,28 @@
     VendorProductIdPair *pair = [[VendorProductIdPair alloc] initWithVendorId: vid productId: pid];
     [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:pair];
     
-    //NSLog(@"Vid/Pid: %@", repObj);
+    return result;
+  }
+  
+  if ([tableColumn.identifier isEqualToString:@"SimpleModificationsDeviceNameColumn"]) {
+    SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsDeviceNameCellView" owner:self];
     
-    //[coreConfigurationModel setSelectedProfileSimpleModificationVendorProductIdAtIndex:row vendorId:vid productId:pid];
-    //[coreConfigurationModel save];
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    
+    //result.popUpButton.action = @selector(vendorProductIdChanged:);
+    result.popUpButton.target = self.simpleModificationsTableViewController;
+    result.popUpButton.menu = [NSMenu new];
+    result.popUpButton.menu.autoenablesItems = NO;
+    
+    NSUInteger vid = [coreConfigurationModel selectedProfileSimpleModificationVendorIdAtIndex:row];
+    NSUInteger pid = [coreConfigurationModel selectedProfileSimpleModificationProductIdAtIndex:row];
+    
+    NSMutableString *product = [[NSMutableString alloc] init];
+    NSMutableString *manufacturer = [[NSMutableString alloc] init];
+    
+    [coreConfigurationModel selectedProfileDeviceProductManufacturerByVendorId:vid productId:pid product:product manufacturer:manufacturer];
+    
+    [result.popUpButton addItemWithTitle:product];
     
     return result;
   }
