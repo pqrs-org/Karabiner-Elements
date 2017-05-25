@@ -1,9 +1,13 @@
-[![Build Status](https://travis-ci.org/tekezo/Karabiner-Elements.svg?branch=master)](https://travis-ci.org/tekezo/Karabiner-Elements)
+[![Build Status](https://travis-ci.org/starsy/Karabiner-Elements.svg?branch=master)](https://travis-ci.org/starsy/Karabiner-Elements)
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://github.com/tekezo/Karabiner-Elements/blob/master/LICENSE.md)
 
 # Karabiner-Elements
 
 Karabiner-Elements provides a subset of the features planned for the next generation [Karabiner](https://pqrs.org/osx/karabiner) for macOS Sierra. The current version of Karabiner does not work with Sierra, so Karabiner-Elements was created to keep Sierra users up and running until a new version of Karabiner is published.
+
+This is an extension to Karabiner which allows you to configure per-device key mapping, which is missing in original Karabiner. Please be aware that the config file format is different and incompatabile with the original Karabiner's. 
+
+![Screen Shot](https://raw.githubusercontent.com/starsy/Karabiner-Elements/master/Screen%20Shot.png)]
 
 ## Project Status
 
