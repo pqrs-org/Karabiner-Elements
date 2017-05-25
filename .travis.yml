@@ -3,4 +3,4 @@ os: osx
 osx_image: xcode8.2
 compiler: clang
 install: true
-script: make && ruby scripts/reduce-logs.rb 'make -C appendix && make -C tests'
+script: make && ruby scripts/reduce-logs.rb 'make -C appendix'
