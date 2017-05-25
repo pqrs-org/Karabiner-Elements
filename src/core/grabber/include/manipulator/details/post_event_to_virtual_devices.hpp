@@ -1,9 +1,12 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
+#include <boost/optional.hpp>
 #include <mach/mach_time.h>
 
 namespace krbn {
@@ -32,22 +35,33 @@ public:
                                    time_stamp_(time_stamp) {
       }
 
-      const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event* get_keyboard_event(void) const {
-        if (type_ == type::keyboard_event) {
-          return &keyboard_event_;
-        }
-        return nullptr;
+      type get_type(void) const {
+        return type_;
       }
 
-      const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input* get_pointing_input(void) const {
-        if (type_ == type::pointing_input) {
-          return &pointing_input_;
+      boost::optional<pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event> get_keyboard_event(void) const {
+        if (type_ == type::keyboard_event) {
+          return keyboard_event_;
         }
-        return nullptr;
+        return boost::none;
+      }
+
+      boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::pointing_input> get_pointing_input(void) const {
+        if (type_ == type::pointing_input) {
+          return pointing_input_;
+        }
+        return boost::none;
       }
 
       uint64_t get_time_stamp(void) const {
         return time_stamp_;
+      }
+
+      bool operator==(const event& other) const {
+        return get_type() == other.get_type() &&
+               get_keyboard_event() == other.get_keyboard_event() &&
+               get_pointing_input() == other.get_pointing_input() &&
+               get_time_stamp() == other.get_time_stamp();
       }
 
     private:
