@@ -24,7 +24,7 @@ int main(int argc, const char* argv[]) {
   }
 
   auto virtual_hid_device_client_ptr = std::make_unique<krbn::virtual_hid_device_client>(logger::get_logger());
-  krbn::manipulator::details::post_event_to_virtual_devices::queue queue(*virtual_hid_device_client_ptr);
+  krbn::manipulator::details::post_event_to_virtual_devices::queue queue;
 
   virtual_hid_device_client_ptr->client_connected.connect([&]() {
     std::cout << "connected" << std::endl;
@@ -42,6 +42,7 @@ int main(int argc, const char* argv[]) {
       event.value = 1;
       auto time_stamp = mach_absolute_time();
       queue.emplace_back_event(event, time_stamp);
+      queue.post_events(*virtual_hid_device_client_ptr);
     }
     {
       pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event event;
@@ -49,6 +50,7 @@ int main(int argc, const char* argv[]) {
       event.value = 0;
       auto time_stamp = mach_absolute_time();
       queue.emplace_back_event(event, time_stamp);
+      queue.post_events(*virtual_hid_device_client_ptr);
     }
 
     {
@@ -57,6 +59,7 @@ int main(int argc, const char* argv[]) {
       event.value = 1;
       auto time_stamp = mach_absolute_time() + krbn::time_utility::nano_to_absolute(NSEC_PER_SEC);
       queue.emplace_back_event(event, time_stamp);
+      queue.post_events(*virtual_hid_device_client_ptr);
     }
     {
       pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event event;
@@ -64,6 +67,7 @@ int main(int argc, const char* argv[]) {
       event.value = 0;
       auto time_stamp = mach_absolute_time() + krbn::time_utility::nano_to_absolute(3 * NSEC_PER_SEC);
       queue.emplace_back_event(event, time_stamp);
+      queue.post_events(*virtual_hid_device_client_ptr);
     }
 
     {
@@ -72,6 +76,7 @@ int main(int argc, const char* argv[]) {
       event.value = 1;
       auto time_stamp = mach_absolute_time();
       queue.emplace_back_event(event, time_stamp);
+      queue.post_events(*virtual_hid_device_client_ptr);
     }
     {
       pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event event;
@@ -79,6 +84,7 @@ int main(int argc, const char* argv[]) {
       event.value = 0;
       auto time_stamp = mach_absolute_time();
       queue.emplace_back_event(event, time_stamp);
+      queue.post_events(*virtual_hid_device_client_ptr);
     }
   });
 
