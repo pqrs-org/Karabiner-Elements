@@ -11,7 +11,9 @@
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
+#include "manipulator/details/add_delay_after_modifier_key_down.hpp"
 #include "manipulator/details/collapse_lazy_events.hpp"
+#include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "physical_keyboard_repeat_detector.hpp"
 #include "pressed_physical_keys_counter.hpp"
@@ -45,6 +47,16 @@ public:
       collapse_lazy_events_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
 
+    {
+      auto manipulator = std::make_shared<manipulator::details::add_delay_after_modifier_key_down>();
+      add_delay_after_modifier_key_down_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+    }
+
+    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>();
+    post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
+
+    // Connect manipulator_managers
+
     manipulator_managers_connector_.emplace_back_connection(simple_modifications_manipulator_manager_,
                                                             merged_input_event_queue_,
                                                             simple_modifications_applied_event_queue_);
@@ -54,6 +66,12 @@ public:
     manipulator_managers_connector_.emplace_back_connection(collapse_lazy_events_manipulator_manager_,
                                                             fn_function_keys_applied_event_queue_,
                                                             lazy_collapsed_event_queue_);
+    manipulator_managers_connector_.emplace_back_connection(add_delay_after_modifier_key_down_manipulator_manager_,
+                                                            lazy_collapsed_event_queue_,
+                                                            modifier_delay_added_event_queue_);
+    manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
+                                                            modifier_delay_added_event_queue_,
+                                                            posted_event_queue_);
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
     // The behavior causes LED state mismatch because device_grabber does not change the caps lock state of physical keyboards.
@@ -354,62 +372,8 @@ private:
 
       manipulator_managers_connector_.manipulate(mach_absolute_time());
 
-      for (const auto& queued_event : lazy_collapsed_event_queue_.get_events()) {
-        // logger::get_logger().info("event_time: {0} current_time:{1}", queued_event.get_time_stamp(), mach_absolute_time());
-
-        if (queued_event.get_valid()) {
-          auto device_id = queued_event.get_device_id();
-          auto time_stamp = queued_event.get_time_stamp();
-
-          if (auto key_code = queued_event.get_event().get_key_code()) {
-            event_manipulator_.handle_keyboard_event(device_id,
-                                                     time_stamp,
-                                                     *key_code,
-                                                     queued_event.get_event_type() == event_type::key_down);
-
-          } else if (auto pointing_button = queued_event.get_event().get_pointing_button()) {
-            event_manipulator_.handle_pointing_event(device_id,
-                                                     time_stamp,
-                                                     pointing_event::button,
-                                                     *pointing_button,
-                                                     queued_event.get_event_type() == event_type::key_down);
-
-          } else {
-            if (auto integer_value = queued_event.get_event().get_integer_value()) {
-              if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_x) {
-                event_manipulator_.handle_pointing_event(device_id,
-                                                         time_stamp,
-                                                         pointing_event::x,
-                                                         boost::none,
-                                                         *integer_value);
-
-              } else if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_y) {
-                event_manipulator_.handle_pointing_event(device_id,
-                                                         time_stamp,
-                                                         pointing_event::y,
-                                                         boost::none,
-                                                         *integer_value);
-
-              } else if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel) {
-                event_manipulator_.handle_pointing_event(device_id,
-                                                         time_stamp,
-                                                         pointing_event::vertical_wheel,
-                                                         boost::none,
-                                                         *integer_value);
-
-              } else if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
-                event_manipulator_.handle_pointing_event(device_id,
-                                                         time_stamp,
-                                                         pointing_event::horizontal_wheel,
-                                                         boost::none,
-                                                         *integer_value);
-              }
-            }
-          }
-        }
-      }
-
-      lazy_collapsed_event_queue_.clear_events();
+      posted_event_queue_.clear_events();
+      post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
 
       // reset modifier_flags state if all keys are released.
       if (pressed_physical_keys_counter_updated &&
@@ -738,6 +702,13 @@ private:
 
   manipulator::manipulator_manager collapse_lazy_events_manipulator_manager_;
   event_queue lazy_collapsed_event_queue_;
+
+  manipulator::manipulator_manager add_delay_after_modifier_key_down_manipulator_manager_;
+  event_queue modifier_delay_added_event_queue_;
+
+  std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
+  manipulator::manipulator_manager post_event_to_virtual_devices_manipulator_manager_;
+  event_queue posted_event_queue_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> led_monitor_timer_;
 
