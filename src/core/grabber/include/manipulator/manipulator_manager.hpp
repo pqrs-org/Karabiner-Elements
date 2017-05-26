@@ -76,6 +76,10 @@ public:
     return manipulators_.size();
   }
 
+  const details::base& get_manipulator(size_t index) const {
+    return *manipulators_[index];
+  }
+
 private:
   void remove_invalid_manipulators(void) {
     manipulators_.erase(std::remove_if(std::begin(manipulators_),
