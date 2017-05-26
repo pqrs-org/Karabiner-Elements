@@ -6,12 +6,17 @@ namespace krbn {
 namespace manipulator {
 class manipulator_manager final {
 public:
+  manipulator_manager(const manipulator_manager&) = delete;
+
+  manipulator_manager(void) {
+  }
+
   void push_back_manipulator(const nlohmann::json& json) {
     manipulators_.push_back(manipulator_factory::make_manipulator(json));
   }
 
-  void push_back_manipulator(std::unique_ptr<details::base> ptr) {
-    manipulators_.push_back(std::move(ptr));
+  void push_back_manipulator(std::shared_ptr<details::base> ptr) {
+    manipulators_.push_back(ptr);
   }
 
   void manipulate(event_queue& input_event_queue,
@@ -91,7 +96,7 @@ private:
                         std::end(manipulators_));
   }
 
-  std::vector<std::unique_ptr<details::base>> manipulators_;
+  std::vector<std::shared_ptr<details::base>> manipulators_;
 };
 } // namespace manipulator
 } // namespace krbn

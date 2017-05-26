@@ -41,9 +41,8 @@ public:
         boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
 
     {
-      auto manipulator = std::make_unique<krbn::manipulator::details::collapse_lazy_events>();
-      std::unique_ptr<krbn::manipulator::details::base> ptr = std::move(manipulator);
-      collapse_lazy_events_manipulator_manager_.push_back_manipulator(std::move(ptr));
+      auto manipulator = std::make_shared<manipulator::details::collapse_lazy_events>();
+      collapse_lazy_events_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
 
     manipulator_managers_connector_.emplace_back_connection(simple_modifications_manipulator_manager_,
@@ -610,14 +609,13 @@ private:
     simple_modifications_manipulator_manager_.invalidate_manipulators();
 
     for (const auto& pair : profile_.get_simple_modifications_key_code_map(logger::get_logger())) {
-      auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
                                                                            pair.first,
                                                                            std::unordered_set<manipulator::details::event_definition::modifier>({
                                                                                manipulator::details::event_definition::modifier::any,
                                                                            })),
                                                                        manipulator::details::event_definition(pair.second));
-      std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
-      simple_modifications_manipulator_manager_.push_back_manipulator(std::move(ptr));
+      simple_modifications_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
   }
 
@@ -657,7 +655,7 @@ private:
                key_code::f11,
                key_code::f12,
            })) {
-        auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
                                                                              key_code,
                                                                              std::unordered_set<manipulator::details::event_definition::modifier>({
                                                                                  manipulator::details::event_definition::modifier::fn,
@@ -668,22 +666,20 @@ private:
                                                                              std::unordered_set<manipulator::details::event_definition::modifier>({
                                                                                  manipulator::details::event_definition::modifier::fn,
                                                                              })));
-        std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
-        fn_function_keys_manipulator_manager_.push_back_manipulator(std::move(ptr));
+        fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
     }
 
     // from_modifiers+f1 -> display_brightness_decrement ...
 
     for (const auto& pair : profile_.get_fn_function_keys_key_code_map(logger::get_logger())) {
-      auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
                                                                            pair.first,
                                                                            from_modifiers),
                                                                        manipulator::details::event_definition(
                                                                            pair.second,
                                                                            to_modifiers));
-      std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
-      fn_function_keys_manipulator_manager_.push_back_manipulator(std::move(ptr));
+      fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
 
     // fn+return_or_enter -> keypad_enter ...
@@ -697,7 +693,7 @@ private:
         std::make_pair(key_code::up_arrow, key_code::page_up),
     });
     for (const auto& p : pairs) {
-      auto manipulator = std::make_unique<manipulator::details::basic>(manipulator::details::event_definition(
+      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
                                                                            p.first,
                                                                            std::unordered_set<manipulator::details::event_definition::modifier>({
                                                                                manipulator::details::event_definition::modifier::fn,
@@ -708,8 +704,7 @@ private:
                                                                            std::unordered_set<manipulator::details::event_definition::modifier>({
                                                                                manipulator::details::event_definition::modifier::fn,
                                                                            })));
-      std::unique_ptr<manipulator::details::base> ptr = std::move(manipulator);
-      fn_function_keys_manipulator_manager_.push_back_manipulator(std::move(ptr));
+      fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
   }
 

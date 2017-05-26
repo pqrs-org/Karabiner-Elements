@@ -10,16 +10,16 @@ namespace krbn {
 namespace manipulator {
 class manipulator_factory final {
 public:
-  static std::unique_ptr<details::base> make_manipulator(const nlohmann::json& json) {
+  static std::shared_ptr<details::base> make_manipulator(const nlohmann::json& json) {
     {
       const std::string key = "type";
       if (json.find(key) != std::end(json) && json[key].is_string()) {
         if (json[key] == "basic") {
-          return std::make_unique<details::basic>(json);
+          return std::make_shared<details::basic>(json);
         }
       }
     }
-    return std::make_unique<details::nop>();
+    return std::make_shared<details::nop>();
   }
 };
 } // namespace manipulator
