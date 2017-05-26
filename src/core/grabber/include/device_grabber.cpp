@@ -516,6 +516,23 @@ device_grabber::device_grabber(virtual_hid_device_client& virtual_hid_device_cli
     return boost::none;
   }
 
+  boost::optional<const core_configuration::profile::device::identifiers&> device_grabber::find_device_identifiers(vendor_id vid, product_id pid) {
+    if (core_configuration_) {
+      for (const auto& kv : hids_) {
+        auto hid = kv.second;
+        if (hid) {
+          if (vid == hid->get_vendor_id() && pid == hid->get_product_id()) {
+            return hid->get_connected_device().get_identifiers();
+          }
+        }
+        
+      }
+    }
+    return boost::none;
+  }
+
+
+
   bool device_grabber::is_ignored_device(const human_interface_device& device) {
     if (auto s = find_device_configuration(device)) {
       return s->get_ignore();

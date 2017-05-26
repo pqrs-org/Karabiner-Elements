@@ -71,6 +71,7 @@ private:
   bool is_keyboard_connected(void);
   bool is_pointing_device_connected(void) ;
   boost::optional<const core_configuration::profile::device&> find_device_configuration(const human_interface_device& device);
+  boost::optional<const core_configuration::profile::device::identifiers&> find_device_identifiers(vendor_id vid, product_id pid);
   
   bool is_ignored_device(const human_interface_device& device);
   bool get_disable_built_in_keyboard_if_exists(const human_interface_device& device) ;
