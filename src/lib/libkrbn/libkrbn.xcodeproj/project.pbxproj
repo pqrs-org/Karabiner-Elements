@@ -35,6 +35,12 @@
 		34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC701D9663EC004C61E1 /* log_monitor.hpp */; };
 		34CFEC731D9663F6004C61E1 /* spdlog_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */; };
 		34F4D5191E672758007D5065 /* configuration_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34F4D5181E672758007D5065 /* configuration_monitor.hpp */; };
+		5E695C061ECB66E2002E849C /* global_configuration.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF31ECB66E2002E849C /* global_configuration.hpp */; };
+		5E695C071ECB66E2002E849C /* complex_modification.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF51ECB66E2002E849C /* complex_modification.hpp */; };
+		5E695C081ECB66E2002E849C /* device.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF61ECB66E2002E849C /* device.hpp */; };
+		5E695C0A1ECB66E2002E849C /* simple_modifications.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF81ECB66E2002E849C /* simple_modifications.hpp */; };
+		5E695C0B1ECB66E2002E849C /* virtual_hid_keyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695BF91ECB66E2002E849C /* virtual_hid_keyboard.hpp */; };
+		5E695C191ECB6FA2002E849C /* general_logger.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5E695C181ECB6FA2002E849C /* general_logger.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +73,12 @@
 		34CFEC701D9663EC004C61E1 /* log_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = log_monitor.hpp; path = ../../share/log_monitor.hpp; sourceTree = "<group>"; };
 		34CFEC721D9663F6004C61E1 /* spdlog_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = spdlog_utility.hpp; path = ../../share/spdlog_utility.hpp; sourceTree = "<group>"; };
 		34F4D5181E672758007D5065 /* configuration_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_monitor.hpp; path = ../../share/configuration_monitor.hpp; sourceTree = "<group>"; };
+		5E695BF31ECB66E2002E849C /* global_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = global_configuration.hpp; sourceTree = "<group>"; };
+		5E695BF51ECB66E2002E849C /* complex_modification.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = complex_modification.hpp; sourceTree = "<group>"; };
+		5E695BF61ECB66E2002E849C /* device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = device.hpp; sourceTree = "<group>"; };
+		5E695BF81ECB66E2002E849C /* simple_modifications.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = simple_modifications.hpp; sourceTree = "<group>"; };
+		5E695BF91ECB66E2002E849C /* virtual_hid_keyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_keyboard.hpp; sourceTree = "<group>"; };
+		5E695C181ECB6FA2002E849C /* general_logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = general_logger.hpp; path = ../../share/general_logger.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +127,8 @@
 		347113091D87091F001AC60D /* share */ = {
 			isa = PBXGroup;
 			children = (
+				5E695BF21ECB66E2002E849C /* core_configuration */,
+				5E695C181ECB6FA2002E849C /* general_logger.hpp */,
 				3404CB7B1E3E5B2000629451 /* application_launcher.hpp */,
 				34B97B261DBB2C5A00EB3583 /* boost_defs.hpp */,
 				3476862D1E22A9F400A7DFAB /* cf_utility.hpp */,
@@ -139,6 +153,27 @@
 			name = share;
 			sourceTree = "<group>";
 		};
+		5E695BF21ECB66E2002E849C /* core_configuration */ = {
+			isa = PBXGroup;
+			children = (
+				5E695BF31ECB66E2002E849C /* global_configuration.hpp */,
+				5E695BF41ECB66E2002E849C /* profile */,
+			);
+			name = core_configuration;
+			path = ../../share/core_configuration;
+			sourceTree = "<group>";
+		};
+		5E695BF41ECB66E2002E849C /* profile */ = {
+			isa = PBXGroup;
+			children = (
+				5E695BF51ECB66E2002E849C /* complex_modification.hpp */,
+				5E695BF61ECB66E2002E849C /* device.hpp */,
+				5E695BF81ECB66E2002E849C /* simple_modifications.hpp */,
+				5E695BF91ECB66E2002E849C /* virtual_hid_keyboard.hpp */,
+			);
+			path = profile;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -148,14 +183,19 @@
 			files = (
 				3471130C1D87092D001AC60D /* constants.hpp in Headers */,
 				345F953B1DA2AE3F002854B8 /* libkrbn.hpp in Headers */,
+				5E695C0A1ECB66E2002E849C /* simple_modifications.hpp in Headers */,
 				34CFEC731D9663F6004C61E1 /* spdlog_utility.hpp in Headers */,
 				3404CB7C1E3E5B2000629451 /* application_launcher.hpp in Headers */,
 				34B97B101DB8D2F600EB3583 /* thread_utility.hpp in Headers */,
+				5E695C061ECB66E2002E849C /* global_configuration.hpp in Headers */,
 				34B97B271DBB2C5A00EB3583 /* boost_defs.hpp in Headers */,
 				34F4D5191E672758007D5065 /* configuration_monitor.hpp in Headers */,
 				347113081D870834001AC60D /* libkrbn.h in Headers */,
 				340C7F6A1E4253CA00F9B911 /* process_utility.hpp in Headers */,
 				345F95421DA934C6002854B8 /* core_configuration.hpp in Headers */,
+				5E695C071ECB66E2002E849C /* complex_modification.hpp in Headers */,
+				5E695C081ECB66E2002E849C /* device.hpp in Headers */,
+				5E695C0B1ECB66E2002E849C /* virtual_hid_keyboard.hpp in Headers */,
 				34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */,
 				346FC8011E3F8CAD0090B203 /* version_monitor.hpp in Headers */,
 				3404CB781E3E3C7100629451 /* update_utility.hpp in Headers */,
@@ -164,6 +204,7 @@
 				342853071DCB851B00164476 /* system_preferences_monitor.hpp in Headers */,
 				3404CB7A1E3E430000629451 /* launchctl_utility.hpp in Headers */,
 				342853081DCB851B00164476 /* system_preferences.hpp in Headers */,
+				5E695C191ECB6FA2002E849C /* general_logger.hpp in Headers */,
 				34B97B241DBB2C4700EB3583 /* types.hpp in Headers */,
 				340C7F6C1E4253DF00F9B911 /* filesystem.hpp in Headers */,
 				3496EDB11E75A3B1003D6EFD /* connected_devices.hpp in Headers */,
@@ -297,6 +338,8 @@
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = krbn;
+				SEPARATE_STRIP = NO;
+				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Release;
 		};

@@ -16,7 +16,7 @@ public:
     static std::shared_ptr<spdlog::logger> logger;
 
     if (!logger) {
-      logger = spdlog::stdout_color_mt("libkrbn");
+      logger = spdlog::stdout_logger_mt("libkrbn");
     }
     return *logger;
   }

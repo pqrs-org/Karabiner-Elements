@@ -2,15 +2,16 @@
 
 #include "boost_defs.hpp"
 
-#include "apple_hid_usage_tables.hpp"
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
-#include "event_manipulator.hpp"
-#include "event_tap_manager.hpp"
-#include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
+#include "virtual_hid_device_client.hpp"
+#include "physical_keyboard_repeat_detector.hpp"
+#include "pressed_physical_keys_counter.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
+#include "event_tap_manager.hpp"
+#include "manipulator/event_manipulator.hpp"
 #include "manipulator/details/add_delay_after_modifier_key_down.hpp"
 #include "manipulator/details/collapse_lazy_events.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
@@ -21,15 +22,16 @@
 #include "system_preferences.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
-#include <boost/algorithm/string.hpp>
-#include <fstream>
-#include <json/json.hpp>
-#include <thread>
-#include <time.h>
 
 namespace krbn {
+
 class device_grabber final {
 public:
+  
+  static device_grabber * _Nullable get_grabber() { return grabber; }
+  boost::optional<std::weak_ptr<human_interface_device>> get_hid_by_id(device_id device_id_);
+
+  
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(virtual_hid_device_client& virtual_hid_device_client,
@@ -108,6 +110,8 @@ public:
 
       IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     }
+                                                                        
+    device_grabber::grabber = this;
   }
 
   ~device_grabber(void) {
@@ -235,37 +239,41 @@ public:
     update_fn_function_keys_manipulators();
   }
 
+
 private:
   enum class mode {
     observing,
     grabbing,
   };
 
+  static device_grabber * _Nullable grabber;
+  boost::optional<const core_configuration::profile::device::identifiers&> find_device_identifiers(vendor_id vid, product_id pid);
+  
   void virtual_hid_device_client_disconnected_callback(void) {
     stop_grabbing();
   }
-
+  
   static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
     if (result != kIOReturnSuccess) {
       return;
     }
-
+    
     auto self = static_cast<device_grabber*>(context);
     if (!self) {
       return;
     }
-
+    
     self->device_matching_callback(device);
   }
-
+  
   void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
     if (!device) {
       return;
     }
-
+    
     iokit_utility::log_matching_device(logger::get_logger(), device);
-
-    auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
+    
+    auto dev = std::make_shared<human_interface_device>(logger::get_logger(), device);
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
     dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
@@ -275,78 +283,98 @@ private:
                                       std::placeholders::_1,
                                       std::placeholders::_2));
     dev->observe();
-
-    hids_[device] = std::move(dev);
-
+    
+    hids_[device] = dev;
+    
+    boost::optional<device_id> device_id_ = dev->get_device_id();
+    
+    //logger::get_logger().info("-----> matching device id ptr: {:#x}", reinterpret_cast<uintptr_t>(dev.get()));
+    //logger::get_logger().info("-----> matching device id: {0}", static_cast<uint32_t>(dev->get_device_id()));
+    
+    if (device_id_) {
+      id2dev_[*device_id_] = dev;
+    }
+    
     output_devices_json();
-
+    
     if (is_pointing_device_connected()) {
       event_manipulator_.initialize_virtual_hid_pointing();
     } else {
       event_manipulator_.terminate_virtual_hid_pointing();
     }
-
+    
     // ----------------------------------------
     if (mode_ == mode::grabbing) {
       grab_devices();
     }
   }
-
+  
   static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
     if (result != kIOReturnSuccess) {
       return;
     }
-
+    
     auto self = static_cast<device_grabber*>(context);
     if (!self) {
       return;
     }
-
+    
     self->device_removal_callback(device);
   }
-
+  
   void device_removal_callback(IOHIDDeviceRef _Nonnull device) {
     if (!device) {
       return;
     }
-
+    
     iokit_utility::log_removal_device(logger::get_logger(), device);
-
+    
     boost::optional<device_id> device_id;
-
+    
     auto it = hids_.find(device);
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
         device_id = dev->get_device_id();
+        //logger::get_logger().info("-----> removal device id: {0}", static_cast<uint32_t>(*device_id));
+        if (device_id) {
+          auto item = id2dev_.find(*device_id);
+          if (item != id2dev_.end()) {
+            // release shared ptr
+            item->second.reset();
+            id2dev_.erase(item);
+          }
+        }
+        
+        it->second.reset();
         hids_.erase(it);
       }
     }
-
+    
     output_devices_json();
-
+    
     if (is_pointing_device_connected()) {
       event_manipulator_.initialize_virtual_hid_pointing();
     } else {
       event_manipulator_.terminate_virtual_hid_pointing();
     }
-
+    
     if (device_id) {
       event_manipulator_.erase_all_active_modifier_flags(*device_id, true);
       event_manipulator_.erase_all_active_pointing_buttons(*device_id, true);
-
+      
       physical_keyboard_repeat_detector_.erase(*device_id);
       pressed_physical_keys_counter_.erase_all_matched_events(*device_id);
     }
-
+    
     event_manipulator_.stop_key_repeat();
-
+    
     // ----------------------------------------
     if (mode_ == mode::grabbing) {
       grab_devices();
     }
   }
-
+  
   void value_callback(human_interface_device& device,
                       event_queue& event_queue) {
     bool pressed_physical_keys_counter_updated = false;
@@ -581,14 +609,21 @@ private:
   void update_simple_modifications_manipulators(void) {
     simple_modifications_manipulator_manager_.invalidate_manipulators();
 
-    for (const auto& pair : profile_.get_simple_modifications_key_code_map(logger::get_logger())) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
-                                                                           pair.first,
-                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
-                                                                               manipulator::details::event_definition::modifier::any,
-                                                                           })),
-                                                                       manipulator::details::event_definition(pair.second));
-      simple_modifications_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+    for (const auto& pair : profile_.get_simple_modifications()) {
+      auto from_key_code = pair.get_from_key_code();
+      auto to_key_code = pair.get_to_key_code();
+      
+      if (from_key_code && to_key_code) {
+        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+                                                                             *from_key_code,
+                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                                 manipulator::details::event_definition::modifier::any})),
+                                                                         manipulator::details::event_definition(*to_key_code),
+                                                                         pair.get_vendor_id(),
+                                                                         pair.get_product_id());
+        
+        simple_modifications_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+      }
     }
   }
 
@@ -694,7 +729,6 @@ private:
   physical_keyboard_repeat_detector physical_keyboard_repeat_detector_;
   pressed_physical_keys_counter pressed_physical_keys_counter_;
 
-  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 
   core_configuration::profile profile_;
   system_preferences::values system_preferences_values_;
@@ -726,5 +760,9 @@ private:
   spdlog_utility::log_reducer is_grabbable_callback_log_reducer_;
 
   bool suspended_;
+  
+  std::unordered_map<IOHIDDeviceRef, std::shared_ptr<human_interface_device>> hids_;
+  std::unordered_map<device_id, std::shared_ptr<human_interface_device>> id2dev_;
+  
 };
 } // namespace krbn

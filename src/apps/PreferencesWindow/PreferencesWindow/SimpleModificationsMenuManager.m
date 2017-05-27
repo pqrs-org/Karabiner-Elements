@@ -5,10 +5,33 @@
 
 @property(readwrite) NSMenu* fromMenu;
 @property(readwrite) NSMenu* toMenu;
+@property(readwrite) NSMenu* vendorIdMenu;
 
 @end
 
 @implementation SimpleModificationsMenuManager
+
+- (void) setupVendor {
+  NSLog(@"In SetupVendor()");
+  self.vendorIdMenu = [NSMenu new];
+  self.vendorIdMenu.autoenablesItems = NO;
+  
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  NSArray *pairs = [coreConfigurationModel selectedProfileSimpleModificationVendorProductIdPairs];
+  if (pairs != nil) {
+    for (id id_ in pairs) {
+      VendorProductIdPair *pair = (VendorProductIdPair *)id_;
+      NSString *str = [pair toString];
+      NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:str action:NULL keyEquivalent:@""];
+      item.representedObject = pair;
+      [self.vendorIdMenu addItem:item];
+    }
+  }
+  
+  NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"Not Specified" action:NULL keyEquivalent:@""];
+  item.representedObject = [[VendorProductIdPair alloc] initWithVendorId: 0 productId: 0];
+  [self.vendorIdMenu addItem:item];
+}
 
 - (void)setup {
   NSString* jsonFilePath = [[NSBundle mainBundle] pathForResource:@"simple_modifications" ofType:@"json"];
@@ -23,7 +46,7 @@
     self.fromMenu.autoenablesItems = NO;
     self.toMenu = [NSMenu new];
     self.toMenu.autoenablesItems = NO;
-
+  
     for (NSDictionary* dict in jsonObject) {
       NSString* category = dict[@"category"];
       NSString* name = dict[@"name"];
@@ -70,6 +93,7 @@
       }
     }
   }
+
 }
 
 @end

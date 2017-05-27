@@ -2,6 +2,9 @@
 #include "core_configuration.hpp"
 #include "libkrbn.h"
 #include "libkrbn.hpp"
+#include "core_configuration.hpp"
+#include <string>
+#include <set>
 
 namespace {
 class libkrbn_core_configuration_class final {
@@ -39,6 +42,16 @@ private:
   std::unique_ptr<krbn::configuration_monitor> configuration_monitor_;
 };
 } // namespace
+
+const krbn::core_configuration::profile::simple_modifications::key_mapping * _Nullable get_key_mapping(libkrbn_core_configuration* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    const auto& simple_modifications = c->get_core_configuration().get_selected_profile().get_simple_modifications();
+    if (index < simple_modifications.size()) {
+      return &simple_modifications[index];
+    }
+  }
+  return nullptr;
+}
 
 void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
   if (p && *p) {
@@ -161,23 +174,45 @@ size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size
 }
 
 const char* libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    const auto& simple_modifications = c->get_core_configuration().get_selected_profile().get_simple_modifications();
-    if (index < simple_modifications.size()) {
-      return simple_modifications[index].first.c_str();
-    }
+  auto km = get_key_mapping(p, index);
+  if (km) {
+    //libkrbn::get_logger().info("in get_first: {}", (*km).get_from());
+    return km->get_from().c_str();
   }
   return nullptr;
 }
 
 const char* libkrbn_core_configuration_get_selected_profile_simple_modification_second(libkrbn_core_configuration* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    const auto& simple_modifications = c->get_core_configuration().get_selected_profile().get_simple_modifications();
-    if (index < simple_modifications.size()) {
-      return simple_modifications[index].second.c_str();
-    }
+  auto km = get_key_mapping(p, index);
+  if (km) {
+    //libkrbn::get_logger().info("in get_second: {}", km->get_from());
+    return km->get_to().c_str();
   }
   return nullptr;
+}
+
+const uint32_t libkrbn_core_configuration_get_selected_profile_simple_modification_vendor_id(libkrbn_core_configuration* p, size_t index) {
+  auto km = get_key_mapping(p, index);
+  if (km) {
+    return static_cast<uint32_t>(km->get_vendor_id());
+  }
+  return 0;
+}
+
+const uint32_t libkrbn_core_configuration_get_selected_profile_simple_modification_product_id(libkrbn_core_configuration* p, size_t index) {
+  auto km = get_key_mapping(p, index);
+  if (km) {
+    return static_cast<uint32_t>(km->get_product_id());
+  }
+  return 0;
+}
+
+const bool libkrbn_core_configuration_get_selected_profile_simple_modification_disabled(libkrbn_core_configuration* _Nonnull p, size_t index) {
+  auto km = get_key_mapping(p, index);
+  if (km) {
+    return km->is_disabled();
+  }
+  return false;
 }
 
 void libkrbn_core_configuration_replace_selected_profile_simple_modification(libkrbn_core_configuration* p,
@@ -203,6 +238,52 @@ void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkr
   }
 }
 
+void libkrbn_core_configuration_replace_selected_profile_simple_modification_vendor_product_id(libkrbn_core_configuration* _Nonnull p,
+                                                                                               size_t index,
+                                                                                               uint32_t vendorId,
+                                                                                               uint32_t productId) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    auto &kms = c->get_core_configuration().get_selected_profile().get_simple_modifications();
+    if (index < kms.size()) {
+      const_cast<krbn::core_configuration::profile::simple_modifications::key_mapping &>(kms[index]).set_vendor_id(krbn::vendor_id(vendorId));
+      const_cast<krbn::core_configuration::profile::simple_modifications::key_mapping &>(kms[index]).set_product_id(krbn::product_id(productId));
+      libkrbn::get_logger().info("Update vid, pid: {}, {}", vendorId, productId);
+    }
+  }
+}
+
+vendor_product_pair* libkrbn_core_configuration_get_selected_profile_simple_modification_vendor_product_pairs(libkrbn_core_configuration* p,
+                                                                                                                    size_t* count) {
+  vendor_product_pair *vp_pairs = nullptr;
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    const auto& devices = c->get_core_configuration().get_selected_profile().get_devices();
+    
+    std::set<std::pair<uint32_t, uint32_t>> pairs;
+    
+    for (auto &device : devices) {
+      uint32_t vid = static_cast<uint32_t>(device.get_identifiers().get_vendor_id());
+      uint32_t pid = static_cast<uint32_t>(device.get_identifiers().get_product_id());
+      pairs.emplace(vid, pid);
+    }
+    
+    libkrbn::get_logger().info("Pair size: {}", pairs.size());
+    
+    *count = pairs.size();
+    vp_pairs = static_cast<vendor_product_pair *>(malloc(sizeof(vendor_product_pair) * *count));
+    
+    if (vp_pairs) {
+      size_t i = 0;
+      for (auto &pair : pairs) {
+        vendor_product_pair *np = vp_pairs + i;
+        np->vendor_id = pair.first;
+        np->product_id = pair.second;
+        ++ i;
+      }
+    }
+  }
+  return vp_pairs;
+}
+
 size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_selected_profile().get_fn_function_keys().size();
@@ -214,7 +295,7 @@ const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_functio
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     const auto& fn_function_keys = c->get_core_configuration().get_selected_profile().get_fn_function_keys();
     if (index < fn_function_keys.size()) {
-      return fn_function_keys[index].first.c_str();
+      return fn_function_keys[index].get_from().c_str();
     }
   }
   return nullptr;
@@ -224,7 +305,7 @@ const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_functio
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     const auto& fn_function_keys = c->get_core_configuration().get_selected_profile().get_fn_function_keys();
     if (index < fn_function_keys.size()) {
-      return fn_function_keys[index].second.c_str();
+      return fn_function_keys[index].get_to().c_str();
     }
   }
   return nullptr;
@@ -277,7 +358,7 @@ bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device);
+                                                                       is_pointing_device, "", "");
     return c->get_core_configuration().get_selected_profile().get_device_ignore(identifiers);
   }
   return false;
@@ -293,7 +374,7 @@ void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device);
+                                                                       is_pointing_device, "", "");
     c->get_core_configuration().get_selected_profile().set_device_ignore(identifiers, value);
   }
 }
@@ -307,7 +388,7 @@ bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_key
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device);
+                                                                       is_pointing_device, "", "");
     return c->get_core_configuration().get_selected_profile().get_device_disable_built_in_keyboard_if_exists(identifiers);
   }
   return false;
@@ -323,8 +404,33 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device);
+                                                                       is_pointing_device, "", "");
     c->get_core_configuration().get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
+  }
+}
+
+void libkrbn_core_configuration_get_selected_profile_device_product_manufacturer(libkrbn_core_configuration* _Nonnull p,
+                                                                                 uint32_t vendor_id,
+                                                                                 uint32_t product_id,
+                                                                                 const char * _Nonnull * _Nullable product,
+                                                                                 const char * _Nonnull * _Nullable manufacturer) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    auto &devices = c->get_core_configuration().get_selected_profile().get_devices();
+    for (auto &device : devices) {
+      uint32_t vid = static_cast<uint32_t>(device.get_identifiers().get_vendor_id());
+      uint32_t pid = static_cast<uint32_t>(device.get_identifiers().get_product_id());
+      
+      if (vid == vendor_id && pid == product_id) {
+        auto &identifiers = device.get_identifiers();
+        *product = identifiers.get_product().c_str();
+        *manufacturer = identifiers.get_manufacturer().c_str();
+        
+        return;
+      }
+    }
+    // not found
+    *product = "UNKNOWN";
+    *manufacturer = "UNKNOWN";
   }
 }
 

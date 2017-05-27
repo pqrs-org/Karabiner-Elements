@@ -2,13 +2,17 @@
 
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
+#include "logger.hpp"
 #include <json/json.hpp>
+
 #include <unordered_set>
 #include <vector>
 
-namespace krbn {
+
+namespace krbn {  
 namespace manipulator {
 namespace details {
+  
 class basic final : public base {
 public:
   class manipulated_original_event final {
@@ -46,19 +50,31 @@ public:
 
   basic(const nlohmann::json& json) : base(),
                                       from_(json.find("from") != std::end(json) ? json["from"] : nlohmann::json()) {
-    {
-      const std::string key = "to";
-      if (json.find(key) != std::end(json) && json[key].is_array()) {
-        for (const auto& j : json[key]) {
-          to_.emplace_back(j);
-        }
+    const std::string key = "to";
+    if (json.find(key) != std::end(json) && json[key].is_array()) {
+      for (const auto& j : json[key]) {
+        to_.emplace_back(j);
       }
+    }
+                                         
+    if (json.find("vendor_id") != std::end(json)) {
+      vendor_id_ = json["vendor_id"];
+    } else {
+      vendor_id_ = 0;
+    }
+   
+    if (json.find("product_id") != std::end(json)) {
+      product_id_ = json["product_id"];
+    } else {
+      product_id_ = 0;
     }
   }
 
   basic(const event_definition& from,
-        const event_definition& to) : from_(from),
-                                      to_({to}) {
+        const event_definition& to, vendor_id vid = vendor_id::zero, product_id pid = product_id::zero) : from_(from),
+                                                                     to_({to}),
+                                                                     vendor_id_(static_cast<uint32_t>(vid)),
+                                                                     product_id_(static_cast<uint32_t>(pid)) {
   }
 
   virtual ~basic(void) {
@@ -84,7 +100,12 @@ public:
         is_target = true;
       }
     }
-
+    
+    auto vp_id = get_vendor_product_id_by_device_id(front_input_event.get_device_id());
+    if (!is_bypass_vendor_product_id_check() && !is_vendor_product_id_matched(vp_id.first, vp_id.second)) {
+      is_target = false;
+    }
+  
     if (is_target) {
       std::unordered_set<modifier_flag> from_modifiers;
 
@@ -148,7 +169,7 @@ public:
         }
 
         // Send events
-
+        krbn::logger::get_logger().info("Key is replaced");
         for (size_t i = 0; i < to_.size(); ++i) {
           if (auto event = to_[i].to_event()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
@@ -258,6 +279,10 @@ public:
   const std::vector<event_definition>& get_to(void) const {
     return to_;
   }
+  
+private:
+  bool is_bypass_vendor_product_id_check();
+  bool is_vendor_product_id_matched(uint32_t vendor_id, uint32_t product_id);
 
   void enqueue_to_modifiers(const event_definition& to,
                             event_type event_type,
@@ -285,8 +310,12 @@ public:
   }
 
 private:
+  std::pair<uint32_t, uint32_t> get_vendor_product_id_by_device_id(krbn::device_id id);
+
   event_definition from_;
   std::vector<event_definition> to_;
+  uint32_t vendor_id_;
+  uint32_t product_id_;
 
   std::vector<manipulated_original_event> manipulated_original_events_;
 };
