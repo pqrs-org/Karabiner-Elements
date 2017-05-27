@@ -5,7 +5,7 @@
 
 using namespace krbn::manipulator::details;
 
-std::pair<uint32_t, uint32_t> get_vendor_product_id_by_device_id(krbn::device_id id) {
+std::pair<uint32_t, uint32_t> basic::get_vendor_product_id_by_device_id(krbn::device_id id) {
   uint32_t vid = 0;
   uint32_t pid = 0;
   

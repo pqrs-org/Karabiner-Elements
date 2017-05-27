@@ -100,7 +100,12 @@ public:
         is_target = true;
       }
     }
-
+    
+    auto vp_id = get_vendor_product_id_by_device_id(front_input_event.get_device_id());
+    if (!is_bypass_vendor_product_id_check() && !is_vendor_product_id_matched(vp_id.first, vp_id.second)) {
+      is_target = false;
+    }
+  
     if (is_target) {
       std::unordered_set<modifier_flag> from_modifiers;
 
@@ -305,6 +310,8 @@ private:
   }
 
 private:
+  std::pair<uint32_t, uint32_t> get_vendor_product_id_by_device_id(krbn::device_id id);
+
   event_definition from_;
   std::vector<event_definition> to_;
   uint32_t vendor_id_;
