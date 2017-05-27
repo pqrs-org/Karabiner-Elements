@@ -45,7 +45,23 @@ int main(int argc, const char* argv[]) {
     if (kr != KERN_SUCCESS) {
       std::cerr << "initialize_virtual_hid_keyboard error" << std::endl;
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    while (true) {
+      std::cout << "Checking virtual_hid_keyboard is ready..." << std::endl;
+
+      bool ready;
+      kr = pqrs::karabiner_virtual_hid_device_methods::is_virtual_hid_keyboard_ready(connect, ready);
+      if (kr != KERN_SUCCESS) {
+        std::cerr << "is_virtual_hid_keyboard_ready error: " << kr << std::endl;
+      } else {
+        if (ready) {
+          std::cout << "virtual_hid_keyboard is ready." << std::endl;
+          break;
+        }
+      }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
   }
 
   // ----------------------------------------

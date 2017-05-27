@@ -1,3 +1,13 @@
+# Version 4.6.0
+
+* `operator==` and `operator!=` has been added into `pointing_input` and `keyboard_event`.
+
+
+# Version 4.5.0
+
+* `is_virtual_hid_keyboard_ready` method has been added.
+
+
 # Version 4.4.0
 
 * `operator==` and `operator!=` has been added into `keyboard_initialization`.

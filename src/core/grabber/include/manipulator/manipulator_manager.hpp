@@ -7,12 +7,17 @@ namespace krbn {
 namespace manipulator {
 class manipulator_manager final {
 public:
+  manipulator_manager(const manipulator_manager&) = delete;
+
+  manipulator_manager(void) {
+  }
+
   void push_back_manipulator(const nlohmann::json& json) {
     manipulators_.push_back(manipulator_factory::make_manipulator(json));
   }
 
-  void push_back_manipulator(std::unique_ptr<details::base> ptr) {
-    manipulators_.push_back(std::move(ptr));
+  void push_back_manipulator(std::shared_ptr<details::base> ptr) {
+    manipulators_.push_back(ptr);
   }
 
   void manipulate(event_queue& input_event_queue,
@@ -58,19 +63,19 @@ public:
     remove_invalid_manipulators();
   }
 
-  void inactivate_by_device_id(device_id device_id,
-                               event_queue& output_event_queue,
-                               uint64_t time_stamp) {
+  void run_device_ungrabbed_callback(device_id device_id,
+                                     event_queue& output_event_queue,
+                                     uint64_t time_stamp) {
     for (auto&& m : manipulators_) {
-      m->inactivate_by_device_id(device_id,
-                                 output_event_queue,
-                                 time_stamp);
+      m->device_ungrabbed_callback(device_id,
+                                   output_event_queue,
+                                   time_stamp);
     }
 
     remove_invalid_manipulators();
   }
 
-  void invalidate(void) {
+  void invalidate_manipulators(void) {
     for (auto&& m : manipulators_) {
       m->set_valid(false);
     }
@@ -93,7 +98,7 @@ private:
                         std::end(manipulators_));
   }
 
-  std::vector<std::unique_ptr<details::base>> manipulators_;
+  std::vector<std::shared_ptr<details::base>> manipulators_;
 };
 } // namespace manipulator
 } // namespace krbn

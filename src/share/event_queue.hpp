@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "modifier_flag_manager.hpp"
+#include "pointing_button_manager.hpp"
 #include "stream_utility.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
@@ -270,6 +271,21 @@ public:
         }
       }
     }
+
+    // Update pointing_button_manager
+
+    if (auto pointing_button = event.get_pointing_button()) {
+      if (*pointing_button != pointing_button::zero) {
+        pointing_button_manager::active_pointing_button active_pointing_button(pointing_button_manager::active_pointing_button::type::increase,
+                                                                               *pointing_button,
+                                                                               device_id);
+        if (event_type == event_type::key_down) {
+          pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
+        } else {
+          pointing_button_manager_.erase_active_pointing_button(active_pointing_button);
+        }
+      }
+    }
   }
 
   void push_back_event(const queued_event& queued_event) {
@@ -307,6 +323,10 @@ public:
 
   const modifier_flag_manager& get_modifier_flag_manager(void) const {
     return modifier_flag_manager_;
+  }
+
+  const pointing_button_manager& get_pointing_button_manager(void) const {
+    return pointing_button_manager_;
   }
 
   uint64_t get_time_stamp_delay(void) const {
@@ -404,6 +424,7 @@ private:
 
   std::vector<queued_event> events_;
   modifier_flag_manager modifier_flag_manager_;
+  pointing_button_manager pointing_button_manager_;
   uint64_t time_stamp_delay_;
 };
 

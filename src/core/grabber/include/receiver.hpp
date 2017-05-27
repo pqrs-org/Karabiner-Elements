@@ -47,6 +47,7 @@ public:
     server_ = nullptr;
     console_user_server_process_monitor_ = nullptr;
     device_grabber_.stop_grabbing();
+    device_grabber_.unset_profile();
     event_manipulator_.unset_profile();
   }
 
@@ -88,7 +89,7 @@ private:
               logger::get_logger().error("invalid size for operation_type::system_preferences_values_updated ({0})", n);
             } else {
               auto p = reinterpret_cast<operation_type_system_preferences_values_updated_struct*>(&(buffer_[0]));
-              event_manipulator_.set_system_preferences_values(p->values);
+              device_grabber_.set_system_preferences_values(p->values);
               logger::get_logger().info("system_preferences_values_updated");
             }
             break;

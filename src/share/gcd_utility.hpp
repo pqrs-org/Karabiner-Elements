@@ -73,8 +73,8 @@ public:
         uint64_t interval = 100.0 * NSEC_PER_SEC; /* dummy value */
         dispatch_source_set_timer(timer_, when, interval, 0);
         dispatch_source_set_event_handler(timer_, ^{
-          block();
           cancel();
+          block();
         });
         dispatch_resume(timer_);
       }
@@ -84,10 +84,18 @@ public:
       cancel();
     }
 
+    bool fired(void) const {
+      bool __block r;
+      gcd_utility::dispatch_sync_in_main_queue(^{
+        r = !timer_;
+      });
+      return r;
+    }
+
   private:
     void cancel(void) {
       // Release timer_ in main thread to avoid callback invocations after object has been destroyed.
-      dispatch_sync_in_main_queue(^{
+      gcd_utility::dispatch_sync_in_main_queue(^{
         if (timer_) {
           dispatch_source_cancel(timer_);
           dispatch_release(timer_);
@@ -102,9 +110,9 @@ public:
 private:
   static std::string get_next_queue_label(void) {
     static std::mutex mutex;
-    static int id = 0;
-
     std::lock_guard<std::mutex> guard(mutex);
+
+    static int id = 0;
 
     std::stringstream stream;
     stream << "org.pqrs.gcd_utility." << id++;

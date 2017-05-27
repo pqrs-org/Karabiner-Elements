@@ -28,21 +28,48 @@ TEST_CASE("emplace_back_event") {
                                    event_a,
                                    krbn::event_type::key_down,
                                    event_a);
+
+    REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == false);
+
     event_queue.emplace_back_event(krbn::device_id(1),
                                    200,
                                    event_left_shift,
                                    krbn::event_type::key_down,
                                    event_left_shift);
+
+    REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == true);
+
     event_queue.emplace_back_event(krbn::device_id(1),
                                    300,
+                                   event_button2,
+                                   krbn::event_type::key_down,
+                                   event_button2);
+
+    REQUIRE(event_queue.get_pointing_button_manager().is_pressed(krbn::pointing_button::button2) == true);
+
+    event_queue.emplace_back_event(krbn::device_id(1),
+                                   400,
                                    event_left_shift,
                                    krbn::event_type::key_up,
                                    event_left_shift);
+
+    REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == false);
+
     event_queue.emplace_back_event(krbn::device_id(1),
-                                   400,
+                                   500,
                                    event_a,
                                    krbn::event_type::key_up,
                                    event_a);
+
+    REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == false);
+
+    event_queue.emplace_back_event(krbn::device_id(1),
+                                   600,
+                                   event_button2,
+                                   krbn::event_type::key_up,
+                                   event_button2);
+
+    REQUIRE(event_queue.get_pointing_button_manager().is_pressed(krbn::pointing_button::button2) == false);
 
     std::vector<krbn::event_queue::queued_event> expected({
         krbn::event_queue::queued_event(krbn::device_id(1),
@@ -57,14 +84,24 @@ TEST_CASE("emplace_back_event") {
                                         event_left_shift),
         krbn::event_queue::queued_event(krbn::device_id(1),
                                         300,
+                                        event_button2,
+                                        krbn::event_type::key_down,
+                                        event_button2),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        400,
                                         event_left_shift,
                                         krbn::event_type::key_up,
                                         event_left_shift),
         krbn::event_queue::queued_event(krbn::device_id(1),
-                                        400,
+                                        500,
                                         event_a,
                                         krbn::event_type::key_up,
                                         event_a),
+        krbn::event_queue::queued_event(krbn::device_id(1),
+                                        600,
+                                        event_button2,
+                                        krbn::event_type::key_up,
+                                        event_button2),
     });
     REQUIRE(event_queue.get_events() == expected);
 

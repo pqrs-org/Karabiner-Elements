@@ -41,6 +41,7 @@ bool basic::is_vendor_product_id_matched(uint32_t vendor_id, uint32_t product_id
   return is_matched;
 }
 
+#if 0
 void basic::manipulate(event_queue::queued_event& front_input_event,
                        const event_queue& input_event_queue,
                        event_queue& output_event_queue,
@@ -216,4 +217,4 @@ void basic::manipulate(event_queue::queued_event& front_input_event,
     }
   }
 }
-
+#endif

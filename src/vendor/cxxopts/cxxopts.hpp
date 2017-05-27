@@ -482,14 +482,7 @@ namespace cxxopts
       void
       parse(const std::string& text) const
       {
-        if (m_implicit && text.empty())
-        {
-          parse_value(m_implicit_value, *m_store);
-        }
-        else
-        {
-          parse_value(text, *m_store);
-        }
+        parse_value(text, *m_store);
       }
 
       bool
@@ -681,8 +674,17 @@ namespace cxxopts
     Options(std::string program, std::string help_string = "")
     : m_program(std::move(program))
     , m_help_string(toLocalString(std::move(help_string)))
+    , m_positional_help("positional parameters")
     , m_next_positional(m_positional.end())
     {
+    }
+
+    inline
+    Options&
+    positional_help(const std::string& help_text)
+    {
+      m_positional_help = std::move(help_text);
+      return *this;
     }
 
     inline
@@ -793,8 +795,17 @@ namespace cxxopts
     String
     help_one_group(const std::string& group) const;
 
+  inline
+  void
+  generate_group_help(String& result, const std::vector<std::string>& groups) const;
+
+  inline
+  void
+  generate_all_groups_help(String& result) const;
+
     std::string m_program;
     String m_help_string;
+    std::string m_positional_help;
 
     std::map<std::string, std::shared_ptr<OptionDetails>> m_options;
     std::vector<std::string> m_positional;
@@ -1010,7 +1021,7 @@ Options::checked_parse_arg
   {
     if (value->value().has_implicit())
     {
-      parse_option(value, name, "");
+      parse_option(value, name, value->value().get_implicit_value());
     }
     else
     {
@@ -1021,7 +1032,7 @@ Options::checked_parse_arg
   {
     if (argv[current + 1][0] == '-' && value->value().has_implicit())
     {
-      parse_option(value, name, "");
+      parse_option(value, name, value->value().get_implicit_value());
     }
     else
     {
@@ -1163,7 +1174,7 @@ Options::parse(int& argc, char**& argv)
             }
             else if (value->value().has_implicit())
             {
-              parse_option(value, name, "");
+              parse_option(value, name, value->value().get_implicit_value());
             }
             else
             {
@@ -1233,7 +1244,16 @@ Options::parse(int& argc, char**& argv)
   {
     while (current < argc)
     {
-      consume_positional(argv[current]);
+      if (!consume_positional(argv[current])) {
+        break;
+      }
+      ++current;
+    }
+
+    //adjust argv for any that couldn't be swallowed
+    while (current != argc) {
+      argv[nextKeep] = argv[current];
+      ++nextKeep;
       ++current;
     }
   }
@@ -1362,18 +1382,9 @@ Options::help_one_group(const std::string& g) const
   return result;
 }
 
-std::string
-Options::help(const std::vector<std::string>& groups) const
+void
+Options::generate_group_help(String& result, const std::vector<std::string>& groups) const
 {
-  String result = m_help_string + "\nUsage:\n  " +
-    toLocalString(m_program) + " [OPTION...]";
-
-  if (m_positional.size() > 0) {
-    result += " positional parameters";
-  }
-
-  result += "\n\n";
-
   for (std::size_t i = 0; i < groups.size(); ++i)
   {
     String const& group_help = help_one_group(groups[i]);
@@ -1383,6 +1394,42 @@ Options::help(const std::vector<std::string>& groups) const
     {
       result += '\n';
     }
+  }
+}
+
+void
+Options::generate_all_groups_help(String& result) const
+{
+  std::vector<std::string> groups;
+  groups.reserve(m_help.size());
+
+  for (auto& group : m_help)
+  {
+    groups.push_back(group.first);
+  }
+
+  generate_group_help(result, groups);
+}
+
+std::string
+Options::help(const std::vector<std::string>& groups) const
+{
+  String result = m_help_string + "\nUsage:\n  " +
+    toLocalString(m_program) + " [OPTION...]";
+
+  if (m_positional.size() > 0) {
+    result += " " + toLocalString(m_positional_help);
+  }
+
+  result += "\n\n";
+
+  if (groups.size() == 0)
+  {
+    generate_all_groups_help(result);
+  }
+  else
+  {
+    generate_group_help(result, groups);
   }
 
   return toUTF8String(result);
