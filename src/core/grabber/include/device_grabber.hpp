@@ -110,6 +110,8 @@ public:
 
       IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     }
+                                                                        
+    device_grabber::grabber = this;
   }
 
   ~device_grabber(void) {
@@ -271,7 +273,7 @@ private:
     
     iokit_utility::log_matching_device(logger::get_logger(), device);
     
-    auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
+    auto dev = std::make_shared<human_interface_device>(logger::get_logger(), device);
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
     dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
@@ -282,7 +284,16 @@ private:
                                       std::placeholders::_2));
     dev->observe();
     
-    hids_[device] = std::move(dev);
+    hids_[device] = dev;
+    
+    boost::optional<device_id> device_id_ = dev->get_device_id();
+    
+    //logger::get_logger().info("-----> matching device id ptr: {:#x}", reinterpret_cast<uintptr_t>(dev.get()));
+    //logger::get_logger().info("-----> matching device id: {0}", static_cast<uint32_t>(dev->get_device_id()));
+    
+    if (device_id_) {
+      id2dev_[*device_id_] = dev;
+    }
     
     output_devices_json();
     
@@ -325,6 +336,17 @@ private:
       auto& dev = it->second;
       if (dev) {
         device_id = dev->get_device_id();
+        //logger::get_logger().info("-----> removal device id: {0}", static_cast<uint32_t>(*device_id));
+        if (device_id) {
+          auto item = id2dev_.find(*device_id);
+          if (item != id2dev_.end()) {
+            // release shared ptr
+            item->second.reset();
+            id2dev_.erase(item);
+          }
+        }
+        
+        it->second.reset();
         hids_.erase(it);
       }
     }
@@ -587,13 +609,21 @@ private:
   void update_simple_modifications_manipulators(void) {
     simple_modifications_manipulator_manager_.invalidate_manipulators();
 
-    for (const auto& pair : profile_.get_simple_modifications_key_code_map(logger::get_logger())) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
-                                                                           pair.first,
-                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
-                                                                               manipulator::details::event_definition::modifier::any})),
-                                                                       manipulator::details::event_definition(pair.second));
-      simple_modifications_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+    for (const auto& pair : profile_.get_simple_modifications()) {
+      auto from_key_code = pair.get_from_key_code();
+      auto to_key_code = pair.get_to_key_code();
+      
+      if (from_key_code && to_key_code) {
+        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+                                                                             *from_key_code,
+                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                                 manipulator::details::event_definition::modifier::any})),
+                                                                         manipulator::details::event_definition(*to_key_code),
+                                                                         pair.get_vendor_id(),
+                                                                         pair.get_product_id());
+        
+        simple_modifications_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+      }
     }
   }
 
@@ -732,7 +762,7 @@ private:
   bool suspended_;
   
   std::unordered_map<IOHIDDeviceRef, std::shared_ptr<human_interface_device>> hids_;
-  std::unordered_map<device_id, std::shared_ptr<human_interface_device>> id2dev;
+  std::unordered_map<device_id, std::shared_ptr<human_interface_device>> id2dev_;
   
 };
 } // namespace krbn

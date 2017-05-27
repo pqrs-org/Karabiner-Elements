@@ -40,11 +40,11 @@ boost::optional<const core_configuration::profile::device::identifiers&> device_
   return boost::none;
 }
 
-boost::optional<std::weak_ptr<human_interface_device>> device_grabber::get_hid_by_id(device_id device_id_) {
-  auto it = id2dev.find(device_id_);
+boost::optional<std::weak_ptr<human_interface_device>> device_grabber::get_hid_by_id(device_id device_id) {
+  auto it = id2dev_.find(device_id);
   std::weak_ptr<human_interface_device> ptr;
   
-  if (it != id2dev.end()) {
+  if (it != id2dev_.end()) {
     ptr = it->second;
     return boost::make_optional(ptr);
   } else {

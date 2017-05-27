@@ -377,8 +377,10 @@
 		3441491A1D212A1600C8ECFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COPY_PHASE_STRIP = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PRODUCT_NAME = karabiner_grabber;
+				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Release;
 		};

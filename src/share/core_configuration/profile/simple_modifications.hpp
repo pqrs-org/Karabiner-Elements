@@ -96,11 +96,19 @@ public:
       from = value;
     }
     
+    boost::optional<krbn::key_code> get_from_key_code() const {
+      return types::get_key_code(from);
+    }
+    
     const std::string &get_to(void) const {
       return to;
     }
     void set_to(const std::string &value) {
       to = value;
+    }
+    
+    boost::optional<krbn::key_code> get_to_key_code() const {
+      return types::get_key_code(to);
     }
     
     std::string str() {

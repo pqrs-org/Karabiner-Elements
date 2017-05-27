@@ -2,7 +2,7 @@
 
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
-
+#include "logger.hpp"
 #include <json/json.hpp>
 
 #include <unordered_set>
@@ -169,7 +169,7 @@ public:
         }
 
         // Send events
-
+        krbn::logger::get_logger().info("Key is replaced");
         for (size_t i = 0; i < to_.size(); ++i) {
           if (auto event = to_[i].to_event()) {
             if (front_input_event.get_event_type() == event_type::key_down) {

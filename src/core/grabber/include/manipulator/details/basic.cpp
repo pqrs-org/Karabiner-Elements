@@ -47,11 +47,11 @@ void basic::manipulate(event_queue::queued_event& front_input_event,
                        event_queue& output_event_queue,
                        uint64_t time_stamp) {
   
-  //uint32_t _device_id = static_cast<uint32_t>(front_input_event.get_device_id());
-  //uint32_t _key_code = static_cast<uint32_t>(*front_input_event.get_event().get_key_code());
+  uint32_t _device_id = static_cast<uint32_t>(front_input_event.get_device_id());
+  uint32_t _key_code = static_cast<uint32_t>(*front_input_event.get_event().get_key_code());
   
-  //auto& logger = krbn::logger::get_logger();
-  //logger.info("in manipulate(): device_id: {0:#x}, key_code: {1:#x}", _device_id, _key_code);
+  auto& logger = krbn::logger::get_logger();
+  logger.info("in manipulate(): device_id: {0:#x}, key_code: {1:#x}", _device_id, _key_code);
   
   if (!front_input_event.get_valid()) {
     return;
