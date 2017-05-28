@@ -15,7 +15,6 @@
 #include "manipulator/details/collapse_lazy_events.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
-#include "physical_keyboard_repeat_detector.hpp"
 #include "spdlog_utility.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
@@ -333,8 +332,6 @@ private:
     if (device_id) {
       event_manipulator_.erase_all_active_modifier_flags(*device_id, true);
       event_manipulator_.erase_all_active_pointing_buttons(*device_id, true);
-
-      physical_keyboard_repeat_detector_.erase(*device_id);
     }
 
     event_manipulator_.stop_key_repeat();
@@ -347,17 +344,6 @@ private:
 
   void value_callback(human_interface_device& device,
                       event_queue& event_queue) {
-    // Update physical_keyboard_repeat_detector_
-    {
-      for (const auto& queued_event : event_queue.get_events()) {
-        if (queued_event.get_valid()) {
-          if (auto key_code = queued_event.get_event().get_key_code()) {
-            physical_keyboard_repeat_detector_.set(queued_event.get_device_id(), *key_code, queued_event.get_event_type());
-          }
-        }
-      }
-    }
-
     if (device.is_grabbed() && !device.get_disabled()) {
       for (const auto& queued_event : event_queue.get_events()) {
         merged_input_event_queue_.push_back_event(queued_event);
@@ -408,14 +394,6 @@ private:
       }
       message += "Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);
-      return human_interface_device::grabbable_state::ungrabbable_temporarily;
-    }
-
-    // ----------------------------------------
-    // Ungrabbable while key repeating
-
-    if (physical_keyboard_repeat_detector_.is_repeating(device.get_device_id())) {
-      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + device.get_name_for_log() + " while a key is repeating.");
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
     }
 
@@ -666,7 +644,6 @@ private:
 
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   IOHIDManagerRef _Nullable manager_;
-  physical_keyboard_repeat_detector physical_keyboard_repeat_detector_;
 
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 

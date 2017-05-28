@@ -52,6 +52,31 @@ public:
   typedef std::function<void(human_interface_device& device)> ungrabbed_callback;
   typedef std::function<void(human_interface_device& device)> disabled_callback;
 
+  class keyboard_repeat_detector final {
+  public:
+    void set(key_code key_code, event_type event_type) {
+      if (event_type == event_type::key_down) {
+        if (types::get_modifier_flag(key_code) != modifier_flag::zero) {
+          repeating_key_ = boost::none;
+        } else {
+          repeating_key_ = key_code;
+        }
+
+      } else if (event_type == event_type::key_up) {
+        if (repeating_key_ == key_code) {
+          repeating_key_ = boost::none;
+        }
+      }
+    }
+
+    bool is_repeating(void) const {
+      return repeating_key_ != boost::none;
+    }
+
+  private:
+    boost::optional<key_code> repeating_key_;
+  };
+
   human_interface_device(const human_interface_device&) = delete;
 
   human_interface_device(spdlog::logger& logger,
@@ -508,6 +533,14 @@ public:
     }
 
     // ----------------------------------------
+    // Ungrabbable while key repeating
+
+    if (keyboard_repeat_detector_.is_repeating()) {
+      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while a key is repeating.");
+      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+    }
+
+    // ----------------------------------------
     // Ungrabbable while pointing button is pressed.
 
     if (!pressed_pointing_buttons_.empty()) {
@@ -657,9 +690,13 @@ private:
 
             auto& element_event = input_event_queue_.get_events().back();
 
-            // Send `device_keys_are_released` event if needed.
-
             if (auto key_code = element_event.get_event().get_key_code()) {
+              // Update keyboard_repeat_detector_
+
+              keyboard_repeat_detector_.set(*key_code, element_event.get_event_type());
+
+              // Send `device_keys_are_released` event if needed.
+
               if (integer_value) {
                 pressed_keys_.insert(elements_key(usage_page, usage));
               } else {
@@ -676,9 +713,9 @@ private:
               }
             }
 
-            // Send `device_pointing_buttons_are_released` event if needed.
-
             if (auto pointing_button = element_event.get_event().get_pointing_button()) {
+              // Send `device_pointing_buttons_are_released` event if needed.
+
               if (integer_value) {
                 pressed_pointing_buttons_.insert(elements_key(usage_page, usage));
               } else {
@@ -794,6 +831,8 @@ private:
   bool disabled_;
 
   std::unique_ptr<connected_devices::device> connected_device_;
+
+  keyboard_repeat_detector keyboard_repeat_detector_;
 
   std::unordered_set<uint64_t> pressed_keys_;
   std::unordered_set<uint64_t> pressed_pointing_buttons_;
