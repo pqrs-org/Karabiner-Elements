@@ -635,7 +635,50 @@ private:
           auto usage = hid_usage(IOHIDElementGetUsage(element));
           auto integer_value = IOHIDValueGetIntegerValue(value);
 
-          input_event_queue_.emplace_back_event(device_id_, time_stamp, usage_page, usage, integer_value);
+          if (input_event_queue_.emplace_back_event(device_id_, time_stamp, usage_page, usage, integer_value)) {
+            // We need to check whether event is emplaced into `input_event_queue_` since
+            // `emplace_back_event` does not add an event in some usage_page and usage.
+
+            auto& element_event = input_event_queue_.get_events().back();
+
+            // Send `device_keys_are_released` event if needed.
+
+            if (auto key_code = element_event.get_event().get_key_code()) {
+              if (integer_value) {
+                pressed_keys_.insert(elements_key(usage_page, usage));
+              } else {
+                size_t size = pressed_keys_.size();
+                pressed_keys_.erase(elements_key(usage_page, usage));
+                if (size > 0 && pressed_keys_.empty()) {
+                  auto event = event_queue::queued_event::event(event_queue::queued_event::event::type::device_keys_are_released, 1);
+                  input_event_queue_.emplace_back_event(device_id_,
+                                                        time_stamp,
+                                                        event,
+                                                        event_type::key_down,
+                                                        event);
+                }
+              }
+            }
+
+            // Send `device_pointing_buttons_are_released` event if needed.
+
+            if (auto pointing_button = element_event.get_event().get_pointing_button()) {
+              if (integer_value) {
+                pressed_pointing_buttons_.insert(elements_key(usage_page, usage));
+              } else {
+                size_t size = pressed_pointing_buttons_.size();
+                pressed_pointing_buttons_.erase(elements_key(usage_page, usage));
+                if (size > 0 && pressed_pointing_buttons_.empty()) {
+                  auto event = event_queue::queued_event::event(event_queue::queued_event::event::type::device_pointing_buttons_are_released, 1);
+                  input_event_queue_.emplace_back_event(device_id_,
+                                                        time_stamp,
+                                                        event,
+                                                        event_type::key_down,
+                                                        event);
+                }
+              }
+            }
+          }
         }
 
         CFRelease(value);
@@ -733,5 +776,8 @@ private:
   bool disabled_;
 
   std::unique_ptr<connected_devices::device> connected_device_;
+
+  std::unordered_set<uint64_t> pressed_keys_;
+  std::unordered_set<uint64_t> pressed_pointing_buttons_;
 };
 } // namespace krbn
