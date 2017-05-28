@@ -355,14 +355,7 @@ private:
       post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
     }
 
-#if 0
-    logger::get_logger().info("merged_input_event_queue_.size() {0}", merged_input_event_queue_.get_events().size());
-    logger::get_logger().info("simple_modifications_applied_event_queue_.size() {0}", simple_modifications_applied_event_queue_.get_events().size());
-    logger::get_logger().info("fn_function_keys_applied_event_queue_.size() {0}", fn_function_keys_applied_event_queue_.get_events().size());
-    logger::get_logger().info("lazy_collapsed_event_queue_.size() {0}", lazy_collapsed_event_queue_.get_events().size());
-    logger::get_logger().info("modifier_delay_added_event_queue_.size() {0}", modifier_delay_added_event_queue_.get_events().size());
-    logger::get_logger().info("posted_event_queue_.size() {0}", posted_event_queue_.get_events().size());
-#endif
+    // manipulator_managers_connector_.log_events_sizes(logger::get_logger());
   }
 
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
