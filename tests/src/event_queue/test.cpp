@@ -220,41 +220,41 @@ TEST_CASE("compare") {
 TEST_CASE("emplace_back_event.usage_page") {
   krbn::event_queue event_queue;
 
-  event_queue.emplace_back_event(krbn::device_id(1),
-                                 0,
-                                 krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
-                                 krbn::hid_usage(kHIDUsage_KeyboardErrorRollOver),
-                                 1);
-  event_queue.emplace_back_event(krbn::device_id(1),
-                                 100,
-                                 krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
-                                 krbn::hid_usage(kHIDUsage_KeyboardTab),
-                                 1);
-  event_queue.emplace_back_event(krbn::device_id(1),
-                                 200,
-                                 krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
-                                 krbn::hid_usage(kHIDUsage_KeyboardTab),
-                                 0);
-  event_queue.emplace_back_event(krbn::device_id(1),
-                                 300,
-                                 krbn::hid_usage_page(kHIDPage_Button),
-                                 krbn::hid_usage(2),
-                                 1);
-  event_queue.emplace_back_event(krbn::device_id(1),
-                                 400,
-                                 krbn::hid_usage_page(kHIDPage_Button),
-                                 krbn::hid_usage(2),
-                                 0);
-  event_queue.emplace_back_event(krbn::device_id(1),
-                                 500,
-                                 krbn::hid_usage_page(kHIDPage_GenericDesktop),
-                                 krbn::hid_usage(kHIDUsage_GD_X),
-                                 10);
-  event_queue.emplace_back_event(krbn::device_id(1),
-                                 600,
-                                 krbn::hid_usage_page(kHIDPage_GenericDesktop),
-                                 krbn::hid_usage(kHIDUsage_GD_Y),
-                                 -10);
+  REQUIRE(event_queue.emplace_back_event(krbn::device_id(1),
+                                         0,
+                                         krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                                         krbn::hid_usage(kHIDUsage_KeyboardErrorRollOver),
+                                         1) == false);
+  REQUIRE(event_queue.emplace_back_event(krbn::device_id(1),
+                                         100,
+                                         krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                                         krbn::hid_usage(kHIDUsage_KeyboardTab),
+                                         1) == true);
+  REQUIRE(event_queue.emplace_back_event(krbn::device_id(1),
+                                         200,
+                                         krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                                         krbn::hid_usage(kHIDUsage_KeyboardTab),
+                                         0) == true);
+  REQUIRE(event_queue.emplace_back_event(krbn::device_id(1),
+                                         300,
+                                         krbn::hid_usage_page(kHIDPage_Button),
+                                         krbn::hid_usage(2),
+                                         1) == true);
+  REQUIRE(event_queue.emplace_back_event(krbn::device_id(1),
+                                         400,
+                                         krbn::hid_usage_page(kHIDPage_Button),
+                                         krbn::hid_usage(2),
+                                         0) == true);
+  REQUIRE(event_queue.emplace_back_event(krbn::device_id(1),
+                                         500,
+                                         krbn::hid_usage_page(kHIDPage_GenericDesktop),
+                                         krbn::hid_usage(kHIDUsage_GD_X),
+                                         10) == true);
+  REQUIRE(event_queue.emplace_back_event(krbn::device_id(1),
+                                         600,
+                                         krbn::hid_usage_page(kHIDPage_GenericDesktop),
+                                         krbn::hid_usage(kHIDUsage_GD_Y),
+                                         -10) == true);
 
   std::vector<krbn::event_queue::queued_event> expected({
       krbn::event_queue::queued_event(krbn::device_id(1),
