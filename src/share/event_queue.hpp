@@ -328,8 +328,16 @@ public:
     return modifier_flag_manager_;
   }
 
+  void erase_all_active_modifier_flags_except_lock(device_id device_id) {
+    modifier_flag_manager_.erase_all_active_modifier_flags_except_lock(device_id);
+  }
+
   const pointing_button_manager& get_pointing_button_manager(void) const {
     return pointing_button_manager_;
+  }
+
+  void erase_all_active_pointing_buttons_except_lock(device_id device_id) {
+    pointing_button_manager_.erase_all_active_pointing_buttons_except_lock(device_id);
   }
 
   uint64_t get_time_stamp_delay(void) const {

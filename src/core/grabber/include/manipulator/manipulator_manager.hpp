@@ -40,11 +40,23 @@ public:
         }
       }
 
-      for (auto&& m : manipulators_) {
-        m->manipulate(front_input_event,
-                      input_event_queue,
-                      output_event_queue,
-                      time_stamp);
+      switch (front_input_event.get_event().get_type()) {
+        case event_queue::queued_event::event::type::device_keys_are_released:
+          output_event_queue.erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());
+          break;
+
+        case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+          output_event_queue.erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
+          break;
+
+        default:
+          for (auto&& m : manipulators_) {
+            m->manipulate(front_input_event,
+                          input_event_queue,
+                          output_event_queue,
+                          time_stamp);
+          }
+          break;
       }
 
       if (input_event_queue.get_front_event().get_valid()) {
