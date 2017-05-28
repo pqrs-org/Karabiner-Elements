@@ -5,6 +5,7 @@
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "stream_utility.hpp"
+#include "time_utility.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <boost/optional.hpp>
@@ -110,7 +111,10 @@ public:
       while (!events_.empty()) {
         auto& e = events_.front();
         if (e.get_time_stamp() > now) {
-          timer_ = std::make_unique<gcd_utility::main_queue_after_timer>(e.get_time_stamp(), ^{
+          // If e.get_time_stamp() is too large, we reduce the delay to 3 seconds.
+          auto when = std::min(e.get_time_stamp(), now + time_utility::nano_to_absolute(3 * NSEC_PER_SEC));
+
+          timer_ = std::make_unique<gcd_utility::main_queue_after_timer>(when, ^{
             post_events(virtual_hid_device_client);
           });
           return;
