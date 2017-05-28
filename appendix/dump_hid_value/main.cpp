@@ -154,6 +154,14 @@ private:
             std::cout << std::dec << *integer_value << std::endl;
           }
           break;
+
+        case krbn::event_queue::queued_event::event::type::device_keys_are_released:
+          std::cout << "device_keys_are_released for " << device.get_name_for_log() << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+          std::cout << "device_pointing_buttons_are_released for " << device.get_name_for_log() << std::endl;
+          break;
       }
     }
 

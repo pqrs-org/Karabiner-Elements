@@ -192,6 +192,8 @@ public:
               break;
             case event_queue::queued_event::event::type::key_code:
             case event_queue::queued_event::event::type::pointing_button:
+            case event_queue::queued_event::event::type::device_keys_are_released:
+            case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
               // Do nothing
               break;
           }
@@ -201,6 +203,11 @@ public:
                                   front_input_event.get_time_stamp());
         break;
       }
+
+      case event_queue::queued_event::event::type::device_keys_are_released:
+      case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+        // Do nothing
+        break;
     }
   }
 

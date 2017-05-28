@@ -22,6 +22,9 @@ public:
         pointing_y,
         pointing_vertical_wheel,
         pointing_horizontal_wheel,
+        // virtual events
+        device_keys_are_released,
+        device_pointing_buttons_are_released,
       };
 
       event(key_code key_code) : type_(type::key_code),
@@ -78,7 +81,7 @@ public:
       union {
         key_code key_code_;               // For type::key_code
         pointing_button pointing_button_; // For type::pointing_button
-        int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+        int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel and virtual events
       };
     };
 
