@@ -59,6 +59,7 @@ public:
                                                            device_(device),
                                                            device_id_(types::get_new_device_id()),
                                                            queue_(nullptr),
+                                                           is_grabbable_callback_log_reducer_(logger),
                                                            observed_(false),
                                                            grabbed_(false),
                                                            disabled_(false) {
@@ -300,6 +301,8 @@ public:
 
       cancel_grab_timer();
 
+      is_grabbable_callback_log_reducer_.reset();
+
       grab_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
           // We have to set an initial wait since OS X will lost the device if we called IOHIDDeviceOpen(kIOHIDOptionsTypeSeizeDevice) in device_matching_callback.
           // (The device will be unusable after karabiner_grabber is quitted if we don't wait here.)
@@ -503,6 +506,19 @@ public:
         return state;
       }
     }
+
+    // ----------------------------------------
+    // Ungrabbable while pointing button is pressed.
+
+    if (!pressed_pointing_buttons_.empty()) {
+      // We should not grab the device while a button is pressed since we cannot release the button.
+      // (To release the button, we have to send a hid report to the device. But we cannot do it.)
+
+      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while mouse buttons are pressed.");
+      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+    }
+
+    // ----------------------------------------
 
     return grabbable_state::grabbable;
   }
@@ -765,6 +781,8 @@ private:
   std::vector<uint8_t> report_buffer_;
 
   is_grabbable_callback is_grabbable_callback_;
+  spdlog_utility::log_reducer is_grabbable_callback_log_reducer_;
+
   grabbed_callback grabbed_callback_;
   ungrabbed_callback ungrabbed_callback_;
   disabled_callback disabled_callback_;

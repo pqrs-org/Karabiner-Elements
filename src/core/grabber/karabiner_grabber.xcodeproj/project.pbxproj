@@ -72,7 +72,6 @@
 		34DA9F331ED8824200D75501 /* collapse_lazy_events.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = collapse_lazy_events.hpp; path = include/manipulator/details/collapse_lazy_events.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F341ED8824200D75501 /* post_event_to_virtual_devices.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = post_event_to_virtual_devices.hpp; path = include/manipulator/details/post_event_to_virtual_devices.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F351ED8825500D75501 /* physical_keyboard_repeat_detector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = physical_keyboard_repeat_detector.hpp; path = include/physical_keyboard_repeat_detector.hpp; sourceTree = SOURCE_ROOT; };
-		34DA9F361ED8825500D75501 /* pressed_physical_keys_counter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pressed_physical_keys_counter.hpp; path = include/pressed_physical_keys_counter.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F371ED8827800D75501 /* manipulator_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = manipulator_manager.hpp; path = include/manipulator/manipulator_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F381ED8827800D75501 /* manipulator_managers_connector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = manipulator_managers_connector.hpp; path = include/manipulator/manipulator_managers_connector.hpp; sourceTree = SOURCE_ROOT; };
 		34E420601D5042240022F821 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -204,7 +203,6 @@
 				34A88A8C1D6840C200DD480B /* logger.hpp */,
 				34A88AA31D69C84900DD480B /* manipulator */,
 				34DA9F351ED8825500D75501 /* physical_keyboard_repeat_detector.hpp */,
-				34DA9F361ED8825500D75501 /* pressed_physical_keys_counter.hpp */,
 				34A88A891D6840C200DD480B /* receiver.hpp */,
 			);
 			name = include;
