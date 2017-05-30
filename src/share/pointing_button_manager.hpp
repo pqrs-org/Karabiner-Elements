@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "types.hpp"
 #include <thread>
 #include <vector>
@@ -108,6 +109,19 @@ public:
     }
 
     return bits;
+  }
+
+  pqrs::karabiner_virtual_hid_device::hid_report::pointing_input make_pointing_input_report(void) const {
+    pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
+
+    auto bits = get_hid_report_bits();
+
+    report.buttons[0] = (bits >> 0) & 0xff;
+    report.buttons[1] = (bits >> 8) & 0xff;
+    report.buttons[2] = (bits >> 16) & 0xff;
+    report.buttons[3] = (bits >> 24) & 0xff;
+
+    return report;
   }
 
 private:
