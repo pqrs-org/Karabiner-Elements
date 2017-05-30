@@ -703,7 +703,7 @@ private:
                 size_t size = pressed_keys_.size();
                 pressed_keys_.erase(elements_key(usage_page, usage));
                 if (size > 0 && pressed_keys_.empty()) {
-                  auto event = event_queue::queued_event::event(event_queue::queued_event::event::type::device_keys_are_released, 1);
+                  event_queue::queued_event::event event(event_queue::queued_event::event::type::device_keys_are_released, 1);
                   input_event_queue_.emplace_back_event(device_id_,
                                                         time_stamp,
                                                         event,
@@ -722,7 +722,7 @@ private:
                 size_t size = pressed_pointing_buttons_.size();
                 pressed_pointing_buttons_.erase(elements_key(usage_page, usage));
                 if (size > 0 && pressed_pointing_buttons_.empty()) {
-                  auto event = event_queue::queued_event::event(event_queue::queued_event::event::type::device_pointing_buttons_are_released, 1);
+                  event_queue::queued_event::event event(event_queue::queued_event::event::type::device_pointing_buttons_are_released, 1);
                   input_event_queue_.emplace_back_event(device_id_,
                                                         time_stamp,
                                                         event,

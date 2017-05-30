@@ -23,13 +23,6 @@ public:
                                       time_stamp);
     }
 
-    void run_device_ungrabbed_callback(device_id device_id,
-                                       uint64_t time_stamp) {
-      manipulator_manager_.run_device_ungrabbed_callback(device_id,
-                                                         output_event_queue_,
-                                                         time_stamp);
-    }
-
     void invalidate_manipulators(void) {
       manipulator_manager_.invalidate_manipulators();
     }
@@ -57,15 +50,6 @@ public:
   void manipulate(uint64_t time_stamp) {
     for (auto&& c : connections_) {
       c.manipulate(time_stamp);
-    }
-  }
-
-  void run_device_ungrabbed_callback(device_id device_id,
-                                     uint64_t time_stamp) {
-    for (auto&& c : connections_) {
-      // Do `manipulate` for previous connection's `run_device_ungrabbed_callback` result.
-      c.manipulate(time_stamp);
-      c.run_device_ungrabbed_callback(device_id, time_stamp);
     }
   }
 

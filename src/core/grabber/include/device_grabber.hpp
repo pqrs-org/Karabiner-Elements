@@ -316,6 +316,7 @@ private:
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
+        dev->ungrab();
         device_id = dev->get_device_id();
         hids_.erase(it);
       }
@@ -342,20 +343,33 @@ private:
     }
   }
 
+  void manipulate(void) {
+    manipulator_managers_connector_.manipulate(mach_absolute_time());
+
+    posted_event_queue_.clear_events();
+    post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
+  }
+
   void value_callback(human_interface_device& device,
                       event_queue& event_queue) {
     if (device.is_grabbed() && !device.get_disabled()) {
       for (const auto& queued_event : event_queue.get_events()) {
         merged_input_event_queue_.push_back_event(queued_event);
       }
-
-      manipulator_managers_connector_.manipulate(mach_absolute_time());
-
-      posted_event_queue_.clear_events();
-      post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
     }
 
+    manipulate();
     // manipulator_managers_connector_.log_events_sizes(logger::get_logger());
+  }
+
+  void post_device_ungrabbed_event(device_id device_id) {
+    event_queue::queued_event::event event(event_queue::queued_event::event::type::device_ungrabbed, 1);
+    merged_input_event_queue_.emplace_back_event(device_id,
+                                                 mach_absolute_time(),
+                                                 event,
+                                                 event_type::key_down,
+                                                 event);
+    manipulate();
   }
 
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
@@ -410,8 +424,7 @@ private:
     // stop key repeat
     event_manipulator_.stop_key_repeat();
 
-    manipulator_managers_connector_.run_device_ungrabbed_callback(device.get_device_id(),
-                                                                  mach_absolute_time());
+    post_device_ungrabbed_event(device.get_device_id());
   }
 
   void disabled_callback(human_interface_device& device) {

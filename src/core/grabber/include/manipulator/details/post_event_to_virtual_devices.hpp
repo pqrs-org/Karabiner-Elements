@@ -136,8 +136,50 @@ public:
     std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
   };
 
+  class pressed_keys final {
+  public:
+    typedef std::tuple<device_id, pqrs::karabiner_virtual_hid_device::usage_page, pqrs::karabiner_virtual_hid_device::usage> key;
+
+    void insert_key(device_id device_id,
+                    pqrs::karabiner_virtual_hid_device::usage_page usage_page,
+                    pqrs::karabiner_virtual_hid_device::usage usage) {
+      erase_key(device_id, usage_page, usage);
+      pressed_keys_.push_back(std::make_tuple(device_id, usage_page, usage));
+    }
+
+    void erase_key(device_id device_id,
+                   pqrs::karabiner_virtual_hid_device::usage_page usage_page,
+                   pqrs::karabiner_virtual_hid_device::usage usage) {
+      pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
+                                         std::end(pressed_keys_),
+                                         [&](auto& k) {
+                                           return std::get<0>(k) == device_id &&
+                                                  std::get<1>(k) == usage_page &&
+                                                  std::get<2>(k) == usage;
+                                         }),
+                          std::end(pressed_keys_));
+    }
+
+    void erase_keys_by_device_id(device_id device_id) {
+      pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
+                                         std::end(pressed_keys_),
+                                         [&](auto& k) {
+                                           return std::get<0>(k) == device_id;
+                                         }),
+                          std::end(pressed_keys_));
+    }
+
+    const std::vector<key>& get_pressed_keys(void) const {
+      return pressed_keys_;
+    }
+
+  private:
+    std::vector<key> pressed_keys_;
+  };
+
   post_event_to_virtual_devices(void) : base(),
-                                        queue_() {
+                                        queue_(),
+                                        pressed_buttons_(0) {
   }
 
   virtual ~post_event_to_virtual_devices(void) {
@@ -161,6 +203,15 @@ public:
               keyboard_event.value = front_input_event.get_event_type() == event_type::key_down;
               queue_.emplace_back_event(keyboard_event,
                                         front_input_event.get_time_stamp());
+
+              // Save key for `handle_device_ungrabbed_event`.
+              if (keyboard_event.value) {
+                pressed_keys_.insert_key(front_input_event.get_device_id(), *usage_page, *usage);
+              } else {
+                pressed_keys_.erase_key(front_input_event.get_device_id(), *usage_page, *usage);
+              }
+
+              //              logger::get_logger().info("pressed_keys_ size {0}", pressed_keys_.get_pressed_keys().size());
             }
           }
           return;
@@ -172,13 +223,7 @@ public:
       case event_queue::queued_event::event::type::pointing_y:
       case event_queue::queued_event::event::type::pointing_vertical_wheel:
       case event_queue::queued_event::event::type::pointing_horizontal_wheel: {
-        pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
-
-        auto bits = output_event_queue.get_pointing_button_manager().get_hid_report_bits();
-        report.buttons[0] = (bits >> 0) & 0xff;
-        report.buttons[1] = (bits >> 8) & 0xff;
-        report.buttons[2] = (bits >> 16) & 0xff;
-        report.buttons[3] = (bits >> 24) & 0xff;
+        auto report = output_event_queue.get_pointing_button_manager().make_pointing_input_report();
 
         if (auto integer_value = front_input_event.get_event().get_integer_value()) {
           switch (front_input_event.get_event().get_type()) {
@@ -198,6 +243,7 @@ public:
             case event_queue::queued_event::event::type::pointing_button:
             case event_queue::queued_event::event::type::device_keys_are_released:
             case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+            case event_queue::queued_event::event::type::device_ungrabbed:
               // Do nothing
               break;
           }
@@ -205,11 +251,16 @@ public:
 
         queue_.emplace_back_event(report,
                                   front_input_event.get_time_stamp());
+
+        // Save bits for `handle_device_ungrabbed_event`.
+        pressed_buttons_ = output_event_queue.get_pointing_button_manager().get_hid_report_bits();
+
         break;
       }
 
       case event_queue::queued_event::event::type::device_keys_are_released:
       case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+      case event_queue::queued_event::event::type::device_ungrabbed:
         // Do nothing
         break;
     }
@@ -219,10 +270,33 @@ public:
     return !queue_.empty();
   }
 
-  virtual void device_ungrabbed_callback(device_id device_id,
-                                         event_queue& output_event_queue,
-                                         uint64_t time_stamp) {
-    // Do nothing
+  virtual void handle_device_ungrabbed_event(device_id device_id,
+                                             const event_queue& output_event_queue,
+                                             uint64_t time_stamp) {
+    // Release pressed keys
+
+    for (const auto& k : pressed_keys_.get_pressed_keys()) {
+      if (std::get<0>(k) == device_id) {
+        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
+        keyboard_event.usage_page = std::get<1>(k);
+        keyboard_event.usage = std::get<2>(k);
+        keyboard_event.value = 0;
+        queue_.emplace_back_event(keyboard_event, time_stamp);
+      }
+    }
+
+    pressed_keys_.erase_keys_by_device_id(device_id);
+
+    // Release buttons
+    {
+      auto bits = output_event_queue.get_pointing_button_manager().get_hid_report_bits();
+      if (pressed_buttons_ != bits) {
+        auto report = output_event_queue.get_pointing_button_manager().make_pointing_input_report();
+        queue_.emplace_back_event(report, time_stamp);
+
+        pressed_buttons_ = bits;
+      }
+    }
   }
 
   void post_events(virtual_hid_device_client& virtual_hid_device_client) {
@@ -235,6 +309,8 @@ public:
 
 private:
   queue queue_;
+  pressed_keys pressed_keys_;
+  uint32_t pressed_buttons_;
 };
 
 std::ostream& operator<<(std::ostream& stream, const post_event_to_virtual_devices::queue::event& event) {

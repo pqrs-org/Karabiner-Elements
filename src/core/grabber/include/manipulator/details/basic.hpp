@@ -224,31 +224,15 @@ public:
     return !manipulated_original_events_.empty();
   }
 
-  virtual void device_ungrabbed_callback(device_id device_id,
-                                         event_queue& output_event_queue,
-                                         uint64_t time_stamp) {
-    while (true) {
-      auto it = std::find_if(std::begin(manipulated_original_events_),
-                             std::end(manipulated_original_events_),
-                             [&](const auto& manipulated_original_event) {
-                               return manipulated_original_event.get_device_id() == device_id;
-                             });
-      if (it == std::end(manipulated_original_events_)) {
-        break;
-      }
-
-      if (to_.size() > 0) {
-        if (auto event = to_.back().to_event()) {
-          output_event_queue.emplace_back_event(device_id,
-                                                time_stamp,
-                                                *event,
-                                                event_type::key_up,
-                                                it->get_original_event());
-        }
-      }
-
-      manipulated_original_events_.erase(it);
-    }
+  virtual void handle_device_ungrabbed_event(device_id device_id,
+                                             const event_queue& output_event_queue,
+                                             uint64_t time_stamp) {
+    manipulated_original_events_.erase(std::remove_if(std::begin(manipulated_original_events_),
+                                                      std::end(manipulated_original_events_),
+                                                      [&](const auto& e) {
+                                                        return e.get_device_id() == device_id;
+                                                      }),
+                                       std::end(manipulated_original_events_));
   }
 
   const event_definition& get_from(void) const {
