@@ -2,6 +2,7 @@
 
 #include "event_queue.hpp"
 #include "manipulator/manipulator_manager.hpp"
+#include <spdlog/spdlog.h>
 
 namespace krbn {
 namespace manipulator {
@@ -31,6 +32,12 @@ public:
 
     void invalidate_manipulators(void) {
       manipulator_manager_.invalidate_manipulators();
+    }
+
+    void log_events_sizes(spdlog::logger& logger) const {
+      logger.info("connection events sizes: {0} -> {1}",
+                  input_event_queue_.get_events().size(),
+                  output_event_queue_.get_events().size());
     }
 
   private:
@@ -65,6 +72,12 @@ public:
   void invalidate_manipulators(void) {
     for (auto&& c : connections_) {
       c.invalidate_manipulators();
+    }
+  }
+
+  void log_events_sizes(spdlog::logger& logger) const {
+    for (auto&& c : connections_) {
+      c.log_events_sizes(logger);
     }
   }
 

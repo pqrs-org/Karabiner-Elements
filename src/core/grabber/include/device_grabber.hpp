@@ -6,8 +6,6 @@
 #include "constants.hpp"
 #include "human_interface_device.hpp"
 #include "virtual_hid_device_client.hpp"
-#include "physical_keyboard_repeat_detector.hpp"
-#include "pressed_physical_keys_counter.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "event_tap_manager.hpp"
@@ -16,8 +14,6 @@
 #include "manipulator/details/collapse_lazy_events.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
-#include "physical_keyboard_repeat_detector.hpp"
-#include "pressed_physical_keys_counter.hpp"
 #include "spdlog_utility.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
@@ -362,9 +358,6 @@ private:
     if (device_id) {
       event_manipulator_.erase_all_active_modifier_flags(*device_id, true);
       event_manipulator_.erase_all_active_pointing_buttons(*device_id, true);
-      
-      physical_keyboard_repeat_detector_.erase(*device_id);
-      pressed_physical_keys_counter_.erase_all_matched_events(*device_id);
     }
     
     event_manipulator_.stop_key_repeat();
@@ -377,22 +370,6 @@ private:
   
   void value_callback(human_interface_device& device,
                       event_queue& event_queue) {
-    bool pressed_physical_keys_counter_updated = false;
-
-    // Update physical_keyboard_repeat_detector_, pressed_physical_keys_counter_
-    {
-      for (const auto& queued_event : event_queue.get_events()) {
-        if (queued_event.get_valid()) {
-          if (auto key_code = queued_event.get_event().get_key_code()) {
-            physical_keyboard_repeat_detector_.set(queued_event.get_device_id(), *key_code, queued_event.get_event_type());
-          }
-          if (pressed_physical_keys_counter_.update(queued_event)) {
-            pressed_physical_keys_counter_updated = true;
-          }
-        }
-      }
-    }
-
     if (device.is_grabbed() && !device.get_disabled()) {
       for (const auto& queued_event : event_queue.get_events()) {
         merged_input_event_queue_.push_back_event(queued_event);
@@ -402,23 +379,9 @@ private:
 
       posted_event_queue_.clear_events();
       post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
-
-      // reset modifier_flags state if all keys are released.
-      if (pressed_physical_keys_counter_updated &&
-          pressed_physical_keys_counter_.empty(device.get_device_id())) {
-        event_manipulator_.erase_all_active_modifier_flags(device.get_device_id(), false);
-        event_manipulator_.erase_all_active_pointing_buttons(device.get_device_id(), false);
-      }
     }
 
-#if 0
-    logger::get_logger().info("merged_input_event_queue_.size() {0}", merged_input_event_queue_.get_events().size());
-    logger::get_logger().info("simple_modifications_applied_event_queue_.size() {0}", simple_modifications_applied_event_queue_.get_events().size());
-    logger::get_logger().info("fn_function_keys_applied_event_queue_.size() {0}", fn_function_keys_applied_event_queue_.get_events().size());
-    logger::get_logger().info("lazy_collapsed_event_queue_.size() {0}", lazy_collapsed_event_queue_.get_events().size());
-    logger::get_logger().info("modifier_delay_added_event_queue_.size() {0}", modifier_delay_added_event_queue_.get_events().size());
-    logger::get_logger().info("posted_event_queue_.size() {0}", posted_event_queue_.get_events().size());
-#endif
+    // manipulator_managers_connector_.log_events_sizes(logger::get_logger());
   }
 
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
@@ -450,25 +413,6 @@ private:
       }
       message += "Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);
-      return human_interface_device::grabbable_state::ungrabbable_temporarily;
-    }
-
-    // ----------------------------------------
-    // Ungrabbable while key repeating
-
-    if (physical_keyboard_repeat_detector_.is_repeating(device.get_device_id())) {
-      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + device.get_name_for_log() + " while a key is repeating.");
-      return human_interface_device::grabbable_state::ungrabbable_temporarily;
-    }
-
-    // ----------------------------------------
-    // Ungrabbable while pointing button is pressed.
-
-    if (pressed_physical_keys_counter_.is_pointing_button_pressed(device.get_device_id())) {
-      // We should not grab the device while a button is pressed since we cannot release the button.
-      // (To release the button, we have to send a hid report to the device. But we cannot do it.)
-
-      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + device.get_name_for_log() + " while mouse buttons are pressed.");
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
     }
 
@@ -726,8 +670,6 @@ private:
 
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   IOHIDManagerRef _Nullable manager_;
-  physical_keyboard_repeat_detector physical_keyboard_repeat_detector_;
-  pressed_physical_keys_counter pressed_physical_keys_counter_;
 
 
   core_configuration::profile profile_;

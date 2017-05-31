@@ -52,6 +52,31 @@ public:
   typedef std::function<void(human_interface_device& device)> ungrabbed_callback;
   typedef std::function<void(human_interface_device& device)> disabled_callback;
 
+  class keyboard_repeat_detector final {
+  public:
+    void set(key_code key_code, event_type event_type) {
+      if (event_type == event_type::key_down) {
+        if (types::get_modifier_flag(key_code) != modifier_flag::zero) {
+          repeating_key_ = boost::none;
+        } else {
+          repeating_key_ = key_code;
+        }
+
+      } else if (event_type == event_type::key_up) {
+        if (repeating_key_ == key_code) {
+          repeating_key_ = boost::none;
+        }
+      }
+    }
+
+    bool is_repeating(void) const {
+      return repeating_key_ != boost::none;
+    }
+
+  private:
+    boost::optional<key_code> repeating_key_;
+  };
+
   human_interface_device(const human_interface_device&) = delete;
 
   human_interface_device(spdlog::logger& logger,
@@ -59,6 +84,7 @@ public:
                                                            device_(device),
                                                            device_id_(types::get_new_device_id()),
                                                            queue_(nullptr),
+                                                           is_grabbable_callback_log_reducer_(logger),
                                                            observed_(false),
                                                            grabbed_(false),
                                                            disabled_(false) {
@@ -303,6 +329,8 @@ public:
 
       cancel_grab_timer();
 
+      is_grabbable_callback_log_reducer_.reset();
+
       grab_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
           // We have to set an initial wait since OS X will lost the device if we called IOHIDDeviceOpen(kIOHIDOptionsTypeSeizeDevice) in device_matching_callback.
           // (The device will be unusable after karabiner_grabber is quitted if we don't wait here.)
@@ -507,6 +535,27 @@ public:
       }
     }
 
+    // ----------------------------------------
+    // Ungrabbable while key repeating
+
+    if (keyboard_repeat_detector_.is_repeating()) {
+      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while a key is repeating.");
+      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+    }
+
+    // ----------------------------------------
+    // Ungrabbable while pointing button is pressed.
+
+    if (!pressed_pointing_buttons_.empty()) {
+      // We should not grab the device while a button is pressed since we cannot release the button.
+      // (To release the button, we have to send a hid report to the device. But we cannot do it.)
+
+      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while mouse buttons are pressed.");
+      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+    }
+
+    // ----------------------------------------
+
     return grabbable_state::grabbable;
   }
 
@@ -638,7 +687,54 @@ private:
           auto usage = hid_usage(IOHIDElementGetUsage(element));
           auto integer_value = IOHIDValueGetIntegerValue(value);
 
-          input_event_queue_.emplace_back_event(device_id_, time_stamp, usage_page, usage, integer_value);
+          if (input_event_queue_.emplace_back_event(device_id_, time_stamp, usage_page, usage, integer_value)) {
+            // We need to check whether event is emplaced into `input_event_queue_` since
+            // `emplace_back_event` does not add an event in some usage_page and usage.
+
+            auto& element_event = input_event_queue_.get_events().back();
+
+            if (auto key_code = element_event.get_event().get_key_code()) {
+              // Update keyboard_repeat_detector_
+
+              keyboard_repeat_detector_.set(*key_code, element_event.get_event_type());
+
+              // Send `device_keys_are_released` event if needed.
+
+              if (integer_value) {
+                pressed_keys_.insert(elements_key(usage_page, usage));
+              } else {
+                size_t size = pressed_keys_.size();
+                pressed_keys_.erase(elements_key(usage_page, usage));
+                if (size > 0 && pressed_keys_.empty()) {
+                  auto event = event_queue::queued_event::event(event_queue::queued_event::event::type::device_keys_are_released, 1);
+                  input_event_queue_.emplace_back_event(device_id_,
+                                                        time_stamp,
+                                                        event,
+                                                        event_type::key_down,
+                                                        event);
+                }
+              }
+            }
+
+            if (auto pointing_button = element_event.get_event().get_pointing_button()) {
+              // Send `device_pointing_buttons_are_released` event if needed.
+
+              if (integer_value) {
+                pressed_pointing_buttons_.insert(elements_key(usage_page, usage));
+              } else {
+                size_t size = pressed_pointing_buttons_.size();
+                pressed_pointing_buttons_.erase(elements_key(usage_page, usage));
+                if (size > 0 && pressed_pointing_buttons_.empty()) {
+                  auto event = event_queue::queued_event::event(event_queue::queued_event::event::type::device_pointing_buttons_are_released, 1);
+                  input_event_queue_.emplace_back_event(device_id_,
+                                                        time_stamp,
+                                                        event,
+                                                        event_type::key_down,
+                                                        event);
+                }
+              }
+            }
+          }
         }
 
         CFRelease(value);
@@ -725,6 +821,8 @@ private:
   std::vector<uint8_t> report_buffer_;
 
   is_grabbable_callback is_grabbable_callback_;
+  spdlog_utility::log_reducer is_grabbable_callback_log_reducer_;
+
   grabbed_callback grabbed_callback_;
   ungrabbed_callback ungrabbed_callback_;
   disabled_callback disabled_callback_;
@@ -736,5 +834,10 @@ private:
   bool disabled_;
 
   std::unique_ptr<connected_devices::device> connected_device_;
+
+  keyboard_repeat_detector keyboard_repeat_detector_;
+
+  std::unordered_set<uint64_t> pressed_keys_;
+  std::unordered_set<uint64_t> pressed_pointing_buttons_;
 };
 } // namespace krbn
