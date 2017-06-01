@@ -9,9 +9,35 @@
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "thread_utility.hpp"
 
-TEST_CASE("manipulator.details.post_event_to_virtual_devices") {
-  using krbn::manipulator::details::post_event_to_virtual_devices;
+#define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
+  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                 \
+                           TIME_STAMP,                                                 \
+                           EVENT,                                                      \
+                           krbn::event_type::EVENT_TYPE,                               \
+                           ORIGINAL_EVENT);
 
+#define ENQUEUE_KEYBOARD_EVENT(EVENTS, USAGE, VALUE, TIME_STAMP)                               \
+  {                                                                                            \
+    pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;      \
+    keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(USAGE);                   \
+    keyboard_event.value = VALUE;                                                              \
+    EVENTS.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, TIME_STAMP)); \
+  }
+
+using krbn::manipulator::details::post_event_to_virtual_devices;
+
+namespace {
+krbn::event_queue::queued_event::event left_shift_event(krbn::key_code::left_shift);
+krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
+krbn::event_queue::queued_event::event escape_event(krbn::key_code::escape);
+krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
+krbn::event_queue::queued_event::event button1_event(krbn::pointing_button::button1);
+krbn::event_queue::queued_event::event pointing_x_m10_event(krbn::event_queue::queued_event::event::type::pointing_x, -10);
+krbn::event_queue::queued_event::event pointing_y_10_event(krbn::event_queue::queued_event::event::type::pointing_y, 10);
+krbn::event_queue::queued_event::event device_ungrabbed_event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1);
+} // namespace
+
+TEST_CASE("generic") {
   {
     krbn::manipulator::manipulator_manager manipulator_manager;
 
@@ -27,108 +53,32 @@ TEST_CASE("manipulator.details.post_event_to_virtual_devices") {
                                       output_event_queue);
 
     uint64_t time_stamp = 0;
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(2),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::tab));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::pointing_button::button1),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::pointing_button::button1));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::pointing_x, -10),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::pointing_x, -10));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::pointing_button::button1),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::pointing_button::button1));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         time_stamp += 100,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::pointing_y, 10),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::pointing_y, 10));
+
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, left_shift_event, key_up, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 2, time_stamp += 100, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, spacebar_event, key_up, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, escape_event, key_down, escape_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, escape_event, key_up, escape_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, tab_event, key_down, tab_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, button1_event, key_down, button1_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, pointing_x_m10_event, key_down, pointing_x_m10_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, button1_event, key_up, button1_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, pointing_y_10_event, key_down, pointing_y_10_event);
+
     connector.manipulate(time_stamp += 100);
 
     {
       std::vector<post_event_to_virtual_devices::queue::event> expected;
       time_stamp = 0;
-      {
-        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-        keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardLeftShift);
-        keyboard_event.value = 1;
-        expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, time_stamp += 100));
-      }
-      {
-        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-        keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardLeftShift);
-        keyboard_event.value = 0;
-        expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, time_stamp += 100));
-      }
-      {
-        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-        keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardSpacebar);
-        keyboard_event.value = 1;
-        expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, time_stamp += 100));
-      }
-      {
-        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-        keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardSpacebar);
-        keyboard_event.value = 0;
-        expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, time_stamp += 100));
-      }
-      {
-        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-        keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardEscape);
-        keyboard_event.value = 1;
-        expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, time_stamp += 100));
-      }
-      {
-        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-        keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardEscape);
-        keyboard_event.value = 0;
-        expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, time_stamp += 100));
-      }
-      {
-        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-        keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardTab);
-        keyboard_event.value = 1;
-        expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, time_stamp += 100));
-      }
+      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, time_stamp += 100);
+      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, time_stamp += 100);
+      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 1, time_stamp += 100);
+      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 0, time_stamp += 100);
+      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp += 100);
+      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 0, time_stamp += 100);
+      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardTab, 1, time_stamp += 100);
+
       {
         pqrs::karabiner_virtual_hid_device::hid_report::pointing_input pointing_input;
         pointing_input.buttons[0] = 0x1;
@@ -162,9 +112,9 @@ TEST_CASE("manipulator.details.post_event_to_virtual_devices") {
       REQUIRE(manipulator->get_key_event_dispatcher().get_pressed_keys() == expected);
     }
   }
+}
 
-  // Same modifier twice from different devices
-
+TEST_CASE("Same modifier twice from different devices") {
   {
     krbn::manipulator::manipulator_manager manipulator_manager;
 
@@ -179,65 +129,34 @@ TEST_CASE("manipulator.details.post_event_to_virtual_devices") {
                                       input_event_queue,
                                       output_event_queue);
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(2),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
+    uint64_t time_stamp = 0;
 
-    connector.manipulate(400);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 2, time_stamp += 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, left_shift_event, key_up, left_shift_event);
+
+    connector.manipulate(time_stamp += 100);
 
     std::vector<post_event_to_virtual_devices::queue::event> expected;
-    {
-      pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardLeftShift);
-      keyboard_event.value = 1;
-      expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, 100));
-    }
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, 100);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
-    input_event_queue.emplace_back_event(krbn::device_id(2),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         500,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
+    time_stamp = 300;
 
-    connector.manipulate(600);
+    ENQUEUE_EVENT(input_event_queue, 2, time_stamp += 100, left_shift_event, key_up, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, left_shift_event, key_down, left_shift_event);
 
-    {
-      pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardLeftShift);
-      keyboard_event.value = 0;
-      expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, 400));
-    }
-    {
-      pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardLeftShift);
-      keyboard_event.value = 1;
-      expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, 500));
-    }
+    connector.manipulate(time_stamp += 100);
+
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, 400);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, 500);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
   }
+}
 
-  // device_ungrabbed event
-
+TEST_CASE("device_ungrabbed event") {
   {
     krbn::manipulator::manipulator_manager manipulator_manager;
 
@@ -252,76 +171,31 @@ TEST_CASE("manipulator.details.post_event_to_virtual_devices") {
                                       input_event_queue,
                                       output_event_queue);
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::tab));
-    input_event_queue.emplace_back_event(krbn::device_id(2),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::tab));
+    uint64_t time_stamp = 0;
+
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, tab_event, key_down, tab_event);
+    ENQUEUE_EVENT(input_event_queue, 2, time_stamp += 100, escape_event, key_down, escape_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, tab_event, key_up, tab_event);
 
     connector.manipulate(500);
 
+    time_stamp = 0;
+
     std::vector<post_event_to_virtual_devices::queue::event> expected;
-    {
-      pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardTab);
-      keyboard_event.value = 1;
-      expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, 100));
-    }
-    {
-      pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardEscape);
-      keyboard_event.value = 1;
-      expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, 200));
-    }
-    {
-      pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardSpacebar);
-      keyboard_event.value = 1;
-      expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, 300));
-    }
-    {
-      pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardTab);
-      keyboard_event.value = 0;
-      expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, 400));
-    }
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardTab, 1, time_stamp += 100);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp += 100);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 1, time_stamp += 100);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardTab, 0, time_stamp += 100);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         600,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1));
-    input_event_queue.emplace_back_event(krbn::device_id(3),
-                                         600,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1));
+    ENQUEUE_EVENT(input_event_queue, 1, 600, device_ungrabbed_event, key_down, device_ungrabbed_event);
+    ENQUEUE_EVENT(input_event_queue, 3, 600, device_ungrabbed_event, key_down, device_ungrabbed_event);
 
     connector.manipulate(700);
 
-    {
-      pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-      keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardSpacebar);
-      keyboard_event.value = 0;
-      expected.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, 600));
-    }
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 0, 600);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
   }
