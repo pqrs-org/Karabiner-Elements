@@ -239,7 +239,7 @@ public:
             break;
           }
         }
-        if (found) {
+        if (!found) {
           break;
         }
       }
