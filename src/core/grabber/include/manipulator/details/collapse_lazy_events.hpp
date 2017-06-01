@@ -50,7 +50,7 @@ public:
 
     // Determine front_input_event should be collapsed.
 
-    if (!front_input_event.get_lazy()){
+    if (!front_input_event.get_lazy()) {
       return;
     }
 
@@ -76,9 +76,9 @@ public:
     return !invalidation_reserved_events_.empty();
   }
 
-  virtual void device_ungrabbed_callback(device_id device_id,
-                                         event_queue& output_event_queue,
-                                         uint64_t time_stamp) {
+  virtual void handle_device_ungrabbed_event(device_id device_id,
+                                             const event_queue& output_event_queue,
+                                             uint64_t time_stamp) {
     invalidation_reserved_events_.erase(std::remove_if(std::begin(invalidation_reserved_events_),
                                                        std::end(invalidation_reserved_events_),
                                                        [&](auto& e) {

@@ -25,6 +25,7 @@ public:
         // virtual events
         device_keys_are_released,
         device_pointing_buttons_are_released,
+        device_ungrabbed,
       };
 
       event(key_code key_code) : type_(type::key_code),
@@ -336,12 +337,20 @@ public:
     modifier_flag_manager_.erase_all_active_modifier_flags_except_lock(device_id);
   }
 
+  void erase_all_active_modifier_flags(device_id device_id) {
+    modifier_flag_manager_.erase_all_active_modifier_flags(device_id);
+  }
+
   const pointing_button_manager& get_pointing_button_manager(void) const {
     return pointing_button_manager_;
   }
 
   void erase_all_active_pointing_buttons_except_lock(device_id device_id) {
     pointing_button_manager_.erase_all_active_pointing_buttons_except_lock(device_id);
+  }
+
+  void erase_all_active_pointing_buttons(device_id device_id) {
+    pointing_button_manager_.erase_all_active_pointing_buttons(device_id);
   }
 
   uint64_t get_time_stamp_delay(void) const {
