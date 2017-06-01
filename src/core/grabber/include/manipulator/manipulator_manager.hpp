@@ -63,7 +63,7 @@ public:
           for (auto&& m : manipulators_) {
             m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
                                              output_event_queue,
-                                             time_stamp);
+                                             front_input_event.get_time_stamp());
           }
           break;
 
