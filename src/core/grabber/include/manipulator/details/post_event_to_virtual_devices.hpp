@@ -138,53 +138,30 @@ public:
 
   class key_event_dispatcher final {
   public:
-    typedef std::pair<device_id, key_code> pressed_key;
-
-    struct pressed_key_hash : public std::unary_function<pressed_key, std::size_t> {
-      std::size_t operator()(const pressed_key& k) const {
-        return static_cast<uint32_t>(k.first) ^
-               static_cast<uint32_t>(k.second);
-      }
-    };
-
-    // Return true if usage_page and usage is not exists before insert. (device_id is ignored.)
-    void insert_key(device_id device_id,
-                    key_code key_code,
-                    queue& queue,
-                    uint64_t time_stamp) {
+    void dispatch_key_down_event(device_id device_id,
+                                 key_code key_code,
+                                 queue& queue,
+                                 uint64_t time_stamp) {
       // Enqueue key_down event if it is not sent yet.
 
-      auto it = std::find_if(std::begin(pressed_keys_),
-                             std::end(pressed_keys_),
-                             [&](auto& k) {
-                               return k.second == key_code;
-                             });
-      auto found = (it != std::end(pressed_keys_));
-
-      pressed_keys_.emplace(device_id, key_code);
-
-      if (!found) {
+      if (!find_key_code(key_code)) {
+        pressed_keys_.emplace_back(device_id, key_code);
         enqueue_key_event(key_code, event_type::key_down, queue, time_stamp);
       }
     }
 
-    // Return true if usage_page and usage is not exists after erase. (device_id is ignored.)
-    void erase_key(key_code key_code,
-                   queue& queue,
-                   uint64_t time_stamp) {
+    void dispatch_key_up_event(key_code key_code,
+                               queue& queue,
+                               uint64_t time_stamp) {
       // Enqueue key_up event if it is already sent.
 
-      bool found = false;
-      for (auto it = std::begin(pressed_keys_); it != std::end(pressed_keys_);) {
-        if (it->second == key_code) {
-          found = true;
-          it = pressed_keys_.erase(it);
-        } else {
-          std::advance(it, 1);
-        }
-      }
-
-      if (found) {
+      if (find_key_code(key_code)) {
+        pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
+                                           std::end(pressed_keys_),
+                                           [&](auto& k) {
+                                             return k.second == key_code;
+                                           }),
+                            std::end(pressed_keys_));
         enqueue_key_event(key_code, event_type::key_up, queue, time_stamp);
       }
     }
@@ -225,17 +202,17 @@ public:
       }
     }
 
-    void erase_keys_by_device_id(device_id device_id,
-                                 queue& queue,
-                                 uint64_t time_stamp) {
+    void dispatch_key_up_events_by_device_id(device_id device_id,
+                                             queue& queue,
+                                             uint64_t time_stamp) {
       while (true) {
         bool found = false;
         for (const auto& k : pressed_keys_) {
           if (k.first == device_id) {
             found = true;
-            erase_key(k.second,
-                      queue,
-                      time_stamp);
+            dispatch_key_up_event(k.second,
+                                  queue,
+                                  time_stamp);
             break;
           }
         }
@@ -245,11 +222,20 @@ public:
       }
     }
 
-    const std::unordered_set<pressed_key, pressed_key_hash>& get_pressed_keys(void) const {
+    const std::vector<std::pair<device_id, key_code>>& get_pressed_keys(void) const {
       return pressed_keys_;
     }
 
   private:
+    bool find_key_code(key_code key_code) {
+      auto it = std::find_if(std::begin(pressed_keys_),
+                             std::end(pressed_keys_),
+                             [&](auto& k) {
+                               return k.second == key_code;
+                             });
+      return (it != std::end(pressed_keys_));
+    }
+
     void enqueue_key_event(key_code key_code,
                            event_type event_type,
                            queue& queue,
@@ -266,7 +252,7 @@ public:
       }
     }
 
-    std::unordered_set<pressed_key, pressed_key_hash> pressed_keys_;
+    std::vector<std::pair<device_id, key_code>> pressed_keys_;
     std::unordered_set<modifier_flag> pressed_modifier_flags_;
   };
 
@@ -296,14 +282,14 @@ public:
         if (auto key_code = front_input_event.get_event().get_key_code()) {
           if (types::get_modifier_flag(*key_code) == modifier_flag::zero) {
             if (front_input_event.get_event_type() == event_type::key_down) {
-              key_event_dispatcher_.insert_key(front_input_event.get_device_id(),
-                                               *key_code,
-                                               queue_,
-                                               front_input_event.get_time_stamp());
+              key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
+                                                            *key_code,
+                                                            queue_,
+                                                            front_input_event.get_time_stamp());
             } else {
-              key_event_dispatcher_.erase_key(*key_code,
-                                              queue_,
-                                              front_input_event.get_time_stamp());
+              key_event_dispatcher_.dispatch_key_up_event(*key_code,
+                                                          queue_,
+                                                          front_input_event.get_time_stamp());
             }
           }
         }
@@ -372,9 +358,9 @@ public:
                                              uint64_t time_stamp) {
     // Release pressed keys
 
-    key_event_dispatcher_.erase_keys_by_device_id(device_id,
-                                                  queue_,
-                                                  time_stamp);
+    key_event_dispatcher_.dispatch_key_up_events_by_device_id(device_id,
+                                                              queue_,
+                                                              time_stamp);
 
     // Release buttons
     {
@@ -386,6 +372,12 @@ public:
         pressed_buttons_ = bits;
       }
     }
+
+    // Release modifiers
+
+    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                      queue_,
+                                                      time_stamp);
   }
 
   void post_events(virtual_hid_device_client& virtual_hid_device_client) {

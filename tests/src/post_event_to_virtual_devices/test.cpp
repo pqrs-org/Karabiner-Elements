@@ -31,6 +31,8 @@ krbn::event_queue::queued_event::event left_shift_event(krbn::key_code::left_shi
 krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
 krbn::event_queue::queued_event::event escape_event(krbn::key_code::escape);
 krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
+krbn::event_queue::queued_event::event return_or_enter_event(krbn::key_code::return_or_enter);
+krbn::event_queue::queued_event::event a_event(krbn::key_code::a);
 krbn::event_queue::queued_event::event button1_event(krbn::pointing_button::button1);
 krbn::event_queue::queued_event::event pointing_x_m10_event(krbn::event_queue::queued_event::event::type::pointing_x, -10);
 krbn::event_queue::queued_event::event pointing_y_10_event(krbn::event_queue::queued_event::event::type::pointing_y, 10);
@@ -104,11 +106,9 @@ TEST_CASE("generic") {
     }
 
     {
-      std::unordered_set<post_event_to_virtual_devices::key_event_dispatcher::pressed_key,
-                         post_event_to_virtual_devices::key_event_dispatcher::pressed_key_hash>
-          expected({
-              std::make_pair(krbn::device_id(1), krbn::key_code::tab),
-          });
+      std::vector<std::pair<krbn::device_id, krbn::key_code>> expected({
+          std::make_pair(krbn::device_id(1), krbn::key_code::tab),
+      });
       REQUIRE(manipulator->get_key_event_dispatcher().get_pressed_keys() == expected);
     }
   }
@@ -177,6 +177,10 @@ TEST_CASE("device_ungrabbed event") {
     ENQUEUE_EVENT(input_event_queue, 2, time_stamp += 100, escape_event, key_down, escape_event);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, spacebar_event, key_down, spacebar_event);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, tab_event, key_up, tab_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, return_or_enter_event, key_down, return_or_enter_event);
+    ENQUEUE_EVENT(input_event_queue, 2, time_stamp += 100, a_event, key_down, a_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, a_event, key_down, a_event); // `key_code::a` is pressed until device_id(2) is ungrabbed.
 
     connector.manipulate(500);
 
@@ -187,6 +191,9 @@ TEST_CASE("device_ungrabbed event") {
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp += 100);
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 1, time_stamp += 100);
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardTab, 0, time_stamp += 100);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, time_stamp += 100);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardReturnOrEnter, 1, time_stamp += 100);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardA, 1, time_stamp += 100);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
@@ -196,6 +203,17 @@ TEST_CASE("device_ungrabbed event") {
     connector.manipulate(700);
 
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 0, 600);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardReturnOrEnter, 0, 600);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, 600);
+
+    REQUIRE(manipulator->get_queue().get_events() == expected);
+
+    ENQUEUE_EVENT(input_event_queue, 2, 800, device_ungrabbed_event, key_down, device_ungrabbed_event);
+
+    connector.manipulate(900);
+
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 0, 800);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardA, 0, 800);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
   }
