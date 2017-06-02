@@ -9,7 +9,7 @@ Karabiner-Elements provides a subset of the features planned for the next genera
 
 ![Screen Shot](https://raw.githubusercontent.com/starsy/Karabiner-Elements/master/Screen%20Shot.png)
 
- Please be aware that the config file format and file name is different than the original Karabiner's. Below is an example section:
+ **_Please be aware that the config file format and file name is different than the original Karabiner's. Below is an example section from $HOME/.config/karabiner/karabiner2.json:_**
  ```javascript
  ...
  "simple_modifications": [
