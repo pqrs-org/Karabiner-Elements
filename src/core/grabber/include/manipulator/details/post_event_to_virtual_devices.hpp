@@ -82,14 +82,73 @@ public:
       return events_;
     }
 
-    void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event,
+    void emplace_back_event(key_code key_code,
+                            event_type event_type,
                             uint64_t time_stamp) {
-      events_.emplace_back(keyboard_event,
-                           time_stamp);
+      if (auto usage_page = types::get_usage_page(key_code)) {
+        if (auto usage = types::get_usage(key_code)) {
+          pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
+          keyboard_event.usage_page = *usage_page;
+          keyboard_event.usage = *usage;
+          keyboard_event.value = (event_type == event_type::key_down);
+
+          // ----------------------------------------
+          // modify time_stamp if needed
+
+          // wait is 1 milliseconds
+          auto wait = time_utility::nano_to_absolute(NSEC_PER_MSEC);
+          auto m = types::get_modifier_flag(key_code);
+          if (m == modifier_flag::zero) {
+            // generic key
+
+            if (event_type == event_type::key_down) {
+              if (delayed_generic_event_time_stamp_ &&
+                  time_stamp < *delayed_generic_event_time_stamp_) {
+                time_stamp = *delayed_generic_event_time_stamp_;
+              }
+
+              delayed_generic_event_time_stamp_ = boost::none;
+              delayed_modifier_time_stamp_ = time_stamp + wait;
+            }
+
+          } else {
+            // modifier key
+
+            if (delayed_modifier_time_stamp_ &&
+                time_stamp < *delayed_modifier_time_stamp_) {
+              time_stamp = *delayed_modifier_time_stamp_;
+            }
+
+            delayed_modifier_time_stamp_ = boost::none;
+            delayed_generic_event_time_stamp_ = time_stamp + wait;
+          }
+
+          // ----------------------------------------
+
+          events_.emplace_back(keyboard_event,
+                               time_stamp);
+        }
+      }
     }
 
     void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
                             uint64_t time_stamp) {
+      if (pointing_input.buttons[0] != 0 ||
+          pointing_input.buttons[1] != 0 ||
+          pointing_input.buttons[2] != 0 ||
+          pointing_input.buttons[3] != 0) {
+        // wait is 1 milliseconds
+        auto wait = time_utility::nano_to_absolute(NSEC_PER_MSEC);
+
+        if (delayed_generic_event_time_stamp_ &&
+            time_stamp < *delayed_generic_event_time_stamp_) {
+          time_stamp = *delayed_generic_event_time_stamp_;
+        }
+
+        delayed_generic_event_time_stamp_ = boost::none;
+        delayed_modifier_time_stamp_ = time_stamp + wait;
+      }
+
       events_.emplace_back(pointing_input,
                            time_stamp);
     }
@@ -134,6 +193,11 @@ public:
   private:
     std::vector<event> events_;
     std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
+
+    // We should add a wait between modifier event and generic_key_down in order to
+    // ensure window system handles events by properly order.
+    boost::optional<uint64_t> delayed_modifier_time_stamp_;
+    boost::optional<uint64_t> delayed_generic_event_time_stamp_;
   };
 
   class key_event_dispatcher final {
@@ -240,16 +304,7 @@ public:
                            event_type event_type,
                            queue& queue,
                            uint64_t time_stamp) {
-      if (auto usage_page = types::get_usage_page(key_code)) {
-        if (auto usage = types::get_usage(key_code)) {
-          pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-          keyboard_event.usage_page = *usage_page;
-          keyboard_event.usage = *usage;
-          keyboard_event.value = (event_type == event_type::key_down);
-          queue.emplace_back_event(keyboard_event,
-                                   time_stamp);
-        }
-      }
+      queue.emplace_back_event(key_code, event_type, time_stamp);
     }
 
     std::vector<std::pair<device_id, key_code>> pressed_keys_;
