@@ -52,7 +52,6 @@
 		3476862C1E22A7A700A7DFAB /* cf_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = cf_utility.hpp; path = ../../share/cf_utility.hpp; sourceTree = SOURCE_ROOT; };
 		348FC00A1D9B76830083F98F /* virtual_hid_device_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = virtual_hid_device_client.hpp; path = ../../share/virtual_hid_device_client.hpp; sourceTree = SOURCE_ROOT; };
 		349863321E784DC800DF3644 /* connected_devices.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connected_devices.hpp; path = ../../share/connected_devices.hpp; sourceTree = SOURCE_ROOT; };
-		349950681D89A25D004FE466 /* event_manipulator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_manipulator.hpp; path = include/manipulator/event_manipulator.hpp; sourceTree = SOURCE_ROOT; };
 		349950691D89A2EF004FE466 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = system_preferences.hpp; path = ../../share/system_preferences.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A891D6840C200DD480B /* receiver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = receiver.hpp; path = include/receiver.hpp; sourceTree = SOURCE_ROOT; };
@@ -174,7 +173,6 @@
 			isa = PBXGroup;
 			children = (
 				345CCB501E914BCA005B61A8 /* details */,
-				349950681D89A25D004FE466 /* event_manipulator.hpp */,
 				345CCB541E929D65005B61A8 /* manipulator_factory.hpp */,
 				34DA9F371ED8827800D75501 /* manipulator_manager.hpp */,
 				34DA9F381ED8827800D75501 /* manipulator_managers_connector.hpp */,

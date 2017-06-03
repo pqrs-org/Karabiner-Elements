@@ -1,6 +1,5 @@
 #include "connection_manager.hpp"
 #include "constants.hpp"
-#include "event_manipulator.hpp"
 #include "karabiner_version.h"
 #include "notification_center.hpp"
 #include "process_utility.hpp"
@@ -50,8 +49,7 @@ int main(int argc, const char* argv[]) {
 
   auto virtual_hid_device_client_ptr = std::make_unique<krbn::virtual_hid_device_client>(logger);
   virtual_hid_device_client_ptr->connect();
-  auto event_manipulator_ptr = std::make_unique<krbn::manipulator::event_manipulator>(*virtual_hid_device_client_ptr);
-  auto device_grabber_ptr = std::make_unique<krbn::device_grabber>(*virtual_hid_device_client_ptr, *event_manipulator_ptr);
+  auto device_grabber_ptr = std::make_unique<krbn::device_grabber>(*virtual_hid_device_client_ptr);
   krbn::connection_manager connection_manager(*version_monitor_ptr, *device_grabber_ptr);
 
   krbn::notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
@@ -59,7 +57,6 @@ int main(int argc, const char* argv[]) {
   CFRunLoopRun();
 
   device_grabber_ptr = nullptr;
-  event_manipulator_ptr = nullptr;
   version_monitor_ptr = nullptr;
 
   return 0;

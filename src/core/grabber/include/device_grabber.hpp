@@ -5,7 +5,6 @@
 #include "apple_hid_usage_tables.hpp"
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
-#include "event_manipulator.hpp"
 #include "event_tap_manager.hpp"
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
@@ -29,13 +28,11 @@ class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(virtual_hid_device_client& virtual_hid_device_client,
-                 manipulator::event_manipulator& event_manipulator) : virtual_hid_device_client_(virtual_hid_device_client),
-                                                                      event_manipulator_(event_manipulator),
-                                                                      profile_(nlohmann::json()),
-                                                                      mode_(mode::observing),
-                                                                      is_grabbable_callback_log_reducer_(logger::get_logger()),
-                                                                      suspended_(false) {
+  device_grabber(virtual_hid_device_client& virtual_hid_device_client) : virtual_hid_device_client_(virtual_hid_device_client),
+                                                                         profile_(nlohmann::json()),
+                                                                         mode_(mode::observing),
+                                                                         is_grabbable_callback_log_reducer_(logger::get_logger()),
+                                                                         suspended_(false) {
     virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
         boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
 
@@ -279,9 +276,9 @@ private:
     output_devices_json();
 
     if (is_pointing_device_connected()) {
-      event_manipulator_.initialize_virtual_hid_pointing();
+      virtual_hid_device_client_.initialize_virtual_hid_pointing();
     } else {
-      event_manipulator_.terminate_virtual_hid_pointing();
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
     }
 
     // ----------------------------------------
@@ -322,12 +319,10 @@ private:
     output_devices_json();
 
     if (is_pointing_device_connected()) {
-      event_manipulator_.initialize_virtual_hid_pointing();
+      virtual_hid_device_client_.initialize_virtual_hid_pointing();
     } else {
-      event_manipulator_.terminate_virtual_hid_pointing();
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
     }
-
-    event_manipulator_.stop_key_repeat();
 
     // ----------------------------------------
     if (mode_ == mode::grabbing) {
@@ -417,15 +412,12 @@ private:
   }
 
   void ungrabbed_callback(human_interface_device& device) {
-    // stop key repeat
-    event_manipulator_.stop_key_repeat();
-
     post_device_ungrabbed_event(device.get_device_id());
   }
 
   void disabled_callback(human_interface_device& device) {
-    // stop key repeat
-    event_manipulator_.stop_key_repeat();
+    // Post device_ungrabbed event in order to release modifier_flags.
+    post_device_ungrabbed_event(device.get_device_id());
   }
 
   void caps_lock_state_changed_callback(bool caps_lock_state) {
@@ -637,7 +629,6 @@ private:
   }
 
   virtual_hid_device_client& virtual_hid_device_client_;
-  manipulator::event_manipulator& event_manipulator_;
 
   boost::signals2::connection virtual_hid_device_client_disconnected_connection;
 
