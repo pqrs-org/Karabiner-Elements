@@ -263,13 +263,13 @@ TEST_CASE("wait around modifier") {
     std::vector<post_event_to_virtual_devices::queue::event> expected;
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardTab, 1, time_stamp += interval);
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp + modifier_wait); // need wait after modifier before escape key_down
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp + modifier_wait);
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 0, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, time_stamp + 1); // no wait after escape key_up
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, time_stamp + modifier_wait);
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp += interval);
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, time_stamp + modifier_wait);
     ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 0, time_stamp + 1);
+    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 0, time_stamp + modifier_wait);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
   }

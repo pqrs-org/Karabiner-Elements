@@ -75,7 +75,8 @@ public:
       uint64_t time_stamp_;
     };
 
-    queue(void) {
+    queue(void) : last_event_modifier_key_(false),
+                  last_event_time_stamp_(0) {
     }
 
     const std::vector<event>& get_events(void) const {
@@ -95,33 +96,8 @@ public:
           // ----------------------------------------
           // modify time_stamp if needed
 
-          // wait is 1 milliseconds
-          auto wait = time_utility::nano_to_absolute(NSEC_PER_MSEC);
           auto m = types::get_modifier_flag(key_code);
-          if (m == modifier_flag::zero) {
-            // generic key
-
-            if (event_type == event_type::key_down) {
-              if (delayed_generic_event_time_stamp_ &&
-                  time_stamp < *delayed_generic_event_time_stamp_) {
-                time_stamp = *delayed_generic_event_time_stamp_;
-              }
-
-              delayed_generic_event_time_stamp_ = boost::none;
-              delayed_modifier_time_stamp_ = time_stamp + wait;
-            }
-
-          } else {
-            // modifier key
-
-            if (delayed_modifier_time_stamp_ &&
-                time_stamp < *delayed_modifier_time_stamp_) {
-              time_stamp = *delayed_modifier_time_stamp_;
-            }
-
-            delayed_modifier_time_stamp_ = boost::none;
-            delayed_generic_event_time_stamp_ = time_stamp + wait;
-          }
+          adjust_time_stamp(time_stamp, m != modifier_flag::zero);
 
           // ----------------------------------------
 
@@ -133,21 +109,7 @@ public:
 
     void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
                             uint64_t time_stamp) {
-      if (pointing_input.buttons[0] != 0 ||
-          pointing_input.buttons[1] != 0 ||
-          pointing_input.buttons[2] != 0 ||
-          pointing_input.buttons[3] != 0) {
-        // wait is 1 milliseconds
-        auto wait = time_utility::nano_to_absolute(NSEC_PER_MSEC);
-
-        if (delayed_generic_event_time_stamp_ &&
-            time_stamp < *delayed_generic_event_time_stamp_) {
-          time_stamp = *delayed_generic_event_time_stamp_;
-        }
-
-        delayed_generic_event_time_stamp_ = boost::none;
-        delayed_modifier_time_stamp_ = time_stamp + wait;
-      }
+      adjust_time_stamp(time_stamp, false);
 
       events_.emplace_back(pointing_input,
                            time_stamp);
@@ -191,13 +153,49 @@ public:
     }
 
   private:
+    void adjust_time_stamp(uint64_t& time_stamp,
+                           bool is_modifier_key) {
+      // wait is 1 milliseconds
+      auto wait = time_utility::nano_to_absolute(NSEC_PER_MSEC);
+
+      if (last_event_modifier_key_ != is_modifier_key &&
+          time_stamp < last_event_time_stamp_ + wait) {
+        time_stamp = last_event_time_stamp_ + wait;
+      }
+
+      last_event_modifier_key_ = is_modifier_key;
+      if (last_event_time_stamp_ < time_stamp) {
+        last_event_time_stamp_ = time_stamp;
+      }
+    }
+
     std::vector<event> events_;
     std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
 
-    // We should add a wait between modifier event and generic_key_down in order to
-    // ensure window system handles events by properly order.
-    boost::optional<uint64_t> delayed_modifier_time_stamp_;
-    boost::optional<uint64_t> delayed_generic_event_time_stamp_;
+    // We should add a wait between modifier events and other events in order to
+    // ensure window system handles modifier by properly order.
+    //
+    // Example:
+    //
+    //   01. left_shift key_down
+    //   02. left_control key_down
+    //       [wait]
+    //   03. a key_down
+    //   04. a key_up
+    //   05. b key_down
+    //   06. b key_up
+    //       [wait]
+    //   07. left_shift key_up
+    //   08. left_control key_up
+    //       [wait]
+    //   09. button1 down
+    //   10. button1 up
+    //
+    // Without wait, window system sometimes reorder modifier flag event.
+    // it causes improperly event order such as `a,shift,control,b,button1`.
+
+    bool last_event_modifier_key_;
+    uint64_t last_event_time_stamp_;
   };
 
   class key_event_dispatcher final {
