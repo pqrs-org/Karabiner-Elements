@@ -269,6 +269,8 @@ private:
                                       this,
                                       std::placeholders::_1,
                                       std::placeholders::_2));
+    logger::get_logger().info("{0} is detected.", dev->get_name_for_log());
+
     dev->observe();
 
     hids_[device] = std::move(dev);
@@ -311,6 +313,8 @@ private:
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
+        logger::get_logger().info("{0} is removed.", dev->get_name_for_log());
+        dev->set_removed();
         dev->ungrab();
         hids_.erase(it);
       }
