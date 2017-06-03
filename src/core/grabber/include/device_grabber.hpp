@@ -301,14 +301,11 @@ private:
 
     iokit_utility::log_removal_device(logger::get_logger(), device);
 
-    boost::optional<device_id> device_id;
-
     auto it = hids_.find(device);
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
         dev->ungrab();
-        device_id = dev->get_device_id();
         hids_.erase(it);
       }
     }
@@ -319,11 +316,6 @@ private:
       event_manipulator_.initialize_virtual_hid_pointing();
     } else {
       event_manipulator_.terminate_virtual_hid_pointing();
-    }
-
-    if (device_id) {
-      event_manipulator_.erase_all_active_modifier_flags(*device_id, true);
-      event_manipulator_.erase_all_active_pointing_buttons(*device_id, true);
     }
 
     event_manipulator_.stop_key_repeat();

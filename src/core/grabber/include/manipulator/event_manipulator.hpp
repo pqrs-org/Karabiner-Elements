@@ -52,38 +52,6 @@ public:
     virtual_hid_device_client_.terminate_virtual_hid_pointing();
   }
 
-  void erase_all_active_modifier_flags(device_id device_id, bool include_lock) {
-    if (include_lock) {
-      modifier_flag_manager_.erase_all_active_modifier_flags(device_id);
-    } else {
-      modifier_flag_manager_.erase_all_active_modifier_flags_except_lock(device_id);
-    }
-
-    // TODO
-    // Post modifier flag event
-  }
-
-  void erase_all_active_pointing_buttons(device_id device_id, bool include_lock) {
-    auto previous_bits = pointing_button_manager_.get_hid_report_bits();
-
-    if (include_lock) {
-      pointing_button_manager_.erase_all_active_pointing_buttons(device_id);
-    } else {
-      pointing_button_manager_.erase_all_active_pointing_buttons_except_lock(device_id);
-    }
-
-    auto bits = pointing_button_manager_.get_hid_report_bits();
-
-    if (bits != previous_bits) {
-      pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
-      report.buttons[0] = (bits >> 0) & 0xff;
-      report.buttons[1] = (bits >> 8) & 0xff;
-      report.buttons[2] = (bits >> 16) & 0xff;
-      report.buttons[3] = (bits >> 24) & 0xff;
-      virtual_hid_device_client_.post_pointing_input_report(report);
-    }
-  }
-
   void set_profile(const core_configuration::profile& profile) {
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
     if (auto k = types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
