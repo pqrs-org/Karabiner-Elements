@@ -2,7 +2,6 @@
 
 #include "constants.hpp"
 #include "device_grabber.hpp"
-#include "event_manipulator.hpp"
 #include "local_datagram_server.hpp"
 #include "process_monitor.hpp"
 #include "session.hpp"
@@ -14,9 +13,7 @@ class receiver final {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(manipulator::event_manipulator& event_manipulator,
-           device_grabber& device_grabber) : event_manipulator_(event_manipulator),
-                                             device_grabber_(device_grabber),
+  receiver(device_grabber& device_grabber) : device_grabber_(device_grabber),
                                              exit_loop_(false) {
     const size_t buffer_length = 32 * 1024;
     buffer_.resize(buffer_length);
@@ -48,7 +45,6 @@ public:
     console_user_server_process_monitor_ = nullptr;
     device_grabber_.stop_grabbing();
     device_grabber_.unset_profile();
-    event_manipulator_.unset_profile();
   }
 
 private:
@@ -114,7 +110,6 @@ private:
     }
   }
 
-  manipulator::event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
 
   std::vector<uint8_t> buffer_;

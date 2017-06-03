@@ -120,7 +120,7 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       mode_ = mode::grabbing;
 
-      event_manipulator_.reset();
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
 
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_manager here.
@@ -133,7 +133,6 @@ public:
 
                                                                          is_grabbable_callback_log_reducer_.reset();
                                                                          set_profile(core_configuration_->get_selected_profile());
-                                                                         event_manipulator_.set_profile(core_configuration_->get_selected_profile());
                                                                          grab_devices();
                                                                        });
     });
@@ -147,7 +146,7 @@ public:
 
       mode_ = mode::observing;
 
-      event_manipulator_.reset();
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
 
       event_tap_manager_ = nullptr;
     });
@@ -210,6 +209,16 @@ public:
 
     update_simple_modifications_manipulators();
     update_fn_function_keys_manipulators();
+
+    // Update virtual_hid_keyboard
+    {
+      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
+      if (auto k = types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
+        properties.keyboard_type = *k;
+      }
+      properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(profile.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds());
+      virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
+    }
   }
 
   void unset_profile(void) {
