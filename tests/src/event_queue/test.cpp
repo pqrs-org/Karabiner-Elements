@@ -27,6 +27,7 @@
 
 namespace {
 krbn::event_queue::queued_event::event event_a(krbn::key_code::a);
+krbn::event_queue::queued_event::event event_caps_lock(krbn::key_code::caps_lock);
 krbn::event_queue::queued_event::event event_escape(krbn::key_code::escape);
 krbn::event_queue::queued_event::event event_left_control(krbn::key_code::left_control);
 krbn::event_queue::queued_event::event event_left_shift(krbn::key_code::left_shift);
@@ -39,6 +40,9 @@ krbn::event_queue::queued_event::event event_button2(krbn::pointing_button::butt
 
 krbn::event_queue::queued_event::event event_x_p10(krbn::event_queue::queued_event::event::type::pointing_x, 10);
 krbn::event_queue::queued_event::event event_y_m10(krbn::event_queue::queued_event::event::type::pointing_y, -10);
+
+krbn::event_queue::queued_event::event event_caps_lock_state_changed_1(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
+krbn::event_queue::queued_event::event event_caps_lock_state_changed_0(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
 } // namespace
 
 TEST_CASE("emplace_back_event") {
@@ -203,6 +207,35 @@ TEST_CASE("increase_time_stamp_delay") {
       event_queue.erase_front_event();
     }
     REQUIRE(event_queue.get_time_stamp_delay() == 0);
+  }
+}
+
+TEST_CASE("caps_lock_state_changed") {
+  {
+    krbn::event_queue event_queue;
+
+    // modifier_flag_manager's caps lock state will not be changed by key_down event.
+    ENQUEUE_EVENT(event_queue, 1, 100, event_caps_lock, key_down, event_caps_lock);
+
+    REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
+
+    ENQUEUE_EVENT(event_queue, 1, 100, event_caps_lock_state_changed_1, key_down, event_caps_lock_state_changed_1);
+
+    REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
+
+    // Send twice
+
+    ENQUEUE_EVENT(event_queue, 1, 100, event_caps_lock_state_changed_1, key_down, event_caps_lock_state_changed_1);
+
+    REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
+
+    ENQUEUE_EVENT(event_queue, 1, 100, event_caps_lock_state_changed_0, key_down, event_caps_lock_state_changed_0);
+
+    REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
+
+    ENQUEUE_EVENT(event_queue, 1, 100, event_caps_lock_state_changed_1, key_down, event_caps_lock_state_changed_1);
+
+    REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
   }
 }
 

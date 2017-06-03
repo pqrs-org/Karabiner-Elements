@@ -363,6 +363,16 @@ private:
     manipulate();
   }
 
+  void post_caps_lock_state_changed_callback(bool caps_lock_state) {
+    event_queue::queued_event::event event(event_queue::queued_event::event::type::caps_lock_state_changed, caps_lock_state);
+    merged_input_event_queue_.emplace_back_event(device_id(0),
+                                                 mach_absolute_time(),
+                                                 event,
+                                                 event_type::key_down,
+                                                 event);
+    manipulate();
+  }
+
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
     if (is_ignored_device(device)) {
       // If we need to disable the built-in keyboard, we have to grab it.
@@ -424,7 +434,7 @@ private:
   }
 
   void caps_lock_state_changed_callback(bool caps_lock_state) {
-    event_manipulator_.set_caps_lock_state(caps_lock_state);
+    post_caps_lock_state_changed_callback(caps_lock_state);
     update_caps_lock_led(caps_lock_state);
   }
 

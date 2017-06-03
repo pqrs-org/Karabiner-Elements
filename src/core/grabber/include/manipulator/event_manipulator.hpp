@@ -104,17 +104,6 @@ public:
     virtual_hid_device_client_.terminate_virtual_hid_pointing();
   }
 
-  void set_caps_lock_state(bool state) {
-    modifier_flag_manager::active_modifier_flag active_modifier_flag(modifier_flag_manager::active_modifier_flag::type::increase_lock,
-                                                                     modifier_flag::caps_lock,
-                                                                     device_id(0));
-    if (state) {
-      modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
-    } else {
-      modifier_flag_manager_.erase_active_modifier_flag(active_modifier_flag);
-    }
-  }
-
   void stop_key_repeat(void) {
     virtual_hid_device_client_.reset_virtual_hid_keyboard();
   }

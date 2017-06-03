@@ -374,6 +374,7 @@ public:
             case event_queue::queued_event::event::type::device_keys_are_released:
             case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
             case event_queue::queued_event::event::type::device_ungrabbed:
+            case event_queue::queued_event::event::type::caps_lock_state_changed:
               // Do nothing
               break;
           }
@@ -391,6 +392,7 @@ public:
       case event_queue::queued_event::event::type::device_keys_are_released:
       case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
       case event_queue::queued_event::event::type::device_ungrabbed:
+      case event_queue::queued_event::event::type::caps_lock_state_changed:
         // Do nothing
         break;
     }
