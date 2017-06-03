@@ -11,7 +11,6 @@
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
-#include "manipulator/details/add_delay_after_modifier_key_down.hpp"
 #include "manipulator/details/collapse_lazy_events.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
@@ -45,11 +44,6 @@ public:
       collapse_lazy_events_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
 
-    {
-      auto manipulator = std::make_shared<manipulator::details::add_delay_after_modifier_key_down>();
-      add_delay_after_modifier_key_down_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
-    }
-
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>();
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
 
@@ -64,11 +58,8 @@ public:
     manipulator_managers_connector_.emplace_back_connection(collapse_lazy_events_manipulator_manager_,
                                                             fn_function_keys_applied_event_queue_,
                                                             lazy_collapsed_event_queue_);
-    manipulator_managers_connector_.emplace_back_connection(add_delay_after_modifier_key_down_manipulator_manager_,
-                                                            lazy_collapsed_event_queue_,
-                                                            modifier_delay_added_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
-                                                            modifier_delay_added_event_queue_,
+                                                            lazy_collapsed_event_queue_,
                                                             posted_event_queue_);
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
@@ -668,9 +659,6 @@ private:
 
   manipulator::manipulator_manager collapse_lazy_events_manipulator_manager_;
   event_queue lazy_collapsed_event_queue_;
-
-  manipulator::manipulator_manager add_delay_after_modifier_key_down_manipulator_manager_;
-  event_queue modifier_delay_added_event_queue_;
 
   std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   manipulator::manipulator_manager post_event_to_virtual_devices_manipulator_manager_;

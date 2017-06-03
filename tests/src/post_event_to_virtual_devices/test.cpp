@@ -1,7 +1,6 @@
 #define CATCH_CONFIG_RUNNER
 #include "../../vendor/catch/catch.hpp"
 
-#include "manipulator/details/add_delay_after_modifier_key_down.hpp"
 #include "manipulator/details/collapse_lazy_events.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_factory.hpp"
