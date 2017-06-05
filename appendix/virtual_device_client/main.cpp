@@ -1,20 +1,8 @@
+#include "../include/logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "thread_utility.hpp"
 #include "time_utility.hpp"
 #include "virtual_hid_device_client.hpp"
-
-namespace {
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("virtual_device_client");
-    }
-    return *logger;
-  }
-};
-} // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();

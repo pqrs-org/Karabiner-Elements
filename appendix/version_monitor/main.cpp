@@ -1,21 +1,7 @@
 #include "boost_defs.hpp"
 
-#include <iostream>
-
+#include "../include/logger.hpp"
 #include "version_monitor.hpp"
-
-namespace {
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("version_monitor");
-    }
-    return *logger;
-  }
-};
-} // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();

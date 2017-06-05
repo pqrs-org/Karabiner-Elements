@@ -1,5 +1,6 @@
 #include "boost_defs.hpp"
 
+#include "../include/logger.hpp"
 #include "hid_system_client.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
@@ -13,19 +14,6 @@
 #include <boost/bind.hpp>
 #include <iostream>
 #include <mach/mach_time.h>
-
-namespace {
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("dump_caps_lock_state");
-    }
-    return *logger;
-  }
-};
-} // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();

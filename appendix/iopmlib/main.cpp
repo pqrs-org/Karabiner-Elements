@@ -1,17 +1,5 @@
+#include "../include/logger.hpp"
 #include "iopm_client.hpp"
-
-namespace {
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("iopmlib");
-    }
-    return *logger;
-  }
-};
-} // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();

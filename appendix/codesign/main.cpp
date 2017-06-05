@@ -1,22 +1,9 @@
+#include "../include/logger.hpp"
 #include "codesign.hpp"
 #include "thread_utility.hpp"
 #include <chrono>
 #include <iostream>
-#include <spdlog/spdlog.h>
 #include <thread>
-
-namespace {
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("codesign");
-    }
-    return *logger;
-  }
-};
-} // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
