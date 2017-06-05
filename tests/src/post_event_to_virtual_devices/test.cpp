@@ -26,12 +26,13 @@
 using krbn::manipulator::details::post_event_to_virtual_devices;
 
 namespace {
-krbn::event_queue::queued_event::event left_shift_event(krbn::key_code::left_shift);
-krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
-krbn::event_queue::queued_event::event escape_event(krbn::key_code::escape);
-krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
-krbn::event_queue::queued_event::event return_or_enter_event(krbn::key_code::return_or_enter);
 krbn::event_queue::queued_event::event a_event(krbn::key_code::a);
+krbn::event_queue::queued_event::event escape_event(krbn::key_code::escape);
+krbn::event_queue::queued_event::event left_shift_event(krbn::key_code::left_shift);
+krbn::event_queue::queued_event::event return_or_enter_event(krbn::key_code::return_or_enter);
+krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
+krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
+
 krbn::event_queue::queued_event::event button1_event(krbn::pointing_button::button1);
 krbn::event_queue::queued_event::event pointing_x_m10_event(krbn::event_queue::queued_event::event::type::pointing_x, -10);
 krbn::event_queue::queued_event::event pointing_y_10_event(krbn::event_queue::queued_event::event::type::pointing_y, 10);
