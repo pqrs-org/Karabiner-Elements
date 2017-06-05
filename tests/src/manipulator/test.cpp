@@ -8,6 +8,51 @@
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "thread_utility.hpp"
 
+#define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
+  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                 \
+                           TIME_STAMP,                                                 \
+                           EVENT,                                                      \
+                           krbn::event_type::EVENT_TYPE,                               \
+                           ORIGINAL_EVENT);
+
+#define ENQUEUE_LAZY_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
+  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                      \
+                           TIME_STAMP,                                                      \
+                           EVENT,                                                           \
+                           krbn::event_type::EVENT_TYPE,                                    \
+                           ORIGINAL_EVENT,                                                  \
+                           true);
+
+#define PUSH_BACK_QUEUED_EVENT(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
+  VECTOR.push_back(krbn::event_queue::queued_event(krbn::device_id(DEVICE_ID),                   \
+                                                   TIME_STAMP,                                   \
+                                                   EVENT,                                        \
+                                                   krbn::event_type::EVENT_TYPE,                 \
+                                                   ORIGINAL_EVENT))
+
+#define PUSH_BACK_LAZY_QUEUED_EVENT(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
+  VECTOR.push_back(krbn::event_queue::queued_event(krbn::device_id(DEVICE_ID),                        \
+                                                   TIME_STAMP,                                        \
+                                                   EVENT,                                             \
+                                                   krbn::event_type::EVENT_TYPE,                      \
+                                                   ORIGINAL_EVENT,                                    \
+                                                   true))
+
+namespace {
+krbn::event_queue::queued_event::event a_event(krbn::key_code::a);
+krbn::event_queue::queued_event::event escape_event(krbn::key_code::escape);
+krbn::event_queue::queued_event::event fn_event(krbn::key_code::fn);
+krbn::event_queue::queued_event::event left_control_event(krbn::key_code::left_control);
+krbn::event_queue::queued_event::event left_shift_event(krbn::key_code::left_shift);
+krbn::event_queue::queued_event::event page_up_event(krbn::key_code::page_up);
+krbn::event_queue::queued_event::event right_shift_event(krbn::key_code::right_shift);
+krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
+krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
+krbn::event_queue::queued_event::event up_arrow_event(krbn::key_code::up_arrow);
+
+krbn::event_queue::queued_event::event device_ungrabbed_event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1);
+} // namespace
+
 TEST_CASE("manipulator.details.event_definition") {
   {
     nlohmann::json json;
@@ -154,54 +199,21 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // event_queue
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape));
+    ENQUEUE_EVENT(input_event_queue, 1, 100, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 200, escape_event, key_down, escape_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 300, spacebar_event, key_up, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 400, escape_event, key_up, escape_event);
 
     // ----------------------------------------
     // test
 
     connector.manipulate(500);
 
-    std::vector<krbn::event_queue::queued_event> expected({
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        100,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        200,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::escape)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        300,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        400,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::escape)),
-    });
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, tab_event, key_down, spacebar_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 200, escape_event, key_down, escape_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 300, tab_event, key_up, spacebar_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 400, escape_event, key_up, escape_event);
 
     REQUIRE(input_event_queue.get_events().empty());
     REQUIRE(output_event_queue.get_events() == expected);
@@ -252,104 +264,33 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // event_queue
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::escape));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         500,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         600,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         700,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::right_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::right_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         800,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         900,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::tab));
+    uint64_t time_stamp = 0;
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, escape_event, key_down, escape_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, spacebar_event, key_up, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, escape_event, key_up, escape_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, left_shift_event, key_up, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, right_shift_event, key_down, right_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, tab_event, key_down, tab_event);
 
     // ----------------------------------------
     // test
 
     connector.manipulate(1000);
 
-    std::vector<krbn::event_queue::queued_event> expected({
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        100,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        200,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::escape)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        300,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        400,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::escape)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        500,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        600,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        700,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::right_shift),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::right_shift)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        800,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        900,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::a),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::tab)),
-    });
+    std::vector<krbn::event_queue::queued_event> expected;
+    time_stamp = 0;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, tab_event, key_down, spacebar_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, left_shift_event, key_down, escape_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, tab_event, key_up, spacebar_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, left_shift_event, key_up, escape_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, tab_event, key_down, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, tab_event, key_up, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, right_shift_event, key_down, right_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, spacebar_event, key_down, spacebar_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, a_event, key_down, tab_event);
 
     REQUIRE(input_event_queue.get_events().empty());
     REQUIRE(output_event_queue.get_events() == expected);
@@ -377,24 +318,15 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // event_queue
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_EVENT(input_event_queue, 1, 100, spacebar_event, key_up, spacebar_event);
 
     // ----------------------------------------
     // test
 
     connector.manipulate(200);
 
-    std::vector<krbn::event_queue::queued_event> expected({
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        100,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-    });
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, spacebar_event, key_up, spacebar_event);
 
     REQUIRE(input_event_queue.get_events().empty());
     REQUIRE(output_event_queue.get_events() == expected);
@@ -433,26 +365,10 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // event_queue
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(2),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1));
+    ENQUEUE_EVENT(input_event_queue, 1, 100, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 2, 200, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 300, spacebar_event, key_up, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 400, device_ungrabbed_event, key_down, device_ungrabbed_event);
 
     // ----------------------------------------
     // test
@@ -462,28 +378,11 @@ TEST_CASE("manipulator.manipulator_manager") {
     connector.manipulate(500);
 
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          100,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-          krbn::event_queue::queued_event(krbn::device_id(2),
-                                          200,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          300,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                          krbn::event_type::key_up,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          400,
-                                          krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 100, escape_event, key_down, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 2, 200, escape_event, key_down, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 300, escape_event, key_up, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_ungrabbed_event, key_down, device_ungrabbed_event);
 
       REQUIRE(input_event_queue.get_events().empty());
       REQUIRE(output_event_queue.get_events() == expected);
@@ -491,22 +390,13 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     output_event_queue.clear_events();
 
-    input_event_queue.emplace_back_event(krbn::device_id(2),
-                                         600,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_EVENT(input_event_queue, 2, 600, spacebar_event, key_up, spacebar_event);
 
     connector.manipulate(500);
 
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(2),
-                                          600,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                          krbn::event_type::key_up,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_QUEUED_EVENT(expected, 2, 600, escape_event, key_up, spacebar_event);
 
       REQUIRE(input_event_queue.get_events().empty());
       REQUIRE(output_event_queue.get_events() == expected);
@@ -516,52 +406,19 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     // device_ungrabbed for device_id 2
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(2),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(2),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1));
+    ENQUEUE_EVENT(input_event_queue, 1, 100, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 2, 200, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 300, spacebar_event, key_up, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 2, 400, device_ungrabbed_event, key_down, device_ungrabbed_event);
 
     connector.manipulate(500);
 
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          100,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-          krbn::event_queue::queued_event(krbn::device_id(2),
-                                          200,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          300,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::escape),
-                                          krbn::event_type::key_up,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-          krbn::event_queue::queued_event(krbn::device_id(2),
-                                          400,
-                                          krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 100, escape_event, key_down, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 2, 200, escape_event, key_down, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 300, escape_event, key_up, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 2, 400, device_ungrabbed_event, key_down, device_ungrabbed_event);
 
       REQUIRE(input_event_queue.get_events().empty());
       REQUIRE(output_event_queue.get_events() == expected);
@@ -569,22 +426,13 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     output_event_queue.clear_events();
 
-    input_event_queue.emplace_back_event(krbn::device_id(2),
-                                         600,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_EVENT(input_event_queue, 2, 600, spacebar_event, key_up, spacebar_event);
 
     connector.manipulate(500);
 
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(2),
-                                          600,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                          krbn::event_type::key_up,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_QUEUED_EVENT(expected, 2, 600, spacebar_event, key_up, spacebar_event);
 
       REQUIRE(input_event_queue.get_events().empty());
       REQUIRE(output_event_queue.get_events() == expected);
@@ -594,22 +442,13 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     output_event_queue.clear_events();
 
-    input_event_queue.emplace_back_event(krbn::device_id(3),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1));
+    ENQUEUE_EVENT(input_event_queue, 3, 100, device_ungrabbed_event, key_down, device_ungrabbed_event);
 
     connector.manipulate(600);
 
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(3),
-                                          100,
-                                          krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_QUEUED_EVENT(expected, 3, 100, device_ungrabbed_event, key_down, device_ungrabbed_event);
 
       REQUIRE(input_event_queue.get_events().empty());
       REQUIRE(output_event_queue.get_events() == expected);
@@ -647,11 +486,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // event_queue
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_EVENT(input_event_queue, 1, 100, spacebar_event, key_down, spacebar_event);
 
     // ----------------------------------------
     // test
@@ -661,12 +496,7 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
-
-      expected.emplace_back(krbn::device_id(1),
-                            100,
-                            krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                            krbn::event_type::key_down,
-                            krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 100, tab_event, key_down, spacebar_event);
 
       REQUIRE(input_event_queue.get_events().empty());
       REQUIRE(output_event_queue.get_events() == expected);
@@ -676,11 +506,7 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     // push key_up (A remaining manipulator will be removed in the next `manipulate`)
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_EVENT(input_event_queue, 1, 300, spacebar_event, key_up, spacebar_event);
 
     connector.manipulate(400);
 
@@ -718,36 +544,12 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // event_queue
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         500,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         600,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_EVENT(input_event_queue, 1, 100, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 200, spacebar_event, key_up, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 300, fn_event, key_down, fn_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 400, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 500, fn_event, key_up, fn_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 600, spacebar_event, key_up, spacebar_event);
 
     // ----------------------------------------
     // test
@@ -756,56 +558,14 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
-
-      expected.emplace_back(krbn::device_id(1),
-                            100,
-                            krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                            krbn::event_type::key_down,
-                            krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-
-      expected.emplace_back(krbn::device_id(1),
-                            200,
-                            krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                            krbn::event_type::key_up,
-                            krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-
-      expected.emplace_back(krbn::device_id(1),
-                            300,
-                            krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                            krbn::event_type::key_down,
-                            krbn::event_queue::queued_event::event(krbn::key_code::fn));
-
-      expected.emplace_back(krbn::device_id(1),
-                            400,
-                            krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                            krbn::event_type::key_up,
-                            krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                            true);
-
-      expected.emplace_back(krbn::device_id(1),
-                            401,
-                            krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                            krbn::event_type::key_down,
-                            krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-
-      expected.emplace_back(krbn::device_id(1),
-                            402,
-                            krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                            krbn::event_type::key_down,
-                            krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                            true);
-
-      expected.emplace_back(krbn::device_id(1),
-                            502,
-                            krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                            krbn::event_type::key_up,
-                            krbn::event_queue::queued_event::event(krbn::key_code::fn));
-
-      expected.emplace_back(krbn::device_id(1),
-                            602,
-                            krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                            krbn::event_type::key_up,
-                            krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 100, spacebar_event, key_down, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 200, spacebar_event, key_up, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 300, fn_event, key_down, fn_event);
+      PUSH_BACK_LAZY_QUEUED_EVENT(expected, 1, 400, fn_event, key_up, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 401, tab_event, key_down, spacebar_event);
+      PUSH_BACK_LAZY_QUEUED_EVENT(expected, 1, 402, fn_event, key_down, spacebar_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 502, fn_event, key_up, fn_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 602, tab_event, key_up, spacebar_event);
     }
   }
 
@@ -831,23 +591,9 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // event_queue
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                         true);
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                         true);
+    ENQUEUE_EVENT(input_event_queue, 1, 100, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 200, fn_event, key_down, fn_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 300, fn_event, key_up, fn_event);
 
     // ----------------------------------------
     // test
@@ -855,13 +601,8 @@ TEST_CASE("manipulator.manipulator_manager") {
     connector.manipulate(700);
 
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          100,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 100, tab_event, key_down, spacebar_event);
 
       REQUIRE(input_event_queue.get_events().size() == 2);
       REQUIRE(output_event_queue.get_events() == expected);
@@ -869,36 +610,17 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     // Push a non lazy event
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_EVENT(input_event_queue, 1, 400, spacebar_event, key_up, spacebar_event);
 
     output_event_queue.clear_events();
 
     connector.manipulate(500);
 
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          200,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                          true),
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          300,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                          krbn::event_type::key_up,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                          true),
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          400,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::tab),
-                                          krbn::event_type::key_up,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_LAZY_QUEUED_EVENT(expected, 1, 200, fn_event, key_down, fn_event);
+      PUSH_BACK_LAZY_QUEUED_EVENT(expected, 1, 300, fn_event, key_up, fn_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 400, tab_event, key_up, spacebar_event);
 
       REQUIRE(output_event_queue.get_events() == expected);
     }
@@ -924,61 +646,20 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
                                       input_event_queue,
                                       output_event_queue);
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         500,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_EVENT(input_event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 200, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 300, left_shift_event, key_up, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 400, left_control_event, key_up, left_control_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 500, spacebar_event, key_up, spacebar_event);
 
     connector.manipulate(600);
 
-    std::vector<krbn::event_queue::queued_event> expected({
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        100,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        200,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_control)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        300,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        400,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_control)),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        500,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-    });
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 200, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 300, left_shift_event, key_up, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 400, left_control_event, key_up, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, spacebar_event, key_up, spacebar_event);
 
     REQUIRE(output_event_queue.get_events() == expected);
   }
@@ -1003,44 +684,16 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
                                       input_event_queue,
                                       output_event_queue);
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         true);
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         true);
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         true);
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         500,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 200, left_control_event, key_up, left_control_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 300, left_shift_event, key_up, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 400, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 500, spacebar_event, key_up, spacebar_event);
 
     connector.manipulate(500);
 
-    std::vector<krbn::event_queue::queued_event> expected({
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        500,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-    });
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, spacebar_event, key_up, spacebar_event);
 
     REQUIRE(output_event_queue.get_events() == expected);
   }
@@ -1063,45 +716,16 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
                                       input_event_queue,
                                       output_event_queue);
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         true);
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         true);
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 200, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 300, spacebar_event, key_up, spacebar_event);
 
     connector.manipulate(500);
 
-    std::vector<krbn::event_queue::queued_event> expected({
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        100,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                        true),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        200,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                        krbn::event_type::key_down,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                        true),
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        300,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-    });
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_LAZY_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
+    PUSH_BACK_LAZY_QUEUED_EVENT(expected, 1, 200, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 300, spacebar_event, key_up, spacebar_event);
 
     REQUIRE(output_event_queue.get_events() == expected);
   }
@@ -1126,18 +750,8 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
 
     // First
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         true);
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         200,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         true);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 200, left_control_event, key_down, left_control_event);
 
     connector.manipulate(300);
 
@@ -1145,32 +759,14 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
 
     // Second
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
-                                         true);
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         400,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::left_control));
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         500,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, 300, left_shift_event, key_up, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 400, left_control_event, key_up, left_control_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 500, spacebar_event, key_up, spacebar_event);
 
     connector.manipulate(600);
 
-    std::vector<krbn::event_queue::queued_event> expected({
-        krbn::event_queue::queued_event(krbn::device_id(1),
-                                        500,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar),
-                                        krbn::event_type::key_up,
-                                        krbn::event_queue::queued_event::event(krbn::key_code::spacebar)),
-    });
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, spacebar_event, key_up, spacebar_event);
 
     REQUIRE(output_event_queue.get_events() == expected);
   }
@@ -1215,24 +811,17 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
 
     // fn key_down
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         100,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::fn));
+    ENQUEUE_EVENT(input_event_queue, 1, 100, fn_event, key_down, fn_event);
 
     connector.manipulate(200);
 
     REQUIRE(input_event_queue.get_events().empty());
     REQUIRE(middle_event_queue.get_events().empty());
+
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          100,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::fn)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 100, fn_event, key_down, fn_event);
+
       REQUIRE(output_event_queue.get_events() == expected);
       output_event_queue.erase_front_event();
       REQUIRE(output_event_queue.get_events().empty());
@@ -1240,40 +829,20 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
 
     // up_arrow key_down
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         300,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::up_arrow),
-                                         krbn::event_type::key_down,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::up_arrow));
+    ENQUEUE_EVENT(input_event_queue, 1, 300, up_arrow_event, key_down, up_arrow_event);
 
     connector.manipulate(400);
 
     REQUIRE(input_event_queue.get_events().empty());
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          303,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                          krbn::event_type::key_up,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::up_arrow),
-                                          true),
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          304,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::fn),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::up_arrow),
-                                          true),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_LAZY_QUEUED_EVENT(expected, 1, 303, fn_event, key_up, up_arrow_event);
+      PUSH_BACK_LAZY_QUEUED_EVENT(expected, 1, 304, fn_event, key_down, up_arrow_event);
       REQUIRE(middle_event_queue.get_events() == expected);
     }
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          302,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::page_up),
-                                          krbn::event_type::key_down,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::up_arrow)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 302, page_up_event, key_down, up_arrow_event);
       REQUIRE(output_event_queue.get_events() == expected);
       output_event_queue.erase_front_event();
       REQUIRE(output_event_queue.get_events().empty());
@@ -1281,24 +850,15 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
 
     // up_arrow key_up
 
-    input_event_queue.emplace_back_event(krbn::device_id(1),
-                                         500,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::up_arrow),
-                                         krbn::event_type::key_up,
-                                         krbn::event_queue::queued_event::event(krbn::key_code::up_arrow));
+    ENQUEUE_EVENT(input_event_queue, 1, 500, up_arrow_event, key_up, up_arrow_event);
 
     connector.manipulate(600);
 
     REQUIRE(input_event_queue.get_events().empty());
     REQUIRE(middle_event_queue.get_events().empty());
     {
-      std::vector<krbn::event_queue::queued_event> expected({
-          krbn::event_queue::queued_event(krbn::device_id(1),
-                                          504,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::page_up),
-                                          krbn::event_type::key_up,
-                                          krbn::event_queue::queued_event::event(krbn::key_code::up_arrow)),
-      });
+      std::vector<krbn::event_queue::queued_event> expected;
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 504, page_up_event, key_up, up_arrow_event);
       REQUIRE(output_event_queue.get_events() == expected);
       output_event_queue.erase_front_event();
       REQUIRE(output_event_queue.get_events().empty());
