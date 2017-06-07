@@ -305,7 +305,6 @@ TEST_CASE("manipulator.manipulator_manager") {
                                       input_event_queue,
                                       middle_event_queue);
     connector.emplace_back_connection(manipulator_manager2,
-                                      middle_event_queue,
                                       output_event_queue);
 
     // ----------------------------------------
@@ -754,7 +753,6 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
                                       input_event_queue,
                                       middle_event_queue);
     connector.emplace_back_connection(lazy_manipulator_manager,
-                                      middle_event_queue,
                                       output_event_queue);
 
     // fn key_down

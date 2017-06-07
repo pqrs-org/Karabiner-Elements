@@ -49,14 +49,13 @@ public:
     manipulator_managers_connector_.emplace_back_connection(simple_modifications_manipulator_manager_,
                                                             merged_input_event_queue_,
                                                             simple_modifications_applied_event_queue_);
+    manipulator_managers_connector_.emplace_back_connection(complex_modifications_manipulator_manager_,
+                                                            complex_modifications_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(fn_function_keys_manipulator_manager_,
-                                                            simple_modifications_applied_event_queue_,
                                                             fn_function_keys_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(collapse_lazy_events_manipulator_manager_,
-                                                            fn_function_keys_applied_event_queue_,
                                                             lazy_collapsed_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
-                                                            lazy_collapsed_event_queue_,
                                                             posted_event_queue_);
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
@@ -661,6 +660,9 @@ private:
 
   manipulator::manipulator_manager simple_modifications_manipulator_manager_;
   event_queue simple_modifications_applied_event_queue_;
+
+  manipulator::manipulator_manager complex_modifications_manipulator_manager_;
+  event_queue complex_modifications_applied_event_queue_;
 
   manipulator::manipulator_manager fn_function_keys_manipulator_manager_;
   event_queue fn_function_keys_applied_event_queue_;
