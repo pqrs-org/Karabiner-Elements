@@ -77,6 +77,14 @@ public:
       return j;
     }
 
+    const std::vector<condition>& get_conditions(void) const {
+      return conditions_;
+    }
+
+    const std::vector<manipulator>& get_manipulators(void) const {
+      return manipulators_;
+    }
+
   private:
     nlohmann::json json_;
     std::vector<condition> conditions_;
@@ -103,7 +111,7 @@ public:
     return parameters_;
   }
 
-  const std::vector<rule> get_rules(void) const {
+  const std::vector<rule>& get_rules(void) const {
     return rules_;
   }
 

@@ -33,6 +33,12 @@ TEST_CASE("valid") {
     REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
   }
   {
+    auto manipulator = configuration.get_selected_profile().get_complex_modifications().get_rules()[0].get_manipulators()[0].get_json();
+    std::cout << manipulator << std::endl;
+    REQUIRE(manipulator["type"] == "basic");
+    REQUIRE(manipulator["from"]["key_code"] == "open_bracket");
+  }
+  {
     std::unordered_map<krbn::key_code, krbn::key_code> expected{
         {krbn::key_code::f1, krbn::key_code::display_brightness_decrement},
         {krbn::key_code::f10, krbn::key_code::mute},
