@@ -469,7 +469,7 @@ private:
 
 // For unit tests
 
-std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event& event) {
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event& event) {
   stream << "{"
          << "\"type\":";
   stream_utility::output_enum(stream, event.get_type());
@@ -491,7 +491,7 @@ std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::
   return stream;
 }
 
-std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event& value) {
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event& value) {
   stream << "{"
          << "\"device_id\":" << value.get_device_id()
          << ",\"time_stamp\":" << value.get_time_stamp()

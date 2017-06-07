@@ -454,7 +454,7 @@ private:
   uint32_t pressed_buttons_;
 };
 
-std::ostream& operator<<(std::ostream& stream, const post_event_to_virtual_devices::queue::event& event) {
+inline std::ostream& operator<<(std::ostream& stream, const post_event_to_virtual_devices::queue::event& event) {
   stream << "{"
          << "\"type\":";
   stream_utility::output_enum(stream, event.get_type());

@@ -814,19 +814,19 @@ struct operation_type_system_preferences_values_updated_struct {
 
 // stream output
 
-#define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                        \
-  inline std::ostream& operator<<(std::ostream& stream, const TYPE& value) {                                                                  \
-    return stream_utility::output_enum(stream, value);                                                                                        \
-  }                                                                                                                                           \
-                                                                                                                                              \
-  template <template <class T, class A> class container>                                                                                      \
-  std::ostream& operator<<(std::ostream& stream, const container<TYPE, std::allocator<TYPE>>& values) {                                       \
-    return stream_utility::output_enums(stream, values);                                                                                      \
-  }                                                                                                                                           \
-                                                                                                                                              \
-  template <template <class T, class H, class K, class A> class container>                                                                    \
-  std::ostream& operator<<(std::ostream& stream, const container<TYPE, std::hash<TYPE>, std::equal_to<TYPE>, std::allocator<TYPE>>& values) { \
-    return stream_utility::output_enums(stream, values);                                                                                      \
+#define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \
+  inline std::ostream& operator<<(std::ostream& stream, const TYPE& value) {                                                                         \
+    return stream_utility::output_enum(stream, value);                                                                                               \
+  }                                                                                                                                                  \
+                                                                                                                                                     \
+  template <template <class T, class A> class container>                                                                                             \
+  inline std::ostream& operator<<(std::ostream& stream, const container<TYPE, std::allocator<TYPE>>& values) {                                       \
+    return stream_utility::output_enums(stream, values);                                                                                             \
+  }                                                                                                                                                  \
+                                                                                                                                                     \
+  template <template <class T, class H, class K, class A> class container>                                                                           \
+  inline std::ostream& operator<<(std::ostream& stream, const container<TYPE, std::hash<TYPE>, std::equal_to<TYPE>, std::allocator<TYPE>>& values) { \
+    return stream_utility::output_enums(stream, values);                                                                                             \
   }
 
 KRBN_TYPES_STREAM_OUTPUT(device_id);
