@@ -34,7 +34,6 @@ TEST_CASE("valid") {
   }
   {
     auto manipulator = configuration.get_selected_profile().get_complex_modifications().get_rules()[0].get_manipulators()[0].get_json();
-    std::cout << manipulator << std::endl;
     REQUIRE(manipulator["type"] == "basic");
     REQUIRE(manipulator["from"]["key_code"] == "open_bracket");
   }
