@@ -1,0 +1,11 @@
+{
+    "profiles": [
+        {
+            "name": "Default profile",
+            "selected": true,
+            "simple_modifications": {
+                "left_command": "left_control"
+            }
+        }
+    ]
+}
