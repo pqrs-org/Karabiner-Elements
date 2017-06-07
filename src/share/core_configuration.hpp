@@ -20,7 +20,7 @@ public:
 
   class profile final {
   public:
-#include "core_configuration/profile/complex_modification.hpp"
+#include "core_configuration/profile/complex_modifications.hpp"
 #include "core_configuration/profile/device.hpp"
 #include "core_configuration/profile/simple_modifications.hpp"
 #include "core_configuration/profile/virtual_hid_keyboard.hpp"
@@ -42,7 +42,7 @@ public:
                                               {"f11", "volume_decrement"},
                                               {"f12", "volume_increment"},
                                           })),
-                                          complex_modification_(json.find("complex_modification") != json.end() ? json["complex_modification"] : nlohmann::json()),
+                                          complex_modifications_(json.find("complex_modifications") != json.end() ? json["complex_modifications"] : nlohmann::json()),
                                           virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json()) {
       {
         const std::string key = "name";
@@ -128,6 +128,10 @@ public:
       return fn_function_keys_.to_key_code_map(logger);
     }
 
+    const complex_modifications& get_complex_modifications(void) const {
+      return complex_modifications_;
+    }
+
     const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
       return virtual_hid_keyboard_;
     }
@@ -191,7 +195,7 @@ public:
     bool selected_;
     simple_modifications simple_modifications_;
     simple_modifications fn_function_keys_;
-    complex_modification complex_modification_;
+    complex_modifications complex_modifications_;
     virtual_hid_keyboard virtual_hid_keyboard_;
     std::vector<device> devices_;
   };
@@ -352,23 +356,23 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile::sim
   json = simple_modifications.to_json();
 }
 
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification& complex_modification) {
-  json = complex_modification.to_json();
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications& complex_modifications) {
+  json = complex_modifications.to_json();
 }
 
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification::parameters& parameters) {
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::parameters& parameters) {
   json = parameters.to_json();
 }
 
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification::rule& rule) {
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::rule& rule) {
   json = rule.to_json();
 }
 
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification::rule::condition& condition) {
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::rule::condition& condition) {
   json = condition.to_json();
 }
 
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification::rule::manipulator& manipulator) {
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::rule::manipulator& manipulator) {
   json = manipulator.to_json();
 }
 

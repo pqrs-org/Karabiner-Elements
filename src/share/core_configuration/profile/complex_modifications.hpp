@@ -1,6 +1,6 @@
 #pragma once
 
-class complex_modification final {
+class complex_modifications final {
 public:
   class parameters final {
   public:
@@ -83,8 +83,8 @@ public:
     std::vector<manipulator> manipulators_;
   };
 
-  complex_modification(const nlohmann::json& json) : json_(json),
-                                                     parameters_(json.find("parameters") != std::end(json) ? json["parameters"] : nlohmann::json()) {
+  complex_modifications(const nlohmann::json& json) : json_(json),
+                                                      parameters_(json.find("parameters") != std::end(json) ? json["parameters"] : nlohmann::json()) {
     {
       const std::string key = "rules";
       if (json_.find(key) != json_.end() && json_[key].is_array()) {

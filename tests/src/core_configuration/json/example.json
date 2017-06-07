@@ -25,7 +25,7 @@
                 "f11": "volume_decrement",
                 "f12": "volume_increment"
             },
-            "complex_modification": {
+            "complex_modifications": {
                 "rules": [
                     {
                         "conditions": [],
