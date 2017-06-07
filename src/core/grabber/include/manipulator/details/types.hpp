@@ -40,40 +40,6 @@ public:
     end_,
   };
 
-  event_definition(const nlohmann::json& json) : type_(type::none) {
-    // Set type_ and values.
-
-    {
-      const std::string key = "key_code";
-      if (json.find(key) != std::end(json) && json[key].is_string()) {
-        const std::string& name = json[key];
-        if (auto key_code = types::get_key_code(name)) {
-          type_ = type::key_code;
-          key_code_ = *key_code;
-          return;
-        }
-      }
-    }
-    {
-      const std::string key = "pointing_button";
-      if (json.find(key) != std::end(json) && json[key].is_string()) {
-        if (auto pointing_button = types::get_pointing_button(json[key])) {
-          type_ = type::pointing_button;
-          pointing_button_ = *pointing_button;
-          return;
-        }
-      }
-    }
-  }
-
-  event_definition(key_code key_code) : type_(type::key_code),
-                                        key_code_(key_code) {
-  }
-
-  event_definition(pointing_button pointing_button) : type_(type::pointing_button),
-                                                      pointing_button_(pointing_button) {
-  }
-
   virtual ~event_definition(void) {
   }
 
@@ -222,6 +188,40 @@ public:
   }
 
 protected:
+  event_definition(const nlohmann::json& json) : type_(type::none) {
+    // Set type_ and values.
+
+    {
+      const std::string key = "key_code";
+      if (json.find(key) != std::end(json) && json[key].is_string()) {
+        const std::string& name = json[key];
+        if (auto key_code = types::get_key_code(name)) {
+          type_ = type::key_code;
+          key_code_ = *key_code;
+          return;
+        }
+      }
+    }
+    {
+      const std::string key = "pointing_button";
+      if (json.find(key) != std::end(json) && json[key].is_string()) {
+        if (auto pointing_button = types::get_pointing_button(json[key])) {
+          type_ = type::pointing_button;
+          pointing_button_ = *pointing_button;
+          return;
+        }
+      }
+    }
+  }
+
+  event_definition(key_code key_code) : type_(type::key_code),
+                                        key_code_(key_code) {
+  }
+
+  event_definition(pointing_button pointing_button) : type_(type::pointing_button),
+                                                      pointing_button_(pointing_button) {
+  }
+
   type type_;
   union {
     key_code key_code_;
