@@ -533,12 +533,15 @@ private:
     simple_modifications_manipulator_manager_.invalidate_manipulators();
 
     for (const auto& pair : profile_.get_simple_modifications_key_code_map(logger::get_logger())) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                            pair.first,
-                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                           {},
+                                                                           {
                                                                                manipulator::details::event_definition::modifier::any,
-                                                                           })),
-                                                                       manipulator::details::event_definition(pair.second));
+                                                                           }),
+                                                                       manipulator::details::to_event_definition(
+                                                                           pair.second,
+                                                                           {}));
       simple_modifications_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
   }
@@ -546,22 +549,22 @@ private:
   void update_fn_function_keys_manipulators(void) {
     fn_function_keys_manipulator_manager_.invalidate_manipulators();
 
-    std::unordered_set<manipulator::details::event_definition::modifier> from_modifiers;
+    std::unordered_set<manipulator::details::event_definition::modifier> from_mandatory_modifiers;
+    std::unordered_set<manipulator::details::event_definition::modifier> from_optional_modifiers({
+        manipulator::details::event_definition::modifier::any,
+    });
     std::unordered_set<manipulator::details::event_definition::modifier> to_modifiers;
 
     if (system_preferences_values_.get_keyboard_fn_state()) {
       // f1 -> f1
       // fn+f1 -> display_brightness_decrement
 
-      from_modifiers.insert(manipulator::details::event_definition::modifier::fn);
-      from_modifiers.insert(manipulator::details::event_definition::modifier::any);
+      from_mandatory_modifiers.insert(manipulator::details::event_definition::modifier::fn);
       to_modifiers.insert(manipulator::details::event_definition::modifier::fn);
 
     } else {
       // f1 -> display_brightness_decrement
       // fn+f1 -> f1
-
-      from_modifiers.insert(manipulator::details::event_definition::modifier::any);
 
       // fn+f1 ... fn+f12 -> f1 .. f12
 
@@ -579,17 +582,19 @@ private:
                key_code::f11,
                key_code::f12,
            })) {
-        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                              key_code,
-                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                             {
                                                                                  manipulator::details::event_definition::modifier::fn,
+                                                                             },
+                                                                             {
                                                                                  manipulator::details::event_definition::modifier::any,
-                                                                             })),
-                                                                         manipulator::details::event_definition(
+                                                                             }),
+                                                                         manipulator::details::to_event_definition(
                                                                              key_code,
-                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                             {
                                                                                  manipulator::details::event_definition::modifier::fn,
-                                                                             })));
+                                                                             }));
         fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
     }
@@ -597,10 +602,11 @@ private:
     // from_modifiers+f1 -> display_brightness_decrement ...
 
     for (const auto& pair : profile_.get_fn_function_keys_key_code_map(logger::get_logger())) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                            pair.first,
-                                                                           from_modifiers),
-                                                                       manipulator::details::event_definition(
+                                                                           from_mandatory_modifiers,
+                                                                           from_optional_modifiers),
+                                                                       manipulator::details::to_event_definition(
                                                                            pair.second,
                                                                            to_modifiers));
       fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
@@ -617,17 +623,19 @@ private:
         std::make_pair(key_code::up_arrow, key_code::page_up),
     });
     for (const auto& p : pairs) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                            p.first,
-                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                           {
                                                                                manipulator::details::event_definition::modifier::fn,
+                                                                           },
+                                                                           {
                                                                                manipulator::details::event_definition::modifier::any,
-                                                                           })),
-                                                                       manipulator::details::event_definition(
+                                                                           }),
+                                                                       manipulator::details::to_event_definition(
                                                                            p.second,
-                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                           {
                                                                                manipulator::details::event_definition::modifier::fn,
-                                                                           })));
+                                                                           }));
       fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
   }

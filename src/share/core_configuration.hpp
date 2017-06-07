@@ -42,6 +42,7 @@ public:
                                               {"f11", "volume_decrement"},
                                               {"f12", "volume_increment"},
                                           })),
+                                          complex_modification_(json.find("complex_modification") != json.end() ? json["complex_modification"] : nlohmann::json()),
                                           virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json()) {
       {
         const std::string key = "name";
@@ -190,6 +191,7 @@ public:
     bool selected_;
     simple_modifications simple_modifications_;
     simple_modifications fn_function_keys_;
+    complex_modification complex_modification_;
     virtual_hid_keyboard virtual_hid_keyboard_;
     std::vector<device> devices_;
   };
@@ -348,6 +350,26 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile& pro
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::simple_modifications& simple_modifications) {
   json = simple_modifications.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification& complex_modification) {
+  json = complex_modification.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification::parameters& parameters) {
+  json = parameters.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification::rule& rule) {
+  json = rule.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification::rule::condition& condition) {
+  json = condition.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modification::rule::manipulator& manipulator) {
+  json = manipulator.to_json();
 }
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::virtual_hid_keyboard& virtual_hid_keyboard) {

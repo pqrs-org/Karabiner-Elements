@@ -7,6 +7,7 @@
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "thread_utility.hpp"
+#include <boost/optional/optional_io.hpp>
 
 #define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
   QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                 \
@@ -53,69 +54,9 @@ krbn::event_queue::queued_event::event up_arrow_event(krbn::key_code::up_arrow);
 krbn::event_queue::queued_event::event device_ungrabbed_event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1);
 } // namespace
 
-TEST_CASE("manipulator.details.event_definition") {
-  {
-    nlohmann::json json;
-    krbn::manipulator::details::event_definition event_definition(json);
-    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::none);
-    REQUIRE(event_definition.get_modifiers().size() == 0);
-    REQUIRE(!(event_definition.to_event()));
-  }
-  {
-    nlohmann::json json({
-        {"key_code", "spacebar"},
-        {
-            "modifiers", {
-                             "shift", "left_command", "any",
-                         },
-        },
-    });
-    krbn::manipulator::details::event_definition event_definition(json);
-    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::key_code);
-    REQUIRE(*(event_definition.get_key_code()) == krbn::key_code::spacebar);
-    REQUIRE(!(event_definition.get_pointing_button()));
-    REQUIRE(event_definition.get_modifiers() == std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
-                                                    krbn::manipulator::details::event_definition::modifier::shift,
-                                                    krbn::manipulator::details::event_definition::modifier::left_command,
-                                                    krbn::manipulator::details::event_definition::modifier::any,
-                                                }));
-    REQUIRE(*(event_definition.to_event()) == krbn::event_queue::queued_event::event(krbn::key_code::spacebar));
-  }
-  {
-    nlohmann::json json({
-        {"key_code", "right_option"},
-        {
-            "modifiers", {
-                             "shift", "left_command", "any",
-                             // duplicated
-                             "shift", "left_command", "any",
-                         },
-        },
-    });
-    krbn::manipulator::details::event_definition event_definition(json);
-    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::key_code);
-    REQUIRE(*(event_definition.get_key_code()) == krbn::key_code::right_option);
-    REQUIRE(!(event_definition.get_pointing_button()));
-    REQUIRE(event_definition.get_modifiers() == std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
-                                                    krbn::manipulator::details::event_definition::modifier::shift,
-                                                    krbn::manipulator::details::event_definition::modifier::left_command,
-                                                    krbn::manipulator::details::event_definition::modifier::any,
-                                                }));
-  }
-  {
-    nlohmann::json json({
-        {"key_code", nlohmann::json::array()},
-        {
-            "modifiers", "dummy",
-        },
-    });
-    krbn::manipulator::details::event_definition event_definition(json);
-    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::none);
-    REQUIRE(!(event_definition.get_key_code()));
-    REQUIRE(!(event_definition.get_pointing_button()));
-    REQUIRE(event_definition.get_modifiers().size() == 0);
-  }
-}
+using krbn::manipulator::details::event_definition;
+using krbn::manipulator::details::from_event_definition;
+using krbn::manipulator::details::to_event_definition;
 
 TEST_CASE("manipulator.manipulator_factory") {
   {
@@ -136,7 +77,12 @@ TEST_CASE("manipulator.manipulator_factory") {
                         },
                         {
                             "modifiers", {
-                                             "left_shift", "left_option", "any",
+                                             {"mandatory", {
+                                                               "left_shift", "left_option",
+                                                           }},
+                                             {"optional", {
+                                                              "any",
+                                                          }},
                                          },
                         },
                     },
@@ -158,33 +104,33 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(manipulator->active() == false);
 
     auto basic = dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get());
-    REQUIRE(basic->get_from().get_type() == krbn::manipulator::details::event_definition::type::key_code);
-    REQUIRE(*(basic->get_from().get_key_code()) == krbn::key_code::escape);
-    REQUIRE(!(basic->get_from().get_pointing_button()));
-    REQUIRE(basic->get_from().get_modifiers() == std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
-                                                     krbn::manipulator::details::event_definition::modifier::left_shift,
-                                                     krbn::manipulator::details::event_definition::modifier::left_option,
-                                                     krbn::manipulator::details::event_definition::modifier::any,
-                                                 }));
+    REQUIRE(basic->get_from().get_type() == event_definition::type::key_code);
+    REQUIRE(basic->get_from().get_key_code() == krbn::key_code::escape);
+    REQUIRE(basic->get_from().get_pointing_button() == boost::none);
+    REQUIRE(basic->get_from().get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>({
+                                                               event_definition::modifier::left_shift,
+                                                               event_definition::modifier::left_option,
+                                                           }));
+    REQUIRE(basic->get_from().get_optional_modifiers() == std::unordered_set<event_definition::modifier>({
+                                                              event_definition::modifier::any,
+                                                          }));
     REQUIRE(basic->get_to().size() == 1);
-    REQUIRE(basic->get_to()[0].get_type() == krbn::manipulator::details::event_definition::type::pointing_button);
-    REQUIRE(!(basic->get_to()[0].get_key_code()));
-    REQUIRE(*(basic->get_to()[0].get_pointing_button()) == krbn::pointing_button::button1);
-    REQUIRE(basic->get_to()[0].get_modifiers() == std::unordered_set<krbn::manipulator::details::event_definition::modifier>());
+    REQUIRE(basic->get_to()[0].get_type() == event_definition::type::pointing_button);
+    REQUIRE(basic->get_to()[0].get_key_code() == boost::none);
+    REQUIRE(basic->get_to()[0].get_pointing_button() == krbn::pointing_button::button1);
+    REQUIRE(basic->get_to()[0].get_modifiers() == std::unordered_set<event_definition::modifier>());
   }
 }
 
 TEST_CASE("manipulator.manipulator_manager") {
-  using krbn::manipulator::details::event_definition;
-
   {
     // ----------------------------------------
     // manipulator_manager
 
     krbn::manipulator::manipulator_manager manipulator_manager;
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::spacebar),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::tab));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar, {}, {}),
+                                                                             to_event_definition(krbn::key_code::tab, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
@@ -225,32 +171,32 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     krbn::manipulator::manipulator_manager manipulator_manager;
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::spacebar),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::tab));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar, {}, {}),
+                                                                             to_event_definition(krbn::key_code::tab, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::spacebar),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::escape));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar, {}, {}),
+                                                                             to_event_definition(krbn::key_code::escape, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(
-                                                                                 krbn::key_code::tab,
-                                                                                 std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
-                                                                                     krbn::manipulator::details::event_definition::modifier::any,
-                                                                                 })),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::a));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::tab,
+                                                                                                   {},
+                                                                                                   {
+                                                                                                       event_definition::modifier::any,
+                                                                                                   }),
+                                                                             to_event_definition(krbn::key_code::a, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::escape),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::left_shift));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::escape, {}, {}),
+                                                                             to_event_definition(krbn::key_code::left_shift, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::left_shift),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::tab));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::left_shift, {}, {}),
+                                                                             to_event_definition(krbn::key_code::tab, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
@@ -302,8 +248,8 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     krbn::manipulator::manipulator_manager manipulator_manager;
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::spacebar),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::tab));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar, {}, {}),
+                                                                             to_event_definition(krbn::key_code::tab, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
@@ -338,15 +284,15 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     krbn::manipulator::manipulator_manager manipulator_manager1;
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::spacebar),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::tab));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar, {}, {}),
+                                                                             to_event_definition(krbn::key_code::tab, {}));
       manipulator_manager1.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
     krbn::manipulator::manipulator_manager manipulator_manager2;
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::tab),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::escape));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::tab, {}, {}),
+                                                                             to_event_definition(krbn::key_code::escape, {}));
       manipulator_manager2.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
@@ -461,15 +407,15 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     krbn::manipulator::manipulator_manager manipulator_manager;
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::spacebar),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::tab));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar, {}, {}),
+                                                                             to_event_definition(krbn::key_code::tab, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
 
       REQUIRE(manipulator_manager.get_manipulators_size() == 1);
     }
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::tab),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::escape));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::tab, {}, {}),
+                                                                             to_event_definition(krbn::key_code::escape, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
 
       REQUIRE(manipulator_manager.get_manipulators_size() == 2);
@@ -519,15 +465,17 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     krbn::manipulator::manipulator_manager manipulator_manager;
     {
-      std::unordered_set<event_definition::modifier> from_modifiers({
-          event_definition::modifier::fn,
-          event_definition::modifier::any,
-      });
-      std::unordered_set<event_definition::modifier> to_modifiers({
-          event_definition::modifier::fn,
-      });
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(event_definition(krbn::key_code::spacebar, from_modifiers),
-                                                                             event_definition(krbn::key_code::tab, to_modifiers));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar,
+                                                                                                   {
+                                                                                                       event_definition::modifier::fn,
+                                                                                                   },
+                                                                                                   {
+                                                                                                       event_definition::modifier::any,
+                                                                                                   }),
+                                                                             to_event_definition(krbn::key_code::tab,
+                                                                                                 {
+                                                                                                     event_definition::modifier::fn,
+                                                                                                 }));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
 
       REQUIRE(manipulator_manager.get_manipulators_size() == 1);
@@ -575,8 +523,8 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     krbn::manipulator::manipulator_manager manipulator_manager;
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(krbn::key_code::spacebar),
-                                                                             krbn::manipulator::details::event_definition(krbn::key_code::tab));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar, {}, {}),
+                                                                             to_event_definition(krbn::key_code::tab, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
@@ -777,17 +725,17 @@ TEST_CASE("manipulator.details.collapse_lazy_events") {
 
     krbn::manipulator::manipulator_manager fn_manipulator_manager;
     {
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(krbn::manipulator::details::event_definition(
-                                                                                 krbn::key_code::up_arrow,
-                                                                                 std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
-                                                                                     krbn::manipulator::details::event_definition::modifier::fn,
-                                                                                     krbn::manipulator::details::event_definition::modifier::any,
-                                                                                 })),
-                                                                             krbn::manipulator::details::event_definition(
-                                                                                 krbn::key_code::page_up,
-                                                                                 std::unordered_set<krbn::manipulator::details::event_definition::modifier>({
-                                                                                     krbn::manipulator::details::event_definition::modifier::fn,
-                                                                                 })));
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::up_arrow,
+                                                                                                   {
+                                                                                                       event_definition::modifier::fn,
+                                                                                                   },
+                                                                                                   {
+                                                                                                       event_definition::modifier::any,
+                                                                                                   }),
+                                                                             to_event_definition(krbn::key_code::page_up,
+                                                                                                 {
+                                                                                                     event_definition::modifier::fn,
+                                                                                                 }));
       fn_manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 

@@ -33,12 +33,15 @@
                             {
                                 "type": "basic",
                                 "from": {
-                                    "key_code": "spacebar",
-                                    "modifiers": [
-                                        "shift",
-                                        "control",
-                                        "any"
-                                    ]
+                                    "key_code": "open_bracket",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ],
+                                        "optional": [
+                                            "caps_lock"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
@@ -49,18 +52,19 @@
                             {
                                 "type": "basic",
                                 "from": {
-                                    "key_code": "spacebar"
+                                    "key_code": "h",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
-                                        "modifiers": [
-                                            "left_shift"
-                                        ]
-                                    }
-                                ],
-                                "standalone_to": [
-                                    {
-                                        "key_code": "spacebar"
+                                        "key_code": "delete_or_backspace"
                                     }
                                 ]
                             }

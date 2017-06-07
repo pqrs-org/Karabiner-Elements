@@ -56,9 +56,9 @@ public:
     }
   }
 
-  basic(const event_definition& from,
-        const event_definition& to) : from_(from),
-                                      to_({to}) {
+  basic(const from_event_definition& from,
+        const to_event_definition& to) : from_(from),
+                                         to_({to}) {
   }
 
   virtual ~basic(void) {
@@ -235,15 +235,15 @@ public:
                                        std::end(manipulated_original_events_));
   }
 
-  const event_definition& get_from(void) const {
+  const from_event_definition& get_from(void) const {
     return from_;
   }
 
-  const std::vector<event_definition>& get_to(void) const {
+  const std::vector<to_event_definition>& get_to(void) const {
     return to_;
   }
 
-  void enqueue_to_modifiers(const event_definition& to,
+  void enqueue_to_modifiers(const to_event_definition& to,
                             event_type event_type,
                             const event_queue::queued_event& front_input_event,
                             uint64_t& time_stamp_delay,
@@ -269,8 +269,8 @@ public:
   }
 
 private:
-  event_definition from_;
-  std::vector<event_definition> to_;
+  from_event_definition from_;
+  std::vector<to_event_definition> to_;
 
   std::vector<manipulated_original_event> manipulated_original_events_;
 };
