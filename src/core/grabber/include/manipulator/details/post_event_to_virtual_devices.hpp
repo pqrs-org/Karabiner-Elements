@@ -324,7 +324,30 @@ public:
     output_event_queue.push_back_event(front_input_event);
     front_input_event.set_valid(false);
 
-    if (front_input_event.get_event_type() == event_type::key_down) {
+    // Dispatch modifier key event only when front_input_event is key_down or modifier key.
+
+    bool dispatch_modifier_key_event = false;
+    {
+      auto modifier_flag = modifier_flag::zero;
+      if (auto key_code = front_input_event.get_event().get_key_code()) {
+        modifier_flag = types::get_modifier_flag(*key_code);
+      }
+
+      if (modifier_flag != modifier_flag::zero) {
+        // front_input_event is modifier key event.
+        if (!front_input_event.get_lazy()) {
+          dispatch_modifier_key_event = true;
+        }
+
+      } else {
+        if (front_input_event.get_event_type() == event_type::key_down) {
+          dispatch_modifier_key_event = true;
+        }
+      }
+    }
+
+    if (dispatch_modifier_key_event &&
+        front_input_event.get_event_type() == event_type::key_down) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
                                                         front_input_event.get_time_stamp());
@@ -397,7 +420,8 @@ public:
         break;
     }
 
-    if (front_input_event.get_event_type() == event_type::key_up) {
+    if (dispatch_modifier_key_event &&
+        front_input_event.get_event_type() == event_type::key_up) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
                                                         front_input_event.get_time_stamp());
