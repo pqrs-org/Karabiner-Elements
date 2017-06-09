@@ -56,6 +56,10 @@ public:
     device_id device_id_;
   };
 
+  const std::vector<active_modifier_flag>& get_active_modifier_flags(void) const {
+    return active_modifier_flags_;
+  }
+
   void push_back_active_modifier_flag(const active_modifier_flag& flag) {
     active_modifier_flags_.push_back(flag);
   }
