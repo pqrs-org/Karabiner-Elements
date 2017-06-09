@@ -78,6 +78,7 @@ public:
     for (const auto& j : json) {
       if (j.is_string()) {
         if (j == "any") { modifiers.insert(modifier::any); }
+        if (j == "caps_lock") { modifiers.insert(modifier::caps_lock); }
         if (j == "command") { modifiers.insert(modifier::command); }
         if (j == "control") { modifiers.insert(modifier::control); }
         if (j == "fn") { modifiers.insert(modifier::fn); }
