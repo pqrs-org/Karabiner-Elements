@@ -15,9 +15,9 @@ public:
   public:
     manipulated_original_event(device_id device_id,
                                const event_queue::queued_event::event& original_event,
-                               const std::unordered_set<modifier_flag> from_modifiers) : device_id_(device_id),
-                                                                                         original_event_(original_event),
-                                                                                         from_modifiers_(from_modifiers) {
+                               const std::unordered_set<modifier_flag> from_mandatory_modifiers) : device_id_(device_id),
+                                                                                                   original_event_(original_event),
+                                                                                                   from_mandatory_modifiers_(from_mandatory_modifiers) {
     }
 
     device_id get_device_id(void) const {
@@ -28,12 +28,12 @@ public:
       return original_event_;
     }
 
-    const std::unordered_set<modifier_flag>& get_from_modifiers(void) const {
-      return from_modifiers_;
+    const std::unordered_set<modifier_flag>& get_from_mandatory_modifiers(void) const {
+      return from_mandatory_modifiers_;
     }
 
     bool operator==(const manipulated_original_event& other) const {
-      // Do not compare `from_modifiers_`.
+      // Do not compare `from_mandatory_modifiers_`.
       return get_device_id() == other.get_device_id() &&
              get_original_event() == other.get_original_event();
     }
@@ -41,7 +41,7 @@ public:
   private:
     device_id device_id_;
     event_queue::queued_event::event original_event_;
-    std::unordered_set<modifier_flag> from_modifiers_;
+    std::unordered_set<modifier_flag> from_mandatory_modifiers_;
   };
 
   basic(const nlohmann::json& json) : base(),
@@ -86,7 +86,7 @@ public:
     }
 
     if (is_target) {
-      std::unordered_set<modifier_flag> from_modifiers;
+      std::unordered_set<modifier_flag> from_mandatory_modifiers;
 
       if (front_input_event.get_event_type() == event_type::key_down) {
 
@@ -95,7 +95,7 @@ public:
         }
 
         if (auto modifiers = from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
-          from_modifiers = *modifiers;
+          from_mandatory_modifiers = *modifiers;
         } else {
           is_target = false;
         }
@@ -103,7 +103,7 @@ public:
         if (is_target) {
           manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
                                                     front_input_event.get_original_event(),
-                                                    from_modifiers);
+                                                    from_mandatory_modifiers);
         }
 
       } else {
@@ -118,7 +118,7 @@ public:
                                         manipulated_original_event.get_original_event() == front_input_event.get_original_event();
                                });
         if (it != std::end(manipulated_original_events_)) {
-          from_modifiers = it->get_from_modifiers();
+          from_mandatory_modifiers = it->get_from_mandatory_modifiers();
           manipulated_original_events_.erase(it);
         } else {
           is_target = false;
@@ -129,12 +129,11 @@ public:
         front_input_event.set_valid(false);
 
         uint64_t time_stamp_delay = 0;
-        bool persist_from_modifier_manipulation = false;
 
-        // Release from_modifiers
+        // Release from_mandatory_modifiers
 
         if (front_input_event.get_event_type() == event_type::key_down) {
-          for (const auto& m : from_modifiers) {
+          for (const auto& m : from_mandatory_modifiers) {
             if (auto key_code = types::get_key_code(m)) {
               event_queue::queued_event event(front_input_event.get_device_id(),
                                               front_input_event.get_time_stamp() + time_stamp_delay++,
@@ -170,19 +169,15 @@ public:
                                                       *event,
                                                       event_type::key_up,
                                                       front_input_event.get_original_event());
-
-                if (auto key_code = event->get_key_code()) {
-                  if (types::get_modifier_flag(*key_code) != modifier_flag::zero) {
-                    persist_from_modifier_manipulation = true;
-                  }
-                }
               }
 
-              enqueue_to_modifiers(to_[i],
-                                   event_type::key_up,
-                                   front_input_event,
-                                   time_stamp_delay,
-                                   output_event_queue);
+              if (i != to_.size() - 1 || !preserve_to_modifiers_down()) {
+                enqueue_to_modifiers(to_[i],
+                                     event_type::key_up,
+                                     front_input_event,
+                                     time_stamp_delay,
+                                     output_event_queue);
+              }
 
             } else {
               // event_type::key_up
@@ -193,23 +188,31 @@ public:
                                                       *event,
                                                       event_type::key_up,
                                                       front_input_event.get_original_event());
+
+                if (preserve_to_modifiers_down()) {
+                  enqueue_to_modifiers(to_[i],
+                                       event_type::key_up,
+                                       front_input_event,
+                                       time_stamp_delay,
+                                       output_event_queue);
+                }
               }
             }
           }
         }
 
-        // Restore from_modifiers
+        // Restore from_mandatory_modifiers
 
-        if ((front_input_event.get_event_type() == event_type::key_down) ||
-            (front_input_event.get_event_type() == event_type::key_up && persist_from_modifier_manipulation)) {
-          for (const auto& m : from_modifiers) {
+        if ((front_input_event.get_event_type() == event_type::key_down && !preserve_from_mandatory_modifiers_up()) ||
+            (front_input_event.get_event_type() == event_type::key_up && preserve_from_mandatory_modifiers_up())) {
+          for (const auto& m : from_mandatory_modifiers) {
             if (auto key_code = types::get_key_code(m)) {
               event_queue::queued_event event(front_input_event.get_device_id(),
                                               front_input_event.get_time_stamp() + time_stamp_delay++,
                                               event_queue::queued_event::event(*key_code),
                                               event_type::key_down,
                                               front_input_event.get_original_event(),
-                                              !persist_from_modifier_manipulation);
+                                              true);
               output_event_queue.push_back_event(event);
             }
           }
@@ -264,13 +267,33 @@ public:
                                                 event_queue::queued_event::event(*key_code),
                                                 event_type,
                                                 front_input_event.get_original_event(),
-                                                true);
+                                                !preserve_to_modifiers_down());
         }
       }
     }
   }
 
 private:
+  bool preserve_from_mandatory_modifiers_up(void) const {
+    if (to_.empty()) {
+      return false;
+    }
+
+    if (auto event = to_.back().to_event()) {
+      if (auto key_code = event->get_key_code()) {
+        if (types::get_modifier_flag(*key_code) != modifier_flag::zero) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  bool preserve_to_modifiers_down(void) const {
+    return preserve_from_mandatory_modifiers_up();
+  }
+
   from_event_definition from_;
   std::vector<to_event_definition> to_;
 

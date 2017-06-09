@@ -492,7 +492,8 @@ inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event& value) {
-  stream << "{"
+  stream << std::endl
+         << "{"
          << "\"device_id\":" << value.get_device_id()
          << ",\"time_stamp\":" << value.get_time_stamp()
          << ",\"valid\":" << value.get_valid()

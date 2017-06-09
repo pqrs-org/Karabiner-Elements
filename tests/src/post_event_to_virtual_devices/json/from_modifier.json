@@ -1,0 +1,23 @@
+[
+    {
+        "description": "right_command+right_option -> spacebar (modifier+modifier -> key)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_option",
+            "modifiers": {
+                "mandatory": [
+                    "right_command"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "spacebar",
+                "modifiers": []
+            }
+        ]
+    }
+]

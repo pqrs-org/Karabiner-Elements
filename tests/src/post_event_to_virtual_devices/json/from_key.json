@@ -1,5 +1,6 @@
 [
     {
+        "description": "f1 -> f2 (key to key)",
         "type": "basic",
         "from": {
             "key_code": "f1",
@@ -18,6 +19,7 @@
         ]
     },
     {
+        "description": "f2 -> left_shift (key to modifier)",
         "type": "basic",
         "from": {
             "key_code": "f2",
@@ -36,9 +38,10 @@
         ]
     },
     {
+        "description": "f3 -> left_command+spacebar (key to modifier+key)",
         "type": "basic",
         "from": {
-            "key_code": "right_command",
+            "key_code": "f3",
             "modifiers": {
                 "mandatory": [],
                 "optional": [
@@ -48,14 +51,18 @@
         },
         "to": [
             {
-                "key_code": "spacebar"
+                "key_code": "spacebar",
+                "modifiers": [
+                    "left_command"
+                ]
             }
         ]
     },
     {
+        "description": "f4 -> left_command+left_option (key to modifier+modifier)",
         "type": "basic",
         "from": {
-            "key_code": "right_shift",
+            "key_code": "f4",
             "modifiers": {
                 "mandatory": [],
                 "optional": [
@@ -65,59 +72,21 @@
         },
         "to": [
             {
-                "key_code": "right_option"
+                "key_code": "left_option",
+                "modifiers": [
+                    "left_command"
+                ]
             }
         ]
     },
     {
+        "description": "left_shift+f5 -> spacebar (modifier+key to key)",
         "type": "basic",
         "from": {
-            "key_code": "up_arrow",
+            "key_code": "f5",
             "modifiers": {
                 "mandatory": [
-                    "fn"
-                ],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "page_up",
-                "modifiers": [
-                    "fn"
-                ]
-            }
-        ]
-    },
-    {
-        "type": "basic",
-        "from": {
-            "key_code": "keypad_asterisk",
-            "modifiers": {
-                "mandatory": [],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "escape",
-                "modifiers": [
                     "left_shift"
-                ]
-            }
-        ]
-    },
-    {
-        "type": "basic",
-        "from": {
-            "key_code": "down_arrow",
-            "modifiers": {
-                "mandatory": [
-                    "fn"
                 ],
                 "optional": [
                     "any"
@@ -126,38 +95,41 @@
         },
         "to": [
             {
-                "key_code": "escape",
-                "modifiers": [
-                    "left_shift"
-                ]
+                "key_code": "spacebar",
+                "modifiers": []
             }
         ]
     },
     {
+        "description": "left_command+f6 -> fn (modifier+key to modifier)",
         "type": "basic",
         "from": {
-            "key_code": "p",
+            "key_code": "f6",
             "modifiers": {
                 "mandatory": [
-                    "control"
+                    "left_command"
                 ],
                 "optional": [
-                    "shift"
+                    "any"
                 ]
             }
         },
         "to": [
             {
-                "key_code": "up_arrow"
+                "key_code": "fn",
+                "modifiers": []
             }
         ]
     },
     {
+        "description": "right_option+f7 -> right_command+spacebar (modifier+key to modifier+key)",
         "type": "basic",
         "from": {
-            "key_code": "keypad_equal_sign",
+            "key_code": "f7",
             "modifiers": {
-                "mandatory": [],
+                "mandatory": [
+                    "right_option"
+                ],
                 "optional": [
                     "any"
                 ]
@@ -165,26 +137,32 @@
         },
         "to": [
             {
-                "key_code": "right_command"
-            }
-        ]
-    },
-    {
-        "type": "basic",
-        "from": {
-            "key_code": "keypad_slash",
-            "modifiers": {
-                "mandatory": [],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "left_command",
+                "key_code": "spacebar",
                 "modifiers": [
-                    "left_option"
+                    "right_command"
+                ]
+            }
+        ]
+    },
+    {
+        "description": "right_option+f8 -> right_command+right_control (modifier+key to modifier+modifier)",
+        "type": "basic",
+        "from": {
+            "key_code": "f8",
+            "modifiers": {
+                "mandatory": [
+                    "right_option"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "right_control",
+                "modifiers": [
+                    "right_command"
                 ]
             }
         ]

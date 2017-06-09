@@ -41,6 +41,7 @@
 namespace {
 krbn::event_queue::queued_event::event a_event(krbn::key_code::a);
 krbn::event_queue::queued_event::event escape_event(krbn::key_code::escape);
+krbn::event_queue::queued_event::event f1_event(krbn::key_code::f1);
 krbn::event_queue::queued_event::event fn_event(krbn::key_code::fn);
 krbn::event_queue::queued_event::event left_control_event(krbn::key_code::left_control);
 krbn::event_queue::queued_event::event left_shift_event(krbn::key_code::left_shift);
@@ -170,16 +171,19 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     krbn::manipulator::manipulator_manager manipulator_manager;
     {
+      // spacebar -> tab
       auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar, {}, {}),
                                                                              to_event_definition(krbn::key_code::tab, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
     {
+      // spacebar -> escape
       auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::spacebar, {}, {}),
                                                                              to_event_definition(krbn::key_code::escape, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
     {
+      // tab -> a
       auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::tab,
                                                                                                    {},
                                                                                                    {
@@ -189,13 +193,29 @@ TEST_CASE("manipulator.manipulator_manager") {
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
     {
+      // escape -> left_shift
       auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::escape, {}, {}),
                                                                              to_event_definition(krbn::key_code::left_shift, {}));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
     {
+      // left_shift -> tab
       auto manipulator = std::make_shared<krbn::manipulator::details::basic>(from_event_definition(krbn::key_code::left_shift, {}, {}),
                                                                              to_event_definition(krbn::key_code::tab, {}));
+      manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
+    }
+    {
+      // f1 -> empty
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(nlohmann::json({
+          {"type", "basic"},
+          {"from",
+           {
+               {"key_code", "f1"},
+               {"modifiers", {
+                                 {"mandatory", nlohmann::json::array()}, {"optional", {"any"}},
+                             }},
+           }},
+      }));
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
@@ -219,6 +239,9 @@ TEST_CASE("manipulator.manipulator_manager") {
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, right_shift_event, key_down, right_shift_event);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, spacebar_event, key_down, spacebar_event);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, tab_event, key_down, tab_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, f1_event, key_down, f1_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, f1_event, key_up, f1_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += 100, tab_event, key_up, tab_event);
 
     // ----------------------------------------
     // test
@@ -236,6 +259,9 @@ TEST_CASE("manipulator.manipulator_manager") {
     PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, right_shift_event, key_down, right_shift_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, spacebar_event, key_down, spacebar_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, a_event, key_down, tab_event);
+    time_stamp += 100;
+    time_stamp += 100;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, a_event, key_up, tab_event);
 
     REQUIRE(input_event_queue.get_events().empty());
     REQUIRE(output_event_queue.get_events() == expected);
