@@ -152,6 +152,10 @@ public:
       }
     }
 
+    void clear(void) {
+      events_.clear();
+    }
+
   private:
     void adjust_time_stamp(uint64_t& time_stamp,
                            bool is_modifier_key) {
@@ -465,6 +469,10 @@ public:
 
   const queue& get_queue(void) const {
     return queue_;
+  }
+
+  void clear_queue(void) {
+    return queue_.clear();
   }
 
   const key_event_dispatcher& get_key_event_dispatcher(void) const {
