@@ -487,7 +487,8 @@ private:
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const post_event_to_virtual_devices::queue::event& event) {
-  stream << "{"
+  stream << std::endl
+         << "{"
          << "\"type\":";
   stream_utility::output_enum(stream, event.get_type());
 
