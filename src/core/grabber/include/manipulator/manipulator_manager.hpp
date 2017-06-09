@@ -25,21 +25,6 @@ public:
     while (!input_event_queue.empty()) {
       auto& front_input_event = input_event_queue.get_front_event();
 
-      if (front_input_event.get_lazy()) {
-        bool lazy_events = true;
-
-        // Find a not lazy event
-        for (const auto& e : input_event_queue.get_events()) {
-          if (!e.get_lazy()) {
-            lazy_events = false;
-          }
-        }
-
-        if (lazy_events) {
-          break;
-        }
-      }
-
       switch (front_input_event.get_event().get_type()) {
         case event_queue::queued_event::event::type::device_keys_are_released:
           output_event_queue.erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());

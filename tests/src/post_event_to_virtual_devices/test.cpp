@@ -1,7 +1,6 @@
 #define CATCH_CONFIG_RUNNER
 #include "../../vendor/catch/catch.hpp"
 
-#include "manipulator/details/collapse_lazy_events.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
@@ -15,23 +14,46 @@
                            krbn::event_type::EVENT_TYPE,                               \
                            ORIGINAL_EVENT);
 
-#define ENQUEUE_KEYBOARD_EVENT(EVENTS, USAGE, VALUE, TIME_STAMP)                               \
+#define ENQUEUE_LAZY_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
+  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                      \
+                           TIME_STAMP,                                                      \
+                           EVENT,                                                           \
+                           krbn::event_type::EVENT_TYPE,                                    \
+                           ORIGINAL_EVENT,                                                  \
+                           true);
+
+#define ENQUEUE_KEYBOARD_EVENT(EVENTS, KEY_CODE, VALUE, TIME_STAMP)                            \
   {                                                                                            \
     pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;      \
-    keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(USAGE);                   \
+    keyboard_event.usage_page = *(krbn::types::get_usage_page(krbn::key_code::KEY_CODE));      \
+    keyboard_event.usage = *(krbn::types::get_usage(krbn::key_code::KEY_CODE));                \
     keyboard_event.value = VALUE;                                                              \
     EVENTS.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, TIME_STAMP)); \
   }
+
+#define PUSH_BACK_LAZY_QUEUED_EVENT(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
+  VECTOR.push_back(krbn::event_queue::queued_event(krbn::device_id(DEVICE_ID),                        \
+                                                   TIME_STAMP,                                        \
+                                                   EVENT,                                             \
+                                                   krbn::event_type::EVENT_TYPE,                      \
+                                                   ORIGINAL_EVENT,                                    \
+                                                   true))
 
 using krbn::manipulator::details::post_event_to_virtual_devices;
 
 namespace {
 krbn::event_queue::queued_event::event a_event(krbn::key_code::a);
 krbn::event_queue::queued_event::event escape_event(krbn::key_code::escape);
+krbn::event_queue::queued_event::event fn_event(krbn::key_code::fn);
+krbn::event_queue::queued_event::event left_control_event(krbn::key_code::left_control);
 krbn::event_queue::queued_event::event left_shift_event(krbn::key_code::left_shift);
+krbn::event_queue::queued_event::event p_event(krbn::key_code::p);
+krbn::event_queue::queued_event::event page_up_event(krbn::key_code::page_up);
 krbn::event_queue::queued_event::event return_or_enter_event(krbn::key_code::return_or_enter);
+krbn::event_queue::queued_event::event right_shift_event(krbn::key_code::right_shift);
 krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
 krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
+krbn::event_queue::queued_event::event up_arrow_event(krbn::key_code::up_arrow);
 
 krbn::event_queue::queued_event::event button1_event(krbn::pointing_button::button1);
 krbn::event_queue::queued_event::event pointing_x_m10_event(krbn::event_queue::queued_event::event::type::pointing_x, -10);
@@ -76,13 +98,13 @@ TEST_CASE("generic") {
     {
       std::vector<post_event_to_virtual_devices::queue::event> expected;
       time_stamp = 0;
-      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 1, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 0, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 0, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardTab, 1, time_stamp += interval);
+      ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp += interval);
+      ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp += interval);
+      ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp += interval);
+      ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp += interval);
+      ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp += interval);
+      ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp += interval);
+      ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp += interval);
 
       {
         pqrs::karabiner_virtual_hid_device::hid_report::pointing_input pointing_input;
@@ -142,7 +164,7 @@ TEST_CASE("Same modifier twice from different devices") {
     connector.manipulate(time_stamp += interval);
 
     std::vector<post_event_to_virtual_devices::queue::event> expected;
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, interval);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
@@ -153,8 +175,8 @@ TEST_CASE("Same modifier twice from different devices") {
 
     connector.manipulate(time_stamp += interval);
 
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, interval * 4);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, interval * 5);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, interval * 4);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, interval * 5);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
   }
@@ -192,13 +214,13 @@ TEST_CASE("device_ungrabbed event") {
     time_stamp = 0;
 
     std::vector<post_event_to_virtual_devices::queue::event> expected;
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardTab, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardTab, 0, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardReturnOrEnter, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardA, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, return_or_enter, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, a, 1, time_stamp += interval);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
@@ -207,9 +229,9 @@ TEST_CASE("device_ungrabbed event") {
 
     connector.manipulate(interval * 7);
 
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardSpacebar, 0, interval * 6);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardReturnOrEnter, 0, interval * 6);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, time_stamp + modifier_wait); // need to wait after 'kHIDUsage_KeyboardA key_down'
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, interval * 6);
+    ENQUEUE_KEYBOARD_EVENT(expected, return_or_enter, 0, interval * 6);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp + modifier_wait); // need to wait after 'kHIDUsage_KeyboardA key_down'
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
@@ -217,8 +239,8 @@ TEST_CASE("device_ungrabbed event") {
 
     connector.manipulate(interval * 9);
 
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 0, interval * 8);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardA, 0, interval * 8);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, interval * 8);
+    ENQUEUE_KEYBOARD_EVENT(expected, a, 0, interval * 8);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
   }
@@ -261,17 +283,274 @@ TEST_CASE("wait around modifier") {
     time_stamp = 0;
 
     std::vector<post_event_to_virtual_devices::queue::event> expected;
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardTab, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp + modifier_wait);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 0, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, time_stamp + modifier_wait);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 1, time_stamp + modifier_wait);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardLeftShift, 0, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, kHIDUsage_KeyboardEscape, 0, time_stamp + modifier_wait);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp + modifier_wait);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp + modifier_wait);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp + modifier_wait);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp + modifier_wait);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
+  }
+}
+
+TEST_CASE("lazy events") {
+  {
+    // ----------------------------------------
+    // Collapse lazy events
+    //   * left_shift:   key_down,key_up
+    //   * left_control: key_up,key_down
+
+    krbn::manipulator::manipulator_manager manipulator_manager;
+
+    auto manipulator = std::make_shared<post_event_to_virtual_devices>();
+    manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
+
+    krbn::event_queue input_event_queue;
+    krbn::event_queue output_event_queue;
+
+    krbn::manipulator::manipulator_managers_connector connector;
+    connector.emplace_back_connection(manipulator_manager,
+                                      input_event_queue,
+                                      output_event_queue);
+
+    uint64_t time_stamp = 0;
+    uint64_t interval = krbn::time_utility::nano_to_absolute(NSEC_PER_SEC);
+
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, time_stamp += interval, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, time_stamp += interval, left_control_event, key_down, left_control_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, time_stamp += interval, left_shift_event, key_up, left_shift_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, left_control_event, key_up, left_control_event);
+
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, fn_event, key_down, fn_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, time_stamp += interval, fn_event, key_up, fn_event);
+    ENQUEUE_LAZY_EVENT(input_event_queue, 1, time_stamp += interval, spacebar_event, key_up, spacebar_event);
+
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, fn_event, key_down, fn_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, spacebar_event, key_down, spacebar_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, fn_event, key_up, fn_event);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, spacebar_event, key_up, spacebar_event);
+
+    connector.manipulate(time_stamp += interval);
+
+    // ----------------------------------------
+
+    std::vector<post_event_to_virtual_devices::queue::event> expected;
+    time_stamp = 0;
+
+    time_stamp += interval;
+    time_stamp += interval;
+    time_stamp += interval;
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp += interval);
+    time_stamp += interval;
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp += interval);
+
+    time_stamp += interval;
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp += interval);
+
+    REQUIRE(manipulator->get_queue().get_events() == expected);
+  }
+}
+
+namespace {
+class actual_examples_helper final {
+public:
+  actual_examples_helper(void) {
+    // fn-up_arrow -> page_up
+    // control-p -> up_arrow
+
+    std::ifstream input("json/complex_modifications.json");
+    auto json = nlohmann::json::parse(input);
+    for (const auto& j : json) {
+      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j);
+      modifications_manipulator_manager_.push_back_manipulator(m);
+    }
+
+    manipulator_ = std::make_shared<post_event_to_virtual_devices>();
+    post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator_));
+
+    connector_.emplace_back_connection(modifications_manipulator_manager_,
+                                       input_event_queue_,
+                                       middle_event_queue_);
+    connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
+                                       output_event_queue_);
+  }
+
+  krbn::event_queue& get_input_event_queue(void) {
+    return input_event_queue_;
+  }
+
+  void manipulate(uint64_t time_stamp) {
+    connector_.manipulate(time_stamp);
+  }
+
+  const std::vector<post_event_to_virtual_devices::queue::event> get_events(void) {
+    return manipulator_->get_queue().get_events();
+  }
+
+private:
+  krbn::manipulator::manipulator_manager modifications_manipulator_manager_;
+  krbn::manipulator::manipulator_manager post_event_to_virtual_devices_manipulator_manager_;
+  std::shared_ptr<post_event_to_virtual_devices> manipulator_;
+  krbn::event_queue input_event_queue_;
+  krbn::event_queue middle_event_queue_;
+  krbn::event_queue output_event_queue_;
+  krbn::manipulator::manipulator_managers_connector connector_;
+};
+} // namespace
+
+TEST_CASE("actual examples") {
+  uint64_t time_stamp = 0;
+  uint64_t interval = krbn::time_utility::nano_to_absolute(NSEC_PER_MSEC) * 2;
+  std::vector<post_event_to_virtual_devices::queue::event> expected;
+
+  {
+    actual_examples_helper helper;
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down, tab_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up, tab_event);
+
+    helper.manipulate(time_stamp += interval);
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp += interval);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  // ----------------------------------------
+  // fn-up_arrow
+
+  {
+    actual_examples_helper helper;
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, fn_event, key_down, fn_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_down, up_arrow_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_up, up_arrow_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_down, up_arrow_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_up, up_arrow_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, fn_event, key_up, fn_event);
+
+    helper.manipulate(time_stamp += interval);
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp += interval);
+
+    time_stamp += 2; // lazy fn key_up, lazy fn key_down
+    ENQUEUE_KEYBOARD_EVENT(expected, page_up, 1, time_stamp += interval);
+    time_stamp += 2; // lazy fn key_up, lazy fn key_down
+
+    ENQUEUE_KEYBOARD_EVENT(expected, page_up, 0, time_stamp += interval);
+
+    time_stamp += 2; // lazy fn key_up, lazy key_down
+    ENQUEUE_KEYBOARD_EVENT(expected, page_up, 1, time_stamp += interval);
+    time_stamp += 2; // lazy fn key_up, lazy fn key_down
+
+    ENQUEUE_KEYBOARD_EVENT(expected, page_up, 0, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp += interval);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  // ----------------------------------------
+  // fn-up_arrow (release fn before up_arrow)
+
+  {
+    actual_examples_helper helper;
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, fn_event, key_down, fn_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_down, up_arrow_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_up, up_arrow_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_down, up_arrow_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, fn_event, key_up, fn_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_up, up_arrow_event);
+
+    helper.manipulate(time_stamp += interval);
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp += interval);
+
+    time_stamp += 2; // lazy fn key_up, lazy fn key_down
+    ENQUEUE_KEYBOARD_EVENT(expected, page_up, 1, time_stamp += interval);
+    time_stamp += 2; // lazy fn key_up, lazy fn key_down
+
+    ENQUEUE_KEYBOARD_EVENT(expected, page_up, 0, time_stamp += interval);
+
+    time_stamp += 2; // lazy fn key_up, lazy fn key_down
+    ENQUEUE_KEYBOARD_EVENT(expected, page_up, 1, time_stamp += interval);
+    time_stamp += 2; // lazy fn key_up, lazy fn key_down
+
+    ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, page_up, 0, time_stamp += interval);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  // ----------------------------------------
+  // control-p
+
+  {
+    actual_examples_helper helper;
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down, p_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_up, p_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down, p_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_up, p_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_up, left_control_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down, tab_event);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_up, tab_event);
+
+    helper.manipulate(time_stamp += interval);
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp += interval);
+
+    time_stamp += 1; // lazy left_control key_up
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp + modifier_wait); // wait after modifier
+    time_stamp += 1;                                                           // lazy left_control key_down
+
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp += interval);
+
+    time_stamp += 1; // lazy left_control key_up
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp += interval);
+    time_stamp += 1; // lazy left_control key_down
+
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp += interval);
+
+    time_stamp += interval; // left_control_event key_up
+
+    ENQUEUE_KEYBOARD_EVENT(expected, p, 1, time_stamp += interval);
+    ENQUEUE_KEYBOARD_EVENT(expected, p, 0, time_stamp += interval);
+
+    REQUIRE(helper.get_events() == expected);
   }
 }
 

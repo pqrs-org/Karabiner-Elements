@@ -10,7 +10,6 @@
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
-#include "manipulator/details/collapse_lazy_events.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "spdlog_utility.hpp"
@@ -36,11 +35,6 @@ public:
     virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
         boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
 
-    {
-      auto manipulator = std::make_shared<manipulator::details::collapse_lazy_events>();
-      collapse_lazy_events_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
-    }
-
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>();
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
 
@@ -53,8 +47,6 @@ public:
                                                             complex_modifications_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(fn_function_keys_manipulator_manager_,
                                                             fn_function_keys_applied_event_queue_);
-    manipulator_managers_connector_.emplace_back_connection(collapse_lazy_events_manipulator_manager_,
-                                                            lazy_collapsed_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
                                                             posted_event_queue_);
 
@@ -679,9 +671,6 @@ private:
 
   manipulator::manipulator_manager fn_function_keys_manipulator_manager_;
   event_queue fn_function_keys_applied_event_queue_;
-
-  manipulator::manipulator_manager collapse_lazy_events_manipulator_manager_;
-  event_queue lazy_collapsed_event_queue_;
 
   std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   manipulator::manipulator_manager post_event_to_virtual_devices_manipulator_manager_;

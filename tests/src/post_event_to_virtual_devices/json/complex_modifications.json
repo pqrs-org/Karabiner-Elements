@@ -1,0 +1,43 @@
+[
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "up_arrow",
+            "modifiers": {
+                "mandatory": [
+                    "fn"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "page_up",
+                "modifiers": [
+                    "fn"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "p",
+            "modifiers": {
+                "mandatory": [
+                    "control"
+                ],
+                "optional": [
+                    "shift"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "up_arrow"
+            }
+        ]
+    }
+]
