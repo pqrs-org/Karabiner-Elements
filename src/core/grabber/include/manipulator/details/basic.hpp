@@ -215,7 +215,9 @@ public:
           }
         }
 
-        output_event_queue.increase_time_stamp_delay(time_stamp_delay - 1);
+        if (time_stamp_delay > 0) {
+          output_event_queue.increase_time_stamp_delay(time_stamp_delay - 1);
+        }
       }
     }
   }
