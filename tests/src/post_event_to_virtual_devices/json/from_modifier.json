@@ -1,6 +1,86 @@
 [
     {
-        "description": "right_command+right_option -> spacebar (modifier+modifier -> key)",
+        "description": "right_shift -> f1 (modifier -> key)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_shift",
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f1",
+                "modifiers": []
+            }
+        ]
+    },
+    {
+        "description": "left_shift -> fn (modifier -> modifier)",
+        "type": "basic",
+        "from": {
+            "key_code": "left_shift",
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "fn",
+                "modifiers": []
+            }
+        ]
+    },
+    {
+        "description": "left_control -> fn+f3 (modifier -> modifier+key)",
+        "type": "basic",
+        "from": {
+            "key_code": "left_control",
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f3",
+                "modifiers": [
+                    "fn"
+                ]
+            }
+        ]
+    },
+    {
+        "description": "left_command -> fn+right_option (modifier -> modifier+modifier)",
+        "type": "basic",
+        "from": {
+            "key_code": "left_command",
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "right_option",
+                "modifiers": [
+                    "fn"
+                ]
+            }
+        ]
+    },
+    {
+        "description": "right_command+right_option -> f5 (modifier+modifier -> key)",
         "type": "basic",
         "from": {
             "key_code": "right_option",
@@ -15,7 +95,7 @@
         },
         "to": [
             {
-                "key_code": "spacebar",
+                "key_code": "f5",
                 "modifiers": []
             }
         ]
