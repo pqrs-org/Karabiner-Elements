@@ -298,11 +298,6 @@ public:
         if (pair.second != modifier_flag::zero) {
           modifier_flags.insert(pair.second);
         }
-      } else if (optional_modifiers_.find(m) != std::end(optional_modifiers_)) {
-        auto pair = test_modifier(modifier_flag_manager, m);
-        if (!pair.first) {
-          return boost::none;
-        }
       }
     }
 
