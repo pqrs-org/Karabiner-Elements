@@ -99,5 +99,70 @@
                 "modifiers": []
             }
         ]
+    },
+    {
+        "description": "right_control+right_option -> left_shift (modifier+modifier -> modifier)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_option",
+            "modifiers": {
+                "mandatory": [
+                    "right_control"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_shift",
+                "modifiers": []
+            }
+        ]
+    },
+    {
+        "description": "right_control+right_command -> left_shift+f7 (modifier+modifier -> modifier+key)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_command",
+            "modifiers": {
+                "mandatory": [
+                    "right_control"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f7",
+                "modifiers": ["left_shift"]
+            }
+        ]
+    },
+    {
+        "description": "right_command+right_control -> left_shift+left_option (modifier+modifier -> modifier+modifier)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_control",
+            "modifiers": {
+                "mandatory": [
+                    "right_command"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_option",
+                "modifiers": [
+                    "left_shift"
+                ]
+            }
+        ]
     }
 ]
