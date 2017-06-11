@@ -463,6 +463,10 @@ public:
                                                       time_stamp);
   }
 
+  virtual void set_valid(bool value) {
+    // This manipulator is always valid.
+  }
+
   void post_events(virtual_hid_device_client& virtual_hid_device_client) {
     queue_.post_events(virtual_hid_device_client);
   }

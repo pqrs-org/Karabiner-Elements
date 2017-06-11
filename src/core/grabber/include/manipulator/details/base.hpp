@@ -29,7 +29,7 @@ public:
   bool get_valid(void) const {
     return valid_;
   }
-  void set_valid(bool value) {
+  virtual void set_valid(bool value) {
     valid_ = value;
   }
 
