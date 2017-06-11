@@ -27,6 +27,7 @@ public:
         device_pointing_buttons_are_released,
         device_ungrabbed,
         caps_lock_state_changed,
+        event_from_ignored_device,
       };
 
       event(key_code key_code) : type_(type::key_code),

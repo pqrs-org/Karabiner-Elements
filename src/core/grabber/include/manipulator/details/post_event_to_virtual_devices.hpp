@@ -348,6 +348,10 @@ public:
           dispatch_modifier_key_event = true;
         }
       }
+
+      if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::event_from_ignored_device) {
+        dispatch_modifier_key_event = true;
+      }
     }
 
     if (dispatch_modifier_key_event &&
@@ -402,6 +406,7 @@ public:
             case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
             case event_queue::queued_event::event::type::device_ungrabbed:
             case event_queue::queued_event::event::type::caps_lock_state_changed:
+            case event_queue::queued_event::event::type::event_from_ignored_device:
               // Do nothing
               break;
           }
@@ -420,6 +425,7 @@ public:
       case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
       case event_queue::queued_event::event::type::device_ungrabbed:
       case event_queue::queued_event::event::type::caps_lock_state_changed:
+      case event_queue::queued_event::event::type::event_from_ignored_device:
         // Do nothing
         break;
     }

@@ -335,9 +335,21 @@ private:
 
   void value_callback(human_interface_device& device,
                       event_queue& event_queue) {
-    if (device.is_grabbed() && !device.get_disabled()) {
+    if (device.get_disabled()) {
+      // Do nothing
+    } else {
       for (const auto& queued_event : event_queue.get_events()) {
-        merged_input_event_queue_.push_back_event(queued_event);
+        if (device.is_grabbed()) {
+          merged_input_event_queue_.push_back_event(queued_event);
+        } else {
+          // device is ignored
+          event_queue::queued_event::event event(event_queue::queued_event::event::type::event_from_ignored_device, 1);
+          merged_input_event_queue_.emplace_back_event(queued_event.get_device_id(),
+                                                       queued_event.get_time_stamp(),
+                                                       event,
+                                                       queued_event.get_event_type(),
+                                                       event);
+        }
       }
     }
 

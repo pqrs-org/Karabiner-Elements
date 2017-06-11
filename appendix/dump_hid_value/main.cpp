@@ -162,6 +162,10 @@ private:
             std::cout << "caps_lock_state_changed " << *integer_value << std::endl;
           }
           break;
+
+        case krbn::event_queue::queued_event::event::type::event_from_ignored_device:
+          std::cout << "event_from_ignored_device from " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          break;
       }
     }
 
