@@ -147,7 +147,9 @@ public:
                                                                    is_pointing_device);
 
       bool is_built_in_keyboard = false;
-      if (descriptions.get_product().find("Apple Internal ") != std::string::npos) {
+      if (is_keyboard &&
+          !is_pointing_device &&
+          descriptions.get_product().find("Apple Internal ") != std::string::npos) {
         is_built_in_keyboard = true;
       }
 
@@ -316,7 +318,7 @@ public:
 
       auto r = open();
       if (r != kIOReturnSuccess) {
-        logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
+        logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
         return;
       }
 
@@ -392,7 +394,7 @@ public:
             // ----------------------------------------
             auto r = open(kIOHIDOptionsTypeSeizeDevice);
             if (r != kIOReturnSuccess) {
-              logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
+              logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
               return;
             }
 
