@@ -1,75 +1,6 @@
 [
     {
-        "type": "basic",
-        "from": {
-            "key_code": "f1",
-            "modifiers": {
-                "mandatory": [],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "f2",
-                "modifiers": []
-            }
-        ]
-    },
-    {
-        "type": "basic",
-        "from": {
-            "key_code": "f2",
-            "modifiers": {
-                "mandatory": [],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "left_shift",
-                "modifiers": []
-            }
-        ]
-    },
-    {
-        "type": "basic",
-        "from": {
-            "key_code": "right_command",
-            "modifiers": {
-                "mandatory": [],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "spacebar"
-            }
-        ]
-    },
-    {
-        "type": "basic",
-        "from": {
-            "key_code": "right_shift",
-            "modifiers": {
-                "mandatory": [],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "right_option"
-            }
-        ]
-    },
-    {
+        "description": "fn+up_arrow to fn+page_up (from modifiers == to modifiers)",
         "type": "basic",
         "from": {
             "key_code": "up_arrow",
@@ -92,48 +23,7 @@
         ]
     },
     {
-        "type": "basic",
-        "from": {
-            "key_code": "keypad_asterisk",
-            "modifiers": {
-                "mandatory": [],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "escape",
-                "modifiers": [
-                    "left_shift"
-                ]
-            }
-        ]
-    },
-    {
-        "type": "basic",
-        "from": {
-            "key_code": "down_arrow",
-            "modifiers": {
-                "mandatory": [
-                    "fn"
-                ],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "escape",
-                "modifiers": [
-                    "left_shift"
-                ]
-            }
-        ]
-    },
-    {
+        "description": "control+p to up_arrow (from modifiers.optional)",
         "type": "basic",
         "from": {
             "key_code": "p",
@@ -149,43 +39,6 @@
         "to": [
             {
                 "key_code": "up_arrow"
-            }
-        ]
-    },
-    {
-        "type": "basic",
-        "from": {
-            "key_code": "keypad_equal_sign",
-            "modifiers": {
-                "mandatory": [],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "right_command"
-            }
-        ]
-    },
-    {
-        "type": "basic",
-        "from": {
-            "key_code": "keypad_slash",
-            "modifiers": {
-                "mandatory": [],
-                "optional": [
-                    "any"
-                ]
-            }
-        },
-        "to": [
-            {
-                "key_code": "left_command",
-                "modifiers": [
-                    "left_option"
-                ]
             }
         ]
     }

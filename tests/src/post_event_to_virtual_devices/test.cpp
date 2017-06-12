@@ -1040,59 +1040,7 @@ TEST_CASE("actual examples") {
   }
 
   // ----------------------------------------
-  // right_command -> spacebar
-
-  {
-    actual_examples_helper helper("complex_modifications.json");
-
-    time_stamp = 0;
-
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_command_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_command_event, key_up);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
-
-    helper.manipulate(time_stamp += interval);
-
-    time_stamp = 0;
-    expected.clear();
-
-    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
-
-    REQUIRE(helper.get_events() == expected);
-  }
-
-  // ----------------------------------------
-  // right_shift -> right_option
-
-  {
-    actual_examples_helper helper("complex_modifications.json");
-
-    time_stamp = 0;
-
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_shift_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_shift_event, key_up);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
-
-    helper.manipulate(time_stamp += interval);
-
-    time_stamp = 0;
-    expected.clear();
-
-    ENQUEUE_KEYBOARD_EVENT(expected, right_option, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, right_option, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
-
-    REQUIRE(helper.get_events() == expected);
-  }
-
-  // ----------------------------------------
-  // fn-up_arrow
+  // fn+up_arrow to fn+page_up (from modifiers == to modifiers)
 
   {
     actual_examples_helper helper("complex_modifications.json");
@@ -1122,7 +1070,8 @@ TEST_CASE("actual examples") {
   }
 
   // ----------------------------------------
-  // fn-up_arrow (release fn before up_arrow)
+  // fn+up_arrow to fn+page_up (from modifiers == to modifiers)
+  // (release fn before up_arrow)
 
   {
     actual_examples_helper helper("complex_modifications.json");
@@ -1152,73 +1101,7 @@ TEST_CASE("actual examples") {
   }
 
   // ----------------------------------------
-  // keypad_asterisk -> left_shift-escape (key to modifier+key)
-
-  {
-    actual_examples_helper helper("complex_modifications.json");
-
-    time_stamp = 0;
-
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, keypad_asterisk_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, keypad_asterisk_event, key_up);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
-
-    helper.manipulate(time_stamp += interval);
-
-    time_stamp = 0;
-    expected.clear();
-
-    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
-
-    REQUIRE(helper.get_events() == expected);
-  }
-
-  // ----------------------------------------
-  // fn-down_arrow -> left_shift-escape
-
-  {
-    actual_examples_helper helper("complex_modifications.json");
-
-    time_stamp = 0;
-
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, fn_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, down_arrow_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, down_arrow_event, key_up);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, down_arrow_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, down_arrow_event, key_up);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, fn_event, key_up);
-
-    helper.manipulate(time_stamp += interval);
-
-    time_stamp = 0;
-    expected.clear();
-
-    ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
-
-    REQUIRE(helper.get_events() == expected);
-  }
-
-  // ----------------------------------------
-  // control-p
+  // control+p to up_arrow (from modifiers.optional)
 
   {
     actual_examples_helper helper("complex_modifications.json");
@@ -1252,6 +1135,7 @@ TEST_CASE("actual examples") {
   }
 
   // ----------------------------------------
+  // control+p to up_arrow (from modifiers.optional)
   // control-p, tab
 
   {
@@ -1288,6 +1172,7 @@ TEST_CASE("actual examples") {
   }
 
   // ----------------------------------------
+  // control+p to up_arrow (from modifiers.optional)
   // control-option-p
 
   {
@@ -1318,6 +1203,7 @@ TEST_CASE("actual examples") {
   }
 
   // ----------------------------------------
+  // control+p to up_arrow (from modifiers.optional)
   // control-shift-p
 
   {
