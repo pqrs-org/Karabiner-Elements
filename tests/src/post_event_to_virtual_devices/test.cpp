@@ -66,6 +66,7 @@ krbn::event_queue::queued_event::event right_option_event(krbn::key_code::right_
 krbn::event_queue::queued_event::event right_shift_event(krbn::key_code::right_shift);
 krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
 krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
+krbn::event_queue::queued_event::event u_event(krbn::key_code::u);
 krbn::event_queue::queued_event::event up_arrow_event(krbn::key_code::up_arrow);
 
 krbn::event_queue::queued_event::event button1_event(krbn::pointing_button::button1);
@@ -1235,6 +1236,88 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, p, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, p, 0, time_stamp);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  // ----------------------------------------
+  // control+u to shift+control+a,delete_or_backspace (multiple to keys)
+
+  {
+    actual_examples_helper helper("complex_modifications.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, u_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, u_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, u_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, u_event, key_up);
+
+    helper.manipulate(time_stamp += interval);
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, a, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, a, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, a, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, a, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 0, time_stamp);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  // ----------------------------------------
+  // control+f1 to shift+control+a,delete_or_backspace,vk_none (multiple to keys)
+
+  {
+    actual_examples_helper helper("complex_modifications.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_up);
+
+    helper.manipulate(time_stamp += interval);
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, a, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, a, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
 
     REQUIRE(helper.get_events() == expected);
   }
