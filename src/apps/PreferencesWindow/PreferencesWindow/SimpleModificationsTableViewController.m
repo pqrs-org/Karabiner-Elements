@@ -95,6 +95,16 @@
     
     [coreConfigurationModel selectedProfileDeviceProductManufacturerByVendorId:pair.vendorId productId:pair.productId product:product manufacturer:manufacturer];
     
+    if (product.length == 0) {
+      KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+      NSString *str = [connectedDevices findProductByVendorId:pair.vendorId productId:pair.productId];
+      if (str) {
+        [product setString:str];
+      } else {
+        [product setString: @"--"];
+      }
+    }
+    
     [popUpButton removeAllItems];
     [popUpButton addItemWithTitle: product];
   }

@@ -112,6 +112,8 @@ bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_
 void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* _Nonnull p,
                                                                    uint32_t vendor_id,
                                                                    uint32_t product_id,
+                                                                   const char* _Nonnull manufacturer,
+                                                                   const char* _Nonnull product,
                                                                    bool is_keyboard,
                                                                    bool is_pointing_device,
                                                                    bool value);
@@ -123,6 +125,8 @@ bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_key
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* _Nonnull p,
                                                                                                 uint32_t vendor_id,
                                                                                                 uint32_t product_id,
+                                                                                                const char* _Nonnull manufacturer,
+                                                                                                const char* _Nonnull product,
                                                                                                 bool is_keyboard,
                                                                                                 bool is_pointing_device,
                                                                                                 bool value);

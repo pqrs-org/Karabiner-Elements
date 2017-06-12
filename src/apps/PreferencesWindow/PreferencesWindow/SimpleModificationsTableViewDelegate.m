@@ -87,6 +87,16 @@
     
     [coreConfigurationModel selectedProfileDeviceProductManufacturerByVendorId:vid productId:pid product:product manufacturer:manufacturer];
     
+    if (product.length == 0) {
+      KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+      NSString *str = [connectedDevices findProductByVendorId:vid productId:pid];
+      if (str) {
+        [product setString:str];
+      } else {
+        [product setString: @"--"];
+      }
+    }
+    
     [result.popUpButton addItemWithTitle:product];
     
     return result;

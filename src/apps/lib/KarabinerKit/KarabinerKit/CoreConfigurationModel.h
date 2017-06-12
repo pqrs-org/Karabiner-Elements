@@ -39,7 +39,6 @@
 - (NSUInteger)selectedProfileSimpleModificationProductIdAtIndex:(NSUInteger)index;
 - (BOOL)selectedProfileSimpleModificationDisabledAtIndex:(NSUInteger)index;
 - (NSArray *)selectedProfileSimpleModificationVendorProductIdPairs;
-- (NSString *)getDeviceNameByVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId;
 
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to;
 - (void)setSelectedProfileSimpleModificationVendorProductIdAtIndex:(NSUInteger)index vendorId:(NSUInteger)vid productId:(NSUInteger)pid;
@@ -60,6 +59,8 @@
                    isPointingDevice:(BOOL)isPointingDevice;
 - (void)setSelectedProfileDeviceIgnore:(NSUInteger)vendorId
                              productId:(NSUInteger)productId
+                          manufacturer:(NSString*)manufacturer
+                               product:(NSString*)product
                             isKeyboard:(BOOL)isKeyboard
                       isPointingDevice:(BOOL)isPointingDevice
                                  value:(BOOL)value;
@@ -69,6 +70,8 @@
                                            isPointingDevice:(BOOL)isPointingDevice;
 - (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
                                                      productId:(NSUInteger)productId
+                                                  manufacturer:(NSString*)manufacturer
+                                                       product:(NSString*)product
                                                     isKeyboard:(BOOL)isKeyboard
                                               isPointingDevice:(BOOL)isPointingDevice
                                                          value:(BOOL)value;

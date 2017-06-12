@@ -81,4 +81,16 @@
   return libkrbn_connected_devices_get_is_built_in_keyboard(self.libkrbnConnectedDevices, index);
 }
 
+- (NSString *)findProductByVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId {
+  for (NSUInteger i = 0; i < self.devicesCount; ++ i) {
+    NSUInteger vid = [self vendorIdAtIndex:i];
+    NSUInteger pid = [self productIdAtIndex:i];
+    
+    if (vid == vendorId && pid == productId) {
+      return [self productAtIndex:i];
+    }
+  }
+  return nil;
+}
+
 @end
