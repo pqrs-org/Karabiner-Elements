@@ -5,7 +5,7 @@
 
 Karabiner-Elements provides a subset of the features planned for the next generation [Karabiner](https://pqrs.org/osx/karabiner) for macOS Sierra. The current version of Karabiner does not work with Sierra, so Karabiner-Elements was created to keep Sierra users up and running until a new version of Karabiner is published.
 
-**_This is an extension to Karabiner which allows you to configure per-device key mapping, which is quite useful when you have multiple keyboards with different layouts, e.g. PC & Apple, and you want to apply different key mappings on them._**
+**_This is an enhanced version of Karabiner which allows you to configure per-device key mapping, which is quite useful when you have multiple keyboards with different layouts, e.g. PC & Apple, and you want to apply different key mappings on them._**
 
 ![Screen Shot](https://raw.githubusercontent.com/starsy/Karabiner-Elements/master/Screen%20Shot.png)
 
@@ -29,7 +29,7 @@ Karabiner-Elements provides a subset of the features planned for the next genera
 
 Karabiner-Elements is ready to use today. It provides a useful subset of Karabiner's features that you can begin using immediately.
 
-You can download the latest Karabiner-Elements from https://pqrs.org/latest/karabiner-elements-latest.dmg
+You can download the latest enhanced Karabiner-Elements from https://github.com/starsy/Karabiner-Elements/releases
 
 ## System requirements
 
