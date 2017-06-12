@@ -318,7 +318,7 @@ public:
 
       auto r = open();
       if (r != kIOReturnSuccess) {
-        logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+        logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2} (device_id:{3})", iokit_utility::get_error_name(r), r, name_for_log_, static_cast<uint32_t>(device_id_));
         return;
       }
 
@@ -394,7 +394,7 @@ public:
             // ----------------------------------------
             auto r = open(kIOHIDOptionsTypeSeizeDevice);
             if (r != kIOReturnSuccess) {
-              logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+              logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2} (device_id:{3})", iokit_utility::get_error_name(r), r, name_for_log_, static_cast<uint32_t>(device_id_));
               return;
             }
 
