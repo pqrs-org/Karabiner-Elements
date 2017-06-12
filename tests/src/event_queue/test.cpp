@@ -3,6 +3,7 @@
 
 #include "event_queue.hpp"
 #include "thread_utility.hpp"
+#include <boost/optional/optional_io.hpp>
 
 #define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
   QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                 \
@@ -44,6 +45,14 @@ krbn::event_queue::queued_event::event pointing_y_m10_event(krbn::event_queue::q
 krbn::event_queue::queued_event::event caps_lock_event_state_changed_1_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
 krbn::event_queue::queued_event::event caps_lock_event_state_changed_0_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
 } // namespace
+
+TEST_CASE("constructor") {
+  {
+    auto event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::key_code);
+    REQUIRE(event.get_type() == krbn::event_queue::queued_event::event::type::event_from_ignored_device);
+    REQUIRE(event.get_original_type() == krbn::event_queue::queued_event::event::type::key_code);
+  }
+}
 
 TEST_CASE("emplace_back_event") {
   // Normal order

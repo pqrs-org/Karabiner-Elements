@@ -342,7 +342,7 @@ private:
           merged_input_event_queue_.push_back_event(queued_event);
         } else {
           // device is ignored
-          event_queue::queued_event::event event(event_queue::queued_event::event::type::event_from_ignored_device, 1);
+          auto event = event_queue::queued_event::event::make_event_from_ignored_device(queued_event.get_event().get_type());
           merged_input_event_queue_.emplace_back_event(queued_event.get_device_id(),
                                                        queued_event.get_time_stamp(),
                                                        event,

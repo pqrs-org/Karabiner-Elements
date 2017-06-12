@@ -43,6 +43,13 @@ public:
                                      integer_value_(integer_value) {
       }
 
+      static event make_event_from_ignored_device(type original_type) {
+        event e;
+        e.type_ = type::event_from_ignored_device;
+        e.original_type_ = original_type;
+        return e;
+      }
+
       type get_type(void) const {
         return type_;
       }
@@ -72,20 +79,32 @@ public:
         return boost::none;
       }
 
+      boost::optional<type> get_original_type(void) const {
+        if (type_ == type::event_from_ignored_device) {
+          return original_type_;
+        }
+        return boost::none;
+      }
+
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
                get_key_code() == other.get_key_code() &&
                get_pointing_button() == other.get_pointing_button() &&
-               get_integer_value() == other.get_integer_value();
+               get_integer_value() == other.get_integer_value() &&
+               get_original_type() == other.get_original_type();
       }
 
     private:
+      event(void) {
+      }
+
       type type_;
 
       union {
         key_code key_code_;               // For type::key_code
         pointing_button pointing_button_; // For type::pointing_button
         int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel and virtual events
+        type original_type_;              // For type::event_from_ignored_device
       };
     };
 
@@ -469,6 +488,10 @@ private:
 }; // namespace krbn
 
 // For unit tests
+
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event::type& value) {
+  return stream_utility::output_enum(stream, value);
+}
 
 inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event& event) {
   stream << "{"
