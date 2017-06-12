@@ -73,8 +73,7 @@ public:
 
     auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
-        // std::make_pair(hid_usage_page::consumer, hid_usage::csmr_consumercontrol),
-        // std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
+        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
     });
     if (device_matching_dictionaries) {
       IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
@@ -261,7 +260,7 @@ private:
                                       this,
                                       std::placeholders::_1,
                                       std::placeholders::_2));
-    logger::get_logger().info("{0} is detected.", dev->get_name_for_log());
+    logger::get_logger().info("{0} (device_id:{1}) is detected.", dev->get_name_for_log(), static_cast<uint32_t>(dev->get_device_id()));
 
     dev->observe();
 
@@ -524,6 +523,10 @@ private:
       if ((it.second)->is_pqrs_device()) {
         continue;
       }
+      if (!(it.second)->is_keyboard()) {
+        continue;
+      }
+
       connected_devices.push_back_device(it.second->get_connected_device());
     }
 
