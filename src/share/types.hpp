@@ -644,6 +644,9 @@ public:
       case key_code::eject:
         return pqrs::karabiner_virtual_hid_device::usage_page::consumer;
 
+      case key_code::vk_none:
+        return boost::none;
+
       default:
         return pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad;
     }
@@ -707,6 +710,9 @@ public:
 
       case key_code::eject:
         return pqrs::karabiner_virtual_hid_device::usage::csmr_eject;
+
+      case key_code::vk_none:
+        return boost::none;
 
       default:
         return pqrs::karabiner_virtual_hid_device::usage(key_code);
