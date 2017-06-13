@@ -1042,6 +1042,35 @@ TEST_CASE("actual examples") {
     REQUIRE(helper.get_events() == expected);
   }
 
+  {
+    actual_examples_helper helper("alone.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
+
+    helper.manipulate(time_stamp += interval);
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, f2, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, f2, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
   // ----------------------------------------
   // fn+up_arrow to fn+page_up (from modifiers == to modifiers)
 

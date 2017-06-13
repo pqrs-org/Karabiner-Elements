@@ -86,10 +86,6 @@ public:
                           const event_queue& input_event_queue,
                           event_queue& output_event_queue,
                           uint64_t time_stamp) {
-    if (!front_input_event.get_valid()) {
-      return;
-    }
-
     bool key_or_button = false;
     bool is_target = false;
 
@@ -112,6 +108,10 @@ public:
           e.unset_alone();
         }
       }
+    }
+
+    if (!front_input_event.get_valid()) {
+      return;
     }
 
     if (is_target) {

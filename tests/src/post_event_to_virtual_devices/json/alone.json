@@ -1,5 +1,22 @@
 [
     {
+        "description": "f1 -> f2 (for pressed alone interruption)",
+        "from": {
+            "key_code": "f1",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f2"
+            }
+        ],
+        "type": "basic"
+    },
+    {
         "description": "right_control -> left_command (escape)",
         "from": {
             "key_code": "right_control",
