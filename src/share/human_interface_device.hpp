@@ -96,26 +96,24 @@ public:
 
     // Set name_for_log_
     {
+      std::stringstream stream;
+
       if (auto product_name = get_product()) {
-        name_for_log_ = boost::trim_copy(*product_name);
+        stream << boost::trim_copy(*product_name);
       } else {
         if (auto vendor_id = get_vendor_id()) {
           if (auto product_id = get_product_id()) {
-            std::stringstream stream;
             stream << std::hex
                    << "(vendor_id:0x" << static_cast<uint32_t>(*vendor_id)
                    << ", product_id:0x" << static_cast<uint32_t>(*product_id)
                    << ")"
                    << std::dec;
-            name_for_log_ = stream.str();
           }
         }
-        if (name_for_log_.empty()) {
-          std::stringstream stream;
-          stream << "(device_id:" << static_cast<uint32_t>(device_id_) << ")";
-          name_for_log_ = stream.str();
-        }
       }
+
+      stream << " (device_id:" << static_cast<uint32_t>(device_id_) << ")";
+      name_for_log_ = stream.str();
     }
 
     // Create connected_device_.
@@ -318,7 +316,7 @@ public:
 
       auto r = open();
       if (r != kIOReturnSuccess) {
-        logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2} (device_id:{3})", iokit_utility::get_error_name(r), r, name_for_log_, static_cast<uint32_t>(device_id_));
+        logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
         return;
       }
 
@@ -394,7 +392,7 @@ public:
             // ----------------------------------------
             auto r = open(kIOHIDOptionsTypeSeizeDevice);
             if (r != kIOReturnSuccess) {
-              logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2} (device_id:{3})", iokit_utility::get_error_name(r), r, name_for_log_, static_cast<uint32_t>(device_id_));
+              logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
               return;
             }
 

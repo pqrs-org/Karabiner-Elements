@@ -260,7 +260,7 @@ private:
                                       this,
                                       std::placeholders::_1,
                                       std::placeholders::_2));
-    logger::get_logger().info("{0} (device_id:{1}) is detected.", dev->get_name_for_log(), static_cast<uint32_t>(dev->get_device_id()));
+    logger::get_logger().info("{0} is detected.", dev->get_name_for_log());
 
     dev->observe();
 
