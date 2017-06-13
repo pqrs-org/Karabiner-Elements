@@ -307,6 +307,9 @@ private:
         logger::get_logger().info("{0} is removed.", dev->get_name_for_log());
         dev->set_removed();
         dev->ungrab();
+        if (dev->is_pqrs_virtual_hid_keyboard()) {
+          ungrab_devices();
+        }
         hids_.erase(it);
       }
     }
@@ -400,6 +403,20 @@ private:
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
+    }
+
+    {
+      bool found = false;
+      for (const auto& it : hids_) {
+        if ((it.second)->is_pqrs_virtual_hid_keyboard()) {
+          found = true;
+        }
+      }
+      if (!found) {
+        std::string message = "virtual_hid_keyboard is not detected. Please wait for a while.";
+        is_grabbable_callback_log_reducer_.warn(message);
+        return human_interface_device::grabbable_state::ungrabbable_temporarily;
+      }
     }
 
     // ----------------------------------------
