@@ -348,10 +348,6 @@ public:
           dispatch_modifier_key_event = true;
         }
       }
-
-      if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::event_from_ignored_device) {
-        dispatch_modifier_key_event = true;
-      }
     }
 
     if (dispatch_modifier_key_event &&
@@ -464,6 +460,15 @@ public:
 
     // Release modifiers
 
+    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                      queue_,
+                                                      time_stamp);
+  }
+
+  virtual void handle_event_from_ignored_device(event_queue::queued_event::event::type original_type,
+                                                event_type event_type,
+                                                event_queue& output_event_queue,
+                                                uint64_t time_stamp) {
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                       queue_,
                                                       time_stamp);

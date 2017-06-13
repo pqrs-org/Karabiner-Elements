@@ -26,6 +26,11 @@ public:
                                              const event_queue& output_event_queue,
                                              uint64_t time_stamp) = 0;
 
+  virtual void handle_event_from_ignored_device(event_queue::queued_event::event::type original_type,
+                                                event_type event_type,
+                                                event_queue& output_event_queue,
+                                                uint64_t time_stamp) = 0;
+
   bool get_valid(void) const {
     return valid_;
   }

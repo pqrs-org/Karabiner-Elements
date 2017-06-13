@@ -17,7 +17,8 @@ public:
                                const event_queue::queued_event::event& original_event,
                                const std::unordered_set<modifier_flag> from_mandatory_modifiers) : device_id_(device_id),
                                                                                                    original_event_(original_event),
-                                                                                                   from_mandatory_modifiers_(from_mandatory_modifiers) {
+                                                                                                   from_mandatory_modifiers_(from_mandatory_modifiers),
+                                                                                                   alone_(true) {
     }
 
     device_id get_device_id(void) const {
@@ -32,6 +33,14 @@ public:
       return from_mandatory_modifiers_;
     }
 
+    bool get_alone(void) const {
+      return alone_;
+    }
+
+    void unset_alone(void) {
+      alone_ = false;
+    }
+
     bool operator==(const manipulated_original_event& other) const {
       // Do not compare `from_mandatory_modifiers_`.
       return get_device_id() == other.get_device_id() &&
@@ -42,6 +51,7 @@ public:
     device_id device_id_;
     event_queue::queued_event::event original_event_;
     std::unordered_set<modifier_flag> from_mandatory_modifiers_;
+    bool alone_;
   };
 
   basic(const nlohmann::json& json) : base(),
@@ -51,6 +61,14 @@ public:
       if (json.find(key) != std::end(json) && json[key].is_array()) {
         for (const auto& j : json[key]) {
           to_.emplace_back(j);
+        }
+      }
+    }
+    {
+      const std::string key = "to_if_alone";
+      if (json.find(key) != std::end(json) && json[key].is_array()) {
+        for (const auto& j : json[key]) {
+          to_if_alone_.emplace_back(j);
         }
       }
     }
@@ -72,21 +90,33 @@ public:
       return;
     }
 
+    bool key_or_button = false;
     bool is_target = false;
 
     if (auto key_code = front_input_event.get_event().get_key_code()) {
+      key_or_button = true;
       if (from_.get_key_code() == key_code) {
         is_target = true;
       }
     }
     if (auto pointing_button = front_input_event.get_event().get_pointing_button()) {
+      key_or_button = true;
       if (from_.get_pointing_button() == pointing_button) {
         is_target = true;
       }
     }
 
+    if (key_or_button) {
+      if (front_input_event.get_event_type() == event_type::key_down) {
+        for (auto& e : manipulated_original_events_) {
+          e.unset_alone();
+        }
+      }
+    }
+
     if (is_target) {
       std::unordered_set<modifier_flag> from_mandatory_modifiers;
+      bool alone = false;
 
       if (front_input_event.get_event_type() == event_type::key_down) {
 
@@ -119,6 +149,7 @@ public:
                                });
         if (it != std::end(manipulated_original_events_)) {
           from_mandatory_modifiers = it->get_from_mandatory_modifiers();
+          alone = it->get_alone();
           manipulated_original_events_.erase(it);
         } else {
           is_target = false;
@@ -154,6 +185,7 @@ public:
               enqueue_to_modifiers(to_[i],
                                    event_type::key_down,
                                    front_input_event,
+                                   !preserve_to_modifiers_down(),
                                    time_stamp_delay,
                                    output_event_queue);
 
@@ -175,6 +207,7 @@ public:
                 enqueue_to_modifiers(to_[i],
                                      event_type::key_up,
                                      front_input_event,
+                                     !preserve_to_modifiers_down(),
                                      time_stamp_delay,
                                      output_event_queue);
               }
@@ -193,8 +226,15 @@ public:
                   enqueue_to_modifiers(to_[i],
                                        event_type::key_up,
                                        front_input_event,
+                                       !preserve_to_modifiers_down(),
                                        time_stamp_delay,
                                        output_event_queue);
+                }
+
+                if (alone) {
+                  send_to_if_alone(front_input_event,
+                                   time_stamp_delay,
+                                   output_event_queue);
                 }
               }
             }
@@ -240,6 +280,22 @@ public:
                                        std::end(manipulated_original_events_));
   }
 
+  virtual void handle_event_from_ignored_device(event_queue::queued_event::event::type original_type,
+                                                event_type event_type,
+                                                event_queue& output_event_queue,
+                                                uint64_t time_stamp) {
+    if (original_type == event_queue::queued_event::event::type::key_code ||
+        original_type == event_queue::queued_event::event::type::pointing_button ||
+        original_type == event_queue::queued_event::event::type::pointing_vertical_wheel ||
+        original_type == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
+      if (event_type == event_type::key_down) {
+        for (auto& e : manipulated_original_events_) {
+          e.unset_alone();
+        }
+      }
+    }
+  }
+
   const from_event_definition& get_from(void) const {
     return from_;
   }
@@ -251,6 +307,7 @@ public:
   void enqueue_to_modifiers(const to_event_definition& to,
                             event_type event_type,
                             const event_queue::queued_event& front_input_event,
+                            bool lazy,
                             uint64_t& time_stamp_delay,
                             event_queue& output_event_queue) {
     for (const auto& modifier : to.get_modifiers()) {
@@ -294,8 +351,43 @@ private:
     return preserve_from_mandatory_modifiers_up();
   }
 
+  void send_to_if_alone(const event_queue::queued_event& front_input_event,
+                        uint64_t& time_stamp_delay,
+                        event_queue& output_event_queue) {
+    for (const auto& to : to_if_alone_) {
+      if (auto event = to.to_event()) {
+        enqueue_to_modifiers(to,
+                             event_type::key_down,
+                             front_input_event,
+                             true,
+                             time_stamp_delay,
+                             output_event_queue);
+
+        output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                              front_input_event.get_time_stamp() + time_stamp_delay++,
+                                              *event,
+                                              event_type::key_down,
+                                              front_input_event.get_original_event());
+
+        output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                              front_input_event.get_time_stamp() + time_stamp_delay++,
+                                              *event,
+                                              event_type::key_up,
+                                              front_input_event.get_original_event());
+
+        enqueue_to_modifiers(to,
+                             event_type::key_up,
+                             front_input_event,
+                             true,
+                             time_stamp_delay,
+                             output_event_queue);
+      }
+    }
+  }
+
   from_event_definition from_;
   std::vector<to_event_definition> to_;
+  std::vector<to_event_definition> to_if_alone_;
 
   std::vector<manipulated_original_event> manipulated_original_events_;
 };
