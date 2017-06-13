@@ -268,7 +268,7 @@ private:
 
     output_devices_json();
 
-    if (is_pointing_device_connected()) {
+    if (is_pointing_device_grabbed()) {
       virtual_hid_device_client_.initialize_virtual_hid_pointing();
     } else {
       virtual_hid_device_client_.terminate_virtual_hid_pointing();
@@ -316,7 +316,7 @@ private:
 
     output_devices_json();
 
-    if (is_pointing_device_connected()) {
+    if (is_pointing_device_grabbed()) {
       virtual_hid_device_client_.initialize_virtual_hid_pointing();
     } else {
       virtual_hid_device_client_.terminate_virtual_hid_pointing();
@@ -467,9 +467,10 @@ private:
     return false;
   }
 
-  bool is_pointing_device_connected(void) {
+  bool is_pointing_device_grabbed(void) {
     for (const auto& it : hids_) {
-      if ((it.second)->is_pointing_device()) {
+      if ((it.second)->is_pointing_device() &&
+          (it.second)->is_grabbed()) {
         return true;
       }
     }
