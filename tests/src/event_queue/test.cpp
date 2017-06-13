@@ -44,6 +44,8 @@ krbn::event_queue::queued_event::event pointing_y_m10_event(krbn::event_queue::q
 
 krbn::event_queue::queued_event::event caps_lock_event_state_changed_1_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
 krbn::event_queue::queued_event::event caps_lock_event_state_changed_0_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
+
+krbn::event_queue::queued_event::event device_keys_are_released_event(krbn::event_queue::queued_event::event::type::device_keys_are_released, 1);
 } // namespace
 
 TEST_CASE("constructor") {
@@ -113,6 +115,14 @@ TEST_CASE("emplace_back_event") {
     ENQUEUE_EVENT(event_queue, 1, 300, a_event, key_up, a_event);
     ENQUEUE_EVENT(event_queue, 1, 300, left_control_event, key_up, left_control_event);
 
+    // Other events (not key_code) order are preserved.
+
+    ENQUEUE_EVENT(event_queue, 1, 400, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_EVENT(event_queue, 1, 400, device_keys_are_released_event, key_down, device_keys_are_released_event);
+
+    ENQUEUE_EVENT(event_queue, 1, 500, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    ENQUEUE_EVENT(event_queue, 1, 500, left_shift_event, key_down, left_shift_event);
+
     std::vector<krbn::event_queue::queued_event> expected;
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
@@ -121,6 +131,10 @@ TEST_CASE("emplace_back_event") {
     PUSH_BACK_QUEUED_EVENT(expected, 1, 300, a_event, key_up, a_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 300, left_shift_event, key_up, left_shift_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 300, left_control_event, key_up, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 400, left_shift_event, key_down, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, left_shift_event, key_down, left_shift_event);
     REQUIRE(event_queue.get_events() == expected);
   }
 }

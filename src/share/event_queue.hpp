@@ -437,37 +437,35 @@ public:
     // Thus, we have to reorder the events.
 
     if (v1.get_time_stamp() == v2.get_time_stamp()) {
-      auto modifier_flag1 = modifier_flag::zero;
-      auto modifier_flag2 = modifier_flag::zero;
+      auto key_code1 = v1.get_event().get_key_code();
+      auto key_code2 = v2.get_event().get_key_code();
 
-      if (auto key_code1 = v1.get_event().get_key_code()) {
-        modifier_flag1 = types::get_modifier_flag(*key_code1);
-      }
-      if (auto key_code2 = v2.get_event().get_key_code()) {
-        modifier_flag2 = types::get_modifier_flag(*key_code2);
-      }
+      if (key_code1 && key_code2) {
+        auto modifier_flag1 = types::get_modifier_flag(*key_code1);
+        auto modifier_flag2 = types::get_modifier_flag(*key_code2);
 
-      // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
+        // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
 
-      if (modifier_flag1 == modifier_flag::zero &&
-          modifier_flag2 != modifier_flag::zero) {
-        // v2 is modifier_flag
-        if (v2.get_event_type() == event_type::key_up) {
-          return true;
-        } else {
-          // reorder to v2,v1 if v2 is pressed.
-          return false;
+        if (modifier_flag1 == modifier_flag::zero &&
+            modifier_flag2 != modifier_flag::zero) {
+          // v2 is modifier_flag
+          if (v2.get_event_type() == event_type::key_up) {
+            return true;
+          } else {
+            // reorder to v2,v1 if v2 is pressed.
+            return false;
+          }
         }
-      }
 
-      if (modifier_flag1 != modifier_flag::zero &&
-          modifier_flag2 == modifier_flag::zero) {
-        // v1 is modifier_flag
-        if (v1.get_event_type() == event_type::key_up) {
-          // reorder to v2,v1 if v1 is released.
-          return false;
-        } else {
-          return true;
+        if (modifier_flag1 != modifier_flag::zero &&
+            modifier_flag2 == modifier_flag::zero) {
+          // v1 is modifier_flag
+          if (v1.get_event_type() == event_type::key_up) {
+            // reorder to v2,v1 if v1 is released.
+            return false;
+          } else {
+            return true;
+          }
         }
       }
     }
