@@ -682,6 +682,19 @@ public:
     return false;
   }
 
+  bool is_pqrs_virtual_hid_keyboard(void) const {
+    if (auto manufacturer = get_manufacturer()) {
+      if (auto product = get_product()) {
+        if (*manufacturer == "pqrs.org" &&
+            *product == "Karabiner VirtualHIDKeyboard") {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
 private:
   static void static_queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
     if (result != kIOReturnSuccess) {
