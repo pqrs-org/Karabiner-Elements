@@ -17,10 +17,9 @@ public:
                                                   output_event_queue_(output_event_queue) {
     }
 
-    void manipulate(uint64_t time_stamp) {
+    void manipulate(void) {
       manipulator_manager_.manipulate(input_event_queue_,
-                                      output_event_queue_,
-                                      time_stamp);
+                                      output_event_queue_);
     }
 
     void invalidate_manipulators(void) {
@@ -63,9 +62,9 @@ public:
     last_output_event_queue_ = &output_event_queue;
   }
 
-  void manipulate(uint64_t time_stamp) {
+  void manipulate(void) {
     for (auto&& c : connections_) {
-      c.manipulate(time_stamp);
+      c.manipulate();
     }
   }
 

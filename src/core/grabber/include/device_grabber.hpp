@@ -329,7 +329,7 @@ private:
   }
 
   void manipulate(void) {
-    manipulator_managers_connector_.manipulate(mach_absolute_time());
+    manipulator_managers_connector_.manipulate();
 
     posted_event_queue_.clear_events();
     post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);

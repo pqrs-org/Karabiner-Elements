@@ -17,8 +17,7 @@ public:
 
   virtual void manipulate(event_queue::queued_event& front_input_event,
                           const event_queue& input_event_queue,
-                          event_queue& output_event_queue,
-                          uint64_t time_stamp) = 0;
+                          event_queue& output_event_queue) = 0;
 
   virtual bool active(void) const = 0;
 

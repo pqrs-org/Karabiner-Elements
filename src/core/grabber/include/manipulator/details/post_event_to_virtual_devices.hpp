@@ -271,8 +271,7 @@ public:
 
   virtual void manipulate(event_queue::queued_event& front_input_event,
                           const event_queue& input_event_queue,
-                          event_queue& output_event_queue,
-                          uint64_t time_stamp) {
+                          event_queue& output_event_queue) {
     output_event_queue.push_back_event(front_input_event);
     front_input_event.set_valid(false);
 

@@ -21,8 +21,7 @@ public:
   }
 
   void manipulate(event_queue& input_event_queue,
-                  event_queue& output_event_queue,
-                  uint64_t time_stamp) {
+                  event_queue& output_event_queue) {
     while (!input_event_queue.empty()) {
       auto& front_input_event = input_event_queue.get_front_event();
 
@@ -62,8 +61,7 @@ public:
           for (auto&& m : manipulators_) {
             m->manipulate(front_input_event,
                           input_event_queue,
-                          output_event_queue,
-                          time_stamp);
+                          output_event_queue);
           }
           break;
       }

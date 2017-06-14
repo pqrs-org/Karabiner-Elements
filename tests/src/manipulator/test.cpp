@@ -155,7 +155,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    connector.manipulate(500);
+    connector.manipulate();
 
     std::vector<krbn::event_queue::queued_event> expected;
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, tab_event, key_down, spacebar_event);
@@ -251,7 +251,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    connector.manipulate(1000);
+    connector.manipulate();
 
     std::vector<krbn::event_queue::queued_event> expected;
     time_stamp = 0;
@@ -299,7 +299,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    connector.manipulate(200);
+    connector.manipulate();
 
     std::vector<krbn::event_queue::queued_event> expected;
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, spacebar_event, key_up, spacebar_event);
@@ -350,7 +350,7 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     // device_ungrabbed for device_id 1
 
-    connector.manipulate(500);
+    connector.manipulate();
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
@@ -367,7 +367,7 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     ENQUEUE_EVENT(input_event_queue, 2, 600, spacebar_event, key_up, spacebar_event);
 
-    connector.manipulate(500);
+    connector.manipulate();
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
@@ -386,7 +386,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     ENQUEUE_EVENT(input_event_queue, 1, 300, spacebar_event, key_up, spacebar_event);
     ENQUEUE_EVENT(input_event_queue, 2, 400, device_ungrabbed_event, key_down, device_ungrabbed_event);
 
-    connector.manipulate(500);
+    connector.manipulate();
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
@@ -403,7 +403,7 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     ENQUEUE_EVENT(input_event_queue, 2, 600, spacebar_event, key_up, spacebar_event);
 
-    connector.manipulate(500);
+    connector.manipulate();
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
@@ -419,7 +419,7 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     ENQUEUE_EVENT(input_event_queue, 3, 100, device_ungrabbed_event, key_down, device_ungrabbed_event);
 
-    connector.manipulate(600);
+    connector.manipulate();
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
@@ -466,7 +466,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    connector.manipulate(200);
+    connector.manipulate();
     connector.invalidate_manipulators();
 
     {
@@ -483,7 +483,7 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     ENQUEUE_EVENT(input_event_queue, 1, 300, spacebar_event, key_up, spacebar_event);
 
-    connector.manipulate(400);
+    connector.manipulate();
 
     REQUIRE(manipulator_manager.get_manipulators_size() == 0);
   }
@@ -531,7 +531,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     // ----------------------------------------
     // test
 
-    connector.manipulate(700);
+    connector.manipulate();
 
     {
       std::vector<krbn::event_queue::queued_event> expected;

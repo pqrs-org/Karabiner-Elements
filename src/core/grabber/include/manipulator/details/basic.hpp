@@ -15,10 +15,12 @@ public:
   public:
     manipulated_original_event(device_id device_id,
                                const event_queue::queued_event::event& original_event,
-                               const std::unordered_set<modifier_flag> from_mandatory_modifiers) : device_id_(device_id),
-                                                                                                   original_event_(original_event),
-                                                                                                   from_mandatory_modifiers_(from_mandatory_modifiers),
-                                                                                                   alone_(true) {
+                               const std::unordered_set<modifier_flag> from_mandatory_modifiers,
+                               uint64_t key_down_time_stamp) : device_id_(device_id),
+                                                               original_event_(original_event),
+                                                               from_mandatory_modifiers_(from_mandatory_modifiers),
+                                                               key_down_time_stamp_(key_down_time_stamp),
+                                                               alone_(true) {
     }
 
     device_id get_device_id(void) const {
@@ -31,6 +33,10 @@ public:
 
     const std::unordered_set<modifier_flag>& get_from_mandatory_modifiers(void) const {
       return from_mandatory_modifiers_;
+    }
+
+    uint64_t get_key_down_time_stamp(void) const {
+      return key_down_time_stamp_;
     }
 
     bool get_alone(void) const {
@@ -51,6 +57,7 @@ public:
     device_id device_id_;
     event_queue::queued_event::event original_event_;
     std::unordered_set<modifier_flag> from_mandatory_modifiers_;
+    uint64_t key_down_time_stamp_;
     bool alone_;
   };
 
@@ -86,8 +93,7 @@ public:
 
   virtual void manipulate(event_queue::queued_event& front_input_event,
                           const event_queue& input_event_queue,
-                          event_queue& output_event_queue,
-                          uint64_t time_stamp) {
+                          event_queue& output_event_queue) {
     bool key_or_button = false;
     bool is_target = false;
 
@@ -135,7 +141,8 @@ public:
         if (is_target) {
           manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
                                                     front_input_event.get_original_event(),
-                                                    from_mandatory_modifiers);
+                                                    from_mandatory_modifiers,
+                                                    front_input_event.get_time_stamp());
         }
 
       } else {

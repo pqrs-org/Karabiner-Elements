@@ -109,7 +109,7 @@ TEST_CASE("generic") {
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, button1_event, key_up);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, pointing_y_10_event, key_down);
 
-    connector.manipulate(time_stamp += interval);
+    connector.manipulate();
 
     {
       std::vector<post_event_to_virtual_devices::queue::event> expected;
@@ -177,7 +177,7 @@ TEST_CASE("Same modifier twice from different devices") {
     ENQUEUE_EVENT(input_event_queue, 2, time_stamp += interval, left_shift_event, key_down);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, left_shift_event, key_up);
 
-    connector.manipulate(time_stamp += interval);
+    connector.manipulate();
 
     std::vector<post_event_to_virtual_devices::queue::event> expected;
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, interval);
@@ -189,7 +189,7 @@ TEST_CASE("Same modifier twice from different devices") {
     ENQUEUE_EVENT(input_event_queue, 2, time_stamp += interval, left_shift_event, key_up);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, left_shift_event, key_down);
 
-    connector.manipulate(time_stamp += interval);
+    connector.manipulate();
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, interval * 4);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, interval * 5);
@@ -225,7 +225,7 @@ TEST_CASE("device_ungrabbed event") {
     ENQUEUE_EVENT(input_event_queue, 2, time_stamp += interval, a_event, key_down);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, a_event, key_down); // `key_code::a` is pressed until device_id(2) is ungrabbed.
 
-    connector.manipulate(interval * 5);
+    connector.manipulate();
 
     time_stamp = 0;
 
@@ -243,7 +243,7 @@ TEST_CASE("device_ungrabbed event") {
     ENQUEUE_EVENT(input_event_queue, 1, interval * 6, device_ungrabbed_event, key_down);
     ENQUEUE_EVENT(input_event_queue, 3, interval * 6, device_ungrabbed_event, key_down);
 
-    connector.manipulate(interval * 7);
+    connector.manipulate();
 
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, interval * 6);
     ENQUEUE_KEYBOARD_EVENT(expected, return_or_enter, 0, interval * 6);
@@ -253,7 +253,7 @@ TEST_CASE("device_ungrabbed event") {
 
     ENQUEUE_EVENT(input_event_queue, 2, interval * 8, device_ungrabbed_event, key_down);
 
-    connector.manipulate(interval * 9);
+    connector.manipulate();
 
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, interval * 8);
     ENQUEUE_KEYBOARD_EVENT(expected, a, 0, interval * 8);
@@ -300,7 +300,7 @@ TEST_CASE("lazy events") {
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, fn_event, key_up);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, spacebar_event, key_up);
 
-    connector.manipulate(time_stamp += interval);
+    connector.manipulate();
 
     // ----------------------------------------
 
@@ -374,8 +374,8 @@ public:
     return input_event_queue_;
   }
 
-  void manipulate(uint64_t time_stamp) {
-    connector_.manipulate(time_stamp);
+  void manipulate(void) {
+    connector_.manipulate();
   }
 
   const std::vector<post_event_to_virtual_devices::queue::event> get_events(void) const {
@@ -420,7 +420,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -446,7 +446,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_shift_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -472,7 +472,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -496,7 +496,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f2_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -524,7 +524,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f3_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -558,7 +558,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f4_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -596,7 +596,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f5_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_shift_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -634,7 +634,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_command_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -674,7 +674,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_option_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -716,7 +716,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_option_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -754,7 +754,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_shift_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -780,7 +780,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_shift_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -808,7 +808,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -840,7 +840,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_command_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -878,7 +878,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_command_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -918,7 +918,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -958,7 +958,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1000,7 +1000,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_command_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1040,7 +1040,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1066,7 +1066,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, event_from_ignored_device_key_code_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1089,7 +1089,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1121,7 +1121,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, fn_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1152,7 +1152,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, fn_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, up_arrow_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1184,7 +1184,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1214,7 +1214,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1237,7 +1237,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, event_from_ignored_device_key_code_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1269,7 +1269,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1304,7 +1304,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_option_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1338,7 +1338,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1373,7 +1373,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, u_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
@@ -1417,7 +1417,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_up);
 
-    helper.manipulate(time_stamp += interval);
+    helper.manipulate();
 
     time_stamp = 0;
     expected.clear();
