@@ -33,6 +33,7 @@
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = SOURCE_ROOT; };
 		341F59D11D5244F200B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../../share/local_datagram_client.hpp; sourceTree = SOURCE_ROOT; };
 		341F59DC1D5778A000B441A8 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../../share/iokit_utility.hpp; sourceTree = SOURCE_ROOT; };
+		342BE67B1EF148BE00149985 /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = core_configuration.hpp; path = ../../share/core_configuration.hpp; sourceTree = SOURCE_ROOT; };
 		3431346C1DB3CD8A0008F284 /* iopm_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iopm_client.hpp; path = ../../share/iopm_client.hpp; sourceTree = SOURCE_ROOT; };
 		3431346E1DB70C900008F284 /* gcd_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = gcd_utility.hpp; path = ../../share/gcd_utility.hpp; sourceTree = SOURCE_ROOT; };
 		343134701DB71BEC0008F284 /* thread_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = thread_utility.hpp; path = ../../share/thread_utility.hpp; sourceTree = SOURCE_ROOT; };
@@ -139,6 +140,7 @@
 				341424E81E685E5F00DFE6EC /* configuration_monitor.hpp */,
 				349863321E784DC800DF3644 /* connected_devices.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
+				342BE67B1EF148BE00149985 /* core_configuration.hpp */,
 				345CCB4F1E902963005B61A8 /* event_queue.hpp */,
 				3469EB701D814F140005D30D /* filesystem.hpp */,
 				3431346E1DB70C900008F284 /* gcd_utility.hpp */,
