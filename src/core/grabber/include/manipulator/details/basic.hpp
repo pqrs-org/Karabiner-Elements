@@ -124,6 +124,7 @@ public:
 
     if (is_target) {
       std::unordered_set<modifier_flag> from_mandatory_modifiers;
+      uint64_t key_down_time_stamp = 0;
       bool alone = false;
 
       if (front_input_event.get_event_type() == event_type::key_down) {
@@ -158,6 +159,7 @@ public:
                                });
         if (it != std::end(manipulated_original_events_)) {
           from_mandatory_modifiers = it->get_from_mandatory_modifiers();
+          key_down_time_stamp = it->get_key_down_time_stamp();
           alone = it->get_alone();
           manipulated_original_events_.erase(it);
         } else {
@@ -240,7 +242,9 @@ public:
                                        output_event_queue);
                 }
 
-                if (alone) {
+                uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
+                if (alone &&
+                    nanoseconds < parameters_.get_basic().get_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
                   send_to_if_alone(front_input_event,
                                    time_stamp_delay,
                                    output_event_queue);

@@ -1039,6 +1039,12 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
+    uint64_t timeout1 = krbn::time_utility::nano_to_absolute(999 * NSEC_PER_MSEC);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += timeout1, right_control_event, key_up);
+    uint64_t timeout2 = krbn::time_utility::nano_to_absolute(1001 * NSEC_PER_MSEC);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += timeout2, right_control_event, key_up);
 
     helper.manipulate();
 
@@ -1053,6 +1059,12 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
 
     REQUIRE(helper.get_events() == expected);
   }
