@@ -74,7 +74,10 @@ krbn::event_queue::queued_event::event pointing_x_m10_event(krbn::event_queue::q
 krbn::event_queue::queued_event::event pointing_y_10_event(krbn::event_queue::queued_event::event::type::pointing_y, 10);
 krbn::event_queue::queued_event::event device_ungrabbed_event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1);
 krbn::event_queue::queued_event::event device_keys_are_released_event(krbn::event_queue::queued_event::event::type::device_keys_are_released, 1);
-auto event_from_ignored_device_key_code_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::key_code);
+auto event_from_ignored_device_key_code_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::key_code, boost::none);
+auto event_from_ignored_device_pointing_x_100_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::pointing_x, 100);
+auto event_from_ignored_device_pointing_vertical_wheel_0_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::pointing_vertical_wheel, 0);
+auto event_from_ignored_device_pointing_vertical_wheel_100_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::pointing_vertical_wheel, 100);
 
 uint64_t modifier_wait = krbn::time_utility::nano_to_absolute(NSEC_PER_MSEC);
 } // namespace
@@ -1078,6 +1081,16 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, event_from_ignored_device_key_code_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
 
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, event_from_ignored_device_pointing_vertical_wheel_100_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, event_from_ignored_device_key_code_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, event_from_ignored_device_pointing_x_100_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, event_from_ignored_device_pointing_vertical_wheel_0_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
+
     helper.manipulate();
 
     time_stamp = 0;
@@ -1085,6 +1098,12 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
 
     REQUIRE(helper.get_events() == expected);
   }

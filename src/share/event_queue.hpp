@@ -43,10 +43,12 @@ public:
                                      integer_value_(integer_value) {
       }
 
-      static event make_event_from_ignored_device(type original_type) {
+      static event make_event_from_ignored_device(type original_type,
+                                                  boost::optional<int64_t> original_integer_value) {
         event e;
         e.type_ = type::event_from_ignored_device;
-        e.original_type_ = original_type;
+        e.original_value_.type_ = original_type;
+        e.original_value_.integer_value_ = (original_integer_value ? *original_integer_value : 0);
         return e;
       }
 
@@ -81,7 +83,14 @@ public:
 
       boost::optional<type> get_original_type(void) const {
         if (type_ == type::event_from_ignored_device) {
-          return original_type_;
+          return original_value_.type_;
+        }
+        return boost::none;
+      }
+
+      boost::optional<int64_t> get_original_integer_value(void) const {
+        if (type_ == type::event_from_ignored_device) {
+          return original_value_.integer_value_;
         }
         return boost::none;
       }
@@ -91,7 +100,8 @@ public:
                get_key_code() == other.get_key_code() &&
                get_pointing_button() == other.get_pointing_button() &&
                get_integer_value() == other.get_integer_value() &&
-               get_original_type() == other.get_original_type();
+               get_original_type() == other.get_original_type() &&
+               get_original_integer_value() == other.get_original_integer_value();
       }
 
     private:
@@ -104,7 +114,10 @@ public:
         key_code key_code_;               // For type::key_code
         pointing_button pointing_button_; // For type::pointing_button
         int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel and virtual events
-        type original_type_;              // For type::event_from_ignored_device
+        struct {
+          type type_;
+          int64_t integer_value_;
+        } original_value_; // For type::event_from_ignored_device
       };
     };
 

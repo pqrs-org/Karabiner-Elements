@@ -50,9 +50,16 @@ krbn::event_queue::queued_event::event device_keys_are_released_event(krbn::even
 
 TEST_CASE("constructor") {
   {
-    auto event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::key_code);
+    auto event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::key_code, boost::none);
     REQUIRE(event.get_type() == krbn::event_queue::queued_event::event::type::event_from_ignored_device);
     REQUIRE(event.get_original_type() == krbn::event_queue::queued_event::event::type::key_code);
+    REQUIRE(event.get_original_integer_value() == static_cast<int64_t>(0));
+  }
+  {
+    auto event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::pointing_y, -100);
+    REQUIRE(event.get_type() == krbn::event_queue::queued_event::event::type::event_from_ignored_device);
+    REQUIRE(event.get_original_type() == krbn::event_queue::queued_event::event::type::pointing_y);
+    REQUIRE(event.get_original_integer_value() == static_cast<int64_t>(-100));
   }
 }
 

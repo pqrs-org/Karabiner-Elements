@@ -294,17 +294,28 @@ public:
   }
 
   virtual void handle_event_from_ignored_device(event_queue::queued_event::event::type original_type,
+                                                int64_t original_integer_value,
                                                 event_type event_type,
                                                 event_queue& output_event_queue,
                                                 uint64_t time_stamp) {
+    bool need_to_unset_alone = false;
+
     if (original_type == event_queue::queued_event::event::type::key_code ||
-        original_type == event_queue::queued_event::event::type::pointing_button ||
-        original_type == event_queue::queued_event::event::type::pointing_vertical_wheel ||
-        original_type == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
+        original_type == event_queue::queued_event::event::type::pointing_button) {
       if (event_type == event_type::key_down) {
-        for (auto& e : manipulated_original_events_) {
-          e.unset_alone();
-        }
+        need_to_unset_alone = true;
+      }
+    }
+    if (original_type == event_queue::queued_event::event::type::pointing_vertical_wheel ||
+        original_type == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
+      if (original_integer_value != 0) {
+        need_to_unset_alone = true;
+      }
+    }
+
+    if (need_to_unset_alone) {
+      for (auto& e : manipulated_original_events_) {
+        e.unset_alone();
       }
     }
   }
