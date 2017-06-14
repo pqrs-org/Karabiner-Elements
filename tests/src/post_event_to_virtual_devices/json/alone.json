@@ -58,7 +58,12 @@
                 "key_code": "spacebar"
             }
         ],
-        "type": "basic"
+        "type": "basic",
+        "parameters": {
+            "basic": {
+                "to_if_alone_timeout_milliseconds": 500
+            }
+        }
     },
     {
         "description": "command+escape -> left_control (spacebar)",

@@ -360,22 +360,6 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile::com
   json = complex_modifications.to_json();
 }
 
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::parameters& parameters) {
-  json = parameters.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::rule& rule) {
-  json = rule.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::rule::condition& condition) {
-  json = condition.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::rule::manipulator& manipulator) {
-  json = manipulator.to_json();
-}
-
 inline void to_json(nlohmann::json& json, const core_configuration::profile::virtual_hid_keyboard& virtual_hid_keyboard) {
   json = virtual_hid_keyboard.to_json();
 }

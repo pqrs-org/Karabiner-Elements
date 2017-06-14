@@ -54,8 +54,10 @@ public:
     bool alone_;
   };
 
-  basic(const nlohmann::json& json) : base(),
-                                      from_(json.find("from") != std::end(json) ? json["from"] : nlohmann::json()) {
+  basic(const nlohmann::json& json,
+        const core_configuration::profile::complex_modifications::parameters& parameters) : base(),
+                                                                                            parameters_(parameters),
+                                                                                            from_(json.find("from") != std::end(json) ? json["from"] : nlohmann::json()) {
     {
       const std::string key = "to";
       if (json.find(key) != std::end(json) && json[key].is_array()) {
@@ -384,6 +386,8 @@ private:
       }
     }
   }
+
+  core_configuration::profile::complex_modifications::parameters parameters_;
 
   from_event_definition from_;
   std::vector<to_event_definition> to_;

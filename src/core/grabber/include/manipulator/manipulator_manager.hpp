@@ -11,8 +11,9 @@ public:
   manipulator_manager(void) {
   }
 
-  void push_back_manipulator(const nlohmann::json& json) {
-    manipulators_.push_back(manipulator_factory::make_manipulator(json));
+  void push_back_manipulator(const nlohmann::json& json,
+                             const core_configuration::profile::complex_modifications::parameters& parameters) {
+    manipulators_.push_back(manipulator_factory::make_manipulator(json, parameters));
   }
 
   void push_back_manipulator(std::shared_ptr<details::base> ptr) {

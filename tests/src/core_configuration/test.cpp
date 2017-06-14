@@ -55,6 +55,12 @@ TEST_CASE("valid") {
     REQUIRE(configuration.get_selected_profile().get_fn_function_keys_key_code_map(logger::get_logger()) == expected);
   }
   {
+    auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
+    REQUIRE(complex_modifications.get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 800);
+    REQUIRE(complex_modifications.get_rules()[0].get_manipulators()[0].get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 800);
+    REQUIRE(complex_modifications.get_rules()[0].get_manipulators()[2].get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 400);
+  }
+  {
     REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type() == "iso");
     REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds() == 100);
   }
@@ -769,6 +775,41 @@ TEST_CASE("simple_modifications.to_json") {
                                                   {"dummy", "f3"},
                                                   {"f4", "dummy"},
                                               }));
+  }
+}
+
+TEST_CASE("complex_modifications.parameters") {
+  // empty json
+  {
+    nlohmann::json json;
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1000);
+  }
+
+  // load values from json
+  {
+    nlohmann::json json({
+        {
+            "basic", {
+                         {"to_if_alone_timeout_milliseconds", 1234},
+                     },
+        },
+    });
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1234);
+  }
+
+  // invalid values in json
+  {
+    nlohmann::json json({
+        {
+            "basic", {
+                         {"to_if_alone_timeout_milliseconds", "1234"},
+                     },
+        },
+    });
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1000);
   }
 }
 

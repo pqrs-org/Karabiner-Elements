@@ -61,7 +61,8 @@ using krbn::manipulator::details::to_event_definition;
 TEST_CASE("manipulator.manipulator_factory") {
   {
     nlohmann::json json;
-    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json);
+    krbn::core_configuration::profile::complex_modifications::parameters parameters;
+    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json, parameters);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) == nullptr);
     REQUIRE(manipulator->get_valid() == true);
@@ -97,7 +98,8 @@ TEST_CASE("manipulator.manipulator_factory") {
                   },
         },
     });
-    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json);
+    krbn::core_configuration::profile::complex_modifications::parameters parameters;
+    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json, parameters);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) == nullptr);
     REQUIRE(manipulator->get_valid() == true);
@@ -206,16 +208,19 @@ TEST_CASE("manipulator.manipulator_manager") {
     }
     {
       // f1 -> empty
-      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(nlohmann::json({
-          {"type", "basic"},
-          {"from",
-           {
-               {"key_code", "f1"},
-               {"modifiers", {
-                                 {"mandatory", nlohmann::json::array()}, {"optional", {"any"}},
-                             }},
-           }},
-      }));
+      krbn::core_configuration::profile::complex_modifications::parameters parameters;
+      auto manipulator = std::make_shared<krbn::manipulator::details::basic>(
+          nlohmann::json({
+              {"type", "basic"},
+              {"from",
+               {
+                   {"key_code", "f1"},
+                   {"modifiers", {
+                                     {"mandatory", nlohmann::json::array()}, {"optional", {"any"}},
+                                 }},
+               }},
+          }),
+          parameters);
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 

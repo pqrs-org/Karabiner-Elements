@@ -4,15 +4,51 @@ class complex_modifications final {
 public:
   class parameters final {
   public:
-    parameters(const nlohmann::json& json) : json_(json) {
+    class basic final {
+    public:
+      basic(void) : to_if_alone_timeout_milliseconds_(1000) {
+      }
+
+      void update(const nlohmann::json& json) {
+        {
+          const std::string key = "to_if_alone_timeout_milliseconds";
+          if (json.find(key) != json.end() && json[key].is_number()) {
+            to_if_alone_timeout_milliseconds_ = json[key];
+          }
+        }
+      }
+
+      int get_to_if_alone_timeout_milliseconds(void) const {
+        return to_if_alone_timeout_milliseconds_;
+      }
+
+    private:
+      int to_if_alone_timeout_milliseconds_;
+    };
+
+    parameters(void) : json_(nlohmann::json::object()) {
     }
 
-    nlohmann::json to_json(void) const {
-      return json_;
-    };
+    parameters(const nlohmann::json& json) : json_(json) {
+      update(json);
+    }
+
+    void update(const nlohmann::json& json) {
+      {
+        const std::string key = "basic";
+        if (json.find(key) != json.end()) {
+          basic_.update(json[key]);
+        }
+      }
+    }
+
+    const basic& get_basic(void) const {
+      return basic_;
+    }
 
   private:
     nlohmann::json json_;
+    basic basic_;
   };
 
   class rule final {
@@ -20,10 +56,6 @@ public:
     class condition {
     public:
       condition(const nlohmann::json& json) : json_(json) {
-      }
-
-      nlohmann::json to_json(void) const {
-        return json_;
       }
 
       const nlohmann::json& get_json(void) const {
@@ -36,22 +68,30 @@ public:
 
     class manipulator {
     public:
-      manipulator(const nlohmann::json& json) : json_(json) {
-      }
-
-      nlohmann::json to_json(void) const {
-        return json_;
+      manipulator(const nlohmann::json& json, const parameters& parameters) : json_(json),
+                                                                              parameters_(parameters) {
+        {
+          const std::string key = "parameters";
+          if (json.find(key) != json.end()) {
+            parameters_.update(json[key]);
+          }
+        }
       }
 
       const nlohmann::json& get_json(void) const {
         return json_;
       }
 
+      const parameters& get_parameters(void) const {
+        return parameters_;
+      }
+
     private:
       nlohmann::json json_;
+      parameters parameters_;
     };
 
-    rule(const nlohmann::json& json) : json_(json) {
+    rule(const nlohmann::json& json, const parameters& parameters) : json_(json) {
       {
         const std::string key = "conditions";
         if (json.find(key) != json.end() && json[key].is_array()) {
@@ -64,17 +104,10 @@ public:
         const std::string key = "manipulators";
         if (json.find(key) != json.end() && json[key].is_array()) {
           for (const auto& j : json[key]) {
-            manipulators_.emplace_back(j);
+            manipulators_.emplace_back(j, parameters);
           }
         }
       }
-    }
-
-    nlohmann::json to_json(void) const {
-      nlohmann::json j = json_;
-      j["conditions"] = conditions_;
-      j["manipulators"] = manipulators_;
-      return j;
     }
 
     const std::vector<condition>& get_conditions(void) const {
@@ -97,7 +130,7 @@ public:
       const std::string key = "rules";
       if (json_.find(key) != json_.end() && json_[key].is_array()) {
         for (const auto& j : json_[key]) {
-          rules_.emplace_back(j);
+          rules_.emplace_back(j, parameters_);
         }
       }
     }
@@ -105,7 +138,7 @@ public:
 
   nlohmann::json to_json(void) const {
     return json_;
-  };
+  }
 
   const parameters& get_parameters(void) const {
     return parameters_;

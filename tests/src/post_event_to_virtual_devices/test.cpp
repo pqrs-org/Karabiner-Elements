@@ -352,7 +352,11 @@ public:
     std::ifstream input(std::string("json/") + file_name);
     auto json = nlohmann::json::parse(input);
     for (const auto& j : json) {
-      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j);
+      krbn::core_configuration::profile::complex_modifications::parameters parameters;
+      if (j.find("parameters") != j.end()) {
+        parameters.update(j["parameters"]);
+      }
+      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j, parameters);
       modifications_manipulator_manager_.push_back_manipulator(m);
     }
 

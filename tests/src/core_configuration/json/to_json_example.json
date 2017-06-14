@@ -29,8 +29,7 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "conditions": [
-                        ],
+                        "conditions": [],
                         "manipulators": [
                             {
                                 "type": "basic",
@@ -69,11 +68,47 @@
                                         "key_code": "delete_or_backspace"
                                     }
                                 ]
+                            },
+                            {
+                                "description": "Change spacebar to left_shift. (Post spacebar if pressed alone)",
+                                "from": {
+                                    "key_code": "spacebar",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_shift"
+                                    }
+                                ],
+                                "to_if_alone": [
+                                    {
+                                        "key_code": "spacebar"
+                                    }
+                                ],
+                                "type": "basic",
+                                "parameters": {
+                                    "basic": {
+                                        "to_if_alone_timeout_milliseconds": 400
+                                    }
+                                }
                             }
                         ]
                     }
                 ],
+                "dummy": {
+                    "keep_me": true
+                },
                 "parameters": {
+                    "basic": {
+                        "to_if_alone_timeout_milliseconds": 800,
+                        "dummy": {
+                            "keep_me": true
+                        }
+                    }
                 }
             },
             "virtual_hid_keyboard": {
