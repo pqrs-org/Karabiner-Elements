@@ -1,6 +1,5 @@
 #include "constants.hpp"
 #include "libkrbn.h"
-#include "libkrbn.hpp"
 #include "system_preferences.hpp"
 #include "system_preferences_monitor.hpp"
 
@@ -10,10 +9,10 @@ public:
   libkrbn_system_preferences_monitor_class(const libkrbn_system_preferences_monitor_class&) = delete;
 
   libkrbn_system_preferences_monitor_class(libkrbn_system_preferences_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    system_preferences_monitor_ = std::make_unique<krbn::system_preferences_monitor>(libkrbn::get_logger(),
-                                                                                     [this](const krbn::system_preferences::values& values) {
-                                                                                       cpp_callback(values);
-                                                                                     });
+    system_preferences_monitor_ = std::make_unique<krbn::system_preferences_monitor>(
+        [this](const krbn::system_preferences::values& values) {
+          cpp_callback(values);
+        });
   }
 
 private:

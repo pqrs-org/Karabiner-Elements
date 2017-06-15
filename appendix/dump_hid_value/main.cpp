@@ -1,8 +1,8 @@
 #include "boost_defs.hpp"
 
-#include "../include/logger.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
+#include "logger.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -62,9 +62,9 @@ private:
       return;
     }
 
-    krbn::iokit_utility::log_matching_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_matching_device(device);
 
-    hids_[device] = std::make_unique<krbn::human_interface_device>(logger::get_logger(), device);
+    hids_[device] = std::make_unique<krbn::human_interface_device>(device);
     auto& dev = hids_[device];
     dev->set_value_callback(boost::bind(&dump_hid_value::value_callback, this, _1, _2));
     dev->observe();
@@ -88,7 +88,7 @@ private:
       return;
     }
 
-    krbn::iokit_utility::log_removal_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_removal_device(device);
 
     auto it = hids_.find(device);
     if (it != hids_.end()) {

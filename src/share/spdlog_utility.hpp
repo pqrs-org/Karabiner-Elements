@@ -2,11 +2,11 @@
 
 #include "boost_defs.hpp"
 
+#include "logger.hpp"
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 #include <deque>
 #include <iomanip>
-#include <spdlog/spdlog.h>
 
 namespace krbn {
 class spdlog_utility final {
@@ -90,7 +90,7 @@ public:
   public:
     log_reducer(const log_reducer&) = delete;
 
-    log_reducer(spdlog::logger& logger) : logger_(logger) {}
+    log_reducer(void) {}
 
     void reset(void) {
       messages_.clear();
@@ -101,7 +101,7 @@ public:
         return;
       }
 
-      logger_.info(message);
+      logger::get_logger().info(message);
     }
 
     void warn(const std::string& message) {
@@ -109,7 +109,7 @@ public:
         return;
       }
 
-      logger_.warn(message);
+      logger::get_logger().warn(message);
     }
 
     void error(const std::string& message) {
@@ -117,7 +117,7 @@ public:
         return;
       }
 
-      logger_.error(message);
+      logger::get_logger().error(message);
     }
 
   private:
@@ -136,8 +136,6 @@ public:
 
       return false;
     }
-
-    spdlog::logger& logger_;
 
     std::deque<std::pair<spdlog::level::level_enum, std::string>> messages_;
   };

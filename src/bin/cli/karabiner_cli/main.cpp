@@ -1,29 +1,12 @@
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
 #include "cxxopts/cxxopts.hpp"
+#include "logger.hpp"
 #include <iostream>
 
 namespace {
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> guard(mutex);
-
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("karabiner_cli");
-      logger->set_pattern("[%l] %v");
-      logger->set_level(spdlog::level::err);
-    }
-
-    return *logger;
-  }
-};
-
 void select_profile(const std::string& name) {
-  krbn::configuration_monitor monitor(logger::get_logger(),
-                                      krbn::constants::get_user_core_configuration_file_path(),
+  krbn::configuration_monitor monitor(krbn::constants::get_user_core_configuration_file_path(),
                                       [&name](std::shared_ptr<krbn::core_configuration> core_configuration) {
                                         auto& profiles = core_configuration->get_profiles();
                                         for (size_t i = 0; i < profiles.size(); ++i) {
@@ -33,7 +16,7 @@ void select_profile(const std::string& name) {
                                             return;
                                           }
                                         }
-                                        logger::get_logger().error("`{0}` is not found.", name);
+                                        krbn::logger::get_logger().error("`{0}` is not found.", name);
                                       });
 }
 
@@ -41,12 +24,12 @@ int copy_current_profile_to_system_default_profile(void) {
   krbn::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_system_configuration_directory(), 0755);
   std::ifstream ifstream(krbn::constants::get_user_core_configuration_file_path());
   if (!ifstream) {
-    logger::get_logger().error("Failed to open {0}", krbn::constants::get_user_core_configuration_file_path());
+    krbn::logger::get_logger().error("Failed to open {0}", krbn::constants::get_user_core_configuration_file_path());
     return 1;
   }
   std::ofstream ofstream(krbn::constants::get_system_core_configuration_file_path());
   if (!ofstream) {
-    logger::get_logger().error("Failed to open {0}", krbn::constants::get_system_core_configuration_file_path());
+    krbn::logger::get_logger().error("Failed to open {0}", krbn::constants::get_system_core_configuration_file_path());
     return 1;
   }
   ofstream << ifstream.rdbuf();
@@ -55,11 +38,11 @@ int copy_current_profile_to_system_default_profile(void) {
 
 int remove_system_default_profile(void) {
   if (!krbn::filesystem::exists(krbn::constants::get_system_core_configuration_file_path())) {
-    logger::get_logger().error("{0} is not found.", krbn::constants::get_system_core_configuration_file_path());
+    krbn::logger::get_logger().error("{0} is not found.", krbn::constants::get_system_core_configuration_file_path());
     return 1;
   }
   if (unlink(krbn::constants::get_system_core_configuration_file_path()) != 0) {
-    logger::get_logger().error("Failed to unlink {0}.");
+    krbn::logger::get_logger().error("Failed to unlink {0}.");
     return 1;
   }
   return 0;
@@ -68,6 +51,13 @@ int remove_system_default_profile(void) {
 
 int main(int argc, char* argv[]) {
   krbn::thread_utility::register_main_thread();
+
+  {
+    auto l = spdlog::stdout_color_mt("karabiner_cli");
+    l->set_pattern("[%l] %v");
+    l->set_level(spdlog::level::err);
+    krbn::logger::set_logger(l);
+  }
 
   cxxopts::Options options("karabiner_cli", "A command line utility of Karabiner-Elements.");
 
@@ -91,7 +81,7 @@ int main(int argc, char* argv[]) {
       std::string key = "copy-current-profile-to-system-default-profile";
       if (options.count(key)) {
         if (getuid() != 0) {
-          logger::get_logger().error("--{0} requires root privilege.", key);
+          krbn::logger::get_logger().error("--{0} requires root privilege.", key);
           return 1;
         }
         return copy_current_profile_to_system_default_profile();
@@ -102,7 +92,7 @@ int main(int argc, char* argv[]) {
       std::string key = "remove-system-default-profile";
       if (options.count(key)) {
         if (getuid() != 0) {
-          logger::get_logger().error("--{0} requires root privilege.", key);
+          krbn::logger::get_logger().error("--{0} requires root privilege.", key);
           return 1;
         }
         return remove_system_default_profile();

@@ -1,4 +1,4 @@
-#include "../include/logger.hpp"
+#include "logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "thread_utility.hpp"
 #include "time_utility.hpp"
@@ -8,10 +8,10 @@ int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
   if (getuid() != 0) {
-    logger::get_logger().error("virtual_device_client requires root privilege.");
+    krbn::logger::get_logger().error("virtual_device_client requires root privilege.");
   }
 
-  auto virtual_hid_device_client_ptr = std::make_unique<krbn::virtual_hid_device_client>(logger::get_logger());
+  auto virtual_hid_device_client_ptr = std::make_unique<krbn::virtual_hid_device_client>();
   krbn::manipulator::details::post_event_to_virtual_devices::queue queue;
 
   virtual_hid_device_client_ptr->client_connected.connect([&]() {

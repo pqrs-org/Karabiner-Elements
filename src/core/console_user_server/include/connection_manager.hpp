@@ -34,19 +34,18 @@ public:
                 if (!grabber_client_) {
                   version_monitor_.manual_check();
 
-                  grabber_client_ = std::make_unique<grabber_client>(logger::get_logger());
+                  grabber_client_ = std::make_unique<grabber_client>();
                   grabber_client_->connect();
                   logger::get_logger().info("grabber_client_ is connected");
                 }
 
                 if (!system_preferences_monitor_) {
                   system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
-                      logger::get_logger(),
                       std::bind(&connection_manager::system_preferences_values_updated_callback, this, std::placeholders::_1));
                 }
 
                 if (!configuration_manager_) {
-                  configuration_manager_ = std::make_unique<configuration_manager>(logger::get_logger());
+                  configuration_manager_ = std::make_unique<configuration_manager>();
                 }
 
                 return;

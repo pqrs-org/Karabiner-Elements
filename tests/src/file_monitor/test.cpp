@@ -9,22 +9,6 @@
 #include <time.h>
 
 namespace {
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> guard(mutex);
-
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("file_monitor");
-      logger->set_level(spdlog::level::off);
-    }
-
-    return *logger;
-  }
-};
-
 std::atomic<time_t> last_callback_time;
 } // namespace
 
@@ -36,7 +20,7 @@ TEST_CASE("file_monitor") {
                         },
       },
   });
-  krbn::file_monitor file_monitor(logger::get_logger(), targets, [](const std::string& file_path) {
+  krbn::file_monitor file_monitor(targets, [](const std::string& file_path) {
     static int i = 0;
 
     last_callback_time = time(nullptr);
@@ -93,6 +77,12 @@ int main(int argc, char* const argv[]) {
   krbn::thread_utility::register_main_thread();
 
   last_callback_time = time(nullptr);
+
+  {
+    auto l = spdlog::stdout_logger_mt("karabiner");
+    l->set_level(spdlog::level::off);
+    krbn::logger::set_logger(l);
+  }
 
   // watchdog timer
   krbn::gcd_utility::main_queue_timer timer(

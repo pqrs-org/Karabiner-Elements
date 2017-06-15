@@ -3,18 +3,16 @@
 #include "boost_defs.hpp"
 
 #include "gcd_utility.hpp"
+#include "logger.hpp"
 #include "system_preferences.hpp"
 #include <boost/optional.hpp>
-#include <spdlog/spdlog.h>
 
 namespace krbn {
 class system_preferences_monitor final {
 public:
   typedef std::function<void(const system_preferences::values& values)> values_updated_callback;
 
-  system_preferences_monitor(spdlog::logger& logger,
-                             const values_updated_callback& callback) : logger_(logger),
-                                                                        callback_(callback) {
+  system_preferences_monitor(const values_updated_callback& callback) : callback_(callback) {
     timer_ = std::make_unique<gcd_utility::main_queue_timer>(
         dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
         1.0 * NSEC_PER_SEC,
@@ -22,7 +20,7 @@ public:
         ^{
           system_preferences::values v;
           if (!values_ || *values_ != v) {
-            logger_.info("system_preferences::values is updated.");
+            logger::get_logger().info("system_preferences::values is updated.");
 
             values_ = v;
             if (callback_) {
@@ -37,7 +35,6 @@ public:
   }
 
 private:
-  spdlog::logger& logger_;
   values_updated_callback callback_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> timer_;

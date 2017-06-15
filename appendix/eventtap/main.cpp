@@ -1,8 +1,7 @@
-#include "../include/logger.hpp"
+#include "logger.hpp"
 #include "thread_utility.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 #include <iostream>
-#include <spdlog/spdlog.h>
 
 namespace {
 CFMachPortRef eventtap_;
@@ -28,7 +27,7 @@ int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
   if (getuid() != 0) {
-    logger::get_logger().error("eventtap requires root privilege to use kCGHIDEventTap.");
+    krbn::logger::get_logger().error("eventtap requires root privilege to use kCGHIDEventTap.");
     return 0;
   }
 

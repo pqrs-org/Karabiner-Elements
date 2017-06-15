@@ -1,6 +1,5 @@
 #include "constants.hpp"
 #include "libkrbn.h"
-#include "libkrbn.hpp"
 #include "log_monitor.hpp"
 
 namespace {

@@ -9,6 +9,7 @@
 #include "event_queue.hpp"
 #include "gcd_utility.hpp"
 #include "iokit_utility.hpp"
+#include "logger.hpp"
 #include "spdlog_utility.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
@@ -22,7 +23,6 @@
 #include <functional>
 #include <list>
 #include <mach/mach_time.h>
-#include <spdlog/spdlog.h>
 #include <unordered_map>
 #include <vector>
 
@@ -79,12 +79,9 @@ public:
 
   human_interface_device(const human_interface_device&) = delete;
 
-  human_interface_device(spdlog::logger& logger,
-                         IOHIDDeviceRef _Nonnull device) : logger_(logger),
-                                                           device_(device),
+  human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
                                                            device_id_(types::get_new_device_id()),
                                                            queue_(nullptr),
-                                                           is_grabbable_callback_log_reducer_(logger),
                                                            removed_(false),
                                                            observed_(false),
                                                            grabbed_(false),
@@ -184,7 +181,7 @@ public:
     const CFIndex depth = 1024;
     queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
     if (!queue_) {
-      logger_.error("IOHIDQueueCreate error @ {0}", __PRETTY_FUNCTION__);
+      logger::get_logger().error("IOHIDQueueCreate error @ {0}", __PRETTY_FUNCTION__);
     } else {
       // Add elements into queue_.
       for (const auto& it : elements_) {
@@ -319,7 +316,7 @@ public:
 
       auto r = open();
       if (r != kIOReturnSuccess) {
-        logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+        logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
         return;
       }
 
@@ -395,7 +392,7 @@ public:
             // ----------------------------------------
             auto r = open(kIOHIDOptionsTypeSeizeDevice);
             if (r != kIOReturnSuccess) {
-              logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+              logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
               return;
             }
 
@@ -407,7 +404,7 @@ public:
             schedule();
 
             // ----------------------------------------
-            logger_.info("{0} is grabbed", get_name_for_log());
+            logger::get_logger().info("{0} is grabbed", get_name_for_log());
 
             cancel_grab_timer();
           });
@@ -461,7 +458,7 @@ public:
         disabled_callback_(*this);
       }
 
-      logger_.info("{0} is disabled", get_name_for_log());
+      logger::get_logger().info("{0} is disabled", get_name_for_log());
     });
   }
 
@@ -477,7 +474,7 @@ public:
 
       disabled_ = false;
 
-      logger_.info("{0} is enabled", get_name_for_log());
+      logger::get_logger().info("{0} is enabled", get_name_for_log());
     });
   }
 
@@ -600,7 +597,7 @@ public:
         IOHIDValueRef value;
         auto r = IOHIDDeviceGetValue(device_, element, &value);
         if (r != kIOReturnSuccess) {
-          logger_.error("IOHIDDeviceGetValue error: {1} @ {0}", __PRETTY_FUNCTION__, r);
+          logger::get_logger().error("IOHIDDeviceGetValue error: {1} @ {0}", __PRETTY_FUNCTION__, r);
         } else {
           auto integer_value = IOHIDValueGetIntegerValue(value);
           if (integer_value == max) {
@@ -643,13 +640,13 @@ public:
           r = IOHIDDeviceSetValue(device_, element, value);
 
           if (r != kIOReturnSuccess) {
-            logger_.error("IOHIDDeviceSetValue error {1} for {2} @ {0}", __PRETTY_FUNCTION__, r, get_name_for_log());
+            logger::get_logger().error("IOHIDDeviceSetValue error {1} for {2} @ {0}", __PRETTY_FUNCTION__, r, get_name_for_log());
           }
 
           CFRelease(value);
 
         } else {
-          logger_.error("IOHIDValueCreateWithIntegerValue error @ {0}", __PRETTY_FUNCTION__);
+          logger::get_logger().error("IOHIDValueCreateWithIntegerValue error @ {0}", __PRETTY_FUNCTION__);
         }
       }
     });
@@ -839,8 +836,6 @@ private:
   void cancel_grab_timer(void) {
     grab_timer_ = nullptr;
   }
-
-  spdlog::logger& logger_;
 
   IOHIDDeviceRef _Nonnull device_;
   device_id device_id_;

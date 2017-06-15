@@ -1,7 +1,7 @@
 #include "boost_defs.hpp"
 
-#include "../include/logger.hpp"
 #include "hid_system_client.hpp"
+#include "logger.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -19,10 +19,10 @@ int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
   if (getuid() != 0) {
-    logger::get_logger().error("dump_caps_lock_state requires root privilege.");
+    krbn::logger::get_logger().error("dump_caps_lock_state requires root privilege.");
   }
 
-  krbn::hid_system_client client(logger::get_logger());
+  krbn::hid_system_client client;
   if (auto state = client.get_caps_lock_state()) {
     std::cout << "state: " << *state << std::endl;
   }

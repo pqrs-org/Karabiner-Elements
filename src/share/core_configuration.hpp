@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "filesystem.hpp"
+#include "logger.hpp"
 #include "session.hpp"
 #include "types.hpp"
 #include "general_logger.hpp"
@@ -9,7 +10,6 @@
 #include <fstream>
 #include <json/json.hpp>
 #include <natural_sort/natural_sort.hpp>
-#include <spdlog/spdlog.h>
 #include <string>
 #include <map>
 #include <unordered_map>
@@ -117,8 +117,8 @@ public:
     void replace_simple_modification(size_t index, const std::string& from, const std::string& to) {
       simple_modifications_.replace_pair(index, from, to);
     }
-    const std::unordered_map<key_code, key_code> get_simple_modifications_key_code_map(spdlog::logger& log) const {
-      return simple_modifications_.to_key_code_map(log);
+    const std::unordered_map<key_code, key_code> get_simple_modifications_key_code_map(void) const {
+      return simple_modifications_.to_key_code_map();
     }
 
     const std::vector<simple_modifications::key_mapping>& get_fn_function_keys(void) const {
@@ -127,8 +127,8 @@ public:
     void replace_fn_function_key(const std::string& from, const std::string& to) {
       fn_function_keys_.replace_second(from, to);
     }
-    const std::unordered_map<key_code, key_code> get_fn_function_keys_key_code_map(spdlog::logger& log) const {
-      return fn_function_keys_.to_key_code_map(log);
+    const std::unordered_map<key_code, key_code> get_fn_function_keys_key_code_map(void) const {
+      return fn_function_keys_.to_key_code_map();
     }
 
     const complex_modifications& get_complex_modifications(void) const {
@@ -205,8 +205,8 @@ public:
 
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(spdlog::logger& logger, const std::string& file_path) : loaded_(true),
-                                                                             global_configuration_(nlohmann::json()) {
+  core_configuration(const std::string& file_path) : loaded_(true),
+                                                     global_configuration_(nlohmann::json()) {
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
@@ -221,22 +221,22 @@ public:
         }
       }
       
-      logger.info("File owner valid: {}", valid_file_owner);
+      logger::get_logger().info("File owner valid: {}", valid_file_owner);
 
       if (!valid_file_owner) {
-        logger.warn("{0} is not owned by a valid user.", file_path);
+        logger::get_logger().warn("{0} is not owned by a valid user.", file_path);
         loaded_ = false;
 
       } else {
         std::ifstream input(file_path);
         
-        logger.info("Reading config file: {}", file_path);
+        logger::get_logger().info("Reading config file: {}", file_path);
         
         if (input) {
           try {
-            logger.info("Start to parse config file");
+            logger::get_logger().info("Start to parse config file");
             json_ = nlohmann::json::parse(input);
-            logger.info("Parse config file done");
+            logger::get_logger().info("Parse config file done");
             {
               const std::string key = "global";
               if (json_.find(key) != json_.end()) {
@@ -253,12 +253,12 @@ public:
             }
 
           } catch (std::exception& e) {
-            logger.warn("parse error in {0}: {1}", file_path, e.what());
+            logger::get_logger().warn("parse error in {0}: {1}", file_path, e.what());
             json_ = nlohmann::json();
             loaded_ = false;
           }
         } else {
-          logger.info("Failed reading config file {}", file_path);
+          logger::get_logger().info("Failed reading config file {}", file_path);
         }
       }
     }

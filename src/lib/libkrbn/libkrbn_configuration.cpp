@@ -1,9 +1,6 @@
 #include "configuration_monitor.hpp"
 #include "core_configuration.hpp"
 #include "libkrbn.h"
-#include "libkrbn.hpp"
-#include "core_configuration.hpp"
-#include <string>
 #include <set>
 
 namespace {
@@ -25,14 +22,14 @@ public:
   libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
 
   libkrbn_configuration_monitor_class(libkrbn_configuration_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    configuration_monitor_ = std::make_unique<krbn::configuration_monitor>(libkrbn::get_logger(),
-                                                                           krbn::constants::get_user_core_configuration_file_path(),
-                                                                           [this](const std::shared_ptr<krbn::core_configuration> core_configuration) {
-                                                                             if (callback_) {
-                                                                               auto* p = new libkrbn_core_configuration_class(core_configuration);
-                                                                               callback_(p, refcon_);
-                                                                             }
-                                                                           });
+    configuration_monitor_ = std::make_unique<krbn::configuration_monitor>(
+        krbn::constants::get_user_core_configuration_file_path(),
+        [this](const std::shared_ptr<krbn::core_configuration> core_configuration) {
+          if (callback_) {
+            auto* p = new libkrbn_core_configuration_class(core_configuration);
+            callback_(p, refcon_);
+          }
+        });
   }
 
 private:
@@ -247,7 +244,6 @@ void libkrbn_core_configuration_replace_selected_profile_simple_modification_ven
     if (index < kms.size()) {
       const_cast<krbn::core_configuration::profile::simple_modifications::key_mapping &>(kms[index]).set_vendor_id(krbn::vendor_id(vendorId));
       const_cast<krbn::core_configuration::profile::simple_modifications::key_mapping &>(kms[index]).set_product_id(krbn::product_id(productId));
-      libkrbn::get_logger().info("Update vid, pid: {}, {}", vendorId, productId);
     }
   }
 }
@@ -265,8 +261,6 @@ vendor_product_pair* libkrbn_core_configuration_get_selected_profile_simple_modi
       uint32_t pid = static_cast<uint32_t>(device.get_identifiers().get_product_id());
       pairs.emplace(vid, pid);
     }
-    
-    libkrbn::get_logger().info("Pair size: {}", pairs.size());
     
     *count = pairs.size();
     vp_pairs = static_cast<vendor_product_pair *>(malloc(sizeof(vendor_product_pair) * *count));

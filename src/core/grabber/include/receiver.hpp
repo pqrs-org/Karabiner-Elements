@@ -74,8 +74,7 @@ private:
 
               // monitor the last process
               console_user_server_process_monitor_ = nullptr;
-              console_user_server_process_monitor_ = std::make_unique<process_monitor>(logger::get_logger(),
-                                                                                       p->pid,
+              console_user_server_process_monitor_ = std::make_unique<process_monitor>(p->pid,
                                                                                        std::bind(&receiver::console_user_server_exit_callback, this));
             }
             break;

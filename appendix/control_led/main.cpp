@@ -1,8 +1,8 @@
 #include "boost_defs.hpp"
 
-#include "../include/logger.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
+#include "logger.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDDevice.h>
@@ -60,24 +60,24 @@ private:
       return;
     }
 
-    krbn::iokit_utility::log_matching_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_matching_device(device);
 
-    hids_[device] = std::make_unique<krbn::human_interface_device>(logger::get_logger(), device);
+    hids_[device] = std::make_unique<krbn::human_interface_device>(device);
     auto& dev = hids_[device];
 
     auto kr = dev->open();
     if (kr != kIOReturnSuccess) {
-      logger::get_logger().error("failed to dev->open(). {0}", kr);
+      krbn::logger::get_logger().error("failed to dev->open(). {0}", kr);
     }
     dev->schedule();
 
     if (auto caps_lock_led_state = dev->get_caps_lock_led_state()) {
       switch (*caps_lock_led_state) {
         case krbn::led_state::on:
-          logger::get_logger().info("caps_lock_led_state is on.");
+          krbn::logger::get_logger().info("caps_lock_led_state is on.");
           break;
         case krbn::led_state::off:
-          logger::get_logger().info("caps_lock_led_state is off.");
+          krbn::logger::get_logger().info("caps_lock_led_state is off.");
           break;
       }
 
@@ -87,10 +87,10 @@ private:
         dev->set_caps_lock_led_state(krbn::led_state::on);
       }
 
-      logger::get_logger().info("set_caps_lock_led_state is called.");
+      krbn::logger::get_logger().info("set_caps_lock_led_state is called.");
 
     } else {
-      logger::get_logger().info("failed to get caps_lock_led_state.");
+      krbn::logger::get_logger().info("failed to get caps_lock_led_state.");
     }
   }
 
@@ -112,7 +112,7 @@ private:
       return;
     }
 
-    krbn::iokit_utility::log_removal_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_removal_device(device);
 
     auto it = hids_.find(device);
     if (it != hids_.end()) {
@@ -132,7 +132,7 @@ int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
   if (getuid() != 0) {
-    logger::get_logger().error("control_led requires root privilege.");
+    krbn::logger::get_logger().error("control_led requires root privilege.");
   }
 
   control_led d;

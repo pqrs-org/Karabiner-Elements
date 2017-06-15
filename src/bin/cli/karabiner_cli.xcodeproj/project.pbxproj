@@ -25,6 +25,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		342BE67E1EF2855600149985 /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = logger.hpp; path = ../../../share/logger.hpp; sourceTree = "<group>"; };
 		3452ECAA1E6BF17800A5144C /* karabiner_cli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = karabiner_cli; sourceTree = BUILT_PRODUCTS_DIR; };
 		3452ECAD1E6BF17800A5144C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3452ECB51E6BF4BC00A5144C /* configuration_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_monitor.hpp; path = ../../../share/configuration_monitor.hpp; sourceTree = "<group>"; };
@@ -85,6 +86,7 @@
 				3452ECB71E6C5AB000A5144C /* core_configuration.hpp */,
 				3452ECB81E6C5AB000A5144C /* file_monitor.hpp */,
 				3452ECB91E6C5AB000A5144C /* filesystem.hpp */,
+				342BE67E1EF2855600149985 /* logger.hpp */,
 				3452ECBA1E6C5ABA00A5144C /* thread_utility.hpp */,
 				3452ECBB1E6C5AEE00A5144C /* types.hpp */,
 			);

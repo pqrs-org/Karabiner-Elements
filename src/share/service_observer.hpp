@@ -1,11 +1,11 @@
 #pragma once
 
 #include "gcd_utility.hpp"
+#include "logger.hpp"
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <functional>
-#include <spdlog/spdlog.h>
 
 namespace krbn {
 class service_observer final {
@@ -14,25 +14,23 @@ public:
 
   service_observer(const service_observer&) = delete;
 
-  service_observer(spdlog::logger& logger,
-                   CFDictionaryRef _Nonnull matching_dictionary,
+  service_observer(CFDictionaryRef _Nonnull matching_dictionary,
                    const callback& matched_callback,
-                   const callback& terminated_callback) : logger_(logger),
-                                                          matched_callback_(matched_callback),
+                   const callback& terminated_callback) : matched_callback_(matched_callback),
                                                           terminated_callback_(terminated_callback),
                                                           notification_port_(nullptr),
                                                           matched_notification_(IO_OBJECT_NULL),
                                                           terminated_notification_(IO_OBJECT_NULL) {
     notification_port_ = IONotificationPortCreate(kIOMasterPortDefault);
     if (!notification_port_) {
-      logger_.error("IONotificationPortCreate is failed @ {0}", __PRETTY_FUNCTION__);
+      logger::get_logger().error("IONotificationPortCreate is failed @ {0}", __PRETTY_FUNCTION__);
       return;
     }
 
     if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
       CFRunLoopAddSource(CFRunLoopGetMain(), loop_source, kCFRunLoopDefaultMode);
     } else {
-      logger_.error("IONotificationPortGetRunLoopSource is failed @ {0}", __PRETTY_FUNCTION__);
+      logger::get_logger().error("IONotificationPortGetRunLoopSource is failed @ {0}", __PRETTY_FUNCTION__);
     }
 
     // kIOMatchedNotification
@@ -45,7 +43,7 @@ public:
                                                  static_cast<void*>(this),
                                                  &matched_notification_);
       if (kr != kIOReturnSuccess) {
-        logger_.error("IOServiceAddMatchingNotification error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        logger::get_logger().error("IOServiceAddMatchingNotification error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
         CFRelease(matching_dictionary);
       } else {
         matched_callback(matched_notification_);
@@ -62,7 +60,7 @@ public:
                                                  static_cast<void*>(this),
                                                  &terminated_notification_);
       if (kr != kIOReturnSuccess) {
-        logger_.error("IOServiceAddMatchingNotification error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        logger::get_logger().error("IOServiceAddMatchingNotification error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
         CFRelease(matching_dictionary);
       } else {
         terminated_callback(terminated_notification_);
@@ -109,7 +107,6 @@ private:
     }
   }
 
-  spdlog::logger& logger_;
   callback matched_callback_;
   callback terminated_callback_;
 

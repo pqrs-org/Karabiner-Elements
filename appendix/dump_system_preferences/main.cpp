@@ -1,4 +1,4 @@
-#include "../include/logger.hpp"
+#include "logger.hpp"
 #include "system_preferences_monitor.hpp"
 #include <iostream>
 
@@ -12,7 +12,7 @@ void system_preferences_values_updated_callback(const krbn::system_preferences::
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
-  krbn::system_preferences_monitor monitor(logger::get_logger(), system_preferences_values_updated_callback);
+  krbn::system_preferences_monitor monitor(system_preferences_values_updated_callback);
 
   CFRunLoopRun();
 

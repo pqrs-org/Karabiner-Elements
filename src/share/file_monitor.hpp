@@ -2,8 +2,8 @@
 
 #include "filesystem.hpp"
 #include "gcd_utility.hpp"
+#include "logger.hpp"
 #include <CoreServices/CoreServices.h>
-#include <spdlog/spdlog.h>
 #include <utility>
 #include <vector>
 
@@ -17,10 +17,8 @@ public:
   //   {directory, [file, file, ...]}
   //   ...
   // ]
-  file_monitor(spdlog::logger& logger,
-               const std::vector<std::pair<std::string, std::vector<std::string>>>& targets,
-               const callback& callback) : logger_(logger),
-                                           callback_(callback),
+  file_monitor(const std::vector<std::pair<std::string, std::vector<std::string>>>& targets,
+               const callback& callback) : callback_(callback),
                                            directories_(CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks)),
                                            stream_(nullptr) {
     if (directories_) {
@@ -99,11 +97,11 @@ private:
                                   0.1, // 100 ms
                                   flags);
     if (!stream_) {
-      logger_.error("FSEventStreamCreate error @ {0}", __PRETTY_FUNCTION__);
+      logger::get_logger().error("FSEventStreamCreate error @ {0}", __PRETTY_FUNCTION__);
     } else {
       FSEventStreamScheduleWithRunLoop(stream_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
       if (!FSEventStreamStart(stream_)) {
-        logger_.error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
+        logger::get_logger().error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
       }
     }
   }
@@ -141,7 +139,7 @@ private:
                        const FSEventStreamEventId event_ids[]) {
     for (size_t i = 0; i < num_events; ++i) {
       if (event_flags[i] & kFSEventStreamEventFlagRootChanged) {
-        logger_.info("the configuration directory is updated.");
+        logger::get_logger().info("the configuration directory is updated.");
         // re-register stream
         unregister_stream();
         register_stream();
@@ -165,7 +163,6 @@ private:
     }
   }
 
-  spdlog::logger& logger_;
   callback callback_;
 
   CFMutableArrayRef directories_;

@@ -5,25 +5,22 @@
 #include "core_configuration.hpp"
 #include "file_monitor.hpp"
 #include "filesystem.hpp"
-#include <spdlog/spdlog.h>
+#include "logger.hpp"
 
 namespace krbn {
 class configuration_monitor final {
 public:
   typedef std::function<void(std::shared_ptr<core_configuration> core_configuration)> core_configuration_updated_callback;
 
-  configuration_monitor(spdlog::logger& logger,
-                        const std::string& user_core_configuration_file_path,
-                        const core_configuration_updated_callback& callback) : logger_(logger),
-                                                                               user_core_configuration_file_path_(user_core_configuration_file_path),
+  configuration_monitor(const std::string& user_core_configuration_file_path,
+                        const core_configuration_updated_callback& callback) : user_core_configuration_file_path_(user_core_configuration_file_path),
                                                                                callback_(callback) {
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
         {constants::get_system_configuration_directory(), {constants::get_system_core_configuration_file_path()}},
         {filesystem::dirname(user_core_configuration_file_path), {user_core_configuration_file_path}},
     };
 
-    file_monitor_ = std::make_unique<file_monitor>(logger_,
-                                                   targets,
+    file_monitor_ = std::make_unique<file_monitor>(targets,
                                                    [this](const std::string&) {
                                                      core_configuration_file_updated_callback();
                                                    });
@@ -48,20 +45,20 @@ public:
 
 private:
   void core_configuration_file_updated_callback(void) {
-    logger_.info("Load {}...", constants::get_system_core_configuration_file_path());
 
     std::string file_path = constants::get_system_core_configuration_file_path();
     
     if (filesystem::exists(user_core_configuration_file_path_)) {
       file_path = user_core_configuration_file_path_;
-      logger_.info("Load {}...", user_core_configuration_file_path_);
+      logger::get_logger().info("Load {}...", user_core_configuration_file_path_);
     } else {
-      logger_.info("{} Not found...", user_core_configuration_file_path_);
+      logger::get_logger().info("{} Not found...", user_core_configuration_file_path_);
     }
     
-    auto c = std::make_shared<core_configuration>(logger_, file_path);
+    logger::get_logger().info("Load {}...", file_path);
+    auto c = std::make_shared<core_configuration>(file_path);
     if (!core_configuration_ || c->is_loaded()) {
-      logger_.info("core_configuration is updated.");
+      logger::get_logger().info("core_configuration is updated.");
       core_configuration_ = c;
       if (callback_) {
         callback_(core_configuration_);
@@ -69,7 +66,6 @@ private:
     }
   }
 
-  spdlog::logger& logger_;
   std::string user_core_configuration_file_path_;
   core_configuration_updated_callback callback_;
 
