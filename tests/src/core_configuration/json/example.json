@@ -31,6 +31,7 @@
                         "conditions": [],
                         "manipulators": [
                             {
+                                "description": "Change control+[ to escape.",
                                 "type": "basic",
                                 "from": {
                                     "key_code": "open_bracket",
@@ -96,6 +97,19 @@
                                 }
                             }
                         ]
+                    },
+                    {
+                        "description": "description test",
+                        "conditions": [],
+                        "manipulators": [
+                            {
+                                "description": "description test 2"
+                            }
+                        ]
+                    },
+                    {
+                        "conditions": [],
+                        "manipulators": []
                     }
                 ],
                 "dummy": {

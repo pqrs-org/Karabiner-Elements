@@ -108,6 +108,10 @@ public:
           }
         }
       }
+
+      if (auto d = find_description(json)) {
+        description_ = *d;
+      }
     }
 
     const std::vector<condition>& get_conditions(void) const {
@@ -118,10 +122,39 @@ public:
       return manipulators_;
     }
 
+    const std::string& get_description(void) const {
+      return description_;
+    }
+
   private:
+    boost::optional<std::string> find_description(const nlohmann::json& json) const {
+      {
+        const std::string key = "description";
+        if (json.find(key) != json.end()) {
+          if (json[key].is_string()) {
+            return json[key].get<std::string>();
+          } else {
+            return std::string("");
+          }
+        }
+      }
+
+      if (json.is_array() || json.is_object()) {
+        for (const auto& j : json) {
+          auto s = find_description(j);
+          if (s) {
+            return s;
+          }
+        }
+      }
+
+      return boost::none;
+    }
+
     nlohmann::json json_;
     std::vector<condition> conditions_;
     std::vector<manipulator> manipulators_;
+    std::string description_;
   };
 
   complex_modifications(const nlohmann::json& json) : json_(json),
