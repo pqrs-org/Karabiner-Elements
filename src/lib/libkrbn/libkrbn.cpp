@@ -3,7 +3,6 @@
 #include "constants.hpp"
 #include "core_configuration.hpp"
 #include "launchctl_utility.hpp"
-#include "libkrbn.hpp"
 #include "process_utility.hpp"
 #include "thread_utility.hpp"
 #include "types.hpp"

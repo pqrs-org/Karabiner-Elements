@@ -16,10 +16,9 @@ public:
 
   virtual_hid_device_client(const virtual_hid_device_client&) = delete;
 
-  virtual_hid_device_client(spdlog::logger& logger) : logger_(logger),
-                                                      service_(IO_OBJECT_NULL),
-                                                      connect_(IO_OBJECT_NULL),
-                                                      virtual_hid_keyboard_ready_(false) {
+  virtual_hid_device_client(void) : service_(IO_OBJECT_NULL),
+                                    connect_(IO_OBJECT_NULL),
+                                    virtual_hid_keyboard_ready_(false) {
   }
 
   ~virtual_hid_device_client(void) {
@@ -28,8 +27,7 @@ public:
 
   void connect(void) {
     if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name())) {
-      service_observer_ = std::make_unique<service_observer>(logger_,
-                                                             matching_dictionary,
+      service_observer_ = std::make_unique<service_observer>(matching_dictionary,
                                                              std::bind(&virtual_hid_device_client::matched_callback, this, std::placeholders::_1),
                                                              std::bind(&virtual_hid_device_client::terminated_callback, this, std::placeholders::_1));
       CFRelease(matching_dictionary);
@@ -54,9 +52,9 @@ public:
     virtual_hid_keyboard_ready_ = false;
 
     call_method([this](void) {
-      logger_.info("initialize_virtual_hid_keyboard");
-      logger_.info("  keyboard_type:{0}", static_cast<uint32_t>(virtual_hid_keyboard_properties_.keyboard_type));
-      logger_.info("  caps_lock_delay_milliseconds:{0}", static_cast<uint64_t>(virtual_hid_keyboard_properties_.caps_lock_delay_milliseconds));
+      logger::get_logger().info("initialize_virtual_hid_keyboard");
+      logger::get_logger().info("  keyboard_type:{0}", static_cast<uint32_t>(virtual_hid_keyboard_properties_.keyboard_type));
+      logger::get_logger().info("  caps_lock_delay_milliseconds:{0}", static_cast<uint64_t>(virtual_hid_keyboard_properties_.caps_lock_delay_milliseconds));
 
       bool result = pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect_, virtual_hid_keyboard_properties_);
 
@@ -151,10 +149,10 @@ private:
 
         auto kr = IOServiceOpen(service_, mach_task_self(), kIOHIDServerConnectType, &connect_);
         if (kr != KERN_SUCCESS) {
-          logger_.error("IOServiceOpen error: {1} ({2}) @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_error_name(kr), kr);
+          logger::get_logger().error("IOServiceOpen error: {1} ({2}) @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_error_name(kr), kr);
           connect_ = IO_OBJECT_NULL;
         } else {
-          logger_.info("IOServiceOpen is succeeded @ {0}", __PRETTY_FUNCTION__);
+          logger::get_logger().info("IOServiceOpen is succeeded @ {0}", __PRETTY_FUNCTION__);
           connected = true;
         }
       }
@@ -191,12 +189,12 @@ private:
     if (connect_) {
       auto kr = IOServiceClose(connect_);
       if (kr != kIOReturnSuccess) {
-        logger_.error("IOConnectRelease error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        logger::get_logger().error("IOConnectRelease error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
       }
       connect_ = IO_OBJECT_NULL;
     }
 
-    logger_.info("IOServiceClose is succeeded @ {0}", __PRETTY_FUNCTION__);
+    logger::get_logger().info("IOServiceClose is succeeded @ {0}", __PRETTY_FUNCTION__);
 
     if (service_) {
       IOObjectRelease(service_);
@@ -211,20 +209,18 @@ private:
     std::lock_guard<std::mutex> guard(connect_mutex_);
 
     if (!connect_) {
-      logger_.error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
+      logger::get_logger().error("connect_ is null @ {0}", __PRETTY_FUNCTION__);
       return false;
     }
 
     auto kr = method();
     if (kr != KERN_SUCCESS) {
-      logger_.error("IOConnectCallStructMethod error: {1} ({2}) @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_error_name(kr), kr);
+      logger::get_logger().error("IOConnectCallStructMethod error: {1} ({2}) @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_error_name(kr), kr);
       return false;
     }
 
     return true;
   }
-
-  spdlog::logger& logger_;
 
   std::unique_ptr<service_observer> service_observer_;
   io_service_t service_;

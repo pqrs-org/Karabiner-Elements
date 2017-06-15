@@ -4,6 +4,7 @@
 #include "file_monitor.hpp"
 #include "filesystem.hpp"
 #include "gcd_utility.hpp"
+#include "logger.hpp"
 #include <fstream>
 
 namespace krbn {
@@ -13,9 +14,7 @@ public:
 
   version_monitor(const version_monitor&) = delete;
 
-  version_monitor(spdlog::logger& logger,
-                  const callback& callback) : logger_(logger),
-                                              callback_(callback) {
+  version_monitor(const callback& callback) : callback_(callback) {
     auto version_file_path = constants::get_version_file_path();
     auto version_file_directory = filesystem::dirname(version_file_path);
 
@@ -24,8 +23,7 @@ public:
     std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
         {version_file_directory, {version_file_path}},
     };
-    file_monitor_ = std::make_unique<file_monitor>(logger_,
-                                                   targets,
+    file_monitor_ = std::make_unique<file_monitor>(targets,
                                                    [this](const std::string&) {
                                                      check_version();
                                                    });
@@ -45,10 +43,10 @@ public:
 
 private:
   void check_version(void) {
-    logger_.info("Check version...");
+    logger::get_logger().info("Check version...");
     auto version = read_version_file();
     if (version_ != version) {
-      logger_.info("Version is changed: '{0}' -> '{1}'", version_, version);
+      logger::get_logger().info("Version is changed: '{0}' -> '{1}'", version_, version);
       if (callback_) {
         callback_();
       }
@@ -67,7 +65,6 @@ private:
     return version;
   }
 
-  spdlog::logger& logger_;
   callback callback_;
 
   std::string version_;

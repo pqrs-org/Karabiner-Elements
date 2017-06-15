@@ -60,7 +60,7 @@ public:
     }
   }
 
-  std::unordered_map<key_code, key_code> to_key_code_map(spdlog::logger& logger) const {
+  std::unordered_map<key_code, key_code> to_key_code_map(void) const {
     std::unordered_map<key_code, key_code> map;
 
     for (const auto& it : pairs_) {
@@ -69,13 +69,13 @@ public:
 
       auto from_key_code = types::get_key_code(from_string);
       if (!from_key_code) {
-        logger.warn("unknown key_code:{0}", from_string);
+        logger::get_logger().error("unknown key_code:{0}", from_string);
         continue;
       }
 
       auto to_key_code = types::get_key_code(to_string);
       if (!to_key_code) {
-        logger.warn("unknown key_code:{0}", to_string);
+        logger::get_logger().error("unknown key_code:{0}", to_string);
         continue;
       }
 

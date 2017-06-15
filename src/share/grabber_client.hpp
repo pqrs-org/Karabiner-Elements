@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include "local_datagram_client.hpp"
+#include "logger.hpp"
 #include "session.hpp"
 #include "types.hpp"
 #include <unistd.h>
@@ -13,7 +14,7 @@ class grabber_client final {
 public:
   grabber_client(const grabber_client&) = delete;
 
-  grabber_client(spdlog::logger& logger) {
+  grabber_client(void) {
     // Check socket file existance
     if (!filesystem::exists(constants::get_grabber_socket_file_path())) {
       throw std::runtime_error("grabber socket is not found");
@@ -28,8 +29,7 @@ public:
       throw std::runtime_error("session::get_current_console_user_id error");
     }
 
-    client_ = std::make_unique<local_datagram_client>(logger,
-                                                      constants::get_grabber_socket_file_path());
+    client_ = std::make_unique<local_datagram_client>(constants::get_grabber_socket_file_path());
   }
 
   void connect(void) {

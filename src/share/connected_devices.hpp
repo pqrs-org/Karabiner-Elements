@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core_configuration.hpp"
+#include "logger.hpp"
 #include <algorithm>
 
 // Json example:
@@ -138,7 +139,7 @@ public:
   connected_devices(void) : loaded_(true) {
   }
 
-  connected_devices(spdlog::logger& logger, const std::string& file_path) : loaded_(true) {
+  connected_devices(const std::string& file_path) : loaded_(true) {
     std::ifstream input(file_path);
     if (input) {
       try {
@@ -149,7 +150,7 @@ public:
           }
         }
       } catch (std::exception& e) {
-        logger.warn("parse error in {0}: {1}", file_path, e.what());
+        logger::get_logger().warn("parse error in {0}: {1}", file_path, e.what());
         loaded_ = false;
       }
     }

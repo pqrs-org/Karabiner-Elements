@@ -4,33 +4,16 @@
 #include "core_configuration.hpp"
 #include "thread_utility.hpp"
 #include <iostream>
-#include <spdlog/spdlog.h>
-
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> guard(mutex);
-
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("core_configuration");
-      logger->set_level(spdlog::level::off);
-    }
-
-    return *logger;
-  }
-};
 
 TEST_CASE("valid") {
-  krbn::core_configuration configuration(logger::get_logger(), "json/example.json");
+  krbn::core_configuration configuration("json/example.json");
 
   {
     std::unordered_map<krbn::key_code, krbn::key_code> expected{
         {*(krbn::types::get_key_code("caps_lock")), *(krbn::types::get_key_code("delete_or_backspace"))},
         {*(krbn::types::get_key_code("escape")), *(krbn::types::get_key_code("spacebar"))},
     };
-    REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
+    REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map() == expected);
   }
   {
     auto manipulator = configuration.get_selected_profile().get_complex_modifications().get_rules()[0].get_manipulators()[0].get_json();
@@ -52,7 +35,7 @@ TEST_CASE("valid") {
         {krbn::key_code::f8, krbn::key_code::play_or_pause},
         {krbn::key_code::f9, krbn::key_code::fastforward},
     };
-    REQUIRE(configuration.get_selected_profile().get_fn_function_keys_key_code_map(logger::get_logger()) == expected);
+    REQUIRE(configuration.get_selected_profile().get_fn_function_keys_key_code_map() == expected);
   }
   {
     auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
@@ -101,11 +84,11 @@ TEST_CASE("valid") {
 
 TEST_CASE("broken.json") {
   {
-    krbn::core_configuration configuration(logger::get_logger(), "json/broken.json");
+    krbn::core_configuration configuration("json/broken.json");
 
     {
       std::unordered_map<krbn::key_code, krbn::key_code> expected;
-      REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
+      REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map() == expected);
     }
     REQUIRE(configuration.is_loaded() == false);
 
@@ -125,21 +108,21 @@ TEST_CASE("broken.json") {
     }
   }
   {
-    krbn::core_configuration configuration(logger::get_logger(), "a.out");
+    krbn::core_configuration configuration("a.out");
 
     std::unordered_map<krbn::key_code, krbn::key_code> expected;
-    REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
+    REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map() == expected);
     REQUIRE(configuration.is_loaded() == false);
   }
 }
 
 TEST_CASE("invalid_key_code_name.json") {
-  krbn::core_configuration configuration(logger::get_logger(), "json/invalid_key_code_name.json");
+  krbn::core_configuration configuration("json/invalid_key_code_name.json");
 
   std::unordered_map<krbn::key_code, krbn::key_code> expected{
       {krbn::key_code(41), krbn::key_code(44)},
   };
-  REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
+  REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map() == expected);
   REQUIRE(configuration.is_loaded() == true);
 }
 
@@ -743,7 +726,7 @@ TEST_CASE("simple_modifications") {
           {*(krbn::types::get_key_code("a")), *(krbn::types::get_key_code("f1"))},
           {*(krbn::types::get_key_code("b")), *(krbn::types::get_key_code("f2"))},
       });
-      REQUIRE(simple_modifications.to_key_code_map(logger::get_logger()) == expected);
+      REQUIRE(simple_modifications.to_key_code_map() == expected);
     }
   }
 

@@ -1,7 +1,6 @@
 #include "connected_devices_monitor.hpp"
 #include "constants.hpp"
 #include "libkrbn.h"
-#include "libkrbn.hpp"
 
 namespace {
 class libkrbn_connected_devices_class final {
@@ -22,13 +21,13 @@ public:
   libkrbn_connected_devices_monitor_class(const libkrbn_connected_devices_monitor_class&) = delete;
 
   libkrbn_connected_devices_monitor_class(libkrbn_connected_devices_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    connected_devices_monitor_ = std::make_unique<krbn::connected_devices_monitor>(libkrbn::get_logger(),
-                                                                                   [this](const std::shared_ptr<krbn::connected_devices> connected_devices) {
-                                                                                     if (callback_) {
-                                                                                       auto* p = new libkrbn_connected_devices_class(connected_devices);
-                                                                                       callback_(p, refcon_);
-                                                                                     }
-                                                                                   });
+    connected_devices_monitor_ = std::make_unique<krbn::connected_devices_monitor>(
+        [this](const std::shared_ptr<krbn::connected_devices> connected_devices) {
+          if (callback_) {
+            auto* p = new libkrbn_connected_devices_class(connected_devices);
+            callback_(p, refcon_);
+          }
+        });
   }
 
 private:

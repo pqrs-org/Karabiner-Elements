@@ -4,23 +4,6 @@
 #include "connected_devices.hpp"
 #include "thread_utility.hpp"
 #include <iostream>
-#include <spdlog/spdlog.h>
-
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> guard(mutex);
-
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("connected_devices");
-      logger->set_level(spdlog::level::off);
-    }
-
-    return *logger;
-  }
-};
 
 TEST_CASE("connected_devices::device::descriptions") {
   {
@@ -227,7 +210,7 @@ TEST_CASE("connected_devices") {
   }
 
   {
-    krbn::connected_devices connected_devices(logger::get_logger(), "json/connected_devices.json");
+    krbn::connected_devices connected_devices("json/connected_devices.json");
 
     REQUIRE(connected_devices.is_loaded() == true);
     REQUIRE(connected_devices.get_devices().size() == 3);
@@ -236,7 +219,7 @@ TEST_CASE("connected_devices") {
   }
 
   {
-    krbn::connected_devices connected_devices(logger::get_logger(), "json/broken.json");
+    krbn::connected_devices connected_devices("json/broken.json");
 
     REQUIRE(connected_devices.is_loaded() == false);
     REQUIRE(connected_devices.get_devices().size() == 0);

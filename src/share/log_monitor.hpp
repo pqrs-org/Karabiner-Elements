@@ -5,7 +5,6 @@
 #include "spdlog_utility.hpp"
 #include <deque>
 #include <fstream>
-#include <spdlog/spdlog.h>
 #include <thread>
 #include <vector>
 

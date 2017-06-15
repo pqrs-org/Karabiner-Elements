@@ -30,7 +30,6 @@ public:
   device_grabber(virtual_hid_device_client& virtual_hid_device_client) : virtual_hid_device_client_(virtual_hid_device_client),
                                                                          profile_(nlohmann::json()),
                                                                          mode_(mode::observing),
-                                                                         is_grabbable_callback_log_reducer_(logger::get_logger()),
                                                                          suspended_(false) {
     virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
         boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
@@ -113,8 +112,7 @@ public:
       // So, we create event_tap_manager here.
       event_tap_manager_ = std::make_unique<event_tap_manager>(std::bind(&device_grabber::caps_lock_state_changed_callback, this, std::placeholders::_1));
 
-      configuration_monitor_ = std::make_unique<configuration_monitor>(logger::get_logger(),
-                                                                       user_core_configuration_file_path,
+      configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path,
                                                                        [this](std::shared_ptr<core_configuration> core_configuration) {
                                                                          core_configuration_ = core_configuration;
 
@@ -249,9 +247,9 @@ private:
       return;
     }
 
-    iokit_utility::log_matching_device(logger::get_logger(), device);
+    iokit_utility::log_matching_device(device);
 
-    auto dev = std::make_unique<human_interface_device>(logger::get_logger(), device);
+    auto dev = std::make_unique<human_interface_device>(device);
     dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
     dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
     dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
@@ -298,7 +296,7 @@ private:
       return;
     }
 
-    iokit_utility::log_removal_device(logger::get_logger(), device);
+    iokit_utility::log_removal_device(device);
 
     auto it = hids_.find(device);
     if (it != hids_.end()) {
@@ -558,7 +556,7 @@ private:
   void update_simple_modifications_manipulators(void) {
     simple_modifications_manipulator_manager_.invalidate_manipulators();
 
-    for (const auto& pair : profile_.get_simple_modifications_key_code_map(logger::get_logger())) {
+    for (const auto& pair : profile_.get_simple_modifications_key_code_map()) {
       auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                            pair.first,
                                                                            {},
@@ -638,7 +636,7 @@ private:
 
     // from_modifiers+f1 -> display_brightness_decrement ...
 
-    for (const auto& pair : profile_.get_fn_function_keys_key_code_map(logger::get_logger())) {
+    for (const auto& pair : profile_.get_fn_function_keys_key_code_map()) {
       auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                            pair.first,
                                                                            from_mandatory_modifiers,

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "event_queue.hpp"
+#include "logger.hpp"
 #include "manipulator/manipulator_manager.hpp"
-#include <spdlog/spdlog.h>
 
 namespace krbn {
 namespace manipulator {
@@ -26,10 +26,10 @@ public:
       manipulator_manager_.invalidate_manipulators();
     }
 
-    void log_events_sizes(spdlog::logger& logger) const {
-      logger.info("connection events sizes: {0} -> {1}",
-                  input_event_queue_.get_events().size(),
-                  output_event_queue_.get_events().size());
+    void log_events_sizes(void) const {
+      logger::get_logger().info("connection events sizes: {0} -> {1}",
+                                input_event_queue_.get_events().size(),
+                                output_event_queue_.get_events().size());
     }
 
   private:
@@ -74,9 +74,9 @@ public:
     }
   }
 
-  void log_events_sizes(spdlog::logger& logger) const {
+  void log_events_sizes(void) const {
     for (auto&& c : connections_) {
-      c.log_events_sizes(logger);
+      c.log_events_sizes();
     }
   }
 

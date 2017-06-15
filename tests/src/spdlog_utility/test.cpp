@@ -9,21 +9,6 @@
 #include <boost/optional/optional_io.hpp>
 #include <ostream>
 
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> guard(mutex);
-
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("log_reducer");
-    }
-
-    return *logger;
-  }
-};
-
 TEST_CASE("get_timestamp_number") {
   {
     auto actual = krbn::spdlog_utility::get_sort_key("[2016-10-15 00:09:47.283] [info] [grabber] version 0.90.50");
@@ -41,7 +26,7 @@ TEST_CASE("get_timestamp_number") {
 }
 
 TEST_CASE("log_reducer") {
-  krbn::spdlog_utility::log_reducer log_reducer(logger::get_logger());
+  krbn::spdlog_utility::log_reducer log_reducer;
 
   // reduce
   log_reducer.info("test1");

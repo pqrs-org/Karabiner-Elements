@@ -1,6 +1,5 @@
 #include "boost_defs.hpp"
 
-#include "../include/logger.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
@@ -62,9 +61,9 @@ private:
       return;
     }
 
-    krbn::iokit_utility::log_matching_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_matching_device(device);
 
-    hids_[device] = std::make_unique<krbn::human_interface_device>(logger::get_logger(), device);
+    hids_[device] = std::make_unique<krbn::human_interface_device>(device);
     auto& dev = hids_[device];
 
     dev->open();
@@ -90,7 +89,7 @@ private:
       return;
     }
 
-    krbn::iokit_utility::log_removal_device(logger::get_logger(), device);
+    krbn::iokit_utility::log_removal_device(device);
 
     auto it = hids_.find(device);
     if (it != hids_.end()) {
@@ -117,7 +116,7 @@ private:
       }
     }
 
-    logger::get_logger().info("report_length: {0}", report_length);
+    krbn::logger::get_logger().info("report_length: {0}", report_length);
     std::cout << "  report_id: " << std::dec << report_id << std::endl;
     for (CFIndex i = 0; i < report_length; ++i) {
       std::cout << "  key[" << i << "]: 0x" << std::hex << static_cast<int>(report[i]) << std::dec << std::endl;

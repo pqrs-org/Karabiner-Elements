@@ -1,7 +1,6 @@
 #include "configuration_monitor.hpp"
 #include "core_configuration.hpp"
 #include "libkrbn.h"
-#include "libkrbn.hpp"
 
 namespace {
 class libkrbn_core_configuration_class final {
@@ -22,14 +21,14 @@ public:
   libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
 
   libkrbn_configuration_monitor_class(libkrbn_configuration_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    configuration_monitor_ = std::make_unique<krbn::configuration_monitor>(libkrbn::get_logger(),
-                                                                           krbn::constants::get_user_core_configuration_file_path(),
-                                                                           [this](const std::shared_ptr<krbn::core_configuration> core_configuration) {
-                                                                             if (callback_) {
-                                                                               auto* p = new libkrbn_core_configuration_class(core_configuration);
-                                                                               callback_(p, refcon_);
-                                                                             }
-                                                                           });
+    configuration_monitor_ = std::make_unique<krbn::configuration_monitor>(
+        krbn::constants::get_user_core_configuration_file_path(),
+        [this](const std::shared_ptr<krbn::core_configuration> core_configuration) {
+          if (callback_) {
+            auto* p = new libkrbn_core_configuration_class(core_configuration);
+            callback_(p, refcon_);
+          }
+        });
   }
 
 private:
