@@ -10,8 +10,6 @@
 #include "virtual_hid_device_client.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
-#include "event_tap_manager.hpp"
-#include "manipulator/details/collapse_lazy_events.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "spdlog_utility.hpp"
@@ -38,11 +36,6 @@ public:
     virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
         boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
 
-    {
-      auto manipulator = std::make_shared<manipulator::details::collapse_lazy_events>();
-      collapse_lazy_events_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
-    }
-
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>();
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
 
@@ -51,14 +44,11 @@ public:
     manipulator_managers_connector_.emplace_back_connection(simple_modifications_manipulator_manager_,
                                                             merged_input_event_queue_,
                                                             simple_modifications_applied_event_queue_);
+    manipulator_managers_connector_.emplace_back_connection(complex_modifications_manipulator_manager_,
+                                                            complex_modifications_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(fn_function_keys_manipulator_manager_,
-                                                            simple_modifications_applied_event_queue_,
                                                             fn_function_keys_applied_event_queue_);
-    manipulator_managers_connector_.emplace_back_connection(collapse_lazy_events_manipulator_manager_,
-                                                            fn_function_keys_applied_event_queue_,
-                                                            lazy_collapsed_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
-                                                            lazy_collapsed_event_queue_,
                                                             posted_event_queue_);
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
@@ -84,8 +74,7 @@ public:
 
     auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
-        // std::make_pair(hid_usage_page::consumer, hid_usage::csmr_consumercontrol),
-        // std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
+        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
     });
     if (device_matching_dictionaries) {
       IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
@@ -209,6 +198,7 @@ public:
     profile_ = profile;
 
     update_simple_modifications_manipulators();
+    update_complex_modifications_manipulators();
     update_fn_function_keys_manipulators();
 
     // Update virtual_hid_keyboard
@@ -293,8 +283,8 @@ private:
     }
     
     output_devices_json();
-    
-    if (is_pointing_device_connected()) {
+
+    if (is_pointing_device_grabbed()) {
       virtual_hid_device_client_.initialize_virtual_hid_pointing();
     } else {
       virtual_hid_device_client_.terminate_virtual_hid_pointing();
@@ -347,12 +337,17 @@ private:
         
         it->second.reset();
         hids_.erase(it);
+        
+        if (dev->is_pqrs_virtual_hid_keyboard()) {
+          ungrab_devices();
+        }
+
       }
     }
     
     output_devices_json();
-    
-    if (is_pointing_device_connected()) {
+
+    if (is_pointing_device_grabbed()) {
       virtual_hid_device_client_.initialize_virtual_hid_pointing();
     } else {
       virtual_hid_device_client_.terminate_virtual_hid_pointing();
@@ -365,7 +360,7 @@ private:
   }
 
   void manipulate(void) {
-    manipulator_managers_connector_.manipulate(mach_absolute_time());
+    manipulator_managers_connector_.manipulate();
 
     posted_event_queue_.clear_events();
     post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
@@ -373,9 +368,22 @@ private:
 
   void value_callback(human_interface_device& device,
                       event_queue& event_queue) {
-    if (device.is_grabbed() && !device.get_disabled()) {
+    if (device.get_disabled()) {
+      // Do nothing
+    } else {
       for (const auto& queued_event : event_queue.get_events()) {
-        merged_input_event_queue_.push_back_event(queued_event);
+        if (device.is_grabbed()) {
+          merged_input_event_queue_.push_back_event(queued_event);
+        } else {
+          // device is ignored
+          auto event = event_queue::queued_event::event::make_event_from_ignored_device(queued_event.get_event().get_type(),
+                                                                                        queued_event.get_event().get_integer_value());
+          merged_input_event_queue_.emplace_back_event(queued_event.get_device_id(),
+                                                       queued_event.get_time_stamp(),
+                                                       event,
+                                                       queued_event.get_event_type(),
+                                                       event);
+        }
       }
     }
 
@@ -429,6 +437,20 @@ private:
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
     }
 
+    {
+      bool found = false;
+      for (const auto& it : hids_) {
+        if ((it.second)->is_pqrs_virtual_hid_keyboard()) {
+          found = true;
+        }
+      }
+      if (!found) {
+        std::string message = "virtual_hid_keyboard is not detected. Please wait for a while.";
+        is_grabbable_callback_log_reducer_.warn(message);
+        return human_interface_device::grabbable_state::ungrabbable_temporarily;
+      }
+    }
+
     // ----------------------------------------
 
     return human_interface_device::grabbable_state::grabbable;
@@ -477,9 +499,10 @@ private:
     return false;
   }
 
-  bool is_pointing_device_connected(void) {
+  bool is_pointing_device_grabbed(void) {
     for (const auto& it : hids_) {
-      if ((it.second)->is_pointing_device()) {
+      if ((it.second)->is_pointing_device() &&
+          (it.second)->is_grabbed()) {
         return true;
       }
     }
@@ -550,6 +573,10 @@ private:
       if ((it.second)->is_pqrs_device()) {
         continue;
       }
+      if (!(it.second)->is_keyboard()) {
+        continue;
+      }
+
       connected_devices.push_back_device(it.second->get_connected_device());
     }
 
@@ -567,15 +594,45 @@ private:
       auto to_key_code = pair.get_to_key_code();
       
       if (from_key_code && to_key_code) {
-        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                              *from_key_code,
-                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
-                                                                                 manipulator::details::event_definition::modifier::any})),
-                                                                         manipulator::details::event_definition(*to_key_code),
+                                                                             {},
+                                                                             {
+                                                                                 manipulator::details::event_definition::modifier::any
+                                                                             }),
+                                                                         manipulator::details::to_event_definition(
+                                                                             *to_key_code,
+                                                                             {}),
                                                                          pair.get_vendor_id(),
                                                                          pair.get_product_id());
         
         simple_modifications_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+      }
+      /*
+=======
+    for (const auto& pair : profile_.get_simple_modifications_key_code_map(logger::get_logger())) {
+      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
+                                                                           pair.first,
+                                                                           {},
+                                                                           {
+                                                                               manipulator::details::event_definition::modifier::any,
+                                                                           }),
+                                                                       manipulator::details::to_event_definition(
+                                                                           pair.second,
+                                                                           {}));
+      simple_modifications_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+>>>>>>> af0ab3933992de6acc5a97d78e16ee95fc7b0aee
+       */
+    }
+  }
+
+  void update_complex_modifications_manipulators(void) {
+    complex_modifications_manipulator_manager_.invalidate_manipulators();
+
+    for (const auto& rule : profile_.get_complex_modifications().get_rules()) {
+      for (const auto& manipulator : rule.get_manipulators()) {
+        auto m = krbn::manipulator::manipulator_factory::make_manipulator(manipulator.get_json(), manipulator.get_parameters());
+        complex_modifications_manipulator_manager_.push_back_manipulator(m);
       }
     }
   }
@@ -583,22 +640,22 @@ private:
   void update_fn_function_keys_manipulators(void) {
     fn_function_keys_manipulator_manager_.invalidate_manipulators();
 
-    std::unordered_set<manipulator::details::event_definition::modifier> from_modifiers;
+    std::unordered_set<manipulator::details::event_definition::modifier> from_mandatory_modifiers;
+    std::unordered_set<manipulator::details::event_definition::modifier> from_optional_modifiers({
+        manipulator::details::event_definition::modifier::any,
+    });
     std::unordered_set<manipulator::details::event_definition::modifier> to_modifiers;
 
     if (system_preferences_values_.get_keyboard_fn_state()) {
       // f1 -> f1
       // fn+f1 -> display_brightness_decrement
 
-      from_modifiers.insert(manipulator::details::event_definition::modifier::fn);
-      from_modifiers.insert(manipulator::details::event_definition::modifier::any);
+      from_mandatory_modifiers.insert(manipulator::details::event_definition::modifier::fn);
       to_modifiers.insert(manipulator::details::event_definition::modifier::fn);
 
     } else {
       // f1 -> display_brightness_decrement
       // fn+f1 -> f1
-
-      from_modifiers.insert(manipulator::details::event_definition::modifier::any);
 
       // fn+f1 ... fn+f12 -> f1 .. f12
 
@@ -616,17 +673,19 @@ private:
                key_code::f11,
                key_code::f12,
            })) {
-        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                              key_code,
-                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                             {
                                                                                  manipulator::details::event_definition::modifier::fn,
+                                                                             },
+                                                                             {
                                                                                  manipulator::details::event_definition::modifier::any,
-                                                                             })),
-                                                                         manipulator::details::event_definition(
+                                                                             }),
+                                                                         manipulator::details::to_event_definition(
                                                                              key_code,
-                                                                             std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                             {
                                                                                  manipulator::details::event_definition::modifier::fn,
-                                                                             })));
+                                                                             }));
         fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
     }
@@ -634,10 +693,11 @@ private:
     // from_modifiers+f1 -> display_brightness_decrement ...
 
     for (const auto& pair : profile_.get_fn_function_keys_key_code_map(logger::get_logger())) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                            pair.first,
-                                                                           from_modifiers),
-                                                                       manipulator::details::event_definition(
+                                                                           from_mandatory_modifiers,
+                                                                           from_optional_modifiers),
+                                                                       manipulator::details::to_event_definition(
                                                                            pair.second,
                                                                            to_modifiers));
       fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
@@ -654,17 +714,19 @@ private:
         std::make_pair(key_code::up_arrow, key_code::page_up),
     });
     for (const auto& p : pairs) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::event_definition(
+      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                            p.first,
-                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                           {
                                                                                manipulator::details::event_definition::modifier::fn,
+                                                                           },
+                                                                           {
                                                                                manipulator::details::event_definition::modifier::any,
-                                                                           })),
-                                                                       manipulator::details::event_definition(
+                                                                           }),
+                                                                       manipulator::details::to_event_definition(
                                                                            p.second,
-                                                                           std::unordered_set<manipulator::details::event_definition::modifier>({
+                                                                           {
                                                                                manipulator::details::event_definition::modifier::fn,
-                                                                           })));
+                                                                           }));
       fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
   }
@@ -690,11 +752,11 @@ private:
   manipulator::manipulator_manager simple_modifications_manipulator_manager_;
   event_queue simple_modifications_applied_event_queue_;
 
+  manipulator::manipulator_manager complex_modifications_manipulator_manager_;
+  event_queue complex_modifications_applied_event_queue_;
+
   manipulator::manipulator_manager fn_function_keys_manipulator_manager_;
   event_queue fn_function_keys_applied_event_queue_;
-
-  manipulator::manipulator_manager collapse_lazy_events_manipulator_manager_;
-  event_queue lazy_collapsed_event_queue_;
 
   std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   manipulator::manipulator_manager post_event_to_virtual_devices_manipulator_manager_;

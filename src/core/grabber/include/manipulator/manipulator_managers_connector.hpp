@@ -17,10 +17,9 @@ public:
                                                   output_event_queue_(output_event_queue) {
     }
 
-    void manipulate(uint64_t time_stamp) {
+    void manipulate(void) {
       manipulator_manager_.manipulate(input_event_queue_,
-                                      output_event_queue_,
-                                      time_stamp);
+                                      output_event_queue_);
     }
 
     void invalidate_manipulators(void) {
@@ -39,17 +38,33 @@ public:
     event_queue& output_event_queue_;
   };
 
+  manipulator_managers_connector(void) : last_output_event_queue_(nullptr) {
+  }
+
   void emplace_back_connection(manipulator_manager& manipulator_manager,
                                event_queue& input_event_queue,
                                event_queue& output_event_queue) {
     connections_.emplace_back(manipulator_manager,
                               input_event_queue,
                               output_event_queue);
+    last_output_event_queue_ = &output_event_queue;
   }
 
-  void manipulate(uint64_t time_stamp) {
+  void emplace_back_connection(manipulator_manager& manipulator_manager,
+                               event_queue& output_event_queue) {
+    if (!last_output_event_queue_) {
+      throw std::runtime_error("last_output_event_queue_ is nullptr");
+    }
+
+    connections_.emplace_back(manipulator_manager,
+                              *last_output_event_queue_,
+                              output_event_queue);
+    last_output_event_queue_ = &output_event_queue;
+  }
+
+  void manipulate(void) {
     for (auto&& c : connections_) {
-      c.manipulate(time_stamp);
+      c.manipulate();
     }
   }
 
@@ -67,6 +82,7 @@ public:
 
 private:
   std::vector<connection> connections_;
+  event_queue* last_output_event_queue_;
 };
 } // namespace manipulator
 } // namespace krbn

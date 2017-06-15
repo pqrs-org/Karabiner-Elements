@@ -23,7 +23,7 @@ public:
 
   class profile final {
   public:
-#include "core_configuration/profile/complex_modification.hpp"
+#include "core_configuration/profile/complex_modifications.hpp"
 #include "core_configuration/profile/device.hpp"
 #include "core_configuration/profile/simple_modifications.hpp"
 #include "core_configuration/profile/virtual_hid_keyboard.hpp"
@@ -44,6 +44,8 @@ public:
                                                                                  {{"from", "f11"}, {"to", "volume_decrement"}},
                                                                                  {{"from", "f12"}, {"to", "volume_increment"}}
                                                                                })),
+                                              complex_modifications_(json.find("complex_modifications") != json.end() ? json["complex_modifications"] : nlohmann::json()),
+
                                               virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json()) {
       {
         const std::string key = "name";
@@ -129,6 +131,10 @@ public:
       return fn_function_keys_.to_key_code_map(log);
     }
 
+    const complex_modifications& get_complex_modifications(void) const {
+      return complex_modifications_;
+    }
+
     const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
       return virtual_hid_keyboard_;
     }
@@ -192,6 +198,7 @@ public:
     bool selected_;
     simple_modifications simple_modifications_;
     simple_modifications fn_function_keys_;
+    complex_modifications complex_modifications_;
     virtual_hid_keyboard virtual_hid_keyboard_;
     std::vector<device> devices_;
   };
@@ -362,6 +369,10 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile& pro
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::simple_modifications& simple_modifications) {
   json = simple_modifications.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications& complex_modifications) {
+  json = complex_modifications.to_json();
 }
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::virtual_hid_keyboard& virtual_hid_keyboard) {

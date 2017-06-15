@@ -27,6 +27,7 @@ public:
         device_pointing_buttons_are_released,
         device_ungrabbed,
         caps_lock_state_changed,
+        event_from_ignored_device,
       };
 
       event(key_code key_code) : type_(type::key_code),
@@ -40,6 +41,15 @@ public:
       event(type type,
             int64_t integer_value) : type_(type),
                                      integer_value_(integer_value) {
+      }
+
+      static event make_event_from_ignored_device(type original_type,
+                                                  boost::optional<int64_t> original_integer_value) {
+        event e;
+        e.type_ = type::event_from_ignored_device;
+        e.original_value_.type_ = original_type;
+        e.original_value_.integer_value_ = (original_integer_value ? *original_integer_value : 0);
+        return e;
       }
 
       type get_type(void) const {
@@ -71,20 +81,43 @@ public:
         return boost::none;
       }
 
+      boost::optional<type> get_original_type(void) const {
+        if (type_ == type::event_from_ignored_device) {
+          return original_value_.type_;
+        }
+        return boost::none;
+      }
+
+      boost::optional<int64_t> get_original_integer_value(void) const {
+        if (type_ == type::event_from_ignored_device) {
+          return original_value_.integer_value_;
+        }
+        return boost::none;
+      }
+
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
                get_key_code() == other.get_key_code() &&
                get_pointing_button() == other.get_pointing_button() &&
-               get_integer_value() == other.get_integer_value();
+               get_integer_value() == other.get_integer_value() &&
+               get_original_type() == other.get_original_type() &&
+               get_original_integer_value() == other.get_original_integer_value();
       }
 
     private:
+      event(void) {
+      }
+
       type type_;
 
       union {
         key_code key_code_;               // For type::key_code
         pointing_button pointing_button_; // For type::pointing_button
         int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel and virtual events
+        struct {
+          type type_;
+          int64_t integer_value_;
+        } original_value_; // For type::event_from_ignored_device
       };
     };
 
@@ -417,37 +450,35 @@ public:
     // Thus, we have to reorder the events.
 
     if (v1.get_time_stamp() == v2.get_time_stamp()) {
-      auto modifier_flag1 = modifier_flag::zero;
-      auto modifier_flag2 = modifier_flag::zero;
+      auto key_code1 = v1.get_event().get_key_code();
+      auto key_code2 = v2.get_event().get_key_code();
 
-      if (auto key_code1 = v1.get_event().get_key_code()) {
-        modifier_flag1 = types::get_modifier_flag(*key_code1);
-      }
-      if (auto key_code2 = v2.get_event().get_key_code()) {
-        modifier_flag2 = types::get_modifier_flag(*key_code2);
-      }
+      if (key_code1 && key_code2) {
+        auto modifier_flag1 = types::get_modifier_flag(*key_code1);
+        auto modifier_flag2 = types::get_modifier_flag(*key_code2);
 
-      // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
+        // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
 
-      if (modifier_flag1 == modifier_flag::zero &&
-          modifier_flag2 != modifier_flag::zero) {
-        // v2 is modifier_flag
-        if (v2.get_event_type() == event_type::key_up) {
-          return true;
-        } else {
-          // reorder to v2,v1 if v2 is pressed.
-          return false;
+        if (modifier_flag1 == modifier_flag::zero &&
+            modifier_flag2 != modifier_flag::zero) {
+          // v2 is modifier_flag
+          if (v2.get_event_type() == event_type::key_up) {
+            return true;
+          } else {
+            // reorder to v2,v1 if v2 is pressed.
+            return false;
+          }
         }
-      }
 
-      if (modifier_flag1 != modifier_flag::zero &&
-          modifier_flag2 == modifier_flag::zero) {
-        // v1 is modifier_flag
-        if (v1.get_event_type() == event_type::key_up) {
-          // reorder to v2,v1 if v1 is released.
-          return false;
-        } else {
-          return true;
+        if (modifier_flag1 != modifier_flag::zero &&
+            modifier_flag2 == modifier_flag::zero) {
+          // v1 is modifier_flag
+          if (v1.get_event_type() == event_type::key_up) {
+            // reorder to v2,v1 if v1 is released.
+            return false;
+          } else {
+            return true;
+          }
         }
       }
     }
@@ -469,7 +500,11 @@ private:
 
 // For unit tests
 /*
-std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event& event) {
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event::type& value) {
+  return stream_utility::output_enum(stream, value);
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event& event) {
   stream << "{"
          << "\"type\":";
   stream_utility::output_enum(stream, event.get_type());
@@ -491,8 +526,9 @@ std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::
   return stream;
 }
 
-std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event& value) {
-  stream << "{"
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event& value) {
+  stream << std::endl
+         << "{"
          << "\"device_id\":" << value.get_device_id()
          << ",\"time_stamp\":" << value.get_time_stamp()
          << ",\"valid\":" << value.get_valid()

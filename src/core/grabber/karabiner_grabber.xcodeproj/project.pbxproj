@@ -36,6 +36,7 @@
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = SOURCE_ROOT; };
 		341F59D11D5244F200B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = local_datagram_client.hpp; path = ../../share/local_datagram_client.hpp; sourceTree = SOURCE_ROOT; };
 		341F59DC1D5778A000B441A8 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iokit_utility.hpp; path = ../../share/iokit_utility.hpp; sourceTree = SOURCE_ROOT; };
+		342BE67B1EF148BE00149985 /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = core_configuration.hpp; path = ../../share/core_configuration.hpp; sourceTree = SOURCE_ROOT; };
 		3431346C1DB3CD8A0008F284 /* iopm_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = iopm_client.hpp; path = ../../share/iopm_client.hpp; sourceTree = SOURCE_ROOT; };
 		3431346E1DB70C900008F284 /* gcd_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = gcd_utility.hpp; path = ../../share/gcd_utility.hpp; sourceTree = SOURCE_ROOT; };
 		343134701DB71BEC0008F284 /* thread_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = thread_utility.hpp; path = ../../share/thread_utility.hpp; sourceTree = SOURCE_ROOT; };
@@ -70,7 +71,6 @@
 		34D2FC841D9C120F00168D20 /* pointing_button_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pointing_button_manager.hpp; path = ../../share/pointing_button_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34DA28A31D8FC8BE0029E37D /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = service_observer.hpp; path = ../../share/service_observer.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F311ED8810C00D75501 /* stream_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = stream_utility.hpp; path = ../../share/stream_utility.hpp; sourceTree = SOURCE_ROOT; };
-		34DA9F331ED8824200D75501 /* collapse_lazy_events.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = collapse_lazy_events.hpp; path = include/manipulator/details/collapse_lazy_events.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F341ED8824200D75501 /* post_event_to_virtual_devices.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = post_event_to_virtual_devices.hpp; path = include/manipulator/details/post_event_to_virtual_devices.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F371ED8827800D75501 /* manipulator_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = manipulator_manager.hpp; path = include/manipulator/manipulator_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F381ED8827800D75501 /* manipulator_managers_connector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = manipulator_managers_connector.hpp; path = include/manipulator/manipulator_managers_connector.hpp; sourceTree = SOURCE_ROOT; };
@@ -80,12 +80,12 @@
 		34EED7101D6FA38400399AD1 /* apple_hid_usage_tables.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = apple_hid_usage_tables.hpp; path = ../../share/apple_hid_usage_tables.hpp; sourceTree = SOURCE_ROOT; };
 		34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = ../../share/human_interface_device.hpp; sourceTree = SOURCE_ROOT; };
 		5E0512941ED983C800997718 /* post_event_to_virtual_devices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = post_event_to_virtual_devices.cpp; path = include/manipulator/details/post_event_to_virtual_devices.cpp; sourceTree = SOURCE_ROOT; };
+		5E1597D31EF28BDB00E46F26 /* complex_modifications.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = complex_modifications.hpp; sourceTree = "<group>"; };
 		5E1FEF451EC59E7600B01724 /* manipulator_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = manipulator_manager.hpp; path = include/manipulator/manipulator_manager.hpp; sourceTree = SOURCE_ROOT; };
 		5E1FEF4A1EC5DA6900B01724 /* basic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basic.cpp; path = include/manipulator/details/basic.cpp; sourceTree = SOURCE_ROOT; };
 		5E1FEF4C1EC5E13400B01724 /* device_grabber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device_grabber.cpp; path = include/device_grabber.cpp; sourceTree = SOURCE_ROOT; };
 		5E695C171ECB6F0A002E849C /* general_logger.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = general_logger.hpp; path = ../../share/general_logger.hpp; sourceTree = "<group>"; };
 		5EFDD3DF1EC9B4E600040ABE /* global_configuration.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = global_configuration.hpp; sourceTree = "<group>"; };
-		5EFDD3E11EC9B4E600040ABE /* complex_modification.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = complex_modification.hpp; sourceTree = "<group>"; };
 		5EFDD3E21EC9B4E600040ABE /* device.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = device.hpp; sourceTree = "<group>"; };
 		5EFDD3E31EC9B4E600040ABE /* simple_modifications.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = simple_modifications.hpp; sourceTree = "<group>"; };
 		5EFDD3E41EC9B4E600040ABE /* virtual_hid_keyboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_keyboard.hpp; sourceTree = "<group>"; };
@@ -139,7 +139,6 @@
 				5E1FEF4A1EC5DA6900B01724 /* basic.cpp */,
 				345CCB511E914BDA005B61A8 /* base.hpp */,
 				345CCB521E914BDA005B61A8 /* basic.hpp */,
-				34DA9F331ED8824200D75501 /* collapse_lazy_events.hpp */,
 				345CCB551E929D71005B61A8 /* nop.hpp */,
 				34DA9F341ED8824200D75501 /* post_event_to_virtual_devices.hpp */,
 				5E0512941ED983C800997718 /* post_event_to_virtual_devices.cpp */,
@@ -159,6 +158,7 @@
 				349863321E784DC800DF3644 /* connected_devices.hpp */,
 				5EFDD3E51EC9B5CE00040ABE /* core_configuration.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
+				342BE67B1EF148BE00149985 /* core_configuration.hpp */,
 				345CCB4F1E902963005B61A8 /* event_queue.hpp */,
 				3469EB701D814F140005D30D /* filesystem.hpp */,
 				3431346E1DB70C900008F284 /* gcd_utility.hpp */,
@@ -238,7 +238,7 @@
 		5EFDD3E01EC9B4E600040ABE /* profile */ = {
 			isa = PBXGroup;
 			children = (
-				5EFDD3E11EC9B4E600040ABE /* complex_modification.hpp */,
+				5E1597D31EF28BDB00E46F26 /* complex_modifications.hpp */,
 				5EFDD3E21EC9B4E600040ABE /* device.hpp */,
 				5EFDD3E31EC9B4E600040ABE /* simple_modifications.hpp */,
 				5EFDD3E41EC9B4E600040ABE /* virtual_hid_keyboard.hpp */,

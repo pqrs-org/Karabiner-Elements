@@ -25,20 +25,24 @@
                 "f11": "volume_decrement",
                 "f12": "volume_increment"
             },
-            "complex_modification": {
+            "complex_modifications": {
                 "rules": [
                     {
                         "conditions": [],
                         "manipulators": [
                             {
+                                "description": "Change control+[ to escape.",
                                 "type": "basic",
                                 "from": {
-                                    "key_code": "spacebar",
-                                    "modifiers": [
-                                        "shift",
-                                        "control",
-                                        "any"
-                                    ]
+                                    "key_code": "open_bracket",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ],
+                                        "optional": [
+                                            "caps_lock"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
@@ -49,25 +53,75 @@
                             {
                                 "type": "basic",
                                 "from": {
-                                    "key_code": "spacebar"
+                                    "key_code": "h",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
-                                        "modifiers": [
-                                            "left_shift"
+                                        "key_code": "delete_or_backspace"
+                                    }
+                                ]
+                            },
+                            {
+                                "description": "Change spacebar to left_shift. (Post spacebar if pressed alone)",
+                                "from": {
+                                    "key_code": "spacebar",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
                                         ]
                                     }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_shift"
+                                    }
                                 ],
-                                "standalone_to": [
+                                "to_if_alone": [
                                     {
                                         "key_code": "spacebar"
                                     }
-                                ]
+                                ],
+                                "type": "basic",
+                                "parameters": {
+                                    "basic": {
+                                        "to_if_alone_timeout_milliseconds": 400
+                                    }
+                                }
                             }
                         ]
+                    },
+                    {
+                        "description": "description test",
+                        "conditions": [],
+                        "manipulators": [
+                            {
+                                "description": "description test 2"
+                            }
+                        ]
+                    },
+                    {
+                        "conditions": [],
+                        "manipulators": []
                     }
                 ],
+                "dummy": {
+                    "keep_me": true
+                },
                 "parameters": {
+                    "basic": {
+                        "to_if_alone_timeout_milliseconds": 800,
+                        "dummy": {
+                            "keep_me": true
+                        }
+                    }
                 }
             },
             "virtual_hid_keyboard": {

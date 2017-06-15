@@ -9,6 +9,9 @@ namespace krbn {
 class logger final {
 public:
   static spdlog::logger& get_logger(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
       auto log_directory = "/var/log/karabiner";
@@ -25,6 +28,7 @@ public:
         logger = spdlog::stdout_logger_mt("grabber");
       }
     }
+
     return *logger;
   }
 };

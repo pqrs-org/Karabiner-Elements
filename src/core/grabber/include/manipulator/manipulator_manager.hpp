@@ -12,8 +12,9 @@ public:
   manipulator_manager(void) {
   }
 
-  void push_back_manipulator(const nlohmann::json& json) {
-    manipulators_.push_back(manipulator_factory::make_manipulator(json));
+  void push_back_manipulator(const nlohmann::json& json,
+                             const core_configuration::profile::complex_modifications::parameters& parameters) {
+    manipulators_.push_back(manipulator_factory::make_manipulator(json, parameters));
   }
 
   void push_back_manipulator(std::shared_ptr<details::base> ptr) {
@@ -21,30 +22,11 @@ public:
   }
 
   void manipulate(event_queue& input_event_queue,
-                  event_queue& output_event_queue,
-                  uint64_t time_stamp) {
-      
-      
+                  event_queue& output_event_queue) {
     // auto& logger = krbn::logger::get_logger();
     // logger.info("manipulateor size(): {0}", manipulators_.size());
-      
     while (!input_event_queue.empty()) {
       auto& front_input_event = input_event_queue.get_front_event();
-
-      if (front_input_event.get_lazy()) {
-        bool lazy_events = true;
-
-        // Find a not lazy event
-        for (const auto& e : input_event_queue.get_events()) {
-          if (!e.get_lazy()) {
-            lazy_events = false;
-          }
-        }
-
-        if (lazy_events) {
-          break;
-        }
-      }
 
       switch (front_input_event.get_event().get_type()) {
         case event_queue::queued_event::event::type::device_keys_are_released:
@@ -67,12 +49,25 @@ public:
           }
           break;
 
+        case event_queue::queued_event::event::type::event_from_ignored_device:
+          if (auto original_type = front_input_event.get_event().get_original_type()) {
+            if (auto original_integer_value = front_input_event.get_event().get_original_integer_value()) {
+              for (auto&& m : manipulators_) {
+                m->handle_event_from_ignored_device(*original_type,
+                                                    *original_integer_value,
+                                                    front_input_event.get_event_type(),
+                                                    output_event_queue,
+                                                    front_input_event.get_time_stamp());
+              }
+            }
+          }
+          break;
+
         default:
           for (auto&& m : manipulators_) {
             m->manipulate(front_input_event,
                           input_event_queue,
-                          output_event_queue,
-                          time_stamp);
+                          output_event_queue);
           }
           break;
       }

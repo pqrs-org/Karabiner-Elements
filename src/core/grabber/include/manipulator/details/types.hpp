@@ -4,6 +4,7 @@
 
 #include "event_queue.hpp"
 #include "modifier_flag_manager.hpp"
+#include "stream_utility.hpp"
 #include <boost/optional.hpp>
 #include <json/json.hpp>
 #include <unordered_set>
@@ -12,7 +13,7 @@ namespace krbn {
 namespace manipulator {
 namespace details {
 
-class event_definition final {
+class event_definition {
 public:
   enum class type {
     none,
@@ -39,68 +40,7 @@ public:
     end_,
   };
 
-  event_definition(const nlohmann::json& json) : type_(type::none) {
-    // Set type_ and values.
-    do {
-      {
-        const std::string key = "key_code";
-        if (json.find(key) != std::end(json) && json[key].is_string()) {
-          const std::string& name = json[key];
-          if (auto key_code = types::get_key_code(name)) {
-            type_ = type::key_code;
-            key_code_ = *key_code;
-          }
-        }
-      }
-      {
-        const std::string key = "pointing_button";
-        if (json.find(key) != std::end(json) && json[key].is_string()) {
-          if (auto pointing_button = types::get_pointing_button(json[key])) {
-            type_ = type::pointing_button;
-            pointing_button_ = *pointing_button;
-            break;
-          }
-        }
-      }
-    } while (false);
-
-    // Set modifiers_.
-    {
-      const std::string key = "modifiers";
-      if (json.find(key) != std::end(json) && json[key].is_array()) {
-        for (const auto& j : json[key]) {
-          if (j.is_string()) {
-            if (j == "any") { modifiers_.insert(modifier::any); }
-            if (j == "command") { modifiers_.insert(modifier::command); }
-            if (j == "control") { modifiers_.insert(modifier::control); }
-            if (j == "fn") { modifiers_.insert(modifier::fn); }
-            if (j == "left_command") { modifiers_.insert(modifier::left_command); }
-            if (j == "left_control") { modifiers_.insert(modifier::left_control); }
-            if (j == "left_option") { modifiers_.insert(modifier::left_option); }
-            if (j == "left_shift") { modifiers_.insert(modifier::left_shift); }
-            if (j == "option") { modifiers_.insert(modifier::option); }
-            if (j == "right_command") { modifiers_.insert(modifier::right_command); }
-            if (j == "right_control") { modifiers_.insert(modifier::right_control); }
-            if (j == "right_option") { modifiers_.insert(modifier::right_option); }
-            if (j == "right_shift") { modifiers_.insert(modifier::right_shift); }
-            if (j == "shift") { modifiers_.insert(modifier::shift); }
-          }
-        }
-      }
-    }
-  }
-
-  event_definition(key_code key_code,
-                   const std::unordered_set<modifier> modifiers) : type_(type::key_code),
-                                                                   key_code_(key_code),
-                                                                   modifiers_(modifiers) {
-  }
-
-  event_definition(key_code key_code) : event_definition(key_code, std::unordered_set<modifier>()) {
-  }
-
-  event_definition(pointing_button pointing_button) : type_(type::pointing_button),
-                                                      pointing_button_(pointing_button) {
+  virtual ~event_definition(void) {
   }
 
   type get_type(void) const {
@@ -121,10 +61,6 @@ public:
     return boost::none;
   }
 
-  const std::unordered_set<modifier>& get_modifiers(void) const {
-    return modifiers_;
-  }
-
   boost::optional<event_queue::queued_event::event> to_event(void) const {
     switch (type_) {
       case type::none:
@@ -136,74 +72,30 @@ public:
     }
   }
 
-  boost::optional<std::unordered_set<modifier_flag>> test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
-    bool has_any = (modifiers_.find(modifier::any) != std::end(modifiers_));
-    bool has_command = (modifiers_.find(modifier::command) != std::end(modifiers_));
-    bool has_control = (modifiers_.find(modifier::control) != std::end(modifiers_));
-    bool has_option = (modifiers_.find(modifier::option) != std::end(modifiers_));
-    bool has_shift = (modifiers_.find(modifier::shift) != std::end(modifiers_));
+  static std::unordered_set<modifier> make_modifiers(const nlohmann::json& json) {
+    std::unordered_set<modifier> modifiers;
 
-    std::unordered_set<modifier_flag> modifier_flags;
-
-    for (int i = 0; i < static_cast<int>(modifier::end_); ++i) {
-      auto m = modifier(i);
-
-      if (m == modifier::any) {
-        continue;
-      }
-
-      if (modifiers_.find(m) != std::end(modifiers_)) {
-        auto pair = test_modifier(modifier_flag_manager, m);
-        if (!pair.first) {
-          return boost::none;
-        }
-        if (pair.second != modifier_flag::zero) {
-          modifier_flags.insert(pair.second);
-        }
-
-      } else {
-        // m is not a member of modifiers_.
-        if (!has_any) {
-          // Strict matching
-
-          if (m == modifier::command ||
-              m == modifier::control ||
-              m == modifier::option ||
-              m == modifier::shift ||
-              (has_command && (m == modifier::left_command || m == modifier::right_command)) ||
-              (has_control && (m == modifier::left_control || m == modifier::right_control)) ||
-              (has_option && (m == modifier::left_option || m == modifier::right_option)) ||
-              (has_shift && (m == modifier::left_shift || m == modifier::right_shift))) {
-            continue;
-          }
-
-          auto pair = test_modifier(modifier_flag_manager, m);
-          if (pair.first) {
-            return boost::none;
-          }
-        }
+    for (const auto& j : json) {
+      if (j.is_string()) {
+        if (j == "any") { modifiers.insert(modifier::any); }
+        if (j == "caps_lock") { modifiers.insert(modifier::caps_lock); }
+        if (j == "command") { modifiers.insert(modifier::command); }
+        if (j == "control") { modifiers.insert(modifier::control); }
+        if (j == "fn") { modifiers.insert(modifier::fn); }
+        if (j == "left_command") { modifiers.insert(modifier::left_command); }
+        if (j == "left_control") { modifiers.insert(modifier::left_control); }
+        if (j == "left_option") { modifiers.insert(modifier::left_option); }
+        if (j == "left_shift") { modifiers.insert(modifier::left_shift); }
+        if (j == "option") { modifiers.insert(modifier::option); }
+        if (j == "right_command") { modifiers.insert(modifier::right_command); }
+        if (j == "right_control") { modifiers.insert(modifier::right_control); }
+        if (j == "right_option") { modifiers.insert(modifier::right_option); }
+        if (j == "right_shift") { modifiers.insert(modifier::right_shift); }
+        if (j == "shift") { modifiers.insert(modifier::shift); }
       }
     }
 
-    return modifier_flags;
-  }
-
-  static std::pair<bool, modifier_flag> test_modifier(const modifier_flag_manager& modifier_flag_manager,
-                                                      modifier modifier) {
-    if (modifier == modifier::any) {
-      return std::make_pair(true, modifier_flag::zero);
-    }
-
-    auto modifier_flags = get_modifier_flags(modifier);
-    if (!modifier_flags.empty()) {
-      for (const auto& m : modifier_flags) {
-        if (modifier_flag_manager.is_pressed(m)) {
-          return std::make_pair(true, m);
-        }
-      }
-    }
-
-    return std::make_pair(false, modifier_flag::zero);
+    return modifiers;
   }
 
   static std::vector<modifier_flag> get_modifier_flags(modifier modifier) {
@@ -296,14 +188,242 @@ public:
     }
   }
 
-private:
+protected:
+  event_definition(const nlohmann::json& json) : type_(type::none) {
+    // Set type_ and values.
+
+    {
+      const std::string key = "key_code";
+      if (json.find(key) != std::end(json) && json[key].is_string()) {
+        const std::string& name = json[key];
+        if (auto key_code = types::get_key_code(name)) {
+          type_ = type::key_code;
+          key_code_ = *key_code;
+          return;
+        }
+      }
+    }
+    {
+      const std::string key = "pointing_button";
+      if (json.find(key) != std::end(json) && json[key].is_string()) {
+        if (auto pointing_button = types::get_pointing_button(json[key])) {
+          type_ = type::pointing_button;
+          pointing_button_ = *pointing_button;
+          return;
+        }
+      }
+    }
+  }
+
+  event_definition(key_code key_code) : type_(type::key_code),
+                                        key_code_(key_code) {
+  }
+
+  event_definition(pointing_button pointing_button) : type_(type::pointing_button),
+                                                      pointing_button_(pointing_button) {
+  }
+
   type type_;
   union {
     key_code key_code_;
     pointing_button pointing_button_;
   };
+};
+
+class from_event_definition final : public event_definition {
+public:
+  from_event_definition(const nlohmann::json& json) : event_definition(json) {
+    {
+      const std::string key = "modifiers";
+      if (json.find(key) != json.end() && json[key].is_object()) {
+        auto& modifiers = json[key];
+        {
+          const std::string k = "mandatory";
+          if (modifiers.find(k) != modifiers.end()) {
+            mandatory_modifiers_ = make_modifiers(modifiers[k]);
+          }
+        }
+        {
+          const std::string k = "optional";
+          if (modifiers.find(k) != modifiers.end()) {
+            optional_modifiers_ = make_modifiers(modifiers[k]);
+          }
+        }
+      }
+    }
+  }
+
+  from_event_definition(key_code key_code,
+                        std::unordered_set<modifier> mandatory_modifiers,
+                        std::unordered_set<modifier> optional_modifiers) : event_definition(key_code),
+                                                                           mandatory_modifiers_(mandatory_modifiers),
+                                                                           optional_modifiers_(optional_modifiers) {
+  }
+
+  virtual ~from_event_definition(void) {
+  }
+
+  const std::unordered_set<modifier>& get_mandatory_modifiers(void) const {
+    return mandatory_modifiers_;
+  }
+
+  const std::unordered_set<modifier>& get_optional_modifiers(void) const {
+    return optional_modifiers_;
+  }
+
+  boost::optional<std::unordered_set<modifier_flag>> test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
+    std::unordered_set<modifier_flag> modifier_flags;
+
+    // If mandatory_modifiers_ contains modifier::any, return all active modifier_flags.
+
+    if (mandatory_modifiers_.find(modifier::any) != std::end(mandatory_modifiers_)) {
+      for (auto i = static_cast<uint32_t>(modifier_flag::zero) + 1; i != static_cast<uint32_t>(modifier_flag::end_); ++i) {
+        auto flag = modifier_flag(i);
+        if (modifier_flag_manager.is_pressed(flag)) {
+          modifier_flags.insert(flag);
+        }
+      }
+      return modifier_flags;
+    }
+
+    // Check modifier_flag state.
+
+    for (int i = 0; i < static_cast<int>(modifier::end_); ++i) {
+      auto m = modifier(i);
+
+      if (mandatory_modifiers_.find(m) != std::end(mandatory_modifiers_)) {
+        auto pair = test_modifier(modifier_flag_manager, m);
+        if (!pair.first) {
+          return boost::none;
+        }
+        if (pair.second != modifier_flag::zero) {
+          modifier_flags.insert(pair.second);
+        }
+      }
+    }
+
+    // If optional_modifiers_ does not contain modifier::any, we have to check modifier flags strictly.
+
+    if (optional_modifiers_.find(modifier::any) == std::end(optional_modifiers_)) {
+      std::unordered_set<modifier_flag> extra_modifier_flags;
+      for (auto m = static_cast<uint32_t>(modifier_flag::zero) + 1; m != static_cast<uint32_t>(modifier_flag::end_); ++m) {
+        extra_modifier_flags.insert(modifier_flag(m));
+      }
+
+      for (int i = 0; i < static_cast<int>(modifier::end_); ++i) {
+        auto m = modifier(i);
+
+        if (mandatory_modifiers_.find(m) != std::end(mandatory_modifiers_) ||
+            optional_modifiers_.find(m) != std::end(optional_modifiers_)) {
+          for (const auto& flag : get_modifier_flags(m)) {
+            extra_modifier_flags.erase(flag);
+          }
+        }
+      }
+
+      for (const auto& flag : extra_modifier_flags) {
+        if (modifier_flag_manager.is_pressed(flag)) {
+          return boost::none;
+        }
+      }
+    }
+
+    return modifier_flags;
+  }
+
+  static std::pair<bool, modifier_flag> test_modifier(const modifier_flag_manager& modifier_flag_manager,
+                                                      modifier modifier) {
+    if (modifier == modifier::any) {
+      return std::make_pair(true, modifier_flag::zero);
+    }
+
+    auto modifier_flags = get_modifier_flags(modifier);
+    if (!modifier_flags.empty()) {
+      for (const auto& m : modifier_flags) {
+        if (modifier_flag_manager.is_pressed(m)) {
+          return std::make_pair(true, m);
+        }
+      }
+    }
+
+    return std::make_pair(false, modifier_flag::zero);
+  }
+
+private:
+  std::unordered_set<modifier> mandatory_modifiers_;
+  std::unordered_set<modifier> optional_modifiers_;
+};
+
+class to_event_definition final : public event_definition {
+public:
+  to_event_definition(const nlohmann::json& json) : event_definition(json) {
+    {
+      const std::string key = "modifiers";
+      if (json.find(key) != json.end()) {
+        modifiers_ = make_modifiers(json[key]);
+      }
+    }
+  }
+
+  to_event_definition(key_code key_code,
+                      std::unordered_set<modifier> modifiers) : event_definition(key_code),
+                                                                modifiers_(modifiers) {
+  }
+
+  virtual ~to_event_definition(void) {
+  }
+
+  const std::unordered_set<modifier>& get_modifiers(void) const {
+    return modifiers_;
+  }
+
+private:
   std::unordered_set<modifier> modifiers_;
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const event_definition::modifier& value) {
+#define KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(MODIFIER) \
+  case event_definition::modifier::MODIFIER:               \
+    stream << #MODIFIER;                                   \
+    break;
+
+  switch (value) {
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(any);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(caps_lock);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(command);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(control);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(fn);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(left_command);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(left_control);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(left_option);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(left_shift);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(option);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(right_command);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(right_control);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(right_option);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(right_shift);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(shift);
+    KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(end_);
+  }
+
+#undef KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT
+
+  return stream;
+}
+
+template <template <class T, class A> class container>
+inline std::ostream& operator<<(std::ostream& stream, const container<event_definition::modifier, std::allocator<event_definition::modifier>>& values) {
+  return stream_utility::output_enums(stream, values);
+}
+
+template <template <class T, class H, class K, class A> class container>
+inline std::ostream& operator<<(std::ostream& stream,
+                                const container<event_definition::modifier,
+                                                std::hash<event_definition::modifier>,
+                                                std::equal_to<event_definition::modifier>,
+                                                std::allocator<event_definition::modifier>>& values) {
+  return stream_utility::output_enums(stream, values);
+}
 } // namespace details
 } // namespace manipulator
 } // namespace krbn

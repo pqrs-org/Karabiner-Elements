@@ -1,0 +1,93 @@
+[
+    {
+        "description": "f1 -> f2 (for pressed alone interruption)",
+        "from": {
+            "key_code": "f1",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f2"
+            }
+        ],
+        "type": "basic"
+    },
+    {
+        "description": "right_control -> left_command (escape)",
+        "from": {
+            "key_code": "right_control",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_command"
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "escape"
+            }
+        ],
+        "type": "basic"
+    },
+    {
+        "description": "spacebar -> left_shift (spacebar)",
+        "from": {
+            "key_code": "spacebar",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_shift"
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "spacebar"
+            }
+        ],
+        "type": "basic",
+        "parameters": {
+            "basic": {
+                "to_if_alone_timeout_milliseconds": 500
+            }
+        }
+    },
+    {
+        "description": "command+escape -> left_control (spacebar)",
+        "from": {
+            "key_code": "escape",
+            "modifiers": {
+                "mandatory": [
+                    "command"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_control"
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "spacebar"
+            }
+        ],
+        "type": "basic"
+    }
+]

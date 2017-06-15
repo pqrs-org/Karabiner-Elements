@@ -9,11 +9,15 @@
 class logger final {
 public:
   static spdlog::logger& get_logger(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
     static std::shared_ptr<spdlog::logger> logger;
     if (!logger) {
       logger = spdlog::stdout_color_mt("core_configuration");
       logger->set_level(spdlog::level::off);
     }
+
     return *logger;
   }
 };
@@ -27,6 +31,11 @@ TEST_CASE("valid") {
         {*(krbn::types::get_key_code("escape")), *(krbn::types::get_key_code("spacebar"))},
     };
     REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map(logger::get_logger()) == expected);
+  }
+  {
+    auto manipulator = configuration.get_selected_profile().get_complex_modifications().get_rules()[0].get_manipulators()[0].get_json();
+    REQUIRE(manipulator["type"] == "basic");
+    REQUIRE(manipulator["from"]["key_code"] == "open_bracket");
   }
   {
     std::unordered_map<krbn::key_code, krbn::key_code> expected{
@@ -44,6 +53,16 @@ TEST_CASE("valid") {
         {krbn::key_code::f9, krbn::key_code::fastforward},
     };
     REQUIRE(configuration.get_selected_profile().get_fn_function_keys_key_code_map(logger::get_logger()) == expected);
+  }
+  {
+    auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
+    auto& rules = complex_modifications.get_rules();
+    REQUIRE(complex_modifications.get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 800);
+    REQUIRE(rules[0].get_manipulators()[0].get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 800);
+    REQUIRE(rules[0].get_manipulators()[2].get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 400);
+    REQUIRE(rules[0].get_description() == "Change control+[ to escape.");
+    REQUIRE(rules[1].get_description() == "description test");
+    REQUIRE(rules[2].get_description() == "");
   }
   {
     REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type() == "iso");
@@ -760,6 +779,41 @@ TEST_CASE("simple_modifications.to_json") {
                                                   {"dummy", "f3"},
                                                   {"f4", "dummy"},
                                               }));
+  }
+}
+
+TEST_CASE("complex_modifications.parameters") {
+  // empty json
+  {
+    nlohmann::json json;
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1000);
+  }
+
+  // load values from json
+  {
+    nlohmann::json json({
+        {
+            "basic", {
+                         {"to_if_alone_timeout_milliseconds", 1234},
+                     },
+        },
+    });
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1234);
+  }
+
+  // invalid values in json
+  {
+    nlohmann::json json({
+        {
+            "basic", {
+                         {"to_if_alone_timeout_milliseconds", "1234"},
+                     },
+        },
+    });
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1000);
   }
 }
 

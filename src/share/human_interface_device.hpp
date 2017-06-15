@@ -96,26 +96,24 @@ public:
 
     // Set name_for_log_
     {
+      std::stringstream stream;
+
       if (auto product_name = get_product()) {
-        name_for_log_ = boost::trim_copy(*product_name);
+        stream << boost::trim_copy(*product_name);
       } else {
         if (auto vendor_id = get_vendor_id()) {
           if (auto product_id = get_product_id()) {
-            std::stringstream stream;
             stream << std::hex
                    << "(vendor_id:0x" << static_cast<uint32_t>(*vendor_id)
                    << ", product_id:0x" << static_cast<uint32_t>(*product_id)
                    << ")"
                    << std::dec;
-            name_for_log_ = stream.str();
           }
         }
-        if (name_for_log_.empty()) {
-          std::stringstream stream;
-          stream << "(device_id:" << static_cast<uint32_t>(device_id_) << ")";
-          name_for_log_ = stream.str();
-        }
       }
+
+      stream << " (device_id:" << static_cast<uint32_t>(device_id_) << ")";
+      name_for_log_ = stream.str();
     }
 
     // Create connected_device_.
@@ -150,7 +148,9 @@ public:
                                                                    manufacturer);
 
       bool is_built_in_keyboard = false;
-      if (descriptions.get_product().find("Apple Internal ") != std::string::npos) {
+      if (is_keyboard &&
+          !is_pointing_device &&
+          descriptions.get_product().find("Apple Internal ") != std::string::npos) {
         is_built_in_keyboard = true;
       }
 
@@ -319,7 +319,7 @@ public:
 
       auto r = open();
       if (r != kIOReturnSuccess) {
-        logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
+        logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
         return;
       }
 
@@ -395,7 +395,7 @@ public:
             // ----------------------------------------
             auto r = open(kIOHIDOptionsTypeSeizeDevice);
             if (r != kIOReturnSuccess) {
-              logger_.error("IOHIDDeviceOpen error: {1} @ {0}", __PRETTY_FUNCTION__, r);
+              logger_.error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
               return;
             }
 
@@ -677,6 +677,19 @@ public:
     if (auto manufacturer = get_manufacturer()) {
       if (*manufacturer == "pqrs.org") {
         return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool is_pqrs_virtual_hid_keyboard(void) const {
+    if (auto manufacturer = get_manufacturer()) {
+      if (auto product = get_product()) {
+        if (*manufacturer == "pqrs.org" &&
+            *product == "Karabiner VirtualHIDKeyboard") {
+          return true;
+        }
       }
     }
 

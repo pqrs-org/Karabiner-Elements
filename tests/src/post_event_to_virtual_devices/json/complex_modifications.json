@@ -1,0 +1,102 @@
+[
+    {
+        "description": "fn+up_arrow to fn+page_up (from modifiers == to modifiers)",
+        "type": "basic",
+        "from": {
+            "key_code": "up_arrow",
+            "modifiers": {
+                "mandatory": [
+                    "fn"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "page_up",
+                "modifiers": [
+                    "fn"
+                ]
+            }
+        ]
+    },
+    {
+        "description": "control+p to up_arrow (from modifiers.optional)",
+        "type": "basic",
+        "from": {
+            "key_code": "p",
+            "modifiers": {
+                "mandatory": [
+                    "control"
+                ],
+                "optional": [
+                    "shift"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "up_arrow"
+            }
+        ]
+    },
+    {
+        "description": "control+u to shift+control+a,delete_or_backspace (multiple to keys)",
+        "type": "basic",
+        "from": {
+            "key_code": "u",
+            "modifiers": {
+                "mandatory": [
+                    "control"
+                ],
+                "optional": [
+                    "caps_lock"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "a",
+                "modifiers": [
+                    "left_control",
+                    "left_shift"
+                ]
+            },
+            {
+                "key_code": "delete_or_backspace"
+            }
+        ]
+    },
+    {
+        "description": "control+f1 to shift+control+a,delete_or_backspace,vk_none (multiple to keys)",
+        "type": "basic",
+        "from": {
+            "key_code": "f1",
+            "modifiers": {
+                "mandatory": [
+                    "control"
+                ],
+                "optional": [
+                    "caps_lock"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "a",
+                "modifiers": [
+                    "left_control",
+                    "left_shift"
+                ]
+            },
+            {
+                "key_code": "delete_or_backspace"
+            },
+            {
+                "key_code": "vk_none"
+            }
+        ]
+    }
+]

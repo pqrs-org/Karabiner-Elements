@@ -1,0 +1,168 @@
+[
+    {
+        "description": "right_shift -> f1 (modifier -> key)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_shift",
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f1",
+                "modifiers": []
+            }
+        ]
+    },
+    {
+        "description": "left_shift -> fn (modifier -> modifier)",
+        "type": "basic",
+        "from": {
+            "key_code": "left_shift",
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "fn",
+                "modifiers": []
+            }
+        ]
+    },
+    {
+        "description": "left_control -> fn+f3 (modifier -> modifier+key)",
+        "type": "basic",
+        "from": {
+            "key_code": "left_control",
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f3",
+                "modifiers": [
+                    "fn"
+                ]
+            }
+        ]
+    },
+    {
+        "description": "left_command -> fn+right_option (modifier -> modifier+modifier)",
+        "type": "basic",
+        "from": {
+            "key_code": "left_command",
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "right_option",
+                "modifiers": [
+                    "fn"
+                ]
+            }
+        ]
+    },
+    {
+        "description": "right_command+right_option -> f5 (modifier+modifier -> key)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_option",
+            "modifiers": {
+                "mandatory": [
+                    "right_command"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f5",
+                "modifiers": []
+            }
+        ]
+    },
+    {
+        "description": "right_control+right_option -> left_shift (modifier+modifier -> modifier)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_option",
+            "modifiers": {
+                "mandatory": [
+                    "right_control"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_shift",
+                "modifiers": []
+            }
+        ]
+    },
+    {
+        "description": "right_control+right_command -> left_shift+f7 (modifier+modifier -> modifier+key)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_command",
+            "modifiers": {
+                "mandatory": [
+                    "right_control"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f7",
+                "modifiers": ["left_shift"]
+            }
+        ]
+    },
+    {
+        "description": "right_command+right_control -> left_shift+left_option (modifier+modifier -> modifier+modifier)",
+        "type": "basic",
+        "from": {
+            "key_code": "right_control",
+            "modifiers": {
+                "mandatory": [
+                    "right_command"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_option",
+                "modifiers": [
+                    "left_shift"
+                ]
+            }
+        ]
+    }
+]

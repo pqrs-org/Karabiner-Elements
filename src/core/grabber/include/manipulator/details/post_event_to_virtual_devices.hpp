@@ -75,8 +75,7 @@ public:
       uint64_t time_stamp_;
     };
 
-    queue(void) : last_event_modifier_key_(false),
-                  last_event_time_stamp_(0) {
+    queue(void) {
     }
 
     const std::vector<event>& get_events(void) const {
@@ -93,14 +92,6 @@ public:
           keyboard_event.usage = *usage;
           keyboard_event.value = (event_type == event_type::key_down);
 
-          // ----------------------------------------
-          // modify time_stamp if needed
-
-          auto m = types::get_modifier_flag(key_code);
-          adjust_time_stamp(time_stamp, m != modifier_flag::zero);
-
-          // ----------------------------------------
-
           events_.emplace_back(keyboard_event,
                                time_stamp);
         }
@@ -109,8 +100,6 @@ public:
 
     void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
                             uint64_t time_stamp) {
-      adjust_time_stamp(time_stamp, false);
-
       events_.emplace_back(pointing_input,
                            time_stamp);
     }
@@ -152,50 +141,13 @@ public:
       }
     }
 
-  private:
-    void adjust_time_stamp(uint64_t& time_stamp,
-                           bool is_modifier_key) {
-      // wait is 1 milliseconds
-      auto wait = time_utility::nano_to_absolute(NSEC_PER_MSEC);
-
-      if (last_event_modifier_key_ != is_modifier_key &&
-          time_stamp < last_event_time_stamp_ + wait) {
-        time_stamp = last_event_time_stamp_ + wait;
-      }
-
-      last_event_modifier_key_ = is_modifier_key;
-      if (last_event_time_stamp_ < time_stamp) {
-        last_event_time_stamp_ = time_stamp;
-      }
+    void clear(void) {
+      events_.clear();
     }
 
+  private:
     std::vector<event> events_;
     std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
-
-    // We should add a wait between modifier events and other events in order to
-    // ensure window system handles modifier by properly order.
-    //
-    // Example:
-    //
-    //   01. left_shift key_down
-    //   02. left_control key_down
-    //       [wait]
-    //   03. a key_down
-    //   04. a key_up
-    //   05. b key_down
-    //   06. b key_up
-    //       [wait]
-    //   07. left_shift key_up
-    //   08. left_control key_up
-    //       [wait]
-    //   09. button1 down
-    //   10. button1 up
-    //
-    // Without wait, window system sometimes reorder modifier flag event.
-    // it causes improperly event order such as `a,shift,control,b,button1`.
-
-    bool last_event_modifier_key_;
-    uint64_t last_event_time_stamp_;
   };
 
   class key_event_dispatcher final {
@@ -319,12 +271,34 @@ public:
 
   virtual void manipulate(event_queue::queued_event& front_input_event,
                           const event_queue& input_event_queue,
-                          event_queue& output_event_queue,
-                          uint64_t time_stamp) {
+                          event_queue& output_event_queue) {
     output_event_queue.push_back_event(front_input_event);
     front_input_event.set_valid(false);
 
-    if (front_input_event.get_event_type() == event_type::key_down) {
+    // Dispatch modifier key event only when front_input_event is key_down or modifier key.
+
+    bool dispatch_modifier_key_event = false;
+    {
+      auto modifier_flag = modifier_flag::zero;
+      if (auto key_code = front_input_event.get_event().get_key_code()) {
+        modifier_flag = types::get_modifier_flag(*key_code);
+      }
+
+      if (modifier_flag != modifier_flag::zero) {
+        // front_input_event is modifier key event.
+        if (!front_input_event.get_lazy()) {
+          dispatch_modifier_key_event = true;
+        }
+
+      } else {
+        if (front_input_event.get_event_type() == event_type::key_down) {
+          dispatch_modifier_key_event = true;
+        }
+      }
+    }
+
+    if (dispatch_modifier_key_event &&
+        front_input_event.get_event_type() == event_type::key_down) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
                                                         front_input_event.get_time_stamp());
@@ -375,6 +349,7 @@ public:
             case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
             case event_queue::queued_event::event::type::device_ungrabbed:
             case event_queue::queued_event::event::type::caps_lock_state_changed:
+            case event_queue::queued_event::event::type::event_from_ignored_device:
               // Do nothing
               break;
           }
@@ -393,11 +368,13 @@ public:
       case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
       case event_queue::queued_event::event::type::device_ungrabbed:
       case event_queue::queued_event::event::type::caps_lock_state_changed:
+      case event_queue::queued_event::event::type::event_from_ignored_device:
         // Do nothing
         break;
     }
 
-    if (front_input_event.get_event_type() == event_type::key_up) {
+    if (dispatch_modifier_key_event &&
+        front_input_event.get_event_type() == event_type::key_up) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
                                                         front_input_event.get_time_stamp());
@@ -435,12 +412,30 @@ public:
                                                       time_stamp);
   }
 
+  virtual void handle_event_from_ignored_device(event_queue::queued_event::event::type original_type,
+                                                int64_t original_integer_value,
+                                                event_type event_type,
+                                                event_queue& output_event_queue,
+                                                uint64_t time_stamp) {
+    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                      queue_,
+                                                      time_stamp);
+  }
+
+  virtual void set_valid(bool value) {
+    // This manipulator is always valid.
+  }
+
   void post_events(virtual_hid_device_client& virtual_hid_device_client) {
     queue_.post_events(virtual_hid_device_client);
   }
 
   const queue& get_queue(void) const {
     return queue_;
+  }
+
+  void clear_queue(void) {
+    return queue_.clear();
   }
 
   const key_event_dispatcher& get_key_event_dispatcher(void) const {
@@ -453,6 +448,38 @@ private:
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   uint32_t pressed_buttons_;
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const post_event_to_virtual_devices::queue::event& event) {
+  stream << std::endl
+         << "{"
+         << "\"type\":";
+  stream_utility::output_enum(stream, event.get_type());
+
+  if (auto keyboard_event = event.get_keyboard_event()) {
+    stream << ",\"keyboard_event.usage\":" << static_cast<uint32_t>(keyboard_event->usage);
+    stream << ",\"keyboard_event.usage_page\":" << static_cast<uint32_t>(keyboard_event->usage_page);
+    stream << ",\"keyboard_event.value\":" << static_cast<uint32_t>(keyboard_event->value);
+  }
+
+  if (auto pointing_input = event.get_pointing_input()) {
+    stream << std::hex;
+    stream << ",\"pointing_input.buttons[0]\":0x" << static_cast<int>(pointing_input->buttons[0]);
+    stream << ",\"pointing_input.buttons[1]\":0x" << static_cast<int>(pointing_input->buttons[1]);
+    stream << ",\"pointing_input.buttons[2]\":0x" << static_cast<int>(pointing_input->buttons[2]);
+    stream << ",\"pointing_input.buttons[3]\":0x" << static_cast<int>(pointing_input->buttons[3]);
+    stream << std::dec;
+    stream << ",\"pointing_input.x\":" << static_cast<int>(pointing_input->x);
+    stream << ",\"pointing_input.y\":" << static_cast<int>(pointing_input->y);
+    stream << ",\"pointing_input.vertical_wheel\":" << static_cast<int>(pointing_input->vertical_wheel);
+    stream << ",\"pointing_input.horizontal_wheel\":" << static_cast<int>(pointing_input->horizontal_wheel);
+  }
+
+  stream << ",\"time_stamp\":" << event.get_time_stamp();
+
+  stream << "}";
+
+  return stream;
+}
 
 } // namespace details
 } // namespace manipulator
