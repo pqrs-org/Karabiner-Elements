@@ -1,5 +1,6 @@
 #include "boost_defs.hpp"
 
+#include "../include/logger.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
@@ -16,17 +17,6 @@
 #include <mach/mach_time.h>
 
 namespace {
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("dump_hid_report");
-    }
-    return *logger;
-  }
-};
-
 class dump_hid_report final {
 public:
   dump_hid_report(const dump_hid_report&) = delete;

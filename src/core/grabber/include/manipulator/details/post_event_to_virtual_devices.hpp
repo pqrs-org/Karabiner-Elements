@@ -75,21 +75,42 @@ public:
       uint64_t time_stamp_;
     };
 
-    queue(void) {
+    queue(void) : last_event_modifier_key_(false),
+                  last_event_time_stamp_(0) {
     }
 
     const std::vector<event>& get_events(void) const {
       return events_;
     }
 
-    void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event,
+    void emplace_back_event(key_code key_code,
+                            event_type event_type,
                             uint64_t time_stamp) {
-      events_.emplace_back(keyboard_event,
-                           time_stamp);
+      if (auto usage_page = types::get_usage_page(key_code)) {
+        if (auto usage = types::get_usage(key_code)) {
+          pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
+          keyboard_event.usage_page = *usage_page;
+          keyboard_event.usage = *usage;
+          keyboard_event.value = (event_type == event_type::key_down);
+
+          // ----------------------------------------
+          // modify time_stamp if needed
+
+          auto m = types::get_modifier_flag(key_code);
+          adjust_time_stamp(time_stamp, m != modifier_flag::zero);
+
+          // ----------------------------------------
+
+          events_.emplace_back(keyboard_event,
+                               time_stamp);
+        }
+      }
     }
 
     void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
                             uint64_t time_stamp) {
+      adjust_time_stamp(time_stamp, false);
+
       events_.emplace_back(pointing_input,
                            time_stamp);
     }
@@ -132,59 +153,77 @@ public:
     }
 
   private:
+    void adjust_time_stamp(uint64_t& time_stamp,
+                           bool is_modifier_key) {
+      // wait is 1 milliseconds
+      auto wait = time_utility::nano_to_absolute(NSEC_PER_MSEC);
+
+      if (last_event_modifier_key_ != is_modifier_key &&
+          time_stamp < last_event_time_stamp_ + wait) {
+        time_stamp = last_event_time_stamp_ + wait;
+      }
+
+      last_event_modifier_key_ = is_modifier_key;
+      if (last_event_time_stamp_ < time_stamp) {
+        last_event_time_stamp_ = time_stamp;
+      }
+    }
+
     std::vector<event> events_;
     std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
+
+    // We should add a wait between modifier events and other events in order to
+    // ensure window system handles modifier by properly order.
+    //
+    // Example:
+    //
+    //   01. left_shift key_down
+    //   02. left_control key_down
+    //       [wait]
+    //   03. a key_down
+    //   04. a key_up
+    //   05. b key_down
+    //   06. b key_up
+    //       [wait]
+    //   07. left_shift key_up
+    //   08. left_control key_up
+    //       [wait]
+    //   09. button1 down
+    //   10. button1 up
+    //
+    // Without wait, window system sometimes reorder modifier flag event.
+    // it causes improperly event order such as `a,shift,control,b,button1`.
+
+    bool last_event_modifier_key_;
+    uint64_t last_event_time_stamp_;
   };
 
   class key_event_dispatcher final {
   public:
-    typedef std::pair<device_id, key_code> pressed_key;
-
-    struct pressed_key_hash : public std::unary_function<pressed_key, std::size_t> {
-      std::size_t operator()(const pressed_key& k) const {
-        return static_cast<uint32_t>(k.first) ^
-               static_cast<uint32_t>(k.second);
-      }
-    };
-
-    // Return true if usage_page and usage is not exists before insert. (device_id is ignored.)
-    void insert_key(device_id device_id,
-                    key_code key_code,
-                    queue& queue,
-                    uint64_t time_stamp) {
+    void dispatch_key_down_event(device_id device_id,
+                                 key_code key_code,
+                                 queue& queue,
+                                 uint64_t time_stamp) {
       // Enqueue key_down event if it is not sent yet.
 
-      auto it = std::find_if(std::begin(pressed_keys_),
-                             std::end(pressed_keys_),
-                             [&](auto& k) {
-                               return k.second == key_code;
-                             });
-      auto found = (it != std::end(pressed_keys_));
-
-      pressed_keys_.emplace(device_id, key_code);
-
-      if (!found) {
+      if (!find_key_code(key_code)) {
+        pressed_keys_.emplace_back(device_id, key_code);
         enqueue_key_event(key_code, event_type::key_down, queue, time_stamp);
       }
     }
 
-    // Return true if usage_page and usage is not exists after erase. (device_id is ignored.)
-    void erase_key(key_code key_code,
-                   queue& queue,
-                   uint64_t time_stamp) {
+    void dispatch_key_up_event(key_code key_code,
+                               queue& queue,
+                               uint64_t time_stamp) {
       // Enqueue key_up event if it is already sent.
 
-      bool found = false;
-      for (auto it = std::begin(pressed_keys_); it != std::end(pressed_keys_);) {
-        if (it->second == key_code) {
-          found = true;
-          it = pressed_keys_.erase(it);
-        } else {
-          std::advance(it, 1);
-        }
-      }
-
-      if (found) {
+      if (find_key_code(key_code)) {
+        pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
+                                           std::end(pressed_keys_),
+                                           [&](auto& k) {
+                                             return k.second == key_code;
+                                           }),
+                            std::end(pressed_keys_));
         enqueue_key_event(key_code, event_type::key_up, queue, time_stamp);
       }
     }
@@ -225,17 +264,17 @@ public:
       }
     }
 
-    void erase_keys_by_device_id(device_id device_id,
-                                 queue& queue,
-                                 uint64_t time_stamp) {
+    void dispatch_key_up_events_by_device_id(device_id device_id,
+                                             queue& queue,
+                                             uint64_t time_stamp) {
       while (true) {
         bool found = false;
         for (const auto& k : pressed_keys_) {
           if (k.first == device_id) {
             found = true;
-            erase_key(k.second,
-                      queue,
-                      time_stamp);
+            dispatch_key_up_event(k.second,
+                                  queue,
+                                  time_stamp);
             break;
           }
         }
@@ -245,28 +284,28 @@ public:
       }
     }
 
-    const std::unordered_set<pressed_key, pressed_key_hash>& get_pressed_keys(void) const {
+    const std::vector<std::pair<device_id, key_code>>& get_pressed_keys(void) const {
       return pressed_keys_;
     }
 
   private:
+    bool find_key_code(key_code key_code) {
+      auto it = std::find_if(std::begin(pressed_keys_),
+                             std::end(pressed_keys_),
+                             [&](auto& k) {
+                               return k.second == key_code;
+                             });
+      return (it != std::end(pressed_keys_));
+    }
+
     void enqueue_key_event(key_code key_code,
                            event_type event_type,
                            queue& queue,
                            uint64_t time_stamp) {
-      if (auto usage_page = types::get_usage_page(key_code)) {
-        if (auto usage = types::get_usage(key_code)) {
-          pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-          keyboard_event.usage_page = *usage_page;
-          keyboard_event.usage = *usage;
-          keyboard_event.value = (event_type == event_type::key_down);
-          queue.emplace_back_event(keyboard_event,
-                                   time_stamp);
-        }
-      }
+      queue.emplace_back_event(key_code, event_type, time_stamp);
     }
 
-    std::unordered_set<pressed_key, pressed_key_hash> pressed_keys_;
+    std::vector<std::pair<device_id, key_code>> pressed_keys_;
     std::unordered_set<modifier_flag> pressed_modifier_flags_;
   };
 
@@ -296,14 +335,14 @@ public:
         if (auto key_code = front_input_event.get_event().get_key_code()) {
           if (types::get_modifier_flag(*key_code) == modifier_flag::zero) {
             if (front_input_event.get_event_type() == event_type::key_down) {
-              key_event_dispatcher_.insert_key(front_input_event.get_device_id(),
-                                               *key_code,
-                                               queue_,
-                                               front_input_event.get_time_stamp());
+              key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
+                                                            *key_code,
+                                                            queue_,
+                                                            front_input_event.get_time_stamp());
             } else {
-              key_event_dispatcher_.erase_key(*key_code,
-                                              queue_,
-                                              front_input_event.get_time_stamp());
+              key_event_dispatcher_.dispatch_key_up_event(*key_code,
+                                                          queue_,
+                                                          front_input_event.get_time_stamp());
             }
           }
         }
@@ -335,6 +374,7 @@ public:
             case event_queue::queued_event::event::type::device_keys_are_released:
             case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
             case event_queue::queued_event::event::type::device_ungrabbed:
+            case event_queue::queued_event::event::type::caps_lock_state_changed:
               // Do nothing
               break;
           }
@@ -352,6 +392,7 @@ public:
       case event_queue::queued_event::event::type::device_keys_are_released:
       case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
       case event_queue::queued_event::event::type::device_ungrabbed:
+      case event_queue::queued_event::event::type::caps_lock_state_changed:
         // Do nothing
         break;
     }
@@ -372,9 +413,9 @@ public:
                                              uint64_t time_stamp) {
     // Release pressed keys
 
-    key_event_dispatcher_.erase_keys_by_device_id(device_id,
-                                                  queue_,
-                                                  time_stamp);
+    key_event_dispatcher_.dispatch_key_up_events_by_device_id(device_id,
+                                                              queue_,
+                                                              time_stamp);
 
     // Release buttons
     {
@@ -386,6 +427,12 @@ public:
         pressed_buttons_ = bits;
       }
     }
+
+    // Release modifiers
+
+    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                      queue_,
+                                                      time_stamp);
   }
 
   void post_events(virtual_hid_device_client& virtual_hid_device_client) {

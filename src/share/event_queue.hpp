@@ -26,6 +26,7 @@ public:
         device_keys_are_released,
         device_pointing_buttons_are_released,
         device_ungrabbed,
+        caps_lock_state_changed,
       };
 
       event(key_code key_code) : type_(type::key_code),
@@ -63,7 +64,8 @@ public:
         if (type_ == type::pointing_x ||
             type_ == type::pointing_y ||
             type_ == type::pointing_vertical_wheel ||
-            type_ == type::pointing_horizontal_wheel) {
+            type_ == type::pointing_horizontal_wheel ||
+            type_ == type::caps_lock_state_changed) {
           return integer_value_;
         }
         return boost::none;
@@ -276,6 +278,19 @@ public:
           modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
         } else {
           modifier_flag_manager_.erase_active_modifier_flag(active_modifier_flag);
+        }
+      }
+    }
+
+    if (event.get_type() == queued_event::event::type::caps_lock_state_changed) {
+      if (auto integer_value = event.get_integer_value()) {
+        modifier_flag_manager::active_modifier_flag active_modifier_flag(modifier_flag_manager::active_modifier_flag::type::increase_lock,
+                                                                         modifier_flag::caps_lock,
+                                                                         device_id);
+        if (*integer_value) {
+          modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
+        } else {
+          modifier_flag_manager_.erase_all_active_modifier_flags(active_modifier_flag);
         }
       }
     }

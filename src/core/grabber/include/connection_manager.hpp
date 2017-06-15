@@ -2,7 +2,6 @@
 
 #include "constants.hpp"
 #include "device_grabber.hpp"
-#include "event_manipulator.hpp"
 #include "gcd_utility.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
@@ -17,9 +16,7 @@ public:
   connection_manager(const connection_manager&) = delete;
 
   connection_manager(version_monitor& version_monitor,
-                     manipulator::event_manipulator& event_manipulator,
                      device_grabber& device_grabber) : version_monitor_(version_monitor),
-                                                       event_manipulator_(event_manipulator),
                                                        device_grabber_(device_grabber),
                                                        timer_(nullptr) {
     timer_ = std::make_unique<gcd_utility::main_queue_timer>(
@@ -46,7 +43,7 @@ public:
             version_monitor_.manual_check();
 
             receiver_ = nullptr;
-            receiver_ = std::make_unique<receiver>(event_manipulator_, device_grabber_);
+            receiver_ = std::make_unique<receiver>(device_grabber_);
           }
         });
   }
@@ -58,7 +55,6 @@ public:
 
 private:
   version_monitor& version_monitor_;
-  manipulator::event_manipulator& event_manipulator_;
   device_grabber& device_grabber_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> timer_;

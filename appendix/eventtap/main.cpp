@@ -1,3 +1,4 @@
+#include "../include/logger.hpp"
 #include "thread_utility.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 #include <iostream>
@@ -22,17 +23,6 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
   return event;
 }
 } // namespace
-
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("eventtap");
-    }
-    return *logger;
-  }
-};
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();

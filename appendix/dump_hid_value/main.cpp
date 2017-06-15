@@ -1,5 +1,6 @@
 #include "boost_defs.hpp"
 
+#include "../include/logger.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
@@ -16,17 +17,6 @@
 #include <mach/mach_time.h>
 
 namespace {
-class logger final {
-public:
-  static spdlog::logger& get_logger(void) {
-    static std::shared_ptr<spdlog::logger> logger;
-    if (!logger) {
-      logger = spdlog::stdout_color_mt("dump_hid_value");
-    }
-    return *logger;
-  }
-};
-
 class dump_hid_value final {
 public:
   dump_hid_value(const dump_hid_value&) = delete;
@@ -165,6 +155,12 @@ private:
 
         case krbn::event_queue::queued_event::event::type::device_ungrabbed:
           std::cout << "device_ungrabbed for " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::caps_lock_state_changed:
+          if (auto integer_value = queued_event.get_event().get_integer_value()) {
+            std::cout << "caps_lock_state_changed " << *integer_value << std::endl;
+          }
           break;
       }
     }

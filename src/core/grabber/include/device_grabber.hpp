@@ -4,13 +4,13 @@
 
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
+#include "event_tap_manager.hpp"
+#include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
 #include "virtual_hid_device_client.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "event_tap_manager.hpp"
-#include "manipulator/event_manipulator.hpp"
-#include "manipulator/details/add_delay_after_modifier_key_down.hpp"
 #include "manipulator/details/collapse_lazy_events.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
@@ -30,24 +30,17 @@ public:
   
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(virtual_hid_device_client& virtual_hid_device_client,
-                 manipulator::event_manipulator& event_manipulator) : virtual_hid_device_client_(virtual_hid_device_client),
-                                                                      event_manipulator_(event_manipulator),
-                                                                      profile_(nlohmann::json()),
-                                                                      mode_(mode::observing),
-                                                                      is_grabbable_callback_log_reducer_(logger::get_logger()),
-                                                                      suspended_(false) {
+  device_grabber(virtual_hid_device_client& virtual_hid_device_client) : virtual_hid_device_client_(virtual_hid_device_client),
+                                                                         profile_(nlohmann::json()),
+                                                                         mode_(mode::observing),
+                                                                         is_grabbable_callback_log_reducer_(logger::get_logger()),
+                                                                         suspended_(false) {
     virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
         boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
 
     {
       auto manipulator = std::make_shared<manipulator::details::collapse_lazy_events>();
       collapse_lazy_events_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
-    }
-
-    {
-      auto manipulator = std::make_shared<manipulator::details::add_delay_after_modifier_key_down>();
-      add_delay_after_modifier_key_down_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
 
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>();
@@ -64,11 +57,8 @@ public:
     manipulator_managers_connector_.emplace_back_connection(collapse_lazy_events_manipulator_manager_,
                                                             fn_function_keys_applied_event_queue_,
                                                             lazy_collapsed_event_queue_);
-    manipulator_managers_connector_.emplace_back_connection(add_delay_after_modifier_key_down_manipulator_manager_,
-                                                            lazy_collapsed_event_queue_,
-                                                            modifier_delay_added_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
-                                                            modifier_delay_added_event_queue_,
+                                                            lazy_collapsed_event_queue_,
                                                             posted_event_queue_);
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
@@ -131,7 +121,7 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       mode_ = mode::grabbing;
 
-      event_manipulator_.reset();
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
 
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_manager here.
@@ -144,7 +134,6 @@ public:
 
                                                                          is_grabbable_callback_log_reducer_.reset();
                                                                          set_profile(core_configuration_->get_selected_profile());
-                                                                         event_manipulator_.set_profile(core_configuration_->get_selected_profile());
                                                                          grab_devices();
                                                                        });
     });
@@ -158,7 +147,7 @@ public:
 
       mode_ = mode::observing;
 
-      event_manipulator_.reset();
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
 
       event_tap_manager_ = nullptr;
     });
@@ -221,6 +210,16 @@ public:
 
     update_simple_modifications_manipulators();
     update_fn_function_keys_manipulators();
+
+    // Update virtual_hid_keyboard
+    {
+      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
+      if (auto k = types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
+        properties.keyboard_type = *k;
+      }
+      properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(profile.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds());
+      virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
+    }
   }
 
   void unset_profile(void) {
@@ -278,6 +277,8 @@ private:
                                       this,
                                       std::placeholders::_1,
                                       std::placeholders::_2));
+    logger::get_logger().info("{0} is detected.", dev->get_name_for_log());
+
     dev->observe();
     
     hids_[device] = dev;
@@ -294,9 +295,9 @@ private:
     output_devices_json();
     
     if (is_pointing_device_connected()) {
-      event_manipulator_.initialize_virtual_hid_pointing();
+      virtual_hid_device_client_.initialize_virtual_hid_pointing();
     } else {
-      event_manipulator_.terminate_virtual_hid_pointing();
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
     }
     
     // ----------------------------------------
@@ -324,13 +325,14 @@ private:
     }
     
     iokit_utility::log_removal_device(logger::get_logger(), device);
-    
     boost::optional<device_id> device_id;
     
     auto it = hids_.find(device);
     if (it != hids_.end()) {
       auto& dev = it->second;
       if (dev) {
+        logger::get_logger().info("{0} is removed.", dev->get_name_for_log());
+        dev->set_removed();
         dev->ungrab();
         device_id = dev->get_device_id();
         //logger::get_logger().info("-----> removal device id: {0}", static_cast<uint32_t>(*device_id));
@@ -351,18 +353,11 @@ private:
     output_devices_json();
     
     if (is_pointing_device_connected()) {
-      event_manipulator_.initialize_virtual_hid_pointing();
+      virtual_hid_device_client_.initialize_virtual_hid_pointing();
     } else {
-      event_manipulator_.terminate_virtual_hid_pointing();
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
     }
-    
-    if (device_id) {
-      event_manipulator_.erase_all_active_modifier_flags(*device_id, true);
-      event_manipulator_.erase_all_active_pointing_buttons(*device_id, true);
-    }
-    
-    event_manipulator_.stop_key_repeat();
-    
+
     // ----------------------------------------
     if (mode_ == mode::grabbing) {
       grab_devices();
@@ -398,6 +393,16 @@ private:
     manipulate();
   }
 
+  void post_caps_lock_state_changed_callback(bool caps_lock_state) {
+    event_queue::queued_event::event event(event_queue::queued_event::event::type::caps_lock_state_changed, caps_lock_state);
+    merged_input_event_queue_.emplace_back_event(device_id(0),
+                                                 mach_absolute_time(),
+                                                 event,
+                                                 event_type::key_down,
+                                                 event);
+    manipulate();
+  }
+
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
     if (is_ignored_device(device)) {
       // If we need to disable the built-in keyboard, we have to grab it.
@@ -410,22 +415,16 @@ private:
     }
 
     // ----------------------------------------
-    // Ungrabbable while event_manipulator_ is not ready.
+    // Ungrabbable while virtual_hid_device_client_ is not ready.
 
-    auto ready_state = event_manipulator_.is_ready();
-    if (ready_state != manipulator::event_manipulator::ready_state::ready) {
-      std::string message = "event_manipulator_ is not ready. ";
-      switch (ready_state) {
-        case manipulator::event_manipulator::ready_state::ready:
-          break;
-        case manipulator::event_manipulator::ready_state::virtual_hid_device_client_is_not_ready:
-          message += "(virtual_hid_device_client is not ready) ";
-          break;
-        case manipulator::event_manipulator::ready_state::virtual_hid_keyboard_is_not_ready:
-          message += "(virtual_hid_keyboard is not ready) ";
-          break;
-      }
-      message += "Please wait for a while.";
+    if (!virtual_hid_device_client_.is_connected()) {
+      std::string message = "virtual_hid_device_client is not connected yet. Please wait for a while.";
+      is_grabbable_callback_log_reducer_.warn(message);
+      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+    }
+
+    if (!virtual_hid_device_client_.is_virtual_hid_keyboard_ready()) {
+      std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
     }
@@ -447,19 +446,16 @@ private:
   }
 
   void ungrabbed_callback(human_interface_device& device) {
-    // stop key repeat
-    event_manipulator_.stop_key_repeat();
-
     post_device_ungrabbed_event(device.get_device_id());
   }
 
   void disabled_callback(human_interface_device& device) {
-    // stop key repeat
-    event_manipulator_.stop_key_repeat();
+    // Post device_ungrabbed event in order to release modifier_flags.
+    post_device_ungrabbed_event(device.get_device_id());
   }
 
   void caps_lock_state_changed_callback(bool caps_lock_state) {
-    event_manipulator_.set_caps_lock_state(caps_lock_state);
+    post_caps_lock_state_changed_callback(caps_lock_state);
     update_caps_lock_led(caps_lock_state);
   }
 
@@ -674,7 +670,6 @@ private:
   }
 
   virtual_hid_device_client& virtual_hid_device_client_;
-  manipulator::event_manipulator& event_manipulator_;
 
   boost::signals2::connection virtual_hid_device_client_disconnected_connection;
 
@@ -700,9 +695,6 @@ private:
 
   manipulator::manipulator_manager collapse_lazy_events_manipulator_manager_;
   event_queue lazy_collapsed_event_queue_;
-
-  manipulator::manipulator_manager add_delay_after_modifier_key_down_manipulator_manager_;
-  event_queue modifier_delay_added_event_queue_;
 
   std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   manipulator::manipulator_manager post_event_to_virtual_devices_manipulator_manager_;

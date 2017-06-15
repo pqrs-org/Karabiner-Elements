@@ -3,7 +3,6 @@
 #include "apple_hid_usage_tables.hpp"
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
-#include "event_manipulator.hpp"
 #include "event_tap_manager.hpp"
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"

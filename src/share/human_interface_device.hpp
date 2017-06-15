@@ -85,6 +85,7 @@ public:
                                                            device_id_(types::get_new_device_id()),
                                                            queue_(nullptr),
                                                            is_grabbable_callback_log_reducer_(logger),
+                                                           removed_(false),
                                                            observed_(false),
                                                            grabbed_(false),
                                                            disabled_(false) {
@@ -92,6 +93,30 @@ public:
     // Retain device_
 
     CFRetain(device_);
+
+    // Set name_for_log_
+    {
+      if (auto product_name = get_product()) {
+        name_for_log_ = boost::trim_copy(*product_name);
+      } else {
+        if (auto vendor_id = get_vendor_id()) {
+          if (auto product_id = get_product_id()) {
+            std::stringstream stream;
+            stream << std::hex
+                   << "(vendor_id:0x" << static_cast<uint32_t>(*vendor_id)
+                   << ", product_id:0x" << static_cast<uint32_t>(*product_id)
+                   << ")"
+                   << std::dec;
+            name_for_log_ = stream.str();
+          }
+        }
+        if (name_for_log_.empty()) {
+          std::stringstream stream;
+          stream << "(device_id:" << static_cast<uint32_t>(device_id_) << ")";
+          name_for_log_ = stream.str();
+        }
+      }
+    }
 
     // Create connected_device_.
     {
@@ -273,9 +298,17 @@ public:
     });
   }
 
+  void set_removed(void) {
+    removed_ = true;
+  }
+
   // High-level utility method.
   void observe(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
+      if (removed_) {
+        return;
+      }
+
       if (is_pqrs_device()) {
         return;
       }
@@ -319,6 +352,10 @@ public:
   // High-level utility method.
   void grab(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
+      if (removed_) {
+        return;
+      }
+
       if (is_pqrs_device()) {
         return;
       }
@@ -477,24 +514,7 @@ public:
   }
 
   std::string get_name_for_log(void) const {
-    if (auto product_name = get_product()) {
-      return boost::trim_copy(*product_name);
-    }
-    if (auto vendor_id = get_vendor_id()) {
-      if (auto product_id = get_product_id()) {
-        std::stringstream stream;
-        stream << std::hex
-               << "(vendor_id:0x" << static_cast<uint32_t>(*vendor_id)
-               << ", product_id:0x" << static_cast<uint32_t>(*product_id)
-               << ")"
-               << std::dec;
-        return stream.str();
-      }
-    }
-
-    std::stringstream stream;
-    stream << "(device_id:" << static_cast<uint32_t>(device_id_) << ")";
-    return stream.str();
+    return name_for_log_;
   }
 
   void set_is_grabbable_callback(const is_grabbable_callback& callback) {
@@ -814,6 +834,8 @@ private:
   IOHIDQueueRef _Nullable queue_;
   std::unordered_map<uint64_t, IOHIDElementRef> elements_;
 
+  std::string name_for_log_;
+
   event_queue input_event_queue_;
 
   value_callback value_callback_;
@@ -827,6 +849,7 @@ private:
   ungrabbed_callback ungrabbed_callback_;
   disabled_callback disabled_callback_;
   std::unique_ptr<gcd_utility::main_queue_timer> grab_timer_;
+  bool removed_;
   bool observed_;
   bool grabbed_;
   // `disabled_` is ignoring input events from this device.
