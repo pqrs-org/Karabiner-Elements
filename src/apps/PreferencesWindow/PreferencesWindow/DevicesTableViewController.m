@@ -50,6 +50,8 @@
     DevicesTableCellView* cellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
     [coreConfigurationModel setSelectedProfileDeviceIgnore:cellView.deviceVendorId
                                                  productId:cellView.deviceProductId
+                                              manufacturer:cellView.deviceManufacturer
+                                                   product:cellView.deviceProduct
                                                 isKeyboard:cellView.deviceIsKeyboard
                                           isPointingDevice:cellView.deviceIsPointingDevice
                                                      value:(cellView.checkbox.state == NSOffState)];
@@ -62,6 +64,8 @@
     DevicesTableCellView* cellView = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
     [coreConfigurationModel setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:cellView.deviceVendorId
                                                                          productId:cellView.deviceProductId
+                                                                      manufacturer:cellView.deviceManufacturer
+                                                                           product:cellView.deviceProduct
                                                                         isKeyboard:cellView.deviceIsKeyboard
                                                                   isPointingDevice:cellView.deviceIsPointingDevice
                                                                              value:(cellView.checkbox.state == NSOnState)];

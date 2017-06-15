@@ -18,9 +18,26 @@
   
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   NSArray *pairs = [coreConfigurationModel selectedProfileSimpleModificationVendorProductIdPairs];
-  if (pairs != nil) {
+  if (pairs) {
     for (id id_ in pairs) {
       VendorProductIdPair *pair = (VendorProductIdPair *)id_;
+      NSString *str = [pair toString];
+      NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:str action:NULL keyEquivalent:@""];
+      item.representedObject = pair;
+      [self.vendorIdMenu addItem:item];
+    }
+  }
+  
+  KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+  NSUInteger cnt = [KarabinerKitDeviceManager sharedManager].connectedDevices.devicesCount;
+  
+  if (connectedDevices) {
+    for (NSUInteger i = 0; i < cnt; ++ i) {
+      
+      NSUInteger deviceVendorId = [connectedDevices vendorIdAtIndex:i];
+      NSUInteger deviceProductId = [connectedDevices productIdAtIndex:i];
+
+      VendorProductIdPair *pair = [[VendorProductIdPair alloc] initWithVendorId:deviceVendorId productId:deviceProductId];
       NSString *str = [pair toString];
       NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:str action:NULL keyEquivalent:@""];
       item.representedObject = pair;

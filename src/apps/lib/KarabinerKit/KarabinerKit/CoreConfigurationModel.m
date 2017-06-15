@@ -224,15 +224,13 @@
                                                                               (uint32_t)productId,
                                                                               &product_,
                                                                               &manufacturer_);
-  [product setString: [NSString stringWithUTF8String: product_]];
-  [manufacturer setString: [NSString stringWithUTF8String: manufacturer_]];
-}
-
-- (NSString *)getDeviceNameByVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId {
-  size_t size = 50;
-  char *buf = (char *)malloc(size);
+  if (product_) {
+    [product setString: [NSString stringWithUTF8String: product_]];
+  }
   
-  return [NSString stringWithUTF8String:buf];
+  if (manufacturer_) {
+    [manufacturer setString: [NSString stringWithUTF8String: manufacturer_]];
+  }
 }
 
 - (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index {
@@ -276,12 +274,16 @@
 
 - (void)setSelectedProfileDeviceIgnore:(NSUInteger)vendorId
                              productId:(NSUInteger)productId
+                          manufacturer:(NSString*)manufacturer
+                               product:(NSString*)product
                             isKeyboard:(BOOL)isKeyboard
                       isPointingDevice:(BOOL)isPointingDevice
                                  value:(BOOL)value {
   libkrbn_core_configuration_set_selected_profile_device_ignore(self.libkrbnCoreConfiguration,
                                                                 (uint32_t)(vendorId),
                                                                 (uint32_t)(productId),
+                                                                [manufacturer UTF8String],
+                                                                [product UTF8String],
                                                                 isKeyboard,
                                                                 isPointingDevice,
                                                                 value);
@@ -300,12 +302,16 @@
 
 - (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
                                                      productId:(NSUInteger)productId
+                                                  manufacturer:(NSString*)manufacturer
+                                                       product:(NSString*)product
                                                     isKeyboard:(BOOL)isKeyboard
                                               isPointingDevice:(BOOL)isPointingDevice
                                                          value:(BOOL)value {
   libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(self.libkrbnCoreConfiguration,
                                                                                              (uint32_t)(vendorId),
                                                                                              (uint32_t)(productId),
+                                                                                             [manufacturer UTF8String],
+                                                                                             [product UTF8String],
                                                                                              isKeyboard,
                                                                                              isPointingDevice,
                                                                                              value);

@@ -361,6 +361,8 @@ bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_
 void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* p,
                                                                    uint32_t vendor_id,
                                                                    uint32_t product_id,
+                                                                   const char *manufacturer,
+                                                                   const char *product,
                                                                    bool is_keyboard,
                                                                    bool is_pointing_device,
                                                                    bool value) {
@@ -368,7 +370,9 @@ void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device, "", "");
+                                                                       is_pointing_device,
+                                                                       product,
+                                                                       manufacturer);
     c->get_core_configuration().get_selected_profile().set_device_ignore(identifiers, value);
   }
 }
@@ -391,6 +395,8 @@ bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_key
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
                                                                                                 uint32_t vendor_id,
                                                                                                 uint32_t product_id,
+                                                                                                const char *manufacturer,
+                                                                                                const char *product,
                                                                                                 bool is_keyboard,
                                                                                                 bool is_pointing_device,
                                                                                                 bool value) {
@@ -398,7 +404,9 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
     krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(vendor_id),
                                                                        krbn::product_id(product_id),
                                                                        is_keyboard,
-                                                                       is_pointing_device, "", "");
+                                                                       is_pointing_device,
+                                                                       product,
+                                                                       manufacturer);
     c->get_core_configuration().get_selected_profile().set_device_disable_built_in_keyboard_if_exists(identifiers, value);
   }
 }
@@ -423,8 +431,8 @@ void libkrbn_core_configuration_get_selected_profile_device_product_manufacturer
       }
     }
     // not found
-    *product = "UNKNOWN";
-    *manufacturer = "UNKNOWN";
+    *product = nil;
+    *manufacturer = nil;
   }
 }
 

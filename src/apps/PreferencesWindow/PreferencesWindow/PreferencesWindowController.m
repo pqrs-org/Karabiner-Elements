@@ -68,6 +68,7 @@
                                                   [self setupVirtualHIDKeyboardTypePopUpButton];
                                                   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
                                                   [self setupMiscTabControls];
+                                                  [self.simpleModificationsMenuManager setupVendor];
                                                 }];
   [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
                                                     object:nil
@@ -87,6 +88,7 @@
 
                                                   [self setupVirtualHIDKeyboardTypePopUpButton];
                                                   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
+                                                  [self.simpleModificationsMenuManager setupVendor];
                                                 }];
 
   // ----------------------------------------
