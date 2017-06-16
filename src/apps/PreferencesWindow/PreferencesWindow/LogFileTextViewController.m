@@ -12,9 +12,11 @@ typedef enum {
 
 @property(unsafe_unretained) IBOutlet NSTextView* textView;
 @property(weak) IBOutlet NSTextField* currentTime;
+@property(weak) IBOutlet NSTabViewItem* logTabViewItem;
 @property dispatch_source_t timer;
 @property NSDate* fileModificationDate;
 @property libkrbn_log_monitor* libkrbn_log_monitor;
+@property NSInteger errorLogCount;
 
 - (void)appendLogLine:(const char*)line;
 
@@ -80,6 +82,10 @@ static void log_updated_callback(const char* line, void* refcon) {
   }
 }
 
+- (void)resetErrorLogCount {
+  self.errorLogCount = 0;
+}
+
 - (void)dealloc {
   if (self.libkrbn_log_monitor) {
     libkrbn_log_monitor* p = self.libkrbn_log_monitor;
@@ -99,6 +105,10 @@ static void log_updated_callback(const char* line, void* refcon) {
   NSString* lineString = [self logLineString:line];
   LogLevel level = [self getLogLevel:line];
 
+  if (level == LogLevelErr) {
+    ++(self.errorLogCount);
+  }
+
   @weakify(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     @strongify(self);
@@ -112,7 +122,21 @@ static void log_updated_callback(const char* line, void* refcon) {
     [self.textView.textStorage endEditing];
 
     [self scrollToBottom];
+    [self updateTabLabel];
   });
+}
+
+- (void)updateTabLabel {
+  if (self.logTabViewItem.tabState == NSSelectedTab) {
+    [self resetErrorLogCount];
+  } else {
+    if (self.errorLogCount > 0) {
+      self.logTabViewItem.label = [NSString stringWithFormat:@"Log \u2666%ld", self.errorLogCount];
+      return;
+    }
+  }
+
+  self.logTabViewItem.label = @"Log";
 }
 
 - (LogLevel)getLogLevel:(const char*)line {

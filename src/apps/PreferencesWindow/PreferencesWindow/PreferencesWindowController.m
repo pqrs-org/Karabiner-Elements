@@ -111,6 +111,10 @@
   [NSApp activateIgnoringOtherApps:YES];
 }
 
+- (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem {
+  [self.logFileTextViewController updateTabLabel];
+}
+
 - (void)setupVirtualHIDKeyboardTypePopUpButton {
   NSMenu* menu = [NSMenu new];
 
