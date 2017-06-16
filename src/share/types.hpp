@@ -5,6 +5,7 @@
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
+#include "logger.hpp"
 #include "stream_utility.hpp"
 #include "system_preferences.hpp"
 #include <CoreFoundation/CoreFoundation.h>
@@ -583,6 +584,7 @@ public:
     auto& map = get_key_code_map();
     auto it = map.find(name);
     if (it == map.end()) {
+      logger::get_logger().error("unknown key_code: {0}", name);
       return boost::none;
     }
     return it->second;
@@ -766,6 +768,7 @@ public:
     auto& map = get_pointing_button_map();
     auto it = map.find(name);
     if (it == map.end()) {
+      logger::get_logger().error("unknown pointing_button: {0}", name);
       return boost::none;
     }
     return it->second;
@@ -793,6 +796,7 @@ public:
     auto& map = get_keyboard_type_map();
     auto it = map.find(name);
     if (it == map.end()) {
+      logger::get_logger().error("unknown keyboard_type: {0}", name);
       return boost::none;
     }
     return it->second;
