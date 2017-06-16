@@ -29,7 +29,6 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "conditions": [],
                         "manipulators": [
                             {
                                 "description": "Change control+[ to escape.",
@@ -101,7 +100,6 @@
                     },
                     {
                         "description": "description test",
-                        "conditions": [],
                         "manipulators": [
                             {
                                 "description": "description test 2"
@@ -109,7 +107,6 @@
                         ]
                     },
                     {
-                        "conditions": [],
                         "manipulators": []
                     }
                 ],
