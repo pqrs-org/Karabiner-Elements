@@ -174,6 +174,8 @@ void libkrbn_log_monitor_terminate(libkrbn_log_monitor* _Nullable* _Nonnull p);
 size_t libkrbn_log_monitor_initial_lines_size(libkrbn_log_monitor* _Nonnull p);
 const char* _Nullable libkrbn_log_monitor_initial_line(libkrbn_log_monitor* _Nonnull p, size_t index);
 void libkrbn_log_monitor_start(libkrbn_log_monitor* _Nonnull p);
+bool libkrbn_is_warn_log(const char* _Nonnull line);
+bool libkrbn_is_err_log(const char* _Nonnull line);
 
 // ----------------------------------------
 // libkrbn_version_monitor
