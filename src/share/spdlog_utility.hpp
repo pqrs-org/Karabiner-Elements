@@ -86,6 +86,24 @@ public:
     return boost::none;
   }
 
+  static boost::optional<spdlog::level::level_enum> get_level(const std::string& line) {
+    auto front = strlen("[0000-00-00 00:00:00.000] [");
+    if (line.size() <= front) {
+      return boost::none;
+    }
+
+    for (int i = 0; i < spdlog::level::off; ++i) {
+      auto level = spdlog::level::level_enum(i);
+      auto level_name = std::string(spdlog::level::to_str(level)) + "]";
+
+      if (line.compare(front, level_name.size(), level_name) == 0) {
+        return level;
+      }
+    }
+
+    return boost::none;
+  }
+
   class log_reducer final {
   public:
     log_reducer(const log_reducer&) = delete;
