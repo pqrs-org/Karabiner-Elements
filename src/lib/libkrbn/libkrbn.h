@@ -80,6 +80,11 @@ void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn
                                                                          const char* _Nonnull from,
                                                                          const char* _Nonnull to);
 
+// profile:complex_modifications
+
+size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(libkrbn_core_configuration* _Nonnull p);
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* _Nonnull p, size_t index);
+
 // profile::virtual_hid_device
 
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* _Nonnull p);
