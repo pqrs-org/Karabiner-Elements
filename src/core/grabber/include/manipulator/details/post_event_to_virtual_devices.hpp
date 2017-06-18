@@ -197,6 +197,16 @@ public:
     //
     // Without wait, window system sometimes reorder modifier flag event.
     // it causes improperly event order such as `a,shift,control,b,button1`.
+    //
+    // You can confirm the actual problem in Google Chrome.
+    // When sending return_or_enter when right_control is pressed alone by the following manipulator,
+    // Google Chrome treats return_or_enter as right_control-return_or_enter in omnibox.
+    // (open www.<entered url>.com)
+    //
+    //   "from": <%= from("right_control", [], ["any"]) %>,
+    //   "to": <%= to([["right_control"]]) %>,
+    //   "to_if_alone": <%= to([["return_or_enter"]]) %>
+    //
 
     bool last_event_modifier_key_;
     uint64_t last_event_time_stamp_;
