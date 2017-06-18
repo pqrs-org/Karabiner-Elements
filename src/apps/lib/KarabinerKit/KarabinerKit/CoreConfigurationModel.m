@@ -151,6 +151,18 @@
   libkrbn_core_configuration_replace_selected_profile_fn_function_key(self.libkrbnCoreConfiguration, [from UTF8String], [to UTF8String]);
 }
 
+- (NSUInteger)selectedProfileComplexModificationsRulesCount {
+  return libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(self.libkrbnCoreConfiguration);
+}
+
+- (NSString*)selectedProfileComplexModificationsRuleDescription:(NSUInteger)index {
+  const char* p = libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(self.libkrbnCoreConfiguration, index);
+  if (p) {
+    return [NSString stringWithUTF8String:p];
+  }
+  return @"";
+}
+
 - (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
                           productId:(NSUInteger)productId
                          isKeyboard:(BOOL)isKeyboard

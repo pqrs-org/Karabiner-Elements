@@ -34,6 +34,9 @@
 - (NSString*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index;
 - (void)setSelectedProfileFnFunctionKey:(NSString*)from to:(NSString*)to;
 
+@property(readonly) NSUInteger selectedProfileComplexModificationsRulesCount;
+- (NSString*)selectedProfileComplexModificationsRuleDescription:(NSUInteger)index;
+
 - (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
                           productId:(NSUInteger)productId
                          isKeyboard:(BOOL)isKeyboard
