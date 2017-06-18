@@ -297,7 +297,7 @@ TEST_CASE("wait around modifier") {
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, left_shift_event, key_up);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp + 1, escape_event, key_up);
 
-    connector.manipulate(time_stamp += interval);
+    connector.manipulate();
 
     time_stamp = 0;
 
