@@ -119,6 +119,10 @@ public:
       }
     }
 
+    const nlohmann::json& get_json(void) const {
+      return json_;
+    }
+
     const std::vector<manipulator>& get_manipulators(void) const {
       return manipulators_;
     }
