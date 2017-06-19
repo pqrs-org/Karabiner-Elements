@@ -200,7 +200,7 @@ public:
     //
     // You can confirm the actual problem in Google Chrome.
     // When sending return_or_enter when right_control is pressed alone by the following manipulator,
-    // Google Chrome treats return_or_enter as right_control-return_or_enter in omnibox.
+    // Google Chrome treats return_or_enter as right_control-return_or_enter in omnibox unless we put a wait around a modifier event.
     // (open www.<entered url>.com)
     //
     //   "from": <%= from("right_control", [], ["any"]) %>,
