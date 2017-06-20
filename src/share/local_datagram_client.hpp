@@ -7,6 +7,7 @@ BEGIN_BOOST_INCLUDE
 #include <boost/bind.hpp>
 END_BOOST_INCLUDE
 
+#include <spdlog/spdlog.h>
 #include <thread>
 
 namespace krbn {
@@ -14,7 +15,9 @@ class local_datagram_client final {
 public:
   local_datagram_client(const local_datagram_client&) = delete;
 
-  local_datagram_client(const char* _Nonnull path) : endpoint_(path),
+  local_datagram_client(spdlog::logger& logger,
+                        const char* _Nonnull path) : logger_(logger),
+                                                     endpoint_(path),
                                                      io_service_(),
                                                      work_(io_service_),
                                                      socket_(io_service_) {
@@ -56,17 +59,27 @@ private:
   };
 
   void do_send(const std::shared_ptr<buffer>& ptr) {
-    socket_.async_send_to(boost::asio::buffer(ptr->get_vector()), endpoint_,
-                          boost::bind(&local_datagram_client::handle_send, this, ptr));
+    socket_.async_send_to(boost::asio::buffer(ptr->get_vector()),
+                          endpoint_,
+                          boost::bind(&local_datagram_client::handle_send,
+                                      this,
+                                      boost::asio::placeholders::error,
+                                      ptr));
   }
 
-  void handle_send(const std::shared_ptr<buffer>& ptr) {
+  void handle_send(const boost::system::error_code& ec,
+                   const std::shared_ptr<buffer>& ptr) {
     // buffer will be released.
+    if (ec) {
+      logger_.error("local_datagram_client error: {0}", ec.message());
+    }
   }
 
   void do_stop(void) {
     io_service_.stop();
   }
+
+  spdlog::logger& logger_;
 
   boost::asio::local::datagram_protocol::endpoint endpoint_;
   boost::asio::io_service io_service_;

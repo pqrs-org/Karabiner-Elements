@@ -293,6 +293,8 @@ public:
   }
 
   static modifier_flag get_modifier_flag(key_code key_code) {
+    // get_modifier_flag(key_code::caps_lock) == modifier_flag::zero.
+
     switch (key_code) {
       case key_code::left_control:
         return modifier_flag::left_control;

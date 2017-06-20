@@ -46,11 +46,35 @@ public:
         }
       }
 
-      for (auto&& m : manipulators_) {
-        m->manipulate(front_input_event,
-                      input_event_queue,
-                      output_event_queue,
-                      time_stamp);
+      switch (front_input_event.get_event().get_type()) {
+        case event_queue::queued_event::event::type::device_keys_are_released:
+          output_event_queue.erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());
+          break;
+
+        case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+          output_event_queue.erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
+          break;
+
+        case event_queue::queued_event::event::type::device_ungrabbed:
+          // Reset modifier_flags and pointing_buttons before `handle_device_ungrabbed_event`
+          // in order to send key_up events in `post_event_to_virtual_devices::handle_device_ungrabbed_event`.
+          output_event_queue.erase_all_active_modifier_flags(front_input_event.get_device_id());
+          output_event_queue.erase_all_active_pointing_buttons(front_input_event.get_device_id());
+          for (auto&& m : manipulators_) {
+            m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
+                                             output_event_queue,
+                                             front_input_event.get_time_stamp());
+          }
+          break;
+
+        default:
+          for (auto&& m : manipulators_) {
+            m->manipulate(front_input_event,
+                          input_event_queue,
+                          output_event_queue,
+                          time_stamp);
+          }
+          break;
       }
 
       if (input_event_queue.get_front_event().get_valid()) {
@@ -58,18 +82,6 @@ public:
       }
 
       input_event_queue.erase_front_event();
-    }
-
-    remove_invalid_manipulators();
-  }
-
-  void run_device_ungrabbed_callback(device_id device_id,
-                                     event_queue& output_event_queue,
-                                     uint64_t time_stamp) {
-    for (auto&& m : manipulators_) {
-      m->device_ungrabbed_callback(device_id,
-                                   output_event_queue,
-                                   time_stamp);
     }
 
     remove_invalid_manipulators();

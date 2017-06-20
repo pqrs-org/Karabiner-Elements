@@ -22,6 +22,10 @@ public:
         pointing_y,
         pointing_vertical_wheel,
         pointing_horizontal_wheel,
+        // virtual events
+        device_keys_are_released,
+        device_pointing_buttons_are_released,
+        device_ungrabbed,
       };
 
       event(key_code key_code) : type_(type::key_code),
@@ -78,7 +82,7 @@ public:
       union {
         key_code key_code_;               // For type::key_code
         pointing_button pointing_button_; // For type::pointing_button
-        int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+        int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel and virtual events
       };
     };
 
@@ -156,7 +160,7 @@ public:
   }
 
   // from physical device
-  void emplace_back_event(device_id device_id,
+  bool emplace_back_event(device_id device_id,
                           uint64_t time_stamp,
                           hid_usage_page usage_page,
                           hid_usage usage,
@@ -168,75 +172,79 @@ public:
                          event,
                          integer_value ? event_type::key_down : event_type::key_up,
                          event);
+      return true;
+    }
 
-    } else if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
+    if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
       queued_event::event event(*pointing_button);
       emplace_back_event(device_id,
                          time_stamp,
                          event,
                          integer_value ? event_type::key_down : event_type::key_up,
                          event);
-
-    } else {
-      switch (usage_page) {
-        case hid_usage_page::generic_desktop:
-          switch (usage) {
-            case hid_usage::gd_x: {
-              queued_event::event event(queued_event::event::type::pointing_x, integer_value);
-              emplace_back_event(device_id,
-                                 time_stamp,
-                                 event,
-                                 event_type::key_down,
-                                 event);
-              break;
-            }
-
-            case hid_usage::gd_y: {
-              queued_event::event event(queued_event::event::type::pointing_y, integer_value);
-              emplace_back_event(device_id,
-                                 time_stamp,
-                                 event,
-                                 event_type::key_down,
-                                 event);
-              break;
-            }
-
-            case hid_usage::gd_wheel: {
-              queued_event::event event(queued_event::event::type::pointing_vertical_wheel, integer_value);
-              emplace_back_event(device_id,
-                                 time_stamp,
-                                 event,
-                                 event_type::key_down,
-                                 event);
-              break;
-            }
-
-            default:
-              break;
-          }
-          break;
-
-        case hid_usage_page::consumer:
-          switch (usage) {
-            case hid_usage::csmr_acpan: {
-              queued_event::event event(queued_event::event::type::pointing_horizontal_wheel, integer_value);
-              emplace_back_event(device_id,
-                                 time_stamp,
-                                 event,
-                                 event_type::key_down,
-                                 event);
-              break;
-            }
-
-            default:
-              break;
-          }
-          break;
-
-        default:
-          break;
-      }
+      return true;
     }
+
+    switch (usage_page) {
+      case hid_usage_page::generic_desktop:
+        switch (usage) {
+          case hid_usage::gd_x: {
+            queued_event::event event(queued_event::event::type::pointing_x, integer_value);
+            emplace_back_event(device_id,
+                               time_stamp,
+                               event,
+                               event_type::key_down,
+                               event);
+            return true;
+          }
+
+          case hid_usage::gd_y: {
+            queued_event::event event(queued_event::event::type::pointing_y, integer_value);
+            emplace_back_event(device_id,
+                               time_stamp,
+                               event,
+                               event_type::key_down,
+                               event);
+            return true;
+          }
+
+          case hid_usage::gd_wheel: {
+            queued_event::event event(queued_event::event::type::pointing_vertical_wheel, integer_value);
+            emplace_back_event(device_id,
+                               time_stamp,
+                               event,
+                               event_type::key_down,
+                               event);
+            return true;
+          }
+
+          default:
+            break;
+        }
+        break;
+
+      case hid_usage_page::consumer:
+        switch (usage) {
+          case hid_usage::csmr_acpan: {
+            queued_event::event event(queued_event::event::type::pointing_horizontal_wheel, integer_value);
+            emplace_back_event(device_id,
+                               time_stamp,
+                               event,
+                               event_type::key_down,
+                               event);
+            return true;
+          }
+
+          default:
+            break;
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return false;
   }
 
   void emplace_back_event(device_id device_id,
@@ -325,8 +333,24 @@ public:
     return modifier_flag_manager_;
   }
 
+  void erase_all_active_modifier_flags_except_lock(device_id device_id) {
+    modifier_flag_manager_.erase_all_active_modifier_flags_except_lock(device_id);
+  }
+
+  void erase_all_active_modifier_flags(device_id device_id) {
+    modifier_flag_manager_.erase_all_active_modifier_flags(device_id);
+  }
+
   const pointing_button_manager& get_pointing_button_manager(void) const {
     return pointing_button_manager_;
+  }
+
+  void erase_all_active_pointing_buttons_except_lock(device_id device_id) {
+    pointing_button_manager_.erase_all_active_pointing_buttons_except_lock(device_id);
+  }
+
+  void erase_all_active_pointing_buttons(device_id device_id) {
+    pointing_button_manager_.erase_all_active_pointing_buttons(device_id);
   }
 
   uint64_t get_time_stamp_delay(void) const {
@@ -426,7 +450,7 @@ private:
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
   uint64_t time_stamp_delay_;
-};
+}; // namespace krbn
 
 // For unit tests
 /*

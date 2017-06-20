@@ -22,10 +22,9 @@ public:
 
   virtual bool active(void) const = 0;
 
-  // Manipulators should send key_up events in this method.
-  virtual void device_ungrabbed_callback(device_id device_id,
-                                         event_queue& output_event_queue,
-                                         uint64_t time_stamp) = 0;
+  virtual void handle_device_ungrabbed_event(device_id device_id,
+                                             const event_queue& output_event_queue,
+                                             uint64_t time_stamp) = 0;
 
   bool get_valid(void) const {
     return valid_;

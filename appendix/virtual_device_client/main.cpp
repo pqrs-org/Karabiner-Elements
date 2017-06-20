@@ -54,6 +54,42 @@ int main(int argc, const char* argv[]) {
     }
 
     {
+      auto time_stamp = mach_absolute_time();
+
+      {
+        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event event;
+        event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardLeftShift);
+        event.value = 1;
+        queue.emplace_back_event(event, time_stamp);
+        queue.post_events(*virtual_hid_device_client_ptr);
+      }
+
+      time_stamp += krbn::time_utility::nano_to_absolute(NSEC_PER_MSEC);
+
+      {
+        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event event;
+        event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardB);
+        event.value = 1;
+        queue.emplace_back_event(event, time_stamp);
+        queue.post_events(*virtual_hid_device_client_ptr);
+      }
+      {
+        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event event;
+        event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardB);
+        event.value = 0;
+        queue.emplace_back_event(event, time_stamp);
+        queue.post_events(*virtual_hid_device_client_ptr);
+      }
+      {
+        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event event;
+        event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardLeftShift);
+        event.value = 0;
+        queue.emplace_back_event(event, time_stamp);
+        queue.post_events(*virtual_hid_device_client_ptr);
+      }
+    }
+
+    {
       pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event event;
       event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardA);
       event.value = 1;

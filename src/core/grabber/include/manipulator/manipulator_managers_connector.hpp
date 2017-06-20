@@ -2,6 +2,7 @@
 
 #include "event_queue.hpp"
 #include "manipulator/manipulator_manager.hpp"
+#include <spdlog/spdlog.h>
 
 namespace krbn {
 namespace manipulator {
@@ -22,15 +23,14 @@ public:
                                       time_stamp);
     }
 
-    void run_device_ungrabbed_callback(device_id device_id,
-                                       uint64_t time_stamp) {
-      manipulator_manager_.run_device_ungrabbed_callback(device_id,
-                                                         output_event_queue_,
-                                                         time_stamp);
-    }
-
     void invalidate_manipulators(void) {
       manipulator_manager_.invalidate_manipulators();
+    }
+
+    void log_events_sizes(spdlog::logger& logger) const {
+      logger.info("connection events sizes: {0} -> {1}",
+                  input_event_queue_.get_events().size(),
+                  output_event_queue_.get_events().size());
     }
 
   private:
@@ -53,18 +53,15 @@ public:
     }
   }
 
-  void run_device_ungrabbed_callback(device_id device_id,
-                                     uint64_t time_stamp) {
-    for (auto&& c : connections_) {
-      // Do `manipulate` for previous connection's `run_device_ungrabbed_callback` result.
-      c.manipulate(time_stamp);
-      c.run_device_ungrabbed_callback(device_id, time_stamp);
-    }
-  }
-
   void invalidate_manipulators(void) {
     for (auto&& c : connections_) {
       c.invalidate_manipulators();
+    }
+  }
+
+  void log_events_sizes(spdlog::logger& logger) const {
+    for (auto&& c : connections_) {
+      c.log_events_sizes(logger);
     }
   }
 
