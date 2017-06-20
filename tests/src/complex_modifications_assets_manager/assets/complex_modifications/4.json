@@ -1,0 +1,13 @@
+{
+    "title": "EEE",
+    "rules": [
+        {
+            "description": "EEE1",
+            "manipulators": []
+        },
+        {
+            "description": "EEE2",
+            "manipulators": []
+        }
+    ]
+}

@@ -53,23 +53,31 @@ public:
 
   class rule final {
   public:
-    class condition {
-    public:
-      condition(const nlohmann::json& json) : json_(json) {
-      }
-
-      const nlohmann::json& get_json(void) const {
-        return json_;
-      }
-
-    private:
-      nlohmann::json json_;
-    };
-
     class manipulator {
     public:
+      class condition {
+      public:
+        condition(const nlohmann::json& json) : json_(json) {
+        }
+
+        const nlohmann::json& get_json(void) const {
+          return json_;
+        }
+
+      private:
+        nlohmann::json json_;
+      };
+
       manipulator(const nlohmann::json& json, const parameters& parameters) : json_(json),
                                                                               parameters_(parameters) {
+        {
+          const std::string key = "conditions";
+          if (json.find(key) != json.end() && json[key].is_array()) {
+            for (const auto& j : json[key]) {
+              conditions_.emplace_back(j);
+            }
+          }
+        }
         {
           const std::string key = "parameters";
           if (json.find(key) != json.end()) {
@@ -82,24 +90,21 @@ public:
         return json_;
       }
 
+      const std::vector<condition>& get_conditions(void) const {
+        return conditions_;
+      }
+
       const parameters& get_parameters(void) const {
         return parameters_;
       }
 
     private:
       nlohmann::json json_;
+      std::vector<condition> conditions_;
       parameters parameters_;
     };
 
     rule(const nlohmann::json& json, const parameters& parameters) : json_(json) {
-      {
-        const std::string key = "conditions";
-        if (json.find(key) != json.end() && json[key].is_array()) {
-          for (const auto& j : json[key]) {
-            conditions_.emplace_back(j);
-          }
-        }
-      }
       {
         const std::string key = "manipulators";
         if (json.find(key) != json.end() && json[key].is_array()) {
@@ -114,8 +119,8 @@ public:
       }
     }
 
-    const std::vector<condition>& get_conditions(void) const {
-      return conditions_;
+    const nlohmann::json& get_json(void) const {
+      return json_;
     }
 
     const std::vector<manipulator>& get_manipulators(void) const {
@@ -152,7 +157,6 @@ public:
     }
 
     nlohmann::json json_;
-    std::vector<condition> conditions_;
     std::vector<manipulator> manipulators_;
     std::string description_;
   };

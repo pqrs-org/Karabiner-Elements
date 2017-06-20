@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */; };
 		3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */; };
+		342BE6811EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6801EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m */; };
+		342BE6841EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6831EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.m */; };
+		342BE6871EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6861EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m */; };
+		342BE68A1EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6891EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m */; };
 		3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0661D801AF7004555F9 /* AppDelegate.m */; };
 		3445E06A1D801AF7004555F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0691D801AF7004555F9 /* main.m */; };
 		3445E06C1D801AF7004555F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06B1D801AF7004555F9 /* Assets.xcassets */; };
@@ -43,6 +47,14 @@
 		3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemPreferencesModel.m; sourceTree = "<group>"; };
 		3428530C1DCCFDEB00164476 /* SystemPreferencesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemPreferencesManager.h; sourceTree = "<group>"; };
 		3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemPreferencesManager.m; sourceTree = "<group>"; };
+		342BE67F1EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsRulesTableViewDataSource.h; sourceTree = "<group>"; };
+		342BE6801EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsRulesTableViewDataSource.m; sourceTree = "<group>"; };
+		342BE6821EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsRulesTableViewDelegate.h; sourceTree = "<group>"; };
+		342BE6831EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsRulesTableViewDelegate.m; sourceTree = "<group>"; };
+		342BE6851EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsRulesTableViewController.h; sourceTree = "<group>"; };
+		342BE6861EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsRulesTableViewController.m; sourceTree = "<group>"; };
+		342BE6881EF6D7E900149985 /* ComplexModificationsRulesTableCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsRulesTableCellView.h; sourceTree = "<group>"; };
+		342BE6891EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsRulesTableCellView.m; sourceTree = "<group>"; };
 		3445E0621D801AF7004555F9 /* Karabiner-Elements.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Karabiner-Elements.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3445E0651D801AF7004555F9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3445E0661D801AF7004555F9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -134,6 +146,14 @@
 				3445E0651D801AF7004555F9 /* AppDelegate.h */,
 				3445E0661D801AF7004555F9 /* AppDelegate.m */,
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
+				342BE6881EF6D7E900149985 /* ComplexModificationsRulesTableCellView.h */,
+				342BE6891EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m */,
+				342BE6851EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.h */,
+				342BE6861EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m */,
+				342BE67F1EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.h */,
+				342BE6801EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m */,
+				342BE6821EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.h */,
+				342BE6831EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.m */,
 				34B97B331DBE58AA00EB3583 /* DevicesTableCellView.h */,
 				34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */,
 				34B97B3A1DBEF9CA00EB3583 /* DevicesTableViewController.h */,
@@ -293,12 +313,15 @@
 				34ECD8F71E3659BB007D5AB8 /* ProfilesTableViewDelegate.m in Sources */,
 				34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */,
 				34B97B3C1DBEF9CA00EB3583 /* DevicesTableViewController.m in Sources */,
+				342BE6811EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m in Sources */,
+				342BE6841EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.m in Sources */,
 				3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */,
 				345F95541DABE746002854B8 /* SimpleModificationsTableViewController.m in Sources */,
 				34ECD8FD1E366431007D5AB8 /* ProfilesTableView.m in Sources */,
 				34ECD8F11E364B06007D5AB8 /* ProfilesTableViewDataSource.m in Sources */,
 				345F954B1DAB8DAB002854B8 /* SimpleModificationsMenuManager.m in Sources */,
 				34B97B391DBE5C9E00EB3583 /* DevicesTableViewDelegate.m in Sources */,
+				342BE68A1EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m in Sources */,
 				34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */,
 				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
 				34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */,
@@ -306,6 +329,7 @@
 				345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */,
 				345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */,
 				345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */,
+				342BE6871EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m in Sources */,
 				34ECD8F61E3659BB007D5AB8 /* ProfilesTableCellView.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,
 				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,
@@ -380,6 +404,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
+				WARNING_CFLAGS = "-Wpartial-availability";
 			};
 			name = Release;
 		};

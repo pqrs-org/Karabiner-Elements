@@ -150,7 +150,7 @@ public:
           }
         }
       } catch (std::exception& e) {
-        logger::get_logger().warn("parse error in {0}: {1}", file_path, e.what());
+        logger::get_logger().error("parse error in {0}: {1}", file_path, e.what());
         loaded_ = false;
       }
     }

@@ -95,6 +95,11 @@ void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn
                                                                          const char* _Nonnull from,
                                                                          const char* _Nonnull to);
 
+// profile:complex_modifications
+
+size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(libkrbn_core_configuration* _Nonnull p);
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* _Nonnull p, size_t index);
+
 // profile::virtual_hid_device
 
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* _Nonnull p);
@@ -199,6 +204,8 @@ void libkrbn_log_monitor_terminate(libkrbn_log_monitor* _Nullable* _Nonnull p);
 size_t libkrbn_log_monitor_initial_lines_size(libkrbn_log_monitor* _Nonnull p);
 const char* _Nullable libkrbn_log_monitor_initial_line(libkrbn_log_monitor* _Nonnull p, size_t index);
 void libkrbn_log_monitor_start(libkrbn_log_monitor* _Nonnull p);
+bool libkrbn_is_warn_log(const char* _Nonnull line);
+bool libkrbn_is_err_log(const char* _Nonnull line);
 
 // ----------------------------------------
 // libkrbn_version_monitor

@@ -271,6 +271,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
+				WARNING_CFLAGS = "-Wpartial-availability";
 			};
 			name = Release;
 		};

@@ -12,8 +12,7 @@
 TEST_CASE("get_timestamp_number") {
   {
     auto actual = krbn::spdlog_utility::get_sort_key("[2016-10-15 00:09:47.283] [info] [grabber] version 0.90.50");
-    REQUIRE(actual != boost::none);
-    REQUIRE(*actual == 20161015000947283);
+    REQUIRE(actual == 20161015000947283ULL);
   }
   {
     auto actual = krbn::spdlog_utility::get_sort_key("[]");
@@ -22,6 +21,37 @@ TEST_CASE("get_timestamp_number") {
   {
     auto actual = krbn::spdlog_utility::get_sort_key("[yyyy-mm-dd hh:mm:ss.mmm]");
     REQUIRE(actual == boost::none);
+  }
+}
+
+TEST_CASE("get_level") {
+  {
+    auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [info] [grabber] version 0.90.50");
+    REQUIRE(actual == spdlog::level::info);
+  }
+  {
+    auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [error] [grabber] version 0.90.50");
+    REQUIRE(actual == spdlog::level::err);
+  }
+  {
+    auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [unknown] [grabber] version 0.90.50");
+    REQUIRE(actual == boost::none);
+  }
+  {
+    auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] ");
+    REQUIRE(actual == boost::none);
+  }
+  {
+    auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [");
+    REQUIRE(actual == boost::none);
+  }
+  {
+    auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [info");
+    REQUIRE(actual == boost::none);
+  }
+  {
+    auto actual = krbn::spdlog_utility::get_level("[2016-10-15 00:09:47.283] [info]");
+    REQUIRE(actual == spdlog::level::info);
   }
 }
 

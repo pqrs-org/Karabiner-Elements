@@ -75,7 +75,8 @@ public:
       uint64_t time_stamp_;
     };
 
-    queue(void) {
+    queue(void) : last_event_modifier_key_(false),
+                  last_event_time_stamp_(0) {
     }
 
     const std::vector<event>& get_events(void) const {
@@ -92,6 +93,14 @@ public:
           keyboard_event.usage = *usage;
           keyboard_event.value = (event_type == event_type::key_down);
 
+          // ----------------------------------------
+          // modify time_stamp if needed
+
+          auto m = types::get_modifier_flag(key_code);
+          adjust_time_stamp(time_stamp, m != modifier_flag::zero);
+
+          // ----------------------------------------
+
           events_.emplace_back(keyboard_event,
                                time_stamp);
         }
@@ -100,6 +109,8 @@ public:
 
     void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
                             uint64_t time_stamp) {
+      adjust_time_stamp(time_stamp, false);
+
       events_.emplace_back(pointing_input,
                            time_stamp);
     }
@@ -146,8 +157,59 @@ public:
     }
 
   private:
+    void adjust_time_stamp(uint64_t& time_stamp,
+                           bool is_modifier_key) {
+      // wait is 1 milliseconds
+      auto wait = time_utility::nano_to_absolute(NSEC_PER_MSEC);
+
+      if (last_event_modifier_key_ != is_modifier_key &&
+          time_stamp < last_event_time_stamp_ + wait) {
+        time_stamp = last_event_time_stamp_ + wait;
+      }
+
+      last_event_modifier_key_ = is_modifier_key;
+      if (last_event_time_stamp_ < time_stamp) {
+        last_event_time_stamp_ = time_stamp;
+      }
+    }
+
     std::vector<event> events_;
     std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
+
+    // We should add a wait between modifier events and other events in order to
+    // ensure window system handles modifier by properly order.
+    //
+    // Example:
+    //
+    //   01. left_shift key_down
+    //   02. left_control key_down
+    //       [wait]
+    //   03. a key_down
+    //   04. a key_up
+    //   05. b key_down
+    //   06. b key_up
+    //       [wait]
+    //   07. left_shift key_up
+    //   08. left_control key_up
+    //       [wait]
+    //   09. button1 down
+    //   10. button1 up
+    //
+    // Without wait, window system sometimes reorder modifier flag event.
+    // it causes improperly event order such as `a,shift,control,b,button1`.
+    //
+    // You can confirm the actual problem in Google Chrome.
+    // When sending return_or_enter when right_control is pressed alone by the following manipulator,
+    // Google Chrome treats return_or_enter as right_control-return_or_enter in omnibox unless we put a wait around a modifier event.
+    // (open www.<entered url>.com)
+    //
+    //   "from": <%= from("right_control", [], ["any"]) %>,
+    //   "to": <%= to([["right_control"]]) %>,
+    //   "to_if_alone": <%= to([["return_or_enter"]]) %>
+    //
+
+    bool last_event_modifier_key_;
+    uint64_t last_event_time_stamp_;
   };
 
   class key_event_dispatcher final {

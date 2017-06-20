@@ -52,6 +52,8 @@
 
 - (void)selectedProfileDeviceProductManufacturerByVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId product:(NSMutableString *)product manufacturer:(NSMutableString *)manufacturer;
 
+@property(readonly) NSUInteger selectedProfileComplexModificationsRulesCount;
+- (NSString*)selectedProfileComplexModificationsRuleDescription:(NSUInteger)index;
 
 - (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
                           productId:(NSUInteger)productId

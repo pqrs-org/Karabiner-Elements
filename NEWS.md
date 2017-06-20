@@ -1,3 +1,9 @@
+# Version 0.91.4
+
+* The modifier flag event handling has been improved.
+* Show warning and error logs by colored text in Log tab.
+
+
 # Version 0.91.3
 
 * Add timeout to `to_if_alone`.

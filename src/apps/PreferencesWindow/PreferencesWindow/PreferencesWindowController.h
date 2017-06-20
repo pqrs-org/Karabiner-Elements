@@ -2,7 +2,7 @@
 
 @import Cocoa;
 
-@interface PreferencesWindowController : NSWindowController <NSWindowDelegate>
+@interface PreferencesWindowController : NSWindowController <NSWindowDelegate, NSTabViewDelegate>
 
 - (void)setup;
 - (void)show;

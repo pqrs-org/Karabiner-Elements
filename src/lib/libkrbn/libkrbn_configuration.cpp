@@ -315,6 +315,23 @@ void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn
   }
 }
 
+size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(libkrbn_core_configuration* p) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    return c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules().size();
+  }
+  return 0;
+}
+
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    const auto& rules = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules();
+    if (index < rules.size()) {
+      return rules[index].get_description().c_str();
+    }
+  }
+  return 0;
+}
+
 const char* libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type().c_str();
