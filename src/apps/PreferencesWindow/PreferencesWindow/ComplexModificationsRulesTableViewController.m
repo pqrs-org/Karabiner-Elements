@@ -4,6 +4,7 @@
 
 @interface ComplexModificationsRulesTableViewController ()
 
+@property(weak) IBOutlet NSOutlineView* assetsOutlineView;
 @property(weak) IBOutlet NSPanel* addRulePanel;
 @property(weak) IBOutlet NSTableView* tableView;
 @property(weak) IBOutlet NSWindow* window;
@@ -29,16 +30,27 @@
 }
 
 - (void)removeRule:(id)sender {
-  NSInteger row = [self.tableView rowForView:sender];
-
-  NSLog(@"removeRule called %d", (int)(row));
+  //NSInteger row = [self.tableView rowForView:sender];
 }
 
 - (IBAction)openAddRulePanel:(id)sender {
+  [[KarabinerKitComplexModificationsAssetsManager sharedManager] reload];
+  [self.assetsOutlineView reloadData];
+  [self.assetsOutlineView expandItem:nil expandChildren:YES];
+
   [self.window beginSheet:self.addRulePanel
-        completionHandler:^(NSModalResponse returnCode) {
-          NSLog(@"addRulePanel closed %d", (int)(returnCode));
-        }];
+        completionHandler:^(NSModalResponse returnCode){}];
+}
+
+- (void)addRule:(id)sender {
+}
+
+- (IBAction)expandRules:(id)sender {
+  [self.assetsOutlineView expandItem:nil expandChildren:YES];
+}
+
+- (IBAction)collapseRules:(id)sender {
+  [self.assetsOutlineView collapseItem:nil collapseChildren:YES];
 }
 
 - (IBAction)closeAddRulePanel:(id)sender {
