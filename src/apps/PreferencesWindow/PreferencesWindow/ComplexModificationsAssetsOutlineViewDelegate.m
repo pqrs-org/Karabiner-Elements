@@ -13,12 +13,12 @@
 
 - (NSView*)outlineView:(NSOutlineView*)outlineView viewForTableColumn:(NSTableColumn*)tableColumn item:(id)item {
   KarabinerKitComplexModificationsAssetsFileModel* fileModel = nil;
-  if ([item class] == [KarabinerKitComplexModificationsAssetsFileModel class]) {
+  if ([item class] == KarabinerKitComplexModificationsAssetsFileModel.class) {
     fileModel = (KarabinerKitComplexModificationsAssetsFileModel*)(item);
   }
 
   KarabinerKitComplexModificationsAssetsRuleModel* ruleModel = nil;
-  if ([item class] == [KarabinerKitComplexModificationsAssetsRuleModel class]) {
+  if ([item class] == KarabinerKitComplexModificationsAssetsRuleModel.class) {
     ruleModel = (KarabinerKitComplexModificationsAssetsRuleModel*)(item);
   }
 
@@ -41,7 +41,7 @@
       result.eraseButton.action = @selector(eraseImportedFile:);
       result.eraseButton.target = self.complexModificationsRulesTableViewController;
       result.enableButton.hidden = YES;
-      result.fileIndex = ruleModel.fileIndex;
+      result.fileIndex = fileModel.fileIndex;
       return result;
     }
 

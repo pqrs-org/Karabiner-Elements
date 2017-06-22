@@ -1,4 +1,5 @@
 #import "ComplexModificationsRulesTableViewController.h"
+#import "ComplexModificationsAssetsOutlineCellView.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
 
@@ -42,7 +43,33 @@
         completionHandler:^(NSModalResponse returnCode){}];
 }
 
-- (void)eraseImportedFile:(id)sender {
+- (void)eraseImportedFile:(NSButton*)sender {
+  if (sender.superview.class == ComplexModificationsAssetsOutlineCellView.class) {
+    ComplexModificationsAssetsOutlineCellView* view = (ComplexModificationsAssetsOutlineCellView*)(sender.superview);
+
+    NSArray* files = [KarabinerKitComplexModificationsAssetsManager sharedManager].assetsFileModels;
+    if (view.fileIndex < files.count) {
+      KarabinerKitComplexModificationsAssetsFileModel* model = files[view.fileIndex];
+
+      NSAlert* alert = [NSAlert new];
+
+      alert.messageText = @"Confirmation";
+      alert.informativeText = @"Are you sure you want to erase this imported file?";
+      [alert addButtonWithTitle:@"Erase"];
+      [alert addButtonWithTitle:@"Cancel"];
+
+      [alert beginSheetModalForWindow:self.addRulePanel
+                    completionHandler:^(NSModalResponse returnCode) {
+                      if (returnCode == NSAlertFirstButtonReturn) {
+                        [model unlinkFile];
+
+                        [[KarabinerKitComplexModificationsAssetsManager sharedManager] reload];
+                        [self.assetsOutlineView reloadData];
+                        [self.assetsOutlineView expandItem:nil expandChildren:YES];
+                      }
+                    }];
+    }
+  }
 }
 
 - (void)addRule:(id)sender {
