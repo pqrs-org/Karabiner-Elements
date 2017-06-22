@@ -2,6 +2,7 @@
 
 #include "core_configuration.hpp"
 #include <dirent.h>
+#include <unistd.h>
 
 namespace krbn {
 class complex_modifications_assets_manager final {
@@ -43,6 +44,10 @@ public:
 
     const std::vector<core_configuration::profile::complex_modifications::rule>& get_rules(void) const {
       return rules_;
+    }
+
+    void unlink_file(void) const {
+      unlink(file_path_.c_str());
     }
 
   private:
