@@ -416,7 +416,7 @@
                                                         <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn identifier="SimpleModificationsFromColumn" width="350" minWidth="40" maxWidth="1000" id="zOn-42-oxZ">
+                                                            <tableColumn identifier="SimpleModificationsFromColumn" width="350" minWidth="40" maxWidth="10000" id="zOn-42-oxZ">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="From key">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -650,7 +650,7 @@
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
                                                             </tableColumn>
-                                                            <tableColumn identifier="FnFunctionKeysToColumn" width="712" minWidth="40" maxWidth="1000" id="ZHK-yh-2iU">
+                                                            <tableColumn identifier="FnFunctionKeysToColumn" width="712" minWidth="40" maxWidth="10000" id="ZHK-yh-2iU">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="To key">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -767,7 +767,7 @@
                                                                             <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                             <tableColumns>
-                                                                                <tableColumn identifier="ComplexModificationsRulesDescriptionColumn" width="672" minWidth="40" maxWidth="1000" id="Ctr-us-5oS">
+                                                                                <tableColumn identifier="ComplexModificationsRulesDescriptionColumn" width="672" minWidth="40" maxWidth="10000" id="Ctr-us-5oS">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Description">
                                                                                         <font key="font" metaFont="smallSystem"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1365,7 +1365,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn width="815" minWidth="40" maxWidth="1000" id="hdQ-pY-WkB">
+                                                            <tableColumn width="815" minWidth="40" maxWidth="10000" id="hdQ-pY-WkB">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Profile name">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1853,7 +1853,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                     <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn identifier="ComplexModificationsAssetsNameColumn" width="658" minWidth="40" maxWidth="1000" id="nlS-o3-ZB6">
+                                        <tableColumn identifier="ComplexModificationsAssetsNameColumn" width="658" minWidth="40" maxWidth="100000" id="nlS-o3-ZB6">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1906,7 +1906,17 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                     <rect key="frame" x="662" y="1" width="100" height="26"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aoS-Bs-ODT">
+                                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="553-rb-9Yn">
+                                                            <rect key="frame" x="59" y="-4" width="42" height="32"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="30" id="CAG-fq-yBI"/>
+                                                            </constraints>
+                                                            <buttonCell key="cell" type="push" alternateTitle="Erase imported file" bezelStyle="rounded" image="ic_delete_forever_18pt" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QMI-8g-K8d">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                            </buttonCell>
+                                                        </button>
+                                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aoS-Bs-ODT">
                                                             <rect key="frame" x="-1" y="-5" width="102" height="32"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="90" id="9hR-Yv-mhJ"/>
@@ -1918,11 +1928,14 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         </button>
                                                     </subviews>
                                                     <constraints>
+                                                        <constraint firstAttribute="trailing" secondItem="553-rb-9Yn" secondAttribute="trailing" constant="5" id="5NR-Vl-JKl"/>
                                                         <constraint firstItem="aoS-Bs-ODT" firstAttribute="centerY" secondItem="8TG-IN-f4f" secondAttribute="centerY" id="a7d-U1-thg"/>
-                                                        <constraint firstItem="aoS-Bs-ODT" firstAttribute="centerX" secondItem="8TG-IN-f4f" secondAttribute="centerX" id="lcx-LC-XNb"/>
+                                                        <constraint firstAttribute="trailing" secondItem="aoS-Bs-ODT" secondAttribute="trailing" constant="5" id="pZb-WJ-0nk"/>
+                                                        <constraint firstItem="553-rb-9Yn" firstAttribute="centerY" secondItem="8TG-IN-f4f" secondAttribute="centerY" id="rvr-HU-xGD"/>
                                                     </constraints>
                                                     <connections>
                                                         <outlet property="enableButton" destination="aoS-Bs-ODT" id="8vq-ae-Iun"/>
+                                                        <outlet property="eraseButton" destination="553-rb-9Yn" id="T8L-wW-oGR"/>
                                                     </connections>
                                                 </tableCellView>
                                             </prototypeCellViews>

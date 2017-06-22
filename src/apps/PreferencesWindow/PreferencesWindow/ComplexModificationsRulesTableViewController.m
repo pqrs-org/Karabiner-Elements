@@ -42,6 +42,9 @@
         completionHandler:^(NSModalResponse returnCode){}];
 }
 
+- (void)eraseImportedFile:(id)sender {
+}
+
 - (void)addRule:(id)sender {
 }
 
