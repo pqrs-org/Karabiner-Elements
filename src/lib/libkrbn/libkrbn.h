@@ -128,10 +128,17 @@ void libkrbn_complex_modifications_assets_manager_terminate(libkrbn_complex_modi
 void libkrbn_complex_modifications_assets_manager_reload(libkrbn_complex_modifications_assets_manager* _Nonnull p);
 
 size_t libkrbn_complex_modifications_assets_manager_get_files_size(libkrbn_complex_modifications_assets_manager* _Nonnull p);
-const char* _Nullable libkrbn_complex_modifications_assets_manager_get_file_title(libkrbn_complex_modifications_assets_manager* _Nonnull p, size_t index);
+const char* _Nullable libkrbn_complex_modifications_assets_manager_get_file_title(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                                                  size_t index);
 
-size_t libkrbn_complex_modifications_assets_manager_get_file_rules_size(libkrbn_complex_modifications_assets_manager* _Nonnull p, size_t file_index);
-const char* _Nullable libkrbn_complex_modifications_assets_manager_get_file_rule_description(libkrbn_complex_modifications_assets_manager* _Nonnull p, size_t file_index, size_t index);
+size_t libkrbn_complex_modifications_assets_manager_get_file_rules_size(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                                        size_t file_index);
+const char* _Nullable libkrbn_complex_modifications_assets_manager_get_file_rule_description(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                                                             size_t file_index,
+                                                                                             size_t index);
+
+void libkrbn_complex_modifications_assets_manager_erase_file(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                             size_t index);
 
 // ----------------------------------------
 // libkrbn_configuration_monitor
