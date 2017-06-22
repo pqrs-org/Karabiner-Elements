@@ -6,6 +6,7 @@
 @property(readwrite) NSUInteger fileIndex;
 @property(copy, readwrite) NSString* title;
 @property(copy, readwrite) NSArray* rules;
+@property libkrbn_complex_modifications_assets_manager* libkrbn_complex_modifications_assets_manager;
 
 @end
 
@@ -29,9 +30,15 @@
                                                                                       ruleIndex:i]];
     }
     _rules = rules;
+
+    _libkrbn_complex_modifications_assets_manager = libkrbn_complex_modifications_assets_manager;
   }
 
   return self;
+}
+
+- (void)unlinkFile {
+  libkrbn_complex_modifications_assets_manager_erase_file(self.libkrbn_complex_modifications_assets_manager, self.fileIndex);
 }
 
 @end
