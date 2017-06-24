@@ -78,7 +78,23 @@
   }
 }
 
-- (void)addRule:(id)sender {
+- (void)addRule:(NSButton*)sender {
+  if (sender.superview.class == ComplexModificationsAssetsOutlineCellView.class) {
+    ComplexModificationsAssetsOutlineCellView* view = (ComplexModificationsAssetsOutlineCellView*)(sender.superview);
+
+    NSArray* files = [KarabinerKitComplexModificationsAssetsManager sharedManager].assetsFileModels;
+    if (view.fileIndex < files.count) {
+      KarabinerKitComplexModificationsAssetsFileModel* fileModel = files[view.fileIndex];
+      if (view.ruleIndex < fileModel.rules.count) {
+        KarabinerKitComplexModificationsAssetsRuleModel* ruleModel = fileModel.rules[view.ruleIndex];
+        KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+        [ruleModel addRuleToCoreConfigurationProfile:coreConfigurationModel];
+        [coreConfigurationModel save];
+        [self.tableView reloadData];
+      }
+    }
+  }
+  [self.window endSheet:self.addRulePanel];
 }
 
 - (IBAction)expandRules:(id)sender {
