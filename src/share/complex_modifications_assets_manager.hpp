@@ -46,6 +46,13 @@ public:
       return rules_;
     }
 
+    void push_back_rule_to_core_configuration_profile(core_configuration::profile& profile,
+                                                      size_t index) {
+      if (index < rules_.size()) {
+        profile.push_back_complex_modifications_rule(rules_[index]);
+      }
+    }
+
     void unlink_file(void) const {
       unlink(file_path_.c_str());
     }

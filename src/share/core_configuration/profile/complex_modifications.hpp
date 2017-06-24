@@ -187,6 +187,10 @@ public:
     return rules_;
   }
 
+  void push_back_rule(const rule& rule) {
+    rules_.push_back(rule);
+  }
+
   void erase_rule(size_t index) {
     if (index < rules_.size()) {
       rules_.erase(std::begin(rules_) + index);

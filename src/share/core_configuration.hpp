@@ -132,6 +132,9 @@ public:
     const complex_modifications& get_complex_modifications(void) const {
       return complex_modifications_;
     }
+    void push_back_complex_modifications_rule(const profile::complex_modifications::rule& rule) {
+      complex_modifications_.push_back_rule(rule);
+    }
     void erase_complex_modifications_rule(size_t index) {
       complex_modifications_.erase_rule(index);
     }
