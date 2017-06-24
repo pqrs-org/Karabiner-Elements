@@ -36,6 +36,7 @@
 
 @property(readonly) NSUInteger selectedProfileComplexModificationsRulesCount;
 - (NSString*)selectedProfileComplexModificationsRuleDescription:(NSUInteger)index;
+- (void)removeSelectedProfileComplexModificationsRule:(NSUInteger)index;
 
 - (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
                           productId:(NSUInteger)productId

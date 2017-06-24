@@ -174,7 +174,9 @@ public:
   }
 
   nlohmann::json to_json(void) const {
-    return json_;
+    auto j = json_;
+    j["rules"] = rules_;
+    return j;
   }
 
   const parameters& get_parameters(void) const {
@@ -183,6 +185,12 @@ public:
 
   const std::vector<rule>& get_rules(void) const {
     return rules_;
+  }
+
+  void erase_rule(size_t index) {
+    if (index < rules_.size()) {
+      rules_.erase(std::begin(rules_) + index);
+    }
   }
 
 private:

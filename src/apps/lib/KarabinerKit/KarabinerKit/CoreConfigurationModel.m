@@ -163,6 +163,10 @@
   return @"";
 }
 
+- (void)removeSelectedProfileComplexModificationsRule:(NSUInteger)index {
+  libkrbn_core_configuration_get_selected_profile_complex_modifications_erase_rule(self.libkrbnCoreConfiguration, index);
+}
+
 - (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
                           productId:(NSUInteger)productId
                          isKeyboard:(BOOL)isKeyboard

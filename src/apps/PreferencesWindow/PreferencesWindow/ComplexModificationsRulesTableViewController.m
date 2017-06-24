@@ -31,7 +31,13 @@
 }
 
 - (void)removeRule:(id)sender {
-  //NSInteger row = [self.tableView rowForView:sender];
+  NSInteger row = [self.tableView rowForView:sender];
+
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  [coreConfigurationModel removeSelectedProfileComplexModificationsRule:row];
+  [coreConfigurationModel save];
+
+  [self.tableView reloadData];
 }
 
 - (IBAction)openAddRulePanel:(id)sender {
