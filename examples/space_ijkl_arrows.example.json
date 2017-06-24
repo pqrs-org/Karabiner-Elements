@@ -2,7 +2,6 @@
   "profiles":[
     {
       "complex_modifications":{
-        [
           "rules":[
              {
                   "manipulators":[
@@ -67,7 +66,7 @@
                   ]
               }
           ]
-        ]
+        
       }
     }
   ]
