@@ -1,6 +1,10 @@
 #include "complex_modifications_assets_manager.hpp"
 #include "libkrbn.h"
 
+// libkrbn_configuration.cpp
+void libkrbn_core_configuration_push_back_complex_modifications_rule_to_selected_profile(libkrbn_core_configuration* p,
+                                                                                         const krbn::core_configuration::profile::complex_modifications::rule& rule);
+
 bool libkrbn_complex_modifications_assets_manager_initialize(libkrbn_complex_modifications_assets_manager** out) {
   if (!out) return false;
   // return if already initialized.
@@ -94,6 +98,15 @@ const char* libkrbn_complex_modifications_assets_manager_get_file_rule_descripti
     return rule->get_description().c_str();
   }
   return nullptr;
+}
+
+void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(libkrbn_complex_modifications_assets_manager* p,
+                                                                                                  size_t file_index,
+                                                                                                  size_t index,
+                                                                                                  libkrbn_core_configuration* q) {
+  if (auto rule = get_rule(p, file_index, index)) {
+    libkrbn_core_configuration_push_back_complex_modifications_rule_to_selected_profile(q, *rule);
+  }
 }
 
 void libkrbn_complex_modifications_assets_manager_erase_file(libkrbn_complex_modifications_assets_manager* _Nonnull p,

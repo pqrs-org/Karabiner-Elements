@@ -84,7 +84,7 @@ void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn
 
 size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(libkrbn_core_configuration* _Nonnull p);
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* _Nonnull p, size_t index);
-void libkrbn_core_configuration_get_selected_profile_complex_modifications_erase_rule(libkrbn_core_configuration* _Nonnull p, size_t index);
+void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(libkrbn_core_configuration* _Nonnull p, size_t index);
 
 // profile::virtual_hid_device
 
@@ -138,6 +138,10 @@ const char* _Nullable libkrbn_complex_modifications_assets_manager_get_file_rule
                                                                                              size_t file_index,
                                                                                              size_t index);
 
+void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                                                                  size_t file_index,
+                                                                                                  size_t index,
+                                                                                                  libkrbn_core_configuration* _Nonnull q);
 void libkrbn_complex_modifications_assets_manager_erase_file(libkrbn_complex_modifications_assets_manager* _Nonnull p,
                                                              size_t index);
 
