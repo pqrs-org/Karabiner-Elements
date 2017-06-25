@@ -197,6 +197,13 @@ public:
     }
   }
 
+  void swap_rules(size_t index1, size_t index2) {
+    if (index1 < rules_.size() &&
+        index2 < rules_.size()) {
+      std::swap(rules_[index1], rules_[index2]);
+    }
+  }
+
 private:
   nlohmann::json json_;
   parameters parameters_;

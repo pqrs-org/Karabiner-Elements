@@ -811,6 +811,44 @@ TEST_CASE("complex_modifications") {
   }
 }
 
+TEST_CASE("complex_modifications.push_back_rule") {
+  {
+    nlohmann::json json({
+        {
+            "rules", {
+                         {
+                             {"description", "rule 1"},
+                         },
+                         {
+                             {"description", "rule 2"},
+                         },
+                         {
+                             {"description", "rule 3"},
+                         },
+                     },
+        },
+    });
+    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    auto& rules = complex_modifications.get_rules();
+    REQUIRE(rules.size() == 3);
+    REQUIRE(rules[0].get_description() == "rule 1");
+    REQUIRE(rules[1].get_description() == "rule 2");
+    REQUIRE(rules[2].get_description() == "rule 3");
+
+    krbn::core_configuration::profile::complex_modifications::parameters parameters;
+    nlohmann::json rule_json;
+    rule_json["description"] = "rule 4";
+    krbn::core_configuration::profile::complex_modifications::rule rule(rule_json, parameters);
+
+    complex_modifications.push_back_rule(rule);
+    REQUIRE(rules.size() == 4);
+    REQUIRE(rules[0].get_description() == "rule 1");
+    REQUIRE(rules[1].get_description() == "rule 2");
+    REQUIRE(rules[2].get_description() == "rule 3");
+    REQUIRE(rules[3].get_description() == "rule 4");
+  }
+}
+
 TEST_CASE("complex_modifications.erase_rule") {
   {
     nlohmann::json json({
@@ -846,6 +884,38 @@ TEST_CASE("complex_modifications.erase_rule") {
 
     complex_modifications.erase_rule(1);
     REQUIRE(rules.size() == 1);
+  }
+}
+
+TEST_CASE("complex_modifications.swap_rules") {
+  {
+    nlohmann::json json({
+        {
+            "rules", {
+                         {
+                             {"description", "rule 1"},
+                         },
+                         {
+                             {"description", "rule 2"},
+                         },
+                         {
+                             {"description", "rule 3"},
+                         },
+                     },
+        },
+    });
+    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    auto& rules = complex_modifications.get_rules();
+    REQUIRE(rules.size() == 3);
+    REQUIRE(rules[0].get_description() == "rule 1");
+    REQUIRE(rules[1].get_description() == "rule 2");
+    REQUIRE(rules[2].get_description() == "rule 3");
+
+    complex_modifications.swap_rules(1, 2);
+    REQUIRE(rules.size() == 3);
+    REQUIRE(rules[0].get_description() == "rule 1");
+    REQUIRE(rules[1].get_description() == "rule 3");
+    REQUIRE(rules[2].get_description() == "rule 2");
   }
 }
 
