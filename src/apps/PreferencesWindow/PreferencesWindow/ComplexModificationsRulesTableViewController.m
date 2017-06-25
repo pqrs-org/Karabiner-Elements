@@ -5,6 +5,8 @@
 
 @interface ComplexModificationsRulesTableViewController ()
 
+@property(weak) IBOutlet NSButton* downButton;
+@property(weak) IBOutlet NSButton* upButton;
 @property(weak) IBOutlet NSOutlineView* assetsOutlineView;
 @property(weak) IBOutlet NSPanel* addRulePanel;
 @property(weak) IBOutlet NSTableView* tableView;
@@ -28,6 +30,8 @@
                                                 usingBlock:^(NSNotification* note) {
                                                   [self.tableView reloadData];
                                                 }];
+
+  [self updateUpDownButtons];
 }
 
 - (void)removeRule:(id)sender {
@@ -38,6 +42,62 @@
   [coreConfigurationModel save];
 
   [self.tableView reloadData];
+}
+
+- (void)updateUpDownButtons {
+  self.downButton.enabled = NO;
+  self.upButton.enabled = NO;
+
+  if (self.tableView.selectedRow < 0) {
+    return;
+  }
+
+  if (self.tableView.selectedRow > 0) {
+    self.upButton.enabled = YES;
+  }
+  if (self.tableView.selectedRow < self.tableView.numberOfRows - 1) {
+    self.downButton.enabled = YES;
+  }
+}
+
+- (IBAction)moveRuleUp:(id)sender {
+  NSInteger row = self.tableView.selectedRow;
+
+  if (row < 0) {
+    return;
+  }
+
+  if (row > 0) {
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    [coreConfigurationModel swapSelectedProfileComplexModificationsRules:row
+                                                                  index2:row - 1];
+    [coreConfigurationModel save];
+
+    [self.tableView reloadData];
+
+    NSIndexSet* indexes = [NSIndexSet indexSetWithIndex:(row - 1)];
+    [self.tableView selectRowIndexes:indexes byExtendingSelection:NO];
+  }
+}
+
+- (IBAction)moveRuleDown:(id)sender {
+  NSInteger row = self.tableView.selectedRow;
+
+  if (row < 0) {
+    return;
+  }
+
+  if (row < self.tableView.numberOfRows - 1) {
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    [coreConfigurationModel swapSelectedProfileComplexModificationsRules:row
+                                                                  index2:row + 1];
+    [coreConfigurationModel save];
+
+    [self.tableView reloadData];
+
+    NSIndexSet* indexes = [NSIndexSet indexSetWithIndex:(row + 1)];
+    [self.tableView selectRowIndexes:indexes byExtendingSelection:NO];
+  }
 }
 
 - (IBAction)openAddRulePanel:(id)sender {

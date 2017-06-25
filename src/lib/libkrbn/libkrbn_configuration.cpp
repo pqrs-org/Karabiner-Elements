@@ -259,6 +259,12 @@ void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rul
   }
 }
 
+void libkrbn_core_configuration_swap_selected_profile_complex_modifications_rules(libkrbn_core_configuration* p, size_t index1, size_t index2) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    c->get_core_configuration().get_selected_profile().swap_complex_modifications_rules(index1, index2);
+  }
+}
+
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     const auto& rules = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules();

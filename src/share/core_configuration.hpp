@@ -138,6 +138,9 @@ public:
     void erase_complex_modifications_rule(size_t index) {
       complex_modifications_.erase_rule(index);
     }
+    void swap_complex_modifications_rules(size_t index1, size_t index2) {
+      complex_modifications_.swap_rules(index1, index2);
+    }
 
     const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
       return virtual_hid_keyboard_;

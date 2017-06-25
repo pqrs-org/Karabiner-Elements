@@ -24,7 +24,9 @@
             <connections>
                 <outlet property="addRulePanel" destination="FqN-OP-TO2" id="Hly-t6-AS0"/>
                 <outlet property="assetsOutlineView" destination="eIx-lp-xHQ" id="9T4-AO-C4q"/>
+                <outlet property="downButton" destination="Lix-R1-azx" id="BrF-7k-jaQ"/>
                 <outlet property="tableView" destination="v5W-RF-1fL" id="lmS-X3-g5F"/>
+                <outlet property="upButton" destination="QXl-xa-ZAD" id="GZy-ps-fmM"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="UV5-jc-pki"/>
             </connections>
         </customObject>
@@ -759,7 +761,7 @@
                                                                     <rect key="frame" x="1" y="0.0" width="778" height="333"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
-                                                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
+                                                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
                                                                             <rect key="frame" x="0.0" y="0.0" width="778" height="310"/>
                                                                             <autoresizingMask key="autoresizingMask"/>
                                                                             <size key="intercellSpacing" width="3" height="2"/>
@@ -875,12 +877,42 @@
                                                                     <action selector="openAddRulePanel:" target="kWQ-dQ-cFu" id="zzr-JY-LWh"/>
                                                                 </connections>
                                                             </button>
+                                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QXl-xa-ZAD">
+                                                                <rect key="frame" x="651" y="8" width="72" height="32"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="60" id="bgZ-zT-tpQ"/>
+                                                                </constraints>
+                                                                <buttonCell key="cell" type="push" title="Up" bezelStyle="rounded" image="ic_arrow_upward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hwz-PV-JXe">
+                                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                    <font key="font" metaFont="system"/>
+                                                                </buttonCell>
+                                                                <connections>
+                                                                    <action selector="moveRuleUp:" target="kWQ-dQ-cFu" id="R6l-K2-7dw"/>
+                                                                </connections>
+                                                            </button>
+                                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lix-R1-azx">
+                                                                <rect key="frame" x="716" y="8" width="87" height="32"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="75" id="J1h-p7-4OX"/>
+                                                                </constraints>
+                                                                <buttonCell key="cell" type="push" title="Down" bezelStyle="rounded" image="ic_arrow_downward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CrG-r0-gke">
+                                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                    <font key="font" metaFont="system"/>
+                                                                </buttonCell>
+                                                                <connections>
+                                                                    <action selector="moveRuleDown:" target="kWQ-dQ-cFu" id="NcT-Sw-Qt1"/>
+                                                                </connections>
+                                                            </button>
                                                         </subviews>
                                                         <constraints>
+                                                            <constraint firstItem="Lix-R1-azx" firstAttribute="leading" secondItem="QXl-xa-ZAD" secondAttribute="trailing" constant="5" id="4aZ-rI-Tw8"/>
                                                             <constraint firstItem="ZVI-Dx-0Da" firstAttribute="leading" secondItem="cFJ-9E-eEA" secondAttribute="leading" constant="17" id="Br0-84-BqI"/>
                                                             <constraint firstAttribute="bottom" secondItem="6JB-lK-sd2" secondAttribute="bottom" constant="10" id="DUx-ej-xCq"/>
+                                                            <constraint firstItem="Lix-R1-azx" firstAttribute="trailing" secondItem="ZVI-Dx-0Da" secondAttribute="trailing" id="KeF-Pm-DZz"/>
+                                                            <constraint firstItem="Lix-R1-azx" firstAttribute="top" secondItem="ZVI-Dx-0Da" secondAttribute="bottom" constant="5" id="Ooy-sn-Sqc"/>
                                                             <constraint firstItem="6JB-lK-sd2" firstAttribute="top" secondItem="ZVI-Dx-0Da" secondAttribute="bottom" constant="10" id="VyU-Tn-GFm"/>
                                                             <constraint firstItem="ZVI-Dx-0Da" firstAttribute="top" secondItem="cFJ-9E-eEA" secondAttribute="top" constant="8" id="hgp-KK-n51"/>
+                                                            <constraint firstItem="QXl-xa-ZAD" firstAttribute="centerY" secondItem="Lix-R1-azx" secondAttribute="centerY" id="xow-2V-cAi"/>
                                                             <constraint firstAttribute="trailing" secondItem="ZVI-Dx-0Da" secondAttribute="trailing" constant="17" id="yoo-9p-EbD"/>
                                                             <constraint firstItem="6JB-lK-sd2" firstAttribute="leading" secondItem="ZVI-Dx-0Da" secondAttribute="leading" id="z9t-0D-n3y"/>
                                                         </constraints>
@@ -2018,6 +2050,8 @@ Gw
     </objects>
     <resources>
         <image name="ic_add_circle_18pt" width="36" height="36"/>
+        <image name="ic_arrow_downward_18pt" width="36" height="36"/>
+        <image name="ic_arrow_upward_18pt" width="36" height="36"/>
         <image name="ic_cancel_18pt" width="36" height="36"/>
         <image name="ic_check_18pt" width="36" height="36"/>
         <image name="ic_chevron_right_18pt" width="36" height="36"/>
