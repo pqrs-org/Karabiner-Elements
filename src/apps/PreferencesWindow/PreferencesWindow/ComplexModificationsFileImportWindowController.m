@@ -95,6 +95,8 @@
 
   [alert beginSheetModalForWindow:self.preferencesWindow
                 completionHandler:^(NSModalResponse returnCode){}];
+
+  [self.complexModificationsRulesTableViewController openAddRulePanel:nil];
 }
 
 - (IBAction)closePanel:(id)sender {

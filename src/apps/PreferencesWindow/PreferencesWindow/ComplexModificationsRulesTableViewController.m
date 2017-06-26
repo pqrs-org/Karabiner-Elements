@@ -9,6 +9,7 @@
 @property(weak) IBOutlet NSButton* upButton;
 @property(weak) IBOutlet NSOutlineView* assetsOutlineView;
 @property(weak) IBOutlet NSPanel* addRulePanel;
+@property(weak) IBOutlet NSTabViewItem* complexModificationsTabViewItem;
 @property(weak) IBOutlet NSTableView* tableView;
 @property(weak) IBOutlet NSWindow* window;
 
@@ -101,6 +102,10 @@
 }
 
 - (IBAction)openAddRulePanel:(id)sender {
+  if (self.complexModificationsTabViewItem.tabState != NSSelectedTab) {
+    [self.complexModificationsTabViewItem.tabView selectTabViewItem:self.complexModificationsTabViewItem];
+  }
+
   [[KarabinerKitComplexModificationsAssetsManager sharedManager] reload];
   [self.assetsOutlineView reloadData];
   [self.assetsOutlineView expandItem:nil expandChildren:YES];

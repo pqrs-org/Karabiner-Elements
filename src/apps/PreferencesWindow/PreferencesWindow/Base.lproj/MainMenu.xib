@@ -35,6 +35,7 @@
             <connections>
                 <outlet property="addRulePanel" destination="FqN-OP-TO2" id="Hly-t6-AS0"/>
                 <outlet property="assetsOutlineView" destination="eIx-lp-xHQ" id="9T4-AO-C4q"/>
+                <outlet property="complexModificationsTabViewItem" destination="zkg-mg-aXH" id="jg2-NU-kJD"/>
                 <outlet property="downButton" destination="Lix-R1-azx" id="BrF-7k-jaQ"/>
                 <outlet property="tableView" destination="v5W-RF-1fL" id="lmS-X3-g5F"/>
                 <outlet property="upButton" destination="QXl-xa-ZAD" id="GZy-ps-fmM"/>
