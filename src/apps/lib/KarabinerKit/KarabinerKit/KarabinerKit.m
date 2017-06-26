@@ -28,6 +28,18 @@ static void version_changed_callback(void* refcon) {
   }
 }
 
++ (void)endAllAttachedSheets:(NSWindow*)window {
+  for (;;) {
+    NSWindow* sheet = window.attachedSheet;
+    if (!sheet) {
+      break;
+    }
+
+    [self endAllAttachedSheets:sheet];
+    [window endSheet:sheet];
+  }
+}
+
 + (void)observeConsoleUserServerIsDisabledNotification {
   NSString* name = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_console_user_server_is_disabled()];
   NSString* object = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_observed_object()];

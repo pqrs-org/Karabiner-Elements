@@ -15,6 +15,7 @@
 
 + (void)setup;
 + (void)exitIfAnotherProcessIsRunning:(const char*)pidFileName;
++ (void)endAllAttachedSheets:(NSWindow*)window;
 
 + (void)observeConsoleUserServerIsDisabledNotification;
 
