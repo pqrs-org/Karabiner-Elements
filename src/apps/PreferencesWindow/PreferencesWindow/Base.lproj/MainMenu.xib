@@ -20,6 +20,14 @@
                 <outlet property="complexModificationsRulesTableViewController" destination="kWQ-dQ-cFu" id="edI-Jo-8qK"/>
             </connections>
         </customObject>
+        <customObject id="1ch-Te-EDv" customClass="ComplexModificationsFileImportWindowController">
+            <connections>
+                <outlet property="detailTextView" destination="iV7-bm-Yxd" id="2n2-05-bcW"/>
+                <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="3zX-u2-NMr"/>
+                <outlet property="urlLabel" destination="9oL-YE-FiJ" id="6dq-nK-rfJ"/>
+                <outlet property="window" destination="ZY4-nd-9zB" id="wk4-WE-dmJ"/>
+            </connections>
+        </customObject>
         <customObject id="kWQ-dQ-cFu" customClass="ComplexModificationsRulesTableViewController">
             <connections>
                 <outlet property="addRulePanel" destination="FqN-OP-TO2" id="Hly-t6-AS0"/>
@@ -38,6 +46,8 @@
         </customObject>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
+                <outlet property="complexModificationsFileImportWindowController" destination="1ch-Te-EDv" id="TJS-aK-9xm"/>
+                <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="91M-TG-qdJ"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
                 <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="LEs-Qx-33f"/>
             </connections>
@@ -1867,18 +1877,20 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="800" height="400"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <value key="minSize" type="size" width="800" height="400"/>
+            <value key="maxSize" type="size" width="800" height="400"/>
             <view key="contentView" id="uOP-Fc-vEW">
                 <rect key="frame" x="0.0" y="0.0" width="800" height="400"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jfS-u6-wyb">
-                        <rect key="frame" x="17" y="51" width="766" height="341"/>
+                        <rect key="frame" x="17" y="61" width="766" height="331"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
-                            <rect key="frame" x="1" y="1" width="764" height="339"/>
+                            <rect key="frame" x="1" y="1" width="764" height="329"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
-                                    <rect key="frame" x="0.0" y="0.0" width="764" height="339"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="764" height="329"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1990,7 +2002,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lWl-Op-37M">
-                        <rect key="frame" x="12" y="22" width="120" height="28"/>
+                        <rect key="frame" x="12" y="32" width="120" height="28"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="110" id="Ldk-uN-88W"/>
                         </constraints>
@@ -2003,7 +2015,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Tqb-fK-IZi">
-                        <rect key="frame" x="132" y="22" width="120" height="28"/>
+                        <rect key="frame" x="132" y="32" width="120" height="28"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="110" id="Or6-aV-Isb"/>
                         </constraints>
@@ -2016,7 +2028,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iWA-ft-hGI">
-                        <rect key="frame" x="354" y="3" width="92" height="32"/>
+                        <rect key="frame" x="354" y="13" width="92" height="32"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="80" id="YTu-Cq-XtG"/>
                         </constraints>
@@ -2035,7 +2047,7 @@ Gw
                 <constraints>
                     <constraint firstItem="Tqb-fK-IZi" firstAttribute="centerY" secondItem="lWl-Op-37M" secondAttribute="centerY" id="36S-C7-Clh"/>
                     <constraint firstItem="jfS-u6-wyb" firstAttribute="leading" secondItem="uOP-Fc-vEW" secondAttribute="leading" constant="17" id="9HY-xk-7Ax"/>
-                    <constraint firstAttribute="bottom" secondItem="iWA-ft-hGI" secondAttribute="bottom" constant="10" id="Bcg-RX-zfY"/>
+                    <constraint firstAttribute="bottom" secondItem="iWA-ft-hGI" secondAttribute="bottom" constant="20" id="Bcg-RX-zfY"/>
                     <constraint firstItem="lWl-Op-37M" firstAttribute="leading" secondItem="jfS-u6-wyb" secondAttribute="leading" id="FLh-gQ-1el"/>
                     <constraint firstAttribute="trailing" secondItem="jfS-u6-wyb" secondAttribute="trailing" constant="17" id="Jhd-Zo-iBQ"/>
                     <constraint firstItem="Tqb-fK-IZi" firstAttribute="leading" secondItem="lWl-Op-37M" secondAttribute="trailing" constant="10" id="YGP-8y-JSe"/>
@@ -2047,6 +2059,106 @@ Gw
             </view>
             <point key="canvasLocation" x="-20" y="-264"/>
         </window>
+        <window title="Import complex modifications file" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="ZY4-nd-9zB" userLabel="Import Complex Modifications File Panel" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="132" width="800" height="200"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <value key="minSize" type="size" width="800" height="200"/>
+            <value key="maxSize" type="size" width="800" height="200"/>
+            <view key="contentView" id="YVO-Df-Mre">
+                <rect key="frame" x="0.0" y="0.0" width="800" height="200"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X3k-uL-arh">
+                        <rect key="frame" x="15" y="163" width="98" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Import file from" id="YZo-5z-FvX">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9oL-YE-FiJ">
+                        <rect key="frame" x="114" y="163" width="604" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="600" id="SHe-uE-Vaq"/>
+                        </constraints>
+                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="https://example.com" id="vyx-b8-V2L">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <scrollView wantsLayer="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A3J-XY-x60">
+                        <rect key="frame" x="80" y="61" width="640" height="82"/>
+                        <clipView key="contentView" id="uNg-oR-13T">
+                            <rect key="frame" x="1" y="1" width="623" height="80"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <textView editable="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
+                                    <rect key="frame" x="0.0" y="0.0" width="623" height="80"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <size key="minSize" width="623" height="80"/>
+                                    <size key="maxSize" width="623" height="10000000"/>
+                                    <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                </textView>
+                            </subviews>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </clipView>
+                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="2ec-D0-U5S">
+                            <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="eOh-hu-RTZ">
+                            <rect key="frame" x="624" y="1" width="15" height="80"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                    </scrollView>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RCh-62-Dln">
+                        <rect key="frame" x="294" y="13" width="92" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="80" id="oUT-IN-8HD"/>
+                        </constraints>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WIz-od-AHq">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closePanel:" target="1ch-Te-EDv" id="bQk-TR-8Ld"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qHV-O1-rJe">
+                        <rect key="frame" x="414" y="13" width="92" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="80" id="YDi-V5-MA2"/>
+                        </constraints>
+                        <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" image="ic_file_download_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2lw-6W-9IN">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="X3k-uL-arh" firstAttribute="top" secondItem="YVO-Df-Mre" secondAttribute="top" constant="20" id="47s-jh-RVv"/>
+                    <constraint firstItem="9oL-YE-FiJ" firstAttribute="centerY" secondItem="X3k-uL-arh" secondAttribute="centerY" id="AdD-sP-0NK"/>
+                    <constraint firstItem="RCh-62-Dln" firstAttribute="leading" secondItem="YVO-Df-Mre" secondAttribute="leading" constant="300" id="Eqs-0D-4Jh"/>
+                    <constraint firstAttribute="trailing" secondItem="qHV-O1-rJe" secondAttribute="trailing" constant="300" id="H0W-4S-gBg"/>
+                    <constraint firstItem="RCh-62-Dln" firstAttribute="top" secondItem="A3J-XY-x60" secondAttribute="bottom" constant="20" id="UFT-No-3Be"/>
+                    <constraint firstItem="X3k-uL-arh" firstAttribute="leading" secondItem="YVO-Df-Mre" secondAttribute="leading" constant="17" id="XRI-YV-XJb"/>
+                    <constraint firstItem="9oL-YE-FiJ" firstAttribute="leading" secondItem="X3k-uL-arh" secondAttribute="trailing" constant="5" id="hm5-ar-Oms"/>
+                    <constraint firstAttribute="bottom" secondItem="RCh-62-Dln" secondAttribute="bottom" constant="20" id="kXU-Wm-AzL"/>
+                    <constraint firstItem="A3J-XY-x60" firstAttribute="top" secondItem="X3k-uL-arh" secondAttribute="bottom" constant="20" id="r0b-vj-CSb"/>
+                    <constraint firstItem="qHV-O1-rJe" firstAttribute="centerY" secondItem="RCh-62-Dln" secondAttribute="centerY" id="t2Q-9z-7dS"/>
+                    <constraint firstItem="A3J-XY-x60" firstAttribute="leading" secondItem="YVO-Df-Mre" secondAttribute="leading" constant="80" id="t6P-K4-tIj"/>
+                    <constraint firstAttribute="trailing" secondItem="A3J-XY-x60" secondAttribute="trailing" constant="80" id="uOj-TA-PK9"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="46" y="640"/>
+        </window>
     </objects>
     <resources>
         <image name="ic_add_circle_18pt" width="36" height="36"/>
@@ -2057,6 +2169,7 @@ Gw
         <image name="ic_chevron_right_18pt" width="36" height="36"/>
         <image name="ic_delete_forever_18pt" width="36" height="36"/>
         <image name="ic_expand_more_18pt" width="36" height="36"/>
+        <image name="ic_file_download_18pt" width="36" height="36"/>
         <image name="ic_forward_18pt" width="36" height="36"/>
         <image name="ic_keyboard_18pt" width="36" height="36"/>
         <image name="ic_mouse_18pt" width="36" height="36"/>
