@@ -14,6 +14,7 @@ const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
 const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(void);
 const char* _Nonnull libkrbn_get_distributed_notification_console_user_server_is_disabled(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
+const char* _Nonnull libkrbn_get_user_complex_modifications_assets_directory(void);
 
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name);
 void libkrbn_unlock_single_application(void);
