@@ -22,8 +22,11 @@
         </customObject>
         <customObject id="1ch-Te-EDv" customClass="ComplexModificationsFileImportWindowController">
             <connections>
+                <outlet property="complexModificationsRulesTableViewController" destination="kWQ-dQ-cFu" id="HAt-q2-wFH"/>
                 <outlet property="detailTextView" destination="iV7-bm-Yxd" id="2n2-05-bcW"/>
+                <outlet property="importButton" destination="qHV-O1-rJe" id="EUS-bk-zrz"/>
                 <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="3zX-u2-NMr"/>
+                <outlet property="progressIndicator" destination="9Nf-aG-15a" id="bYh-wi-MjE"/>
                 <outlet property="urlLabel" destination="9oL-YE-FiJ" id="6dq-nK-rfJ"/>
                 <outlet property="window" destination="ZY4-nd-9zB" id="wk4-WE-dmJ"/>
             </connections>
@@ -2089,6 +2092,9 @@ Gw
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="9Nf-aG-15a">
+                        <rect key="frame" x="726" y="164" width="16" height="16"/>
+                    </progressIndicator>
                     <scrollView wantsLayer="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A3J-XY-x60">
                         <rect key="frame" x="80" y="61" width="640" height="82"/>
                         <clipView key="contentView" id="uNg-oR-13T">
@@ -2140,6 +2146,9 @@ Gw
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="importFile:" target="1ch-Te-EDv" id="X5G-Ac-qSE"/>
+                        </connections>
                     </button>
                 </subviews>
                 <constraints>
@@ -2148,6 +2157,8 @@ Gw
                     <constraint firstItem="RCh-62-Dln" firstAttribute="leading" secondItem="YVO-Df-Mre" secondAttribute="leading" constant="300" id="Eqs-0D-4Jh"/>
                     <constraint firstAttribute="trailing" secondItem="qHV-O1-rJe" secondAttribute="trailing" constant="300" id="H0W-4S-gBg"/>
                     <constraint firstItem="RCh-62-Dln" firstAttribute="top" secondItem="A3J-XY-x60" secondAttribute="bottom" constant="20" id="UFT-No-3Be"/>
+                    <constraint firstItem="9Nf-aG-15a" firstAttribute="leading" secondItem="9oL-YE-FiJ" secondAttribute="trailing" constant="10" id="W3U-Ag-RST"/>
+                    <constraint firstItem="9Nf-aG-15a" firstAttribute="centerY" secondItem="9oL-YE-FiJ" secondAttribute="centerY" id="Wdd-Qs-ZLM"/>
                     <constraint firstItem="X3k-uL-arh" firstAttribute="leading" secondItem="YVO-Df-Mre" secondAttribute="leading" constant="17" id="XRI-YV-XJb"/>
                     <constraint firstItem="9oL-YE-FiJ" firstAttribute="leading" secondItem="X3k-uL-arh" secondAttribute="trailing" constant="5" id="hm5-ar-Oms"/>
                     <constraint firstAttribute="bottom" secondItem="RCh-62-Dln" secondAttribute="bottom" constant="20" id="kXU-Wm-AzL"/>
