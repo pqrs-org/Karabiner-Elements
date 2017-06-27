@@ -275,6 +275,26 @@ const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_mo
   return 0;
 }
 
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
+                                                                                    const char* name) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    if (name) {
+      return c->get_core_configuration().get_selected_profile().get_complex_modifications().get_parameters().get_value(name);
+    }
+  }
+  return 0;
+}
+
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
+                                                                                     const char* name,
+                                                                                     int value) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    if (name) {
+      c->get_core_configuration().get_selected_profile().set_complex_modifications_parameter(name, value);
+    }
+  }
+}
+
 const char* libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     return c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type().c_str();
