@@ -4,6 +4,7 @@
 @interface KarabinerKitComplexModificationsAssetsFileModel ()
 
 @property(readwrite) NSUInteger fileIndex;
+@property(readwrite) BOOL userFile;
 @property(copy, readwrite) NSString* title;
 @property(copy, readwrite) NSArray* rules;
 @property libkrbn_complex_modifications_assets_manager* libkrbnComplexModificationsAssetsManager;
@@ -18,6 +19,8 @@
 
   if (self) {
     _fileIndex = index;
+
+    _userFile = libkrbn_complex_modifications_assets_manager_is_user_file(libkrbnComplexModificationsAssetsManager, index);
 
     const char* p = libkrbn_complex_modifications_assets_manager_get_file_title(libkrbnComplexModificationsAssetsManager, index);
     _title = (p ? [NSString stringWithUTF8String:p] : @"");

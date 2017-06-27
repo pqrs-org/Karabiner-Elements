@@ -144,6 +144,8 @@ void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration
                                                                                                   size_t file_index,
                                                                                                   size_t index,
                                                                                                   libkrbn_core_configuration* _Nonnull q);
+bool libkrbn_complex_modifications_assets_manager_is_user_file(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                               size_t index);
 void libkrbn_complex_modifications_assets_manager_erase_file(libkrbn_complex_modifications_assets_manager* _Nonnull p,
                                                              size_t index);
 

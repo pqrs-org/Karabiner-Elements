@@ -20,6 +20,7 @@ mkdir -p "$basedir"
 cp version "$basedir"
 cp src/scripts/uninstall.sh "$basedir"
 cp src/scripts/uninstall_core.sh "$basedir"
+cp files/complex_modifications_rules_example.json "$basedir"
 cp -R "src/vendor/Karabiner-VirtualHIDDevice/dist" "$basedir/Karabiner-VirtualHIDDevice"
 cp -R "src/apps/Menu/build/Release/Karabiner-Menu.app" "$basedir"
 

@@ -109,7 +109,15 @@ void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration
   }
 }
 
-void libkrbn_complex_modifications_assets_manager_erase_file(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+bool libkrbn_complex_modifications_assets_manager_is_user_file(libkrbn_complex_modifications_assets_manager* p,
+                                                               size_t index) {
+  if (auto file = get_file(p, index)) {
+    return file->is_user_file();
+  }
+  return false;
+}
+
+void libkrbn_complex_modifications_assets_manager_erase_file(libkrbn_complex_modifications_assets_manager* p,
                                                              size_t index) {
   if (auto file = get_file(p, index)) {
     file->unlink_file();

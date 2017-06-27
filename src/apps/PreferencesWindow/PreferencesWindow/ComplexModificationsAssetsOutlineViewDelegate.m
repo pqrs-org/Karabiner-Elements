@@ -37,9 +37,13 @@
   } else if ([tableColumn.identifier isEqualToString:@"ComplexModificationsAssetsButtonsColumn"]) {
     if (fileModel) {
       ComplexModificationsAssetsOutlineCellView* result = [outlineView makeViewWithIdentifier:@"ComplexModificationsAssetsButtonsCellView" owner:self];
-      result.eraseButton.hidden = NO;
-      result.eraseButton.action = @selector(eraseImportedFile:);
-      result.eraseButton.target = self.complexModificationsRulesTableViewController;
+      if (fileModel.userFile) {
+        result.eraseButton.hidden = NO;
+        result.eraseButton.action = @selector(eraseImportedFile:);
+        result.eraseButton.target = self.complexModificationsRulesTableViewController;
+      } else {
+        result.eraseButton.hidden = YES;
+      }
       result.enableButton.hidden = YES;
       result.fileIndex = fileModel.fileIndex;
       return result;

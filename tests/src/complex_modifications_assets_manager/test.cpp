@@ -8,7 +8,7 @@
 TEST_CASE("reload") {
   {
     krbn::complex_modifications_assets_manager complex_modifications_assets_manager;
-    complex_modifications_assets_manager.reload("assets/complex_modifications");
+    complex_modifications_assets_manager.reload("assets/complex_modifications", false);
 
     auto& files = complex_modifications_assets_manager.get_files();
     REQUIRE(files.size() == 5);
@@ -34,7 +34,7 @@ TEST_CASE("reload") {
 
   {
     krbn::complex_modifications_assets_manager complex_modifications_assets_manager;
-    complex_modifications_assets_manager.reload("not_found");
+    complex_modifications_assets_manager.reload("not_found", false);
 
     auto& files = complex_modifications_assets_manager.get_files();
     REQUIRE(files.size() == 0);

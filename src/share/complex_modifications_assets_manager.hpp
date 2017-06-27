@@ -1,6 +1,10 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
+#include "constants.hpp"
 #include "core_configuration.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 #include <dirent.h>
 #include <unistd.h>
 
@@ -57,15 +61,30 @@ public:
       unlink(file_path_.c_str());
     }
 
+    bool is_user_file(void) const {
+      return boost::starts_with(file_path_, constants::get_user_complex_modifications_assets_directory());
+    }
+
   private:
     std::string file_path_;
     std::string title_;
     std::vector<core_configuration::profile::complex_modifications::rule> rules_;
   };
 
-  void reload(const std::string& directory) {
+  void reload(const std::string& directory, bool load_system_example_file = true) {
     files_.clear();
 
+    // Load system example file.
+    if (load_system_example_file) {
+      const std::string file_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/complex_modifications_rules_example.json";
+      try {
+        files_.emplace_back(file_path);
+      } catch (std::exception& e) {
+        logger::get_logger().error("Error in {0}: {1}", file_path, e.what());
+      }
+    }
+
+    // Load user files.
     DIR* dir = opendir(directory.c_str());
     if (dir) {
       while (auto entry = readdir(dir)) {
