@@ -1,5 +1,6 @@
 #import "PreferencesWindowController.h"
 #import "ComplexModificationsRulesTableViewController.h"
+#import "ComplexModificationsParametersTabController.h"
 #import "DevicesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
@@ -14,6 +15,7 @@
 
 @interface PreferencesWindowController ()
 
+@property(weak) IBOutlet ComplexModificationsParametersTabController* complexModificationsParametersTabController;
 @property(weak) IBOutlet ComplexModificationsRulesTableViewController* complexModificationsRulesTableViewController;
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
@@ -50,6 +52,7 @@
   [self.simpleModificationsTableViewController setup];
   [self.fnFunctionKeysTableViewController setup];
   [self.complexModificationsRulesTableViewController setup];
+  [self.complexModificationsParametersTabController setup];
   [self.devicesTableViewController setup];
   [self setupVirtualHIDKeyboardTypePopUpButton];
   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];

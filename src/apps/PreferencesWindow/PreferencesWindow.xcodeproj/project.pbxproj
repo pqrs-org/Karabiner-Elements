@@ -14,6 +14,7 @@
 		342BE6871EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6861EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m */; };
 		342BE68A1EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6891EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m */; };
 		344370C21F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344370C11F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m */; };
+		344370C51F026CE4003C38F5 /* ComplexModificationsParametersTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344370C41F026CE4003C38F5 /* ComplexModificationsParametersTabController.m */; };
 		3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0661D801AF7004555F9 /* AppDelegate.m */; };
 		3445E06A1D801AF7004555F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0691D801AF7004555F9 /* main.m */; };
 		3445E06C1D801AF7004555F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06B1D801AF7004555F9 /* Assets.xcassets */; };
@@ -61,6 +62,8 @@
 		342BE6891EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsRulesTableCellView.m; sourceTree = "<group>"; };
 		344370C01F011AED003C38F5 /* ComplexModificationsFileImportWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsFileImportWindowController.h; sourceTree = "<group>"; };
 		344370C11F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsFileImportWindowController.m; sourceTree = "<group>"; };
+		344370C31F026CE4003C38F5 /* ComplexModificationsParametersTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsParametersTabController.h; sourceTree = "<group>"; };
+		344370C41F026CE4003C38F5 /* ComplexModificationsParametersTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsParametersTabController.m; sourceTree = "<group>"; };
 		3445E0621D801AF7004555F9 /* Karabiner-Elements.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Karabiner-Elements.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3445E0651D801AF7004555F9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3445E0661D801AF7004555F9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -166,6 +169,8 @@
 				34B13D221EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.m */,
 				344370C01F011AED003C38F5 /* ComplexModificationsFileImportWindowController.h */,
 				344370C11F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m */,
+				344370C31F026CE4003C38F5 /* ComplexModificationsParametersTabController.h */,
+				344370C41F026CE4003C38F5 /* ComplexModificationsParametersTabController.m */,
 				342BE6881EF6D7E900149985 /* ComplexModificationsRulesTableCellView.h */,
 				342BE6891EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m */,
 				342BE6851EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.h */,
@@ -354,6 +359,7 @@
 				342BE6871EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m in Sources */,
 				344370C21F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m in Sources */,
 				34ECD8F61E3659BB007D5AB8 /* ProfilesTableCellView.m in Sources */,
+				344370C51F026CE4003C38F5 /* ComplexModificationsParametersTabController.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,
 				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,
 				34B13D231EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.m in Sources */,
