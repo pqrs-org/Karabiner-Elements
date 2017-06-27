@@ -35,6 +35,10 @@
   [self updateUpDownButtons];
 }
 
+- (IBAction)openRulesSite:(id)sender {
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://pqrs-org.github.io/KE-complex_modifications/"]];
+}
+
 - (void)removeRule:(id)sender {
   NSInteger row = [self.tableView rowForView:sender];
 

@@ -936,23 +936,27 @@
                                                     <view key="view" id="8OI-Si-MWw">
                                                         <rect key="frame" x="10" y="33" width="814" height="383"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <subviews>
+                                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Giw-g9-ORf">
+                                                                <rect key="frame" x="253" y="304" width="282" height="36"/>
+                                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Not implemented yet" drawsBackground="YES" id="9K8-G3-elz">
+                                                                    <font key="font" metaFont="system" size="30"/>
+                                                                    <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                </textFieldCell>
+                                                            </textField>
+                                                        </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="Giw-g9-ORf" firstAttribute="top" secondItem="8OI-Si-MWw" secondAttribute="top" constant="43" id="8Iw-PD-OCJ"/>
+                                                            <constraint firstItem="Giw-g9-ORf" firstAttribute="centerX" secondItem="8OI-Si-MWw" secondAttribute="centerX" constant="-13" id="UBu-cN-Fje"/>
+                                                        </constraints>
                                                     </view>
                                                 </tabViewItem>
                                             </tabViewItems>
                                         </tabView>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Giw-g9-ORf">
-                                            <rect key="frame" x="286" y="392" width="282" height="36"/>
-                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Not implemented yet" drawsBackground="YES" id="9K8-G3-elz">
-                                                <font key="font" metaFont="system" size="30"/>
-                                                <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="1c1-vs-xhU" secondAttribute="trailing" constant="17" id="DuZ-f9-QAt"/>
-                                        <constraint firstItem="Giw-g9-ORf" firstAttribute="top" secondItem="QKn-8U-Fy4" secondAttribute="top" constant="10" id="W0j-zI-QS4"/>
-                                        <constraint firstItem="Giw-g9-ORf" firstAttribute="centerX" secondItem="QKn-8U-Fy4" secondAttribute="centerX" id="dAY-fE-508"/>
                                         <constraint firstItem="1c1-vs-xhU" firstAttribute="top" secondItem="QKn-8U-Fy4" secondAttribute="top" constant="8" id="gA5-la-4Jh"/>
                                         <constraint firstItem="1c1-vs-xhU" firstAttribute="leading" secondItem="QKn-8U-Fy4" secondAttribute="leading" constant="17" id="kqR-aB-TKC"/>
                                         <constraint firstAttribute="bottom" secondItem="1c1-vs-xhU" secondAttribute="bottom" constant="17" id="sCC-MG-8jF"/>
@@ -1887,14 +1891,27 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                 <rect key="frame" x="0.0" y="0.0" width="800" height="400"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Jox-CI-bt9">
+                        <rect key="frame" x="194" y="357" width="412" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="400" id="I8e-H1-3Go"/>
+                        </constraints>
+                        <buttonCell key="cell" type="push" title="Import more rules from the Internet (open a web browser)" bezelStyle="rounded" image="ic_cloud_download_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="02O-a2-wtg">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="openRulesSite:" target="kWQ-dQ-cFu" id="Hpq-8a-7iW"/>
+                        </connections>
+                    </button>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jfS-u6-wyb">
-                        <rect key="frame" x="17" y="61" width="766" height="331"/>
+                        <rect key="frame" x="17" y="61" width="766" height="288"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
-                            <rect key="frame" x="1" y="1" width="764" height="329"/>
+                            <rect key="frame" x="1" y="1" width="764" height="286"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
-                                    <rect key="frame" x="0.0" y="0.0" width="764" height="329"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="764" height="286"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -2050,14 +2067,16 @@ Gw
                 </subviews>
                 <constraints>
                     <constraint firstItem="Tqb-fK-IZi" firstAttribute="centerY" secondItem="lWl-Op-37M" secondAttribute="centerY" id="36S-C7-Clh"/>
+                    <constraint firstItem="jfS-u6-wyb" firstAttribute="top" secondItem="Jox-CI-bt9" secondAttribute="bottom" constant="15" id="7uv-LC-wt7"/>
                     <constraint firstItem="jfS-u6-wyb" firstAttribute="leading" secondItem="uOP-Fc-vEW" secondAttribute="leading" constant="17" id="9HY-xk-7Ax"/>
                     <constraint firstAttribute="bottom" secondItem="iWA-ft-hGI" secondAttribute="bottom" constant="20" id="Bcg-RX-zfY"/>
                     <constraint firstItem="lWl-Op-37M" firstAttribute="leading" secondItem="jfS-u6-wyb" secondAttribute="leading" id="FLh-gQ-1el"/>
                     <constraint firstAttribute="trailing" secondItem="jfS-u6-wyb" secondAttribute="trailing" constant="17" id="Jhd-Zo-iBQ"/>
                     <constraint firstItem="Tqb-fK-IZi" firstAttribute="leading" secondItem="lWl-Op-37M" secondAttribute="trailing" constant="10" id="YGP-8y-JSe"/>
-                    <constraint firstItem="jfS-u6-wyb" firstAttribute="top" secondItem="uOP-Fc-vEW" secondAttribute="top" constant="8" id="aS6-Mp-ZnL"/>
+                    <constraint firstItem="Jox-CI-bt9" firstAttribute="top" secondItem="uOP-Fc-vEW" secondAttribute="top" constant="15" id="a3q-vX-1gN"/>
                     <constraint firstItem="lWl-Op-37M" firstAttribute="top" secondItem="jfS-u6-wyb" secondAttribute="bottom" constant="5" id="bIU-Lt-5pw"/>
                     <constraint firstItem="iWA-ft-hGI" firstAttribute="centerX" secondItem="uOP-Fc-vEW" secondAttribute="centerX" id="sBH-lf-YAd"/>
+                    <constraint firstItem="Jox-CI-bt9" firstAttribute="centerX" secondItem="uOP-Fc-vEW" secondAttribute="centerX" id="scP-F9-X3P"/>
                     <constraint firstItem="iWA-ft-hGI" firstAttribute="top" secondItem="jfS-u6-wyb" secondAttribute="bottom" constant="20" id="wPT-dt-23q"/>
                 </constraints>
             </view>
@@ -2179,6 +2198,7 @@ Gw
         <image name="ic_cancel_18pt" width="36" height="36"/>
         <image name="ic_check_18pt" width="36" height="36"/>
         <image name="ic_chevron_right_18pt" width="36" height="36"/>
+        <image name="ic_cloud_download_18pt" width="36" height="36"/>
         <image name="ic_delete_forever_18pt" width="36" height="36"/>
         <image name="ic_expand_more_18pt" width="36" height="36"/>
         <image name="ic_file_download_18pt" width="36" height="36"/>
