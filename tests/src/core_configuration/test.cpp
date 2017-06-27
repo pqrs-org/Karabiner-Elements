@@ -506,7 +506,10 @@ TEST_CASE("profile.to_json") {
     nlohmann::json json;
     krbn::core_configuration::profile profile(json);
     nlohmann::json expected({
-        {"complex_modifications", nlohmann::json::object({{"rules", nlohmann::json::array()}})},
+        {"complex_modifications", nlohmann::json::object({
+                                      {"rules", nlohmann::json::array()},
+                                      {"parameters", nlohmann::json::object({{"basic.to_if_alone_timeout_milliseconds", 1000}})},
+                                  })},
         {"devices", nlohmann::json::array()},
         {"name", ""},
         {"selected", false},
@@ -651,6 +654,7 @@ TEST_CASE("profile.to_json") {
     nlohmann::json expected({
         {"complex_modifications", nlohmann::json::object({
                                       {"rules", nlohmann::json::array()},
+                                      {"parameters", nlohmann::json::object({{"basic.to_if_alone_timeout_milliseconds", 1000}})},
                                   })},
         {"devices", {
                         {

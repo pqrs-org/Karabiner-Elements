@@ -165,7 +165,10 @@
                 "f12": "volume_increment"
             },
             "complex_modifications": {
-                "rules": []
+                "rules": [],
+                "parameters": {
+                    "basic.to_if_alone_timeout_milliseconds": 1000
+                }
             },
             "virtual_hid_keyboard": {
                 "keyboard_type": "ansi",
