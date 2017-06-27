@@ -4,51 +4,39 @@ class complex_modifications final {
 public:
   class parameters final {
   public:
-    class basic final {
-    public:
-      basic(void) : to_if_alone_timeout_milliseconds_(1000) {
-      }
-
-      void update(const nlohmann::json& json) {
-        {
-          const std::string key = "to_if_alone_timeout_milliseconds";
-          if (json.find(key) != json.end() && json[key].is_number()) {
-            to_if_alone_timeout_milliseconds_ = json[key];
-          }
-        }
-      }
-
-      int get_to_if_alone_timeout_milliseconds(void) const {
-        return to_if_alone_timeout_milliseconds_;
-      }
-
-    private:
-      int to_if_alone_timeout_milliseconds_;
-    };
-
     parameters(void) : json_(nlohmann::json::object()) {
     }
 
-    parameters(const nlohmann::json& json) : json_(json) {
+    parameters(const nlohmann::json& json) : json_(json),
+                                             basic_to_if_alone_timeout_milliseconds_(1000) {
       update(json);
     }
 
     void update(const nlohmann::json& json) {
-      {
-        const std::string key = "basic";
-        if (json.find(key) != json.end()) {
-          basic_.update(json[key]);
+      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+        if (it.value().is_number()) {
+          set_value(it.key(), it.value());
         }
       }
     }
 
-    const basic& get_basic(void) const {
-      return basic_;
+    void set_value(const std::string& name, int value) {
+      if (name == "basic.to_if_alone_timeout_milliseconds") {
+        basic_to_if_alone_timeout_milliseconds_ = value;
+      }
+    }
+
+    int get_basic_to_if_alone_timeout_milliseconds(void) const {
+      return basic_to_if_alone_timeout_milliseconds_;
+    }
+
+    void set_basic_to_if_alone_timeout_milliseconds(int value) {
+      basic_to_if_alone_timeout_milliseconds_ = value;
     }
 
   private:
     nlohmann::json json_;
-    basic basic_;
+    int basic_to_if_alone_timeout_milliseconds_;
   };
 
   class rule final {

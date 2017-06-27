@@ -40,9 +40,9 @@ TEST_CASE("valid") {
   {
     auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
     auto& rules = complex_modifications.get_rules();
-    REQUIRE(complex_modifications.get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 800);
-    REQUIRE(rules[0].get_manipulators()[0].get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 800);
-    REQUIRE(rules[0].get_manipulators()[2].get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 400);
+    REQUIRE(complex_modifications.get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 800);
+    REQUIRE(rules[0].get_manipulators()[0].get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 800);
+    REQUIRE(rules[0].get_manipulators()[2].get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 400);
     REQUIRE(rules[0].get_description() == "Change control+[ to escape.");
     REQUIRE(rules[1].get_description() == "description test");
     REQUIRE(rules[2].get_description() == "");
@@ -775,7 +775,7 @@ TEST_CASE("complex_modifications") {
     nlohmann::json json;
     krbn::core_configuration::profile::complex_modifications complex_modifications(json);
     REQUIRE(complex_modifications.get_rules().empty());
-    REQUIRE(complex_modifications.get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 1000);
+    REQUIRE(complex_modifications.get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 1000);
   }
 
   // load values from json
@@ -924,33 +924,23 @@ TEST_CASE("complex_modifications.parameters") {
   {
     nlohmann::json json;
     krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
-    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1000);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1000);
   }
 
   // load values from json
   {
-    nlohmann::json json({
-        {
-            "basic", {
-                         {"to_if_alone_timeout_milliseconds", 1234},
-                     },
-        },
-    });
+    nlohmann::json json;
+    json["basic.to_if_alone_timeout_milliseconds"] = 1234;
     krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
-    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1234);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1234);
   }
 
   // invalid values in json
   {
-    nlohmann::json json({
-        {
-            "basic", {
-                         {"to_if_alone_timeout_milliseconds", "1234"},
-                     },
-        },
-    });
+    nlohmann::json json;
+    json["basic.to_if_alone_timeout_milliseconds"] = "1234";
     krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
-    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1000);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1000);
   }
 }
 
