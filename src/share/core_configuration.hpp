@@ -141,6 +141,9 @@ public:
     void swap_complex_modifications_rules(size_t index1, size_t index2) {
       complex_modifications_.swap_rules(index1, index2);
     }
+    void set_complex_modifications_parameter(const std::string& name, int value) {
+      complex_modifications_.set_parameter_value(name, value);
+    }
 
     const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
       return virtual_hid_keyboard_;
@@ -372,6 +375,10 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile::com
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::rule& rule) {
   json = rule.get_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::parameters& parameters) {
+  json = parameters.to_json();
 }
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::virtual_hid_keyboard& virtual_hid_keyboard) {
