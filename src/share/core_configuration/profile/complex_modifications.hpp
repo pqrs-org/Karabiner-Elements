@@ -12,6 +12,14 @@ public:
       update(json);
     }
 
+    nlohmann::json to_json(void) const {
+      auto j = json_;
+      for (const auto& pair : make_map()) {
+        j[pair.first] = pair.second;
+      }
+      return j;
+    }
+
     void update(const nlohmann::json& json) {
       for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
         if (it.value().is_number()) {
@@ -20,9 +28,20 @@ public:
       }
     }
 
+    int get_value(const std::string& name) const {
+      auto map = make_map();
+      auto it = map.find(name);
+      if (it != std::end(map)) {
+        return it->second;
+      }
+      return 0;
+    }
+
     void set_value(const std::string& name, int value) {
-      if (name == "basic.to_if_alone_timeout_milliseconds") {
-        basic_to_if_alone_timeout_milliseconds_ = value;
+      auto map = make_map();
+      auto it = map.find(name);
+      if (it != std::end(map)) {
+        const_cast<int&>(it->second) = value;
       }
     }
 
@@ -30,11 +49,13 @@ public:
       return basic_to_if_alone_timeout_milliseconds_;
     }
 
-    void set_basic_to_if_alone_timeout_milliseconds(int value) {
-      basic_to_if_alone_timeout_milliseconds_ = value;
+  private:
+    std::unordered_map<std::string, const int&> make_map(void) const {
+      return {
+          {"basic.to_if_alone_timeout_milliseconds", basic_to_if_alone_timeout_milliseconds_},
+      };
     }
 
-  private:
     nlohmann::json json_;
     int basic_to_if_alone_timeout_milliseconds_;
   };
@@ -164,11 +185,16 @@ public:
   nlohmann::json to_json(void) const {
     auto j = json_;
     j["rules"] = rules_;
+    j["parameters"] = parameters_;
     return j;
   }
 
   const parameters& get_parameters(void) const {
     return parameters_;
+  }
+
+  void set_parameter_value(const std::string& name, int value) {
+    parameters_.set_value(name, value);
   }
 
   const std::vector<rule>& get_rules(void) const {
