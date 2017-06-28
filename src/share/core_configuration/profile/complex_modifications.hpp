@@ -4,7 +4,7 @@ class complex_modifications final {
 public:
   class parameters final {
   public:
-    parameters(void) : json_(nlohmann::json::object()) {
+    parameters(void) : parameters(nlohmann::json::object()) {
     }
 
     parameters(const nlohmann::json& json) : json_(json),
@@ -21,9 +21,9 @@ public:
     }
 
     void update(const nlohmann::json& json) {
-      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-        if (it.value().is_number()) {
-          set_value(it.key(), it.value());
+      for (const auto& pair : make_map()) {
+        if (json.find(pair.first) != json.end() && json[pair.first].is_number()) {
+          const_cast<int&>(pair.second) = json[pair.first];
         }
       }
     }
