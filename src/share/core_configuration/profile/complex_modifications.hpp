@@ -4,51 +4,60 @@ class complex_modifications final {
 public:
   class parameters final {
   public:
-    class basic final {
-    public:
-      basic(void) : to_if_alone_timeout_milliseconds_(1000) {
-      }
-
-      void update(const nlohmann::json& json) {
-        {
-          const std::string key = "to_if_alone_timeout_milliseconds";
-          if (json.find(key) != json.end() && json[key].is_number()) {
-            to_if_alone_timeout_milliseconds_ = json[key];
-          }
-        }
-      }
-
-      int get_to_if_alone_timeout_milliseconds(void) const {
-        return to_if_alone_timeout_milliseconds_;
-      }
-
-    private:
-      int to_if_alone_timeout_milliseconds_;
-    };
-
-    parameters(void) : json_(nlohmann::json::object()) {
+    parameters(void) : parameters(nlohmann::json::object()) {
     }
 
-    parameters(const nlohmann::json& json) : json_(json) {
+    parameters(const nlohmann::json& json) : json_(json),
+                                             basic_to_if_alone_timeout_milliseconds_(1000) {
       update(json);
     }
 
+    nlohmann::json to_json(void) const {
+      auto j = json_;
+      for (const auto& pair : make_map()) {
+        j[pair.first] = pair.second;
+      }
+      return j;
+    }
+
     void update(const nlohmann::json& json) {
-      {
-        const std::string key = "basic";
-        if (json.find(key) != json.end()) {
-          basic_.update(json[key]);
+      for (const auto& pair : make_map()) {
+        if (json.find(pair.first) != json.end() && json[pair.first].is_number()) {
+          const_cast<int&>(pair.second) = json[pair.first];
         }
       }
     }
 
-    const basic& get_basic(void) const {
-      return basic_;
+    int get_value(const std::string& name) const {
+      auto map = make_map();
+      auto it = map.find(name);
+      if (it != std::end(map)) {
+        return it->second;
+      }
+      return 0;
+    }
+
+    void set_value(const std::string& name, int value) {
+      auto map = make_map();
+      auto it = map.find(name);
+      if (it != std::end(map)) {
+        const_cast<int&>(it->second) = value;
+      }
+    }
+
+    int get_basic_to_if_alone_timeout_milliseconds(void) const {
+      return basic_to_if_alone_timeout_milliseconds_;
     }
 
   private:
+    std::unordered_map<std::string, const int&> make_map(void) const {
+      return {
+          {"basic.to_if_alone_timeout_milliseconds", basic_to_if_alone_timeout_milliseconds_},
+      };
+    }
+
     nlohmann::json json_;
-    basic basic_;
+    int basic_to_if_alone_timeout_milliseconds_;
   };
 
   class rule final {
@@ -174,15 +183,39 @@ public:
   }
 
   nlohmann::json to_json(void) const {
-    return json_;
+    auto j = json_;
+    j["rules"] = rules_;
+    j["parameters"] = parameters_;
+    return j;
   }
 
   const parameters& get_parameters(void) const {
     return parameters_;
   }
 
+  void set_parameter_value(const std::string& name, int value) {
+    parameters_.set_value(name, value);
+  }
+
   const std::vector<rule>& get_rules(void) const {
     return rules_;
+  }
+
+  void push_back_rule(const rule& rule) {
+    rules_.push_back(rule);
+  }
+
+  void erase_rule(size_t index) {
+    if (index < rules_.size()) {
+      rules_.erase(std::begin(rules_) + index);
+    }
+  }
+
+  void swap_rules(size_t index1, size_t index2) {
+    if (index1 < rules_.size() &&
+        index2 < rules_.size()) {
+      std::swap(rules_[index1], rules_[index2]);
+    }
   }
 
 private:

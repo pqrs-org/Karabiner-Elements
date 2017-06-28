@@ -61,7 +61,8 @@
 
   [self.tableView reloadData];
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:kSelectedProfileChanged object:nil];
+  // Ensure reloading data
+  [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitConfigurationIsLoaded object:nil];
 }
 
 @end

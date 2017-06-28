@@ -322,6 +322,25 @@ size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rul
   return 0;
 }
 
+void libkrbn_core_configuration_push_back_complex_modifications_rule_to_selected_profile(libkrbn_core_configuration* p,
+                                                                                         const krbn::core_configuration::profile::complex_modifications::rule& rule) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    c->get_core_configuration().get_selected_profile().push_back_complex_modifications_rule(rule);
+  }
+}
+
+void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(libkrbn_core_configuration* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    c->get_core_configuration().get_selected_profile().erase_complex_modifications_rule(index);
+  }
+}
+
+void libkrbn_core_configuration_swap_selected_profile_complex_modifications_rules(libkrbn_core_configuration* p, size_t index1, size_t index2) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    c->get_core_configuration().get_selected_profile().swap_complex_modifications_rules(index1, index2);
+  }
+}
+
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     const auto& rules = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_rules();
@@ -330,6 +349,26 @@ const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_mo
     }
   }
   return 0;
+}
+
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
+                                                                                    const char* name) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    if (name) {
+      return c->get_core_configuration().get_selected_profile().get_complex_modifications().get_parameters().get_value(name);
+    }
+  }
+  return 0;
+}
+
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* p,
+                                                                                     const char* name,
+                                                                                     int value) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    if (name) {
+      c->get_core_configuration().get_selected_profile().set_complex_modifications_parameter(name, value);
+    }
+  }
 }
 
 const char* libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* p) {

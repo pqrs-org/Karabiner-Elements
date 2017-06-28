@@ -1,4 +1,5 @@
 #import "PreferencesWindowController.h"
+#import "ComplexModificationsParametersTabController.h"
 #import "ComplexModificationsRulesTableViewController.h"
 #import "DevicesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
@@ -14,6 +15,7 @@
 
 @interface PreferencesWindowController ()
 
+@property(weak) IBOutlet ComplexModificationsParametersTabController* complexModificationsParametersTabController;
 @property(weak) IBOutlet ComplexModificationsRulesTableViewController* complexModificationsRulesTableViewController;
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
@@ -48,6 +50,7 @@
 
   [self.fnFunctionKeysTableViewController setup];
   [self.complexModificationsRulesTableViewController setup];
+  [self.complexModificationsParametersTabController setup];
   [self.devicesTableViewController setup];
   [self setupVirtualHIDKeyboardTypePopUpButton];
   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];

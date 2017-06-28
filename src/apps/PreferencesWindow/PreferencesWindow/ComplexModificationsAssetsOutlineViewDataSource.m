@@ -16,7 +16,7 @@
 }
 
 - (NSArray*)getChildren:(id)item {
-  if ([item class] == [KarabinerKitComplexModificationsAssetsFileModel class]) {
+  if ([item class] == KarabinerKitComplexModificationsAssetsFileModel.class) {
     KarabinerKitComplexModificationsAssetsFileModel* model = (KarabinerKitComplexModificationsAssetsFileModel*)(item);
     return model.rules;
   }

@@ -271,7 +271,7 @@ public:
 
                 uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
                 if (alone &&
-                    nanoseconds < parameters_.get_basic().get_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                    nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
                   send_to_if_alone(front_input_event,
                                    time_stamp_delay,
                                    output_event_queue);

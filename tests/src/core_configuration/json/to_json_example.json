@@ -91,9 +91,7 @@
                                 ],
                                 "type": "basic",
                                 "parameters": {
-                                    "basic": {
-                                        "to_if_alone_timeout_milliseconds": 400
-                                    }
+                                    "basic.to_if_alone_timeout_milliseconds": 400
                                 }
                             }
                         ]
@@ -114,11 +112,9 @@
                     "keep_me": true
                 },
                 "parameters": {
-                    "basic": {
-                        "to_if_alone_timeout_milliseconds": 800,
-                        "dummy": {
-                            "keep_me": true
-                        }
+                    "basic.to_if_alone_timeout_milliseconds": 800,
+                    "dummy": {
+                        "keep_me": true
                     }
                 }
             },
@@ -167,6 +163,12 @@
                 "f10": "mute",
                 "f11": "volume_decrement",
                 "f12": "volume_increment"
+            },
+            "complex_modifications": {
+                "rules": [],
+                "parameters": {
+                    "basic.to_if_alone_timeout_milliseconds": 1000
+                }
             },
             "virtual_hid_keyboard": {
                 "keyboard_type": "ansi",

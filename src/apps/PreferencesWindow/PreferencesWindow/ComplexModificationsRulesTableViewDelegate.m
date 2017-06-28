@@ -32,4 +32,8 @@
   return nil;
 }
 
+- (void)tableViewSelectionDidChange:(NSNotification*)notification {
+  [self.complexModificationsRulesTableViewController updateUpDownButtons];
+}
+
 @end

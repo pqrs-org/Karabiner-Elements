@@ -86,6 +86,7 @@ public:
       j["selected"] = selected_;
       j["simple_modifications"] = simple_modifications_;
       j["fn_function_keys"] = fn_function_keys_;
+      j["complex_modifications"] = complex_modifications_;
       j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
       j["devices"] = devices_;
       return j;
@@ -133,6 +134,18 @@ public:
 
     const complex_modifications& get_complex_modifications(void) const {
       return complex_modifications_;
+    }
+    void push_back_complex_modifications_rule(const profile::complex_modifications::rule& rule) {
+      complex_modifications_.push_back_rule(rule);
+    }
+    void erase_complex_modifications_rule(size_t index) {
+      complex_modifications_.erase_rule(index);
+    }
+    void swap_complex_modifications_rules(size_t index1, size_t index2) {
+      complex_modifications_.swap_rules(index1, index2);
+    }
+    void set_complex_modifications_parameter(const std::string& name, int value) {
+      complex_modifications_.set_parameter_value(name, value);
     }
 
     const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
@@ -373,6 +386,14 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile::sim
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications& complex_modifications) {
   json = complex_modifications.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::rule& rule) {
+  json = rule.get_json();
+}
+
+inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::parameters& parameters) {
+  json = parameters.to_json();
 }
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::virtual_hid_keyboard& virtual_hid_keyboard) {

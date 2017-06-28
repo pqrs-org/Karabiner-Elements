@@ -6,6 +6,12 @@
     },
     "profiles": [
         {
+            "complex_modifications": {
+                "rules": [],
+                "parameters": {
+                    "basic.to_if_alone_timeout_milliseconds": 1000
+                }
+            },
             "devices": [],
             "fn_function_keys": {
                 "f1": "display_brightness_decrement",
