@@ -1,6 +1,6 @@
 #import "PreferencesWindowController.h"
-#import "ComplexModificationsRulesTableViewController.h"
 #import "ComplexModificationsParametersTabController.h"
+#import "ComplexModificationsRulesTableViewController.h"
 #import "DevicesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
@@ -80,16 +80,6 @@
                                                   if (!self) return;
 
                                                   [self updateSystemPreferencesUIValues];
-                                                }];
-  [[NSNotificationCenter defaultCenter] addObserverForName:kSelectedProfileChanged
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  @strongify(self);
-                                                  if (!self) return;
-
-                                                  [self setupVirtualHIDKeyboardTypePopUpButton];
-                                                  [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
                                                 }];
 
   // ----------------------------------------

@@ -20,13 +20,6 @@
                                                 usingBlock:^(NSNotification* note) {
                                                   [self.tableView reloadData];
                                                 }];
-
-  [[NSNotificationCenter defaultCenter] addObserverForName:kSelectedProfileChanged
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  [self.tableView reloadData];
-                                                }];
 }
 
 - (void)dealloc {
