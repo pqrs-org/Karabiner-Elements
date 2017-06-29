@@ -984,11 +984,21 @@
                                                                                 <action selector="valueChanged:" target="ihI-ZX-C7a" id="ejc-nY-9Kn"/>
                                                                             </connections>
                                                                         </stepper>
+                                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="B6h-dy-l1f">
+                                                                            <rect key="frame" x="356" y="13" width="140" height="17"/>
+                                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Default value is 1000)" id="Fo2-yn-bIz">
+                                                                                <font key="font" metaFont="system"/>
+                                                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                            </textFieldCell>
+                                                                        </textField>
                                                                     </subviews>
                                                                     <constraints>
                                                                         <constraint firstItem="otc-Wi-CC9" firstAttribute="leading" secondItem="AOh-cS-AAf" secondAttribute="leading" constant="17" id="14J-fP-hNi"/>
+                                                                        <constraint firstItem="B6h-dy-l1f" firstAttribute="centerY" secondItem="otc-Wi-CC9" secondAttribute="centerY" id="NZK-R1-mTe"/>
                                                                         <constraint firstAttribute="bottom" secondItem="B5e-sA-OFJ" secondAttribute="bottom" constant="10" id="WkB-YC-peF"/>
                                                                         <constraint firstItem="B5e-sA-OFJ" firstAttribute="leading" secondItem="otc-Wi-CC9" secondAttribute="trailing" constant="10" id="ZHZ-nS-sGM"/>
+                                                                        <constraint firstItem="B6h-dy-l1f" firstAttribute="leading" secondItem="cfX-J1-0CG" secondAttribute="trailing" constant="20" id="b8B-4e-7Mw"/>
                                                                         <constraint firstItem="B5e-sA-OFJ" firstAttribute="centerY" secondItem="otc-Wi-CC9" secondAttribute="centerY" id="dOc-ca-bJd"/>
                                                                         <constraint firstItem="cfX-J1-0CG" firstAttribute="centerY" secondItem="B5e-sA-OFJ" secondAttribute="centerY" id="hO2-YT-CSD"/>
                                                                         <constraint firstItem="cfX-J1-0CG" firstAttribute="leading" secondItem="B5e-sA-OFJ" secondAttribute="trailing" constant="2" id="nbw-Pw-upk"/>
@@ -2178,7 +2188,7 @@ Gw
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <size key="minSize" width="623" height="80"/>
-                                    <size key="maxSize" width="623" height="10000000"/>
+                                    <size key="maxSize" width="640" height="10000000"/>
                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
                             </subviews>
