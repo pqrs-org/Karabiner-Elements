@@ -1,3 +1,8 @@
+# Version 0.91.5
+
+* GUI for complex_modifications has been added. https://github.com/tekezo/Karabiner-Elements/tree/master/usage#how-to-use-complex-modifications
+* Syntax of `complex_modifications > parameters` has been changed.
+
 # Version 0.91.4
 
 * The modifier flag event handling has been improved.
