@@ -22,6 +22,11 @@
   self.progressIndicator.hidden = NO;
   [self.progressIndicator startAnimation:nil];
 
+  NSTextStorage* textStorage = self.detailTextView.textStorage;
+  [textStorage beginEditing];
+  [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
+  [textStorage endEditing];
+
   NSURLSession* session = [NSURLSession sharedSession];
   NSURLSessionDataTask* task = [session dataTaskWithURL:[NSURL URLWithString:url]
                                       completionHandler:^(NSData* data, NSURLResponse* response, NSError* error) {
@@ -31,7 +36,6 @@
                                           self.progressIndicator.hidden = YES;
                                           [self.progressIndicator stopAnimation:nil];
 
-                                          NSTextStorage* textStorage = self.detailTextView.textStorage;
                                           [textStorage beginEditing];
 
                                           if (error) {
