@@ -16,6 +16,13 @@
 
 @implementation AppDelegate
 
+- (void)applicationWillFinishLaunching:(NSNotification*)notification {
+  [[NSAppleEventManager sharedAppleEventManager] setEventHandler:self
+                                                     andSelector:@selector(handleGetURLEvent:withReplyEvent:)
+                                                   forEventClass:kInternetEventClass
+                                                      andEventID:kAEGetURL];
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
@@ -26,18 +33,15 @@
   [self.systemPreferencesManager setup];
 
   [self.preferencesWindowController setup];
-
-  [[NSAppleEventManager sharedAppleEventManager] setEventHandler:self
-                                                     andSelector:@selector(handleGetURLEvent:withReplyEvent:)
-                                                   forEventClass:kInternetEventClass
-                                                      andEventID:kAEGetURL];
 }
 
 - (void)handleGetURLEvent:(NSAppleEventDescriptor*)event withReplyEvent:(NSAppleEventDescriptor*)replyEvent {
-  [KarabinerKit endAllAttachedSheets:self.preferencesWindow];
-
   //  url == @"karabiner://karabiner/assets/complex_modifications/import?url=xxx"
   NSString* url = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
+  NSLog(@"handleGetURLEvent %@", url);
+
+  [KarabinerKit endAllAttachedSheets:self.preferencesWindow];
+
   NSURLComponents* urlComponents = [[NSURLComponents alloc] initWithString:url];
   if ([urlComponents.path isEqualToString:@"/assets/complex_modifications/import"]) {
     for (NSURLQueryItem* pair in urlComponents.queryItems) {
