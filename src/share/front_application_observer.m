@@ -8,14 +8,23 @@ static krbn_front_application_observer_callback callback_;
 
 @implementation KrbnFrontApplicationObserver
 
-- (void)callback:(NSNotification*)notification {
+- (void)runCallback:(NSRunningApplication*)runningApplication {
   if (callback_) {
     @try {
-      NSRunningApplication* runningApplication = notification.userInfo[NSWorkspaceApplicationKey];
       NSString* path = [[runningApplication.executableURL path] stringByStandardizingPath];
       callback_([runningApplication.bundleIdentifier UTF8String], [path UTF8String]);
     } @catch (NSException* exception) {
+      NSLog(@"runCallback error");
     }
+  }
+}
+
+- (void)handleNotification:(NSNotification*)notification {
+  @try {
+    NSRunningApplication* runningApplication = notification.userInfo[NSWorkspaceApplicationKey];
+    [self runCallback:runningApplication];
+  } @catch (NSException* exception) {
+    NSLog(@"notificationHandler error");
   }
 }
 
@@ -27,12 +36,18 @@ void krbn_front_application_observer_initialize(krbn_front_application_observer_
   callback_ = callback;
 
   if (!observer_) {
-    observer_ = [KrbnFrontApplicationObserver new];
+    @try {
+      observer_ = [KrbnFrontApplicationObserver new];
 
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:observer_
-                                                           selector:@selector(callback:)
-                                                               name:NSWorkspaceDidActivateApplicationNotification
-                                                             object:nil];
+      [observer_ runCallback:[[NSWorkspace sharedWorkspace] frontmostApplication]];
+
+      [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:observer_
+                                                             selector:@selector(handleNotification:)
+                                                                 name:NSWorkspaceDidActivateApplicationNotification
+                                                               object:nil];
+    } @catch (NSException* exception) {
+      NSLog(@"krbn_front_application_observer_initialize error");
+    }
   }
 }
 
