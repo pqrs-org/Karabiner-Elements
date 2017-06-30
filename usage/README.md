@@ -3,6 +3,7 @@
 * [Quit Karabiner-Elements](#quit-karabiner-elements)
 * [Uninstall Karabiner-Elements](#uninstall-karabiner-elements)
 * [How to configure Karabiner-Elements](#how-to-configure-karabiner-elements)
+  * [How to use complex modifications](#how-to-use-complex-modifications)
 * [Set keyboard type](#set-keyboard-type)
 
 # Installation
@@ -43,15 +44,7 @@ You can investigate the key name in Karabiner-EventViewer.
 
 <img src="img/keycode.png" width="400">
 
-# Set keyboard type
-
-You can set keyboard type in Virtual Keyboard tab.
-
-<img src="img/keyboard_type.png" width="400">
-
-If your keyboard is not ANSI layout, you have to set the keyboard type of virtual keyboard.
-
-# How to use complex modifications
+## How to use complex modifications
 
 Open Complex Modifications tab.
 
@@ -80,6 +73,14 @@ New rules are imported. Press `Enable` button.
 A new rule is enabled.
 
 <img src="img/complex_modifications7.png" width="400" style="border: 1px solid gray">
+
+# Set keyboard type
+
+You can set keyboard type in Virtual Keyboard tab.
+
+<img src="img/keyboard_type.png" width="400">
+
+If your keyboard is not ANSI layout, you have to set the keyboard type of virtual keyboard.
 
 # Learn about `karabiner.json`
 
