@@ -1,15 +1,15 @@
-#import "front_application_observer_objc.h"
+#import "frontmost_application_observer_objc.h"
 #import <Cocoa/Cocoa.h>
 
-@interface KrbnFrontApplicationObserver : NSObject
+@interface KrbnFrontmostApplicationObserver : NSObject
 
-@property krbn_front_application_observer_callback callback;
+@property krbn_frontmost_application_observer_callback callback;
 
 @end
 
-@implementation KrbnFrontApplicationObserver
+@implementation KrbnFrontmostApplicationObserver
 
-- (instancetype)initWithCallback:(krbn_front_application_observer_callback)callback {
+- (instancetype)initWithCallback:(krbn_frontmost_application_observer_callback)callback {
   self = [super init];
 
   if (self) {
@@ -21,14 +21,11 @@
                                                          object:nil];
   }
 
-  NSLog(@"init");
-
   return self;
 }
 
 - (void)dealloc {
   [NSNotificationCenter.defaultCenter removeObserver:self];
-  NSLog(@"dealloc");
 }
 
 - (void)runCallback:(NSRunningApplication*)runningApplication {
@@ -58,10 +55,10 @@
 
 @end
 
-void krbn_front_application_observer_initialize(krbn_front_application_observer_objc** observer,
-                                                krbn_front_application_observer_callback callback) {
+void krbn_frontmost_application_observer_initialize(krbn_frontmost_application_observer_objc** observer,
+                                                    krbn_frontmost_application_observer_callback callback) {
   if (!observer) {
-    NSLog(@"krbn_front_application_observer_initialize invalid arguments");
+    NSLog(@"krbn_frontmost_application_observer_initialize invalid arguments");
     return;
   }
   if (*observer) {
@@ -69,15 +66,15 @@ void krbn_front_application_observer_initialize(krbn_front_application_observer_
     return;
   }
 
-  KrbnFrontApplicationObserver* o = [[KrbnFrontApplicationObserver alloc] initWithCallback:callback];
+  KrbnFrontmostApplicationObserver* o = [[KrbnFrontmostApplicationObserver alloc] initWithCallback:callback];
   [o runCallbackWithFrontmostApplication];
 
   *observer = (__bridge_retained void*)(o);
 }
 
-void krbn_front_application_observer_terminate(krbn_front_application_observer_objc** observer) {
+void krbn_frontmost_application_observer_terminate(krbn_frontmost_application_observer_objc** observer) {
   if (observer) {
-    KrbnFrontApplicationObserver* o = (__bridge_transfer KrbnFrontApplicationObserver*)(*observer);
+    KrbnFrontmostApplicationObserver* o = (__bridge_transfer KrbnFrontmostApplicationObserver*)(*observer);
     o = nil;
   }
 }
