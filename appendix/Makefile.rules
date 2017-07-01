@@ -1,4 +1,5 @@
-CXXFLAGS = -I../../src/share -I../../src/vendor -I/opt/local/include -I/usr/local/include -std=c++14 -Wall -Werror -O2
+CFLAGS   = -I../../src/share -I../../src/vendor -I/opt/local/include -I/usr/local/include -Wall -Werror -O2
+CXXFLAGS = $(CFLAGS) -std=c++14
 
 clean:
 	rm -f *.o
