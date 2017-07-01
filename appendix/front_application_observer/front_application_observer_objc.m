@@ -1,0 +1,1 @@
+../../src/share/front_application_observer_objc.m
