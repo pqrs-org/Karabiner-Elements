@@ -74,7 +74,9 @@ void krbn_frontmost_application_observer_initialize(krbn_frontmost_application_o
 
 void krbn_frontmost_application_observer_terminate(krbn_frontmost_application_observer_objc** observer) {
   if (observer) {
+#ifndef __clang_analyzer__
     KrbnFrontmostApplicationObserver* o = (__bridge_transfer KrbnFrontmostApplicationObserver*)(*observer);
     o = nil;
+#endif
   }
 }
