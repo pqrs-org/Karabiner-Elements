@@ -3,11 +3,13 @@
 #include "thread_utility.hpp"
 #include <Carbon/Carbon.h>
 
-static void callback(const char* bundle_identifier, const char* file_path) {
+namespace {
+void callback(const std::string& bundle_identifier, const std::string& file_path) {
   krbn::logger::get_logger().info("callback");
-  krbn::logger::get_logger().info("  bundle_identifier:{0}", bundle_identifier ? bundle_identifier : "(nullptr)");
-  krbn::logger::get_logger().info("  file_path:{0}", file_path ? file_path : "(nullptr)");
+  krbn::logger::get_logger().info("  bundle_identifier:{0}", bundle_identifier);
+  krbn::logger::get_logger().info("  file_path:{0}", file_path);
 }
+} // namespace
 
 int main(int argc, char** argv) {
   krbn::logger::get_logger().set_level(spdlog::level::off);

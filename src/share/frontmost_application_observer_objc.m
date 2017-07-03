@@ -4,16 +4,19 @@
 @interface KrbnFrontmostApplicationObserver : NSObject
 
 @property krbn_frontmost_application_observer_callback callback;
+@property void* context;
 
 @end
 
 @implementation KrbnFrontmostApplicationObserver
 
-- (instancetype)initWithCallback:(krbn_frontmost_application_observer_callback)callback {
+- (instancetype)initWithCallback:(krbn_frontmost_application_observer_callback)callback
+                         context:(void*)context {
   self = [super init];
 
   if (self) {
     _callback = callback;
+    _context = context;
 
     [NSWorkspace.sharedWorkspace.notificationCenter addObserver:self
                                                        selector:@selector(handleNotification:)
@@ -33,7 +36,11 @@
     @try {
       NSString* bundleIdentifier = runningApplication.bundleIdentifier;
       NSString* path = [[runningApplication.executableURL path] stringByStandardizingPath];
-      self.callback([bundleIdentifier UTF8String], [path UTF8String]);
+
+      const char* b = [bundleIdentifier UTF8String];
+      const char* p = [path UTF8String];
+
+      self.callback(b ? b : "", p ? p : "", self.context);
     } @catch (NSException* exception) {
       NSLog(@"runCallback error");
     }
@@ -56,7 +63,8 @@
 @end
 
 void krbn_frontmost_application_observer_initialize(krbn_frontmost_application_observer_objc** observer,
-                                                    krbn_frontmost_application_observer_callback callback) {
+                                                    krbn_frontmost_application_observer_callback callback,
+                                                    void* context) {
   if (!observer) {
     NSLog(@"krbn_frontmost_application_observer_initialize invalid arguments");
     return;
@@ -66,7 +74,7 @@ void krbn_frontmost_application_observer_initialize(krbn_frontmost_application_o
     return;
   }
 
-  KrbnFrontmostApplicationObserver* o = [[KrbnFrontmostApplicationObserver alloc] initWithCallback:callback];
+  KrbnFrontmostApplicationObserver* o = [[KrbnFrontmostApplicationObserver alloc] initWithCallback:callback context:context];
   [o runCallbackWithFrontmostApplication];
 
   *observer = (__bridge_retained void*)(o);
