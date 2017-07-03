@@ -12,12 +12,14 @@ public:
 
   frontmost_application_observer(const callback& callback) : callback_(callback),
                                                              observer_(nullptr) {
+    logger::get_logger().info("frontmost_application_observer initialize");
     krbn_frontmost_application_observer_initialize(&observer_,
                                                    static_cpp_callback,
                                                    this);
   }
 
   ~frontmost_application_observer(void) {
+    logger::get_logger().info("frontmost_application_observer terminate");
     krbn_frontmost_application_observer_terminate(&observer_);
   }
 
