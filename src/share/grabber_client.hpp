@@ -44,6 +44,21 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
+  void frontmost_application_changed(const std::string& bundle_identifier,
+                                     const std::string& file_path) {
+    operation_type_frontmost_application_changed_struct s;
+
+    strlcpy(s.bundle_identifier,
+            bundle_identifier.c_str(),
+            sizeof(s.bundle_identifier));
+
+    strlcpy(s.file_path,
+            file_path.c_str(),
+            sizeof(s.file_path));
+
+    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
 private:
   std::unique_ptr<local_datagram_client> client_;
 };

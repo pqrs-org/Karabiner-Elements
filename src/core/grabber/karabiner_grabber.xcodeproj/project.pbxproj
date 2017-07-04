@@ -48,6 +48,7 @@
 		345CCB531E914FD8005B61A8 /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = include/manipulator/details/types.hpp; sourceTree = SOURCE_ROOT; };
 		345CCB541E929D65005B61A8 /* manipulator_factory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = manipulator_factory.hpp; path = include/manipulator/manipulator_factory.hpp; sourceTree = SOURCE_ROOT; };
 		345CCB551E929D71005B61A8 /* nop.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = nop.hpp; path = include/manipulator/details/nop.hpp; sourceTree = SOURCE_ROOT; };
+		345EF8E01F0B354C003E7A67 /* manipulator_environment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = manipulator_environment.hpp; sourceTree = "<group>"; };
 		3463EABD1E2E866000427A81 /* version_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version_monitor.hpp; sourceTree = "<group>"; };
 		3469EB701D814F140005D30D /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = filesystem.hpp; sourceTree = "<group>"; };
 		347113141D871C6C001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = process_monitor.hpp; sourceTree = "<group>"; };
@@ -151,6 +152,7 @@
 				341F59D11D5244F200B441A8 /* local_datagram_client.hpp */,
 				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				342BE67C1EF27CA300149985 /* logger.hpp */,
+				345EF8E01F0B354C003E7A67 /* manipulator_environment.hpp */,
 				34A88AA41D69C85600DD480B /* modifier_flag_manager.hpp */,
 				345AC0021D620C8C009D1FB4 /* notification_center.hpp */,
 				34D2FC841D9C120F00168D20 /* pointing_button_manager.hpp */,

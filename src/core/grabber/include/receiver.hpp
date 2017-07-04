@@ -89,6 +89,15 @@ private:
             }
             break;
 
+          case operation_type::frontmost_application_changed:
+            if (n < sizeof(operation_type_frontmost_application_changed_struct)) {
+              logger::get_logger().error("invalid size for operation_type::frontmost_application_changed ({0})", n);
+            } else {
+              //auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(&(buffer_[0]));
+              //logger::get_logger().info("frontmost_application_changed");
+            }
+            break;
+
           default:
             break;
         }

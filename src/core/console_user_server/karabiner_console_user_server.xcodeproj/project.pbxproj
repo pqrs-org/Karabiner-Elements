@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		345EF8DD1F09FA0B003E7A67 /* frontmost_application_observer_objc.m in Sources */ = {isa = PBXBuildFile; fileRef = 345EF8DB1F09FA0B003E7A67 /* frontmost_application_observer_objc.m */; };
+		345EF8DF1F09FA28003E7A67 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 345EF8DE1F09FA28003E7A67 /* Cocoa.framework */; };
 		34A88A9F1D685A5000DD480B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34A88A9E1D685A5000DD480B /* main.cpp */; };
 		34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34BB0F0A1D22853700372174 /* IOKit.framework */; };
 		34DA28A01D8E94FB0029E37D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34DA289F1D8E94FB0029E37D /* SystemConfiguration.framework */; };
@@ -43,6 +45,10 @@
 		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = system_preferences.hpp; sourceTree = "<group>"; };
 		345AC0031D620E28009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = notification_center.hpp; sourceTree = "<group>"; };
 		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = boost_defs.hpp; sourceTree = "<group>"; };
+		345EF8DA1F09FA0B003E7A67 /* frontmost_application_observer_objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frontmost_application_observer_objc.h; sourceTree = "<group>"; };
+		345EF8DB1F09FA0B003E7A67 /* frontmost_application_observer_objc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = frontmost_application_observer_objc.m; sourceTree = "<group>"; };
+		345EF8DC1F09FA0B003E7A67 /* frontmost_application_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = frontmost_application_observer.hpp; sourceTree = "<group>"; };
+		345EF8DE1F09FA28003E7A67 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		3463EABE1E2FCD9400427A81 /* version_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version_monitor.hpp; sourceTree = "<group>"; };
 		347113151D871EC1001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = process_monitor.hpp; sourceTree = "<group>"; };
 		348A6C461E17D28D00DB5FA4 /* migration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = migration.hpp; path = include/migration.hpp; sourceTree = SOURCE_ROOT; };
@@ -66,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				345EF8DF1F09FA28003E7A67 /* Cocoa.framework in Frameworks */,
 				34DA28A01D8E94FB0029E37D /* SystemConfiguration.framework in Frameworks */,
 				34BB0F0B1D22853700372174 /* IOKit.framework in Frameworks */,
 				34E9F62F1D2134770007AE90 /* Carbon.framework in Frameworks */,
@@ -112,6 +119,9 @@
 				345A9DE41D7DD7A200578F84 /* core_configuration.hpp */,
 				34DA28A11D8FA4A40029E37D /* file_monitor.hpp */,
 				3492C9BC1D772D8B0055988F /* filesystem.hpp */,
+				345EF8DA1F09FA0B003E7A67 /* frontmost_application_observer_objc.h */,
+				345EF8DB1F09FA0B003E7A67 /* frontmost_application_observer_objc.m */,
+				345EF8DC1F09FA0B003E7A67 /* frontmost_application_observer.hpp */,
 				3431346F1DB710E80008F284 /* gcd_utility.hpp */,
 				34A88A981D685A4600DD480B /* grabber_client.hpp */,
 				341F59DB1D57789500B441A8 /* iokit_utility.hpp */,
@@ -138,9 +148,10 @@
 		34BB0F0C1D22853D00372174 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				34DA289F1D8E94FB0029E37D /* SystemConfiguration.framework */,
-				34BB0F0A1D22853700372174 /* IOKit.framework */,
 				34E9F62E1D2134770007AE90 /* Carbon.framework */,
+				345EF8DE1F09FA28003E7A67 /* Cocoa.framework */,
+				34BB0F0A1D22853700372174 /* IOKit.framework */,
+				34DA289F1D8E94FB0029E37D /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -211,6 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				34A88A9F1D685A5000DD480B /* main.cpp in Sources */,
+				345EF8DD1F09FA0B003E7A67 /* frontmost_application_observer_objc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

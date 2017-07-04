@@ -28,6 +28,7 @@ enum class operation_type : uint8_t {
   // console_user_server -> grabber
   connect,
   system_preferences_values_updated,
+  frontmost_application_changed,
 };
 
 enum class device_id : uint32_t {
@@ -820,6 +821,14 @@ struct operation_type_system_preferences_values_updated_struct {
 
   const operation_type operation_type;
   system_preferences::values values;
+};
+
+struct operation_type_frontmost_application_changed_struct {
+  operation_type_frontmost_application_changed_struct(void) : operation_type(operation_type::frontmost_application_changed) {}
+
+  const operation_type operation_type;
+  char bundle_identifier[256];
+  char file_path[_POSIX_PATH_MAX];
 };
 
 // stream output

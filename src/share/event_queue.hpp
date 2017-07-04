@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "manipulator_environment.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
 #include "stream_utility.hpp"
