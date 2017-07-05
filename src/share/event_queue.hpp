@@ -8,6 +8,7 @@
 #include "stream_utility.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 
 namespace krbn {
 class event_queue final {
@@ -32,24 +33,24 @@ public:
       };
 
       event(key_code key_code) : type_(type::key_code),
-                                 key_code_(key_code) {
+                                 value_(key_code) {
       }
 
       event(pointing_button pointing_button) : type_(type::pointing_button),
-                                               pointing_button_(pointing_button) {
+                                               value_(pointing_button) {
       }
 
       event(type type,
             int64_t integer_value) : type_(type),
-                                     integer_value_(integer_value) {
+                                     value_(integer_value) {
       }
 
       static event make_event_from_ignored_device(type original_type,
                                                   boost::optional<int64_t> original_integer_value) {
         event e;
         e.type_ = type::event_from_ignored_device;
-        e.original_value_.type_ = original_type;
-        e.original_value_.integer_value_ = (original_integer_value ? *original_integer_value : 0);
+        e.value_ = original_value(original_type,
+                                  (original_integer_value ? *original_integer_value : 0));
         return e;
       }
 
@@ -59,14 +60,14 @@ public:
 
       boost::optional<key_code> get_key_code(void) const {
         if (type_ == type::key_code) {
-          return key_code_;
+          return boost::get<key_code>(value_);
         }
         return boost::none;
       }
 
       boost::optional<pointing_button> get_pointing_button(void) const {
         if (type_ == type::pointing_button) {
-          return pointing_button_;
+          return boost::get<pointing_button>(value_);
         }
         return boost::none;
       }
@@ -77,49 +78,94 @@ public:
             type_ == type::pointing_vertical_wheel ||
             type_ == type::pointing_horizontal_wheel ||
             type_ == type::caps_lock_state_changed) {
-          return integer_value_;
+          return boost::get<int64_t>(value_);
         }
         return boost::none;
       }
 
       boost::optional<type> get_original_type(void) const {
         if (type_ == type::event_from_ignored_device) {
-          return original_value_.type_;
+          const auto& v = boost::get<original_value>(value_);
+          return v.get_type();
         }
         return boost::none;
       }
 
       boost::optional<int64_t> get_original_integer_value(void) const {
         if (type_ == type::event_from_ignored_device) {
-          return original_value_.integer_value_;
+          const auto& v = boost::get<original_value>(value_);
+          return v.get_integer_value();
         }
         return boost::none;
       }
 
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
-               get_key_code() == other.get_key_code() &&
-               get_pointing_button() == other.get_pointing_button() &&
-               get_integer_value() == other.get_integer_value() &&
-               get_original_type() == other.get_original_type() &&
-               get_original_integer_value() == other.get_original_integer_value();
+               value_ == other.value_;
       }
 
     private:
+      class original_value final {
+      public:
+        original_value(type type,
+                       int64_t integer_value) : type_(type),
+                                                integer_value_(integer_value) {
+        }
+
+        type get_type(void) const {
+          return type_;
+        }
+
+        int64_t get_integer_value(void) const {
+          return integer_value_;
+        }
+
+        bool operator==(const original_value& other) const {
+          return type_ == other.type_ &&
+                 integer_value_ == other.integer_value_;
+        }
+
+      private:
+        type type_;
+        int64_t integer_value_;
+      };
+
+      class frontmost_application final {
+      public:
+        frontmost_application(const std::string& bundle_identifier,
+                              const std::string& file_path) : bundle_identifier_(bundle_identifier),
+                                                              file_path_(file_path) {
+        }
+
+        const std::string& get_bundle_identifier(void) const {
+          return bundle_identifier_;
+        }
+
+        const std::string& get_file_path(void) const {
+          return file_path_;
+        }
+
+        bool operator==(const frontmost_application& other) const {
+          return bundle_identifier_ == other.bundle_identifier_ &&
+                 file_path_ == other.file_path_;
+        }
+
+      private:
+        std::string bundle_identifier_;
+        std::string file_path_;
+      };
+
       event(void) {
       }
 
       type type_;
 
-      union {
-        key_code key_code_;               // For type::key_code
-        pointing_button pointing_button_; // For type::pointing_button
-        int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel and virtual events
-        struct {
-          type type_;
-          int64_t integer_value_;
-        } original_value_; // For type::event_from_ignored_device
-      };
+      boost::variant<key_code,        // For type::key_code
+                     pointing_button, // For type::pointing_button
+                     int64_t,         // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel and virtual events
+                     original_value,  // For type::event_from_ignored_device
+                     frontmost_application>
+          value_;
     };
 
     queued_event(device_id device_id,
