@@ -42,8 +42,8 @@ krbn::event_queue::queued_event::event button2_event(krbn::pointing_button::butt
 krbn::event_queue::queued_event::event pointing_x_10_event(krbn::event_queue::queued_event::event::type::pointing_x, 10);
 krbn::event_queue::queued_event::event pointing_y_m10_event(krbn::event_queue::queued_event::event::type::pointing_y, -10);
 
-krbn::event_queue::queued_event::event caps_lock_event_state_changed_1_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
-krbn::event_queue::queued_event::event caps_lock_event_state_changed_0_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
+krbn::event_queue::queued_event::event caps_lock_state_changed_1_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
+krbn::event_queue::queued_event::event caps_lock_state_changed_0_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
 
 krbn::event_queue::queued_event::event device_keys_are_released_event(krbn::event_queue::queued_event::event::type::device_keys_are_released, 1);
 } // namespace
@@ -61,6 +61,16 @@ TEST_CASE("constructor") {
     REQUIRE(event.get_original_type() == krbn::event_queue::queued_event::event::type::pointing_y);
     REQUIRE(event.get_original_integer_value() == static_cast<int64_t>(-100));
   }
+}
+
+TEST_CASE("get_key_code") {
+  REQUIRE(spacebar_event.get_key_code() == krbn::key_code::spacebar);
+  REQUIRE(button2_event.get_key_code() == boost::none);
+  REQUIRE(pointing_x_10_event.get_key_code() == boost::none);
+  REQUIRE(pointing_y_m10_event.get_key_code() == boost::none);
+  REQUIRE(caps_lock_state_changed_1_event.get_key_code() == boost::none);
+  REQUIRE(caps_lock_state_changed_0_event.get_key_code() == boost::none);
+  REQUIRE(device_keys_are_released_event.get_key_code() == boost::none);
 }
 
 TEST_CASE("emplace_back_event") {
@@ -249,21 +259,21 @@ TEST_CASE("caps_lock_state_changed") {
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event_state_changed_1_event, key_down, caps_lock_event_state_changed_1_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, key_down, caps_lock_state_changed_1_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
 
     // Send twice
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event_state_changed_1_event, key_down, caps_lock_event_state_changed_1_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, key_down, caps_lock_state_changed_1_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event_state_changed_0_event, key_down, caps_lock_event_state_changed_0_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_0_event, key_down, caps_lock_state_changed_0_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event_state_changed_1_event, key_down, caps_lock_event_state_changed_1_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, key_down, caps_lock_state_changed_1_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
   }
