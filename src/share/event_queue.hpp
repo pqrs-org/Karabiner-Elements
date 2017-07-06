@@ -30,6 +30,7 @@ public:
         device_ungrabbed,
         caps_lock_state_changed,
         event_from_ignored_device,
+        frontmost_application_changed,
       };
 
       event(key_code key_code) : type_(type::key_code),
@@ -51,6 +52,14 @@ public:
         e.type_ = type::event_from_ignored_device;
         e.value_ = original_value(original_type,
                                   (original_integer_value ? *original_integer_value : 0));
+        return e;
+      }
+
+      static event make_frontmost_application_changed(const std::string& bundle_identifier,
+                                                      const std::string& file_path) {
+        event e;
+        e.type_ = type::frontmost_application_changed;
+        e.value_ = frontmost_application(bundle_identifier, file_path);
         return e;
       }
 
@@ -95,6 +104,22 @@ public:
         if (type_ == type::event_from_ignored_device) {
           const auto& v = boost::get<original_value>(value_);
           return v.get_integer_value();
+        }
+        return boost::none;
+      }
+
+      boost::optional<std::string> get_frontmost_application_bundle_identifier(void) const {
+        if (type_ == type::frontmost_application_changed) {
+          const auto& v = boost::get<frontmost_application>(value_);
+          return v.get_bundle_identifier();
+        }
+        return boost::none;
+      }
+
+      boost::optional<std::string> get_frontmost_application_file_path(void) const {
+        if (type_ == type::frontmost_application_changed) {
+          const auto& v = boost::get<frontmost_application>(value_);
+          return v.get_file_path();
         }
         return boost::none;
       }
@@ -389,6 +414,14 @@ public:
         }
       }
     }
+
+    // Update manipulator_environment
+    if (auto bundle_identifier = event.get_frontmost_application_bundle_identifier()) {
+      if (auto file_path = event.get_frontmost_application_file_path()) {
+        manipulator_environment_.get_frontmost_application().set_bundle_identifier(*bundle_identifier);
+        manipulator_environment_.get_frontmost_application().set_file_path(*file_path);
+      }
+    }
   }
 
   void push_back_event(const queued_event& queued_event) {
@@ -550,6 +583,7 @@ private:
   std::vector<queued_event> events_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
+  manipulator_environment manipulator_environment_;
   uint64_t time_stamp_delay_;
 }; // namespace krbn
 

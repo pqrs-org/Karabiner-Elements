@@ -219,6 +219,18 @@ public:
     update_fn_function_keys_manipulators();
   }
 
+  void post_frontmost_application_changed_event(const std::string& bundle_identifier,
+                                                const std::string& file_path) {
+    auto event = event_queue::queued_event::event::make_frontmost_application_changed(bundle_identifier,
+                                                                                      file_path);
+    merged_input_event_queue_.emplace_back_event(device_id(0),
+                                                 mach_absolute_time(),
+                                                 event,
+                                                 event_type::key_down,
+                                                 event);
+    manipulate();
+  }
+
 private:
   enum class mode {
     observing,

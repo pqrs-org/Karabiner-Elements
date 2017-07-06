@@ -93,8 +93,9 @@ private:
             if (n < sizeof(operation_type_frontmost_application_changed_struct)) {
               logger::get_logger().error("invalid size for operation_type::frontmost_application_changed ({0})", n);
             } else {
-              //auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(&(buffer_[0]));
-              //logger::get_logger().info("frontmost_application_changed");
+              auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(&(buffer_[0]));
+              device_grabber_.post_frontmost_application_changed_event(p->bundle_identifier,
+                                                                       p->file_path);
             }
             break;
 
@@ -106,6 +107,8 @@ private:
   }
 
   void console_user_server_exit_callback(void) {
+    device_grabber_.post_frontmost_application_changed_event("", "");
+
     device_grabber_.stop_grabbing();
 
     start_grabbing_if_system_core_configuration_file_exists();

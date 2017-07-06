@@ -60,7 +60,17 @@ public:
           }
           break;
 
-        default:
+        case event_queue::queued_event::event::type::caps_lock_state_changed:
+        case event_queue::queued_event::event::type::frontmost_application_changed:
+          // Do nothing
+          break;
+
+        case event_queue::queued_event::event::type::key_code:
+        case event_queue::queued_event::event::type::pointing_button:
+        case event_queue::queued_event::event::type::pointing_x:
+        case event_queue::queued_event::event::type::pointing_y:
+        case event_queue::queued_event::event::type::pointing_vertical_wheel:
+        case event_queue::queued_event::event::type::pointing_horizontal_wheel:
           for (auto&& m : manipulators_) {
             m->manipulate(front_input_event,
                           input_event_queue,
