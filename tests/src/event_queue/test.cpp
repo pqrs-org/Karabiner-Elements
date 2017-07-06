@@ -28,6 +28,7 @@
 
 namespace {
 krbn::event_queue::queued_event::event a_event(krbn::key_code::a);
+krbn::event_queue::queued_event::event b_event(krbn::key_code::b);
 krbn::event_queue::queued_event::event caps_lock_event(krbn::key_code::caps_lock);
 krbn::event_queue::queued_event::event escape_event(krbn::key_code::escape);
 krbn::event_queue::queued_event::event left_control_event(krbn::key_code::left_control);
@@ -152,6 +153,68 @@ TEST_CASE("emplace_back_event") {
     PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_keys_are_released_event, key_down, device_keys_are_released_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 500, device_keys_are_released_event, key_down, device_keys_are_released_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 500, left_shift_event, key_down, left_shift_event);
+    REQUIRE(event_queue.get_events() == expected);
+  }
+  {
+    krbn::event_queue event_queue;
+
+    ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_down, b_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
+
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_down, a_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_down, b_event);
+    REQUIRE(event_queue.get_events() == expected);
+  }
+  {
+    krbn::event_queue event_queue;
+
+    ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_down, b_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_down, b_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_down, a_event);
+    REQUIRE(event_queue.get_events() == expected);
+  }
+  {
+    krbn::event_queue event_queue;
+
+    ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_up, b_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_up, a_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_up, b_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_up, a_event);
+    REQUIRE(event_queue.get_events() == expected);
+  }
+  {
+    krbn::event_queue event_queue;
+
+    ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_up, b_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_up, a_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_up, b_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_up, a_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
     REQUIRE(event_queue.get_events() == expected);
   }
 }
