@@ -156,7 +156,7 @@ TEST_CASE("emplace_back_event") {
   }
 }
 
-TEST_CASE("compare") {
+TEST_CASE("needs_swap") {
   krbn::event_queue::queued_event spacebar_down(krbn::device_id(1),
                                                 100,
                                                 spacebar_event,
@@ -183,22 +183,21 @@ TEST_CASE("compare") {
                                                  krbn::event_type::key_up,
                                                  right_shift_event);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_down, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, escape_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(escape_down, spacebar_down) == false);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_down, escape_down) == true);
-  REQUIRE(krbn::event_queue::compare(escape_down, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, right_shift_down) == true);
+  REQUIRE(krbn::event_queue::needs_swap(right_shift_down, spacebar_down) == false);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_down, right_shift_down) == false);
-  REQUIRE(krbn::event_queue::compare(right_shift_down, spacebar_down) == true);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, right_shift_up) == false);
+  REQUIRE(krbn::event_queue::needs_swap(right_shift_up, spacebar_down) == false);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_down, right_shift_up) == true);
-  REQUIRE(krbn::event_queue::compare(right_shift_up, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_up, right_shift_up) == false);
+  REQUIRE(krbn::event_queue::needs_swap(right_shift_up, spacebar_up) == true);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_up, right_shift_up) == true);
-  REQUIRE(krbn::event_queue::compare(right_shift_up, spacebar_up) == false);
-
-  REQUIRE(krbn::event_queue::compare(spacebar_up, right_shift_down) == false);
-  REQUIRE(krbn::event_queue::compare(right_shift_down, spacebar_up) == true);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_up, right_shift_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(right_shift_down, spacebar_up) == false);
 }
 
 TEST_CASE("emplace_back_event.usage_page") {

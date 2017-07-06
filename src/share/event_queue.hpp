@@ -456,7 +456,7 @@ public:
     time_stamp_delay_ += value;
   }
 
-  static bool compare(const queued_event& v1, const queued_event& v2) {
+  static bool needs_swap(const queued_event& v1, const queued_event& v2) {
     // Some devices are send modifier flag and key at the same HID report.
     // For example, a key sends control+up-arrow by this reports.
     //
@@ -510,10 +510,10 @@ public:
             modifier_flag2 != modifier_flag::zero) {
           // v2 is modifier_flag
           if (v2.get_event_type() == event_type::key_up) {
-            return true;
+            return false;
           } else {
             // reorder to v2,v1 if v2 is pressed.
-            return false;
+            return true;
           }
         }
 
@@ -522,21 +522,29 @@ public:
           // v1 is modifier_flag
           if (v1.get_event_type() == event_type::key_up) {
             // reorder to v2,v1 if v1 is released.
-            return false;
-          } else {
             return true;
+          } else {
+            return false;
           }
         }
       }
     }
 
-    // keep order
-    return v1.get_time_stamp() < v2.get_time_stamp();
+    return false;
   }
 
 private:
   void sort_events(void) {
-    std::stable_sort(std::begin(events_), std::end(events_), event_queue::compare);
+    for (size_t i = 0; i < events_.size() - 1;) {
+      if (needs_swap(events_[i], events_[i + 1])) {
+        std::swap(events_[i], events_[i + 1]);
+        if (i > 0) {
+          --i;
+        }
+        continue;
+      }
+      ++i;
+    }
   }
 
   std::vector<queued_event> events_;
