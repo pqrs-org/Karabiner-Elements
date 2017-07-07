@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event_queue.hpp"
+#include "manipulator/details/conditions/base.hpp"
 #include "modifier_flag_manager.hpp"
 
 namespace krbn {

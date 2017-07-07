@@ -2,6 +2,7 @@
 
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
+#include "time_utility.hpp"
 #include <json/json.hpp>
 #include <unordered_set>
 #include <vector>
