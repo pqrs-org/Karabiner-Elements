@@ -37,10 +37,16 @@
       NSString* bundleIdentifier = runningApplication.bundleIdentifier;
       NSString* path = [[runningApplication.executableURL path] stringByStandardizingPath];
 
-      const char* b = [bundleIdentifier UTF8String];
-      const char* p = [path UTF8String];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+          const char* b = [bundleIdentifier UTF8String];
+          const char* p = [path UTF8String];
 
-      self.callback(b ? b : "", p ? p : "", self.context);
+          self.callback(b ? b : "", p ? p : "", self.context);
+        } @catch (NSException* exception) {
+          NSLog(@"runCallback error");
+        }
+      });
     } @catch (NSException* exception) {
       NSLog(@"runCallback error");
     }
