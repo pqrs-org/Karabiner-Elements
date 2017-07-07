@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1510" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="EventViewerApplication">
@@ -208,6 +210,76 @@
                                     <outlet property="initialFirstResponder" destination="925" id="930"/>
                                 </connections>
                             </tabViewItem>
+                            <tabViewItem label="Frontmost Application" identifier="" id="JP7-qs-Qlf">
+                                <view key="view" id="OUd-40-tIR">
+                                    <rect key="frame" x="10" y="33" width="834" height="493"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sZl-yu-fW5">
+                                            <rect key="frame" x="15" y="466" width="500" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="You can investigate a bundle identifier and a file path of the frontmost application." id="OUp-OJ-jvF">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <imageView translatesAutoresizingMaskIntoConstraints="NO" id="rLa-zN-vtF">
+                                            <rect key="frame" x="17" y="432" width="24" height="24"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="24" id="PjL-hb-tp3"/>
+                                                <constraint firstAttribute="height" constant="24" id="dcf-mY-kOW"/>
+                                            </constraints>
+                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="NSInfo" id="sNn-Pg-r7N"/>
+                                        </imageView>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BNM-S7-jNe">
+                                            <rect key="frame" x="49" y="436" width="582" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="You cannot use shortcut keys in EventViewer. Copy the result text from the context menu." id="TLt-or-bkT">
+                                                <font key="font" metaFont="systemBold"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pmW-ja-RxN">
+                                            <rect key="frame" x="17" y="17" width="800" height="389"/>
+                                            <clipView key="contentView" id="Oc9-TS-hYQ">
+                                                <rect key="frame" x="1" y="1" width="783" height="387"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textView editable="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="KEZ-Np-coZ">
+                                                        <rect key="frame" x="0.0" y="0.0" width="783" height="387"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <size key="minSize" width="783" height="387"/>
+                                                        <size key="maxSize" width="783" height="10000000"/>
+                                                        <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    </textView>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </clipView>
+                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="3iX-Nr-Dk5">
+                                                <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="cHg-52-amM">
+                                                <rect key="frame" x="784" y="1" width="15" height="387"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                        </scrollView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="BNM-S7-jNe" firstAttribute="leading" secondItem="rLa-zN-vtF" secondAttribute="trailing" constant="10" id="0ql-Ku-IFe"/>
+                                        <constraint firstAttribute="trailing" secondItem="pmW-ja-RxN" secondAttribute="trailing" constant="17" id="8hQ-c1-ds9"/>
+                                        <constraint firstItem="pmW-ja-RxN" firstAttribute="leading" secondItem="OUd-40-tIR" secondAttribute="leading" constant="17" id="BVj-s5-lAk"/>
+                                        <constraint firstItem="rLa-zN-vtF" firstAttribute="top" secondItem="sZl-yu-fW5" secondAttribute="bottom" constant="10" id="E70-M0-Jsi"/>
+                                        <constraint firstItem="sZl-yu-fW5" firstAttribute="top" secondItem="OUd-40-tIR" secondAttribute="top" constant="10" id="Hir-Uj-tMj"/>
+                                        <constraint firstItem="pmW-ja-RxN" firstAttribute="top" secondItem="BNM-S7-jNe" secondAttribute="bottom" constant="30" id="dEM-Yb-1Wa"/>
+                                        <constraint firstItem="rLa-zN-vtF" firstAttribute="leading" secondItem="sZl-yu-fW5" secondAttribute="leading" id="dtJ-1v-jOA"/>
+                                        <constraint firstItem="BNM-S7-jNe" firstAttribute="centerY" secondItem="rLa-zN-vtF" secondAttribute="centerY" id="k6C-dT-mOp"/>
+                                        <constraint firstAttribute="bottom" secondItem="pmW-ja-RxN" secondAttribute="bottom" constant="17" id="mrf-aG-TBs"/>
+                                        <constraint firstItem="sZl-yu-fW5" firstAttribute="leading" secondItem="OUd-40-tIR" secondAttribute="leading" constant="17" id="tAv-2p-ATj"/>
+                                    </constraints>
+                                </view>
+                            </tabViewItem>
                             <tabViewItem label="Preferences" identifier="" id="xC1-NR-t4e">
                                 <view key="view" id="FqR-MI-IIO">
                                     <rect key="frame" x="10" y="33" width="834" height="493"/>
@@ -306,6 +378,7 @@
         </window>
         <customObject id="494" userLabel="App Delegate" customClass="AppDelegate">
             <connections>
+                <outlet property="frontmostApplicationController" destination="5Ro-l9-Pmw" id="kJT-Hv-RJh"/>
                 <outlet property="keyResponder" destination="925" id="evx-2k-LwC"/>
                 <outlet property="window" destination="371" id="532"/>
             </connections>
@@ -315,7 +388,15 @@
                 <outlet property="view" destination="564" id="qxL-30-rPh"/>
             </connections>
         </customObject>
+        <customObject id="5Ro-l9-Pmw" customClass="FrontmostApplicationController">
+            <connections>
+                <outlet property="textView" destination="KEZ-Np-coZ" id="jkh-1Q-dq0"/>
+            </connections>
+        </customObject>
         <userDefaultsController representsSharedInstance="YES" id="W9q-2J-Sz1"/>
         <customObject id="rei-LJ-AZr" customClass="PreferencesManager"/>
     </objects>
+    <resources>
+        <image name="NSInfo" width="32" height="32"/>
+    </resources>
 </document>
