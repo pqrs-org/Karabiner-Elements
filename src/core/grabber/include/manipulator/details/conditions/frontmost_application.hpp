@@ -27,17 +27,17 @@ public:
         const auto& value = it.value();
 
         if (key == "type") {
-          if (json.find(key) != std::end(json) && json[key].is_string()) {
-            if (json[key] == "frontmost_application_if") {
+          if (value.is_string()) {
+            if (value == "frontmost_application_if") {
               type_ = type::frontmost_application_if;
             }
-            if (json[key] == "frontmost_application_unless") {
+            if (value == "frontmost_application_unless") {
               type_ = type::frontmost_application_unless;
             }
           }
         } else if (key == "bundle_identifiers") {
-          if (json.find(key) != std::end(json) && json[key].is_array()) {
-            for (const auto& j : json[key]) {
+          if (value.is_array()) {
+            for (const auto& j : value) {
               if (j.is_string()) {
                 std::string s = j;
                 try {
@@ -50,8 +50,8 @@ public:
             }
           }
         } else if (key == "file_paths") {
-          if (json.find(key) != std::end(json) && json[key].is_array()) {
-            for (const auto& j : json[key]) {
+          if (value.is_array()) {
+            for (const auto& j : value) {
               if (j.is_string()) {
                 std::string s = j;
                 try {
