@@ -2,6 +2,7 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "manipulator/condition_manager.hpp"
+#include "manipulator/manipulator_factory.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
@@ -47,7 +48,7 @@ public:
     std::ifstream input(std::string("json/") + file_name);
     auto json = nlohmann::json::parse(input);
     for (const auto& j : json) {
-      condition_manager_.push_back_condition(j);
+      condition_manager_.push_back_condition(krbn::manipulator::manipulator_factory::make_condition(j));
     }
   }
 

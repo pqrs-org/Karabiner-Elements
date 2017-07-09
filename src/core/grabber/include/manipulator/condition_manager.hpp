@@ -1,6 +1,6 @@
 #pragma once
 
-#include "manipulator/manipulator_factory.hpp"
+#include "manipulator/details/conditions/base.hpp"
 
 namespace krbn {
 namespace manipulator {
@@ -11,8 +11,8 @@ public:
   condition_manager(void) {
   }
 
-  void push_back_condition(const nlohmann::json& json) {
-    conditions_.push_back(manipulator_factory::make_condition(json));
+  void push_back_condition(const std::shared_ptr<krbn::manipulator::details::conditions::base>& condition) {
+    conditions_.push_back(condition);
   }
 
   bool is_fulfilled(const krbn::manipulator_environment& manipulator_environment) const {
