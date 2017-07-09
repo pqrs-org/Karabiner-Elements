@@ -384,25 +384,6 @@ namespace {
 class actual_examples_helper final {
 public:
   actual_examples_helper(const std::string& file_name) {
-    // f1 -> f2 (key to key)
-    // f2 -> left_shift (key to modifier)
-    // right_command -> spacebar (modifier to key)
-    // right_shift -> right_option (modifier to modifier)
-
-    // fn-up_arrow -> page_up (modifier+key to key)
-    // keypad_asterisk -> left_shift-escape (key to modifier+key)
-    // fn-down_arrow -> left_shift-escape (modifier+key to modifier+key)
-
-    // right_command+right_option -> spacebar (modifier+modifier to key)
-
-    // modifier -> key
-    // modifier -> modifier
-    // modifier -> modifier+modifier
-
-    // keypad_slash -> left_option-left_command (key to modifier+modifier)
-
-    // control-p -> up_arrow
-
     std::ifstream input(std::string("json/") + file_name);
     auto json = nlohmann::json::parse(input);
     for (const auto& j : json) {
