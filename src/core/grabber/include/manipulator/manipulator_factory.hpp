@@ -18,11 +18,16 @@ public:
     {
       const std::string key = "type";
       if (json.find(key) != std::end(json) && json[key].is_string()) {
-        if (json[key] == "basic") {
+        const std::string& value = json[key];
+        if (value == "basic") {
           return std::make_shared<details::basic>(json, parameters);
+        } else {
+          logger::get_logger().error("unknown type {0} in {1}", value, json.dump());
+          return std::make_shared<details::nop>();
         }
       }
     }
+    logger::get_logger().error("type is not found in {0}", json.dump());
     return std::make_shared<details::nop>();
   }
 
@@ -30,12 +35,17 @@ public:
     {
       const std::string key = "type";
       if (json.find(key) != std::end(json) && json[key].is_string()) {
-        if (json[key] == "frontmost_application_if" ||
-            json[key] == "frontmost_application_unless") {
+        const std::string& value = json[key];
+        if (value == "frontmost_application_if" ||
+            value == "frontmost_application_unless") {
           return std::make_shared<details::conditions::frontmost_application>(json);
+        } else {
+          logger::get_logger().error("unknown type {0} in {1}", value, json.dump());
+          return std::make_shared<details::conditions::nop>();
         }
       }
     }
+    logger::get_logger().error("type is not found in {0}", json.dump());
     return std::make_shared<details::conditions::nop>();
   }
 };
