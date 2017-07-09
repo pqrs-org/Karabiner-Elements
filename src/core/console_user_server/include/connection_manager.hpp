@@ -105,6 +105,11 @@ private:
 
   void frontmost_application_changed_callback(const std::string& bundle_identifier,
                                               const std::string& file_path) {
+    if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
+        bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
+      return;
+    }
+
     if (grabber_client_) {
       grabber_client_->frontmost_application_changed(bundle_identifier, file_path);
     }
