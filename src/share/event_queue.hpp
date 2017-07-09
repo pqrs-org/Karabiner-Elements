@@ -481,6 +481,10 @@ public:
     pointing_button_manager_.erase_all_active_pointing_buttons(device_id);
   }
 
+  const manipulator_environment& get_manipulator_environment(void) const {
+    return manipulator_environment_;
+  }
+
   uint64_t get_time_stamp_delay(void) const {
     return time_stamp_delay_;
   }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event_queue.hpp"
+#include "manipulator/condition_manager.hpp"
 #include "modifier_flag_manager.hpp"
 
 namespace krbn {
@@ -38,8 +39,13 @@ public:
     valid_ = value;
   }
 
+  void push_back_condition(const std::shared_ptr<krbn::manipulator::details::conditions::base>& condition) {
+    condition_manager_.push_back_condition(condition);
+  }
+
 protected:
   bool valid_;
+  condition_manager condition_manager_;
 };
 } // namespace details
 } // namespace manipulator
