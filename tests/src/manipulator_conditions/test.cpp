@@ -79,10 +79,10 @@ TEST_CASE("manipulator.frontmost_application") {
 
   // frontmost_application_not
   manipulator_environment.get_frontmost_application().set_bundle_identifier("com.googlecode.iterm2");
-  manipulator_environment.get_frontmost_application().set_bundle_identifier("/Applications/iTerm.app");
+  manipulator_environment.get_frontmost_application().set_file_path("/Applications/iTerm.app");
   REQUIRE(helper.get_condition_manager().is_fulfilled(manipulator_environment) == true);
-  manipulator_environment.get_frontmost_application().set_bundle_identifier("/Users/tekezo/Applications/iTerm.app");
-  REQUIRE(helper.get_condition_manager().is_fulfilled(manipulator_environment) == true);
+  manipulator_environment.get_frontmost_application().set_file_path("/Users/tekezo/Applications/iTerm.app");
+  REQUIRE(helper.get_condition_manager().is_fulfilled(manipulator_environment) == false);
 }
 
 int main(int argc, char* const argv[]) {
