@@ -58,13 +58,8 @@ public:
         return make_virtual_event(type::device_ungrabbed);
       }
 
-      static event make_event_from_ignored_device(type original_type,
-                                                  boost::optional<int64_t> original_integer_value) {
-        event e;
-        e.type_ = type::event_from_ignored_device;
-        e.value_ = original_value(original_type,
-                                  (original_integer_value ? *original_integer_value : 0));
-        return e;
+      static event make_event_from_ignored_device_event(void) {
+        return make_virtual_event(type::event_from_ignored_device);
       }
 
       static event make_frontmost_application_changed_event(const std::string& bundle_identifier,
@@ -104,22 +99,6 @@ public:
         return boost::none;
       }
 
-      boost::optional<type> get_original_type(void) const {
-        if (type_ == type::event_from_ignored_device) {
-          const auto& v = boost::get<original_value>(value_);
-          return v.get_type();
-        }
-        return boost::none;
-      }
-
-      boost::optional<int64_t> get_original_integer_value(void) const {
-        if (type_ == type::event_from_ignored_device) {
-          const auto& v = boost::get<original_value>(value_);
-          return v.get_integer_value();
-        }
-        return boost::none;
-      }
-
       boost::optional<std::string> get_frontmost_application_bundle_identifier(void) const {
         if (type_ == type::frontmost_application_changed) {
           const auto& v = boost::get<frontmost_application>(value_);
@@ -142,31 +121,6 @@ public:
       }
 
     private:
-      class original_value final {
-      public:
-        original_value(type type,
-                       int64_t integer_value) : type_(type),
-                                                integer_value_(integer_value) {
-        }
-
-        type get_type(void) const {
-          return type_;
-        }
-
-        int64_t get_integer_value(void) const {
-          return integer_value_;
-        }
-
-        bool operator==(const original_value& other) const {
-          return type_ == other.type_ &&
-                 integer_value_ == other.integer_value_;
-        }
-
-      private:
-        type type_;
-        int64_t integer_value_;
-      };
-
       class frontmost_application final {
       public:
         frontmost_application(const std::string& bundle_identifier,
@@ -208,7 +162,6 @@ public:
                      pointing_button, // For type::pointing_button
                      int64_t,         // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
                      boost::blank,    // For virtual events
-                     original_value,  // For type::event_from_ignored_device
                      frontmost_application>
           value_;
     };

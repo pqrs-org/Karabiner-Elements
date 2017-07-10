@@ -355,13 +355,12 @@ private:
           merged_input_event_queue_.push_back_event(queued_event);
         } else {
           // device is ignored
-          auto event = event_queue::queued_event::event::make_event_from_ignored_device(queued_event.get_event().get_type(),
-                                                                                        queued_event.get_event().get_integer_value());
+          auto event = event_queue::queued_event::event::make_event_from_ignored_device_event();
           merged_input_event_queue_.emplace_back_event(queued_event.get_device_id(),
                                                        queued_event.get_time_stamp(),
                                                        event,
                                                        queued_event.get_event_type(),
-                                                       event);
+                                                       queued_event.get_event());
         }
       }
     }
