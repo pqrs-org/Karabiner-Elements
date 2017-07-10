@@ -73,7 +73,7 @@ krbn::event_queue::queued_event::event button1_event(krbn::pointing_button::butt
 krbn::event_queue::queued_event::event pointing_x_m10_event(krbn::event_queue::queued_event::event::type::pointing_x, -10);
 krbn::event_queue::queued_event::event pointing_y_10_event(krbn::event_queue::queued_event::event::type::pointing_y, 10);
 krbn::event_queue::queued_event::event device_ungrabbed_event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1);
-krbn::event_queue::queued_event::event device_keys_are_released_event(krbn::event_queue::queued_event::event::type::device_keys_are_released, 1);
+auto device_keys_are_released_event = krbn::event_queue::queued_event::event::make_device_keys_are_released_event();
 auto event_from_ignored_device_key_code_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::key_code, boost::none);
 auto event_from_ignored_device_pointing_x_100_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::pointing_x, 100);
 auto event_from_ignored_device_pointing_vertical_wheel_0_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::pointing_vertical_wheel, 0);

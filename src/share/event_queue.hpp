@@ -46,6 +46,14 @@ public:
                                      value_(integer_value) {
       }
 
+      static event make_device_keys_are_released_event(void) {
+        return make_virtual_event(type::device_keys_are_released);
+      }
+
+      static event make_device_pointing_buttons_are_released_event(void) {
+        return make_virtual_event(type::device_pointing_buttons_are_released);
+      }
+
       static event make_event_from_ignored_device(type original_type,
                                                   boost::optional<int64_t> original_integer_value) {
         event e;
@@ -183,11 +191,19 @@ public:
       event(void) {
       }
 
+      static event make_virtual_event(type type) {
+        event e;
+        e.type_ = type;
+        e.value_ = boost::blank();
+        return e;
+      }
+
       type type_;
 
       boost::variant<key_code,        // For type::key_code
                      pointing_button, // For type::pointing_button
-                     int64_t,         // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel and virtual events
+                     int64_t,         // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+                     boost::blank,    // For virtual events
                      original_value,  // For type::event_from_ignored_device
                      frontmost_application>
           value_;
