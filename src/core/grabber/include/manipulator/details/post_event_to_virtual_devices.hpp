@@ -412,6 +412,7 @@ public:
             case event_queue::queued_event::event::type::device_ungrabbed:
             case event_queue::queued_event::event::type::caps_lock_state_changed:
             case event_queue::queued_event::event::type::event_from_ignored_device:
+            case event_queue::queued_event::event::type::frontmost_application_changed:
               // Do nothing
               break;
           }
@@ -431,6 +432,7 @@ public:
       case event_queue::queued_event::event::type::device_ungrabbed:
       case event_queue::queued_event::event::type::caps_lock_state_changed:
       case event_queue::queued_event::event::type::event_from_ignored_device:
+      case event_queue::queued_event::event::type::frontmost_application_changed:
         // Do nothing
         break;
     }

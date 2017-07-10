@@ -1,7 +1,13 @@
+# Version 0.91.6
+
+* The conditional event manipulation has been supported. (`frontmost_application_if` and `frontmost_application_unless`)
+
+
 # Version 0.91.5
 
 * GUI for complex_modifications has been added. https://github.com/tekezo/Karabiner-Elements/tree/master/usage#how-to-use-complex-modifications
 * Syntax of `complex_modifications > parameters` has been changed.
+
 
 # Version 0.91.4
 

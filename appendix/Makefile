@@ -10,7 +10,7 @@ all:
 	$(MAKE) -C dump_libkrbn
 	$(MAKE) -C dump_system_preferences
 	$(MAKE) -C eventtap
-	$(MAKE) -C front_application_observer
+	$(MAKE) -C frontmost_application_observer
 	$(MAKE) -C iopmlib
 	$(MAKE) -C session
 	$(MAKE) -C version_monitor
@@ -28,7 +28,7 @@ clean:
 	$(MAKE) -C dump_libkrbn clean
 	$(MAKE) -C dump_system_preferences clean
 	$(MAKE) -C eventtap clean
-	$(MAKE) -C front_application_observer clean
+	$(MAKE) -C frontmost_application_observer clean
 	$(MAKE) -C iopmlib clean
 	$(MAKE) -C session clean
 	$(MAKE) -C version_monitor clean

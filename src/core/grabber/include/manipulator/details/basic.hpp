@@ -166,6 +166,10 @@ public:
           is_target = false;
         }
 
+        if (!condition_manager_.is_fulfilled(output_event_queue.get_manipulator_environment())) {
+          is_target = false;
+        }
+
         if (is_target) {
           manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
                                                     front_input_event.get_original_event(),

@@ -1,0 +1,21 @@
+[
+    {
+        "type": "frontmost_application_if",
+        "bundle_identifiers": [
+            "^com\\.apple\\.Terminal$",
+            "^com\\.googlecode\\.iterm2$"
+        ],
+        "file_paths": [
+            "/Terminal\\.app/"
+        ]
+    },
+    {
+        "type": "unknown"
+    },
+    {
+        "type": "frontmost_application_unless",
+        "file_paths": [
+            "^/Users/tekezo/Applications/iTerm\\.app"
+        ]
+    }
+]

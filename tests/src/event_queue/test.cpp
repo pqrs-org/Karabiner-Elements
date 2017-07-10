@@ -28,6 +28,7 @@
 
 namespace {
 krbn::event_queue::queued_event::event a_event(krbn::key_code::a);
+krbn::event_queue::queued_event::event b_event(krbn::key_code::b);
 krbn::event_queue::queued_event::event caps_lock_event(krbn::key_code::caps_lock);
 krbn::event_queue::queued_event::event escape_event(krbn::key_code::escape);
 krbn::event_queue::queued_event::event left_control_event(krbn::key_code::left_control);
@@ -42,8 +43,8 @@ krbn::event_queue::queued_event::event button2_event(krbn::pointing_button::butt
 krbn::event_queue::queued_event::event pointing_x_10_event(krbn::event_queue::queued_event::event::type::pointing_x, 10);
 krbn::event_queue::queued_event::event pointing_y_m10_event(krbn::event_queue::queued_event::event::type::pointing_y, -10);
 
-krbn::event_queue::queued_event::event caps_lock_event_state_changed_1_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
-krbn::event_queue::queued_event::event caps_lock_event_state_changed_0_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
+krbn::event_queue::queued_event::event caps_lock_state_changed_1_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
+krbn::event_queue::queued_event::event caps_lock_state_changed_0_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
 
 krbn::event_queue::queued_event::event device_keys_are_released_event(krbn::event_queue::queued_event::event::type::device_keys_are_released, 1);
 } // namespace
@@ -61,6 +62,16 @@ TEST_CASE("constructor") {
     REQUIRE(event.get_original_type() == krbn::event_queue::queued_event::event::type::pointing_y);
     REQUIRE(event.get_original_integer_value() == static_cast<int64_t>(-100));
   }
+}
+
+TEST_CASE("get_key_code") {
+  REQUIRE(spacebar_event.get_key_code() == krbn::key_code::spacebar);
+  REQUIRE(button2_event.get_key_code() == boost::none);
+  REQUIRE(pointing_x_10_event.get_key_code() == boost::none);
+  REQUIRE(pointing_y_m10_event.get_key_code() == boost::none);
+  REQUIRE(caps_lock_state_changed_1_event.get_key_code() == boost::none);
+  REQUIRE(caps_lock_state_changed_0_event.get_key_code() == boost::none);
+  REQUIRE(device_keys_are_released_event.get_key_code() == boost::none);
 }
 
 TEST_CASE("emplace_back_event") {
@@ -144,9 +155,71 @@ TEST_CASE("emplace_back_event") {
     PUSH_BACK_QUEUED_EVENT(expected, 1, 500, left_shift_event, key_down, left_shift_event);
     REQUIRE(event_queue.get_events() == expected);
   }
+  {
+    krbn::event_queue event_queue;
+
+    ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_down, b_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
+
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_down, a_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_down, b_event);
+    REQUIRE(event_queue.get_events() == expected);
+  }
+  {
+    krbn::event_queue event_queue;
+
+    ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_down, b_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_down, b_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_down, a_event);
+    REQUIRE(event_queue.get_events() == expected);
+  }
+  {
+    krbn::event_queue event_queue;
+
+    ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_up, b_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_up, a_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_up, b_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_up, a_event);
+    REQUIRE(event_queue.get_events() == expected);
+  }
+  {
+    krbn::event_queue event_queue;
+
+    ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_up, b_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_up, a_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+
+    std::vector<krbn::event_queue::queued_event> expected;
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_up, b_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_up, a_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
+    REQUIRE(event_queue.get_events() == expected);
+  }
 }
 
-TEST_CASE("compare") {
+TEST_CASE("needs_swap") {
   krbn::event_queue::queued_event spacebar_down(krbn::device_id(1),
                                                 100,
                                                 spacebar_event,
@@ -173,22 +246,21 @@ TEST_CASE("compare") {
                                                  krbn::event_type::key_up,
                                                  right_shift_event);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_down, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, escape_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(escape_down, spacebar_down) == false);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_down, escape_down) == true);
-  REQUIRE(krbn::event_queue::compare(escape_down, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, right_shift_down) == true);
+  REQUIRE(krbn::event_queue::needs_swap(right_shift_down, spacebar_down) == false);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_down, right_shift_down) == false);
-  REQUIRE(krbn::event_queue::compare(right_shift_down, spacebar_down) == true);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, right_shift_up) == false);
+  REQUIRE(krbn::event_queue::needs_swap(right_shift_up, spacebar_down) == false);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_down, right_shift_up) == true);
-  REQUIRE(krbn::event_queue::compare(right_shift_up, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_up, right_shift_up) == false);
+  REQUIRE(krbn::event_queue::needs_swap(right_shift_up, spacebar_up) == true);
 
-  REQUIRE(krbn::event_queue::compare(spacebar_up, right_shift_up) == true);
-  REQUIRE(krbn::event_queue::compare(right_shift_up, spacebar_up) == false);
-
-  REQUIRE(krbn::event_queue::compare(spacebar_up, right_shift_down) == false);
-  REQUIRE(krbn::event_queue::compare(right_shift_down, spacebar_up) == true);
+  REQUIRE(krbn::event_queue::needs_swap(spacebar_up, right_shift_down) == false);
+  REQUIRE(krbn::event_queue::needs_swap(right_shift_down, spacebar_up) == false);
 }
 
 TEST_CASE("emplace_back_event.usage_page") {
@@ -249,21 +321,21 @@ TEST_CASE("caps_lock_state_changed") {
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event_state_changed_1_event, key_down, caps_lock_event_state_changed_1_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, key_down, caps_lock_state_changed_1_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
 
     // Send twice
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event_state_changed_1_event, key_down, caps_lock_event_state_changed_1_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, key_down, caps_lock_state_changed_1_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event_state_changed_0_event, key_down, caps_lock_event_state_changed_0_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_0_event, key_down, caps_lock_state_changed_0_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event_state_changed_1_event, key_down, caps_lock_event_state_changed_1_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, key_down, caps_lock_state_changed_1_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
   }
