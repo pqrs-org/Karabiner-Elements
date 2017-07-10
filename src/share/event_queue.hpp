@@ -67,8 +67,8 @@ public:
         return e;
       }
 
-      static event make_frontmost_application_changed(const std::string& bundle_identifier,
-                                                      const std::string& file_path) {
+      static event make_frontmost_application_changed_event(const std::string& bundle_identifier,
+                                                            const std::string& file_path) {
         event e;
         e.type_ = type::frontmost_application_changed;
         e.value_ = frontmost_application(bundle_identifier, file_path);

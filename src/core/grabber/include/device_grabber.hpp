@@ -221,8 +221,8 @@ public:
 
   void post_frontmost_application_changed_event(const std::string& bundle_identifier,
                                                 const std::string& file_path) {
-    auto event = event_queue::queued_event::event::make_frontmost_application_changed(bundle_identifier,
-                                                                                      file_path);
+    auto event = event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
+                                                                                            file_path);
     merged_input_event_queue_.emplace_back_event(device_id(0),
                                                  mach_absolute_time(),
                                                  event,
@@ -371,7 +371,7 @@ private:
   }
 
   void post_device_ungrabbed_event(device_id device_id) {
-    auto event = event_queue::queued_event::event::type::make_device_ungrabbed_event();
+    auto event = event_queue::queued_event::event::make_device_ungrabbed_event();
     merged_input_event_queue_.emplace_back_event(device_id,
                                                  mach_absolute_time(),
                                                  event,
