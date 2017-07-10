@@ -51,7 +51,7 @@ krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
 krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
 krbn::event_queue::queued_event::event up_arrow_event(krbn::key_code::up_arrow);
 
-krbn::event_queue::queued_event::event device_ungrabbed_event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1);
+auto device_ungrabbed_event = krbn::event_queue::queued_event::event::make_device_ungrabbed_event();
 } // namespace
 
 using krbn::manipulator::details::event_definition;

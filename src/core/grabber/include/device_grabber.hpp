@@ -371,7 +371,7 @@ private:
   }
 
   void post_device_ungrabbed_event(device_id device_id) {
-    event_queue::queued_event::event event(event_queue::queued_event::event::type::device_ungrabbed, 1);
+    auto event = event_queue::queued_event::event::type::make_device_ungrabbed_event();
     merged_input_event_queue_.emplace_back_event(device_id,
                                                  mach_absolute_time(),
                                                  event,

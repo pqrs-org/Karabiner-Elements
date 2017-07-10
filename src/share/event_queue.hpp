@@ -54,6 +54,10 @@ public:
         return make_virtual_event(type::device_pointing_buttons_are_released);
       }
 
+      static event make_device_ungrabbed_event(void) {
+        return make_virtual_event(type::device_ungrabbed);
+      }
+
       static event make_event_from_ignored_device(type original_type,
                                                   boost::optional<int64_t> original_integer_value) {
         event e;

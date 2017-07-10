@@ -72,7 +72,7 @@ krbn::event_queue::queued_event::event up_arrow_event(krbn::key_code::up_arrow);
 krbn::event_queue::queued_event::event button1_event(krbn::pointing_button::button1);
 krbn::event_queue::queued_event::event pointing_x_m10_event(krbn::event_queue::queued_event::event::type::pointing_x, -10);
 krbn::event_queue::queued_event::event pointing_y_10_event(krbn::event_queue::queued_event::event::type::pointing_y, 10);
-krbn::event_queue::queued_event::event device_ungrabbed_event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1);
+auto device_ungrabbed_event = krbn::event_queue::queued_event::event::make_device_ungrabbed_event();
 auto device_keys_are_released_event = krbn::event_queue::queued_event::event::make_device_keys_are_released_event();
 auto event_from_ignored_device_key_code_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::key_code, boost::none);
 auto event_from_ignored_device_pointing_x_100_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::pointing_x, 100);
