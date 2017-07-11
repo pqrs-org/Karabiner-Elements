@@ -25,6 +25,7 @@ public:
         pointing_vertical_wheel,
         pointing_horizontal_wheel,
         // virtual events
+        shell_command,
         device_keys_are_released,
         device_pointing_buttons_are_released,
         device_ungrabbed,
@@ -44,6 +45,13 @@ public:
       event(type type,
             int64_t integer_value) : type_(type),
                                      value_(integer_value) {
+      }
+
+      static event make_shell_command_event(const std::string& shell_command) {
+        event e;
+        e.type_ = type::shell_command;
+        e.value_ = shell_command;
+        return e;
       }
 
       static event make_device_keys_are_released_event(void) {
@@ -95,6 +103,13 @@ public:
             type_ == type::pointing_horizontal_wheel ||
             type_ == type::caps_lock_state_changed) {
           return boost::get<int64_t>(value_);
+        }
+        return boost::none;
+      }
+
+      boost::optional<std::string> get_shell_command(void) const {
+        if (type_ == type::shell_command) {
+          return boost::get<std::string>(value_);
         }
         return boost::none;
       }
@@ -161,6 +176,7 @@ public:
       boost::variant<key_code,        // For type::key_code
                      pointing_button, // For type::pointing_button
                      int64_t,         // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+                     std::string,     // For shell_command
                      boost::blank,    // For virtual events
                      frontmost_application>
           value_;

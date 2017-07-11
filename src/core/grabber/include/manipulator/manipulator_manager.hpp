@@ -64,6 +64,7 @@ public:
         case event_queue::queued_event::event::type::pointing_y:
         case event_queue::queued_event::event::type::pointing_vertical_wheel:
         case event_queue::queued_event::event::type::pointing_horizontal_wheel:
+        case event_queue::queued_event::event::type::shell_command:
           for (auto&& m : manipulators_) {
             m->manipulate(front_input_event,
                           input_event_queue,
