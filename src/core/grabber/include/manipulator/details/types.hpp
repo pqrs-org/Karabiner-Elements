@@ -6,6 +6,7 @@
 #include "modifier_flag_manager.hpp"
 #include "stream_utility.hpp"
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 #include <json/json.hpp>
 #include <unordered_set>
 
@@ -49,14 +50,14 @@ public:
 
   boost::optional<key_code> get_key_code(void) const {
     if (type_ == type::key_code) {
-      return key_code_;
+      return boost::get<key_code>(value_);
     }
     return boost::none;
   }
 
   boost::optional<pointing_button> get_pointing_button(void) const {
     if (type_ == type::pointing_button) {
-      return pointing_button_;
+      return boost::get<pointing_button>(value_);
     }
     return boost::none;
   }
@@ -66,9 +67,9 @@ public:
       case type::none:
         return boost::none;
       case type::key_code:
-        return event_queue::queued_event::event(key_code_);
+        return event_queue::queued_event::event(boost::get<key_code>(value_));
       case type::pointing_button:
-        return event_queue::queued_event::event(pointing_button_);
+        return event_queue::queued_event::event(boost::get<pointing_button>(value_));
     }
   }
 
@@ -217,7 +218,7 @@ protected:
         const std::string& name = json[key];
         if (auto key_code = types::get_key_code(name)) {
           type_ = type::key_code;
-          key_code_ = *key_code;
+          value_ = *key_code;
           return;
         }
       }
@@ -227,7 +228,7 @@ protected:
       if (json.find(key) != std::end(json) && json[key].is_string()) {
         if (auto pointing_button = types::get_pointing_button(json[key])) {
           type_ = type::pointing_button;
-          pointing_button_ = *pointing_button;
+          value_ = *pointing_button;
           return;
         }
       }
@@ -235,18 +236,17 @@ protected:
   }
 
   event_definition(key_code key_code) : type_(type::key_code),
-                                        key_code_(key_code) {
+                                        value_(key_code) {
   }
 
   event_definition(pointing_button pointing_button) : type_(type::pointing_button),
-                                                      pointing_button_(pointing_button) {
+                                                      value_(pointing_button) {
   }
 
   type type_;
-  union {
-    key_code key_code_;
-    pointing_button pointing_button_;
-  };
+  boost::variant<key_code,
+                 pointing_button>
+      value_;
 };
 
 class from_event_definition final : public event_definition {
