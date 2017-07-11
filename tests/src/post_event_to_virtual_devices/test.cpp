@@ -420,6 +420,7 @@ public:
   }
 
   const std::vector<post_event_to_virtual_devices::queue::event> get_events(void) const {
+    // Drop time_stamp in events
     std::vector<post_event_to_virtual_devices::queue::event> events;
     for (const auto& e : manipulator_->get_queue().get_events()) {
       switch (e.get_type()) {
@@ -429,6 +430,8 @@ public:
         case post_event_to_virtual_devices::queue::event::type::pointing_input:
           events.emplace_back(*(e.get_pointing_input()), 0);
           break;
+        case post_event_to_virtual_devices::queue::event::type::shell_command:
+          events.push_back(post_event_to_virtual_devices::queue::event::make_shell_command_event(*(e.get_shell_command()), 0));
       }
     }
     return events;
