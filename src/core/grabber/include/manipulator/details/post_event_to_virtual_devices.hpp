@@ -463,8 +463,10 @@ public:
 
       case event_queue::queued_event::event::type::shell_command:
         if (auto shell_command = front_input_event.get_event().get_shell_command()) {
-          queue_.push_back_shell_command_event(*shell_command,
-                                               front_input_event.get_time_stamp());
+          if (front_input_event.get_event_type() == event_type::key_down) {
+            queue_.push_back_shell_command_event(*shell_command,
+                                                 front_input_event.get_time_stamp());
+          }
         }
         break;
 

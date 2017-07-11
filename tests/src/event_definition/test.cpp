@@ -587,6 +587,17 @@ TEST_CASE("manipulator.details.to_event_definition") {
     REQUIRE(event_definition.get_pointing_button() == boost::none);
     REQUIRE(event_definition.get_modifiers().size() == 0);
   }
+  {
+    std::string shell_command = "open /Applications/Safari.app";
+    nlohmann::json json({
+        {"shell_command", shell_command},
+    });
+    krbn::manipulator::details::to_event_definition event_definition(json);
+    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::shell_command);
+    REQUIRE(event_definition.get_key_code() == boost::none);
+    REQUIRE(event_definition.get_pointing_button() == boost::none);
+    REQUIRE(event_definition.get_shell_command() == shell_command);
+  }
 }
 
 int main(int argc, char* const argv[]) {

@@ -20,6 +20,7 @@ public:
     none,
     key_code,
     pointing_button,
+    shell_command,
   };
 
   enum class modifier {
@@ -62,6 +63,13 @@ public:
     return boost::none;
   }
 
+  boost::optional<std::string> get_shell_command(void) const {
+    if (type_ == type::shell_command) {
+      return boost::get<std::string>(value_);
+    }
+    return boost::none;
+  }
+
   boost::optional<event_queue::queued_event::event> to_event(void) const {
     switch (type_) {
       case type::none:
@@ -70,6 +78,8 @@ public:
         return event_queue::queued_event::event(boost::get<key_code>(value_));
       case type::pointing_button:
         return event_queue::queued_event::event(boost::get<pointing_button>(value_));
+      case type::shell_command:
+        return event_queue::queued_event::event::make_shell_command_event(boost::get<std::string>(value_));
     }
   }
 
@@ -233,6 +243,14 @@ protected:
         }
       }
     }
+    {
+      const std::string key = "shell_command";
+      if (json.find(key) != std::end(json) && json[key].is_string()) {
+        type_ = type::shell_command;
+        value_ = json[key].get<std::string>();
+        return;
+      }
+    }
   }
 
   event_definition(key_code key_code) : type_(type::key_code),
@@ -245,7 +263,8 @@ protected:
 
   type type_;
   boost::variant<key_code,
-                 pointing_button>
+                 pointing_button,
+                 std::string>
       value_;
 };
 
