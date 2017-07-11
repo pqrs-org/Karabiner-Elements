@@ -77,21 +77,40 @@ public:
 
     for (const auto& j : json) {
       if (j.is_string()) {
-        if (j == "any") { modifiers.insert(modifier::any); }
-        if (j == "caps_lock") { modifiers.insert(modifier::caps_lock); }
-        if (j == "command") { modifiers.insert(modifier::command); }
-        if (j == "control") { modifiers.insert(modifier::control); }
-        if (j == "fn") { modifiers.insert(modifier::fn); }
-        if (j == "left_command") { modifiers.insert(modifier::left_command); }
-        if (j == "left_control") { modifiers.insert(modifier::left_control); }
-        if (j == "left_option") { modifiers.insert(modifier::left_option); }
-        if (j == "left_shift") { modifiers.insert(modifier::left_shift); }
-        if (j == "option") { modifiers.insert(modifier::option); }
-        if (j == "right_command") { modifiers.insert(modifier::right_command); }
-        if (j == "right_control") { modifiers.insert(modifier::right_control); }
-        if (j == "right_option") { modifiers.insert(modifier::right_option); }
-        if (j == "right_shift") { modifiers.insert(modifier::right_shift); }
-        if (j == "shift") { modifiers.insert(modifier::shift); }
+        const std::string& name = j;
+        if (name == "any") {
+          modifiers.insert(modifier::any);
+        } else if (name == "caps_lock") {
+          modifiers.insert(modifier::caps_lock);
+        } else if (name == "command") {
+          modifiers.insert(modifier::command);
+        } else if (name == "control") {
+          modifiers.insert(modifier::control);
+        } else if (name == "fn") {
+          modifiers.insert(modifier::fn);
+        } else if (name == "left_command") {
+          modifiers.insert(modifier::left_command);
+        } else if (name == "left_control") {
+          modifiers.insert(modifier::left_control);
+        } else if (name == "left_option") {
+          modifiers.insert(modifier::left_option);
+        } else if (name == "left_shift") {
+          modifiers.insert(modifier::left_shift);
+        } else if (name == "option") {
+          modifiers.insert(modifier::option);
+        } else if (name == "right_command") {
+          modifiers.insert(modifier::right_command);
+        } else if (name == "right_control") {
+          modifiers.insert(modifier::right_control);
+        } else if (name == "right_option") {
+          modifiers.insert(modifier::right_option);
+        } else if (name == "right_shift") {
+          modifiers.insert(modifier::right_shift);
+        } else if (name == "shift") {
+          modifiers.insert(modifier::shift);
+        } else {
+          logger::get_logger().error("unknown modifier: {0}", name);
+        }
       }
     }
 
