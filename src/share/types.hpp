@@ -29,6 +29,8 @@ enum class operation_type : uint8_t {
   connect,
   system_preferences_values_updated,
   frontmost_application_changed,
+  // grabber -> console_user_server
+  shell_command_execution,
 };
 
 enum class device_id : uint32_t {
@@ -829,6 +831,13 @@ struct operation_type_frontmost_application_changed_struct {
   const operation_type operation_type;
   char bundle_identifier[256];
   char file_path[_POSIX_PATH_MAX];
+};
+
+struct operation_type_shell_command_execution_struct {
+  operation_type_shell_command_execution_struct(void) : operation_type(operation_type::shell_command_execution) {}
+
+  const operation_type operation_type;
+  char shell_command[256];
 };
 
 // stream output
