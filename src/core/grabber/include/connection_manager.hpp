@@ -1,5 +1,6 @@
 #pragma once
 
+#include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
 #include "gcd_utility.hpp"
@@ -9,6 +10,7 @@
 #include "session.hpp"
 #include "version_monitor.hpp"
 #include <sys/stat.h>
+#include <unistd.h>
 
 namespace krbn {
 class connection_manager final {
@@ -41,6 +43,14 @@ public:
             }
 
             version_monitor_.manual_check();
+
+            // Prepare console_user_server_socket_directory
+            {
+              auto socket_file_path = console_user_server_client::make_console_user_server_socket_directory(*uid);
+              mkdir(socket_file_path.c_str(), 0700);
+              chown(socket_file_path.c_str(), *uid, 0);
+              chmod(socket_file_path.c_str(), 0700);
+            }
 
             receiver_ = nullptr;
             receiver_ = std::make_unique<receiver>(device_grabber_);

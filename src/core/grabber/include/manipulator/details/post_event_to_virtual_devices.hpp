@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "console_user_server_client.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "stream_utility.hpp"
@@ -178,7 +179,12 @@ public:
           virtual_hid_device_client.post_pointing_input_report(*pointing_input);
         }
         if (auto shell_command = e.get_shell_command()) {
-          logger::get_logger().info("shell_command {0}", *shell_command);
+          try {
+            console_user_server_client client;
+            client.shell_command_execution(*shell_command);
+          } catch (std::exception& e) {
+            logger::get_logger().error("error in shell_command: {0}", e.what());
+          }
         }
 
         events_.erase(std::begin(events_));
