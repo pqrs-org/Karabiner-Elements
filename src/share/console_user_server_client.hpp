@@ -6,6 +6,7 @@
 #include "logger.hpp"
 #include "session.hpp"
 #include "types.hpp"
+#include <sstream>
 #include <unistd.h>
 #include <vector>
 
