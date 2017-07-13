@@ -1,3 +1,8 @@
+# Version 0.91.7
+
+* Shell command execution has been supported. (eg. Launch apps in https://pqrs.org/osx/karabiner/complex_modifications/ )
+
+
 # Version 0.91.6
 
 * The conditional event manipulation has been supported. (`frontmost_application_if` and `frontmost_application_unless`)
