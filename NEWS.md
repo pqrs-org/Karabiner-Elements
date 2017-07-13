@@ -1,6 +1,6 @@
 # Version 0.91.7
 
-* Shell command execution has been supported. (eg. Launch apps in https://pqrs.org/osx/karabiner/complex_modifications/ )
+* Shell command execution has been supported. (e.g., Launch apps in https://pqrs.org/osx/karabiner/complex_modifications/ )
 
 
 # Version 0.91.6
