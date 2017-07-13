@@ -68,17 +68,25 @@ public:
                                                                                             from_(json.find("from") != std::end(json) ? json["from"] : nlohmann::json()) {
     {
       const std::string key = "to";
-      if (json.find(key) != std::end(json) && json[key].is_array()) {
-        for (const auto& j : json[key]) {
-          to_.emplace_back(j);
+      if (json.find(key) != std::end(json)) {
+        if (json[key].is_array()) {
+          for (const auto& j : json[key]) {
+            to_.emplace_back(j);
+          }
+        } else {
+          logger::get_logger().error("`to` should be array: {0}", json.dump());
         }
       }
     }
     {
       const std::string key = "to_if_alone";
-      if (json.find(key) != std::end(json) && json[key].is_array()) {
-        for (const auto& j : json[key]) {
-          to_if_alone_.emplace_back(j);
+      if (json.find(key) != std::end(json)) {
+        if (json[key].is_array()) {
+          for (const auto& j : json[key]) {
+            to_if_alone_.emplace_back(j);
+          }
+        } else {
+          logger::get_logger().error("`to_if_alone` should be array: {0}", json.dump());
         }
       }
     }
