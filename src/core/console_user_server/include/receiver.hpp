@@ -11,7 +11,8 @@ class receiver final {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(void) : exit_loop_(false) {
+  receiver(void) : exit_loop_(false),
+                   shell_command_execution_queue_(nullptr) {
     const size_t buffer_length = 32 * 1024;
     buffer_.resize(buffer_length);
 
@@ -27,13 +28,13 @@ public:
 
     exit_loop_ = false;
     thread_ = std::thread([this] { this->worker(); });
+
+    logger::get_logger().info("receiver is initialized");
   }
 
   ~receiver(void) {
-    dispatch_sync(shell_command_execution_queue_, ^{
-      dispatch_release(shell_command_execution_queue_);
-      shell_command_execution_queue_ = nullptr;
-    });
+    dispatch_release(shell_command_execution_queue_);
+    shell_command_execution_queue_ = nullptr;
 
     unlink(socket_path_.c_str());
 
@@ -43,6 +44,8 @@ public:
     }
 
     server_ = nullptr;
+
+    logger::get_logger().info("receiver is terminated");
   }
 
 private:
@@ -67,9 +70,11 @@ private:
               p->shell_command[sizeof(p->shell_command) - 1] = '\0';
 
               std::string shell_command = p->shell_command;
-              dispatch_async(shell_command_execution_queue_, ^{
-                system(shell_command.c_str());
-              });
+              if (shell_command_execution_queue_) {
+                dispatch_async(shell_command_execution_queue_, ^{
+                  system(shell_command.c_str());
+                });
+              }
             }
             break;
 
