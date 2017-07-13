@@ -2,6 +2,7 @@ all:
 	$(MAKE) -C cg_event_set_flags
 	$(MAKE) -C cg_post_event
 	$(MAKE) -C codesign
+	$(MAKE) -C console_user_server_client
 	$(MAKE) -C control_led
 	$(MAKE) -C dump_caps_lock_state
 	$(MAKE) -C dump_constants
@@ -20,6 +21,7 @@ clean:
 	$(MAKE) -C cg_event_set_flags clean
 	$(MAKE) -C cg_post_event clean
 	$(MAKE) -C codesign clean
+	$(MAKE) -C console_user_server_client clean
 	$(MAKE) -C control_led clean
 	$(MAKE) -C dump_caps_lock_state clean
 	$(MAKE) -C dump_constants clean
