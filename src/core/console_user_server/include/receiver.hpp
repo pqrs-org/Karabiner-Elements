@@ -3,6 +3,7 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "local_datagram_server.hpp"
+#include "shell_utility.hpp"
 #include "types.hpp"
 #include <vector>
 
@@ -11,8 +12,7 @@ class receiver final {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(void) : exit_loop_(false),
-                   shell_command_execution_queue_(nullptr) {
+  receiver(void) : exit_loop_(false) {
     const size_t buffer_length = 32 * 1024;
     buffer_.resize(buffer_length);
 
@@ -24,8 +24,6 @@ public:
 
     chmod(path, 0600);
 
-    shell_command_execution_queue_ = dispatch_queue_create("console_user_server_receiver", nullptr);
-
     exit_loop_ = false;
     thread_ = std::thread([this] { this->worker(); });
 
@@ -33,9 +31,6 @@ public:
   }
 
   ~receiver(void) {
-    dispatch_release(shell_command_execution_queue_);
-    shell_command_execution_queue_ = nullptr;
-
     unlink(socket_path_.c_str());
 
     exit_loop_ = true;
@@ -69,12 +64,10 @@ private:
               // Ensure shell_command is null-terminated string even if corrupted data is sent.
               p->shell_command[sizeof(p->shell_command) - 1] = '\0';
 
-              std::string shell_command = p->shell_command;
-              if (shell_command_execution_queue_) {
-                dispatch_async(shell_command_execution_queue_, ^{
-                  system(shell_command.c_str());
-                });
-              }
+              std::string background_shell_command = shell_utility::make_background_command(p->shell_command);
+              dispatch_async(dispatch_get_main_queue(), ^{
+                system(background_shell_command.c_str());
+              });
             }
             break;
 
@@ -90,7 +83,5 @@ private:
   std::unique_ptr<local_datagram_server> server_;
   std::thread thread_;
   std::atomic<bool> exit_loop_;
-
-  dispatch_queue_t shell_command_execution_queue_;
 };
 } // namespace krbn
