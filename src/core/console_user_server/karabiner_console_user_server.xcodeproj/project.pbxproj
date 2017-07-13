@@ -51,6 +51,7 @@
 		345EF8DE1F09FA28003E7A67 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		345EF8E81F1682BD003E7A67 /* console_user_server_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = console_user_server_client.hpp; sourceTree = "<group>"; };
 		345EF8EA1F168937003E7A67 /* receiver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = receiver.hpp; path = include/receiver.hpp; sourceTree = SOURCE_ROOT; };
+		345EF8EB1F17C176003E7A67 /* shell_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shell_utility.hpp; sourceTree = "<group>"; };
 		3463EABE1E2FCD9400427A81 /* version_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version_monitor.hpp; sourceTree = "<group>"; };
 		347113151D871EC1001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = process_monitor.hpp; sourceTree = "<group>"; };
 		348A6C461E17D28D00DB5FA4 /* migration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = migration.hpp; path = include/migration.hpp; sourceTree = SOURCE_ROOT; };
@@ -136,6 +137,7 @@
 				347113151D871EC1001AC60D /* process_monitor.hpp */,
 				340C7F671E424D2C00F9B911 /* process_utility.hpp */,
 				34A88A9D1D685A4600DD480B /* session.hpp */,
+				345EF8EB1F17C176003E7A67 /* shell_utility.hpp */,
 				34492B891DB12F430084F167 /* spdlog_utility.hpp */,
 				349950651D898530004FE466 /* system_preferences_monitor.hpp */,
 				345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */,
