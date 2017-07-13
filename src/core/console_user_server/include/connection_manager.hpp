@@ -73,7 +73,6 @@ public:
 
   ~connection_manager(void) {
     timer_ = nullptr;
-    receiver_ = nullptr;
 
     gcd_utility::dispatch_sync_in_main_queue(^{
       release();
@@ -86,6 +85,7 @@ private:
     configuration_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     grabber_client_ = nullptr;
+    receiver_ = nullptr;
   }
 
   static void static_grabber_is_launched_callback(CFNotificationCenterRef center,

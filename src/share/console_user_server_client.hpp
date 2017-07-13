@@ -15,25 +15,20 @@ class console_user_server_client final {
 public:
   console_user_server_client(const console_user_server_client&) = delete;
 
-  console_user_server_client(void) {
-    if (auto current_console_user_id = session::get_current_console_user_id()) {
-      auto socket_file_path = make_console_user_server_socket_file_path(*current_console_user_id);
+  console_user_server_client(uid_t uid) {
+    auto socket_file_path = make_console_user_server_socket_file_path(uid);
 
-      // Check socket file existance
-      if (!filesystem::exists(socket_file_path)) {
-        throw std::runtime_error("console_user_server socket is not found");
-      }
-
-      // Check socket file permission
-      if (!filesystem::is_owned(socket_file_path, *current_console_user_id)) {
-        throw std::runtime_error("console_user_server socket owner is invalid");
-      }
-
-      client_ = std::make_unique<local_datagram_client>(socket_file_path.c_str());
-
-    } else {
-      throw std::runtime_error("session::get_current_console_user_id error");
+    // Check socket file existance
+    if (!filesystem::exists(socket_file_path)) {
+      throw std::runtime_error("console_user_server socket is not found");
     }
+
+    // Check socket file permission
+    if (!filesystem::is_owned(socket_file_path, uid)) {
+      throw std::runtime_error("console_user_server socket owner is invalid");
+    }
+
+    client_ = std::make_unique<local_datagram_client>(socket_file_path.c_str());
   }
 
   void shell_command_execution(const std::string& shell_command) {
