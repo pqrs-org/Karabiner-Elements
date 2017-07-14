@@ -26,7 +26,7 @@ Detailed usage instructions are provided in [the Usage README](usage/README.md).
 * Modifier Flag Sync: Synchronize modifier flags across all connected keyboards.
 * Simple Modifications: Map normal keys to arbitrary key functions.
 * Function Keys: Map function keys to arbitrary key functions.
-* Complex Modifications: Map keys by complex rules. eg key to modifiers, modifiers+key to key, send key event if pressed alone, etc.
+* Complex Modifications: Map keys by complex rules. eg key to modifiers, modifiers+key to key, send key event if pressed alone, Hyper key etc.
 * Devices: Apply modifications to specified keyboards only.
 * Virtual Keyboard: Set the virtual keyboard's type (ANSI, ISO, JIS) and its Caps Lock Delay.
 * Profiles: Support the creation of multiple profiles that the user can switch between.
