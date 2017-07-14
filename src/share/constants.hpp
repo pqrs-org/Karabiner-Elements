@@ -24,6 +24,10 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_devices.json";
   }
 
+  static const char* get_console_user_server_socket_directory(void) {
+    return "/Library/Application Support/org.pqrs/tmp/karabiner_console_user_server";
+  }
+
   static const char* get_system_configuration_directory(void) {
     return "/Library/Application Support/org.pqrs/config";
   }

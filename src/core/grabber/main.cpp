@@ -9,6 +9,7 @@
 #include "version_monitor.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <iostream>
+#include <sstream>
 #include <unistd.h>
 
 int main(int argc, const char* argv[]) {
@@ -59,6 +60,18 @@ int main(int argc, const char* argv[]) {
   chmod(krbn::constants::get_tmp_directory(), 0755);
 
   unlink(krbn::constants::get_grabber_socket_file_path());
+
+  {
+    // make console_user_server_socket_directory
+
+    std::stringstream ss;
+    ss << "rm -r '" << krbn::constants::get_console_user_server_socket_directory() << "'";
+    system(ss.str().c_str());
+
+    mkdir(krbn::constants::get_console_user_server_socket_directory(), 0755);
+    chown(krbn::constants::get_console_user_server_socket_directory(), 0, 0);
+    chmod(krbn::constants::get_console_user_server_socket_directory(), 0755);
+  }
 
   auto virtual_hid_device_client_ptr = std::make_unique<krbn::virtual_hid_device_client>();
   virtual_hid_device_client_ptr->connect();

@@ -6,6 +6,7 @@
 #include "modifier_flag_manager.hpp"
 #include "stream_utility.hpp"
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 #include <json/json.hpp>
 #include <unordered_set>
 
@@ -19,6 +20,7 @@ public:
     none,
     key_code,
     pointing_button,
+    shell_command,
   };
 
   enum class modifier {
@@ -49,14 +51,21 @@ public:
 
   boost::optional<key_code> get_key_code(void) const {
     if (type_ == type::key_code) {
-      return key_code_;
+      return boost::get<key_code>(value_);
     }
     return boost::none;
   }
 
   boost::optional<pointing_button> get_pointing_button(void) const {
     if (type_ == type::pointing_button) {
-      return pointing_button_;
+      return boost::get<pointing_button>(value_);
+    }
+    return boost::none;
+  }
+
+  boost::optional<std::string> get_shell_command(void) const {
+    if (type_ == type::shell_command) {
+      return boost::get<std::string>(value_);
     }
     return boost::none;
   }
@@ -66,9 +75,11 @@ public:
       case type::none:
         return boost::none;
       case type::key_code:
-        return event_queue::queued_event::event(key_code_);
+        return event_queue::queued_event::event(boost::get<key_code>(value_));
       case type::pointing_button:
-        return event_queue::queued_event::event(pointing_button_);
+        return event_queue::queued_event::event(boost::get<pointing_button>(value_));
+      case type::shell_command:
+        return event_queue::queued_event::event::make_shell_command_event(boost::get<std::string>(value_));
     }
   }
 
@@ -77,21 +88,40 @@ public:
 
     for (const auto& j : json) {
       if (j.is_string()) {
-        if (j == "any") { modifiers.insert(modifier::any); }
-        if (j == "caps_lock") { modifiers.insert(modifier::caps_lock); }
-        if (j == "command") { modifiers.insert(modifier::command); }
-        if (j == "control") { modifiers.insert(modifier::control); }
-        if (j == "fn") { modifiers.insert(modifier::fn); }
-        if (j == "left_command") { modifiers.insert(modifier::left_command); }
-        if (j == "left_control") { modifiers.insert(modifier::left_control); }
-        if (j == "left_option") { modifiers.insert(modifier::left_option); }
-        if (j == "left_shift") { modifiers.insert(modifier::left_shift); }
-        if (j == "option") { modifiers.insert(modifier::option); }
-        if (j == "right_command") { modifiers.insert(modifier::right_command); }
-        if (j == "right_control") { modifiers.insert(modifier::right_control); }
-        if (j == "right_option") { modifiers.insert(modifier::right_option); }
-        if (j == "right_shift") { modifiers.insert(modifier::right_shift); }
-        if (j == "shift") { modifiers.insert(modifier::shift); }
+        const std::string& name = j;
+        if (name == "any") {
+          modifiers.insert(modifier::any);
+        } else if (name == "caps_lock") {
+          modifiers.insert(modifier::caps_lock);
+        } else if (name == "command") {
+          modifiers.insert(modifier::command);
+        } else if (name == "control") {
+          modifiers.insert(modifier::control);
+        } else if (name == "fn") {
+          modifiers.insert(modifier::fn);
+        } else if (name == "left_command") {
+          modifiers.insert(modifier::left_command);
+        } else if (name == "left_control") {
+          modifiers.insert(modifier::left_control);
+        } else if (name == "left_option") {
+          modifiers.insert(modifier::left_option);
+        } else if (name == "left_shift") {
+          modifiers.insert(modifier::left_shift);
+        } else if (name == "option") {
+          modifiers.insert(modifier::option);
+        } else if (name == "right_command") {
+          modifiers.insert(modifier::right_command);
+        } else if (name == "right_control") {
+          modifiers.insert(modifier::right_control);
+        } else if (name == "right_option") {
+          modifiers.insert(modifier::right_option);
+        } else if (name == "right_shift") {
+          modifiers.insert(modifier::right_shift);
+        } else if (name == "shift") {
+          modifiers.insert(modifier::shift);
+        } else {
+          logger::get_logger().error("unknown modifier: {0}", name);
+        }
       }
     }
 
@@ -198,7 +228,7 @@ protected:
         const std::string& name = json[key];
         if (auto key_code = types::get_key_code(name)) {
           type_ = type::key_code;
-          key_code_ = *key_code;
+          value_ = *key_code;
           return;
         }
       }
@@ -208,26 +238,34 @@ protected:
       if (json.find(key) != std::end(json) && json[key].is_string()) {
         if (auto pointing_button = types::get_pointing_button(json[key])) {
           type_ = type::pointing_button;
-          pointing_button_ = *pointing_button;
+          value_ = *pointing_button;
           return;
         }
+      }
+    }
+    {
+      const std::string key = "shell_command";
+      if (json.find(key) != std::end(json) && json[key].is_string()) {
+        type_ = type::shell_command;
+        value_ = json[key].get<std::string>();
+        return;
       }
     }
   }
 
   event_definition(key_code key_code) : type_(type::key_code),
-                                        key_code_(key_code) {
+                                        value_(key_code) {
   }
 
   event_definition(pointing_button pointing_button) : type_(type::pointing_button),
-                                                      pointing_button_(pointing_button) {
+                                                      value_(pointing_button) {
   }
 
   type type_;
-  union {
-    key_code key_code_;
-    pointing_button pointing_button_;
-  };
+  boost::variant<key_code,
+                 pointing_button,
+                 std::string>
+      value_;
 };
 
 class from_event_definition final : public event_definition {

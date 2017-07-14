@@ -50,16 +50,9 @@ public:
           break;
 
         case event_queue::queued_event::event::type::event_from_ignored_device:
-          if (auto original_type = front_input_event.get_event().get_original_type()) {
-            if (auto original_integer_value = front_input_event.get_event().get_original_integer_value()) {
-              for (auto&& m : manipulators_) {
-                m->handle_event_from_ignored_device(*original_type,
-                                                    *original_integer_value,
-                                                    front_input_event.get_event_type(),
-                                                    output_event_queue,
-                                                    front_input_event.get_time_stamp());
-              }
-            }
+          for (auto&& m : manipulators_) {
+            m->handle_event_from_ignored_device(front_input_event,
+                                                output_event_queue);
           }
           break;
 
@@ -74,6 +67,7 @@ public:
         case event_queue::queued_event::event::type::pointing_y:
         case event_queue::queued_event::event::type::pointing_vertical_wheel:
         case event_queue::queued_event::event::type::pointing_horizontal_wheel:
+        case event_queue::queued_event::event::type::shell_command:
           for (auto&& m : manipulators_) {
             m->manipulate(front_input_event,
                           input_event_queue,

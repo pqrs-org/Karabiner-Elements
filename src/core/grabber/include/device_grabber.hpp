@@ -2,12 +2,12 @@
 
 #include "boost_defs.hpp"
 
+#include "apple_hid_usage_tables.hpp"
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
 #include "event_tap_manager.hpp"
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
-#include "virtual_hid_device_client.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
@@ -224,8 +224,8 @@ public:
 
   void post_frontmost_application_changed_event(const std::string& bundle_identifier,
                                                 const std::string& file_path) {
-    auto event = event_queue::queued_event::event::make_frontmost_application_changed(bundle_identifier,
-                                                                                      file_path);
+    auto event = event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
+                                                                                            file_path);
     merged_input_event_queue_.emplace_back_event(device_id(0),
                                                  mach_absolute_time(),
                                                  event,
@@ -385,13 +385,12 @@ private:
           merged_input_event_queue_.push_back_event(queued_event);
         } else {
           // device is ignored
-          auto event = event_queue::queued_event::event::make_event_from_ignored_device(queued_event.get_event().get_type(),
-                                                                                        queued_event.get_event().get_integer_value());
+          auto event = event_queue::queued_event::event::make_event_from_ignored_device_event();
           merged_input_event_queue_.emplace_back_event(queued_event.get_device_id(),
                                                        queued_event.get_time_stamp(),
                                                        event,
                                                        queued_event.get_event_type(),
-                                                       event);
+                                                       queued_event.get_event());
         }
       }
     }
@@ -401,7 +400,7 @@ private:
   }
 
   void post_device_ungrabbed_event(device_id device_id) {
-    event_queue::queued_event::event event(event_queue::queued_event::event::type::device_ungrabbed, 1);
+    auto event = event_queue::queued_event::event::make_device_ungrabbed_event();
     merged_input_event_queue_.emplace_back_event(device_id,
                                                  mach_absolute_time(),
                                                  event,

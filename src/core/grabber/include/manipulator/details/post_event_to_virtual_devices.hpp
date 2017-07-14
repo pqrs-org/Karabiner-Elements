@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "console_user_server_client.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "stream_utility.hpp"
@@ -9,6 +10,7 @@
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 #include <mach/mach_time.h>
 
 namespace krbn {
@@ -23,18 +25,28 @@ public:
       enum class type {
         keyboard_event,
         pointing_input,
+        shell_command,
       };
 
       event(const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event,
             uint64_t time_stamp) : type_(type::keyboard_event),
-                                   keyboard_event_(keyboard_event),
+                                   value_(keyboard_event),
                                    time_stamp_(time_stamp) {
       }
 
       event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
             uint64_t time_stamp) : type_(type::pointing_input),
-                                   pointing_input_(pointing_input),
+                                   value_(pointing_input),
                                    time_stamp_(time_stamp) {
+      }
+
+      static event make_shell_command_event(const std::string& shell_command,
+                                            uint64_t time_stamp) {
+        event e;
+        e.type_ = type::shell_command;
+        e.value_ = shell_command;
+        e.time_stamp_ = time_stamp;
+        return e;
       }
 
       type get_type(void) const {
@@ -43,14 +55,21 @@ public:
 
       boost::optional<pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event> get_keyboard_event(void) const {
         if (type_ == type::keyboard_event) {
-          return keyboard_event_;
+          return boost::get<pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event>(value_);
         }
         return boost::none;
       }
 
       boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::pointing_input> get_pointing_input(void) const {
         if (type_ == type::pointing_input) {
-          return pointing_input_;
+          return boost::get<pqrs::karabiner_virtual_hid_device::hid_report::pointing_input>(value_);
+        }
+        return boost::none;
+      }
+
+      boost::optional<std::string> get_shell_command(void) const {
+        if (type_ == type::shell_command) {
+          return boost::get<std::string>(value_);
         }
         return boost::none;
       }
@@ -60,18 +79,20 @@ public:
       }
 
       bool operator==(const event& other) const {
-        return get_type() == other.get_type() &&
-               get_keyboard_event() == other.get_keyboard_event() &&
-               get_pointing_input() == other.get_pointing_input() &&
-               get_time_stamp() == other.get_time_stamp();
+        return type_ == other.type_ &&
+               value_ == other.value_ &&
+               time_stamp_ == other.time_stamp_;
       }
 
     private:
+      event(void) {
+      }
+
       type type_;
-      union {
-        pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event_;
-        pqrs::karabiner_virtual_hid_device::hid_report::pointing_input pointing_input_;
-      };
+      boost::variant<pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event,
+                     pqrs::karabiner_virtual_hid_device::hid_report::pointing_input,
+                     std::string>
+          value_;
       uint64_t time_stamp_;
     };
 
@@ -115,6 +136,16 @@ public:
                            time_stamp);
     }
 
+    void push_back_shell_command_event(const std::string& shell_command,
+                                       uint64_t time_stamp) {
+      adjust_time_stamp(time_stamp, false);
+
+      auto e = event::make_shell_command_event(shell_command,
+                                               time_stamp);
+
+      events_.push_back(e);
+    }
+
     bool empty(void) const {
       return events_.empty();
     }
@@ -146,6 +177,16 @@ public:
         }
         if (auto pointing_input = e.get_pointing_input()) {
           virtual_hid_device_client.post_pointing_input_report(*pointing_input);
+        }
+        if (auto shell_command = e.get_shell_command()) {
+          try {
+            if (auto current_console_user_id = session::get_current_console_user_id()) {
+              console_user_server_client client(*current_console_user_id);;
+              client.shell_command_execution(*shell_command);
+            }
+          } catch (std::exception& e) {
+            logger::get_logger().error("error in shell_command: {0}", e.what());
+          }
         }
 
         events_.erase(std::begin(events_));
@@ -407,6 +448,7 @@ public:
               break;
             case event_queue::queued_event::event::type::key_code:
             case event_queue::queued_event::event::type::pointing_button:
+            case event_queue::queued_event::event::type::shell_command:
             case event_queue::queued_event::event::type::device_keys_are_released:
             case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
             case event_queue::queued_event::event::type::device_ungrabbed:
@@ -426,6 +468,15 @@ public:
 
         break;
       }
+
+      case event_queue::queued_event::event::type::shell_command:
+        if (auto shell_command = front_input_event.get_event().get_shell_command()) {
+          if (front_input_event.get_event_type() == event_type::key_down) {
+            queue_.push_back_shell_command_event(*shell_command,
+                                                 front_input_event.get_time_stamp());
+          }
+        }
+        break;
 
       case event_queue::queued_event::event::type::device_keys_are_released:
       case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
@@ -476,14 +527,11 @@ public:
                                                       time_stamp);
   }
 
-  virtual void handle_event_from_ignored_device(event_queue::queued_event::event::type original_type,
-                                                int64_t original_integer_value,
-                                                event_type event_type,
-                                                event_queue& output_event_queue,
-                                                uint64_t time_stamp) {
+  virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
+                                                event_queue& output_event_queue) {
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                       queue_,
-                                                      time_stamp);
+                                                      front_input_event.get_time_stamp());
   }
 
   virtual void set_valid(bool value) {
@@ -544,7 +592,6 @@ inline std::ostream& operator<<(std::ostream& stream, const post_event_to_virtua
 
   return stream;
 }
-
 } // namespace details
 } // namespace manipulator
 } // namespace krbn

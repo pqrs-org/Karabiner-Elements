@@ -28,11 +28,8 @@ public:
                                              uint64_t time_stamp) {
   }
 
-  virtual void handle_event_from_ignored_device(event_queue::queued_event::event::type original_type,
-                                                int64_t original_integer_value,
-                                                event_type event_type,
-                                                event_queue& output_event_queue,
-                                                uint64_t time_stamp) {
+  virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
+                                                event_queue& output_event_queue) {
   }
 };
 } // namespace details

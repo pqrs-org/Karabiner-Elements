@@ -7,6 +7,7 @@
 #include "grabber_client.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
+#include "receiver.hpp"
 #include "session.hpp"
 #include "system_preferences_monitor.hpp"
 #include "version_monitor.hpp"
@@ -32,6 +33,10 @@ public:
           if (auto uid = session::get_current_console_user_id()) {
             if (current_uid == *uid) {
               try {
+                if (!receiver_) {
+                  receiver_ = std::make_unique<receiver>();
+                }
+
                 if (!grabber_client_) {
                   version_monitor_.manual_check();
 
@@ -55,6 +60,7 @@ public:
                 }
 
                 return;
+
               } catch (std::exception& ex) {
                 logger::get_logger().warn(ex.what());
               }
@@ -79,6 +85,7 @@ private:
     configuration_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     grabber_client_ = nullptr;
+    receiver_ = nullptr;
   }
 
   static void static_grabber_is_launched_callback(CFNotificationCenterRef center,
@@ -118,6 +125,8 @@ private:
   version_monitor& version_monitor_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> timer_;
+
+  std::unique_ptr<receiver> receiver_;
 
   std::unique_ptr<configuration_manager> configuration_manager_;
   std::unique_ptr<grabber_client> grabber_client_;

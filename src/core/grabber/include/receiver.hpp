@@ -94,6 +94,11 @@ private:
               logger::get_logger().error("invalid size for operation_type::frontmost_application_changed ({0})", n);
             } else {
               auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(&(buffer_[0]));
+
+              // Ensure bundle_identifier and file_path are null-terminated string even if corrupted data is sent.
+              p->bundle_identifier[sizeof(p->bundle_identifier) - 1] = '\0';
+              p->file_path[sizeof(p->file_path) - 1] = '\0';
+
               device_grabber_.post_frontmost_application_changed_event(p->bundle_identifier,
                                                                        p->file_path);
             }

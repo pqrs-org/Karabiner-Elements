@@ -46,23 +46,8 @@ krbn::event_queue::queued_event::event pointing_y_m10_event(krbn::event_queue::q
 krbn::event_queue::queued_event::event caps_lock_state_changed_1_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
 krbn::event_queue::queued_event::event caps_lock_state_changed_0_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
 
-krbn::event_queue::queued_event::event device_keys_are_released_event(krbn::event_queue::queued_event::event::type::device_keys_are_released, 1);
+auto device_keys_are_released_event = krbn::event_queue::queued_event::event::make_device_keys_are_released_event();
 } // namespace
-
-TEST_CASE("constructor") {
-  {
-    auto event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::key_code, boost::none);
-    REQUIRE(event.get_type() == krbn::event_queue::queued_event::event::type::event_from_ignored_device);
-    REQUIRE(event.get_original_type() == krbn::event_queue::queued_event::event::type::key_code);
-    REQUIRE(event.get_original_integer_value() == static_cast<int64_t>(0));
-  }
-  {
-    auto event = krbn::event_queue::queued_event::event::make_event_from_ignored_device(krbn::event_queue::queued_event::event::type::pointing_y, -100);
-    REQUIRE(event.get_type() == krbn::event_queue::queued_event::event::type::event_from_ignored_device);
-    REQUIRE(event.get_original_type() == krbn::event_queue::queued_event::event::type::pointing_y);
-    REQUIRE(event.get_original_integer_value() == static_cast<int64_t>(-100));
-  }
-}
 
 TEST_CASE("get_key_code") {
   REQUIRE(spacebar_event.get_key_code() == krbn::key_code::spacebar);
