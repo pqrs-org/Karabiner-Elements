@@ -1,3 +1,8 @@
+# Version 0.91.8
+
+* Fixed an issue that karabiner_grabber might be crashed when frontmost application is changed.
+
+
 # Version 0.91.7
 
 * Shell command execution has been supported. (e.g., Launch apps in https://pqrs.org/osx/karabiner/complex_modifications/ )
