@@ -59,6 +59,18 @@ TEST_CASE("get_key_code") {
   REQUIRE(device_keys_are_released_event.get_key_code() == boost::none);
 }
 
+TEST_CASE("get_frontmost_application_bundle_identifier") {
+  REQUIRE(a_event.get_frontmost_application_bundle_identifier() == boost::none);
+
+  {
+    std::string bundle_identifier = "org.pqrs.example";
+    std::string file_path = "/opt/bin/examle";
+    auto e = krbn::event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
+                                                                                              file_path);
+    REQUIRE(e.get_frontmost_application_bundle_identifier() == bundle_identifier);
+  }
+}
+
 TEST_CASE("emplace_back_event") {
   // Normal order
   {
