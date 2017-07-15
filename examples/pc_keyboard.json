@@ -206,6 +206,15 @@
                     }
                 ]
             },
+            "simple_modifications": [
+                {
+                    "disabled": false,
+                    "from": "right_command",
+                    "product_id": 0,
+                    "to": "right_option",
+                    "vendor_id": 0
+                },
+            ]
         }
     ]
 }
