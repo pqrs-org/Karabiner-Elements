@@ -52,7 +52,20 @@ public:
     return frontmost_application_;
   }
 
+  int get_variable(const std::string& name) {
+    auto it = variables_.find(name);
+    if (it != std::end(variables_)) {
+      return it->second;
+    }
+    return 0;
+  }
+
+  void set_variable(const std::string& name, int value) {
+    variables_[name] = value;
+  }
+
 private:
   frontmost_application frontmost_application_;
+  std::unordered_map<std::string, int> variables_;
 };
 } // namespace krbn
