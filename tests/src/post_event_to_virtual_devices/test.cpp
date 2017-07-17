@@ -1179,6 +1179,89 @@ TEST_CASE("actual examples") {
   }
 
   // ----------------------------------------
+  // to_after_key_up
+
+  {
+    actual_examples_helper helper("after_key_up.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_shift_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
+
+    helper.manipulate();
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  {
+    actual_examples_helper helper("after_key_up.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_shift_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, f1_event, key_up);
+
+    helper.manipulate();
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, f2, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, f2, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  {
+    actual_examples_helper helper("after_key_up.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, spacebar_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, spacebar_event, key_up);
+
+    helper.manipulate();
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  // ----------------------------------------
   // fn+up_arrow to fn+page_up (from modifiers == to modifiers)
 
   {
