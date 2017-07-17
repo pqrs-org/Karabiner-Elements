@@ -81,6 +81,16 @@ public:
           to_.emplace_back(j);
         }
 
+      } else if (key == "to_after_key_up") {
+        if (!value.is_array()) {
+          logger::get_logger().error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
+          continue;
+        }
+
+        for (const auto& j : value) {
+          to_after_key_up_.emplace_back(j);
+        }
+
       } else if (key == "to_if_alone") {
         if (!value.is_array()) {
           logger::get_logger().error("complex_modifications json error: `to_if_alone` should be array: {0}", json.dump());
@@ -266,12 +276,18 @@ public:
                                        output_event_queue);
                 }
 
+                send_extra_to_events(front_input_event,
+                                     to_after_key_up_,
+                                     time_stamp_delay,
+                                     output_event_queue);
+
                 uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
                 if (alone &&
                     nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
-                  send_to_if_alone(front_input_event,
-                                   time_stamp_delay,
-                                   output_event_queue);
+                  send_extra_to_events(front_input_event,
+                                       to_if_alone_,
+                                       time_stamp_delay,
+                                       output_event_queue);
                 }
               }
             }
@@ -378,10 +394,11 @@ private:
     return preserve_from_mandatory_modifiers_up();
   }
 
-  void send_to_if_alone(const event_queue::queued_event& front_input_event,
-                        uint64_t& time_stamp_delay,
-                        event_queue& output_event_queue) {
-    for (const auto& to : to_if_alone_) {
+  void send_extra_to_events(const event_queue::queued_event& front_input_event,
+                            const std::vector<to_event_definition>& to_events,
+                            uint64_t& time_stamp_delay,
+                            event_queue& output_event_queue) {
+    for (const auto& to : to_events) {
       if (auto event = to.to_event()) {
         enqueue_to_modifiers(to,
                              event_type::key_down,
@@ -441,6 +458,7 @@ private:
 
   from_event_definition from_;
   std::vector<to_event_definition> to_;
+  std::vector<to_event_definition> to_after_key_up_;
   std::vector<to_event_definition> to_if_alone_;
 
   std::vector<manipulated_original_event> manipulated_original_events_;
