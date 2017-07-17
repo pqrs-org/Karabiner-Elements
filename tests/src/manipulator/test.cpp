@@ -547,6 +547,33 @@ TEST_CASE("manipulator.manipulator_manager") {
   }
 }
 
+TEST_CASE("needs_virtual_hid_pointing") {
+  for (const auto& file_name : {
+           std::string("json/needs_virtual_hid_pointing_test1.json"),
+           std::string("json/needs_virtual_hid_pointing_test2.json"),
+           std::string("json/needs_virtual_hid_pointing_test3.json"),
+           std::string("json/needs_virtual_hid_pointing_test4.json"),
+       }) {
+    std::ifstream json_file(file_name);
+    auto json = nlohmann::json::parse(json_file);
+    krbn::manipulator::manipulator_manager manager;
+    for (const auto& j : json) {
+      krbn::core_configuration::profile::complex_modifications::parameters parameters;
+      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j, parameters);
+      manager.push_back_manipulator(m);
+    }
+
+    if (file_name == "json/needs_virtual_hid_pointing_test1.json") {
+      REQUIRE(!manager.needs_virtual_hid_pointing());
+    }
+    if (file_name == "json/needs_virtual_hid_pointing_test2.json" ||
+        file_name == "json/needs_virtual_hid_pointing_test3.json" ||
+        file_name == "json/needs_virtual_hid_pointing_test4.json") {
+      REQUIRE(manager.needs_virtual_hid_pointing());
+    }
+  }
+}
+
 int main(int argc, char* const argv[]) {
   krbn::thread_utility::register_main_thread();
   return Catch::Session().run(argc, argv);
