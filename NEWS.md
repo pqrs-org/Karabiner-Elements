@@ -1,6 +1,7 @@
 # Version 0.91.9
 
 * `variable_if` and `variable_unless` has been added to `conditions`.
+* `to_after_key_up` has been added to `complex_modifications > basic`.
 
 
 # Version 0.91.8
