@@ -322,6 +322,20 @@ public:
     return !manipulated_original_events_.empty();
   }
 
+  virtual bool needs_virtual_hid_pointing(void) const {
+    for (const auto& events : {to_,
+                               to_after_key_up_,
+                               to_if_alone_}) {
+      for (const auto& e : events) {
+        if (e.get_type() == event_definition::type::pointing_button) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
                                              uint64_t time_stamp) {

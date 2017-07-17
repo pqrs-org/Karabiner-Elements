@@ -96,6 +96,15 @@ public:
     return manipulators_.size();
   }
 
+  bool needs_virtual_hid_pointing(void) const {
+    for (auto&& m : manipulators_) {
+      if (m->needs_virtual_hid_pointing()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 private:
   void remove_invalid_manipulators(void) {
     manipulators_.erase(std::remove_if(std::begin(manipulators_),
