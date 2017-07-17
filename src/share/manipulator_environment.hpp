@@ -52,7 +52,7 @@ public:
     return frontmost_application_;
   }
 
-  int get_variable(const std::string& name) {
+  int get_variable(const std::string& name) const {
     auto it = variables_.find(name);
     if (it != std::end(variables_)) {
       return it->second;
