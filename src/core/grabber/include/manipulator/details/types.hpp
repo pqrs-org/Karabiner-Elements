@@ -97,7 +97,10 @@ public:
     std::unordered_set<modifier> modifiers;
 
     for (const auto& j : json) {
-      if (j.is_string()) {
+      if (!j.is_string()) {
+        logger::get_logger().error("complex_modifications json error: modifier should be string form: {0}", j.dump());
+
+      } else {
         const std::string& name = j;
         if (name == "any") {
           modifiers.insert(modifier::any);
@@ -308,16 +311,31 @@ protected:
 
         const std::string name_key = "name";
         const std::string value_key = "value";
-        if (value.find(name_key) != std::end(value) && value[name_key].is_string() &&
-            value.find(value_key) != std::end(value) && value[value_key].is_number()) {
-          std::string variable_name = value[name_key];
-          int variable_value = value[value_key];
-
-          type_ = type::set_variable;
-          value_ = std::make_pair(variable_name, variable_value);
-        } else {
-          logger::get_logger().error("complex_modifications json error: Invalid form of set_variable: {0}", json.dump());
+        if (value.find(name_key) == std::end(value)) {
+          logger::get_logger().error("complex_modifications json error: name is not found in set_variable: {0}", json.dump());
+          continue;
         }
+        if (!value[name_key].is_string()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of set_variable.name: {0}", json.dump());
+          continue;
+        }
+        if (value.find(value_key) == std::end(value)) {
+          logger::get_logger().error("complex_modifications json error: value is not found in set_variable: {0}", json.dump());
+          continue;
+        }
+        if (!value[value_key].is_number()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of set_variable.value: {0}", json.dump());
+          continue;
+        }
+
+        std::string variable_name = value[name_key];
+        int variable_value = value[value_key];
+
+        type_ = type::set_variable;
+        value_ = std::make_pair(variable_name, variable_value);
+
+      } else if (key == "description") {
+        // Do nothing
 
       } else {
         if (!extra_json_handler(key, value)) {
