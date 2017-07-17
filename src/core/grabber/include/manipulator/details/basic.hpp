@@ -66,28 +66,38 @@ public:
         const core_configuration::profile::complex_modifications::parameters& parameters) : base(),
                                                                                             parameters_(parameters),
                                                                                             from_(json.find("from") != std::end(json) ? json["from"] : nlohmann::json()) {
-    {
-      const std::string key = "to";
-      if (json.find(key) != std::end(json)) {
-        if (json[key].is_array()) {
-          for (const auto& j : json[key]) {
-            to_.emplace_back(j);
-          }
-        } else {
-          logger::get_logger().error("`to` should be array: {0}", json.dump());
+    for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+      // it.key() is always std::string.
+      const auto& key = it.key();
+      const auto& value = it.value();
+
+      if (key == "to") {
+        if (!value.is_array()) {
+          logger::get_logger().error("complex_modifications json error: `to` should be array: {0}", json.dump());
+          continue;
         }
-      }
-    }
-    {
-      const std::string key = "to_if_alone";
-      if (json.find(key) != std::end(json)) {
-        if (json[key].is_array()) {
-          for (const auto& j : json[key]) {
-            to_if_alone_.emplace_back(j);
-          }
-        } else {
-          logger::get_logger().error("`to_if_alone` should be array: {0}", json.dump());
+
+        for (const auto& j : value) {
+          to_.emplace_back(j);
         }
+
+      } else if (key == "to_if_alone") {
+        if (!value.is_array()) {
+          logger::get_logger().error("complex_modifications json error: `to_if_alone` should be array: {0}", json.dump());
+          continue;
+        }
+
+        for (const auto& j : value) {
+          to_if_alone_.emplace_back(j);
+        }
+
+      } else if (key == "description" ||
+                 key == "conditions" ||
+                 key == "from" ||
+                 key == "type") {
+        // Do nothing
+      } else {
+        logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
       }
     }
   }

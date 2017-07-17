@@ -37,16 +37,16 @@ public:
           if (value.is_string()) {
             name_ = value;
           } else {
-            logger::get_logger().error("Invalid form of {0} in {1}", key, json.dump());
+            logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, json.dump());
           }
         } else if (key == "value") {
           if (value.is_number()) {
             value_ = value;
           } else {
-            logger::get_logger().error("Invalid form of {0} in {1}", key, json.dump());
+            logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, json.dump());
           }
         } else {
-          logger::get_logger().error("unknown key: {0} in {1}", key, json.dump());
+          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
       }
     }
