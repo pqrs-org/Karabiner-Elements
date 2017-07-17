@@ -61,7 +61,7 @@ public:
   }
 
   void set_variable(const std::string& name, int value) {
-    logger::get_logger().info("set_variable {0} {1}", name, value);
+    // logger::get_logger().info("set_variable {0} {1}", name, value);
     variables_[name] = value;
   }
 
