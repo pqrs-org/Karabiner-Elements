@@ -1,0 +1,32 @@
+{
+    "profiles": [
+        {
+            "name": "Default profile",
+            "selected": true,
+            "simple_modifications": {
+                "caps_lock": "delete_or_backspace",
+                 "w": "d",
+                 "e": "r",
+                 "r": "w",
+                 "t": "b",
+                 "y": "j",
+                 "u": "f",
+                 "i": "u",
+                 "o": "p",
+                 "p": "semicolon",
+                 "d": "h",
+                 "f": "t",
+                 "h": "y",
+                 "j": "n",
+                 "k": "e",
+                 "l": "o",
+                 "semicolon": "i",
+                 "c": "m",
+                 "v": "c",
+                 "b": "v",
+                 "n": "k",
+                 "m": "l"
+            }
+        }
+    ]
+}
