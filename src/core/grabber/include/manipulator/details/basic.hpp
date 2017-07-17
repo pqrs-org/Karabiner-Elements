@@ -130,19 +130,28 @@ public:
 
       if (front_input_event.get_event_type() == event_type::key_down) {
 
+        // ----------------------------------------
+        // Check whether event is target.
+
         if (!valid_) {
           is_target = false;
         }
 
-        if (auto modifiers = from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
-          from_mandatory_modifiers = *modifiers;
-        } else {
-          is_target = false;
+        if (is_target) {
+          if (auto modifiers = from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
+            from_mandatory_modifiers = *modifiers;
+          } else {
+            is_target = false;
+          }
         }
 
-        if (!condition_manager_.is_fulfilled(output_event_queue.get_manipulator_environment())) {
-          is_target = false;
+        if (is_target) {
+          if (!condition_manager_.is_fulfilled(output_event_queue.get_manipulator_environment())) {
+            is_target = false;
+          }
         }
+
+        // ----------------------------------------
 
         if (is_target) {
           manipulated_original_events_.emplace_back(front_input_event.get_device_id(),

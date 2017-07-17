@@ -32,6 +32,7 @@ public:
         caps_lock_state_changed,
         event_from_ignored_device,
         frontmost_application_changed,
+        set_variable,
       };
 
       event(key_code key_code) : type_(type::key_code),
@@ -75,6 +76,13 @@ public:
         event e;
         e.type_ = type::frontmost_application_changed;
         e.value_ = frontmost_application(bundle_identifier, file_path);
+        return e;
+      }
+
+      static event make_set_variable_event(const std::pair<std::string, int>& pair) {
+        event e;
+        e.type_ = type::set_variable;
+        e.value_ = pair;
         return e;
       }
 
@@ -130,6 +138,13 @@ public:
         return boost::none;
       }
 
+      boost::optional<std::pair<std::string, int>> get_set_variable(void) const {
+        if (type_ == type::set_variable) {
+          return boost::get<std::pair<std::string, int>>(value_);
+        }
+        return boost::none;
+      }
+
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
                value_ == other.value_;
@@ -178,7 +193,9 @@ public:
                      int64_t,         // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
                      std::string,     // For shell_command
                      boost::blank,    // For virtual events
-                     frontmost_application>
+                     frontmost_application,
+                     std::pair<std::string, int> // For set_variable
+                     >
           value_;
     };
 
@@ -409,6 +426,12 @@ public:
       if (auto file_path = event.get_frontmost_application_file_path()) {
         manipulator_environment_.get_frontmost_application().set_bundle_identifier(*bundle_identifier);
         manipulator_environment_.get_frontmost_application().set_file_path(*file_path);
+      }
+    }
+    if (event_type == event_type::key_down) {
+      if (auto set_variable = event.get_set_variable()) {
+        manipulator_environment_.set_variable(set_variable->first,
+                                              set_variable->second);
       }
     }
   }

@@ -39,6 +39,26 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::frontmost_application*>(condition.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
   }
+  {
+    nlohmann::json json({
+        {"type", "variable_if"},
+        {"name", "variable_name"},
+        {"value", 1},
+    });
+    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::variable*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+  }
+  {
+    nlohmann::json json({
+        {"type", "variable_unless"},
+        {"name", "variable_name"},
+        {"value", 1},
+    });
+    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::variable*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+  }
 }
 
 namespace {

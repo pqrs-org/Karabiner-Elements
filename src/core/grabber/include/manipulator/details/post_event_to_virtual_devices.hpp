@@ -448,6 +448,7 @@ public:
               break;
             case event_queue::queued_event::event::type::key_code:
             case event_queue::queued_event::event::type::pointing_button:
+            case event_queue::queued_event::event::type::set_variable:
             case event_queue::queued_event::event::type::shell_command:
             case event_queue::queued_event::event::type::device_keys_are_released:
             case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
@@ -478,6 +479,7 @@ public:
         }
         break;
 
+      case event_queue::queued_event::event::type::set_variable:
       case event_queue::queued_event::event::type::device_keys_are_released:
       case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
       case event_queue::queued_event::event::type::device_ungrabbed:
