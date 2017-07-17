@@ -1,3 +1,8 @@
+# Version 0.91.9
+
+* `variable_if` and `variable_unless` has been added to `conditions`.
+
+
 # Version 0.91.8
 
 * Fixed an issue that karabiner_grabber might be crashed when frontmost application is changed.
