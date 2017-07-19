@@ -20,6 +20,7 @@ public:
     none,
     key_code,
     pointing_button,
+    any,
     shell_command,
     set_variable,
   };
@@ -64,6 +65,13 @@ public:
     return boost::none;
   }
 
+  boost::optional<type> get_any_type(void) const {
+    if (type_ == type::any) {
+      return boost::get<type>(value_);
+    }
+    return boost::none;
+  }
+
   boost::optional<std::string> get_shell_command(void) const {
     if (type_ == type::shell_command) {
       return boost::get<std::string>(value_);
@@ -86,6 +94,8 @@ public:
         return event_queue::queued_event::event(boost::get<key_code>(value_));
       case type::pointing_button:
         return event_queue::queued_event::event(boost::get<pointing_button>(value_));
+      case type::any:
+        return boost::none;
       case type::shell_command:
         return event_queue::queued_event::event::make_shell_command_event(boost::get<std::string>(value_));
       case type::set_variable:
@@ -286,6 +296,26 @@ protected:
           value_ = *pointing_button;
         }
 
+      } else if (key == "any") {
+        if (type_ != type::none) {
+          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+          continue;
+        }
+        if (!value.is_string()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of any: {0}", json.dump());
+          continue;
+        }
+
+        if (value == "key_code") {
+          type_ = type::any;
+          value_ = type::key_code;
+        } else if (value == "pointing_button") {
+          type_ = type::any;
+          value_ = type::pointing_button;
+        } else {
+          logger::get_logger().error("complex_modifications json error: Unknown value of any: {0}", json.dump());
+        }
+
       } else if (key == "shell_command") {
         if (type_ != type::none) {
           logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
@@ -348,6 +378,7 @@ protected:
   type type_;
   boost::variant<key_code,
                  pointing_button,
+                 type,                       // For any
                  std::string,                // For shell_command
                  std::pair<std::string, int> // For set_variable
                  >

@@ -20,6 +20,14 @@
             "pointing_button": 1234
         },
         {
+            "description": "any is not string",
+            "any": 1234
+        },
+        {
+            "description": "any value is not known",
+            "any": "unknown_any"
+        },
+        {
             "description": "shell_command is not string",
             "shell_command": 1234
         },

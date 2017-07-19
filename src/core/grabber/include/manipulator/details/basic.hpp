@@ -129,12 +129,14 @@ public:
     bool is_target = false;
 
     if (auto key_code = front_input_event.get_event().get_key_code()) {
-      if (from_.get_key_code() == key_code) {
+      if (from_.get_key_code() == key_code ||
+          from_.get_any_type() == event_definition::type::key_code) {
         is_target = true;
       }
     }
     if (auto pointing_button = front_input_event.get_event().get_pointing_button()) {
-      if (from_.get_pointing_button() == pointing_button) {
+      if (from_.get_pointing_button() == pointing_button ||
+          from_.get_any_type() == event_definition::type::pointing_button) {
         is_target = true;
       }
     }
