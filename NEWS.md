@@ -3,7 +3,7 @@
 * `variable_if` and `variable_unless` has been added to `conditions`.
 * `to_after_key_up` has been added to `complex_modifications > basic`.
 * `"from": { "any": "key_code" }` has been added to `complex_modifications > basic`.
-  You can use this to disable untargeted keys in your modes. (e.g., disable untargeted keys in Launcher Mode.)
+  You can use this to disable untargeted keys in your mode. (e.g., disable untargeted keys in Launcher Mode.)
 
 
 # Version 0.91.8
