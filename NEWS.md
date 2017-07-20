@@ -1,9 +1,12 @@
 # Version 0.91.9
 
 * `variable_if` and `variable_unless` has been added to `conditions`.
+  You can use `set_variable` to change the variables.
+  * An example: https://github.com/pqrs-org/KE-complex_modifications/blob/ef8074892e5fff8a4781a898869f8d341b5a815a/docs/json/personal_tekezo.json
 * `to_after_key_up` has been added to `complex_modifications > basic`.
 * `"from": { "any": "key_code" }` has been added to `complex_modifications > basic`.
-  You can use this to disable untargeted keys in your mode. (e.g., disable untargeted keys in Launcher Mode.)
+   You can use this to disable untargeted keys in your mode. (e.g., disable untargeted keys in Launcher Mode.)
+  * An example: https://github.com/pqrs-org/KE-complex_modifications/blob/ef8074892e5fff8a4781a898869f8d341b5a815a/docs/json/personal_tekezo.json#L818-L844
 * `Variables` tab has been added into `EventViewer`.
   You can confirm the `set_variable` result in `Variables` tab.
 
