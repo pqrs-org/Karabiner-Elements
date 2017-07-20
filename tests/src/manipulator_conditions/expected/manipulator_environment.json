@@ -1,0 +1,11 @@
+{
+    "frontmost_application": {
+        "bundle_identifier": "com.apple.Terminal",
+        "file_path": "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal",
+        "update_count": 2
+    },
+    "variables": {
+        "value1": 100,
+        "value2": 200
+    }
+}

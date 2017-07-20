@@ -81,28 +81,37 @@ private:
 };
 } // namespace
 
+TEST_CASE("manipulator_environment.save_to_file") {
+  krbn::manipulator_environment manipulator_environment;
+  manipulator_environment.enable_json_output("tmp/manipulator_environment.json");
+  manipulator_environment.set_frontmost_application_bundle_identifier("com.apple.Terminal");
+  manipulator_environment.set_frontmost_application_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+  manipulator_environment.set_variable("value1", 100);
+  manipulator_environment.set_variable("value2", 200);
+}
+
 TEST_CASE("manipulator.frontmost_application") {
   actual_examples_helper helper("frontmost_application.json");
   krbn::manipulator_environment manipulator_environment;
 
   // bundle_identifiers matching
-  manipulator_environment.get_frontmost_application().set_bundle_identifier("com.apple.Terminal");
-  manipulator_environment.get_frontmost_application().set_file_path("/not_found");
+  manipulator_environment.set_frontmost_application_bundle_identifier("com.apple.Terminal");
+  manipulator_environment.set_frontmost_application_file_path("/not_found");
   REQUIRE(helper.get_condition_manager().is_fulfilled(manipulator_environment) == true);
 
   // Test regex escape works properly
-  manipulator_environment.get_frontmost_application().set_bundle_identifier("com/apple/Terminal");
+  manipulator_environment.set_frontmost_application_bundle_identifier("com/apple/Terminal");
   REQUIRE(helper.get_condition_manager().is_fulfilled(manipulator_environment) == false);
 
   // file_path matching
-  manipulator_environment.get_frontmost_application().set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+  manipulator_environment.set_frontmost_application_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
   REQUIRE(helper.get_condition_manager().is_fulfilled(manipulator_environment) == true);
 
   // frontmost_application_not
-  manipulator_environment.get_frontmost_application().set_bundle_identifier("com.googlecode.iterm2");
-  manipulator_environment.get_frontmost_application().set_file_path("/Applications/iTerm.app");
+  manipulator_environment.set_frontmost_application_bundle_identifier("com.googlecode.iterm2");
+  manipulator_environment.set_frontmost_application_file_path("/Applications/iTerm.app");
   REQUIRE(helper.get_condition_manager().is_fulfilled(manipulator_environment) == true);
-  manipulator_environment.get_frontmost_application().set_file_path("/Users/tekezo/Applications/iTerm.app");
+  manipulator_environment.set_frontmost_application_file_path("/Users/tekezo/Applications/iTerm.app");
   REQUIRE(helper.get_condition_manager().is_fulfilled(manipulator_environment) == false);
 }
 

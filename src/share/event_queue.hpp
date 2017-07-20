@@ -424,8 +424,8 @@ public:
     // Update manipulator_environment
     if (auto bundle_identifier = event.get_frontmost_application_bundle_identifier()) {
       if (auto file_path = event.get_frontmost_application_file_path()) {
-        manipulator_environment_.get_frontmost_application().set_bundle_identifier(*bundle_identifier);
-        manipulator_environment_.get_frontmost_application().set_file_path(*file_path);
+        manipulator_environment_.set_frontmost_application_bundle_identifier(*bundle_identifier);
+        manipulator_environment_.set_frontmost_application_file_path(*file_path);
       }
     }
     if (event_type == event_type::key_down) {
