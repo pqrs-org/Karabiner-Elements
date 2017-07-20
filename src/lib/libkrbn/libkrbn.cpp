@@ -32,6 +32,10 @@ const char* libkrbn_get_devices_json_file_path(void) {
   return krbn::constants::get_devices_json_file_path();
 }
 
+const char* libkrbn_get_manipulator_environment_json_file_path(void) {
+  return krbn::constants::get_manipulator_environment_json_file_path();
+}
+
 const char* libkrbn_get_user_complex_modifications_assets_directory(void) {
   return krbn::constants::get_user_complex_modifications_assets_directory().c_str();
 }
