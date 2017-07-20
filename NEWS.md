@@ -4,6 +4,8 @@
 * `to_after_key_up` has been added to `complex_modifications > basic`.
 * `"from": { "any": "key_code" }` has been added to `complex_modifications > basic`.
   You can use this to disable untargeted keys in your mode. (e.g., disable untargeted keys in Launcher Mode.)
+* `Variables` tab has been added into `EventViewer`.
+  You can confirm the `set_variable` result in `Variables` tab.
 
 
 # Version 0.91.8
