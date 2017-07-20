@@ -497,6 +497,14 @@ public:
     return manipulator_environment_;
   }
 
+  void enable_manipulator_environment_json_output(const std::string& file_path) {
+    manipulator_environment_.enable_json_output(file_path);
+  }
+
+  void disable_manipulator_environment_json_output(void) {
+    manipulator_environment_.disable_json_output();
+  }
+
   uint64_t get_time_stamp_delay(void) const {
     return time_stamp_delay_;
   }
