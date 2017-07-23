@@ -1,0 +1,5 @@
+{
+    "alerts": [
+        "system_policy_prevents_loading_kext"
+    ]
+}
