@@ -2318,8 +2318,8 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15b-2Z-hf1">
-                                            <rect key="frame" x="228" y="70" width="324" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Te8-FQ-SJa">
+                                            <rect key="frame" x="216" y="70" width="348" height="32"/>
+                                            <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Te8-FQ-SJa">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -2327,13 +2327,25 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                                 <action selector="openSystemPreferencesSecurity:" target="fAe-OR-t9F" id="tgB-x4-4Mm"/>
                                             </connections>
                                         </button>
+                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9f7-D7-XzV">
+                                            <rect key="frame" x="241" y="28" width="298" height="32"/>
+                                            <buttonCell key="cell" type="push" title="Close Karabiner-Elements Preferences" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyW-jE-BlT">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="closePreferences:" target="fAe-OR-t9F" id="lap-n4-hjz"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="9f7-D7-XzV" firstAttribute="top" secondItem="15b-2Z-hf1" secondAttribute="bottom" constant="21" id="1fY-ZB-Kby"/>
                                         <constraint firstAttribute="trailing" secondItem="hVs-29-H8P" secondAttribute="trailing" constant="20" id="CUf-zA-yJF"/>
                                         <constraint firstItem="15b-2Z-hf1" firstAttribute="top" secondItem="hVs-29-H8P" secondAttribute="bottom" constant="20" id="Ji9-Mc-ham"/>
                                         <constraint firstItem="hVs-29-H8P" firstAttribute="top" secondItem="G93-5A-Bfp" secondAttribute="top" constant="20" id="dgJ-Xa-HQh"/>
                                         <constraint firstItem="15b-2Z-hf1" firstAttribute="centerX" secondItem="G93-5A-Bfp" secondAttribute="centerX" id="gOk-R0-Jei"/>
                                         <constraint firstItem="hVs-29-H8P" firstAttribute="leading" secondItem="G93-5A-Bfp" secondAttribute="leading" constant="20" id="gZV-fc-c1K"/>
+                                        <constraint firstItem="9f7-D7-XzV" firstAttribute="centerX" secondItem="G93-5A-Bfp" secondAttribute="centerX" id="ik2-5W-suO"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>

@@ -60,4 +60,9 @@ static void staticCallback(void* context) {
   [[NSWorkspace sharedWorkspace] openFile:@"/System/Library/PreferencePanes/Security.prefPane"];
 }
 
+- (IBAction)closePreferences:(id)sender {
+  [self.preferencesWindow endSheet:self.window];
+  [NSApp terminate:nil];
+}
+
 @end
