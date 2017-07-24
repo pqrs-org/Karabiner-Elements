@@ -13,6 +13,7 @@ void libkrbn_initialize(void);
 const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
 const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(void);
 const char* _Nonnull libkrbn_get_distributed_notification_console_user_server_is_disabled(void);
+const char* _Nonnull libkrbn_get_grabber_alerts_json_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 const char* _Nonnull libkrbn_get_manipulator_environment_json_file_path(void);
 const char* _Nonnull libkrbn_get_user_complex_modifications_assets_directory(void);
@@ -239,6 +240,16 @@ bool libkrbn_manipulator_environment_monitor_initialize(libkrbn_manipulator_envi
                                                         libkrbn_manipulator_environment_monitor_callback _Nullable callback,
                                                         void* _Nullable refcon);
 void libkrbn_manipulator_environment_monitor_terminate(libkrbn_manipulator_environment_monitor* _Nullable* _Nonnull p);
+
+// ----------------------------------------
+// libkrbn_grabber_alerts_monitor
+
+typedef void libkrbn_grabber_alerts_monitor;
+typedef void (*libkrbn_grabber_alerts_monitor_callback)(void* _Nullable refcon);
+bool libkrbn_grabber_alerts_monitor_initialize(libkrbn_grabber_alerts_monitor* _Nullable* _Nonnull out,
+                                               libkrbn_grabber_alerts_monitor_callback _Nullable callback,
+                                               void* _Nullable refcon);
+void libkrbn_grabber_alerts_monitor_terminate(libkrbn_grabber_alerts_monitor* _Nullable* _Nonnull p);
 
 #ifdef __cplusplus
 }
