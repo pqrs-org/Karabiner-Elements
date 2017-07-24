@@ -1,4 +1,5 @@
 #import "AppDelegate.h"
+#import "AlertWindowController.h"
 #import "ComplexModificationsFileImportWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "PreferencesWindowController.h"
@@ -8,6 +9,7 @@
 @interface AppDelegate ()
 
 @property(weak) IBOutlet ComplexModificationsFileImportWindowController* complexModificationsFileImportWindowController;
+@property(weak) IBOutlet AlertWindowController* alertWindowController;
 @property(weak) IBOutlet NSWindow* preferencesWindow;
 @property(weak) IBOutlet PreferencesWindowController* preferencesWindowController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
@@ -33,6 +35,8 @@
   [self.systemPreferencesManager setup];
 
   [self.preferencesWindowController setup];
+
+  [self.alertWindowController setup];
 }
 
 - (void)handleGetURLEvent:(NSAppleEventDescriptor*)event withReplyEvent:(NSAppleEventDescriptor*)replyEvent {
