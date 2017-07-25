@@ -20,6 +20,7 @@ https://github.com/tekezo/pqrs.org/tree/master/webroot/osx/karabiner/files
 
 * OS X 10.11.*
 * OS X 10.12.*
+* OS X 10.13.*
 
 # Usage
 

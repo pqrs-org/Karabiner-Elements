@@ -1,3 +1,8 @@
+# Version 0.91.10
+
+* macOS 10.13 (High Sierra) support has been improved.
+
+
 # Version 0.91.9
 
 * `variable_if` and `variable_unless` has been added to `conditions`.
