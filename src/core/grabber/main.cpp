@@ -58,6 +58,8 @@ int main(int argc, const char* argv[]) {
   // load kexts
   while (true) {
     int exit_status = system("/sbin/kextload /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext");
+    exit_status >>= 8;
+    krbn::logger::get_logger().info("kextload exit status: {0}", exit_status);
     if (exit_status == 27) {
       // kextload is blocked by macOS.
       // https://developer.apple.com/library/content/technotes/tn2459/_index.html
