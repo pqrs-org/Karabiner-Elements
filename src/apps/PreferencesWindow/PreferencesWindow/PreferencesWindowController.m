@@ -208,11 +208,16 @@
 - (void)setupMiscTabControls {
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
 
+  /*
   if (coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup) {
     self.checkForUpdateOnStartupButton.state = NSOnState;
   } else {
     self.checkForUpdateOnStartupButton.state = NSOffState;
   }
+  */
+  
+  // disable update check to not update to original version
+  self.checkForUpdateOnStartupButton.state = NSOffState;
 
   if (libkrbn_system_core_configuration_file_path_exists()) {
     self.systemDefaultProfileStateLabel.hidden = YES;
