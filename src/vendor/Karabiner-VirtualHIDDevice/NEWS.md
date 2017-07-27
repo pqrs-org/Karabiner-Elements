@@ -1,3 +1,8 @@
+# Version 4.7.0
+
+* `dist/update.sh` has been removed. Install new kext to /Library/Extensions directly.
+
+
 # Version 4.6.0
 
 * `operator==` and `operator!=` has been added into `pointing_input` and `keyboard_event`.

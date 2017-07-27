@@ -71,28 +71,48 @@ public:
         const core_configuration::profile::complex_modifications::parameters& parameters) : base(),
                                                                                             parameters_(parameters),
                                                                                             from_(json.find("from") != std::end(json) ? json["from"] : nlohmann::json()) {
-    {
-      const std::string key = "to";
-      if (json.find(key) != std::end(json)) {
-        if (json[key].is_array()) {
-          for (const auto& j : json[key]) {
-            to_.emplace_back(j);
-          }
-        } else {
-          logger::get_logger().error("`to` should be array: {0}", json.dump());
+    for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+      // it.key() is always std::string.
+      const auto& key = it.key();
+      const auto& value = it.value();
+
+      if (key == "to") {
+        if (!value.is_array()) {
+          logger::get_logger().error("complex_modifications json error: `to` should be array: {0}", json.dump());
+          continue;
         }
-      }
-    }
-    {
-      const std::string key = "to_if_alone";
-      if (json.find(key) != std::end(json)) {
-        if (json[key].is_array()) {
-          for (const auto& j : json[key]) {
-            to_if_alone_.emplace_back(j);
-          }
-        } else {
-          logger::get_logger().error("`to_if_alone` should be array: {0}", json.dump());
+
+        for (const auto& j : value) {
+          to_.emplace_back(j);
         }
+
+      } else if (key == "to_after_key_up") {
+        if (!value.is_array()) {
+          logger::get_logger().error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
+          continue;
+        }
+
+        for (const auto& j : value) {
+          to_after_key_up_.emplace_back(j);
+        }
+
+      } else if (key == "to_if_alone") {
+        if (!value.is_array()) {
+          logger::get_logger().error("complex_modifications json error: `to_if_alone` should be array: {0}", json.dump());
+          continue;
+        }
+
+        for (const auto& j : value) {
+          to_if_alone_.emplace_back(j);
+        }
+
+      } else if (key == "description" ||
+                 key == "conditions" ||
+                 key == "from" ||
+                 key == "type") {
+        // Do nothing
+      } else {
+        logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
       }
     }
     if (json.find("vendor_id") != std::end(json)) {
@@ -129,12 +149,14 @@ public:
     bool is_target = false;
 
     if (auto key_code = front_input_event.get_event().get_key_code()) {
-      if (from_.get_key_code() == key_code) {
+      if (from_.get_key_code() == key_code ||
+          from_.get_any_type() == event_definition::type::key_code) {
         is_target = true;
       }
     }
     if (auto pointing_button = front_input_event.get_event().get_pointing_button()) {
-      if (from_.get_pointing_button() == pointing_button) {
+      if (from_.get_pointing_button() == pointing_button ||
+          from_.get_any_type() == event_definition::type::pointing_button) {
         is_target = true;
       }
     }
@@ -156,19 +178,28 @@ public:
 
       if (front_input_event.get_event_type() == event_type::key_down) {
 
+        // ----------------------------------------
+        // Check whether event is target.
+
         if (!valid_) {
           is_target = false;
         }
 
-        if (auto modifiers = from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
-          from_mandatory_modifiers = *modifiers;
-        } else {
-          is_target = false;
+        if (is_target) {
+          if (auto modifiers = from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
+            from_mandatory_modifiers = *modifiers;
+          } else {
+            is_target = false;
+          }
         }
 
-        if (!condition_manager_.is_fulfilled(output_event_queue.get_manipulator_environment())) {
-          is_target = false;
+        if (is_target) {
+          if (!condition_manager_.is_fulfilled(output_event_queue.get_manipulator_environment())) {
+            is_target = false;
+          }
         }
+
+        // ----------------------------------------
 
         if (is_target) {
           manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
@@ -273,12 +304,18 @@ public:
                                        output_event_queue);
                 }
 
+                send_extra_to_events(front_input_event,
+                                     to_after_key_up_,
+                                     time_stamp_delay,
+                                     output_event_queue);
+
                 uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
                 if (alone &&
                     nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
-                  send_to_if_alone(front_input_event,
-                                   time_stamp_delay,
-                                   output_event_queue);
+                  send_extra_to_events(front_input_event,
+                                       to_if_alone_,
+                                       time_stamp_delay,
+                                       output_event_queue);
                 }
               }
             }
@@ -311,6 +348,20 @@ public:
 
   virtual bool active(void) const {
     return !manipulated_original_events_.empty();
+  }
+
+  virtual bool needs_virtual_hid_pointing(void) const {
+    for (const auto& events : {to_,
+                               to_after_key_up_,
+                               to_if_alone_}) {
+      for (const auto& e : events) {
+        if (e.get_type() == event_definition::type::pointing_button) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
@@ -389,10 +440,11 @@ private:
     return preserve_from_mandatory_modifiers_up();
   }
 
-  void send_to_if_alone(const event_queue::queued_event& front_input_event,
-                        uint64_t& time_stamp_delay,
-                        event_queue& output_event_queue) {
-    for (const auto& to : to_if_alone_) {
+  void send_extra_to_events(const event_queue::queued_event& front_input_event,
+                            const std::vector<to_event_definition>& to_events,
+                            uint64_t& time_stamp_delay,
+                            event_queue& output_event_queue) {
+    for (const auto& to : to_events) {
       if (auto event = to.to_event()) {
         enqueue_to_modifiers(to,
                              event_type::key_down,
@@ -452,6 +504,7 @@ private:
   core_configuration::profile::complex_modifications::parameters parameters_;
   from_event_definition from_;
   std::vector<to_event_definition> to_;
+  std::vector<to_event_definition> to_after_key_up_;
   std::vector<to_event_definition> to_if_alone_;
   uint32_t vendor_id_;
   uint32_t product_id_;

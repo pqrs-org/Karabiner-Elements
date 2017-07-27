@@ -5,6 +5,7 @@
 #include "manipulator/details/basic.hpp"
 #include "manipulator/details/conditions/frontmost_application.hpp"
 #include "manipulator/details/conditions/nop.hpp"
+#include "manipulator/details/conditions/variable.hpp"
 #include "manipulator/details/nop.hpp"
 #include "manipulator/details/types.hpp"
 #include <memory>
@@ -24,12 +25,12 @@ public:
         if (value == "basic") {
           return std::make_shared<details::basic>(json, parameters);
         } else {
-          logger::get_logger().error("unknown type {0} in {1}", value, json.dump());
+          logger::get_logger().error("complex_modifications json error: Unknown `type` {0} in {1}", value, json.dump());
           return std::make_shared<details::nop>();
         }
       }
     }
-    logger::get_logger().error("type is not found in {0}", json.dump());
+    logger::get_logger().error("complex_modifications json error: `type` is not found in {0}", json.dump());
     return std::make_shared<details::nop>();
   }
 
@@ -41,13 +42,16 @@ public:
         if (value == "frontmost_application_if" ||
             value == "frontmost_application_unless") {
           return std::make_shared<details::conditions::frontmost_application>(json);
+        } else if (value == "variable_if" ||
+                   value == "variable_unless") {
+          return std::make_shared<details::conditions::variable>(json);
         } else {
-          logger::get_logger().error("unknown type {0} in {1}", value, json.dump());
+          logger::get_logger().error("complex_modifications json error: unknown `type` {0} in {1}", value, json.dump());
           return std::make_shared<details::conditions::nop>();
         }
       }
     }
-    logger::get_logger().error("type is not found in {0}", json.dump());
+    logger::get_logger().error("complex_modifications json error: `type` is not found in {0}", json.dump());
     return std::make_shared<details::conditions::nop>();
   }
 };

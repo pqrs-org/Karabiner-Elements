@@ -1,6 +1,7 @@
 #include "connection_manager.hpp"
 #include "constants.hpp"
 #include "filesystem.hpp"
+#include "grabber_alerts_manager.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "notification_center.hpp"
@@ -35,6 +36,9 @@ int main(int argc, const char* argv[]) {
     }
   }
 
+  krbn::grabber_alerts_manager::enable_json_output(krbn::constants::get_grabber_alerts_json_file_path());
+  krbn::grabber_alerts_manager::save_to_file();
+
   krbn::logger::get_logger().info("version {0}", karabiner_version);
 
   {
@@ -52,7 +56,20 @@ int main(int argc, const char* argv[]) {
   });
 
   // load kexts
-  system("/sbin/kextload /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext");
+  while (true) {
+    int exit_status = system("/sbin/kextload /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext");
+    exit_status >>= 8;
+    krbn::logger::get_logger().info("kextload exit status: {0}", exit_status);
+    if (exit_status == 27) {
+      // kextload is blocked by macOS.
+      // https://developer.apple.com/library/content/technotes/tn2459/_index.html
+      krbn::grabber_alerts_manager::set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
+      std::this_thread::sleep_for(std::chrono::seconds(3));
+      continue;
+    }
+    break;
+  }
+  krbn::grabber_alerts_manager::set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
 
   // make socket directory.
   mkdir(krbn::constants::get_tmp_directory(), 0755);

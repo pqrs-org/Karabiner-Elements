@@ -26,6 +26,10 @@ public:
       manipulator_manager_.invalidate_manipulators();
     }
 
+    bool needs_virtual_hid_pointing(void) const {
+      return manipulator_manager_.needs_virtual_hid_pointing();
+    }
+
     void log_events_sizes(void) const {
       logger::get_logger().info("connection events sizes: {0} -> {1}",
                                 input_event_queue_.get_events().size(),
@@ -72,6 +76,15 @@ public:
     for (auto&& c : connections_) {
       c.invalidate_manipulators();
     }
+  }
+
+  bool needs_virtual_hid_pointing(void) const {
+    for (auto&& c : connections_) {
+      if (c.needs_virtual_hid_pointing()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void log_events_sizes(void) const {

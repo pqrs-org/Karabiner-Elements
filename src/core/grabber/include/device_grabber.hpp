@@ -38,6 +38,8 @@ public:
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>();
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
 
+    complex_modifications_applied_event_queue_.enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
+
     // Connect manipulator_managers
 
     manipulator_managers_connector_.emplace_back_connection(simple_modifications_manipulator_manager_,
@@ -192,46 +194,34 @@ public:
     });
   }
 
-  void set_profile(const core_configuration::profile& profile) {
-    profile_ = profile;
-
-    update_simple_modifications_manipulators();
-    update_complex_modifications_manipulators();
-    update_fn_function_keys_manipulators();
-
-    // Update virtual_hid_keyboard
-    {
-      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-      if (auto k = types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
-        properties.keyboard_type = *k;
-      }
-      properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(profile.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds());
-      virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
-    }
-  }
-
   void unset_profile(void) {
-    profile_ = core_configuration::profile(nlohmann::json());
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      profile_ = core_configuration::profile(nlohmann::json());
 
-    manipulator_managers_connector_.invalidate_manipulators();
+      manipulator_managers_connector_.invalidate_manipulators();
+    });
   }
 
   void set_system_preferences_values(const system_preferences::values& values) {
-    system_preferences_values_ = values;
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      system_preferences_values_ = values;
 
-    update_fn_function_keys_manipulators();
+      update_fn_function_keys_manipulators();
+    });
   }
 
   void post_frontmost_application_changed_event(const std::string& bundle_identifier,
                                                 const std::string& file_path) {
-    auto event = event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
-                                                                                            file_path);
-    merged_input_event_queue_.emplace_back_event(device_id(0),
-                                                 mach_absolute_time(),
-                                                 event,
-                                                 event_type::key_down,
-                                                 event);
-    manipulate();
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      auto event = event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
+                                                                                              file_path);
+      merged_input_event_queue_.emplace_back_event(device_id(0),
+                                                   mach_absolute_time(),
+                                                   event,
+                                                   event_type::key_down,
+                                                   event);
+      manipulate();
+    });
   }
 
 private:
@@ -293,12 +283,8 @@ private:
     
     output_devices_json();
 
-    if (is_pointing_device_grabbed()) {
-      virtual_hid_device_client_.initialize_virtual_hid_pointing();
-    } else {
-      virtual_hid_device_client_.terminate_virtual_hid_pointing();
-    }
-    
+    update_virtual_hid_pointing();
+
     // ----------------------------------------
     if (mode_ == mode::grabbing) {
       grab_devices();
@@ -356,11 +342,7 @@ private:
     
     output_devices_json();
 
-    if (is_pointing_device_grabbed()) {
-      virtual_hid_device_client_.initialize_virtual_hid_pointing();
-    } else {
-      virtual_hid_device_client_.terminate_virtual_hid_pointing();
-    }
+    update_virtual_hid_pointing();
 
     // ----------------------------------------
     if (mode_ == mode::grabbing) {
@@ -517,6 +499,15 @@ private:
     return false;
   }
 
+  void update_virtual_hid_pointing(void) {
+    if (is_pointing_device_grabbed() ||
+        manipulator_managers_connector_.needs_virtual_hid_pointing()) {
+      virtual_hid_device_client_.initialize_virtual_hid_pointing();
+    } else {
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
+    }
+  }
+
   boost::optional<const core_configuration::profile::device&> find_device_configuration(const human_interface_device& device) {
     if (core_configuration_) {
       for (const auto& d : core_configuration_->get_selected_profile().get_devices()) {
@@ -592,6 +583,26 @@ private:
     if (connected_devices.save_to_file(file_path)) {
       chmod(file_path, 0644);
     }
+  }
+
+  void set_profile(const core_configuration::profile& profile) {
+    profile_ = profile;
+
+    update_simple_modifications_manipulators();
+    update_complex_modifications_manipulators();
+    update_fn_function_keys_manipulators();
+
+    // Update virtual_hid_keyboard
+    {
+      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
+      if (auto k = types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
+        properties.keyboard_type = *k;
+      }
+      properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(profile.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds());
+      virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
+    }
+
+    update_virtual_hid_pointing();
   }
 
   void update_simple_modifications_manipulators(void) {

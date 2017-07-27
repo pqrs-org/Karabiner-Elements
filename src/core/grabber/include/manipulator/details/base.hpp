@@ -22,6 +22,8 @@ public:
 
   virtual bool active(void) const = 0;
 
+  virtual bool needs_virtual_hid_pointing(void) const = 0;
+
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
                                              uint64_t time_stamp) = 0;

@@ -250,7 +250,7 @@
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <size key="minSize" width="783" height="387"/>
-                                                        <size key="maxSize" width="783" height="10000000"/>
+                                                        <size key="maxSize" width="800" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     </textView>
                                                 </subviews>
@@ -277,6 +277,76 @@
                                         <constraint firstItem="BNM-S7-jNe" firstAttribute="centerY" secondItem="rLa-zN-vtF" secondAttribute="centerY" id="k6C-dT-mOp"/>
                                         <constraint firstAttribute="bottom" secondItem="pmW-ja-RxN" secondAttribute="bottom" constant="17" id="mrf-aG-TBs"/>
                                         <constraint firstItem="sZl-yu-fW5" firstAttribute="leading" secondItem="OUd-40-tIR" secondAttribute="leading" constant="17" id="tAv-2p-ATj"/>
+                                    </constraints>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Variables" identifier="" id="cGx-w7-vVq">
+                                <view key="view" id="xSW-Xf-kXV">
+                                    <rect key="frame" x="10" y="33" width="834" height="493"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lhf-zu-dhb">
+                                            <rect key="frame" x="15" y="466" width="371" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="You can investigate internal variables of Karabiner-Elements." id="Rwn-Zi-dJH">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <imageView translatesAutoresizingMaskIntoConstraints="NO" id="Tl1-dp-JpM">
+                                            <rect key="frame" x="17" y="432" width="24" height="24"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="24" id="7jc-KY-96e"/>
+                                                <constraint firstAttribute="height" constant="24" id="b04-sI-4wy"/>
+                                            </constraints>
+                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="NSInfo" id="pMs-PO-cpn"/>
+                                        </imageView>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nu3-E2-k09">
+                                            <rect key="frame" x="49" y="435" width="582" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="You cannot use shortcut keys in EventViewer. Copy the result text from the context menu." id="1FH-1H-hUp">
+                                                <font key="font" metaFont="systemBold"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GP7-yc-xcR">
+                                            <rect key="frame" x="17" y="17" width="800" height="388"/>
+                                            <clipView key="contentView" id="jio-Mp-Rne">
+                                                <rect key="frame" x="1" y="1" width="783" height="386"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textView editable="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="Glx-oy-lpN">
+                                                        <rect key="frame" x="0.0" y="0.0" width="783" height="386"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <size key="minSize" width="783" height="386"/>
+                                                        <size key="maxSize" width="800" height="10000000"/>
+                                                        <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    </textView>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </clipView>
+                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="nnN-0i-1m7">
+                                                <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="x3H-49-ue5">
+                                                <rect key="frame" x="784" y="1" width="15" height="386"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                        </scrollView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="GP7-yc-xcR" secondAttribute="trailing" constant="17" id="7nz-bn-8gp"/>
+                                        <constraint firstItem="Lhf-zu-dhb" firstAttribute="leading" secondItem="xSW-Xf-kXV" secondAttribute="leading" constant="17" id="8Sk-WD-5GA"/>
+                                        <constraint firstAttribute="bottom" secondItem="GP7-yc-xcR" secondAttribute="bottom" constant="17" id="Cdk-jZ-4af"/>
+                                        <constraint firstItem="GP7-yc-xcR" firstAttribute="leading" secondItem="xSW-Xf-kXV" secondAttribute="leading" constant="17" id="Et5-Q9-ec6"/>
+                                        <constraint firstItem="Lhf-zu-dhb" firstAttribute="top" secondItem="xSW-Xf-kXV" secondAttribute="top" constant="10" id="JqX-8J-d25"/>
+                                        <constraint firstItem="GP7-yc-xcR" firstAttribute="top" secondItem="nu3-E2-k09" secondAttribute="bottom" constant="30" id="Kbz-5O-61c"/>
+                                        <constraint firstItem="nu3-E2-k09" firstAttribute="centerY" secondItem="Tl1-dp-JpM" secondAttribute="centerY" id="Rhy-RC-Js9"/>
+                                        <constraint firstItem="nu3-E2-k09" firstAttribute="leading" secondItem="Tl1-dp-JpM" secondAttribute="trailing" constant="10" id="UZv-2g-MPZ"/>
+                                        <constraint firstItem="Tl1-dp-JpM" firstAttribute="leading" secondItem="Lhf-zu-dhb" secondAttribute="leading" id="lVI-2g-aHP"/>
+                                        <constraint firstItem="Tl1-dp-JpM" firstAttribute="top" secondItem="Lhf-zu-dhb" secondAttribute="bottom" constant="10" id="vuR-wf-5Dq"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
@@ -380,6 +450,7 @@
             <connections>
                 <outlet property="frontmostApplicationController" destination="5Ro-l9-Pmw" id="kJT-Hv-RJh"/>
                 <outlet property="keyResponder" destination="925" id="evx-2k-LwC"/>
+                <outlet property="variablesController" destination="Hua-x6-m2N" id="bcq-GU-wQo"/>
                 <outlet property="window" destination="371" id="532"/>
             </connections>
         </customObject>
@@ -395,6 +466,11 @@
         </customObject>
         <userDefaultsController representsSharedInstance="YES" id="W9q-2J-Sz1"/>
         <customObject id="rei-LJ-AZr" customClass="PreferencesManager"/>
+        <customObject id="Hua-x6-m2N" customClass="VariablesController">
+            <connections>
+                <outlet property="textView" destination="Glx-oy-lpN" id="uU6-go-3zQ"/>
+            </connections>
+        </customObject>
     </objects>
     <resources>
         <image name="NSInfo" width="32" height="32"/>

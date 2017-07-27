@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3423B0131F26474A009502CC /* AlertWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3423B0121F26474A009502CC /* AlertWindowController.m */; };
 		3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */; };
 		3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */; };
 		342BE6811EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6801EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m */; };
@@ -48,6 +49,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3423B0111F26474A009502CC /* AlertWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlertWindowController.h; sourceTree = "<group>"; };
+		3423B0121F26474A009502CC /* AlertWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertWindowController.m; sourceTree = "<group>"; };
 		342853091DCB8BD700164476 /* SystemPreferencesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemPreferencesModel.h; sourceTree = "<group>"; };
 		3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemPreferencesModel.m; sourceTree = "<group>"; };
 		3428530C1DCCFDEB00164476 /* SystemPreferencesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemPreferencesManager.h; sourceTree = "<group>"; };
@@ -158,6 +161,8 @@
 		3445E0641D801AF7004555F9 /* PreferencesWindow */ = {
 			isa = PBXGroup;
 			children = (
+				3423B0111F26474A009502CC /* AlertWindowController.h */,
+				3423B0121F26474A009502CC /* AlertWindowController.m */,
 				3445E0651D801AF7004555F9 /* AppDelegate.h */,
 				3445E0661D801AF7004555F9 /* AppDelegate.m */,
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
@@ -350,6 +355,7 @@
 				34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */,
 				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
 				34B13D201EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.m in Sources */,
+				3423B0131F26474A009502CC /* AlertWindowController.m in Sources */,
 				34B13D261EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.m in Sources */,
 				34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */,
 				34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */,

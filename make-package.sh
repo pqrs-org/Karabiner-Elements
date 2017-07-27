@@ -22,7 +22,6 @@ cp version "$basedir"
 cp src/scripts/uninstall.sh "$basedir"
 cp src/scripts/uninstall_core.sh "$basedir"
 cp files/complex_modifications_rules_example.json "$basedir"
-cp -R "src/vendor/Karabiner-VirtualHIDDevice/dist" "$basedir/Karabiner-VirtualHIDDevice"
 cp -R "src/apps/Menu/build/Release/Karabiner-Menu.app" "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
@@ -44,6 +43,9 @@ cp -R "src/apps/Updater/build/Release/Karabiner-Elements.app" "$basedir"
 mkdir -p                  "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"
 cp -R files/LaunchAgents  "pkgroot/Library"
+
+mkdir -p "pkgroot/Library/Extensions"
+cp -R "src/vendor/Karabiner-VirtualHIDDevice/dist/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext" "pkgroot/Library/Extensions"
 
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"

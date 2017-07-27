@@ -20,8 +20,16 @@ public:
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_receiver";
   }
 
+  static const char* get_grabber_alerts_json_file_path(void) {
+    return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_alerts.json";
+  }
+
   static const char* get_devices_json_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_devices.json";
+  }
+
+  static const char* get_manipulator_environment_json_file_path(void) {
+    return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_manipulator_environment.json";
   }
 
   static const char* get_console_user_server_socket_directory(void) {

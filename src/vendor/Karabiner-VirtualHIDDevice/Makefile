@@ -7,13 +7,14 @@ all: gitclean
 	cp -R src/build/Release/VirtualHIDDevice.kext dist/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext
 	cp src/include/karabiner_virtual_hid_device.hpp dist/include
 	cp src/include/karabiner_virtual_hid_device_methods.hpp dist/include
-	cp scripts/update.sh dist
 	cp scripts/uninstall.sh dist
 	bash ./scripts/codesign.sh dist
 	bash ./scripts/setpermissions.sh dist
 
 install:
-	sudo sh dist/update.sh
+	sudo rm -rf /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext
+	sudo cp -R dist/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext /Library/Extensions
+	sudo kextload /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext
 
 uninstall:
 	sudo sh dist/uninstall.sh

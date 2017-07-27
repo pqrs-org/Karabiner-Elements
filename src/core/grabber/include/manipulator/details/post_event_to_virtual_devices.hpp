@@ -181,7 +181,7 @@ public:
         if (auto shell_command = e.get_shell_command()) {
           try {
             if (auto current_console_user_id = session::get_current_console_user_id()) {
-              console_user_server_client client(*current_console_user_id);;
+              console_user_server_client client(*current_console_user_id);
               client.shell_command_execution(*shell_command);
             }
           } catch (std::exception& e) {
@@ -448,6 +448,7 @@ public:
               break;
             case event_queue::queued_event::event::type::key_code:
             case event_queue::queued_event::event::type::pointing_button:
+            case event_queue::queued_event::event::type::set_variable:
             case event_queue::queued_event::event::type::shell_command:
             case event_queue::queued_event::event::type::device_keys_are_released:
             case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
@@ -478,6 +479,7 @@ public:
         }
         break;
 
+      case event_queue::queued_event::event::type::set_variable:
       case event_queue::queued_event::event::type::device_keys_are_released:
       case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
       case event_queue::queued_event::event::type::device_ungrabbed:
@@ -498,6 +500,10 @@ public:
 
   virtual bool active(void) const {
     return !queue_.empty();
+  }
+
+  virtual bool needs_virtual_hid_pointing(void) const {
+    return false;
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,

@@ -1,6 +1,7 @@
 @import Carbon;
 #import "AppDelegate.h"
 #import "FrontmostApplicationController.h"
+#import "VariablesController.h"
 #import "KeyResponder.h"
 #import "PreferencesKeys.h"
 #import "weakify.h"
@@ -10,6 +11,7 @@
 @property(weak) IBOutlet NSWindow* window;
 @property(weak) IBOutlet KeyResponder* keyResponder;
 @property(weak) IBOutlet FrontmostApplicationController* frontmostApplicationController;
+@property(weak) IBOutlet VariablesController* variablesController;
 
 @end
 
@@ -19,6 +21,7 @@
   [self setKeyResponder];
   [self setWindowProperty:self];
   [self.frontmostApplicationController setup];
+  [self.variablesController setup];
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)theApplication {

@@ -44,7 +44,7 @@ public:
                   std::regex r(s);
                   bundle_identifiers_.push_back(r);
                 } catch (std::exception& e) {
-                  logger::get_logger().error("regex error: \"{0}\" {1}", s, e.what());
+                  logger::get_logger().error("complex_modifications json error: Regex error: \"{0}\" {1}", s, e.what());
                 }
               }
             }
@@ -58,13 +58,13 @@ public:
                   std::regex r(s);
                   file_paths_.push_back(r);
                 } catch (std::exception& e) {
-                  logger::get_logger().error("regex error: \"{0}\" {1}", s, e.what());
+                  logger::get_logger().error("complex_modifications json error: Regex error: \"{0}\" {1}", s, e.what());
                 }
               }
             }
           }
         } else {
-          logger::get_logger().error("unknown key: {0} in {1}", key, json.dump());
+          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
       }
     }

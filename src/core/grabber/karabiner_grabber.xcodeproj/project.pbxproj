@@ -36,6 +36,7 @@
 		341F59CA1D5167E900B441A8 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = constants.hpp; sourceTree = "<group>"; };
 		341F59D11D5244F200B441A8 /* local_datagram_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = local_datagram_client.hpp; sourceTree = "<group>"; };
 		341F59DC1D5778A000B441A8 /* iokit_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = iokit_utility.hpp; sourceTree = "<group>"; };
+		34219C1E1F24C75F005234CC /* grabber_alerts_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = grabber_alerts_manager.hpp; path = include/grabber_alerts_manager.hpp; sourceTree = SOURCE_ROOT; };
 		342BE67B1EF148BE00149985 /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = core_configuration.hpp; sourceTree = "<group>"; };
 		342BE67C1EF27CA300149985 /* logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = logger.hpp; sourceTree = "<group>"; };
 		3431346C1DB3CD8A0008F284 /* iopm_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = iopm_client.hpp; sourceTree = "<group>"; };
@@ -222,6 +223,8 @@
 				34A88A881D6840C200DD480B /* device_grabber.hpp */,
 				5E1FEF4C1EC5E13400B01724 /* device_grabber.cpp */,
 				34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */,
+				34219C1E1F24C75F005234CC /* grabber_alerts_manager.hpp */,
+				34A88AA31D69C84900DD480B /* manipulator */,
 				34A88A891D6840C200DD480B /* receiver.hpp */,
 				34A88AA31D69C84900DD480B /* manipulator */,
 			);

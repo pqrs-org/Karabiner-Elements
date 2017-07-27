@@ -54,9 +54,9 @@ static void staticCallback(const char* bundle_identifier,
   NSString* filePathLine = [NSString stringWithFormat:@"File Path:          %@\n\n", filePath];
   NSFont* font = [NSFont fontWithName:@"Menlo" size:11];
   [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:bundleIdentifierLine
-                                                                                    attributes:@{NSFontAttributeName : font}]];
+                                                                      attributes:@{NSFontAttributeName : font}]];
   [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:filePathLine
-                                                                                    attributes:@{NSFontAttributeName : font}]];
+                                                                      attributes:@{NSFontAttributeName : font}]];
 
   [textStorage endEditing];
   [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
