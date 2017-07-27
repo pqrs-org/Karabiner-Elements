@@ -1,3 +1,9 @@
+# Version 0.91.11
+
+* Fixed an issue that modifier flags might become improperly state in complex_modifications.
+  (In complex_modifications rules which changes modifier+modifier to modifier.)
+
+
 # Version 0.91.10
 
 * macOS 10.13 (High Sierra) support has been improved.
