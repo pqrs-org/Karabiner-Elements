@@ -28,8 +28,20 @@ const char* libkrbn_get_distributed_notification_console_user_server_is_disabled
   return krbn::constants::get_distributed_notification_console_user_server_is_disabled();
 }
 
+const char* libkrbn_get_grabber_alerts_json_file_path(void) {
+  return krbn::constants::get_grabber_alerts_json_file_path();
+}
+
 const char* libkrbn_get_devices_json_file_path(void) {
   return krbn::constants::get_devices_json_file_path();
+}
+
+const char* libkrbn_get_manipulator_environment_json_file_path(void) {
+  return krbn::constants::get_manipulator_environment_json_file_path();
+}
+
+const char* libkrbn_get_user_complex_modifications_assets_directory(void) {
+  return krbn::constants::get_user_complex_modifications_assets_directory().c_str();
 }
 
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name) {

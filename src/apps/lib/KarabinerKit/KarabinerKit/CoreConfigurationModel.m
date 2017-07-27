@@ -273,6 +273,22 @@
   return @"";
 }
 
+- (void)removeSelectedProfileComplexModificationsRule:(NSUInteger)index {
+  libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(self.libkrbnCoreConfiguration, index);
+}
+
+- (void)swapSelectedProfileComplexModificationsRules:(NSUInteger)index1 index2:(NSUInteger)index2 {
+  libkrbn_core_configuration_swap_selected_profile_complex_modifications_rules(self.libkrbnCoreConfiguration, index1, index2);
+}
+
+- (int)getSelectedProfileComplexModificationsParameter:(NSString*)name {
+  return libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(self.libkrbnCoreConfiguration, [name UTF8String]);
+}
+
+- (void)setSelectedProfileComplexModificationsParameter:(NSString*)name value:(int)value {
+  libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(self.libkrbnCoreConfiguration, [name UTF8String], value);
+}
+
 - (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
                           productId:(NSUInteger)productId
                          isKeyboard:(BOOL)isKeyboard

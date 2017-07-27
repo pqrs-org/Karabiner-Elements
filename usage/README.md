@@ -3,6 +3,7 @@
 * [Quit Karabiner-Elements](#quit-karabiner-elements)
 * [Uninstall Karabiner-Elements](#uninstall-karabiner-elements)
 * [How to configure Karabiner-Elements](#how-to-configure-karabiner-elements)
+  * [How to use complex modifications](#how-to-use-complex-modifications)
 * [Set keyboard type](#set-keyboard-type)
 
 # Installation
@@ -42,6 +43,36 @@ You can add key modification configurations from Preferences.
 You can investigate the key name in Karabiner-EventViewer.
 
 <img src="img/keycode.png" width="400">
+
+## How to use complex modifications
+
+Open Complex Modifications tab.
+
+<img src="img/complex_modifications1.png" width="400" style="border: 1px solid gray">
+
+Then press the `Import more rules from the Internet` button.
+
+<img src="img/complex_modifications2.png" width="400" style="border: 1px solid gray">
+
+A web browser is opened. Press `Import` button.
+
+<img src="img/complex_modifications3.png" width="400" style="border: 1px solid gray">
+
+A confirmation dialog is opened. Press `Allow`.
+
+<img src="img/complex_modifications4.png" width="400" style="border: 1px solid gray">
+
+Karabiner-Elements Preferences is opened. Press `Import` button.
+
+<img src="img/complex_modifications5.png" width="400" style="border: 1px solid gray">
+
+New rules are imported. Press `Enable` button.
+
+<img src="img/complex_modifications6.png" width="400" style="border: 1px solid gray">
+
+A new rule is enabled.
+
+<img src="img/complex_modifications7.png" width="400" style="border: 1px solid gray">
 
 # Set keyboard type
 

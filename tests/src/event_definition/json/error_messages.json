@@ -1,0 +1,90 @@
+{
+    "from_event_definition": [
+        {
+            "description": "Unknown modifier",
+            "key_code": "spacebar",
+            "modifiers": {
+                "mandatory": [
+                    "shift",
+                    "unknown_modifier"
+                ]
+            }
+        },
+        "not_object",
+        {
+            "description": "key_code is not string",
+            "key_code": 1234
+        },
+        {
+            "description": "pointing_button is not string",
+            "pointing_button": 1234
+        },
+        {
+            "description": "any is not string",
+            "any": 1234
+        },
+        {
+            "description": "any value is not known",
+            "any": "unknown_any"
+        },
+        {
+            "description": "shell_command is not string",
+            "shell_command": 1234
+        },
+        {
+            "description": "set_variable is not object",
+            "set_variable": 1234
+        },
+        {
+            "description": "Duplicated type description",
+            "key_code": "spacebar",
+            "pointing_button": "button1"
+        },
+        {
+            "description": "set_variable.name is not found",
+            "set_variable": {
+                "value": 1234
+            }
+        },
+        {
+            "description": "set_variable.name is not string",
+            "set_variable": {
+                "name": 1234,
+                "value": 1234
+            }
+        },
+        {
+            "description": "set_variable.value is not found",
+            "set_variable": {
+                "name": "variable_name"
+            }
+        },
+        {
+            "description": "set_variable.name is not number",
+            "set_variable": {
+                "name": "variable_name",
+                "value": "1234"
+            }
+        },
+        {
+            "description": "Unknown key",
+            "unknown_key": "dummy"
+        },
+        {
+            "description": "unknown modifiers",
+            "modifiers": {
+                "unknown_modifiers": "dummy"
+            }
+        }
+    ],
+    "to_event_definition": [
+        {
+            "description": "Invalid modifiers",
+            "modifiers": {
+                "mandatory": [
+                    "shift"
+                ]
+            }
+        }
+    ]
+}

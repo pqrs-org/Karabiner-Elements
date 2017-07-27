@@ -316,7 +316,7 @@ public:
 
       auto r = open();
       if (r != kIOReturnSuccess) {
-        logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+        //logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
         return;
       }
 
@@ -392,7 +392,7 @@ public:
             // ----------------------------------------
             auto r = open(kIOHIDOptionsTypeSeizeDevice);
             if (r != kIOReturnSuccess) {
-              logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+              //logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
               return;
             }
 
@@ -640,7 +640,7 @@ public:
           r = IOHIDDeviceSetValue(device_, element, value);
 
           if (r != kIOReturnSuccess) {
-            logger::get_logger().error("IOHIDDeviceSetValue error {1} for {2} @ {0}", __PRETTY_FUNCTION__, r, get_name_for_log());
+            //logger::get_logger().error("IOHIDDeviceSetValue error {1} for {2} @ {0}", __PRETTY_FUNCTION__, r, get_name_for_log());
           }
 
           CFRelease(value);
@@ -736,7 +736,7 @@ private:
                 size_t size = pressed_keys_.size();
                 pressed_keys_.erase(elements_key(usage_page, usage));
                 if (size > 0 && pressed_keys_.empty()) {
-                  event_queue::queued_event::event event(event_queue::queued_event::event::type::device_keys_are_released, 1);
+                  auto event = event_queue::queued_event::event::make_device_keys_are_released_event();
                   input_event_queue_.emplace_back_event(device_id_,
                                                         time_stamp,
                                                         event,
@@ -755,7 +755,7 @@ private:
                 size_t size = pressed_pointing_buttons_.size();
                 pressed_pointing_buttons_.erase(elements_key(usage_page, usage));
                 if (size > 0 && pressed_pointing_buttons_.empty()) {
-                  event_queue::queued_event::event event(event_queue::queued_event::event::type::device_pointing_buttons_are_released, 1);
+                  auto event = event_queue::queued_event::event::make_device_pointing_buttons_are_released_event();
                   input_event_queue_.emplace_back_event(device_id_,
                                                         time_stamp,
                                                         event,

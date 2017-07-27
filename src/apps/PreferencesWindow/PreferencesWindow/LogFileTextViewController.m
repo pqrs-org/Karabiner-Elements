@@ -115,6 +115,12 @@ static void log_updated_callback(const char* line, void* refcon) {
     if (!self) return;
 
     [self.textView.textStorage beginEditing];
+
+    // Clear if text is huge.
+    if (self.textView.textStorage.length > 1024 * 1024) {
+      [self.textView.textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
+    }
+
     [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:lineString
                                                                                       attributes:[self stringAttributes:level]]];
     [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"

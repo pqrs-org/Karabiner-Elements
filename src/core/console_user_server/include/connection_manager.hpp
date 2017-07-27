@@ -2,10 +2,12 @@
 
 #include "configuration_manager.hpp"
 #include "constants.hpp"
+#include "frontmost_application_observer.hpp"
 #include "gcd_utility.hpp"
 #include "grabber_client.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
+#include "receiver.hpp"
 #include "session.hpp"
 #include "system_preferences_monitor.hpp"
 #include "version_monitor.hpp"
@@ -31,6 +33,10 @@ public:
           if (auto uid = session::get_current_console_user_id()) {
             if (current_uid == *uid) {
               try {
+                if (!receiver_) {
+                  receiver_ = std::make_unique<receiver>();
+                }
+
                 if (!grabber_client_) {
                   version_monitor_.manual_check();
 
@@ -48,7 +54,13 @@ public:
                   configuration_manager_ = std::make_unique<configuration_manager>();
                 }
 
+                if (!frontmost_application_observer_) {
+                  frontmost_application_observer_ = std::make_unique<frontmost_application_observer>(
+                      std::bind(&connection_manager::frontmost_application_changed_callback, this, std::placeholders::_1, std::placeholders::_2));
+                }
+
                 return;
+
               } catch (std::exception& ex) {
                 logger::get_logger().warn(ex.what());
               }
@@ -69,9 +81,11 @@ public:
 
 private:
   void release(void) {
+    frontmost_application_observer_ = nullptr;
     configuration_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     grabber_client_ = nullptr;
+    receiver_ = nullptr;
   }
 
   static void static_grabber_is_launched_callback(CFNotificationCenterRef center,
@@ -96,12 +110,30 @@ private:
     }
   }
 
+  void frontmost_application_changed_callback(const std::string& bundle_identifier,
+                                              const std::string& file_path) {
+    if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
+        bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
+      return;
+    }
+
+    if (grabber_client_) {
+      grabber_client_->frontmost_application_changed(bundle_identifier, file_path);
+    }
+  }
+
   version_monitor& version_monitor_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> timer_;
 
+  std::unique_ptr<receiver> receiver_;
+
   std::unique_ptr<configuration_manager> configuration_manager_;
   std::unique_ptr<grabber_client> grabber_client_;
   std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
+
+  // `frontmost_application_observer` does not work properly in karabiner_grabber after fast user switching.
+  // Therefore, we have to use `frontmost_application_observer` in `console_user_server`.
+  std::unique_ptr<frontmost_application_observer> frontmost_application_observer_;
 };
 } // namespace krbn

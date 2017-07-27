@@ -6,7 +6,7 @@
 * `karabiner_console_user_server`
   * Run with console user privilege.
   * Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
-  * Monitor a karabiner configuration file and notify changes to `karabiner_grabber`.
+  * Execute shell commands which are specified by `shell_command` in `complex_modifications`.
   * `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
 
 ## program sequence

@@ -13,6 +13,7 @@
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <boost/bind.hpp>
+#include <boost/optional/optional_io.hpp>
 #include <iostream>
 #include <mach/mach_time.h>
 
@@ -145,6 +146,10 @@ private:
           }
           break;
 
+        case krbn::event_queue::queued_event::event::type::shell_command:
+          std::cout << "shell_command" << std::endl;
+          break;
+
         case krbn::event_queue::queued_event::event::type::device_keys_are_released:
           std::cout << "device_keys_are_released for " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
           break;
@@ -165,6 +170,16 @@ private:
 
         case krbn::event_queue::queued_event::event::type::event_from_ignored_device:
           std::cout << "event_from_ignored_device from " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::frontmost_application_changed:
+          std::cout << "frontmost_application_changed "
+                    << queued_event.get_event().get_frontmost_application_bundle_identifier() << " "
+                    << queued_event.get_event().get_frontmost_application_file_path() << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::set_variable:
+          std::cout << "set_variable" << std::endl;
           break;
       }
     }

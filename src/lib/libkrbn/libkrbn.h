@@ -18,7 +18,10 @@ void libkrbn_initialize(void);
 const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
 const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(void);
 const char* _Nonnull libkrbn_get_distributed_notification_console_user_server_is_disabled(void);
+const char* _Nonnull libkrbn_get_grabber_alerts_json_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
+const char* _Nonnull libkrbn_get_manipulator_environment_json_file_path(void);
+const char* _Nonnull libkrbn_get_user_complex_modifications_assets_directory(void);
 
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name);
 void libkrbn_unlock_single_application(void);
@@ -99,6 +102,13 @@ void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn
 
 size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(libkrbn_core_configuration* _Nonnull p);
 const char* _Nullable libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(libkrbn_core_configuration* _Nonnull p, size_t index);
+void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(libkrbn_core_configuration* _Nonnull p, size_t index);
+void libkrbn_core_configuration_swap_selected_profile_complex_modifications_rules(libkrbn_core_configuration* _Nonnull p, size_t index1, size_t index2);
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* _Nonnull p,
+                                                                                    const char* _Nonnull name);
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(libkrbn_core_configuration* _Nonnull p,
+                                                                                     const char* _Nonnull name,
+                                                                                     int value);
 
 // profile::virtual_hid_device
 
@@ -141,6 +151,35 @@ void libkrbn_core_configuration_get_selected_profile_device_product_manufacturer
                                                                                                   uint32_t product_id,
                                                                                                   const char * _Nonnull * _Nullable product,
                                                                                                   const char * _Nonnull * _Nullable manufacturer);
+
+// ----------------------------------------
+// libkrbn_complex_modifications_assets_manager
+
+typedef void libkrbn_complex_modifications_assets_manager;
+
+bool libkrbn_complex_modifications_assets_manager_initialize(libkrbn_complex_modifications_assets_manager* _Nullable* _Nonnull out);
+void libkrbn_complex_modifications_assets_manager_terminate(libkrbn_complex_modifications_assets_manager* _Nullable* _Nonnull p);
+
+void libkrbn_complex_modifications_assets_manager_reload(libkrbn_complex_modifications_assets_manager* _Nonnull p);
+
+size_t libkrbn_complex_modifications_assets_manager_get_files_size(libkrbn_complex_modifications_assets_manager* _Nonnull p);
+const char* _Nullable libkrbn_complex_modifications_assets_manager_get_file_title(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                                                  size_t index);
+
+size_t libkrbn_complex_modifications_assets_manager_get_file_rules_size(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                                        size_t file_index);
+const char* _Nullable libkrbn_complex_modifications_assets_manager_get_file_rule_description(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                                                             size_t file_index,
+                                                                                             size_t index);
+
+void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                                                                  size_t file_index,
+                                                                                                  size_t index,
+                                                                                                  libkrbn_core_configuration* _Nonnull q);
+bool libkrbn_complex_modifications_assets_manager_is_user_file(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                               size_t index);
+void libkrbn_complex_modifications_assets_manager_erase_file(libkrbn_complex_modifications_assets_manager* _Nonnull p,
+                                                             size_t index);
 
 // ----------------------------------------
 // libkrbn_configuration_monitor
@@ -216,6 +255,26 @@ bool libkrbn_version_monitor_initialize(libkrbn_version_monitor* _Nullable* _Non
                                         libkrbn_version_monitor_callback _Nullable callback,
                                         void* _Nullable refcon);
 void libkrbn_version_monitor_terminate(libkrbn_version_monitor* _Nullable* _Nonnull p);
+
+// ----------------------------------------
+// libkrbn_manipulator_environment_monitor
+
+typedef void libkrbn_manipulator_environment_monitor;
+typedef void (*libkrbn_manipulator_environment_monitor_callback)(void* _Nullable refcon);
+bool libkrbn_manipulator_environment_monitor_initialize(libkrbn_manipulator_environment_monitor* _Nullable* _Nonnull out,
+                                                        libkrbn_manipulator_environment_monitor_callback _Nullable callback,
+                                                        void* _Nullable refcon);
+void libkrbn_manipulator_environment_monitor_terminate(libkrbn_manipulator_environment_monitor* _Nullable* _Nonnull p);
+
+// ----------------------------------------
+// libkrbn_grabber_alerts_monitor
+
+typedef void libkrbn_grabber_alerts_monitor;
+typedef void (*libkrbn_grabber_alerts_monitor_callback)(void* _Nullable refcon);
+bool libkrbn_grabber_alerts_monitor_initialize(libkrbn_grabber_alerts_monitor* _Nullable* _Nonnull out,
+                                               libkrbn_grabber_alerts_monitor_callback _Nullable callback,
+                                               void* _Nullable refcon);
+void libkrbn_grabber_alerts_monitor_terminate(libkrbn_grabber_alerts_monitor* _Nullable* _Nonnull p);
 
 #ifdef __cplusplus
 }

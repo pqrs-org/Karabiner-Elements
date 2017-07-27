@@ -40,9 +40,9 @@ TEST_CASE("valid") {
   {
     auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
     auto& rules = complex_modifications.get_rules();
-    REQUIRE(complex_modifications.get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 800);
-    REQUIRE(rules[0].get_manipulators()[0].get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 800);
-    REQUIRE(rules[0].get_manipulators()[2].get_parameters().get_basic().get_to_if_alone_timeout_milliseconds() == 400);
+    REQUIRE(complex_modifications.get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 800);
+    REQUIRE(rules[0].get_manipulators()[0].get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 800);
+    REQUIRE(rules[0].get_manipulators()[2].get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 400);
     REQUIRE(rules[0].get_description() == "Change control+[ to escape.");
     REQUIRE(rules[1].get_description() == "description test");
     REQUIRE(rules[2].get_description() == "");
@@ -506,6 +506,10 @@ TEST_CASE("profile.to_json") {
     nlohmann::json json;
     krbn::core_configuration::profile profile(json);
     nlohmann::json expected({
+        {"complex_modifications", nlohmann::json::object({
+                                      {"rules", nlohmann::json::array()},
+                                      {"parameters", nlohmann::json::object({{"basic.to_if_alone_timeout_milliseconds", 1000}})},
+                                  })},
         {"devices", nlohmann::json::array()},
         {"name", ""},
         {"selected", false},
@@ -648,6 +652,10 @@ TEST_CASE("profile.to_json") {
     auto expected_virtual_hid_keyboard = get_default_virtual_hid_keyboard_json();
     expected_virtual_hid_keyboard["keyboard_type"] = "iso";
     nlohmann::json expected({
+        {"complex_modifications", nlohmann::json::object({
+                                      {"rules", nlohmann::json::array()},
+                                      {"parameters", nlohmann::json::object({{"basic.to_if_alone_timeout_milliseconds", 1000}})},
+                                  })},
         {"devices", {
                         {
                             {"identifiers", {
@@ -765,38 +773,178 @@ TEST_CASE("simple_modifications.to_json") {
   }
 }
 
-TEST_CASE("complex_modifications.parameters") {
+TEST_CASE("complex_modifications") {
   // empty json
   {
     nlohmann::json json;
-    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
-    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1000);
+    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    REQUIRE(complex_modifications.get_rules().empty());
+    REQUIRE(complex_modifications.get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 1000);
   }
 
   // load values from json
   {
     nlohmann::json json({
         {
-            "basic", {
-                         {"to_if_alone_timeout_milliseconds", 1234},
+            "rules", {
+                         {
+                             {"description", "rule 1"},
+                         },
+                         {
+                             {"description", "rule 2"},
+                         },
+                         {
+                             {"description", "rule 3"},
+                         },
                      },
         },
     });
-    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
-    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1234);
+    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    REQUIRE(complex_modifications.get_rules().size() == 3);
   }
 
   // invalid values in json
   {
     nlohmann::json json({
         {
-            "basic", {
-                         {"to_if_alone_timeout_milliseconds", "1234"},
+            "rules", "rule 1",
+        },
+    });
+    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    REQUIRE(complex_modifications.get_rules().empty());
+  }
+}
+
+TEST_CASE("complex_modifications.push_back_rule") {
+  {
+    nlohmann::json json({
+        {
+            "rules", {
+                         {
+                             {"description", "rule 1"},
+                         },
+                         {
+                             {"description", "rule 2"},
+                         },
+                         {
+                             {"description", "rule 3"},
+                         },
                      },
         },
     });
+    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    auto& rules = complex_modifications.get_rules();
+    REQUIRE(rules.size() == 3);
+    REQUIRE(rules[0].get_description() == "rule 1");
+    REQUIRE(rules[1].get_description() == "rule 2");
+    REQUIRE(rules[2].get_description() == "rule 3");
+
+    krbn::core_configuration::profile::complex_modifications::parameters parameters;
+    nlohmann::json rule_json;
+    rule_json["description"] = "rule 4";
+    krbn::core_configuration::profile::complex_modifications::rule rule(rule_json, parameters);
+
+    complex_modifications.push_back_rule(rule);
+    REQUIRE(rules.size() == 4);
+    REQUIRE(rules[0].get_description() == "rule 1");
+    REQUIRE(rules[1].get_description() == "rule 2");
+    REQUIRE(rules[2].get_description() == "rule 3");
+    REQUIRE(rules[3].get_description() == "rule 4");
+  }
+}
+
+TEST_CASE("complex_modifications.erase_rule") {
+  {
+    nlohmann::json json({
+        {
+            "rules", {
+                         {
+                             {"description", "rule 1"},
+                         },
+                         {
+                             {"description", "rule 2"},
+                         },
+                         {
+                             {"description", "rule 3"},
+                         },
+                     },
+        },
+    });
+    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    auto& rules = complex_modifications.get_rules();
+    REQUIRE(rules.size() == 3);
+    REQUIRE(rules[0].get_description() == "rule 1");
+    REQUIRE(rules[1].get_description() == "rule 2");
+    REQUIRE(rules[2].get_description() == "rule 3");
+
+    complex_modifications.erase_rule(0);
+    REQUIRE(rules.size() == 2);
+    REQUIRE(rules[0].get_description() == "rule 2");
+    REQUIRE(rules[1].get_description() == "rule 3");
+
+    complex_modifications.erase_rule(1);
+    REQUIRE(rules.size() == 1);
+    REQUIRE(rules[0].get_description() == "rule 2");
+
+    complex_modifications.erase_rule(1);
+    REQUIRE(rules.size() == 1);
+  }
+}
+
+TEST_CASE("complex_modifications.swap_rules") {
+  {
+    nlohmann::json json({
+        {
+            "rules", {
+                         {
+                             {"description", "rule 1"},
+                         },
+                         {
+                             {"description", "rule 2"},
+                         },
+                         {
+                             {"description", "rule 3"},
+                         },
+                     },
+        },
+    });
+    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    auto& rules = complex_modifications.get_rules();
+    REQUIRE(rules.size() == 3);
+    REQUIRE(rules[0].get_description() == "rule 1");
+    REQUIRE(rules[1].get_description() == "rule 2");
+    REQUIRE(rules[2].get_description() == "rule 3");
+
+    complex_modifications.swap_rules(1, 2);
+    REQUIRE(rules.size() == 3);
+    REQUIRE(rules[0].get_description() == "rule 1");
+    REQUIRE(rules[1].get_description() == "rule 3");
+    REQUIRE(rules[2].get_description() == "rule 2");
+  }
+}
+
+TEST_CASE("complex_modifications.parameters") {
+  // empty json
+  {
+    nlohmann::json json;
     krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
-    REQUIRE(parameters.get_basic().get_to_if_alone_timeout_milliseconds() == 1000);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1000);
+  }
+
+  // load values from json
+  {
+    nlohmann::json json;
+    json["basic.to_if_alone_timeout_milliseconds"] = 1234;
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1234);
+  }
+
+  // invalid values in json
+  {
+    nlohmann::json json;
+    json["basic.to_if_alone_timeout_milliseconds"] = "1234";
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1000);
   }
 }
 

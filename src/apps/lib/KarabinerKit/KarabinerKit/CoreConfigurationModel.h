@@ -54,6 +54,10 @@
 
 @property(readonly) NSUInteger selectedProfileComplexModificationsRulesCount;
 - (NSString*)selectedProfileComplexModificationsRuleDescription:(NSUInteger)index;
+- (void)removeSelectedProfileComplexModificationsRule:(NSUInteger)index;
+- (void)swapSelectedProfileComplexModificationsRules:(NSUInteger)index1 index2:(NSUInteger)index2;
+- (int)getSelectedProfileComplexModificationsParameter:(NSString*)name;
+- (void)setSelectedProfileComplexModificationsParameter:(NSString*)name value:(int)value;
 
 - (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
                           productId:(NSUInteger)productId

@@ -1,4 +1,5 @@
 #import "PreferencesWindowController.h"
+#import "ComplexModificationsParametersTabController.h"
 #import "ComplexModificationsRulesTableViewController.h"
 #import "DevicesTableViewController.h"
 #import "FnFunctionKeysTableViewController.h"
@@ -14,6 +15,7 @@
 
 @interface PreferencesWindowController ()
 
+@property(weak) IBOutlet ComplexModificationsParametersTabController* complexModificationsParametersTabController;
 @property(weak) IBOutlet ComplexModificationsRulesTableViewController* complexModificationsRulesTableViewController;
 @property(weak) IBOutlet DevicesTableViewController* devicesTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
@@ -48,6 +50,7 @@
 
   [self.fnFunctionKeysTableViewController setup];
   [self.complexModificationsRulesTableViewController setup];
+  [self.complexModificationsParametersTabController setup];
   [self.devicesTableViewController setup];
   [self setupVirtualHIDKeyboardTypePopUpButton];
   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
@@ -81,17 +84,6 @@
                                                   if (!self) return;
 
                                                   [self updateSystemPreferencesUIValues];
-                                                }];
-  [[NSNotificationCenter defaultCenter] addObserverForName:kSelectedProfileChanged
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  @strongify(self);
-                                                  if (!self) return;
-
-                                                  [self setupVirtualHIDKeyboardTypePopUpButton];
-                                                  [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
-                                                  [self.simpleModificationsMenuManager setupVendor];
                                                 }];
 
   // ----------------------------------------
@@ -216,11 +208,16 @@
 - (void)setupMiscTabControls {
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
 
+  /*
   if (coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup) {
     self.checkForUpdateOnStartupButton.state = NSOnState;
   } else {
     self.checkForUpdateOnStartupButton.state = NSOffState;
   }
+  */
+  
+  // disable update check to not update to original version
+  self.checkForUpdateOnStartupButton.state = NSOffState;
 
   if (libkrbn_system_core_configuration_file_path_exists()) {
     self.systemDefaultProfileStateLabel.hidden = YES;

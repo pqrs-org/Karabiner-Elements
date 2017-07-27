@@ -50,20 +50,25 @@ public:
           break;
 
         case event_queue::queued_event::event::type::event_from_ignored_device:
-          if (auto original_type = front_input_event.get_event().get_original_type()) {
-            if (auto original_integer_value = front_input_event.get_event().get_original_integer_value()) {
-              for (auto&& m : manipulators_) {
-                m->handle_event_from_ignored_device(*original_type,
-                                                    *original_integer_value,
-                                                    front_input_event.get_event_type(),
-                                                    output_event_queue,
-                                                    front_input_event.get_time_stamp());
-              }
-            }
+          for (auto&& m : manipulators_) {
+            m->handle_event_from_ignored_device(front_input_event,
+                                                output_event_queue);
           }
           break;
 
-        default:
+        case event_queue::queued_event::event::type::caps_lock_state_changed:
+        case event_queue::queued_event::event::type::frontmost_application_changed:
+        case event_queue::queued_event::event::type::set_variable:
+          // Do nothing
+          break;
+
+        case event_queue::queued_event::event::type::key_code:
+        case event_queue::queued_event::event::type::pointing_button:
+        case event_queue::queued_event::event::type::pointing_x:
+        case event_queue::queued_event::event::type::pointing_y:
+        case event_queue::queued_event::event::type::pointing_vertical_wheel:
+        case event_queue::queued_event::event::type::pointing_horizontal_wheel:
+        case event_queue::queued_event::event::type::shell_command:
           for (auto&& m : manipulators_) {
             m->manipulate(front_input_event,
                           input_event_queue,
@@ -92,6 +97,15 @@ public:
 
   size_t get_manipulators_size(void) {
     return manipulators_.size();
+  }
+
+  bool needs_virtual_hid_pointing(void) const {
+    for (auto&& m : manipulators_) {
+      if (m->needs_virtual_hid_pointing()) {
+        return true;
+      }
+    }
+    return false;
   }
 
 private:

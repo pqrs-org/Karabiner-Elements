@@ -31,10 +31,16 @@ Karabiner-Elements is ready to use today. It provides a useful subset of Karabin
 
 You can download the latest enhanced Karabiner-Elements from https://github.com/starsy/Karabiner-Elements/releases
 
+### Old releases
+
+You can download previous versions of Karabiner-Elements from here:
+https://github.com/tekezo/pqrs.org/tree/master/webroot/osx/karabiner/files
+
 ## System requirements
 
 * OS X 10.11.*
 * OS X 10.12.*
+* OS X 10.13.*
 
 # Usage
 
@@ -46,6 +52,7 @@ Detailed usage instructions are provided in [the Usage README](usage/README.md).
 * Modifier Flag Sync: Synchronize modifier flags across all connected keyboards.
 * Simple Modifications: Map normal keys to arbitrary key functions.
 * Function Keys: Map function keys to arbitrary key functions.
+* Complex Modifications: Map keys by complex rules. eg key to modifiers, modifiers+key to key, send key event if pressed alone, etc.
 * Devices: Apply modifications to specified keyboards only.
 * Virtual Keyboard: Set the virtual keyboard's type (ANSI, ISO, JIS) and its Caps Lock Delay.
 * Profiles: Support the creation of multiple profiles that the user can switch between.

@@ -51,7 +51,7 @@ krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
 krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
 krbn::event_queue::queued_event::event up_arrow_event(krbn::key_code::up_arrow);
 
-krbn::event_queue::queued_event::event device_ungrabbed_event(krbn::event_queue::queued_event::event::type::device_ungrabbed, 1);
+auto device_ungrabbed_event = krbn::event_queue::queued_event::event::make_device_ungrabbed_event();
 } // namespace
 
 using krbn::manipulator::details::event_definition;
@@ -543,6 +543,33 @@ TEST_CASE("manipulator.manipulator_manager") {
       PUSH_BACK_LAZY_QUEUED_EVENT(expected, 1, 402, fn_event, key_down, spacebar_event);
       PUSH_BACK_QUEUED_EVENT(expected, 1, 502, fn_event, key_up, fn_event);
       PUSH_BACK_QUEUED_EVENT(expected, 1, 602, tab_event, key_up, spacebar_event);
+    }
+  }
+}
+
+TEST_CASE("needs_virtual_hid_pointing") {
+  for (const auto& file_name : {
+           std::string("json/needs_virtual_hid_pointing_test1.json"),
+           std::string("json/needs_virtual_hid_pointing_test2.json"),
+           std::string("json/needs_virtual_hid_pointing_test3.json"),
+           std::string("json/needs_virtual_hid_pointing_test4.json"),
+       }) {
+    std::ifstream json_file(file_name);
+    auto json = nlohmann::json::parse(json_file);
+    krbn::manipulator::manipulator_manager manager;
+    for (const auto& j : json) {
+      krbn::core_configuration::profile::complex_modifications::parameters parameters;
+      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j, parameters);
+      manager.push_back_manipulator(m);
+    }
+
+    if (file_name == "json/needs_virtual_hid_pointing_test1.json") {
+      REQUIRE(!manager.needs_virtual_hid_pointing());
+    }
+    if (file_name == "json/needs_virtual_hid_pointing_test2.json" ||
+        file_name == "json/needs_virtual_hid_pointing_test3.json" ||
+        file_name == "json/needs_virtual_hid_pointing_test4.json") {
+      REQUIRE(manager.needs_virtual_hid_pointing());
     }
   }
 }

@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_RUNNER
 #include "../../vendor/catch/catch.hpp"
 
+#include "filesystem.hpp"
 #include "manipulator/details/types.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
@@ -21,6 +22,19 @@ krbn::modifier_flag_manager::active_modifier_flag left_shift_1(krbn::modifier_fl
 krbn::modifier_flag_manager::active_modifier_flag right_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
                                                                 krbn::modifier_flag::right_shift,
                                                                 krbn::device_id(1));
+
+void set_file_logger(const std::string& file_path) {
+  unlink(file_path.c_str());
+  auto l = spdlog::rotating_logger_mt(file_path, file_path, 256 * 1024, 3);
+  l->set_pattern("[%l] %v");
+  krbn::logger::set_logger(l);
+}
+
+void set_null_logger(void) {
+  static auto l = spdlog::stdout_logger_mt("null");
+  l->flush_on(spdlog::level::off);
+  krbn::logger::set_logger(l);
+}
 } // namespace
 
 TEST_CASE("event_definition.make_modifiers") {
@@ -587,6 +601,34 @@ TEST_CASE("manipulator.details.to_event_definition") {
     REQUIRE(event_definition.get_pointing_button() == boost::none);
     REQUIRE(event_definition.get_modifiers().size() == 0);
   }
+  {
+    std::string shell_command = "open /Applications/Safari.app";
+    nlohmann::json json({
+        {"shell_command", shell_command},
+    });
+    krbn::manipulator::details::to_event_definition event_definition(json);
+    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::shell_command);
+    REQUIRE(event_definition.get_key_code() == boost::none);
+    REQUIRE(event_definition.get_pointing_button() == boost::none);
+    REQUIRE(event_definition.get_shell_command() == shell_command);
+  }
+}
+
+TEST_CASE("event_definition.error_messages") {
+  set_file_logger("tmp/error_messages.log");
+
+  {
+    std::ifstream json_file("json/error_messages.json");
+    auto json = nlohmann::json::parse(json_file);
+    for (const auto& j : json["from_event_definition"]) {
+      krbn::manipulator::details::from_event_definition from_event_definition(j);
+    }
+    for (const auto& j : json["to_event_definition"]) {
+      krbn::manipulator::details::to_event_definition to_event_definition(j);
+    }
+  }
+
+  set_null_logger();
 }
 
 int main(int argc, char* const argv[]) {

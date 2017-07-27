@@ -5,6 +5,7 @@
 #define BOOST_ERROR_CODE_HEADER_ONLY
 #define BOOST_REGEX_NO_LIB
 #define BOOST_SYSTEM_NO_LIB
+#define BOOST_SYSTEM_NO_DEPRECATED
 
 // Build error in boost/asio.hpp @ 1.63.0 with -Wshorten-64-to-32
 

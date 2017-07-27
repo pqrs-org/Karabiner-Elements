@@ -3,10 +3,6 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
 
 # ------------------------------------------------------------
-# Update Karabiner-VirtualHIDDevice
-
-sh '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-VirtualHIDDevice/update.sh'
-
 # Relaunch karabiner_grabber
 
 killall karabiner_grabber

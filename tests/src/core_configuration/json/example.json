@@ -90,9 +90,7 @@
                                 ],
                                 "type": "basic",
                                 "parameters": {
-                                    "basic": {
-                                        "to_if_alone_timeout_milliseconds": 400
-                                    }
+                                    "basic.to_if_alone_timeout_milliseconds": 400
                                 }
                             }
                         ]
@@ -113,11 +111,9 @@
                     "keep_me": true
                 },
                 "parameters": {
-                    "basic": {
-                        "to_if_alone_timeout_milliseconds": 800,
-                        "dummy": {
-                            "keep_me": true
-                        }
+                    "basic.to_if_alone_timeout_milliseconds": 800,
+                    "dummy": {
+                        "keep_me": true
                     }
                 }
             },

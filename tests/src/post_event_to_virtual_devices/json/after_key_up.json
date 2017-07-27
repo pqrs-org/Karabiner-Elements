@@ -1,0 +1,79 @@
+[
+    {
+        "description": "left_shift+right_control -> left_command (escape)",
+        "from": {
+            "key_code": "right_control",
+            "modifiers": {
+                "mandatory": [
+                    "left_shift"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_command"
+            }
+        ],
+        "to_after_key_up": [
+            {
+                "key_code": "escape"
+            }
+        ],
+        "type": "basic"
+    },
+    {
+        "description": "left_shift+f1 -> f2 (escape)",
+        "from": {
+            "key_code": "f1",
+            "modifiers": {
+                "mandatory": [
+                    "left_shift"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f2"
+            }
+        ],
+        "to_after_key_up": [
+            {
+                "key_code": "escape"
+            }
+        ],
+        "type": "basic"
+    },
+    {
+        "description": "spacebar -> left_shift (with to_alone)",
+        "from": {
+            "key_code": "spacebar",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_shift"
+            }
+        ],
+        "to_after_key_up": [
+            {
+                "key_code": "tab"
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "spacebar"
+            }
+        ],
+        "type": "basic"
+    }
+]

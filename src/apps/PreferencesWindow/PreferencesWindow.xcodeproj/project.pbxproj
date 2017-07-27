@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3423B0131F26474A009502CC /* AlertWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3423B0121F26474A009502CC /* AlertWindowController.m */; };
 		3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */; };
 		3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */; };
 		342BE6811EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6801EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m */; };
 		342BE6841EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6831EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.m */; };
 		342BE6871EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6861EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m */; };
 		342BE68A1EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 342BE6891EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m */; };
+		344370C21F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344370C11F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m */; };
+		344370C51F026CE4003C38F5 /* ComplexModificationsParametersTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344370C41F026CE4003C38F5 /* ComplexModificationsParametersTabController.m */; };
 		3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0661D801AF7004555F9 /* AppDelegate.m */; };
 		3445E06A1D801AF7004555F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3445E0691D801AF7004555F9 /* main.m */; };
 		3445E06C1D801AF7004555F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3445E06B1D801AF7004555F9 /* Assets.xcassets */; };
@@ -27,6 +30,9 @@
 		3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB691D8061E40005D30D /* PreferencesWindowController.m */; };
 		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
 		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
+		34B13D201EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B13D1F1EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.m */; };
+		34B13D231EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B13D221EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.m */; };
+		34B13D261EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B13D251EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.m */; };
 		34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */; };
 		34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B341DBE58AA00EB3583 /* DevicesTableCellView.m */; };
 		34B97B391DBE5C9E00EB3583 /* DevicesTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B97B381DBE5C9E00EB3583 /* DevicesTableViewDelegate.m */; };
@@ -43,6 +49,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3423B0111F26474A009502CC /* AlertWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlertWindowController.h; sourceTree = "<group>"; };
+		3423B0121F26474A009502CC /* AlertWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertWindowController.m; sourceTree = "<group>"; };
 		342853091DCB8BD700164476 /* SystemPreferencesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemPreferencesModel.h; sourceTree = "<group>"; };
 		3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemPreferencesModel.m; sourceTree = "<group>"; };
 		3428530C1DCCFDEB00164476 /* SystemPreferencesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemPreferencesManager.h; sourceTree = "<group>"; };
@@ -55,6 +63,10 @@
 		342BE6861EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsRulesTableViewController.m; sourceTree = "<group>"; };
 		342BE6881EF6D7E900149985 /* ComplexModificationsRulesTableCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsRulesTableCellView.h; sourceTree = "<group>"; };
 		342BE6891EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsRulesTableCellView.m; sourceTree = "<group>"; };
+		344370C01F011AED003C38F5 /* ComplexModificationsFileImportWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsFileImportWindowController.h; sourceTree = "<group>"; };
+		344370C11F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsFileImportWindowController.m; sourceTree = "<group>"; };
+		344370C31F026CE4003C38F5 /* ComplexModificationsParametersTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsParametersTabController.h; sourceTree = "<group>"; };
+		344370C41F026CE4003C38F5 /* ComplexModificationsParametersTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsParametersTabController.m; sourceTree = "<group>"; };
 		3445E0621D801AF7004555F9 /* Karabiner-Elements.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Karabiner-Elements.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3445E0651D801AF7004555F9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		3445E0661D801AF7004555F9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -82,6 +94,12 @@
 		3469EB6E1D8127980005D30D /* LogFileTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogFileTextViewController.m; sourceTree = "<group>"; };
 		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
+		34B13D1E1EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsAssetsOutlineViewDataSource.h; sourceTree = "<group>"; };
+		34B13D1F1EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsAssetsOutlineViewDataSource.m; sourceTree = "<group>"; };
+		34B13D211EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsAssetsOutlineViewDelegate.h; sourceTree = "<group>"; };
+		34B13D221EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsAssetsOutlineViewDelegate.m; sourceTree = "<group>"; };
+		34B13D241EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsAssetsOutlineCellView.h; sourceTree = "<group>"; };
+		34B13D251EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsAssetsOutlineCellView.m; sourceTree = "<group>"; };
 		34B97B281DBCC23D00EB3583 /* DevicesTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableViewDataSource.h; sourceTree = "<group>"; };
 		34B97B291DBCC23D00EB3583 /* DevicesTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DevicesTableViewDataSource.m; sourceTree = "<group>"; };
 		34B97B331DBE58AA00EB3583 /* DevicesTableCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevicesTableCellView.h; sourceTree = "<group>"; };
@@ -143,9 +161,21 @@
 		3445E0641D801AF7004555F9 /* PreferencesWindow */ = {
 			isa = PBXGroup;
 			children = (
+				3423B0111F26474A009502CC /* AlertWindowController.h */,
+				3423B0121F26474A009502CC /* AlertWindowController.m */,
 				3445E0651D801AF7004555F9 /* AppDelegate.h */,
 				3445E0661D801AF7004555F9 /* AppDelegate.m */,
 				3445E06B1D801AF7004555F9 /* Assets.xcassets */,
+				34B13D241EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.h */,
+				34B13D251EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.m */,
+				34B13D1E1EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.h */,
+				34B13D1F1EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.m */,
+				34B13D211EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.h */,
+				34B13D221EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.m */,
+				344370C01F011AED003C38F5 /* ComplexModificationsFileImportWindowController.h */,
+				344370C11F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m */,
+				344370C31F026CE4003C38F5 /* ComplexModificationsParametersTabController.h */,
+				344370C41F026CE4003C38F5 /* ComplexModificationsParametersTabController.m */,
 				342BE6881EF6D7E900149985 /* ComplexModificationsRulesTableCellView.h */,
 				342BE6891EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m */,
 				342BE6851EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.h */,
@@ -324,15 +354,21 @@
 				342BE68A1EF6D7E900149985 /* ComplexModificationsRulesTableCellView.m in Sources */,
 				34EEEEEC1DAE8A6E0026CAF7 /* FnFunctionKeysTableViewDataSource.m in Sources */,
 				3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */,
+				34B13D201EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.m in Sources */,
+				3423B0131F26474A009502CC /* AlertWindowController.m in Sources */,
+				34B13D261EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.m in Sources */,
 				34EEEEF31DAE8C6E0026CAF7 /* FnFunctionKeysTableViewController.m in Sources */,
 				34B97B351DBE58AA00EB3583 /* DevicesTableCellView.m in Sources */,
 				345F95451DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m in Sources */,
 				345F95401DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m in Sources */,
 				345F95511DABAF7A002854B8 /* SimpleModificationsTableCellView.m in Sources */,
 				342BE6871EF6CC1A00149985 /* ComplexModificationsRulesTableViewController.m in Sources */,
+				344370C21F011AED003C38F5 /* ComplexModificationsFileImportWindowController.m in Sources */,
 				34ECD8F61E3659BB007D5AB8 /* ProfilesTableCellView.m in Sources */,
+				344370C51F026CE4003C38F5 /* ComplexModificationsParametersTabController.m in Sources */,
 				3445E06A1D801AF7004555F9 /* main.m in Sources */,
 				3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */,
+				34B13D231EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.m in Sources */,
 				34ECD8FA1E365FFB007D5AB8 /* ProfilesTableViewController.m in Sources */,
 				34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,

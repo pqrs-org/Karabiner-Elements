@@ -16,5 +16,6 @@ rm -f  '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.p
 rm -rf '/Applications/Karabiner-Elements.app'
 rm -rf '/Applications/Karabiner-EventViewer.app'
 rm -rf '/Library/Application Support/org.pqrs/Karabiner-Elements'
+rm -rf '/Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext'
 
 exit 0

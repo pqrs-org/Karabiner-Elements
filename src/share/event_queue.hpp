@@ -2,11 +2,13 @@
 
 #include "boost_defs.hpp"
 
+#include "manipulator_environment.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
 #include "stream_utility.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 
 namespace krbn {
 class event_queue final {
@@ -23,32 +25,64 @@ public:
         pointing_vertical_wheel,
         pointing_horizontal_wheel,
         // virtual events
+        shell_command,
         device_keys_are_released,
         device_pointing_buttons_are_released,
         device_ungrabbed,
         caps_lock_state_changed,
         event_from_ignored_device,
+        frontmost_application_changed,
+        set_variable,
       };
 
       event(key_code key_code) : type_(type::key_code),
-                                 key_code_(key_code) {
+                                 value_(key_code) {
       }
 
       event(pointing_button pointing_button) : type_(type::pointing_button),
-                                               pointing_button_(pointing_button) {
+                                               value_(pointing_button) {
       }
 
       event(type type,
             int64_t integer_value) : type_(type),
-                                     integer_value_(integer_value) {
+                                     value_(integer_value) {
       }
 
-      static event make_event_from_ignored_device(type original_type,
-                                                  boost::optional<int64_t> original_integer_value) {
+      static event make_shell_command_event(const std::string& shell_command) {
         event e;
-        e.type_ = type::event_from_ignored_device;
-        e.original_value_.type_ = original_type;
-        e.original_value_.integer_value_ = (original_integer_value ? *original_integer_value : 0);
+        e.type_ = type::shell_command;
+        e.value_ = shell_command;
+        return e;
+      }
+
+      static event make_device_keys_are_released_event(void) {
+        return make_virtual_event(type::device_keys_are_released);
+      }
+
+      static event make_device_pointing_buttons_are_released_event(void) {
+        return make_virtual_event(type::device_pointing_buttons_are_released);
+      }
+
+      static event make_device_ungrabbed_event(void) {
+        return make_virtual_event(type::device_ungrabbed);
+      }
+
+      static event make_event_from_ignored_device_event(void) {
+        return make_virtual_event(type::event_from_ignored_device);
+      }
+
+      static event make_frontmost_application_changed_event(const std::string& bundle_identifier,
+                                                            const std::string& file_path) {
+        event e;
+        e.type_ = type::frontmost_application_changed;
+        e.value_ = frontmost_application(bundle_identifier, file_path);
+        return e;
+      }
+
+      static event make_set_variable_event(const std::pair<std::string, int>& pair) {
+        event e;
+        e.type_ = type::set_variable;
+        e.value_ = pair;
         return e;
       }
 
@@ -58,14 +92,14 @@ public:
 
       boost::optional<key_code> get_key_code(void) const {
         if (type_ == type::key_code) {
-          return key_code_;
+          return boost::get<key_code>(value_);
         }
         return boost::none;
       }
 
       boost::optional<pointing_button> get_pointing_button(void) const {
         if (type_ == type::pointing_button) {
-          return pointing_button_;
+          return boost::get<pointing_button>(value_);
         }
         return boost::none;
       }
@@ -76,49 +110,93 @@ public:
             type_ == type::pointing_vertical_wheel ||
             type_ == type::pointing_horizontal_wheel ||
             type_ == type::caps_lock_state_changed) {
-          return integer_value_;
+          return boost::get<int64_t>(value_);
         }
         return boost::none;
       }
 
-      boost::optional<type> get_original_type(void) const {
-        if (type_ == type::event_from_ignored_device) {
-          return original_value_.type_;
+      boost::optional<std::string> get_shell_command(void) const {
+        if (type_ == type::shell_command) {
+          return boost::get<std::string>(value_);
         }
         return boost::none;
       }
 
-      boost::optional<int64_t> get_original_integer_value(void) const {
-        if (type_ == type::event_from_ignored_device) {
-          return original_value_.integer_value_;
+      boost::optional<std::string> get_frontmost_application_bundle_identifier(void) const {
+        if (type_ == type::frontmost_application_changed) {
+          const auto& v = boost::get<frontmost_application>(value_);
+          return v.get_bundle_identifier();
+        }
+        return boost::none;
+      }
+
+      boost::optional<std::string> get_frontmost_application_file_path(void) const {
+        if (type_ == type::frontmost_application_changed) {
+          const auto& v = boost::get<frontmost_application>(value_);
+          return v.get_file_path();
+        }
+        return boost::none;
+      }
+
+      boost::optional<std::pair<std::string, int>> get_set_variable(void) const {
+        if (type_ == type::set_variable) {
+          return boost::get<std::pair<std::string, int>>(value_);
         }
         return boost::none;
       }
 
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
-               get_key_code() == other.get_key_code() &&
-               get_pointing_button() == other.get_pointing_button() &&
-               get_integer_value() == other.get_integer_value() &&
-               get_original_type() == other.get_original_type() &&
-               get_original_integer_value() == other.get_original_integer_value();
+               value_ == other.value_;
       }
 
     private:
+      class frontmost_application final {
+      public:
+        frontmost_application(const std::string& bundle_identifier,
+                              const std::string& file_path) : bundle_identifier_(bundle_identifier),
+                                                              file_path_(file_path) {
+        }
+
+        const std::string& get_bundle_identifier(void) const {
+          return bundle_identifier_;
+        }
+
+        const std::string& get_file_path(void) const {
+          return file_path_;
+        }
+
+        bool operator==(const frontmost_application& other) const {
+          return bundle_identifier_ == other.bundle_identifier_ &&
+                 file_path_ == other.file_path_;
+        }
+
+      private:
+        std::string bundle_identifier_;
+        std::string file_path_;
+      };
+
       event(void) {
+      }
+
+      static event make_virtual_event(type type) {
+        event e;
+        e.type_ = type;
+        e.value_ = boost::blank();
+        return e;
       }
 
       type type_;
 
-      union {
-        key_code key_code_;               // For type::key_code
-        pointing_button pointing_button_; // For type::pointing_button
-        int64_t integer_value_;           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel and virtual events
-        struct {
-          type type_;
-          int64_t integer_value_;
-        } original_value_; // For type::event_from_ignored_device
-      };
+      boost::variant<key_code,        // For type::key_code
+                     pointing_button, // For type::pointing_button
+                     int64_t,         // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+                     std::string,     // For shell_command
+                     boost::blank,    // For virtual events
+                     frontmost_application,
+                     std::pair<std::string, int> // For set_variable
+                     >
+          value_;
     };
 
     queued_event(device_id device_id,
@@ -342,6 +420,20 @@ public:
         }
       }
     }
+
+    // Update manipulator_environment
+    if (auto bundle_identifier = event.get_frontmost_application_bundle_identifier()) {
+      if (auto file_path = event.get_frontmost_application_file_path()) {
+        manipulator_environment_.set_frontmost_application_bundle_identifier(*bundle_identifier);
+        manipulator_environment_.set_frontmost_application_file_path(*file_path);
+      }
+    }
+    if (event_type == event_type::key_down) {
+      if (auto set_variable = event.get_set_variable()) {
+        manipulator_environment_.set_variable(set_variable->first,
+                                              set_variable->second);
+      }
+    }
   }
 
   void push_back_event(const queued_event& queued_event) {
@@ -401,6 +493,18 @@ public:
     pointing_button_manager_.erase_all_active_pointing_buttons(device_id);
   }
 
+  const manipulator_environment& get_manipulator_environment(void) const {
+    return manipulator_environment_;
+  }
+
+  void enable_manipulator_environment_json_output(const std::string& file_path) {
+    manipulator_environment_.enable_json_output(file_path);
+  }
+
+  void disable_manipulator_environment_json_output(void) {
+    manipulator_environment_.disable_json_output();
+  }
+
   uint64_t get_time_stamp_delay(void) const {
     return time_stamp_delay_;
   }
@@ -409,7 +513,7 @@ public:
     time_stamp_delay_ += value;
   }
 
-  static bool compare(const queued_event& v1, const queued_event& v2) {
+  static bool needs_swap(const queued_event& v1, const queued_event& v2) {
     // Some devices are send modifier flag and key at the same HID report.
     // For example, a key sends control+up-arrow by this reports.
     //
@@ -463,10 +567,10 @@ public:
             modifier_flag2 != modifier_flag::zero) {
           // v2 is modifier_flag
           if (v2.get_event_type() == event_type::key_up) {
-            return true;
+            return false;
           } else {
             // reorder to v2,v1 if v2 is pressed.
-            return false;
+            return true;
           }
         }
 
@@ -475,26 +579,35 @@ public:
           // v1 is modifier_flag
           if (v1.get_event_type() == event_type::key_up) {
             // reorder to v2,v1 if v1 is released.
-            return false;
-          } else {
             return true;
+          } else {
+            return false;
           }
         }
       }
     }
 
-    // keep order
-    return v1.get_time_stamp() < v2.get_time_stamp();
+    return false;
   }
 
 private:
   void sort_events(void) {
-    std::stable_sort(std::begin(events_), std::end(events_), event_queue::compare);
+    for (size_t i = 0; i < events_.size() - 1;) {
+      if (needs_swap(events_[i], events_[i + 1])) {
+        std::swap(events_[i], events_[i + 1]);
+        if (i > 0) {
+          --i;
+        }
+        continue;
+      }
+      ++i;
+    }
   }
 
   std::vector<queued_event> events_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
+  manipulator_environment manipulator_environment_;
   uint64_t time_stamp_delay_;
 }; // namespace krbn
 

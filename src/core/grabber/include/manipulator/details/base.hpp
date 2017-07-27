@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event_queue.hpp"
+#include "manipulator/condition_manager.hpp"
 #include "modifier_flag_manager.hpp"
 
 namespace krbn {
@@ -21,15 +22,14 @@ public:
 
   virtual bool active(void) const = 0;
 
+  virtual bool needs_virtual_hid_pointing(void) const = 0;
+
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
                                              uint64_t time_stamp) = 0;
 
-  virtual void handle_event_from_ignored_device(event_queue::queued_event::event::type original_type,
-                                                int64_t original_integer_value,
-                                                event_type event_type,
-                                                event_queue& output_event_queue,
-                                                uint64_t time_stamp) = 0;
+  virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
+                                                event_queue& output_event_queue) = 0;
 
   bool get_valid(void) const {
     return valid_;
@@ -38,8 +38,13 @@ public:
     valid_ = value;
   }
 
+  void push_back_condition(const std::shared_ptr<krbn::manipulator::details::conditions::base>& condition) {
+    condition_manager_.push_back_condition(condition);
+  }
+
 protected:
   bool valid_;
+  condition_manager condition_manager_;
 };
 } // namespace details
 } // namespace manipulator
