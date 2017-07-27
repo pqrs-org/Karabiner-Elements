@@ -81,7 +81,6 @@
 		34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = human_interface_device.hpp; path = ../../share/human_interface_device.hpp; sourceTree = SOURCE_ROOT; };
 		5E0512941ED983C800997718 /* post_event_to_virtual_devices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = post_event_to_virtual_devices.cpp; path = include/manipulator/details/post_event_to_virtual_devices.cpp; sourceTree = SOURCE_ROOT; };
 		5E1597D31EF28BDB00E46F26 /* complex_modifications.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = complex_modifications.hpp; sourceTree = "<group>"; };
-		5E1FEF451EC59E7600B01724 /* manipulator_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = manipulator_manager.hpp; path = include/manipulator/manipulator_manager.hpp; sourceTree = SOURCE_ROOT; };
 		5E1FEF4A1EC5DA6900B01724 /* basic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basic.cpp; path = include/manipulator/details/basic.cpp; sourceTree = SOURCE_ROOT; };
 		5E1FEF4C1EC5E13400B01724 /* device_grabber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device_grabber.cpp; path = include/device_grabber.cpp; sourceTree = SOURCE_ROOT; };
 		5E695C171ECB6F0A002E849C /* general_logger.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = general_logger.hpp; path = ../../share/general_logger.hpp; sourceTree = "<group>"; };
@@ -193,7 +192,6 @@
 			isa = PBXGroup;
 			children = (
 				345CCB501E914BCA005B61A8 /* details */,
-				5E1FEF451EC59E7600B01724 /* manipulator_manager.hpp */,
 				345CCB541E929D65005B61A8 /* manipulator_factory.hpp */,
 				34DA9F371ED8827800D75501 /* manipulator_manager.hpp */,
 				34DA9F381ED8827800D75501 /* manipulator_managers_connector.hpp */,
@@ -219,8 +217,6 @@
 				34A88A881D6840C200DD480B /* device_grabber.hpp */,
 				5E1FEF4C1EC5E13400B01724 /* device_grabber.cpp */,
 				34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */,
-				34A88A8C1D6840C200DD480B /* logger.hpp */,
-				34A88AA31D69C84900DD480B /* manipulator */,
 				34A88A891D6840C200DD480B /* receiver.hpp */,
 				34A88AA31D69C84900DD480B /* manipulator */,
 			);

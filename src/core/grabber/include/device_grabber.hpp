@@ -2,12 +2,12 @@
 
 #include "boost_defs.hpp"
 
+#include "apple_hid_usage_tables.hpp"
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
 #include "event_tap_manager.hpp"
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
-#include "virtual_hid_device_client.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"

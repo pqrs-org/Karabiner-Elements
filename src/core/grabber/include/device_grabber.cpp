@@ -1,22 +1,4 @@
-#include "boost_defs.hpp"
-
-#include "apple_hid_usage_tables.hpp"
-#include "configuration_monitor.hpp"
-#include "constants.hpp"
-#include "event_tap_manager.hpp"
-#include "gcd_utility.hpp"
-#include "human_interface_device.hpp"
-#include "iokit_utility.hpp"
-#include "logger.hpp"
-#include "spdlog_utility.hpp"
-#include "types.hpp"
 #include "device_grabber.hpp"
-#include <IOKit/hid/IOHIDManager.h>
-#include <boost/algorithm/string.hpp>
-#include <fstream>
-#include <json/json.hpp>
-#include <thread>
-#include <time.h>
 
 using namespace krbn;
 
