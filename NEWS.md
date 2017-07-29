@@ -1,3 +1,8 @@
+# Version 0.91.12
+
+* `device_if` and `device_unless` has been added to `conditions`.
+  * An example: https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_device.json
+
 # Version 0.91.11
 
 * Fixed an issue that modifier flags might become improperly state in complex_modifications.
