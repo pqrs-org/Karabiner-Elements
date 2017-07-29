@@ -7,7 +7,8 @@ PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin"; export PATH
 version=$(cat version)
 
 echo "make build"
-ruby scripts/reduce-logs.rb 'make build' || exit 99
+#ruby scripts/reduce-logs.rb 'make build -j4' || exit 99
+make build -j8
 
 # --------------------------------------------------
 echo "Copy Files"

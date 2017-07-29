@@ -31,9 +31,9 @@
   [KarabinerKit setup];
   [KarabinerKit exitIfAnotherProcessIsRunning:"preferences_window.pid"];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];
-
+  
+  [NSThread sleepForTimeInterval:0.3f];
   [self.systemPreferencesManager setup];
-
   [self.preferencesWindowController setup];
 
   [self.alertWindowController setup];

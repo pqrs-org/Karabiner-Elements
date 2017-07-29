@@ -16,6 +16,9 @@
 @property(readonly) NSUInteger deviceProductId;
 @property(readonly) BOOL deviceIsKeyboard;
 @property(readonly) BOOL deviceIsPointingDevice;
+@property(readonly) NSString* deviceManufacturer;
+@property(readonly) NSString* deviceProduct;
+
 
 - (void)setDeviceIdentifiers:(KarabinerKitConnectedDevices*)connectedDevices index:(NSUInteger)index;
 

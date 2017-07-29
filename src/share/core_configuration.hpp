@@ -5,10 +5,13 @@
 #include "logger.hpp"
 #include "session.hpp"
 #include "types.hpp"
+#include "general_logger.hpp"
+
 #include <fstream>
 #include <json/json.hpp>
 #include <natural_sort/natural_sort.hpp>
 #include <string>
+#include <map>
 #include <unordered_map>
 
 // Example: tests/src/core_configuration/json/example.json
@@ -27,23 +30,23 @@ public:
 
     profile(const nlohmann::json& json) : json_(json),
                                           selected_(false),
-                                          simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json()),
-                                          fn_function_keys_(nlohmann::json({
-                                              {"f1", "display_brightness_decrement"},
-                                              {"f2", "display_brightness_increment"},
-                                              {"f3", "mission_control"},
-                                              {"f4", "launchpad"},
-                                              {"f5", "illumination_decrement"},
-                                              {"f6", "illumination_increment"},
-                                              {"f7", "rewind"},
-                                              {"f8", "play_or_pause"},
-                                              {"f9", "fastforward"},
-                                              {"f10", "mute"},
-                                              {"f11", "volume_decrement"},
-                                              {"f12", "volume_increment"},
-                                          })),
-                                          complex_modifications_(json.find("complex_modifications") != json.end() ? json["complex_modifications"] : nlohmann::json()),
-                                          virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json()) {
+                                          simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json()), fn_function_keys_(nlohmann::json({
+                                                                                 {{"from", "f1"}, {"to", "display_brightness_decrement"}},
+                                                                                 {{"from", "f2"}, {"to", "display_brightness_increment"}},
+                                                                                 {{"from", "f3"}, {"to", "mission_control"}},
+                                                                                 {{"from", "f4"}, {"to", "launchpad"}},
+                                                                                 {{"from", "f5"}, {"to", "illumination_decrement"}},
+                                                                                 {{"from", "f6"}, {"to", "illumination_increment"}},
+                                                                                 {{"from", "f7"}, {"to", "rewind"}},
+                                                                                 {{"from", "f8"}, {"to", "play_or_pause"}},
+                                                                                 {{"from", "f9"}, {"to", "fastforward"}},
+                                                                                 {{"from", "f10"}, {"to", "mute"}},
+                                                                                 {{"from", "f11"}, {"to", "volume_decrement"}},
+                                                                                 {{"from", "f12"}, {"to", "volume_increment"}}
+                                                                               })),
+                                              complex_modifications_(json.find("complex_modifications") != json.end() ? json["complex_modifications"] : nlohmann::json()),
+
+                                              virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json()) {
       {
         const std::string key = "name";
         if (json.find(key) != json.end() && json[key].is_string()) {
@@ -58,11 +61,11 @@ public:
       }
       {
         const std::string key = "fn_function_keys";
-        if (json.find(key) != json.end() && json[key].is_object()) {
+        if (json.find(key) != json.end() && json[key].is_array()) {
           for (auto it = json[key].begin(); it != json[key].end(); ++it) {
-            // it.key() is always std::string.
-            if (it.value().is_string()) {
-              fn_function_keys_.replace_second(it.key(), it.value());
+            auto &fn_key = *it;
+            if (fn_key.is_object()) {
+              fn_function_keys_.replace_second(fn_key["from"], fn_key["to"]);
             }
           }
         }
@@ -103,7 +106,7 @@ public:
       selected_ = value;
     }
 
-    const std::vector<std::pair<std::string, std::string>>& get_simple_modifications(void) const {
+    const std::vector<simple_modifications::key_mapping>& get_simple_modifications(void) const {
       return simple_modifications_.get_pairs();
     }
     void push_back_simple_modification(void) {
@@ -119,7 +122,7 @@ public:
       return simple_modifications_.to_key_code_map();
     }
 
-    const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) const {
+    const std::vector<simple_modifications::key_mapping>& get_fn_function_keys(void) const {
       return fn_function_keys_.get_pairs();
     }
     void replace_fn_function_key(const std::string& from, const std::string& to) {
@@ -230,6 +233,8 @@ public:
           }
         }
       }
+      
+      logger::get_logger().info("File owner valid: {}", valid_file_owner);
 
       if (!valid_file_owner) {
         logger::get_logger().warn("{0} is not owned by a valid user.", file_path);
@@ -237,10 +242,14 @@ public:
 
       } else {
         std::ifstream input(file_path);
+        
+        logger::get_logger().info("Reading config file: {}", file_path);
+        
         if (input) {
           try {
+            logger::get_logger().info("Start to parse config file");
             json_ = nlohmann::json::parse(input);
-
+            logger::get_logger().info("Parse config file done");
             {
               const std::string key = "global";
               if (json_.find(key) != json_.end()) {
@@ -261,6 +270,8 @@ public:
             json_ = nlohmann::json();
             loaded_ = false;
           }
+        } else {
+          logger::get_logger().info("Failed reading config file {}", file_path);
         }
       }
     }
@@ -342,10 +353,14 @@ public:
 
     std::ofstream output(file_path);
     if (!output) {
+      glogger::get_logger().info("Failed to save to configuration file: {}", file_path);
       return false;
     }
 
     output << std::setw(4) << to_json() << std::endl;
+    
+    glogger::get_logger().info("Saved to configuration file: {}", file_path);
+    
     return true;
   }
 

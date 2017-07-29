@@ -24,6 +24,7 @@
     result.popUpButton.menu = [self.simpleModificationsMenuManager.fromMenu copy];
 
     NSString* fromValue = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row];
+    
     [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:fromValue];
 
     return result;
@@ -49,7 +50,58 @@
 
     return result;
   }
-
+  
+  if ([tableColumn.identifier isEqualToString:@"SimpleModificationsVendorIdColumn"]) {
+    SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsVendorIdCellView" owner:self];
+    
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    
+    result.popUpButton.action = @selector(vendorProductIdChanged:);
+    result.popUpButton.target = self.simpleModificationsTableViewController;
+    result.popUpButton.menu = [self.simpleModificationsMenuManager.vendorIdMenu copy];
+    
+    NSUInteger vid = [coreConfigurationModel selectedProfileSimpleModificationVendorIdAtIndex:row];
+    NSUInteger pid = [coreConfigurationModel selectedProfileSimpleModificationProductIdAtIndex:row];
+    
+    VendorProductIdPair *pair = [[VendorProductIdPair alloc] initWithVendorId: vid productId: pid];
+    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:pair];
+    
+    return result;
+  }
+  
+  if ([tableColumn.identifier isEqualToString:@"SimpleModificationsDeviceNameColumn"]) {
+    SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsDeviceNameCellView" owner:self];
+    
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    
+    //result.popUpButton.action = @selector(vendorProductIdChanged:);
+    result.popUpButton.target = self.simpleModificationsTableViewController;
+    result.popUpButton.menu = [NSMenu new];
+    result.popUpButton.menu.autoenablesItems = NO;
+    
+    NSUInteger vid = [coreConfigurationModel selectedProfileSimpleModificationVendorIdAtIndex:row];
+    NSUInteger pid = [coreConfigurationModel selectedProfileSimpleModificationProductIdAtIndex:row];
+    
+    NSMutableString *product = [[NSMutableString alloc] init];
+    NSMutableString *manufacturer = [[NSMutableString alloc] init];
+    
+    [coreConfigurationModel selectedProfileDeviceProductManufacturerByVendorId:vid productId:pid product:product manufacturer:manufacturer];
+    
+    if (product.length == 0) {
+      KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+      NSString *str = [connectedDevices findProductByVendorId:vid productId:pid];
+      if (str) {
+        [product setString:str];
+      } else {
+        [product setString: @"--"];
+      }
+    }
+    
+    [result.popUpButton addItemWithTitle:product];
+    
+    return result;
+  }
+  
   if ([tableColumn.identifier isEqualToString:@"SimpleModificationsDeleteColumn"]) {
     SimpleModificationsTableCellView* result = [tableView makeViewWithIdentifier:@"SimpleModificationsDeleteCellView" owner:self];
     result.removeButton.action = @selector(removeItem:);

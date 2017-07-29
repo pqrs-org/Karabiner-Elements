@@ -14,6 +14,8 @@ static void configuration_file_updated_callback(libkrbn_core_configuration* init
                                                 void* refcon) {
   KarabinerKitConfigurationManager* manager = (__bridge KarabinerKitConfigurationManager*)(refcon);
   manager.coreConfigurationModel = [[KarabinerKitCoreConfigurationModel alloc] initWithInitializedCoreConfiguration:initializedCoreConfiguration];
+  
+  NSLog(@"KarabinerKit: Configuration is loaded");
 
   [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitConfigurationIsLoaded object:nil];
 }

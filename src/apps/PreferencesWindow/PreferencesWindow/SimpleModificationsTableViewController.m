@@ -12,11 +12,11 @@
 
 @implementation SimpleModificationsTableViewController
 
-+ (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton representedObject:(NSString*)representedObject {
++ (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton representedObject:(NSObject*)representedObject {
   NSArray* items = popUpButton.itemArray;
   if (items) {
     for (NSMenuItem* item in items) {
-      if ([item.representedObject isEqualToString:representedObject]) {
+      if ([item.representedObject isEqual:representedObject]) {
         [popUpButton selectItem:item];
         return;
       }
@@ -57,6 +57,49 @@
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     [coreConfigurationModel setSelectedProfileSimpleModificationAtIndex:row from:fromValue to:toValue];
     [coreConfigurationModel save];
+  }
+}
+
+- (void)vendorProductIdChanged:(id)sender {
+  NSInteger row = [self.tableView rowForView:sender];
+  
+  SimpleModificationsTableCellView* vendorProductIdCellView = [self.tableView viewAtColumn:2 row:row makeIfNecessary:NO];
+  SimpleModificationsTableCellView* devNameCellView = [self.tableView viewAtColumn:3 row:row makeIfNecessary:NO];
+  NSPopUpButton* popUpButton = devNameCellView.popUpButton;
+
+  VendorProductIdPair* pair = vendorProductIdCellView.popUpButton.selectedItem.representedObject;
+  if (pair) {
+    
+    // If toCellView is not selected, set fromCellView value to toCellView.
+    /*
+    NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
+    if (!toValue || [toValue isEqualToString:@""]) {
+      [SimpleModificationsTableViewController selectPopUpButtonMenu:toCellView.popUpButton representedObject:fromValue];
+      toValue = toCellView.popUpButton.selectedItem.representedObject;
+    }
+    toCellView.popUpButton.enabled = YES;
+    */
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    [coreConfigurationModel setSelectedProfileSimpleModificationVendorProductIdAtIndex:row vendorId:pair.vendorId productId:pair.productId];
+    [coreConfigurationModel save];
+    
+    NSMutableString *product = [[NSMutableString alloc] init];
+    NSMutableString *manufacturer = [[NSMutableString alloc] init];
+    
+    [coreConfigurationModel selectedProfileDeviceProductManufacturerByVendorId:pair.vendorId productId:pair.productId product:product manufacturer:manufacturer];
+    
+    if (product.length == 0) {
+      KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+      NSString *str = [connectedDevices findProductByVendorId:pair.vendorId productId:pair.productId];
+      if (str) {
+        [product setString:str];
+      } else {
+        [product setString: @"--"];
+      }
+    }
+    
+    [popUpButton removeAllItems];
+    [popUpButton addItemWithTitle: product];
   }
 }
 

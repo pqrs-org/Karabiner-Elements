@@ -45,13 +45,17 @@ public:
 
 private:
   void core_configuration_file_updated_callback(void) {
-    logger::get_logger().info("Load karabiner.json...");
 
     std::string file_path = constants::get_system_core_configuration_file_path();
+    
     if (filesystem::exists(user_core_configuration_file_path_)) {
       file_path = user_core_configuration_file_path_;
+      logger::get_logger().info("Load {}...", user_core_configuration_file_path_);
+    } else {
+      logger::get_logger().info("{} Not found...", user_core_configuration_file_path_);
     }
-
+    
+    logger::get_logger().info("Load {}...", file_path);
     auto c = std::make_shared<core_configuration>(file_path);
     if (!core_configuration_ || c->is_loaded()) {
       logger::get_logger().info("core_configuration is updated.");
