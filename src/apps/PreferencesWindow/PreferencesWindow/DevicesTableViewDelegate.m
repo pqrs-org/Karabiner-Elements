@@ -41,14 +41,14 @@
   if ([tableColumn.identifier isEqualToString:@"DevicesVendorIdColumn"]) {
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
-    result.textField.stringValue = [NSString stringWithFormat:@"0x%04lx", [connectedDevices vendorIdAtIndex:row]];
+    result.textField.stringValue = [NSString stringWithFormat:@"%ld", [connectedDevices vendorIdAtIndex:row]];
     return result;
   }
 
   if ([tableColumn.identifier isEqualToString:@"DevicesProductIdColumn"]) {
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesVendorIdCellView" owner:self];
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
-    result.textField.stringValue = [NSString stringWithFormat:@"0x%04lx", [connectedDevices productIdAtIndex:row]];
+    result.textField.stringValue = [NSString stringWithFormat:@"%ld", [connectedDevices productIdAtIndex:row]];
     return result;
   }
 
@@ -64,7 +64,7 @@
     DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesExternalKeyboardCellView" owner:self];
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
 
-    result.checkbox.title = [NSString stringWithFormat:@"%@ (%@) [0x%04lx,0x%04lx]",
+    result.checkbox.title = [NSString stringWithFormat:@"%@ (%@) [%ld,%ld]",
                                                        [connectedDevices productAtIndex:row],
                                                        [connectedDevices manufacturerAtIndex:row],
                                                        [connectedDevices vendorIdAtIndex:row],
