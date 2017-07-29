@@ -1,7 +1,6 @@
 #pragma once
 
 #include "manipulator/details/conditions/base.hpp"
-#include <regex>
 #include <string>
 #include <vector>
 
