@@ -73,7 +73,8 @@ public:
   virtual ~frontmost_application(void) {
   }
 
-  virtual bool is_fulfilled(const manipulator_environment& manipulator_environment) const {
+  virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
+                            const manipulator_environment& manipulator_environment) const {
     if (manipulator_environment.get_frontmost_application().get_update_count() == cached_update_count_) {
       return cached_result_;
     }

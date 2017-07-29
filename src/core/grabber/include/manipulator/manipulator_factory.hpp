@@ -3,6 +3,7 @@
 #include "core_configuration.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/basic.hpp"
+#include "manipulator/details/conditions/device.hpp"
 #include "manipulator/details/conditions/frontmost_application.hpp"
 #include "manipulator/details/conditions/nop.hpp"
 #include "manipulator/details/conditions/variable.hpp"
@@ -37,8 +38,11 @@ public:
       const std::string key = "type";
       if (json.find(key) != std::end(json) && json[key].is_string()) {
         const std::string& value = json[key];
-        if (value == "frontmost_application_if" ||
-            value == "frontmost_application_unless") {
+        if (value == "device_if" ||
+            value == "device_unless") {
+          return std::make_shared<details::conditions::device>(json);
+        } else if (value == "frontmost_application_if" ||
+                   value == "frontmost_application_unless") {
           return std::make_shared<details::conditions::frontmost_application>(json);
         } else if (value == "variable_if" ||
                    value == "variable_unless") {

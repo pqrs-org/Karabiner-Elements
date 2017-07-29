@@ -14,7 +14,8 @@ public:
   virtual ~nop(void) {
   }
 
-  virtual bool is_fulfilled(const manipulator_environment& manipulator_environment) const {
+  virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
+                            const manipulator_environment& manipulator_environment) const {
     return true;
   }
 };

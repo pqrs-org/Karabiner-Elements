@@ -286,8 +286,8 @@ enum class location_id : uint32_t {
 
 class types final {
 public:
-  static device_id get_new_device_id(vendor_id vendor_id,
-                                     product_id product_id) {
+  static device_id make_new_device_id(vendor_id vendor_id,
+                                      product_id product_id) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 

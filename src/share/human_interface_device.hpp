@@ -80,8 +80,8 @@ public:
   human_interface_device(const human_interface_device&) = delete;
 
   human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
-                                                           device_id_(types::get_new_device_id(iokit_utility::find_vendor_id(device),
-                                                                                               iokit_utility::find_product_id(device))),
+                                                           device_id_(types::make_new_device_id(iokit_utility::find_vendor_id(device),
+                                                                                                iokit_utility::find_product_id(device))),
                                                            queue_(nullptr),
                                                            removed_(false),
                                                            observed_(false),

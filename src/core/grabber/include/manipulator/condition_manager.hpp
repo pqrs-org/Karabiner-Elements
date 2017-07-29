@@ -15,11 +15,13 @@ public:
     conditions_.push_back(condition);
   }
 
-  bool is_fulfilled(const krbn::manipulator_environment& manipulator_environment) const {
+  bool is_fulfilled(const event_queue::queued_event& queued_event,
+                    const krbn::manipulator_environment& manipulator_environment) const {
     bool result = true;
 
     for (const auto& c : conditions_) {
-      if (!c->is_fulfilled(manipulator_environment)) {
+      if (!c->is_fulfilled(queued_event,
+                           manipulator_environment)) {
         result = false;
       }
     }

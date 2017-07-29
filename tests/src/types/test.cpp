@@ -69,11 +69,11 @@ TEST_CASE("get_pointing_button") {
   }
 }
 
-TEST_CASE("get_new_device_id") {
-  auto device_id1 = krbn::types::get_new_device_id(krbn::vendor_id(1234),
-                                                   krbn::product_id(5678));
-  auto device_id2 = krbn::types::get_new_device_id(krbn::vendor_id(2345),
-                                                   krbn::product_id(6789));
+TEST_CASE("make_new_device_id") {
+  auto device_id1 = krbn::types::make_new_device_id(krbn::vendor_id(1234),
+                                                    krbn::product_id(5678));
+  auto device_id2 = krbn::types::make_new_device_id(krbn::vendor_id(2345),
+                                                    krbn::product_id(6789));
 
   REQUIRE(krbn::types::find_vendor_id(device_id1) == krbn::vendor_id(1234));
   REQUIRE(krbn::types::find_product_id(device_id1) == krbn::product_id(5678));

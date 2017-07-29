@@ -168,7 +168,8 @@ public:
         }
 
         if (is_target) {
-          if (!condition_manager_.is_fulfilled(output_event_queue.get_manipulator_environment())) {
+          if (!condition_manager_.is_fulfilled(front_input_event,
+                                               output_event_queue.get_manipulator_environment())) {
             is_target = false;
           }
         }
