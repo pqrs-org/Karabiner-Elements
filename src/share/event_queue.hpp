@@ -606,7 +606,7 @@ private:
 }; // namespace krbn
 
 // For unit tests
-
+/*
 inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event::type& value) {
   return stream_utility::output_enum(stream, value);
 }
@@ -646,5 +646,6 @@ inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_
          << "}";
   return stream;
 }
+ */
 
 } // namespace krbn

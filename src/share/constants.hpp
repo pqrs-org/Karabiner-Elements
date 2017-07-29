@@ -41,7 +41,7 @@ public:
   }
 
   static const char* get_system_core_configuration_file_path(void) {
-    return "/Library/Application Support/org.pqrs/config/karabiner.json";
+    return "/Library/Application Support/org.pqrs/config/karabiner2.json";
   }
 
   static const std::string& get_user_configuration_directory(void) {
@@ -107,7 +107,7 @@ public:
       once = true;
       auto directory = get_user_configuration_directory();
       if (!directory.empty()) {
-        file_path = directory + "/karabiner.json";
+        file_path = directory + "/karabiner2.json";
       }
     }
 

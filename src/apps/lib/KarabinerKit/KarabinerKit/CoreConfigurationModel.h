@@ -3,6 +3,16 @@
 @import Cocoa;
 #import "libkrbn.h"
 
+@interface VendorProductIdPair: NSObject
+
+@property (assign, readonly) NSUInteger vendorId;
+@property (assign, readonly) NSUInteger productId;
+
+- (instancetype) initWithVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId;
+- (NSString *) toString;
+
+@end
+
 @interface KarabinerKitCoreConfigurationModel : NSObject
 
 - (instancetype)initWithInitializedCoreConfiguration:(libkrbn_core_configuration*)initializedCoreConfiguration;
@@ -25,7 +35,13 @@
 @property(readonly) NSUInteger selectedProfileSimpleModificationsCount;
 - (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index;
 - (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index;
+- (NSUInteger)selectedProfileSimpleModificationVendorIdAtIndex:(NSUInteger)index;
+- (NSUInteger)selectedProfileSimpleModificationProductIdAtIndex:(NSUInteger)index;
+- (BOOL)selectedProfileSimpleModificationDisabledAtIndex:(NSUInteger)index;
+- (NSArray *)selectedProfileSimpleModificationVendorProductIdPairs;
+
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to;
+- (void)setSelectedProfileSimpleModificationVendorProductIdAtIndex:(NSUInteger)index vendorId:(NSUInteger)vid productId:(NSUInteger)pid;
 - (void)addSimpleModificationToSelectedProfile;
 - (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index;
 
@@ -33,6 +49,8 @@
 - (NSString*)selectedProfileFnFunctionKeyFirstAtIndex:(NSUInteger)index;
 - (NSString*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index;
 - (void)setSelectedProfileFnFunctionKey:(NSString*)from to:(NSString*)to;
+
+- (void)selectedProfileDeviceProductManufacturerByVendorId:(NSUInteger)vendorId productId:(NSUInteger)productId product:(NSMutableString *)product manufacturer:(NSMutableString *)manufacturer;
 
 @property(readonly) NSUInteger selectedProfileComplexModificationsRulesCount;
 - (NSString*)selectedProfileComplexModificationsRuleDescription:(NSUInteger)index;
@@ -47,6 +65,8 @@
                    isPointingDevice:(BOOL)isPointingDevice;
 - (void)setSelectedProfileDeviceIgnore:(NSUInteger)vendorId
                              productId:(NSUInteger)productId
+                          manufacturer:(NSString*)manufacturer
+                               product:(NSString*)product
                             isKeyboard:(BOOL)isKeyboard
                       isPointingDevice:(BOOL)isPointingDevice
                                  value:(BOOL)value;
@@ -56,6 +76,8 @@
                                            isPointingDevice:(BOOL)isPointingDevice;
 - (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
                                                      productId:(NSUInteger)productId
+                                                  manufacturer:(NSString*)manufacturer
+                                                       product:(NSString*)product
                                                     isKeyboard:(BOOL)isKeyboard
                                               isPointingDevice:(BOOL)isPointingDevice
                                                          value:(BOOL)value;

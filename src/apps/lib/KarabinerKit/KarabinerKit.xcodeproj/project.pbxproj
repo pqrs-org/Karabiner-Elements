@@ -30,6 +30,16 @@
 		34D4237D1E1A9678000E4154 /* ConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D4237B1E1A9678000E4154 /* ConfigurationManager.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		5E93BBC21EC59CE700F79976 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5E93BBBE1EC59CE700F79976 /* karabiner_grabber.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 344149111D212A1600C8ECFC;
+			remoteInfo = karabiner_grabber;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		3496EDB31E779059003D6EFD /* ConnectedDevices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectedDevices.h; sourceTree = "<group>"; };
 		3496EDB41E779059003D6EFD /* ConnectedDevices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectedDevices.m; sourceTree = "<group>"; };
@@ -53,6 +63,7 @@
 		34D423671E1939EC000E4154 /* NotificationKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationKeys.h; sourceTree = "<group>"; };
 		34D4237A1E1A9678000E4154 /* ConfigurationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationManager.h; sourceTree = "<group>"; };
 		34D4237B1E1A9678000E4154 /* ConfigurationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationManager.m; sourceTree = "<group>"; };
+		5E93BBBE1EC59CE700F79976 /* karabiner_grabber.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = karabiner_grabber.xcodeproj; path = ../../../core/grabber/karabiner_grabber.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,9 +125,18 @@
 		34D423581E18F303000E4154 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5E93BBBE1EC59CE700F79976 /* karabiner_grabber.xcodeproj */,
 				34D423591E18F303000E4154 /* libkrbn.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5E93BBBF1EC59CE700F79976 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5E93BBC31EC59CE700F79976 /* karabiner_grabber */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -184,12 +204,28 @@
 			mainGroup = 34D4233B1E18F06A000E4154;
 			productRefGroup = 34D423451E18F06A000E4154 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 5E93BBBF1EC59CE700F79976 /* Products */;
+					ProjectRef = 5E93BBBE1EC59CE700F79976 /* karabiner_grabber.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				34D423431E18F06A000E4154 /* KarabinerKit */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		5E93BBC31EC59CE700F79976 /* karabiner_grabber */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = karabiner_grabber;
+			remoteRef = 5E93BBC21EC59CE700F79976 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		34D423401E18F06A000E4154 /* Sources */ = {
@@ -268,6 +304,8 @@
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SEPARATE_STRIP = NO;
+				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Release;
 		};

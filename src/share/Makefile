@@ -1,4 +1,5 @@
 VERSION = `cat ../../version`
+CONFIGURATION = 'Release'
 
 all:
 	@echo '#pragma once' > karabiner_version.h.tmp
@@ -6,3 +7,5 @@ all:
 	@echo 'static const char* karabiner_version = "'$(VERSION)'";' >> karabiner_version.h.tmp
 	@cmp --quiet karabiner_version.h.tmp karabiner_version.h || mv karabiner_version.h.tmp karabiner_version.h
 	@rm -f karabiner_version.h.tmp
+
+	xcodebuild -alltargets -configuration $(CONFIGURATION) build

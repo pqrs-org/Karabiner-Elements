@@ -1,15 +1,20 @@
 #pragma once
 
+#include "core_configuration.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "time_utility.hpp"
+#include "logger.hpp"
 #include <json/json.hpp>
+
 #include <unordered_set>
 #include <vector>
 
-namespace krbn {
+
+namespace krbn {  
 namespace manipulator {
 namespace details {
+  
 class basic final : public base {
 public:
   class manipulated_original_event final {
@@ -61,7 +66,7 @@ public:
     uint64_t key_down_time_stamp_;
     bool alone_;
   };
-
+  
   basic(const nlohmann::json& json,
         const core_configuration::profile::complex_modifications::parameters& parameters) : base(),
                                                                                             parameters_(parameters),
@@ -110,11 +115,26 @@ public:
         logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
       }
     }
+    if (json.find("vendor_id") != std::end(json)) {
+      vendor_id_ = json["vendor_id"];
+    } else {
+      vendor_id_ = 0;
+    }
+    if (json.find("product_id") != std::end(json)) {
+      product_id_ = json["product_id"];
+    } else {
+      product_id_ = 0;
+    }
   }
 
   basic(const from_event_definition& from,
-        const to_event_definition& to) : from_(from),
-                                         to_({to}) {
+       const to_event_definition& to,
+        vendor_id vid = vendor_id::zero,
+        product_id pid = product_id::zero) : from_(from),
+                                             to_({to}),
+                                             vendor_id_(static_cast<uint32_t>(vid)),
+                                             product_id_(static_cast<uint32_t>(pid)) {
+
   }
 
   virtual ~basic(void) {
@@ -140,6 +160,12 @@ public:
         is_target = true;
       }
     }
+    
+    auto vp_id = get_vendor_product_id_by_device_id(front_input_event.get_device_id());
+    if (!is_bypass_vendor_product_id_check() && !is_vendor_product_id_matched(vp_id.first, vp_id.second)) {
+      is_target = false;
+    }
+  
 
     if (!front_input_event.get_valid()) {
       return;
@@ -225,7 +251,7 @@ public:
         }
 
         // Send events
-
+        krbn::logger::get_logger().info("Key is replaced");
         for (size_t i = 0; i < to_.size(); ++i) {
           if (auto event = to_[i].to_event()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
@@ -362,6 +388,10 @@ public:
   const std::vector<to_event_definition>& get_to(void) const {
     return to_;
   }
+  
+private:
+  bool is_bypass_vendor_product_id_check();
+  bool is_vendor_product_id_matched(uint32_t vendor_id, uint32_t product_id);
 
   void enqueue_to_modifiers(const to_event_definition& to,
                             event_type event_type,
@@ -470,13 +500,14 @@ private:
     }
   }
 
+  std::pair<uint32_t, uint32_t> get_vendor_product_id_by_device_id(krbn::device_id id);
   core_configuration::profile::complex_modifications::parameters parameters_;
-
   from_event_definition from_;
   std::vector<to_event_definition> to_;
   std::vector<to_event_definition> to_after_key_up_;
   std::vector<to_event_definition> to_if_alone_;
-
+  uint32_t vendor_id_;
+  uint32_t product_id_;
   std::vector<manipulated_original_event> manipulated_original_events_;
 };
 } // namespace details

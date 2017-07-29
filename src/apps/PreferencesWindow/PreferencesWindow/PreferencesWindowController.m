@@ -48,8 +48,6 @@
   // ----------------------------------------
   // Setup
 
-  [self.simpleModificationsMenuManager setup];
-  [self.simpleModificationsTableViewController setup];
   [self.fnFunctionKeysTableViewController setup];
   [self.complexModificationsRulesTableViewController setup];
   [self.complexModificationsParametersTabController setup];
@@ -59,18 +57,24 @@
   [self.profilesTableViewController setup];
   [self setupMiscTabControls];
   [self.logFileTextViewController monitor];
-
+  [self.simpleModificationsMenuManager setup];
+  [self.simpleModificationsTableViewController setup];
+  [self.simpleModificationsMenuManager setupVendor];
+  
   @weakify(self);
   [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
+                                                  NSLog(@"kKarabinerKitConfigurationIsLoaded call-back");
+                                                  
                                                   @strongify(self);
                                                   if (!self) return;
 
                                                   [self setupVirtualHIDKeyboardTypePopUpButton];
                                                   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
                                                   [self setupMiscTabControls];
+                                                  [self.simpleModificationsMenuManager setupVendor];
                                                 }];
   [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
                                                     object:nil
@@ -204,11 +208,16 @@
 - (void)setupMiscTabControls {
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
 
+  /*
   if (coreConfigurationModel.globalConfigurationCheckForUpdatesOnStartup) {
     self.checkForUpdateOnStartupButton.state = NSOnState;
   } else {
     self.checkForUpdateOnStartupButton.state = NSOffState;
   }
+  */
+  
+  // disable update check to not update to original version
+  self.checkForUpdateOnStartupButton.state = NSOffState;
 
   if (libkrbn_system_core_configuration_file_path_exists()) {
     self.systemDefaultProfileStateLabel.hidden = YES;

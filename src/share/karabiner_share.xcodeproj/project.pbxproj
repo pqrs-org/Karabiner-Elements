@@ -1,0 +1,334 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5EFDD42B1ECB005D00040ABE /* core_configuration.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5EFDD4161ECB005D00040ABE /* core_configuration.hpp */; };
+		5EFDD42C1ECB005D00040ABE /* global_configuration.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5EFDD4181ECB005D00040ABE /* global_configuration.hpp */; };
+		5EFDD42D1ECB005D00040ABE /* complex_modification.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5EFDD41A1ECB005D00040ABE /* complex_modification.hpp */; };
+		5EFDD42E1ECB005D00040ABE /* device.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5EFDD41B1ECB005D00040ABE /* device.hpp */; };
+		5EFDD4301ECB005D00040ABE /* simple_modifications.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5EFDD41D1ECB005D00040ABE /* simple_modifications.hpp */; };
+		5EFDD4311ECB005D00040ABE /* virtual_hid_keyboard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5EFDD41E1ECB005D00040ABE /* virtual_hid_keyboard.hpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5EFDD4091ECAF22400040ABE /* libkarabiner_share.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libkarabiner_share.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EFDD4161ECB005D00040ABE /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = core_configuration.hpp; sourceTree = "<group>"; };
+		5EFDD4181ECB005D00040ABE /* global_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = global_configuration.hpp; sourceTree = "<group>"; };
+		5EFDD41A1ECB005D00040ABE /* complex_modification.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = complex_modification.hpp; sourceTree = "<group>"; };
+		5EFDD41B1ECB005D00040ABE /* device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = device.hpp; sourceTree = "<group>"; };
+		5EFDD41C1ECB005D00040ABE /* simple_modifications.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simple_modifications.cpp; sourceTree = "<group>"; };
+		5EFDD41D1ECB005D00040ABE /* simple_modifications.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = simple_modifications.hpp; sourceTree = "<group>"; };
+		5EFDD41E1ECB005D00040ABE /* virtual_hid_keyboard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_keyboard.hpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5EFDD4061ECAF22400040ABE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5EFDD3E91ECAF16700040ABE = {
+			isa = PBXGroup;
+			children = (
+				5EFDD4161ECB005D00040ABE /* core_configuration.hpp */,
+				5EFDD4171ECB005D00040ABE /* core_configuration */,
+				5EFDD40A1ECAF22400040ABE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5EFDD40A1ECAF22400040ABE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5EFDD4091ECAF22400040ABE /* libkarabiner_share.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5EFDD4171ECB005D00040ABE /* core_configuration */ = {
+			isa = PBXGroup;
+			children = (
+				5EFDD4181ECB005D00040ABE /* global_configuration.hpp */,
+				5EFDD4191ECB005D00040ABE /* profile */,
+			);
+			path = core_configuration;
+			sourceTree = "<group>";
+		};
+		5EFDD4191ECB005D00040ABE /* profile */ = {
+			isa = PBXGroup;
+			children = (
+				5EFDD41A1ECB005D00040ABE /* complex_modification.hpp */,
+				5EFDD41B1ECB005D00040ABE /* device.hpp */,
+				5EFDD41C1ECB005D00040ABE /* simple_modifications.cpp */,
+				5EFDD41D1ECB005D00040ABE /* simple_modifications.hpp */,
+				5EFDD41E1ECB005D00040ABE /* virtual_hid_keyboard.hpp */,
+			);
+			path = profile;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		5EFDD4071ECAF22400040ABE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EFDD4301ECB005D00040ABE /* simple_modifications.hpp in Headers */,
+				5EFDD42E1ECB005D00040ABE /* device.hpp in Headers */,
+				5EFDD42C1ECB005D00040ABE /* global_configuration.hpp in Headers */,
+				5EFDD42B1ECB005D00040ABE /* core_configuration.hpp in Headers */,
+				5EFDD42D1ECB005D00040ABE /* complex_modification.hpp in Headers */,
+				5EFDD4311ECB005D00040ABE /* virtual_hid_keyboard.hpp in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		5EFDD4081ECAF22400040ABE /* karabiner_share */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5EFDD4121ECAF22400040ABE /* Build configuration list for PBXNativeTarget "karabiner_share" */;
+			buildPhases = (
+				5EFDD4051ECAF22400040ABE /* Sources */,
+				5EFDD4061ECAF22400040ABE /* Frameworks */,
+				5EFDD4071ECAF22400040ABE /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = karabiner_share;
+			productName = karabiner_share;
+			productReference = 5EFDD4091ECAF22400040ABE /* libkarabiner_share.a */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5EFDD3EA1ECAF16700040ABE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+				TargetAttributes = {
+					5EFDD4081ECAF22400040ABE = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = MKR67VKJHE;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 5EFDD3ED1ECAF16700040ABE /* Build configuration list for PBXProject "karabiner_share" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5EFDD3E91ECAF16700040ABE;
+			productRefGroup = 5EFDD40A1ECAF22400040ABE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5EFDD4081ECAF22400040ABE /* karabiner_share */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5EFDD4051ECAF22400040ABE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5EFDD3EE1ECAF16700040ABE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				HEADER_SEARCH_PATHS = "$(iOSOpenDevPath)/include/**";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LIBRARY_SEARCH_PATHS = "$(iOSOpenDevPath)/lib/**";
+				SDKROOT = iphoneos;
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Debug;
+		};
+		5EFDD3EF1ECAF16700040ABE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				HEADER_SEARCH_PATHS = "$(iOSOpenDevPath)/include/**";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LIBRARY_SEARCH_PATHS = "$(iOSOpenDevPath)/lib/**";
+				SDKROOT = iphoneos;
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Release;
+		};
+		5EFDD4131ECAF22400040ABE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = MKR67VKJHE;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				EXECUTABLE_EXTENSION = a;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					.,
+					../vendor,
+					/usr/local/include,
+					/opt/local/include,
+				);
+				LD_DYLIB_INSTALL_NAME = "";
+				LIBRARY_SEARCH_PATHS = "";
+				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5EFDD4141ECAF22400040ABE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = MKR67VKJHE;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXECUTABLE_EXTENSION = a;
+				EXECUTABLE_PREFIX = lib;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					.,
+					../vendor,
+					/usr/local/include,
+					/opt/local/include,
+				);
+				LD_DYLIB_INSTALL_NAME = "";
+				LIBRARY_SEARCH_PATHS = "";
+				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5EFDD3ED1ECAF16700040ABE /* Build configuration list for PBXProject "karabiner_share" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5EFDD3EE1ECAF16700040ABE /* Debug */,
+				5EFDD3EF1ECAF16700040ABE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5EFDD4121ECAF22400040ABE /* Build configuration list for PBXNativeTarget "karabiner_share" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5EFDD4131ECAF22400040ABE /* Debug */,
+				5EFDD4141ECAF22400040ABE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5EFDD3EA1ECAF16700040ABE /* Project object */;
+}

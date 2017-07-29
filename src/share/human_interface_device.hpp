@@ -136,10 +136,13 @@ public:
       if (auto p = iokit_utility::get_product_id(device_)) {
         product_id = *p;
       }
+      
       core_configuration::profile::device::identifiers identifiers(vendor_id,
                                                                    product_id,
                                                                    is_keyboard,
-                                                                   is_pointing_device);
+                                                                   is_pointing_device,
+                                                                   product,
+                                                                   manufacturer);
 
       bool is_built_in_keyboard = false;
       if (is_keyboard &&
@@ -313,7 +316,7 @@ public:
 
       auto r = open();
       if (r != kIOReturnSuccess) {
-        logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+        //logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
         return;
       }
 
@@ -389,7 +392,7 @@ public:
             // ----------------------------------------
             auto r = open(kIOHIDOptionsTypeSeizeDevice);
             if (r != kIOReturnSuccess) {
-              logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+              //logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
               return;
             }
 
@@ -637,7 +640,7 @@ public:
           r = IOHIDDeviceSetValue(device_, element, value);
 
           if (r != kIOReturnSuccess) {
-            logger::get_logger().error("IOHIDDeviceSetValue error {1} for {2} @ {0}", __PRETTY_FUNCTION__, r, get_name_for_log());
+            //logger::get_logger().error("IOHIDDeviceSetValue error {1} for {2} @ {0}", __PRETTY_FUNCTION__, r, get_name_for_log());
           }
 
           CFRelease(value);
