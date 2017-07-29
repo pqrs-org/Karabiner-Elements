@@ -382,27 +382,23 @@ public:
     if (auto key_code = event.get_key_code()) {
       auto modifier_flag = types::get_modifier_flag(*key_code);
       if (modifier_flag != modifier_flag::zero) {
-        modifier_flag_manager::active_modifier_flag active_modifier_flag(modifier_flag_manager::active_modifier_flag::type::increase,
+        auto type = (event_type == event_type::key_down ? modifier_flag_manager::active_modifier_flag::type::increase
+                                                        : modifier_flag_manager::active_modifier_flag::type::decrease);
+        modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
                                                                          modifier_flag,
                                                                          device_id);
-        if (event_type == event_type::key_down) {
-          modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
-        } else {
-          modifier_flag_manager_.erase_active_modifier_flag(active_modifier_flag);
-        }
+        modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
       }
     }
 
     if (event.get_type() == queued_event::event::type::caps_lock_state_changed) {
       if (auto integer_value = event.get_integer_value()) {
-        modifier_flag_manager::active_modifier_flag active_modifier_flag(modifier_flag_manager::active_modifier_flag::type::increase_lock,
+        auto type = (*integer_value ? modifier_flag_manager::active_modifier_flag::type::increase_lock
+                                    : modifier_flag_manager::active_modifier_flag::type::decrease_lock);
+        modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
                                                                          modifier_flag::caps_lock,
                                                                          device_id);
-        if (*integer_value) {
-          modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
-        } else {
-          modifier_flag_manager_.erase_all_active_modifier_flags(active_modifier_flag);
-        }
+        modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
       }
     }
 
@@ -410,14 +406,12 @@ public:
 
     if (auto pointing_button = event.get_pointing_button()) {
       if (*pointing_button != pointing_button::zero) {
-        pointing_button_manager::active_pointing_button active_pointing_button(pointing_button_manager::active_pointing_button::type::increase,
+        auto type = (event_type == event_type::key_down ? pointing_button_manager::active_pointing_button::type::increase
+                                                        : pointing_button_manager::active_pointing_button::type::decrease);
+        pointing_button_manager::active_pointing_button active_pointing_button(type,
                                                                                *pointing_button,
                                                                                device_id);
-        if (event_type == event_type::key_down) {
-          pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
-        } else {
-          pointing_button_manager_.erase_active_pointing_button(active_pointing_button);
-        }
+        pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
       }
     }
 

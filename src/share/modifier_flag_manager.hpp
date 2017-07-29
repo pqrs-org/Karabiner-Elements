@@ -35,6 +35,19 @@ public:
       return device_id_;
     }
 
+    type get_inverse_type(void) const {
+      switch (type_) {
+        case type::increase:
+          return type::decrease;
+        case type::decrease:
+          return type::increase;
+        case type::increase_lock:
+          return type::decrease_lock;
+        case type::decrease_lock:
+          return type::increase_lock;
+      }
+    }
+
     int get_count(void) const {
       if (type_ == type::increase ||
           type_ == type::increase_lock) {
@@ -42,6 +55,12 @@ public:
       } else {
         return -1;
       }
+    }
+
+    bool is_paired(const active_modifier_flag& other) const {
+      return get_type() == other.get_inverse_type() &&
+             get_modifier_flag() == other.get_modifier_flag() &&
+             get_device_id() == other.get_device_id();
     }
 
     bool operator==(const active_modifier_flag& other) const {
@@ -61,23 +80,24 @@ public:
   }
 
   void push_back_active_modifier_flag(const active_modifier_flag& flag) {
-    active_modifier_flags_.push_back(flag);
-  }
+    switch (flag.get_type()) {
+      case active_modifier_flag::type::increase:
+      case active_modifier_flag::type::decrease:
+      case active_modifier_flag::type::increase_lock:
+        active_modifier_flags_.push_back(flag);
+        erase_pairs();
+        break;
 
-  void erase_active_modifier_flag(const active_modifier_flag& flag) {
-    auto it = std::find(std::begin(active_modifier_flags_),
-                        std::end(active_modifier_flags_),
-                        flag);
-    if (it != std::end(active_modifier_flags_)) {
-      active_modifier_flags_.erase(it);
+      case active_modifier_flag::type::decrease_lock:
+        // Remove all type::increase_lock
+        active_modifier_flags_.erase(std::remove_if(std::begin(active_modifier_flags_),
+                                                    std::end(active_modifier_flags_),
+                                                    [&](auto& f) {
+                                                      return f.is_paired(flag);
+                                                    }),
+                                     std::end(active_modifier_flags_));
+        break;
     }
-  }
-
-  void erase_all_active_modifier_flags(const active_modifier_flag& flag) {
-    active_modifier_flags_.erase(std::remove(std::begin(active_modifier_flags_),
-                                             std::end(active_modifier_flags_),
-                                             flag),
-                                 std::end(active_modifier_flags_));
   }
 
   void erase_all_active_modifier_flags(device_id device_id) {
@@ -117,6 +137,21 @@ public:
   }
 
 private:
+  void erase_pairs(void) {
+    for (size_t i1 = 0; i1 < active_modifier_flags_.size(); ++i1) {
+      for (size_t i2 = i1 + 1; i2 < active_modifier_flags_.size(); ++i2) {
+        if (active_modifier_flags_[i1].is_paired(active_modifier_flags_[i2])) {
+          active_modifier_flags_.erase(std::begin(active_modifier_flags_) + i2);
+          active_modifier_flags_.erase(std::begin(active_modifier_flags_) + i1);
+          if (i1 > 0) {
+            --i1;
+          }
+          break;
+        }
+      }
+    }
+  }
+
   std::vector<active_modifier_flag> active_modifier_flags_;
 };
 } // namespace krbn

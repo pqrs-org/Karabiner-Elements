@@ -437,7 +437,7 @@
                                             <rect key="frame" x="17" y="125" width="820" height="305"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
                                                 <rect key="frame" x="1" y="0.0" width="818" height="304"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
                                                         <rect key="frame" x="0.0" y="0.0" width="818" height="281"/>
@@ -2260,7 +2260,7 @@ Gw
                         <rect key="frame" x="80" y="61" width="640" height="82"/>
                         <clipView key="contentView" id="uNg-oR-13T">
                             <rect key="frame" x="1" y="1" width="623" height="80"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
                                     <rect key="frame" x="0.0" y="0.0" width="623" height="80"/>
@@ -2334,16 +2334,16 @@ Gw
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="WRr-7z-BZH" userLabel="Alert Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="800" height="300"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
-            <value key="minSize" type="size" width="800" height="300"/>
-            <value key="maxSize" type="size" width="800" height="300"/>
+            <rect key="contentRect" x="196" y="132" width="800" height="600"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
+            <value key="minSize" type="size" width="800" height="600"/>
+            <value key="maxSize" type="size" width="800" height="600"/>
             <view key="contentView" id="t6Q-r2-1Lh">
-                <rect key="frame" x="0.0" y="0.0" width="800" height="300"/>
+                <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="GkP-Rg-Yqv">
-                        <rect key="frame" x="297" y="248" width="206" height="32"/>
+                        <rect key="frame" x="297" y="548" width="206" height="32"/>
                         <subviews>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="jJb-z0-5Vi">
                                 <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
@@ -2368,19 +2368,16 @@ Gw
                         </constraints>
                     </customView>
                     <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="kqu-77-2mK">
-                        <rect key="frame" x="10" y="10" width="780" height="218"/>
+                        <rect key="frame" x="10" y="10" width="780" height="518"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Tab" identifier="1" id="eIG-Ss-b2j">
                                 <view key="view" id="G93-5A-Bfp">
-                                    <rect key="frame" x="0.0" y="0.0" width="780" height="218"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="780" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hVs-29-H8P">
-                                            <rect key="frame" x="18" y="118" width="744" height="80"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="80" id="s6B-NI-G6W"/>
-                                            </constraints>
+                                            <rect key="frame" x="18" y="447" width="744" height="51"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="c0m-Ay-Y4e">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">System policy prevents loading the kernel extension that is used by Karabiner-Elements.
@@ -2390,7 +2387,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15b-2Z-hf1">
-                                            <rect key="frame" x="216" y="70" width="348" height="32"/>
+                                            <rect key="frame" x="216" y="399" width="348" height="32"/>
                                             <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Te8-FQ-SJa">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -2400,7 +2397,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9f7-D7-XzV">
-                                            <rect key="frame" x="241" y="28" width="298" height="32"/>
+                                            <rect key="frame" x="241" y="357" width="298" height="32"/>
                                             <buttonCell key="cell" type="push" title="Close Karabiner-Elements Preferences" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyW-jE-BlT">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -2409,14 +2406,23 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                                 <action selector="closePreferences:" target="fAe-OR-t9F" id="lap-n4-hjz"/>
                                             </connections>
                                         </button>
+                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8N5-fM-hfp">
+                                            <rect key="frame" x="58" y="44" width="665" height="290"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="290" id="5o6-Bd-EEQ"/>
+                                            </constraints>
+                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="kext_policy" id="e5V-85-L27"/>
+                                        </imageView>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="9f7-D7-XzV" firstAttribute="top" secondItem="15b-2Z-hf1" secondAttribute="bottom" constant="21" id="1fY-ZB-Kby"/>
                                         <constraint firstAttribute="trailing" secondItem="hVs-29-H8P" secondAttribute="trailing" constant="20" id="CUf-zA-yJF"/>
                                         <constraint firstItem="15b-2Z-hf1" firstAttribute="top" secondItem="hVs-29-H8P" secondAttribute="bottom" constant="20" id="Ji9-Mc-ham"/>
+                                        <constraint firstItem="8N5-fM-hfp" firstAttribute="centerX" secondItem="G93-5A-Bfp" secondAttribute="centerX" id="N5A-Qc-YpE"/>
                                         <constraint firstItem="hVs-29-H8P" firstAttribute="top" secondItem="G93-5A-Bfp" secondAttribute="top" constant="20" id="dgJ-Xa-HQh"/>
                                         <constraint firstItem="15b-2Z-hf1" firstAttribute="centerX" secondItem="G93-5A-Bfp" secondAttribute="centerX" id="gOk-R0-Jei"/>
                                         <constraint firstItem="hVs-29-H8P" firstAttribute="leading" secondItem="G93-5A-Bfp" secondAttribute="leading" constant="20" id="gZV-fc-c1K"/>
+                                        <constraint firstItem="8N5-fM-hfp" firstAttribute="top" secondItem="9f7-D7-XzV" secondAttribute="bottom" constant="30" id="h2g-VL-f5B"/>
                                         <constraint firstItem="9f7-D7-XzV" firstAttribute="centerX" secondItem="G93-5A-Bfp" secondAttribute="centerX" id="ik2-5W-suO"/>
                                     </constraints>
                                 </view>
@@ -2437,21 +2443,22 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
     </objects>
     <resources>
         <image name="NSCaution" width="32" height="32"/>
-        <image name="ic_add_circle_18pt" width="18" height="18"/>
-        <image name="ic_arrow_downward_18pt" width="18" height="18"/>
-        <image name="ic_arrow_upward_18pt" width="18" height="18"/>
-        <image name="ic_cancel_18pt" width="18" height="18"/>
-        <image name="ic_check_18pt" width="18" height="18"/>
-        <image name="ic_chevron_right_18pt" width="18" height="18"/>
-        <image name="ic_cloud_download_18pt" width="18" height="18"/>
-        <image name="ic_delete_forever_18pt" width="18" height="18"/>
-        <image name="ic_expand_more_18pt" width="18" height="18"/>
-        <image name="ic_file_download_18pt" width="18" height="18"/>
-        <image name="ic_forward_18pt" width="18" height="18"/>
-        <image name="ic_keyboard_18pt" width="18" height="18"/>
-        <image name="ic_mouse_18pt" width="18" height="18"/>
-        <image name="ic_refresh_18pt" width="18" height="18"/>
-        <image name="ic_remove_circle_18pt" width="18" height="18"/>
-        <image name="ic_star_rate_18pt" width="18" height="18"/>
+        <image name="ic_add_circle_18pt" width="36" height="36"/>
+        <image name="ic_arrow_downward_18pt" width="36" height="36"/>
+        <image name="ic_arrow_upward_18pt" width="36" height="36"/>
+        <image name="ic_cancel_18pt" width="36" height="36"/>
+        <image name="ic_check_18pt" width="36" height="36"/>
+        <image name="ic_chevron_right_18pt" width="36" height="36"/>
+        <image name="ic_cloud_download_18pt" width="36" height="36"/>
+        <image name="ic_delete_forever_18pt" width="36" height="36"/>
+        <image name="ic_expand_more_18pt" width="36" height="36"/>
+        <image name="ic_file_download_18pt" width="36" height="36"/>
+        <image name="ic_forward_18pt" width="36" height="36"/>
+        <image name="ic_keyboard_18pt" width="36" height="36"/>
+        <image name="ic_mouse_18pt" width="36" height="36"/>
+        <image name="ic_refresh_18pt" width="36" height="36"/>
+        <image name="ic_remove_circle_18pt" width="36" height="36"/>
+        <image name="ic_star_rate_18pt" width="36" height="36"/>
+        <image name="kext_policy" width="665" height="568"/>
     </resources>
 </document>
