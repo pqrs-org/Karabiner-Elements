@@ -80,7 +80,8 @@ public:
   human_interface_device(const human_interface_device&) = delete;
 
   human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
-                                                           device_id_(types::get_new_device_id()),
+                                                           device_id_(types::get_new_device_id(iokit_utility::find_vendor_id(device),
+                                                                                               iokit_utility::find_product_id(device))),
                                                            queue_(nullptr),
                                                            removed_(false),
                                                            observed_(false),
@@ -125,17 +126,11 @@ public:
       }
       connected_devices::device::descriptions descriptions(manufacturer, product);
 
-      auto vendor_id = vendor_id::zero;
-      auto product_id = product_id::zero;
+      auto vendor_id = iokit_utility::find_vendor_id(device_);
+      auto product_id = iokit_utility::find_product_id(device_);
       bool is_keyboard = IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
       bool is_pointing_device = IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer) ||
                                 IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
-      if (auto v = iokit_utility::get_vendor_id(device_)) {
-        vendor_id = *v;
-      }
-      if (auto p = iokit_utility::get_product_id(device_)) {
-        product_id = *p;
-      }
       core_configuration::profile::device::identifiers identifiers(vendor_id,
                                                                    product_id,
                                                                    is_keyboard,
@@ -196,6 +191,8 @@ public:
       unregister_report_callback();
       queue_stop();
       close();
+
+      types::detach_device_id(device_id_);
 
       // ----------------------------------------
       // Release queue_
@@ -480,11 +477,11 @@ public:
   }
 
   boost::optional<vendor_id> get_vendor_id(void) const {
-    return iokit_utility::get_vendor_id(device_);
+    return iokit_utility::find_vendor_id(device_);
   }
 
   boost::optional<product_id> get_product_id(void) const {
-    return iokit_utility::get_product_id(device_);
+    return iokit_utility::find_product_id(device_);
   }
 
   boost::optional<location_id> get_location_id(void) const {

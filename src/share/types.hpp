@@ -286,14 +286,42 @@ enum class location_id : uint32_t {
 
 class types final {
 public:
-  static device_id get_new_device_id(void) {
+  static device_id get_new_device_id(vendor_id vendor_id,
+                                     product_id product_id) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
     static auto id = device_id::zero;
 
     id = device_id(static_cast<uint32_t>(id) + 1);
+
+    auto& map = get_device_identifiers_map();
+    map[id] = std::make_pair(vendor_id, product_id);
+
     return id;
+  }
+
+  static void detach_device_id(device_id device_id) {
+    auto& map = get_device_identifiers_map();
+    map.erase(device_id);
+  }
+
+  static vendor_id find_vendor_id(device_id device_id) {
+    auto& map = get_device_identifiers_map();
+    auto it = map.find(device_id);
+    if (it == std::end(map)) {
+      return vendor_id::zero;
+    }
+    return it->second.first;
+  }
+
+  static product_id find_product_id(device_id device_id) {
+    auto& map = get_device_identifiers_map();
+    auto it = map.find(device_id);
+    if (it == std::end(map)) {
+      return product_id::zero;
+    }
+    return it->second.second;
   }
 
   static modifier_flag get_modifier_flag(key_code key_code) {
@@ -803,6 +831,12 @@ public:
       return boost::none;
     }
     return it->second;
+  }
+
+private:
+  static std::unordered_map<device_id, std::pair<vendor_id, product_id>>& get_device_identifiers_map(void) {
+    static std::unordered_map<device_id, std::pair<vendor_id, product_id>> map;
+    return map;
   }
 };
 

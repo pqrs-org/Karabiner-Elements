@@ -69,6 +69,28 @@ TEST_CASE("get_pointing_button") {
   }
 }
 
+TEST_CASE("get_new_device_id") {
+  auto device_id1 = krbn::types::get_new_device_id(krbn::vendor_id(1234),
+                                                   krbn::product_id(5678));
+  auto device_id2 = krbn::types::get_new_device_id(krbn::vendor_id(2345),
+                                                   krbn::product_id(6789));
+
+  REQUIRE(krbn::types::find_vendor_id(device_id1) == krbn::vendor_id(1234));
+  REQUIRE(krbn::types::find_product_id(device_id1) == krbn::product_id(5678));
+
+  REQUIRE(krbn::types::find_vendor_id(device_id2) == krbn::vendor_id(2345));
+  REQUIRE(krbn::types::find_product_id(device_id2) == krbn::product_id(6789));
+
+  REQUIRE(krbn::types::find_vendor_id(krbn::device_id(-1)) == krbn::vendor_id::zero);
+  REQUIRE(krbn::types::find_product_id(krbn::device_id(-1)) == krbn::product_id::zero);
+
+  krbn::types::detach_device_id(device_id1);
+  krbn::types::detach_device_id(krbn::device_id(-1));
+
+  REQUIRE(krbn::types::find_vendor_id(device_id1) == krbn::vendor_id::zero);
+  REQUIRE(krbn::types::find_product_id(device_id1) == krbn::product_id::zero);
+}
+
 int main(int argc, char* const argv[]) {
   krbn::thread_utility::register_main_thread();
   return Catch::Session().run(argc, argv);

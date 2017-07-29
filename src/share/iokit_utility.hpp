@@ -207,18 +207,18 @@ public:
     return get_long_property(device, CFSTR(kIOHIDMaxInputReportSizeKey));
   }
 
-  static boost::optional<vendor_id> get_vendor_id(IOHIDDeviceRef _Nonnull device) {
+  static vendor_id find_vendor_id(IOHIDDeviceRef _Nonnull device) {
     if (auto value = get_long_property(device, CFSTR(kIOHIDVendorIDKey))) {
       return static_cast<vendor_id>(*value);
     }
-    return boost::none;
+    return vendor_id::zero;
   }
 
-  static boost::optional<product_id> get_product_id(IOHIDDeviceRef _Nonnull device) {
+  static product_id find_product_id(IOHIDDeviceRef _Nonnull device) {
     if (auto value = get_long_property(device, CFSTR(kIOHIDProductIDKey))) {
       return static_cast<product_id>(*value);
     }
-    return boost::none;
+    return product_id::zero;
   }
 
   static boost::optional<location_id> get_location_id(IOHIDDeviceRef _Nonnull device) {
@@ -252,12 +252,8 @@ public:
     if (auto product = get_product(device)) {
       logger::get_logger().info("  product: {0}", *product);
     }
-    if (auto vendor_id = get_vendor_id(device)) {
-      logger::get_logger().info("  vendor_id: {0:#x}", static_cast<uint32_t>(*vendor_id));
-    }
-    if (auto product_id = get_product_id(device)) {
-      logger::get_logger().info("  product_id: {0:#x}", static_cast<uint32_t>(*product_id));
-    }
+    logger::get_logger().info("  vendor_id: {0}", static_cast<uint32_t>(find_vendor_id(device)));
+    logger::get_logger().info("  product_id: {0}", static_cast<uint32_t>(find_product_id(device)));
     if (auto location_id = get_location_id(device)) {
       logger::get_logger().info("  location_id: {0:#x}", static_cast<uint32_t>(*location_id));
     }
@@ -271,12 +267,8 @@ public:
 
   static void log_removal_device(IOHIDDeviceRef _Nonnull device) {
     logger::get_logger().info("removal device:");
-    if (auto vendor_id = get_vendor_id(device)) {
-      logger::get_logger().info("  vendor_id: {0:#x}", static_cast<uint32_t>(*vendor_id));
-    }
-    if (auto product_id = get_product_id(device)) {
-      logger::get_logger().info("  product_id: {0:#x}", static_cast<uint32_t>(*product_id));
-    }
+    logger::get_logger().info("  vendor_id: {0}", static_cast<uint32_t>(find_vendor_id(device)));
+    logger::get_logger().info("  product_id: {0}", static_cast<uint32_t>(find_product_id(device)));
     if (auto location_id = get_location_id(device)) {
       logger::get_logger().info("  location_id: {0:#x}", static_cast<uint32_t>(*location_id));
     }
