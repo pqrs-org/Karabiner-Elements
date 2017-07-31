@@ -38,6 +38,8 @@ public:
           } else {
             logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, json.dump());
           }
+        } else if (key == "description") {
+          // Do nothing
         } else {
           logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
@@ -50,15 +52,23 @@ public:
 
   virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
                             const manipulator_environment& manipulator_environment) const {
+    auto vid = vendor_id::zero;
+    auto pid = product_id::zero;
+
+    if (!identifiers_.empty()) {
+      vid = types::find_vendor_id(queued_event.get_device_id());
+      pid = types::find_product_id(queued_event.get_device_id());
+    }
+
     for (const auto& identifier : identifiers_) {
       bool fulfilled = true;
 
       if (identifier.first != vendor_id::zero &&
-          identifier.first != types::find_vendor_id(queued_event.get_device_id())) {
+          identifier.first != vid) {
         fulfilled = false;
       }
       if (identifier.second != product_id::zero &&
-          identifier.second != types::find_product_id(queued_event.get_device_id())) {
+          identifier.second != pid) {
         fulfilled = false;
       }
 
@@ -108,6 +118,8 @@ private:
             } else {
               logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }
+          } else if (key == "description") {
+            // Do nothing
           } else {
             logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, j.dump());
           }

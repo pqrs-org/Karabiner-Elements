@@ -11,12 +11,15 @@
                 "product_id": 2001
             },
             {
+                "description": "any product_id",
                 "vendor_id": 1099
             },
             {
+                "description": "any vendor_id",
                 "product_id": 2099
             },
             {
+                "description": "ignored if vendor_id and product_id are not set"
             }
         ]
     }
