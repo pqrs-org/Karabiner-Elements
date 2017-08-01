@@ -661,7 +661,7 @@ private:
 
     // from_modifiers+f1 -> display_brightness_decrement ...
 
-    for (const auto& pair : profile_.get_fn_function_keys_key_code_map()) {
+    for (const auto& pair : profile_.get_fn_function_keys().make_key_code_map()) {
       auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                            pair.first,
                                                                            from_mandatory_modifiers,

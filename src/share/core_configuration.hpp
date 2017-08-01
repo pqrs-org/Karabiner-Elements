@@ -111,14 +111,11 @@ public:
       return simple_modifications_;
     }
 
-    const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) const {
-      return fn_function_keys_.get_pairs();
+    const simple_modifications& get_fn_function_keys(void) const {
+      return fn_function_keys_;
     }
-    void replace_fn_function_key(const std::string& from, const std::string& to) {
-      fn_function_keys_.replace_second(from, to);
-    }
-    const std::unordered_map<key_code, key_code> get_fn_function_keys_key_code_map(void) const {
-      return fn_function_keys_.make_key_code_map();
+    simple_modifications& get_fn_function_keys(void) {
+      return fn_function_keys_;
     }
 
     const complex_modifications& get_complex_modifications(void) const {

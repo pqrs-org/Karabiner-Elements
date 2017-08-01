@@ -35,7 +35,7 @@ TEST_CASE("valid") {
         {krbn::key_code::f8, krbn::key_code::play_or_pause},
         {krbn::key_code::f9, krbn::key_code::fastforward},
     };
-    REQUIRE(configuration.get_selected_profile().get_fn_function_keys_key_code_map() == expected);
+    REQUIRE(configuration.get_selected_profile().get_fn_function_keys().make_key_code_map() == expected);
   }
   {
     auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
@@ -98,7 +98,7 @@ TEST_CASE("broken.json") {
     REQUIRE(configuration.get_profiles().size() == 1);
     REQUIRE((configuration.get_profiles())[0].get_name() == "Default profile");
     REQUIRE((configuration.get_profiles())[0].get_selected() == true);
-    REQUIRE((configuration.get_profiles())[0].get_fn_function_keys().size() == 12);
+    REQUIRE((configuration.get_profiles())[0].get_fn_function_keys().get_pairs().size() == 12);
 
     {
       // to_json result is default json if is_loaded == false
@@ -246,7 +246,7 @@ TEST_CASE("profile") {
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().get_pairs().size() == 0);
-    REQUIRE(profile.get_fn_function_keys() == get_default_fn_function_keys_pairs());
+    REQUIRE(profile.get_fn_function_keys().get_pairs() == get_default_fn_function_keys_pairs());
     REQUIRE(profile.get_devices().size() == 0);
   }
 
@@ -354,7 +354,7 @@ TEST_CASE("profile") {
       auto expected = get_default_fn_function_keys_pairs();
       expected[2].second = "to f3";
       expected[3].second = "to f4";
-      REQUIRE(profile.get_fn_function_keys() == expected);
+      REQUIRE(profile.get_fn_function_keys().get_pairs() == expected);
     }
     {
       REQUIRE(profile.get_devices().size() == 3);
@@ -472,7 +472,7 @@ TEST_CASE("profile") {
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().get_pairs().size() == 0);
-    REQUIRE(profile.get_fn_function_keys() == get_default_fn_function_keys_pairs());
+    REQUIRE(profile.get_fn_function_keys().get_pairs() == get_default_fn_function_keys_pairs());
   }
   {
     nlohmann::json json({
@@ -642,8 +642,8 @@ TEST_CASE("profile.to_json") {
     //   "from 5": "to 5"
     // }
 
-    profile.replace_fn_function_key("f3", "to f3");
-    profile.replace_fn_function_key("not found", "do nothing");
+    profile.get_fn_function_keys().replace_second("f3", "to f3");
+    profile.get_fn_function_keys().replace_second("not found", "do nothing");
 
     profile.get_virtual_hid_keyboard().set_keyboard_type("iso");
 
