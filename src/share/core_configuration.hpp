@@ -21,9 +21,10 @@ public:
   class profile final {
   public:
 #include "core_configuration/profile/complex_modifications.hpp"
-#include "core_configuration/profile/device.hpp"
 #include "core_configuration/profile/simple_modifications.hpp"
 #include "core_configuration/profile/virtual_hid_keyboard.hpp"
+
+#include "core_configuration/profile/device.hpp"
 
     profile(const nlohmann::json& json) : json_(json),
                                           selected_(false),
