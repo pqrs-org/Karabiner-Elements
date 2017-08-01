@@ -104,20 +104,11 @@ public:
       selected_ = value;
     }
 
-    const std::vector<std::pair<std::string, std::string>>& get_simple_modifications(void) const {
-      return simple_modifications_.get_pairs();
+    const simple_modifications& get_simple_modifications(void) const {
+      return simple_modifications_;
     }
-    void push_back_simple_modification(void) {
-      simple_modifications_.push_back_pair();
-    }
-    void erase_simple_modification(size_t index) {
-      simple_modifications_.erase_pair(index);
-    }
-    void replace_simple_modification(size_t index, const std::string& from, const std::string& to) {
-      simple_modifications_.replace_pair(index, from, to);
-    }
-    const std::unordered_map<key_code, key_code> get_simple_modifications_key_code_map(void) const {
-      return simple_modifications_.to_key_code_map();
+    simple_modifications& get_simple_modifications(void) {
+      return simple_modifications_;
     }
 
     const std::vector<std::pair<std::string, std::string>>& get_fn_function_keys(void) const {
@@ -127,7 +118,7 @@ public:
       fn_function_keys_.replace_second(from, to);
     }
     const std::unordered_map<key_code, key_code> get_fn_function_keys_key_code_map(void) const {
-      return fn_function_keys_.to_key_code_map();
+      return fn_function_keys_.make_key_code_map();
     }
 
     const complex_modifications& get_complex_modifications(void) const {

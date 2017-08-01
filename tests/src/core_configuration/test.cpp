@@ -13,7 +13,7 @@ TEST_CASE("valid") {
         {*(krbn::types::get_key_code("caps_lock")), *(krbn::types::get_key_code("delete_or_backspace"))},
         {*(krbn::types::get_key_code("escape")), *(krbn::types::get_key_code("spacebar"))},
     };
-    REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map() == expected);
+    REQUIRE(configuration.get_selected_profile().get_simple_modifications().make_key_code_map() == expected);
   }
   {
     auto manipulator = configuration.get_selected_profile().get_complex_modifications().get_rules()[0].get_manipulators()[0].get_json();
@@ -88,7 +88,7 @@ TEST_CASE("broken.json") {
 
     {
       std::unordered_map<krbn::key_code, krbn::key_code> expected;
-      REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map() == expected);
+      REQUIRE(configuration.get_selected_profile().get_simple_modifications().make_key_code_map() == expected);
     }
     REQUIRE(configuration.is_loaded() == false);
 
@@ -111,7 +111,7 @@ TEST_CASE("broken.json") {
     krbn::core_configuration configuration("a.out");
 
     std::unordered_map<krbn::key_code, krbn::key_code> expected;
-    REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map() == expected);
+    REQUIRE(configuration.get_selected_profile().get_simple_modifications().make_key_code_map() == expected);
     REQUIRE(configuration.is_loaded() == false);
   }
 }
@@ -122,7 +122,7 @@ TEST_CASE("invalid_key_code_name.json") {
   std::unordered_map<krbn::key_code, krbn::key_code> expected{
       {krbn::key_code(41), krbn::key_code(44)},
   };
-  REQUIRE(configuration.get_selected_profile().get_simple_modifications_key_code_map() == expected);
+  REQUIRE(configuration.get_selected_profile().get_simple_modifications().make_key_code_map() == expected);
   REQUIRE(configuration.is_loaded() == true);
 }
 
@@ -245,7 +245,7 @@ TEST_CASE("profile") {
     krbn::core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
-    REQUIRE(profile.get_simple_modifications().size() == 0);
+    REQUIRE(profile.get_simple_modifications().get_pairs().size() == 0);
     REQUIRE(profile.get_fn_function_keys() == get_default_fn_function_keys_pairs());
     REQUIRE(profile.get_devices().size() == 0);
   }
@@ -348,7 +348,7 @@ TEST_CASE("profile") {
           {"from 3", "to 3"},
           {"from 10", "to 10"},
       });
-      REQUIRE(profile.get_simple_modifications() == expected);
+      REQUIRE(profile.get_simple_modifications().get_pairs() == expected);
     }
     {
       auto expected = get_default_fn_function_keys_pairs();
@@ -471,7 +471,7 @@ TEST_CASE("profile") {
     krbn::core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
-    REQUIRE(profile.get_simple_modifications().size() == 0);
+    REQUIRE(profile.get_simple_modifications().get_pairs().size() == 0);
     REQUIRE(profile.get_fn_function_keys() == get_default_fn_function_keys_pairs());
   }
   {
@@ -496,7 +496,7 @@ TEST_CASE("profile") {
       std::vector<std::pair<std::string, std::string>> expected({
           {"key", "value"},
       });
-      REQUIRE(profile.get_simple_modifications() == expected);
+      REQUIRE(profile.get_simple_modifications().get_pairs() == expected);
     }
   }
 }
@@ -547,28 +547,28 @@ TEST_CASE("profile.to_json") {
     profile.set_name("profile 1");
     profile.set_selected(true);
 
-    profile.push_back_simple_modification();
+    profile.get_simple_modifications().push_back_pair();
     // {
     //   "": ""
     // }
 
-    profile.push_back_simple_modification();
-    profile.replace_simple_modification(1, "from 1", "to 1");
+    profile.get_simple_modifications().push_back_pair();
+    profile.get_simple_modifications().replace_pair(1, "from 1", "to 1");
     // {
     //   "": "",
     //   "from 1": "to 1"
     // }
 
-    profile.push_back_simple_modification();
-    profile.replace_simple_modification(2, "from 3", "to 3");
+    profile.get_simple_modifications().push_back_pair();
+    profile.get_simple_modifications().replace_pair(2, "from 3", "to 3");
     // {
     //   "": "",
     //   "from 1": "to 1",
     //   "from 3": "to 3"
     // }
 
-    profile.push_back_simple_modification();
-    profile.replace_simple_modification(3, "from 4", "to 4");
+    profile.get_simple_modifications().push_back_pair();
+    profile.get_simple_modifications().replace_pair(3, "from 4", "to 4");
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -576,8 +576,8 @@ TEST_CASE("profile.to_json") {
     //   "from 4": "to 4"
     // }
 
-    profile.push_back_simple_modification();
-    profile.replace_simple_modification(4, "from 2", "to 2");
+    profile.get_simple_modifications().push_back_pair();
+    profile.get_simple_modifications().replace_pair(4, "from 2", "to 2");
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -586,8 +586,8 @@ TEST_CASE("profile.to_json") {
     //   "from 2": "to 2"
     // }
 
-    profile.push_back_simple_modification();
-    profile.replace_simple_modification(5, "from 2", "to 2.0");
+    profile.get_simple_modifications().push_back_pair();
+    profile.get_simple_modifications().replace_pair(5, "from 2", "to 2.0");
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -597,7 +597,7 @@ TEST_CASE("profile.to_json") {
     //   "from 2": "to 2.0"
     // }
 
-    profile.erase_simple_modification(2);
+    profile.get_simple_modifications().erase_pair(2);
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -606,8 +606,8 @@ TEST_CASE("profile.to_json") {
     //   "from 2": "to 2.0"
     // }
 
-    profile.push_back_simple_modification();
-    profile.replace_simple_modification(5, "", "to 0");
+    profile.get_simple_modifications().push_back_pair();
+    profile.get_simple_modifications().replace_pair(5, "", "to 0");
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -617,8 +617,8 @@ TEST_CASE("profile.to_json") {
     //   "": "to 0"
     // }
 
-    profile.push_back_simple_modification();
-    profile.replace_simple_modification(6, "from 0", "");
+    profile.get_simple_modifications().push_back_pair();
+    profile.get_simple_modifications().replace_pair(6, "from 0", "");
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -629,8 +629,8 @@ TEST_CASE("profile.to_json") {
     //   "from 0": ""
     // }
 
-    profile.push_back_simple_modification();
-    profile.replace_simple_modification(7, "from 5", "to 5");
+    profile.get_simple_modifications().push_back_pair();
+    profile.get_simple_modifications().replace_pair(7, "from 5", "to 5");
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -734,7 +734,7 @@ TEST_CASE("simple_modifications") {
           {*(krbn::types::get_key_code("a")), *(krbn::types::get_key_code("f1"))},
           {*(krbn::types::get_key_code("b")), *(krbn::types::get_key_code("f2"))},
       });
-      REQUIRE(simple_modifications.to_key_code_map() == expected);
+      REQUIRE(simple_modifications.make_key_code_map() == expected);
     }
   }
 

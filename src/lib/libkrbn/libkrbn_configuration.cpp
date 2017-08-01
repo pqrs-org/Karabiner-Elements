@@ -154,14 +154,14 @@ void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* p, siz
 
 size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().get_selected_profile().get_simple_modifications().size();
+    return c->get_core_configuration().get_selected_profile().get_simple_modifications().get_pairs().size();
   }
   return 0;
 }
 
 const char* libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    const auto& simple_modifications = c->get_core_configuration().get_selected_profile().get_simple_modifications();
+    const auto& simple_modifications = c->get_core_configuration().get_selected_profile().get_simple_modifications().get_pairs();
     if (index < simple_modifications.size()) {
       return simple_modifications[index].first.c_str();
     }
@@ -171,7 +171,7 @@ const char* libkrbn_core_configuration_get_selected_profile_simple_modification_
 
 const char* libkrbn_core_configuration_get_selected_profile_simple_modification_second(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    const auto& simple_modifications = c->get_core_configuration().get_selected_profile().get_simple_modifications();
+    const auto& simple_modifications = c->get_core_configuration().get_selected_profile().get_simple_modifications().get_pairs();
     if (index < simple_modifications.size()) {
       return simple_modifications[index].second.c_str();
     }
@@ -185,20 +185,20 @@ void libkrbn_core_configuration_replace_selected_profile_simple_modification(lib
                                                                              const char* to) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (from && to) {
-      c->get_core_configuration().get_selected_profile().replace_simple_modification(index, from, to);
+      c->get_core_configuration().get_selected_profile().get_simple_modifications().replace_pair(index, from, to);
     }
   }
 }
 
 void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().push_back_simple_modification();
+    c->get_core_configuration().get_selected_profile().get_simple_modifications().push_back_pair();
   }
 }
 
 void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* p, size_t index) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().erase_simple_modification(index);
+    c->get_core_configuration().get_selected_profile().get_simple_modifications().erase_pair(index);
   }
 }
 

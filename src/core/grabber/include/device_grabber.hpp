@@ -578,7 +578,7 @@ private:
   void update_simple_modifications_manipulators(void) {
     simple_modifications_manipulator_manager_.invalidate_manipulators();
 
-    for (const auto& pair : profile_.get_simple_modifications_key_code_map()) {
+    for (const auto& pair : profile_.get_simple_modifications().make_key_code_map()) {
       auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                            pair.first,
                                                                            {},

@@ -60,7 +60,7 @@ public:
     }
   }
 
-  std::unordered_map<key_code, key_code> to_key_code_map(void) const {
+  std::unordered_map<key_code, key_code> make_key_code_map(void) const {
     std::unordered_map<key_code, key_code> map;
 
     for (const auto& it : pairs_) {
