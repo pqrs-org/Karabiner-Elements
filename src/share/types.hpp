@@ -64,6 +64,14 @@ enum class hid_usage : uint32_t {
   csmr_consumercontrol = kHIDUsage_Csmr_ConsumerControl,
   csmr_acpan = kHIDUsage_Csmr_ACPan,
 
+  csmr_scannexttrack = kHIDUsage_Csmr_ScanNextTrack,
+  csmr_scanprevioustrack = kHIDUsage_Csmr_ScanPreviousTrack,
+  csmr_stop = kHIDUsage_Csmr_Stop,
+  csmr_playorpause = kHIDUsage_Csmr_PlayOrPause,
+  csmr_mute = kHIDUsage_Csmr_Mute,
+  csmr_volumeincrement = kHIDUsage_Csmr_VolumeIncrement,
+  csmr_volumedecrement = kHIDUsage_Csmr_VolumeDecrement,
+  
   apple_vendor_keyboard_function = kHIDUsage_AppleVendorKeyboard_Function,
   av_top_case_keyboard_fn = kHIDUsage_AV_TopCase_KeyboardFn,
 };
@@ -640,6 +648,34 @@ public:
       case hid_usage_page::apple_vendor_keyboard:
         if (usage == hid_usage::apple_vendor_keyboard_function) {
           return key_code::fn;
+        }
+        break;
+        
+      case hid_usage_page::consumer:
+        switch (usage) {
+          case hid_usage::csmr_scannexttrack:
+            return key_code::fastforward;
+            
+          case hid_usage::csmr_scanprevioustrack:
+              return key_code::rewind;
+          
+//          case hid_usage::csmr_stop:
+//              return key_code::????????;
+
+          case hid_usage::csmr_playorpause:
+            return key_code::play_or_pause;
+            
+          case hid_usage::csmr_mute:
+            return key_code::mute;
+            
+          case hid_usage::csmr_volumeincrement:
+            return key_code::volume_increment;
+            
+          case hid_usage::csmr_volumedecrement:
+            return key_code::volume_decrement;
+
+          default:
+            break;
         }
         break;
 
