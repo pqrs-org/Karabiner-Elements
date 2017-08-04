@@ -578,18 +578,37 @@ private:
   void update_simple_modifications_manipulators(void) {
     simple_modifications_manipulator_manager_.invalidate_manipulators();
 
-    for (const auto& pair : profile_.get_simple_modifications().make_key_code_map()) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
-                                                                           pair.first,
-                                                                           {},
-                                                                           {
-                                                                               manipulator::details::event_definition::modifier::any,
-                                                                           }),
-                                                                       manipulator::details::to_event_definition(
-                                                                           pair.second,
-                                                                           {}));
-      simple_modifications_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+    for (const auto& device : profile_.get_devices()) {
+      for (const auto& pair : device.get_simple_modifications().make_key_code_map()) {
+        auto m = make_simple_modifications_manipulator(pair);
+        auto c = make_device_if_condition(device);
+        m->push_back_condition(c);
+        simple_modifications_manipulator_manager_.push_back_manipulator(m);
+      }
     }
+
+    for (const auto& pair : profile_.get_simple_modifications().make_key_code_map()) {
+      auto m = make_simple_modifications_manipulator(pair);
+      simple_modifications_manipulator_manager_.push_back_manipulator(m);
+    }
+  }
+
+  std::shared_ptr<manipulator::details::conditions::base> make_device_if_condition(const core_configuration::profile::device& device) {
+    return std::make_shared<manipulator::details::conditions::device>(manipulator::details::conditions::device::type::device_if,
+                                                                      device.get_identifiers().get_vendor_id(),
+                                                                      device.get_identifiers().get_product_id());
+  }
+
+  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<key_code, key_code>& pair) {
+    return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
+                                                             pair.first,
+                                                             {},
+                                                             {
+                                                                 manipulator::details::event_definition::modifier::any,
+                                                             }),
+                                                         manipulator::details::to_event_definition(
+                                                             pair.second,
+                                                             {}));
   }
 
   void update_complex_modifications_manipulators(void) {
