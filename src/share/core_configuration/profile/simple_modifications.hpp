@@ -67,6 +67,10 @@ public:
       auto& from_string = it.first;
       auto& to_string = it.second;
 
+      if (to_string.empty()) {
+        continue;
+      }
+
       auto from_key_code = types::get_key_code(from_string);
       if (!from_key_code) {
         continue;
