@@ -680,15 +680,24 @@ private:
 
     // from_modifiers+f1 -> display_brightness_decrement ...
 
+    for (const auto& device : profile_.get_devices()) {
+      for (const auto& pair : device.get_fn_function_keys().make_key_code_map()) {
+        auto m = make_fn_function_keys_manipulator(pair,
+                                                   from_mandatory_modifiers,
+                                                   from_optional_modifiers,
+                                                   to_modifiers);
+        auto c = make_device_if_condition(device);
+        m->push_back_condition(c);
+        fn_function_keys_manipulator_manager_.push_back_manipulator(m);
+      }
+    }
+
     for (const auto& pair : profile_.get_fn_function_keys().make_key_code_map()) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
-                                                                           pair.first,
-                                                                           from_mandatory_modifiers,
-                                                                           from_optional_modifiers),
-                                                                       manipulator::details::to_event_definition(
-                                                                           pair.second,
-                                                                           to_modifiers));
-      fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+      auto m = make_fn_function_keys_manipulator(pair,
+                                                 from_mandatory_modifiers,
+                                                 from_optional_modifiers,
+                                                 to_modifiers);
+      fn_function_keys_manipulator_manager_.push_back_manipulator(m);
     }
 
     // fn+return_or_enter -> keypad_enter ...
@@ -717,6 +726,19 @@ private:
                                                                            }));
       fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
     }
+  }
+
+  std::shared_ptr<manipulator::details::base> make_fn_function_keys_manipulator(const std::pair<key_code, key_code>& pair,
+                                                                                const std::unordered_set<manipulator::details::event_definition::modifier>& from_mandatory_modifiers,
+                                                                                const std::unordered_set<manipulator::details::event_definition::modifier>& from_optional_modifiers,
+                                                                                const std::unordered_set<manipulator::details::event_definition::modifier>& to_modifiers) {
+    return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
+                                                             pair.first,
+                                                             from_mandatory_modifiers,
+                                                             from_optional_modifiers),
+                                                         manipulator::details::to_event_definition(
+                                                             pair.second,
+                                                             to_modifiers));
   }
 
   virtual_hid_device_client& virtual_hid_device_client_;
