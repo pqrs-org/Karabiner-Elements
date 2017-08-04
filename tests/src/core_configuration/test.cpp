@@ -674,6 +674,8 @@ TEST_CASE("profile.to_json") {
                                             }},
                             {"ignore", true},
                             {"disable_built_in_keyboard_if_exists", true},
+                            {"simple_modifications", nlohmann::json::object()},
+                            {"fn_function_keys", nlohmann::json::object()},
                         },
                     }},
         {"dummy", {{"keep_me", true}}},
@@ -1176,6 +1178,8 @@ TEST_CASE("device.to_json") {
                         }},
         {"ignore", false},
         {"disable_built_in_keyboard_if_exists", false},
+        {"simple_modifications", nlohmann::json::object()},
+        {"fn_function_keys", nlohmann::json::object()},
     });
     REQUIRE(device.to_json() == expected);
 
@@ -1216,6 +1220,8 @@ TEST_CASE("device.to_json") {
                         }},
         {"ignore", true},
         {"disable_built_in_keyboard_if_exists", false},
+        {"simple_modifications", nlohmann::json::object()},
+        {"fn_function_keys", nlohmann::json::object()},
         {"dummy", {{"keep_me", true}}},
     });
     REQUIRE(device.to_json() == expected);

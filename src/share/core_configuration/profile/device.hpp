@@ -147,6 +147,8 @@ public:
     j["identifiers"] = identifiers_;
     j["ignore"] = ignore_;
     j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
+    j["simple_modifications"] = simple_modifications_;
+    j["fn_function_keys"] = fn_function_keys_;
     return j;
   }
 

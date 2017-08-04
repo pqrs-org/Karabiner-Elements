@@ -131,7 +131,13 @@
                         "is_pointing_device": false
                     },
                     "ignore": false,
-                    "disable_built_in_keyboard_if_exists": false
+                    "disable_built_in_keyboard_if_exists": false,
+                    "simple_modifications": {
+                        "caps_lock": "left_control"
+                    },
+                    "fn_function_keys": {
+                        "f1": "escape"
+                    }
                 },
                 {
                     "identifiers": {
@@ -141,7 +147,11 @@
                         "is_pointing_device": false
                     },
                     "ignore": true,
-                    "disable_built_in_keyboard_if_exists": true
+                    "disable_built_in_keyboard_if_exists": true,
+                    "simple_modifications": {
+                    },
+                    "fn_function_keys": {
+                    }
                 }
             ]
         },
