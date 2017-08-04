@@ -176,6 +176,24 @@ TEST_CASE("conditions.device") {
     REQUIRE(helper.get_condition_manager().is_fulfilled(QUEUED_EVENT(device_id_8888_2099),
                                                         manipulator_environment) == false);
   }
+  {
+    krbn::manipulator::details::conditions::device condition(krbn::manipulator::details::conditions::device::type::device_if,
+                                                             krbn::vendor_id(1000),
+                                                             krbn::product_id(2000));
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(device_id_1000_2000),
+                                   manipulator_environment) == true);
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(device_id_1000_2001),
+                                   manipulator_environment) == false);
+  }
+  {
+    krbn::manipulator::details::conditions::device condition(krbn::manipulator::details::conditions::device::type::device_unless,
+                                                             krbn::vendor_id(1000),
+                                                             krbn::product_id(2000));
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(device_id_1000_2000),
+                                   manipulator_environment) == false);
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(device_id_1000_2001),
+                                   manipulator_environment) == true);
+  }
 
 #undef QUEUED_EVENT
 }

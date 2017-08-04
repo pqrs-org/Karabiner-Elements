@@ -47,6 +47,13 @@ public:
     }
   }
 
+  device(type type,
+         vendor_id vendor_id,
+         product_id product_id) : base(),
+                                  type_(type) {
+    identifiers_.emplace_back(vendor_id, product_id);
+  }
+
   virtual ~device(void) {
   }
 
