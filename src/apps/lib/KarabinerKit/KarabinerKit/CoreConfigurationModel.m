@@ -95,7 +95,7 @@
   libkrbn_core_configuration_erase_profile(self.libkrbnCoreConfiguration, index);
 }
 
-- (NSUInteger)selectedProfileSimpleModificationsCount {
+- (NSUInteger)selectedProfileSimpleModificationsCount:(NSUInteger)connectedDeviceIndex {
   return libkrbn_core_configuration_get_selected_profile_simple_modifications_size(self.libkrbnCoreConfiguration);
 }
 

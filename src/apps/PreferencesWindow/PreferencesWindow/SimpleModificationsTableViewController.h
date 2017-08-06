@@ -10,4 +10,6 @@
 - (void)valueChanged:(id)sender;
 - (void)removeItem:(id)sender;
 
+- (NSInteger)selectedConnectedDeviceIndex;
+
 @end

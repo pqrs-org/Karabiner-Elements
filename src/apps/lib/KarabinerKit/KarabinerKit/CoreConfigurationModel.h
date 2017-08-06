@@ -22,7 +22,7 @@
 - (void)addProfile;
 - (void)removeProfileAtIndex:(NSUInteger)index;
 
-@property(readonly) NSUInteger selectedProfileSimpleModificationsCount;
+- (NSUInteger)selectedProfileSimpleModificationsCount:(NSUInteger)connectedDeviceIndex;
 - (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index;
 - (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index;
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to;

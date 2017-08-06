@@ -2,11 +2,13 @@
 #import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
 #import "SimpleModificationsTableCellView.h"
+#import "SimpleModificationsTargetDeviceMenuManager.h"
 #import "weakify.h"
 
 @interface SimpleModificationsTableViewController ()
 
 @property(weak) IBOutlet NSTableView* tableView;
+@property(weak) IBOutlet NSPopUpButton* connectedDevicesPopupButton;
 
 @end
 
@@ -32,6 +34,15 @@
                                                 usingBlock:^(NSNotification* note) {
                                                   [self.tableView reloadData];
                                                 }];
+
+  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
+                                                    object:nil
+                                                     queue:[NSOperationQueue mainQueue]
+                                                usingBlock:^(NSNotification* note) {
+                                                  [self updateConnectedDevicesMenu];
+                                                }];
+
+  [self updateConnectedDevicesMenu];
 }
 
 - (void)dealloc {
@@ -75,6 +86,18 @@
   [coreConfigurationModel addSimpleModificationToSelectedProfile];
 
   [self.tableView reloadData];
+}
+
+- (void)updateConnectedDevicesMenu {
+  self.connectedDevicesPopupButton.menu = [SimpleModificationsTargetDeviceMenuManager createMenu];
+}
+
+- (NSInteger)selectedConnectedDeviceIndex {
+  NSInteger index = self.connectedDevicesPopupButton.indexOfSelectedItem;
+  if (index < 0) {
+    return -1;
+  }
+  return index - 1;
 }
 
 @end

@@ -31,6 +31,7 @@
 		3469EB6A1D8061E40005D30D /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB691D8061E40005D30D /* PreferencesWindowController.m */; };
 		3469EB6F1D8127980005D30D /* LogFileTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469EB6E1D8127980005D30D /* LogFileTextViewController.m */; };
 		347113131D870F5F001AC60D /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 347113121D870F5F001AC60D /* libc++.dylib */; };
+		347B641C1F37081300A41C47 /* SimpleModificationsTargetDeviceMenuManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 347B641B1F37081300A41C47 /* SimpleModificationsTargetDeviceMenuManager.m */; };
 		34B13D201EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B13D1F1EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.m */; };
 		34B13D231EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B13D221EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.m */; };
 		34B13D261EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B13D251EFACD1300587934 /* ComplexModificationsAssetsOutlineCellView.m */; };
@@ -96,6 +97,8 @@
 		3469EB6E1D8127980005D30D /* LogFileTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogFileTextViewController.m; sourceTree = "<group>"; };
 		347113111D870E87001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libkrbn.h; path = ../../lib/libkrbn/libkrbn.h; sourceTree = "<group>"; };
 		347113121D870F5F001AC60D /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "/usr/lib/libc++.dylib"; sourceTree = "<absolute>"; };
+		347B641A1F37081300A41C47 /* SimpleModificationsTargetDeviceMenuManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleModificationsTargetDeviceMenuManager.h; sourceTree = "<group>"; };
+		347B641B1F37081300A41C47 /* SimpleModificationsTargetDeviceMenuManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleModificationsTargetDeviceMenuManager.m; sourceTree = "<group>"; };
 		34B13D1E1EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsAssetsOutlineViewDataSource.h; sourceTree = "<group>"; };
 		34B13D1F1EFABEB300587934 /* ComplexModificationsAssetsOutlineViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComplexModificationsAssetsOutlineViewDataSource.m; sourceTree = "<group>"; };
 		34B13D211EFAC26200587934 /* ComplexModificationsAssetsOutlineViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComplexModificationsAssetsOutlineViewDelegate.h; sourceTree = "<group>"; };
@@ -229,6 +232,8 @@
 				345F953F1DA8E5FE002854B8 /* SimpleModificationsTableViewDataSource.m */,
 				345F95431DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.h */,
 				345F95441DAA3E04002854B8 /* SimpleModificationsTableViewDelegate.m */,
+				347B641A1F37081300A41C47 /* SimpleModificationsTargetDeviceMenuManager.h */,
+				347B641B1F37081300A41C47 /* SimpleModificationsTargetDeviceMenuManager.m */,
 				3445E0681D801AF7004555F9 /* Supporting Files */,
 				3428530C1DCCFDEB00164476 /* SystemPreferencesManager.h */,
 				3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */,
@@ -377,6 +382,7 @@
 				34B97B2A1DBCC23D00EB3583 /* DevicesTableViewDataSource.m in Sources */,
 				3445E0671D801AF7004555F9 /* AppDelegate.m in Sources */,
 				3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */,
+				347B641C1F37081300A41C47 /* SimpleModificationsTargetDeviceMenuManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
