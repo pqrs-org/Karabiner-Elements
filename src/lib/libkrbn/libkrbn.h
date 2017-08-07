@@ -71,15 +71,23 @@ void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* _Nonnu
 
 // profile::simple_modifications
 
-size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* _Nonnull p);
-const char* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* _Nonnull p, size_t index);
-const char* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_second(libkrbn_core_configuration* _Nonnull p, size_t index);
+size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* _Nonnull p,
+                                                                                 libkrbn_device_identifiers* _Nullable device_identifiers);
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* _Nonnull p,
+                                                                                                size_t index,
+                                                                                                libkrbn_device_identifiers* _Nullable device_identifiers);
+const char* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_second(libkrbn_core_configuration* _Nonnull p,
+                                                                                                 size_t index,
+                                                                                                 libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_replace_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p,
                                                                              size_t index,
                                                                              const char* _Nonnull from,
-                                                                             const char* _Nonnull to);
-void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p);
-void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p, size_t index);
+                                                                             const char* _Nonnull to,
+                                                                             libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p,
+                                                                               libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p, size_t index,
+                                                                           libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // profile::fn_function_keys
 

@@ -2,11 +2,13 @@
 #import "DevicesTableCellView.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
+#import "SimpleModificationsTableViewController.h"
 
 @interface DevicesTableViewController ()
 
 @property(weak) IBOutlet NSTableView* tableView;
 @property(weak) IBOutlet NSTableView* externalKeyboardTableView;
+@property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 
 @end
 
@@ -44,7 +46,7 @@
     [coreConfigurationModel setSelectedProfileDeviceIgnore:&(deviceIdentifiers)
                                                      value:(cellView.checkbox.state == NSOffState)];
     [coreConfigurationModel save];
-    return;
+    goto finish;
   }
 
   row = [self.externalKeyboardTableView rowForView:sender];
@@ -54,8 +56,11 @@
     [coreConfigurationModel setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:&(deviceIdentifiers)
                                                                              value:(cellView.checkbox.state == NSOnState)];
     [coreConfigurationModel save];
-    return;
+    goto finish;
   }
+
+ finish:
+  [self.simpleModificationsTableViewController updateConnectedDevicesMenu];
 }
 
 @end

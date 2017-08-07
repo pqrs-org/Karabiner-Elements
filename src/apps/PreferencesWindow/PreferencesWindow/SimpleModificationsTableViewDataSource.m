@@ -11,7 +11,8 @@
 @implementation SimpleModificationsTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
-  return [[KarabinerKitConfigurationManager sharedManager].coreConfigurationModel selectedProfileSimpleModificationsCount:0];
+  NSInteger connectedDeviceIndex = self.simpleModificationsTableViewController.selectedConnectedDeviceIndex;
+  return [[KarabinerKitConfigurationManager sharedManager].coreConfigurationModel selectedProfileSimpleModificationsCount:connectedDeviceIndex];
 }
 
 @end

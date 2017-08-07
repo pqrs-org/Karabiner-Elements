@@ -73,6 +73,7 @@
         <customObject id="n2S-Tf-7ZE" customClass="DevicesTableViewController">
             <connections>
                 <outlet property="externalKeyboardTableView" destination="aIG-lD-1bK" id="mLO-bs-e8W"/>
+                <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="uUM-J5-NlU"/>
                 <outlet property="tableView" destination="W1W-Xd-0KJ" id="eN4-9F-gvt"/>
             </connections>
         </customObject>
@@ -439,7 +440,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="177" y="494" width="513" height="31"/>
+                                            <rect key="frame" x="176" y="494" width="513" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="101" y="2" width="405" height="26"/>
@@ -451,6 +452,9 @@
                                                         <font key="font" metaFont="menu"/>
                                                         <menu key="menu" id="JFJ-Vg-OFl"/>
                                                     </popUpButtonCell>
+                                                    <connections>
+                                                        <action selector="reloadTableView:" target="4f7-Hm-cOy" id="WOx-WW-UUz"/>
+                                                    </connections>
                                                 </popUpButton>
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lqN-yh-z4B">
                                                     <rect key="frame" x="8" y="7" width="92" height="17"/>

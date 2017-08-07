@@ -23,7 +23,9 @@
     result.popUpButton.target = self.simpleModificationsTableViewController;
     result.popUpButton.menu = [self.simpleModificationsMenuManager.fromMenu copy];
 
-    NSString* fromValue = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row];
+    NSInteger connectedDeviceIndex = self.simpleModificationsTableViewController.selectedConnectedDeviceIndex;
+    NSString* fromValue = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row
+                                                                           connectedDeviceIndex:connectedDeviceIndex];
     [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:fromValue];
 
     return result;
@@ -37,14 +39,17 @@
     result.popUpButton.menu = [self.simpleModificationsMenuManager.toMenu copy];
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    NSString* fromValue = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row];
+    NSInteger connectedDeviceIndex = self.simpleModificationsTableViewController.selectedConnectedDeviceIndex;
+    NSString* fromValue = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row
+                                                                           connectedDeviceIndex:connectedDeviceIndex];
     if ([fromValue length] > 0) {
       result.popUpButton.enabled = YES;
     } else {
       result.popUpButton.enabled = NO;
     }
 
-    NSString* toValue = [coreConfigurationModel selectedProfileSimpleModificationSecondAtIndex:row];
+    NSString* toValue = [coreConfigurationModel selectedProfileSimpleModificationSecondAtIndex:row
+                                                                          connectedDeviceIndex:connectedDeviceIndex];
     [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:toValue];
 
     return result;

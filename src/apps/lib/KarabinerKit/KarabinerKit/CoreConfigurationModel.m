@@ -1,4 +1,5 @@
 #import "CoreConfigurationModel.h"
+#import "KarabinerKit/KarabinerKit.h"
 
 @interface KarabinerKitCoreConfigurationModel ()
 
@@ -95,36 +96,71 @@
   libkrbn_core_configuration_erase_profile(self.libkrbnCoreConfiguration, index);
 }
 
-- (NSUInteger)selectedProfileSimpleModificationsCount:(NSUInteger)connectedDeviceIndex {
-  return libkrbn_core_configuration_get_selected_profile_simple_modifications_size(self.libkrbnCoreConfiguration);
+- (libkrbn_device_identifiers*)deviceIdentifiersByIndex:(NSInteger)connectedDeviceIndex deviceIdentifiers:(libkrbn_device_identifiers*)deviceIdentifiers {
+  if (deviceIdentifiers) {
+    KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+    if (0 <= connectedDeviceIndex && connectedDeviceIndex < (NSInteger)(connectedDevices.devicesCount)) {
+      *deviceIdentifiers = [connectedDevices deviceIdentifiersAtIndex:connectedDeviceIndex];
+      return deviceIdentifiers;
+    }
+  }
+  return nil;
 }
 
-- (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index {
-  const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_first(self.libkrbnCoreConfiguration, index);
+- (NSUInteger)selectedProfileSimpleModificationsCount:(NSInteger)connectedDeviceIndex {
+  libkrbn_device_identifiers deviceIdentifiers;
+  return libkrbn_core_configuration_get_selected_profile_simple_modifications_size(self.libkrbnCoreConfiguration,
+                                                                                   [self deviceIdentifiersByIndex:connectedDeviceIndex
+                                                                                                deviceIdentifiers:&deviceIdentifiers]);
+}
+
+- (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
+  libkrbn_device_identifiers deviceIdentifiers;
+  const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_first(self.libkrbnCoreConfiguration,
+                                                                                            index,
+                                                                                            [self deviceIdentifiersByIndex:connectedDeviceIndex
+                                                                                                         deviceIdentifiers:&deviceIdentifiers]);
   if (p) {
     return [NSString stringWithUTF8String:p];
   }
   return @"";
 }
 
-- (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index {
-  const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_second(self.libkrbnCoreConfiguration, index);
+- (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
+  libkrbn_device_identifiers deviceIdentifiers;
+  const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_second(self.libkrbnCoreConfiguration,
+                                                                                             index,
+                                                                                             [self deviceIdentifiersByIndex:connectedDeviceIndex
+                                                                                                          deviceIdentifiers:&deviceIdentifiers]);
   if (p) {
     return [NSString stringWithUTF8String:p];
   }
   return @"";
 }
 
-- (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to {
-  libkrbn_core_configuration_replace_selected_profile_simple_modification(self.libkrbnCoreConfiguration, index, [from UTF8String], [to UTF8String]);
+- (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
+  libkrbn_device_identifiers deviceIdentifiers;
+  libkrbn_core_configuration_replace_selected_profile_simple_modification(self.libkrbnCoreConfiguration,
+                                                                          index,
+                                                                          [from UTF8String],
+                                                                          [to UTF8String],
+                                                                          [self deviceIdentifiersByIndex:connectedDeviceIndex
+                                                                                       deviceIdentifiers:&deviceIdentifiers]);
 }
 
-- (void)addSimpleModificationToSelectedProfile {
-  libkrbn_core_configuration_push_back_selected_profile_simple_modification(self.libkrbnCoreConfiguration);
+- (void)addSimpleModificationToSelectedProfile:(NSInteger)connectedDeviceIndex {
+  libkrbn_device_identifiers deviceIdentifiers;
+  libkrbn_core_configuration_push_back_selected_profile_simple_modification(self.libkrbnCoreConfiguration,
+                                                                            [self deviceIdentifiersByIndex:connectedDeviceIndex
+                                                                                         deviceIdentifiers:&deviceIdentifiers]);
 }
 
-- (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index {
-  libkrbn_core_configuration_erase_selected_profile_simple_modification(self.libkrbnCoreConfiguration, index);
+- (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
+  libkrbn_device_identifiers deviceIdentifiers;
+  libkrbn_core_configuration_erase_selected_profile_simple_modification(self.libkrbnCoreConfiguration,
+                                                                        index,
+                                                                        [self deviceIdentifiersByIndex:connectedDeviceIndex
+                                                                                     deviceIdentifiers:&deviceIdentifiers]);
 }
 
 - (NSUInteger)selectedProfileFnFunctionKeysCount {

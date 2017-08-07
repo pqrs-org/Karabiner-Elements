@@ -33,6 +33,7 @@
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
                                                   [self.tableView reloadData];
+                                                  [self updateConnectedDevicesMenu];
                                                 }];
 
   [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
@@ -66,7 +67,10 @@
     toCellView.popUpButton.enabled = YES;
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    [coreConfigurationModel setSelectedProfileSimpleModificationAtIndex:row from:fromValue to:toValue];
+    [coreConfigurationModel setSelectedProfileSimpleModificationAtIndex:row
+                                                                   from:fromValue
+                                                                     to:toValue
+                                                   connectedDeviceIndex:self.selectedConnectedDeviceIndex];
     [coreConfigurationModel save];
   }
 }
@@ -75,7 +79,8 @@
   NSInteger row = [self.tableView rowForView:sender];
 
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  [coreConfigurationModel removeSelectedProfileSimpleModificationAtIndex:row];
+  [coreConfigurationModel removeSelectedProfileSimpleModificationAtIndex:row
+                                                    connectedDeviceIndex:self.selectedConnectedDeviceIndex];
   [coreConfigurationModel save];
 
   [self.tableView reloadData];
@@ -83,8 +88,12 @@
 
 - (IBAction)addItem:(id)sender {
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  [coreConfigurationModel addSimpleModificationToSelectedProfile];
+  [coreConfigurationModel addSimpleModificationToSelectedProfile:self.selectedConnectedDeviceIndex];
 
+  [self.tableView reloadData];
+}
+
+- (IBAction)reloadTableView:(id)sender {
   [self.tableView reloadData];
 }
 

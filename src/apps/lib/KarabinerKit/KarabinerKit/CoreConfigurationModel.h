@@ -22,12 +22,12 @@
 - (void)addProfile;
 - (void)removeProfileAtIndex:(NSUInteger)index;
 
-- (NSUInteger)selectedProfileSimpleModificationsCount:(NSUInteger)connectedDeviceIndex;
-- (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index;
-- (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index;
-- (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to;
-- (void)addSimpleModificationToSelectedProfile;
-- (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index;
+- (NSUInteger)selectedProfileSimpleModificationsCount:(NSInteger)connectedDeviceIndex;
+- (NSString*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
+- (NSString*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
+- (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index from:(NSString*)from to:(NSString*)to connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
+- (void)addSimpleModificationToSelectedProfile:(NSInteger)connectedDeviceIndex;
+- (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
 
 @property(readonly) NSUInteger selectedProfileFnFunctionKeysCount;
 - (NSString*)selectedProfileFnFunctionKeyFirstAtIndex:(NSUInteger)index;
