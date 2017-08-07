@@ -72,44 +72,21 @@ const char* libkrbn_connected_devices_get_descriptions_product(libkrbn_connected
   return nullptr;
 }
 
-uint32_t libkrbn_connected_devices_get_identifiers_vendor_id(libkrbn_connected_devices* p, size_t index) {
+bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices* p, size_t index, libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
-    const auto& devices = c->get_connected_devices().get_devices();
-    if (index < devices.size()) {
-      return static_cast<uint32_t>(devices[index].get_identifiers().get_vendor_id());
+    if (device_identifiers) {
+      const auto& devices = c->get_connected_devices().get_devices();
+      if (index < devices.size()) {
+        auto identifiers = devices[index].get_identifiers();
+        device_identifiers->vendor_id = static_cast<uint32_t>(identifiers.get_vendor_id());
+        device_identifiers->product_id = static_cast<uint32_t>(identifiers.get_product_id());
+        device_identifiers->is_keyboard = static_cast<uint32_t>(identifiers.get_is_keyboard());
+        device_identifiers->is_pointing_device = static_cast<uint32_t>(identifiers.get_is_pointing_device());
+        return true;
+      }
     }
   }
-  return 0;
-}
-
-uint32_t libkrbn_connected_devices_get_identifiers_product_id(libkrbn_connected_devices* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
-    const auto& devices = c->get_connected_devices().get_devices();
-    if (index < devices.size()) {
-      return static_cast<uint32_t>(devices[index].get_identifiers().get_product_id());
-    }
-  }
-  return 0;
-}
-
-bool libkrbn_connected_devices_get_identifiers_is_keyboard(libkrbn_connected_devices* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
-    const auto& devices = c->get_connected_devices().get_devices();
-    if (index < devices.size()) {
-      return devices[index].get_identifiers().get_is_keyboard();
-    }
-  }
-  return 0;
-}
-
-bool libkrbn_connected_devices_get_identifiers_is_pointing_device(libkrbn_connected_devices* p, size_t index) {
-  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
-    const auto& devices = c->get_connected_devices().get_devices();
-    if (index < devices.size()) {
-      return devices[index].get_identifiers().get_is_pointing_device();
-    }
-  }
-  return 0;
+  return false;
 }
 
 bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* p, size_t index) {

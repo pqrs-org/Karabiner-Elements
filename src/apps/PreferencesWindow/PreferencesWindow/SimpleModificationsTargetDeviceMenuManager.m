@@ -22,10 +22,9 @@
                                       action:NULL
                                keyEquivalent:@""];
 
-    if ([coreConfigurationModel selectedProfileDeviceIgnore:[devices vendorIdAtIndex:i]
-                                                  productId:[devices productIdAtIndex:i]
-                                                 isKeyboard:[devices isKeyboardAtIndex:i]
-                                           isPointingDevice:[devices isPointingDeviceAtIndex:i]]) {
+    libkrbn_device_identifiers deviceIdentifiers = [devices deviceIdentifiersAtIndex:i];
+
+    if ([coreConfigurationModel selectedProfileDeviceIgnore:(&deviceIdentifiers)]) {
       item.enabled = NO;
     }
 

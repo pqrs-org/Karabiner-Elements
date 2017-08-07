@@ -108,7 +108,19 @@ public:
       return simple_modifications_;
     }
     simple_modifications& get_simple_modifications(void) {
-      return simple_modifications_;
+      return const_cast<simple_modifications&>(static_cast<const profile&>(*this).get_simple_modifications());
+    }
+
+    const simple_modifications* find_simple_modifications(const device::identifiers& identifiers) const {
+      for (const auto& d : devices_) {
+        if (d.get_identifiers() == identifiers) {
+          return &(d.get_simple_modifications());
+        }
+      }
+      return nullptr;
+    }
+    simple_modifications* find_simple_modifications(const device::identifiers& identifiers) {
+      return const_cast<simple_modifications*>(static_cast<const profile&>(*this).find_simple_modifications(identifiers));
     }
 
     const simple_modifications& get_fn_function_keys(void) const {

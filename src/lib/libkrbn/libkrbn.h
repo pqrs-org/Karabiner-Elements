@@ -8,6 +8,13 @@
 extern "C" {
 #endif
 
+typedef struct {
+  uint32_t vendor_id;
+  uint32_t product_id;
+  bool is_keyboard;
+  bool is_pointing_device;
+} libkrbn_device_identifiers;
+
 void libkrbn_initialize(void);
 
 const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
@@ -105,26 +112,14 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_caps_l
 // profile::devices
 
 bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_configuration* _Nonnull p,
-                                                                   uint32_t vendor_id,
-                                                                   uint32_t product_id,
-                                                                   bool is_keyboard,
-                                                                   bool is_pointing_device);
+                                                                   libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* _Nonnull p,
-                                                                   uint32_t vendor_id,
-                                                                   uint32_t product_id,
-                                                                   bool is_keyboard,
-                                                                   bool is_pointing_device,
+                                                                   libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                    bool value);
 bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* _Nonnull p,
-                                                                                                uint32_t vendor_id,
-                                                                                                uint32_t product_id,
-                                                                                                bool is_keyboard,
-                                                                                                bool is_pointing_device);
+                                                                                                libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* _Nonnull p,
-                                                                                                uint32_t vendor_id,
-                                                                                                uint32_t product_id,
-                                                                                                bool is_keyboard,
-                                                                                                bool is_pointing_device,
+                                                                                                libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                                 bool value);
 
 // ----------------------------------------
@@ -192,10 +187,9 @@ void libkrbn_connected_devices_terminate(libkrbn_connected_devices* _Nullable* _
 size_t libkrbn_connected_devices_get_size(libkrbn_connected_devices* _Nonnull p);
 const char* _Nullable libkrbn_connected_devices_get_descriptions_manufacturer(libkrbn_connected_devices* _Nonnull p, size_t index);
 const char* _Nullable libkrbn_connected_devices_get_descriptions_product(libkrbn_connected_devices* _Nonnull p, size_t index);
-uint32_t libkrbn_connected_devices_get_identifiers_vendor_id(libkrbn_connected_devices* _Nonnull p, size_t index);
-uint32_t libkrbn_connected_devices_get_identifiers_product_id(libkrbn_connected_devices* _Nonnull p, size_t index);
-bool libkrbn_connected_devices_get_identifiers_is_keyboard(libkrbn_connected_devices* _Nonnull p, size_t index);
-bool libkrbn_connected_devices_get_identifiers_is_pointing_device(libkrbn_connected_devices* _Nonnull p, size_t index);
+bool libkrbn_connected_devices_get_device_identifiers(libkrbn_connected_devices* _Nonnull p,
+                                                      size_t index,
+                                                      libkrbn_device_identifiers* _Nonnull device_identifiers);
 bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_devices* _Nonnull p, size_t index);
 
 typedef void libkrbn_connected_devices_monitor;

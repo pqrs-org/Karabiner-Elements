@@ -179,51 +179,27 @@
   libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(self.libkrbnCoreConfiguration, [name UTF8String], value);
 }
 
-- (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
-                          productId:(NSUInteger)productId
-                         isKeyboard:(BOOL)isKeyboard
-                   isPointingDevice:(BOOL)isPointingDevice {
+- (BOOL)selectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers {
   return libkrbn_core_configuration_get_selected_profile_device_ignore(self.libkrbnCoreConfiguration,
-                                                                       (uint32_t)(vendorId),
-                                                                       (uint32_t)(productId),
-                                                                       isKeyboard,
-                                                                       isPointingDevice);
+                                                                       deviceIdentifiers);
 }
 
-- (void)setSelectedProfileDeviceIgnore:(NSUInteger)vendorId
-                             productId:(NSUInteger)productId
-                            isKeyboard:(BOOL)isKeyboard
-                      isPointingDevice:(BOOL)isPointingDevice
+- (void)setSelectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers
                                  value:(BOOL)value {
   libkrbn_core_configuration_set_selected_profile_device_ignore(self.libkrbnCoreConfiguration,
-                                                                (uint32_t)(vendorId),
-                                                                (uint32_t)(productId),
-                                                                isKeyboard,
-                                                                isPointingDevice,
+                                                                deviceIdentifiers,
                                                                 value);
 }
 
-- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
-                                                  productId:(NSUInteger)productId
-                                                 isKeyboard:(BOOL)isKeyboard
-                                           isPointingDevice:(BOOL)isPointingDevice {
+- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers {
   return libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(self.libkrbnCoreConfiguration,
-                                                                                                    (uint32_t)(vendorId),
-                                                                                                    (uint32_t)(productId),
-                                                                                                    isKeyboard,
-                                                                                                    isPointingDevice);
+                                                                                                    deviceIdentifiers);
 }
 
-- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
-                                                     productId:(NSUInteger)productId
-                                                    isKeyboard:(BOOL)isKeyboard
-                                              isPointingDevice:(BOOL)isPointingDevice
+- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers
                                                          value:(BOOL)value {
   libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(self.libkrbnCoreConfiguration,
-                                                                                             (uint32_t)(vendorId),
-                                                                                             (uint32_t)(productId),
-                                                                                             isKeyboard,
-                                                                                             isPointingDevice,
+                                                                                             deviceIdentifiers,
                                                                                              value);
 }
 

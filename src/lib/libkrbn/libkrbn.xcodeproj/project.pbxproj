@@ -26,6 +26,7 @@
 		347113081D870834001AC60D /* libkrbn.h in Headers */ = {isa = PBXBuildFile; fileRef = 347113071D870834001AC60D /* libkrbn.h */; };
 		3471130C1D87092D001AC60D /* constants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3471130B1D87092D001AC60D /* constants.hpp */; };
 		3476862E1E22A9F400A7DFAB /* cf_utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3476862D1E22A9F400A7DFAB /* cf_utility.hpp */; };
+		347B641E1F37330200A41C47 /* libkrbn_cpp.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 347B641D1F37330200A41C47 /* libkrbn_cpp.hpp */; };
 		3496EDB01E75A3B1003D6EFD /* connected_devices_monitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3496EDAE1E75A3B1003D6EFD /* connected_devices_monitor.hpp */; };
 		3496EDB11E75A3B1003D6EFD /* connected_devices.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3496EDAF1E75A3B1003D6EFD /* connected_devices.hpp */; };
 		34B13D131EF8E08200587934 /* libkrbn_complex_modifications_assets_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34B13D121EF8E08200587934 /* libkrbn_complex_modifications_assets_manager.cpp */; };
@@ -61,6 +62,7 @@
 		347113071D870834001AC60D /* libkrbn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libkrbn.h; sourceTree = "<group>"; };
 		3471130B1D87092D001AC60D /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = constants.hpp; path = ../../share/constants.hpp; sourceTree = "<group>"; };
 		3476862D1E22A9F400A7DFAB /* cf_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = cf_utility.hpp; path = ../../share/cf_utility.hpp; sourceTree = "<group>"; };
+		347B641D1F37330200A41C47 /* libkrbn_cpp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = libkrbn_cpp.hpp; sourceTree = "<group>"; };
 		3496EDAE1E75A3B1003D6EFD /* connected_devices_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connected_devices_monitor.hpp; path = ../../share/connected_devices_monitor.hpp; sourceTree = "<group>"; };
 		3496EDAF1E75A3B1003D6EFD /* connected_devices.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connected_devices.hpp; path = ../../share/connected_devices.hpp; sourceTree = "<group>"; };
 		34B13D121EF8E08200587934 /* libkrbn_complex_modifications_assets_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libkrbn_complex_modifications_assets_manager.cpp; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 				34B13D121EF8E08200587934 /* libkrbn_complex_modifications_assets_manager.cpp */,
 				3457BEEC1E54B42D00B6A620 /* libkrbn_configuration.cpp */,
 				34B97B2B1DBCD2CB00EB3583 /* libkrbn_connected_devices.cpp */,
+				347B641D1F37330200A41C47 /* libkrbn_cpp.hpp */,
 				3423B0141F265057009502CC /* libkrbn_grabber_alerts_monitor.cpp */,
 				345F95381DA2ADC8002854B8 /* libkrbn_log_monitor.cpp */,
 				344F412F1F210F870073B85A /* libkrbn_manipulator_environment_monitor.cpp */,
@@ -167,6 +170,7 @@
 				345F95421DA934C6002854B8 /* core_configuration.hpp in Headers */,
 				34CFEC711D9663EC004C61E1 /* log_monitor.hpp in Headers */,
 				346FC8011E3F8CAD0090B203 /* version_monitor.hpp in Headers */,
+				347B641E1F37330200A41C47 /* libkrbn_cpp.hpp in Headers */,
 				3404CB781E3E3C7100629451 /* update_utility.hpp in Headers */,
 				34CFEC6F1D9663E0004C61E1 /* file_monitor.hpp in Headers */,
 				3496EDB01E75A3B1003D6EFD /* connected_devices_monitor.hpp in Headers */,

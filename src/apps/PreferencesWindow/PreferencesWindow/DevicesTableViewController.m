@@ -40,10 +40,8 @@
   NSInteger row = [self.tableView rowForView:sender];
   if (row != -1) {
     DevicesTableCellView* cellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
-    [coreConfigurationModel setSelectedProfileDeviceIgnore:cellView.deviceVendorId
-                                                 productId:cellView.deviceProductId
-                                                isKeyboard:cellView.deviceIsKeyboard
-                                          isPointingDevice:cellView.deviceIsPointingDevice
+    libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
+    [coreConfigurationModel setSelectedProfileDeviceIgnore:&(deviceIdentifiers)
                                                      value:(cellView.checkbox.state == NSOffState)];
     [coreConfigurationModel save];
     return;
@@ -52,10 +50,8 @@
   row = [self.externalKeyboardTableView rowForView:sender];
   if (row != -1) {
     DevicesTableCellView* cellView = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
-    [coreConfigurationModel setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:cellView.deviceVendorId
-                                                                         productId:cellView.deviceProductId
-                                                                        isKeyboard:cellView.deviceIsKeyboard
-                                                                  isPointingDevice:cellView.deviceIsPointingDevice
+    libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
+    [coreConfigurationModel setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:&(deviceIdentifiers)
                                                                              value:(cellView.checkbox.state == NSOnState)];
     [coreConfigurationModel save];
     return;

@@ -12,11 +12,6 @@
 // for DevicesIconsColumn
 @property(weak) IBOutlet NSImageView* keyboardImage;
 @property(weak) IBOutlet NSImageView* mouseImage;
-@property(readonly) NSUInteger deviceVendorId;
-@property(readonly) NSUInteger deviceProductId;
-@property(readonly) BOOL deviceIsKeyboard;
-@property(readonly) BOOL deviceIsPointingDevice;
-
-- (void)setDeviceIdentifiers:(KarabinerKitConnectedDevices*)connectedDevices index:(NSUInteger)index;
+@property(readwrite) libkrbn_device_identifiers deviceIdentifiers;
 
 @end

@@ -41,23 +41,11 @@
 - (int)getSelectedProfileComplexModificationsParameter:(NSString*)name;
 - (void)setSelectedProfileComplexModificationsParameter:(NSString*)name value:(int)value;
 
-- (BOOL)selectedProfileDeviceIgnore:(NSUInteger)vendorId
-                          productId:(NSUInteger)productId
-                         isKeyboard:(BOOL)isKeyboard
-                   isPointingDevice:(BOOL)isPointingDevice;
-- (void)setSelectedProfileDeviceIgnore:(NSUInteger)vendorId
-                             productId:(NSUInteger)productId
-                            isKeyboard:(BOOL)isKeyboard
-                      isPointingDevice:(BOOL)isPointingDevice
+- (BOOL)selectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers;
+- (void)setSelectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers
                                  value:(BOOL)value;
-- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
-                                                  productId:(NSUInteger)productId
-                                                 isKeyboard:(BOOL)isKeyboard
-                                           isPointingDevice:(BOOL)isPointingDevice;
-- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(NSUInteger)vendorId
-                                                     productId:(NSUInteger)productId
-                                                    isKeyboard:(BOOL)isKeyboard
-                                              isPointingDevice:(BOOL)isPointingDevice
+- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers;
+- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers
                                                          value:(BOOL)value;
 
 @property(copy) NSString* selectedProfileVirtualHIDKeyboardKeyboardType;
