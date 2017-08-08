@@ -133,10 +133,10 @@ public:
       bool is_keyboard = IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
       bool is_pointing_device = IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer) ||
                                 IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
-      core_configuration::profile::device::identifiers identifiers(vendor_id,
-                                                                   product_id,
-                                                                   is_keyboard,
-                                                                   is_pointing_device);
+      device_identifiers identifiers(vendor_id,
+                                     product_id,
+                                     is_keyboard,
+                                     is_pointing_device);
 
       bool is_built_in_keyboard = false;
       if (is_keyboard &&

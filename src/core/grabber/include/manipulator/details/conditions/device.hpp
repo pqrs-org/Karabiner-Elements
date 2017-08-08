@@ -59,10 +59,10 @@ public:
 
   virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
                             const manipulator_environment& manipulator_environment) const {
-    const device_identifier* di = nullptr;
+    const device_identifiers* di = nullptr;
 
     if (!identifiers_.empty()) {
-      di = types::find_device_identifier(queued_event.get_device_id());
+      di = types::find_device_identifiers(queued_event.get_device_id());
     }
 
     for (const auto& identifier : identifiers_) {

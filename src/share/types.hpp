@@ -16,6 +16,7 @@
 #include <boost/optional.hpp>
 #include <cstring>
 #include <iostream>
+#include <json/json.hpp>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -284,21 +285,74 @@ enum class product_id : uint32_t {
 enum class location_id : uint32_t {
 };
 
-class device_identifier final {
+class device_identifiers final {
 public:
-  device_identifier(void) : vendor_id_(vendor_id::zero),
-                            product_id_(product_id::zero),
-                            is_keyboard_(false),
-                            is_pointing_device_(false) {
+  device_identifiers(void) : vendor_id_(vendor_id::zero),
+                             product_id_(product_id::zero),
+                             is_keyboard_(false),
+                             is_pointing_device_(false) {
   }
 
-  device_identifier(vendor_id vendor_id,
-                    product_id product_id,
-                    bool is_keyboard,
-                    bool is_pointing_device) : vendor_id_(vendor_id),
-                                               product_id_(product_id),
-                                               is_keyboard_(is_keyboard),
-                                               is_pointing_device_(is_pointing_device) {
+  device_identifiers(vendor_id vendor_id,
+                     product_id product_id,
+                     bool is_keyboard,
+                     bool is_pointing_device) : vendor_id_(vendor_id),
+                                                product_id_(product_id),
+                                                is_keyboard_(is_keyboard),
+                                                is_pointing_device_(is_pointing_device) {
+  }
+
+  device_identifiers(const nlohmann::json& json) : device_identifiers() {
+    json_ = json;
+
+    if (json.is_object()) {
+      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+        // it.key() is always std::string.
+        const auto& key = it.key();
+        const auto& value = it.value();
+
+        if (key == "vendor_id") {
+          if (value.is_number()) {
+            vendor_id_ = vendor_id(static_cast<uint32_t>(value));
+          } else {
+            logger::get_logger().error("Invalid form of {0}: {1}", key, value.dump());
+          }
+        }
+        if (key == "product_id") {
+          if (value.is_number()) {
+            product_id_ = product_id(static_cast<uint32_t>(value));
+          } else {
+            logger::get_logger().error("Invalid form of {0}: {1}", key, value.dump());
+          }
+        }
+        if (key == "is_keyboard") {
+          if (value.is_boolean()) {
+            is_keyboard_ = value;
+          } else {
+            logger::get_logger().error("Invalid form of {0}: {1}", key, value.dump());
+          }
+        }
+        if (key == "is_pointing_device") {
+          if (value.is_boolean()) {
+            is_pointing_device_ = value;
+          } else {
+            logger::get_logger().error("Invalid form of {0}: {1}", key, value.dump());
+          }
+        }
+      }
+
+    } else {
+      logger::get_logger().error("Invalid form of device_identifiers: {0}", json.dump());
+    }
+  }
+
+  nlohmann::json to_json(void) const {
+    auto j = json_;
+    j["vendor_id"] = static_cast<uint32_t>(vendor_id_);
+    j["product_id"] = static_cast<uint32_t>(product_id_);
+    j["is_keyboard"] = is_keyboard_;
+    j["is_pointing_device"] = is_pointing_device_;
+    return j;
   }
 
   vendor_id get_vendor_id(void) const {
@@ -317,7 +371,15 @@ public:
     return is_pointing_device_;
   }
 
+  bool operator==(const device_identifiers& other) const {
+    return vendor_id_ == other.vendor_id_ &&
+           product_id_ == other.product_id_ &&
+           is_keyboard_ == other.is_keyboard_ &&
+           is_pointing_device_ == other.is_pointing_device_;
+  }
+
 private:
+  nlohmann::json json_;
   vendor_id vendor_id_;
   product_id product_id_;
   bool is_keyboard_;
@@ -337,22 +399,22 @@ public:
 
     id = device_id(static_cast<uint32_t>(id) + 1);
 
-    auto& map = get_device_identifier_map();
-    map[id] = device_identifier(vendor_id,
-                                product_id,
-                                is_keyboard,
-                                is_pointing_device);
+    auto& map = get_device_identifiers_map();
+    map[id] = device_identifiers(vendor_id,
+                                 product_id,
+                                 is_keyboard,
+                                 is_pointing_device);
 
     return id;
   }
 
   static void detach_device_id(device_id device_id) {
-    auto& map = get_device_identifier_map();
+    auto& map = get_device_identifiers_map();
     map.erase(device_id);
   }
 
-  static const device_identifier* find_device_identifier(device_id device_id) {
-    auto& map = get_device_identifier_map();
+  static const device_identifiers* find_device_identifiers(device_id device_id) {
+    auto& map = get_device_identifiers_map();
     auto it = map.find(device_id);
     if (it == std::end(map)) {
       return nullptr;
@@ -870,8 +932,8 @@ public:
   }
 
 private:
-  static std::unordered_map<device_id, device_identifier>& get_device_identifier_map(void) {
-    static std::unordered_map<device_id, device_identifier> map;
+  static std::unordered_map<device_id, device_identifiers>& get_device_identifiers_map(void) {
+    static std::unordered_map<device_id, device_identifiers> map;
     return map;
   }
 };
@@ -934,5 +996,9 @@ KRBN_TYPES_STREAM_OUTPUT(modifier_flag);
 KRBN_TYPES_STREAM_OUTPUT(pointing_button);
 
 #undef KRBN_TYPES_STREAM_OUTPUT
+
+inline void to_json(nlohmann::json& json, const device_identifiers& identifiers) {
+  json = identifiers.to_json();
+}
 
 } // namespace krbn

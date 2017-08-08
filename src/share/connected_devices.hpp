@@ -90,7 +90,7 @@ public:
     };
 
     device(const descriptions& descriptions,
-           const core_configuration::profile::device::identifiers& identifiers,
+           const device_identifiers& identifiers,
            bool is_built_in_keyboard) : descriptions_(descriptions),
                                         identifiers_(identifiers),
                                         is_built_in_keyboard_(is_built_in_keyboard) {
@@ -118,7 +118,7 @@ public:
       return descriptions_;
     }
 
-    const core_configuration::profile::device::identifiers& get_identifiers(void) const {
+    const device_identifiers& get_identifiers(void) const {
       return identifiers_;
     }
 
@@ -132,7 +132,7 @@ public:
 
   private:
     descriptions descriptions_;
-    core_configuration::profile::device::identifiers identifiers_;
+    device_identifiers identifiers_;
     bool is_built_in_keyboard_;
   };
 

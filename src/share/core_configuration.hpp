@@ -111,7 +111,7 @@ public:
       return const_cast<simple_modifications&>(static_cast<const profile&>(*this).get_simple_modifications());
     }
 
-    const simple_modifications* find_simple_modifications(const device::identifiers& identifiers) const {
+    const simple_modifications* find_simple_modifications(const device_identifiers& identifiers) const {
       for (const auto& d : devices_) {
         if (d.get_identifiers() == identifiers) {
           return &(d.get_simple_modifications());
@@ -119,7 +119,7 @@ public:
       }
       return nullptr;
     }
-    simple_modifications* find_simple_modifications(const device::identifiers& identifiers) {
+    simple_modifications* find_simple_modifications(const device_identifiers& identifiers) {
       return const_cast<simple_modifications*>(static_cast<const profile&>(*this).find_simple_modifications(identifiers));
     }
 
@@ -156,7 +156,7 @@ public:
     const std::vector<device>& get_devices(void) const {
       return devices_;
     }
-    bool get_device_ignore(const device::identifiers& identifiers) {
+    bool get_device_ignore(const device_identifiers& identifiers) {
       for (const auto& d : devices_) {
         if (d.get_identifiers() == identifiers) {
           return d.get_ignore();
@@ -164,7 +164,7 @@ public:
       }
       return false;
     }
-    void set_device_ignore(const device::identifiers& identifiers,
+    void set_device_ignore(const device_identifiers& identifiers,
                            bool ignore) {
       for (auto&& device : devices_) {
         if (device.get_identifiers() == identifiers) {
@@ -179,7 +179,7 @@ public:
       });
       devices_.emplace_back(json);
     }
-    bool get_device_disable_built_in_keyboard_if_exists(const device::identifiers& identifiers) {
+    bool get_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers) {
       for (const auto& d : devices_) {
         if (d.get_identifiers() == identifiers) {
           return d.get_disable_built_in_keyboard_if_exists();
@@ -187,7 +187,7 @@ public:
       }
       return false;
     }
-    void set_device_disable_built_in_keyboard_if_exists(const device::identifiers& identifiers,
+    void set_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers,
                                                         bool disable_built_in_keyboard_if_exists) {
       for (auto&& device : devices_) {
         if (device.get_identifiers() == identifiers) {
@@ -384,10 +384,6 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile::com
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::virtual_hid_keyboard& virtual_hid_keyboard) {
   json = virtual_hid_keyboard.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::device::identifiers& identifiers) {
-  json = identifiers.to_json();
 }
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::device& device) {

@@ -44,10 +44,10 @@ TEST_CASE("connected_devices::device") {
   {
     krbn::connected_devices::device::descriptions descriptions("manufacturer1",
                                                                "product1");
-    krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(1234),
-                                                                       krbn::product_id(5678),
-                                                                       true,
-                                                                       false);
+    krbn::device_identifiers identifiers(krbn::vendor_id(1234),
+                                         krbn::product_id(5678),
+                                         true,
+                                         false);
     krbn::connected_devices::device device(descriptions,
                                            identifiers,
                                            true);
@@ -149,10 +149,10 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::device::descriptions descriptions("manufacturer1",
                                                                  "product1");
-      krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(1234),
-                                                                         krbn::product_id(5678),
-                                                                         true,
-                                                                         false);
+      krbn::device_identifiers identifiers(krbn::vendor_id(1234),
+                                           krbn::product_id(5678),
+                                           true,
+                                           false);
       krbn::connected_devices::device device(descriptions,
                                              identifiers,
                                              true);
@@ -161,10 +161,10 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::device::descriptions descriptions("manufacturer1 (ignored)",
                                                                  "product1 (ignored)");
-      krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(1234),
-                                                                         krbn::product_id(5678),
-                                                                         true,
-                                                                         false);
+      krbn::device_identifiers identifiers(krbn::vendor_id(1234),
+                                           krbn::product_id(5678),
+                                           true,
+                                           false);
       krbn::connected_devices::device device(descriptions,
                                              identifiers,
                                              true);
@@ -173,10 +173,10 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::device::descriptions descriptions("manufacturer3",
                                                                  "product3");
-      krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(2345),
-                                                                         krbn::product_id(6789),
-                                                                         false,
-                                                                         true);
+      krbn::device_identifiers identifiers(krbn::vendor_id(2345),
+                                           krbn::product_id(6789),
+                                           false,
+                                           true);
       krbn::connected_devices::device device(descriptions,
                                              identifiers,
                                              false);
@@ -185,10 +185,10 @@ TEST_CASE("connected_devices") {
     {
       krbn::connected_devices::device::descriptions descriptions("manufacturer2",
                                                                  "product2");
-      krbn::core_configuration::profile::device::identifiers identifiers(krbn::vendor_id(1234),
-                                                                         krbn::product_id(5679),
-                                                                         false,
-                                                                         true);
+      krbn::device_identifiers identifiers(krbn::vendor_id(1234),
+                                           krbn::product_id(5679),
+                                           false,
+                                           true);
       krbn::connected_devices::device device(descriptions,
                                              identifiers,
                                              false);
