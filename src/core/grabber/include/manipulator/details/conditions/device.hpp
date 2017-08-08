@@ -59,23 +59,23 @@ public:
 
   virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
                             const manipulator_environment& manipulator_environment) const {
-    auto vid = vendor_id::zero;
-    auto pid = product_id::zero;
+    const device_identifier* di = nullptr;
 
     if (!identifiers_.empty()) {
-      vid = types::find_vendor_id(queued_event.get_device_id());
-      pid = types::find_product_id(queued_event.get_device_id());
+      di = types::find_device_identifier(queued_event.get_device_id());
     }
 
     for (const auto& identifier : identifiers_) {
       bool fulfilled = true;
 
       if (identifier.first != vendor_id::zero &&
-          identifier.first != vid) {
+          di &&
+          identifier.first != di->get_vendor_id()) {
         fulfilled = false;
       }
       if (identifier.second != product_id::zero &&
-          identifier.second != pid) {
+          di &&
+          identifier.second != di->get_product_id()) {
         fulfilled = false;
       }
 

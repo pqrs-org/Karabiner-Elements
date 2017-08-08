@@ -127,13 +127,13 @@ TEST_CASE("conditions.frontmost_application") {
 
 TEST_CASE("conditions.device") {
   krbn::manipulator_environment manipulator_environment;
-  auto device_id_8888_9999 = krbn::types::make_new_device_id(krbn::vendor_id(8888), krbn::product_id(9999));
-  auto device_id_1000_2000 = krbn::types::make_new_device_id(krbn::vendor_id(1000), krbn::product_id(2000));
-  auto device_id_1000_2001 = krbn::types::make_new_device_id(krbn::vendor_id(1000), krbn::product_id(2001));
-  auto device_id_1001_2000 = krbn::types::make_new_device_id(krbn::vendor_id(1001), krbn::product_id(2000));
-  auto device_id_1001_2001 = krbn::types::make_new_device_id(krbn::vendor_id(1001), krbn::product_id(2001));
-  auto device_id_1099_9999 = krbn::types::make_new_device_id(krbn::vendor_id(1099), krbn::product_id(9999));
-  auto device_id_8888_2099 = krbn::types::make_new_device_id(krbn::vendor_id(8888), krbn::product_id(2099));
+  auto device_id_8888_9999 = krbn::types::make_new_device_id(krbn::vendor_id(8888), krbn::product_id(9999), true, false);
+  auto device_id_1000_2000 = krbn::types::make_new_device_id(krbn::vendor_id(1000), krbn::product_id(2000), true, false);
+  auto device_id_1000_2001 = krbn::types::make_new_device_id(krbn::vendor_id(1000), krbn::product_id(2001), true, false);
+  auto device_id_1001_2000 = krbn::types::make_new_device_id(krbn::vendor_id(1001), krbn::product_id(2000), true, false);
+  auto device_id_1001_2001 = krbn::types::make_new_device_id(krbn::vendor_id(1001), krbn::product_id(2001), true, false);
+  auto device_id_1099_9999 = krbn::types::make_new_device_id(krbn::vendor_id(1099), krbn::product_id(9999), true, false);
+  auto device_id_8888_2099 = krbn::types::make_new_device_id(krbn::vendor_id(8888), krbn::product_id(2099), true, false);
 
 #define QUEUED_EVENT(DEVICE_ID)                                                              \
   krbn::event_queue::queued_event(DEVICE_ID,                                                 \

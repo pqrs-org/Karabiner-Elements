@@ -244,6 +244,15 @@ public:
     return get_string_property(device, CFSTR(kIOHIDTransportKey));
   }
 
+  static bool is_keyboard(IOHIDDeviceRef _Nonnull device) {
+    return IOHIDDeviceConformsTo(device, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
+  }
+
+  static bool is_pointing_device(IOHIDDeviceRef _Nonnull device) {
+    return IOHIDDeviceConformsTo(device, kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer) ||
+           IOHIDDeviceConformsTo(device, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
+  }
+
   static void log_matching_device(IOHIDDeviceRef _Nonnull device) {
     logger::get_logger().info("matching device:");
     if (auto manufacturer = get_manufacturer(device)) {

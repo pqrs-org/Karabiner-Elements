@@ -284,10 +284,52 @@ enum class product_id : uint32_t {
 enum class location_id : uint32_t {
 };
 
+class device_identifier final {
+public:
+  device_identifier(void) : vendor_id_(vendor_id::zero),
+                            product_id_(product_id::zero),
+                            is_keyboard_(false),
+                            is_pointing_device_(false) {
+  }
+
+  device_identifier(vendor_id vendor_id,
+                    product_id product_id,
+                    bool is_keyboard,
+                    bool is_pointing_device) : vendor_id_(vendor_id),
+                                               product_id_(product_id),
+                                               is_keyboard_(is_keyboard),
+                                               is_pointing_device_(is_pointing_device) {
+  }
+
+  vendor_id get_vendor_id(void) const {
+    return vendor_id_;
+  }
+
+  product_id get_product_id(void) const {
+    return product_id_;
+  }
+
+  bool get_is_keyboard(void) const {
+    return is_keyboard_;
+  }
+
+  bool get_is_pointing_device(void) const {
+    return is_pointing_device_;
+  }
+
+private:
+  vendor_id vendor_id_;
+  product_id product_id_;
+  bool is_keyboard_;
+  bool is_pointing_device_;
+};
+
 class types final {
 public:
   static device_id make_new_device_id(vendor_id vendor_id,
-                                      product_id product_id) {
+                                      product_id product_id,
+                                      bool is_keyboard,
+                                      bool is_pointing_device) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
@@ -295,33 +337,27 @@ public:
 
     id = device_id(static_cast<uint32_t>(id) + 1);
 
-    auto& map = get_device_identifiers_map();
-    map[id] = std::make_pair(vendor_id, product_id);
+    auto& map = get_device_identifier_map();
+    map[id] = device_identifier(vendor_id,
+                                product_id,
+                                is_keyboard,
+                                is_pointing_device);
 
     return id;
   }
 
   static void detach_device_id(device_id device_id) {
-    auto& map = get_device_identifiers_map();
+    auto& map = get_device_identifier_map();
     map.erase(device_id);
   }
 
-  static vendor_id find_vendor_id(device_id device_id) {
-    auto& map = get_device_identifiers_map();
+  static const device_identifier* find_device_identifier(device_id device_id) {
+    auto& map = get_device_identifier_map();
     auto it = map.find(device_id);
     if (it == std::end(map)) {
-      return vendor_id::zero;
+      return nullptr;
     }
-    return it->second.first;
-  }
-
-  static product_id find_product_id(device_id device_id) {
-    auto& map = get_device_identifiers_map();
-    auto it = map.find(device_id);
-    if (it == std::end(map)) {
-      return product_id::zero;
-    }
-    return it->second.second;
+    return &(it->second);
   }
 
   static modifier_flag get_modifier_flag(key_code key_code) {
@@ -834,8 +870,8 @@ public:
   }
 
 private:
-  static std::unordered_map<device_id, std::pair<vendor_id, product_id>>& get_device_identifiers_map(void) {
-    static std::unordered_map<device_id, std::pair<vendor_id, product_id>> map;
+  static std::unordered_map<device_id, device_identifier>& get_device_identifier_map(void) {
+    static std::unordered_map<device_id, device_identifier> map;
     return map;
   }
 };

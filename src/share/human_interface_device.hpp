@@ -81,7 +81,9 @@ public:
 
   human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
                                                            device_id_(types::make_new_device_id(iokit_utility::find_vendor_id(device),
-                                                                                                iokit_utility::find_product_id(device))),
+                                                                                                iokit_utility::find_product_id(device),
+                                                                                                iokit_utility::is_keyboard(device),
+                                                                                                iokit_utility::is_pointing_device(device))),
                                                            queue_(nullptr),
                                                            removed_(false),
                                                            observed_(false),

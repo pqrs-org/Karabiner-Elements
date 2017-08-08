@@ -71,24 +71,30 @@ TEST_CASE("get_pointing_button") {
 
 TEST_CASE("make_new_device_id") {
   auto device_id1 = krbn::types::make_new_device_id(krbn::vendor_id(1234),
-                                                    krbn::product_id(5678));
+                                                    krbn::product_id(5678),
+                                                    true,
+                                                    false);
   auto device_id2 = krbn::types::make_new_device_id(krbn::vendor_id(2345),
-                                                    krbn::product_id(6789));
+                                                    krbn::product_id(6789),
+                                                    false,
+                                                    true);
 
-  REQUIRE(krbn::types::find_vendor_id(device_id1) == krbn::vendor_id(1234));
-  REQUIRE(krbn::types::find_product_id(device_id1) == krbn::product_id(5678));
+  REQUIRE(krbn::types::find_device_identifier(device_id1)->get_vendor_id() == krbn::vendor_id(1234));
+  REQUIRE(krbn::types::find_device_identifier(device_id1)->get_product_id() == krbn::product_id(5678));
+  REQUIRE(krbn::types::find_device_identifier(device_id1)->get_is_keyboard() == true);
+  REQUIRE(krbn::types::find_device_identifier(device_id1)->get_is_pointing_device() == false);
 
-  REQUIRE(krbn::types::find_vendor_id(device_id2) == krbn::vendor_id(2345));
-  REQUIRE(krbn::types::find_product_id(device_id2) == krbn::product_id(6789));
+  REQUIRE(krbn::types::find_device_identifier(device_id2)->get_vendor_id() == krbn::vendor_id(2345));
+  REQUIRE(krbn::types::find_device_identifier(device_id2)->get_product_id() == krbn::product_id(6789));
+  REQUIRE(krbn::types::find_device_identifier(device_id2)->get_is_keyboard() == false);
+  REQUIRE(krbn::types::find_device_identifier(device_id2)->get_is_pointing_device() == true);
 
-  REQUIRE(krbn::types::find_vendor_id(krbn::device_id(-1)) == krbn::vendor_id::zero);
-  REQUIRE(krbn::types::find_product_id(krbn::device_id(-1)) == krbn::product_id::zero);
+  REQUIRE(krbn::types::find_device_identifier(krbn::device_id(-1)) == nullptr);
 
   krbn::types::detach_device_id(device_id1);
   krbn::types::detach_device_id(krbn::device_id(-1));
 
-  REQUIRE(krbn::types::find_vendor_id(device_id1) == krbn::vendor_id::zero);
-  REQUIRE(krbn::types::find_product_id(device_id1) == krbn::product_id::zero);
+  REQUIRE(krbn::types::find_device_identifier(device_id1) == nullptr);
 }
 
 int main(int argc, char* const argv[]) {
