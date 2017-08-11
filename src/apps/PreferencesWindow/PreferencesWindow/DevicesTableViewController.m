@@ -1,5 +1,6 @@
 #import "DevicesTableViewController.h"
 #import "DevicesTableCellView.h"
+#import "FnFunctionKeysTableViewController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "NotificationKeys.h"
 #import "SimpleModificationsTableViewController.h"
@@ -9,6 +10,7 @@
 @property(weak) IBOutlet NSTableView* tableView;
 @property(weak) IBOutlet NSTableView* externalKeyboardTableView;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
+@property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 
 @end
 
@@ -44,7 +46,7 @@
     DevicesTableCellView* cellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
     libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
     [coreConfigurationModel setSelectedProfileDeviceIgnore:&(deviceIdentifiers)
-                                                     value:(cellView.checkbox.state == NSOffState)];
+                                                           value:(cellView.checkbox.state == NSOffState)];
     [coreConfigurationModel save];
     goto finish;
   }
@@ -54,13 +56,14 @@
     DevicesTableCellView* cellView = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
     libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
     [coreConfigurationModel setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:&(deviceIdentifiers)
-                                                                             value:(cellView.checkbox.state == NSOnState)];
+                                                                                   value:(cellView.checkbox.state == NSOnState)];
     [coreConfigurationModel save];
     goto finish;
   }
 
- finish:
+finish:
   [self.simpleModificationsTableViewController updateConnectedDevicesMenu];
+  [self.fnFunctionKeysTableViewController updateConnectedDevicesMenu];
 }
 
 @end

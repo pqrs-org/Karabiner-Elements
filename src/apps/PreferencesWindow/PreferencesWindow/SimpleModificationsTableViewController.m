@@ -99,6 +99,7 @@
 
 - (void)updateConnectedDevicesMenu {
   self.connectedDevicesPopupButton.menu = [SimpleModificationsTargetDeviceMenuManager createMenu];
+  [self.tableView reloadData];
 }
 
 - (NSInteger)selectedConnectedDeviceIndex {

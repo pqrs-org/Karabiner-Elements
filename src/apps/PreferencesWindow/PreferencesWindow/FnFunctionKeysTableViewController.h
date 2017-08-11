@@ -7,4 +7,7 @@
 - (void)setup;
 - (void)valueChanged:(id)sender;
 
+- (void)updateConnectedDevicesMenu;
+- (NSInteger)selectedConnectedDeviceIndex;
+
 @end

@@ -19,7 +19,9 @@
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysFromCellView" owner:self];
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    result.textField.stringValue = [coreConfigurationModel selectedProfileFnFunctionKeyFirstAtIndex:row];
+    NSInteger connectedDeviceIndex = self.fnFunctionKeysTableViewController.selectedConnectedDeviceIndex;
+    result.textField.stringValue = [coreConfigurationModel selectedProfileFnFunctionKeyFirstAtIndex:row
+                                                                               connectedDeviceIndex:connectedDeviceIndex];
 
     return result;
   }
@@ -29,10 +31,16 @@
 
     result.popUpButton.action = @selector(valueChanged:);
     result.popUpButton.target = self.fnFunctionKeysTableViewController;
-    result.popUpButton.menu = [self.simpleModificationsMenuManager.toMenu copy];
+    if (self.fnFunctionKeysTableViewController.selectedConnectedDeviceIndex == -1) {
+      result.popUpButton.menu = [self.simpleModificationsMenuManager.toMenu copy];
+    } else {
+      result.popUpButton.menu = [self.simpleModificationsMenuManager.toMenuWithInherited copy];
+    }
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    NSString* toValue = [coreConfigurationModel selectedProfileFnFunctionKeySecondAtIndex:row];
+    NSInteger connectedDeviceIndex = self.fnFunctionKeysTableViewController.selectedConnectedDeviceIndex;
+    NSString* toValue = [coreConfigurationModel selectedProfileFnFunctionKeySecondAtIndex:row
+                                                                     connectedDeviceIndex:connectedDeviceIndex];
     [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:toValue];
 
     return result;

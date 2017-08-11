@@ -29,10 +29,10 @@
 - (void)addSimpleModificationToSelectedProfile:(NSInteger)connectedDeviceIndex;
 - (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
 
-@property(readonly) NSUInteger selectedProfileFnFunctionKeysCount;
-- (NSString*)selectedProfileFnFunctionKeyFirstAtIndex:(NSUInteger)index;
-- (NSString*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index;
-- (void)setSelectedProfileFnFunctionKey:(NSString*)from to:(NSString*)to;
+- (NSUInteger)selectedProfileFnFunctionKeysCount:(NSInteger)connectedDeviceIndex;
+- (NSString*)selectedProfileFnFunctionKeyFirstAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
+- (NSString*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
+- (void)setSelectedProfileFnFunctionKey:(NSString*)from to:(NSString*)to connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
 
 @property(readonly) NSUInteger selectedProfileComplexModificationsRulesCount;
 - (NSString*)selectedProfileComplexModificationsRuleDescription:(NSUInteger)index;

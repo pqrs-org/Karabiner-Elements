@@ -73,6 +73,7 @@
         <customObject id="n2S-Tf-7ZE" customClass="DevicesTableViewController">
             <connections>
                 <outlet property="externalKeyboardTableView" destination="aIG-lD-1bK" id="mLO-bs-e8W"/>
+                <outlet property="fnFunctionKeysTableViewController" destination="KbW-oV-WOQ" id="0NY-iG-3Ig"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="uUM-J5-NlU"/>
                 <outlet property="tableView" destination="W1W-Xd-0KJ" id="eN4-9F-gvt"/>
             </connections>
@@ -151,10 +152,15 @@
         <customObject id="gwA-uV-a9x" customClass="SystemPreferencesManager"/>
         <customObject id="KbW-oV-WOQ" customClass="FnFunctionKeysTableViewController">
             <connections>
+                <outlet property="connectedDevicesPopupButton" destination="grf-jw-eCn" id="YwJ-QA-2Na"/>
                 <outlet property="tableView" destination="OWP-Cf-tc8" id="ZsD-Nm-X5E"/>
             </connections>
         </customObject>
-        <customObject id="gFL-e0-KYR" customClass="FnFunctionKeysTableViewDataSource"/>
+        <customObject id="gFL-e0-KYR" customClass="FnFunctionKeysTableViewDataSource">
+            <connections>
+                <outlet property="fnFunctionKeysTableViewController" destination="KbW-oV-WOQ" id="7yG-ha-bZY"/>
+            </connections>
+        </customObject>
         <customObject id="ADN-Nz-xqI" customClass="FnFunctionKeysTableViewDelegate">
             <connections>
                 <outlet property="fnFunctionKeysTableViewController" destination="KbW-oV-WOQ" id="4r0-M5-Bgg"/>
@@ -423,15 +429,15 @@
         </menu>
         <window title="Karabiner-Elements Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-            <rect key="contentRect" x="335" y="390" width="911" height="597"/>
+            <rect key="contentRect" x="335" y="390" width="900" height="550"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
-            <value key="minSize" type="size" width="900" height="500"/>
+            <value key="minSize" type="size" width="900" height="550"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="911" height="597"/>
+                <rect key="frame" x="0.0" y="0.0" width="900" height="550"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="885" height="581"/>
+                        <rect key="frame" x="13" y="10" width="874" height="534"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Simple Modifications" identifier="1" id="SOT-pf-9fT">
@@ -649,17 +655,52 @@
                             </tabViewItem>
                             <tabViewItem label="Function Keys" identifier="2" id="zrY-nU-kFs">
                                 <view key="view" id="Wmh-Ot-meK">
-                                    <rect key="frame" x="10" y="33" width="854" height="438"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
+                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="FZM-iI-Bcg">
+                                            <rect key="frame" x="171" y="447" width="513" height="31"/>
+                                            <subviews>
+                                                <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="grf-jw-eCn">
+                                                    <rect key="frame" x="101" y="2" width="405" height="26"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="400" id="oUU-f3-pe7"/>
+                                                    </constraints>
+                                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="fqa-jk-Z7r">
+                                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="menu"/>
+                                                        <menu key="menu" id="KV2-LW-dgg"/>
+                                                    </popUpButtonCell>
+                                                    <connections>
+                                                        <action selector="reloadTableView:" target="KbW-oV-WOQ" id="YMd-nv-g84"/>
+                                                    </connections>
+                                                </popUpButton>
+                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tes-Sp-vUH">
+                                                    <rect key="frame" x="8" y="7" width="92" height="17"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Target Device:" id="7GS-fM-TSE">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="grf-jw-eCn" firstAttribute="centerY" secondItem="Tes-Sp-vUH" secondAttribute="centerY" id="3dg-oU-RMC"/>
+                                                <constraint firstAttribute="trailing" secondItem="grf-jw-eCn" secondAttribute="trailing" constant="10" id="Iol-I5-QmJ"/>
+                                                <constraint firstItem="grf-jw-eCn" firstAttribute="leading" secondItem="Tes-Sp-vUH" secondAttribute="trailing" constant="5" id="UId-Mv-ZWn"/>
+                                                <constraint firstItem="grf-jw-eCn" firstAttribute="top" secondItem="FZM-iI-Bcg" secondAttribute="top" constant="5" id="UTl-kJ-tGf"/>
+                                                <constraint firstItem="Tes-Sp-vUH" firstAttribute="leading" secondItem="FZM-iI-Bcg" secondAttribute="leading" constant="10" id="eqj-gH-mVa"/>
+                                                <constraint firstAttribute="bottom" secondItem="grf-jw-eCn" secondAttribute="bottom" constant="5" id="v0f-Wl-muv"/>
+                                            </constraints>
+                                        </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="za5-6F-HaL">
-                                            <rect key="frame" x="17" y="60" width="820" height="370"/>
+                                            <rect key="frame" x="17" y="60" width="820" height="377"/>
                                             <clipView key="contentView" id="LCo-MQ-oMD">
-                                                <rect key="frame" x="1" y="0.0" width="818" height="369"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <rect key="frame" x="1" y="0.0" width="818" height="376"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="RPX-X6-Et1" viewBased="YES" id="OWP-Cf-tc8">
-                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="346"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="353"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -782,13 +823,15 @@
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="bottom" secondItem="za5-6F-HaL" secondAttribute="bottom" constant="60" id="1yw-8e-WL3"/>
+                                        <constraint firstItem="FZM-iI-Bcg" firstAttribute="centerX" secondItem="Wmh-Ot-meK" secondAttribute="centerX" id="4Lc-m7-Tkl"/>
                                         <constraint firstItem="ELQ-Wd-O9E" firstAttribute="top" secondItem="tSp-iV-F6D" secondAttribute="bottom" constant="5" id="DDm-Ig-2UH"/>
                                         <constraint firstAttribute="trailing" secondItem="za5-6F-HaL" secondAttribute="trailing" constant="17" id="IKI-pL-wJV"/>
+                                        <constraint firstItem="FZM-iI-Bcg" firstAttribute="top" secondItem="Wmh-Ot-meK" secondAttribute="top" constant="10" id="IMF-UM-lmL"/>
+                                        <constraint firstItem="za5-6F-HaL" firstAttribute="top" secondItem="FZM-iI-Bcg" secondAttribute="bottom" constant="10" id="Q72-Oi-2sP"/>
                                         <constraint firstItem="ELQ-Wd-O9E" firstAttribute="leading" secondItem="tSp-iV-F6D" secondAttribute="leading" constant="18" id="ZUN-5t-r7r"/>
                                         <constraint firstItem="za5-6F-HaL" firstAttribute="leading" secondItem="Wmh-Ot-meK" secondAttribute="leading" constant="17" id="cC6-bP-AU6"/>
                                         <constraint firstItem="tSp-iV-F6D" firstAttribute="leading" secondItem="za5-6F-HaL" secondAttribute="leading" id="chc-hf-gD6"/>
                                         <constraint firstAttribute="bottom" secondItem="tSp-iV-F6D" secondAttribute="bottom" constant="34" id="gL6-8j-2U5"/>
-                                        <constraint firstItem="za5-6F-HaL" firstAttribute="top" secondItem="Wmh-Ot-meK" secondAttribute="top" constant="8" id="q7Z-fY-zDc"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
@@ -2015,7 +2058,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         <rect key="frame" x="17" y="61" width="766" height="288"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
                             <rect key="frame" x="1" y="1" width="764" height="286"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
                                     <rect key="frame" x="0.0" y="0.0" width="764" height="286"/>
