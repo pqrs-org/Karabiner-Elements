@@ -594,9 +594,7 @@ private:
   }
 
   std::shared_ptr<manipulator::details::conditions::base> make_device_if_condition(const core_configuration::profile::device& device) {
-    return std::make_shared<manipulator::details::conditions::device>(manipulator::details::conditions::device::type::device_if,
-                                                                      device.get_identifiers().get_vendor_id(),
-                                                                      device.get_identifiers().get_product_id());
+    return std::make_shared<manipulator::details::conditions::device>(device.get_identifiers());
   }
 
   std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<key_code, key_code>& pair) {

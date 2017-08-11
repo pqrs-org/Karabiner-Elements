@@ -1,6 +1,7 @@
 #pragma once
 
 #include "manipulator/details/conditions/base.hpp"
+#include <boost/optional.hpp>
 #include <string>
 #include <vector>
 
@@ -47,11 +48,14 @@ public:
     }
   }
 
-  device(type type,
-         vendor_id vendor_id,
-         product_id product_id) : base(),
-                                  type_(type) {
-    identifiers_.emplace_back(vendor_id, product_id);
+  device(const device_identifiers& device_identifiers) : base(),
+                                                         type_(type::device_if) {
+    definition d;
+    d.vendor_id = device_identifiers.get_vendor_id();
+    d.product_id = device_identifiers.get_product_id();
+    d.is_keyboard = device_identifiers.get_is_keyboard();
+    d.is_pointing_device = device_identifiers.get_is_pointing_device();
+    definitions_.push_back(d);
   }
 
   virtual ~device(void) {
@@ -59,32 +63,32 @@ public:
 
   virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
                             const manipulator_environment& manipulator_environment) const {
-    const device_identifiers* di = nullptr;
+    if (!definitions_.empty()) {
+      if (auto di = types::find_device_identifiers(queued_event.get_device_id())) {
+        for (const auto& d : definitions_) {
+          bool fulfilled = true;
 
-    if (!identifiers_.empty()) {
-      di = types::find_device_identifiers(queued_event.get_device_id());
-    }
+          if (d.vendor_id && d.vendor_id != di->get_vendor_id()) {
+            fulfilled = false;
+          }
+          if (d.product_id && d.product_id != di->get_product_id()) {
+            fulfilled = false;
+          }
+          if (d.is_keyboard && d.is_keyboard != di->get_is_keyboard()) {
+            fulfilled = false;
+          }
+          if (d.is_pointing_device && d.is_pointing_device != di->get_is_pointing_device()) {
+            fulfilled = false;
+          }
 
-    for (const auto& identifier : identifiers_) {
-      bool fulfilled = true;
-
-      if (identifier.first != vendor_id::zero &&
-          di &&
-          identifier.first != di->get_vendor_id()) {
-        fulfilled = false;
-      }
-      if (identifier.second != product_id::zero &&
-          di &&
-          identifier.second != di->get_product_id()) {
-        fulfilled = false;
-      }
-
-      if (fulfilled) {
-        switch (type_) {
-          case type::device_if:
-            return true;
-          case type::device_unless:
-            return false;
+          if (fulfilled) {
+            switch (type_) {
+              case type::device_if:
+                return true;
+              case type::device_unless:
+                return false;
+            }
+          }
         }
       }
     }
@@ -100,11 +104,17 @@ public:
   }
 
 private:
+  struct definition final {
+    boost::optional<vendor_id> vendor_id;
+    boost::optional<product_id> product_id;
+    boost::optional<bool> is_keyboard;
+    boost::optional<bool> is_pointing_device;
+  };
+
   void handle_identifiers_json(const nlohmann::json& json) {
     for (const auto& j : json) {
       if (j.is_object()) {
-        auto vid = vendor_id::zero;
-        auto pid = product_id::zero;
+        definition d;
 
         for (auto it = std::begin(j); it != std::end(j); std::advance(it, 1)) {
           // it.key() is always std::string.
@@ -114,14 +124,14 @@ private:
           if (key == "vendor_id") {
             if (value.is_number()) {
               int v = value;
-              vid = vendor_id(v);
+              d.vendor_id = vendor_id(v);
             } else {
               logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }
           } else if (key == "product_id") {
             if (value.is_number()) {
               int v = value;
-              pid = product_id(v);
+              d.product_id = product_id(v);
             } else {
               logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }
@@ -132,9 +142,8 @@ private:
           }
         }
 
-        if (vid != vendor_id::zero ||
-            pid != product_id::zero) {
-          identifiers_.emplace_back(vid, pid);
+        if (d.vendor_id) {
+          definitions_.push_back(d);
         }
 
       } else {
@@ -144,7 +153,7 @@ private:
   }
 
   type type_;
-  std::vector<std::pair<vendor_id, product_id>> identifiers_;
+  std::vector<definition> definitions_;
 };
 } // namespace conditions
 } // namespace details

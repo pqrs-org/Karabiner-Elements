@@ -4,6 +4,7 @@
 
 #include <array>
 #include <boost/optional.hpp>
+#include <climits>
 #include <string>
 #include <sys/stat.h>
 
