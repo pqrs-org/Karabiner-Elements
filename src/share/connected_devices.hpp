@@ -1,8 +1,10 @@
 #pragma once
 
-#include "core_configuration.hpp"
 #include "logger.hpp"
+#include "types.hpp"
+#include "filesystem.hpp"
 #include <algorithm>
+#include <json/json.hpp>
 
 // Json example:
 //

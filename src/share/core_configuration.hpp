@@ -1,5 +1,6 @@
 #pragma once
 
+#include "connected_devices.hpp"
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
