@@ -128,7 +128,19 @@ public:
       return fn_function_keys_;
     }
     simple_modifications& get_fn_function_keys(void) {
-      return fn_function_keys_;
+      return const_cast<simple_modifications&>(static_cast<const profile&>(*this).get_fn_function_keys());
+    }
+
+    const simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) const {
+      for (const auto& d : devices_) {
+        if (d.get_identifiers() == identifiers) {
+          return &(d.get_fn_function_keys());
+        }
+      }
+      return nullptr;
+    }
+    simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) {
+      return const_cast<simple_modifications*>(static_cast<const profile&>(*this).find_fn_function_keys(identifiers));
     }
 
     const complex_modifications& get_complex_modifications(void) const {
