@@ -3,6 +3,7 @@
 #pragma once
 
 // Do not use <cstring> for kext
+#include <IOKit/hid/IOHIDUsageTables.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -21,6 +22,16 @@ public:
 
   enum class usage : uint32_t {
     gd_keyboard = 0x06,
+
+    left_control = kHIDUsage_KeyboardLeftControl,
+    left_shift = kHIDUsage_KeyboardLeftShift,
+    left_option = kHIDUsage_KeyboardLeftAlt,
+    left_command = kHIDUsage_KeyboardLeftGUI,
+    right_control = kHIDUsage_KeyboardRightControl,
+    right_shift = kHIDUsage_KeyboardRightShift,
+    right_option = kHIDUsage_KeyboardRightAlt,
+    right_command = kHIDUsage_KeyboardRightGUI,
+
     av_top_case_keyboard_fn = 0x03,
     av_top_case_brightness_up = 0x04,
     av_top_case_brightness_down = 0x05,
@@ -157,6 +168,7 @@ public:
     is_virtual_hid_keyboard_ready,
     dispatch_keyboard_event,
     post_keyboard_input_report,
+    clear_keyboard_modifier_flags,
     reset_virtual_hid_keyboard,
 
     // VirtualHIDPointing
@@ -169,7 +181,7 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040700";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v040800";
   }
 };
 } // namespace pqrs

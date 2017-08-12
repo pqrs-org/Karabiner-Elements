@@ -21,8 +21,12 @@ public:
                              pqrs::karabiner_virtual_hid_device::usage usage,
                              UInt32 value);
   void dispatchKeyUpAllPressedKeys(void);
+  void clearKeyboardModifierFlags(void);
 
 private:
+  void dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page usagePage,
+                             pqrs::karabiner_virtual_hid_device::usage usage);
+
   OSArray* reportElements_;
   UInt64 pressedKeys_[254];
 };

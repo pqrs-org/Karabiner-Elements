@@ -94,6 +94,14 @@ IOExternalMethodDispatch VIRTUAL_HID_ROOT_USERCLIENT_CLASS::methods_[static_cast
         0                                                                                 // No struct output value.
     },
     {
+        // clear_keyboard_modifier_flags
+        reinterpret_cast<IOExternalMethodAction>(&staticClearKeyboardModifierFlagsCallback), // Method pointer.
+        0,                                                                                   // No scalar input value.
+        0,                                                                                   // No struct input value.
+        0,                                                                                   // No scalar output value.
+        0                                                                                    // No struct output value.
+    },
+    {
         // reset_virtual_hid_keyboard
         reinterpret_cast<IOExternalMethodAction>(&staticResetVirtualHIDKeyboardCallback), // Method pointer.
         0,                                                                                // No scalar input value.
@@ -465,6 +473,27 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticDispatchKeyboardEventCallback(
 IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::dispatchKeyboardEventCallback(const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event) {
   if (virtualHIDEventService_) {
     virtualHIDEventService_->dispatchKeyboardEvent(keyboard_event.usage_page, keyboard_event.usage, keyboard_event.value);
+    return kIOReturnSuccess;
+  }
+
+  return kIOReturnError;
+}
+
+#pragma mark - clear_keyboard_modifier_flags
+
+IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::staticClearKeyboardModifierFlagsCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
+                                                                                     void* reference,
+                                                                                     IOExternalMethodArguments* arguments) {
+  if (!target) {
+    return kIOReturnBadArgument;
+  }
+
+  return target->clearKeyboardModifierFlagsCallback();
+}
+
+IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::clearKeyboardModifierFlagsCallback(void) {
+  if (virtualHIDEventService_) {
+    virtualHIDEventService_->clearKeyboardModifierFlags();
     return kIOReturnSuccess;
   }
 

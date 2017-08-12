@@ -46,6 +46,13 @@ public:
                                      nullptr, 0);
   }
 
+  static IOReturn clear_keyboard_modifier_flags(mach_port_t connection) {
+    return IOConnectCallStructMethod(connection,
+                                     static_cast<uint32_t>(karabiner_virtual_hid_device::user_client_method::clear_keyboard_modifier_flags),
+                                     nullptr, 0,
+                                     nullptr, 0);
+  }
+
   static IOReturn reset_virtual_hid_keyboard(mach_port_t connection) {
     return IOConnectCallStructMethod(connection,
                                      static_cast<uint32_t>(karabiner_virtual_hid_device::user_client_method::reset_virtual_hid_keyboard),

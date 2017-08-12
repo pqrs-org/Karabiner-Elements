@@ -65,6 +65,11 @@ private:
                                                         IOExternalMethodArguments* arguments);
   IOReturn postKeyboardInputReportCallback(const pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& input);
 
+  static IOReturn staticClearKeyboardModifierFlagsCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
+                                                           void* reference,
+                                                           IOExternalMethodArguments* arguments);
+  IOReturn clearKeyboardModifierFlagsCallback(void);
+
   static IOReturn staticResetVirtualHIDKeyboardCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                         void* reference,
                                                         IOExternalMethodArguments* arguments);

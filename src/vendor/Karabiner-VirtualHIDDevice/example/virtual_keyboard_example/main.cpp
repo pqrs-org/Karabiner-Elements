@@ -131,6 +131,47 @@ int main(int argc, const char* argv[]) {
   }
 
   // ----------------------------------------
+  // clear_keyboard_modifier_flags
+
+  {
+    pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
+    keyboard_event.usage_page = pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad;
+    keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage::left_shift;
+    keyboard_event.value = 1;
+    kr = pqrs::karabiner_virtual_hid_device_methods::dispatch_keyboard_event(connect, keyboard_event);
+    if (kr != KERN_SUCCESS) {
+      std::cerr << "dispatch_keyboard_event error" << std::endl;
+    }
+
+    keyboard_event.usage_page = pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_top_case;
+    keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage::av_top_case_keyboard_fn;
+    keyboard_event.value = 1;
+    kr = pqrs::karabiner_virtual_hid_device_methods::dispatch_keyboard_event(connect, keyboard_event);
+    if (kr != KERN_SUCCESS) {
+      std::cerr << "dispatch_keyboard_event error" << std::endl;
+    }
+
+    kr = pqrs::karabiner_virtual_hid_device_methods::clear_keyboard_modifier_flags(connect);
+    if (kr != KERN_SUCCESS) {
+      std::cerr << "clear_keyboard_modifier_flags error" << std::endl;
+    }
+
+    keyboard_event.usage_page = pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad;
+    keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardC);
+    keyboard_event.value = 1;
+    kr = pqrs::karabiner_virtual_hid_device_methods::dispatch_keyboard_event(connect, keyboard_event);
+    if (kr != KERN_SUCCESS) {
+      std::cerr << "dispatch_keyboard_event error" << std::endl;
+    }
+
+    keyboard_event.value = 0;
+    kr = pqrs::karabiner_virtual_hid_device_methods::dispatch_keyboard_event(connect, keyboard_event);
+    if (kr != KERN_SUCCESS) {
+      std::cerr << "dispatch_keyboard_event error" << std::endl;
+    }
+  }
+
+  // ----------------------------------------
   // key repeat
   {
     pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;

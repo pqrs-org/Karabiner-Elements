@@ -64,13 +64,39 @@ void VIRTUAL_HID_EVENT_SERVICE_CLASS::dispatchKeyboardEvent(pqrs::karabiner_virt
 
 void VIRTUAL_HID_EVENT_SERVICE_CLASS::dispatchKeyUpAllPressedKeys(void) {
   for (size_t i = 0; i < sizeof(pressedKeys_) / sizeof(pressedKeys_[0]); ++i) {
-    if (pressedKeys_[i] != 0) {
-      UInt32 usagePage = static_cast<UInt32>((pressedKeys_[i] >> 32) & 0xffffffff);
-      UInt32 usage = static_cast<UInt32>(pressedKeys_[i] & 0xffffffff);
-      dispatchKeyboardEvent(pqrs::karabiner_virtual_hid_device::usage_page(usagePage),
-                            pqrs::karabiner_virtual_hid_device::usage(usage),
-                            0);
-      pressedKeys_[i] = 0;
+    auto usagePage = pqrs::karabiner_virtual_hid_device::usage_page((pressedKeys_[i] >> 32) & 0xffffffff);
+    auto usage = pqrs::karabiner_virtual_hid_device::usage(pressedKeys_[i] & 0xffffffff);
+    dispatchKeyUpIfNeeded(usagePage, usage);
+  }
+}
+
+void VIRTUAL_HID_EVENT_SERVICE_CLASS::clearKeyboardModifierFlags(void) {
+  dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad, pqrs::karabiner_virtual_hid_device::usage::left_control);
+  dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad, pqrs::karabiner_virtual_hid_device::usage::left_shift);
+  dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad, pqrs::karabiner_virtual_hid_device::usage::left_option);
+  dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad, pqrs::karabiner_virtual_hid_device::usage::left_command);
+  dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad, pqrs::karabiner_virtual_hid_device::usage::right_control);
+  dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad, pqrs::karabiner_virtual_hid_device::usage::right_shift);
+  dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad, pqrs::karabiner_virtual_hid_device::usage::right_option);
+  dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad, pqrs::karabiner_virtual_hid_device::usage::right_command);
+  dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_top_case, pqrs::karabiner_virtual_hid_device::usage::av_top_case_keyboard_fn);
+}
+
+void VIRTUAL_HID_EVENT_SERVICE_CLASS::dispatchKeyUpIfNeeded(pqrs::karabiner_virtual_hid_device::usage_page usagePage,
+                                                            pqrs::karabiner_virtual_hid_device::usage usage) {
+  auto pressedKey = (static_cast<UInt64>(usagePage) << 32) | static_cast<UInt64>(usage);
+  if (pressedKey) {
+    for (size_t i = 0; i < sizeof(pressedKeys_) / sizeof(pressedKeys_[0]); ++i) {
+      if (pressedKeys_[i] == pressedKey) {
+        IOLog(VIRTUAL_HID_EVENT_SERVICE_CLASS_STRING "::dispatchKeyUpIfNeeded post key up event %d,%d.\n",
+              static_cast<uint32_t>(usagePage),
+              static_cast<uint32_t>(usage));
+
+        dispatchKeyboardEvent(pqrs::karabiner_virtual_hid_device::usage_page(usagePage),
+                              pqrs::karabiner_virtual_hid_device::usage(usage),
+                              0);
+        pressedKeys_[i] = 0;
+      }
     }
   }
 }

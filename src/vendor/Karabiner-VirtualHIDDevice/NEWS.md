@@ -1,3 +1,8 @@
+# Version 4.8.0
+
+* `clear_keyboard_modifier_flags` method has been added.
+
+
 # Version 4.7.0
 
 * `dist/update.sh` has been removed. Install new kext to /Library/Extensions directly.
