@@ -25,6 +25,7 @@ public:
       enum class type {
         keyboard_event,
         pointing_input,
+        clear_keyboard_modifier_flags,
         shell_command,
       };
 
@@ -38,6 +39,14 @@ public:
             uint64_t time_stamp) : type_(type::pointing_input),
                                    value_(pointing_input),
                                    time_stamp_(time_stamp) {
+      }
+
+      static event make_clear_keyboard_modifier_flags_event(uint64_t time_stamp) {
+        event e;
+        e.type_ = type::clear_keyboard_modifier_flags;
+        e.value_ = boost::blank();
+        e.time_stamp_ = time_stamp;
+        return e;
       }
 
       static event make_shell_command_event(const std::string& shell_command,
@@ -91,6 +100,7 @@ public:
       type type_;
       boost::variant<pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event,
                      pqrs::karabiner_virtual_hid_device::hid_report::pointing_input,
+                     boost::blank, // For clear_keyboard_modifier_flags
                      std::string>
           value_;
       uint64_t time_stamp_;
@@ -136,6 +146,12 @@ public:
                            time_stamp);
     }
 
+    void push_back_clear_keyboard_modifier_flags_event(uint64_t time_stamp) {
+      // Do not call adjust_time_stamp.
+      auto e = event::make_clear_keyboard_modifier_flags_event(time_stamp);
+      events_.push_back(e);
+    }
+
     void push_back_shell_command_event(const std::string& shell_command,
                                        uint64_t time_stamp) {
       adjust_time_stamp(time_stamp, false);
@@ -177,6 +193,9 @@ public:
         }
         if (auto pointing_input = e.get_pointing_input()) {
           virtual_hid_device_client.post_pointing_input_report(*pointing_input);
+        }
+        if (e.get_type() == event::type::clear_keyboard_modifier_flags) {
+          virtual_hid_device_client.clear_keyboard_modifier_flags();
         }
         if (auto shell_command = e.get_shell_command()) {
           try {
@@ -316,6 +335,10 @@ public:
             pressed_modifier_flags_.erase(m);
           }
         }
+      }
+
+      if (pressed_modifier_flags_.empty()) {
+        queue.push_back_clear_keyboard_modifier_flags_event(time_stamp);
       }
     }
 

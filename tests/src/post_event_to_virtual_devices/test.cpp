@@ -39,6 +39,9 @@
     EVENTS.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, TIME_STAMP)); \
   }
 
+#define ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(EVENTS, TIME_STAMP) \
+  EVENTS.push_back(post_event_to_virtual_devices::queue::event::make_clear_keyboard_modifier_flags_event(TIME_STAMP));
+
 using krbn::manipulator::details::post_event_to_virtual_devices;
 
 namespace {
@@ -123,33 +126,61 @@ TEST_CASE("generic") {
     {
       std::vector<post_event_to_virtual_devices::queue::event> expected;
       time_stamp = 0;
-      ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp += interval);
-      ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp += interval);
+      time_stamp += interval;
 
+      ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+      time_stamp += interval;
+
+      ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+      ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+      time_stamp += interval;
+
+      ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+      ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
+      time_stamp += interval;
+
+      ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
+      time_stamp += interval;
+
+      ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+      ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
+      time_stamp += interval;
+
+      ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
+      time_stamp += interval;
+
+      ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+      ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
+      time_stamp += interval;
+
+      ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
       {
         pqrs::karabiner_virtual_hid_device::hid_report::pointing_input pointing_input;
         pointing_input.buttons[0] = 0x1;
-        expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp += interval));
+        expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp));
       }
+      time_stamp += interval;
+
+      ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
       {
         pqrs::karabiner_virtual_hid_device::hid_report::pointing_input pointing_input;
         pointing_input.buttons[0] = 0x1;
         pointing_input.x = -10;
-        expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp += interval));
+        expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp));
       }
+      time_stamp += interval;
+
       {
         pqrs::karabiner_virtual_hid_device::hid_report::pointing_input pointing_input;
-        expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp += interval));
+        expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp));
       }
+      time_stamp += interval;
+
+      ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
       {
         pqrs::karabiner_virtual_hid_device::hid_report::pointing_input pointing_input;
         pointing_input.y = 10;
-        expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp += interval));
+        expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp));
       }
 
       REQUIRE(manipulator->get_queue().get_events() == expected);
@@ -201,6 +232,7 @@ TEST_CASE("Same modifier twice from different devices") {
     connector.manipulate();
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, interval * 4);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, interval * 4);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, interval * 5);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
@@ -236,16 +268,33 @@ TEST_CASE("device_ungrabbed event") {
 
     connector.manipulate();
 
-    time_stamp = 0;
-
     std::vector<post_event_to_virtual_devices::queue::event> expected;
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, return_or_enter, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, a, 1, time_stamp += interval);
+    time_stamp = 0;
+    time_stamp += interval;
+
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, return_or_enter, 1, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, a, 1, time_stamp);
+    time_stamp += interval;
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
@@ -256,7 +305,9 @@ TEST_CASE("device_ungrabbed event") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, interval * 6);
     ENQUEUE_KEYBOARD_EVENT(expected, return_or_enter, 0, interval * 6);
-    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp + modifier_wait); // need to wait after 'kHIDUsage_KeyboardA key_down'
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp - interval + modifier_wait); // need to wait after 'kHIDUsage_KeyboardA key_down'
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, interval * 6);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, interval * 6);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
@@ -266,6 +317,7 @@ TEST_CASE("device_ungrabbed event") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, interval * 8);
     ENQUEUE_KEYBOARD_EVENT(expected, a, 0, interval * 8);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, interval * 8);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
   }
@@ -305,17 +357,34 @@ TEST_CASE("wait around modifier") {
 
     connector.manipulate();
 
-    time_stamp = 0;
-
     std::vector<post_event_to_virtual_devices::queue::event> expected;
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp += interval);
+    time_stamp = 0;
+    time_stamp += interval;
+
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
+
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp + modifier_wait);
-    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp += interval);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
+
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp + modifier_wait);
-    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp += interval);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp + 1);
+    time_stamp += interval;
+
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
+
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp + modifier_wait);
-    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp += interval);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp + modifier_wait);
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
@@ -372,15 +441,31 @@ TEST_CASE("lazy events") {
     time_stamp += interval;
     time_stamp += interval;
 
-    ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp += interval);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
     time_stamp += interval;
-    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp += interval);
+
+    ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
+    time_stamp += interval;
 
     time_stamp += interval;
-    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp += interval);
-    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp += interval);
+
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
+    time_stamp += interval;
+
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, time_stamp);
+    time_stamp += interval;
+
+    ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
+    time_stamp += interval;
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
   }
@@ -430,8 +515,12 @@ public:
         case post_event_to_virtual_devices::queue::event::type::pointing_input:
           events.emplace_back(*(e.get_pointing_input()), 0);
           break;
+        case post_event_to_virtual_devices::queue::event::type::clear_keyboard_modifier_flags:
+          events.push_back(post_event_to_virtual_devices::queue::event::make_clear_keyboard_modifier_flags_event(0));
+          break;
         case post_event_to_virtual_devices::queue::event::type::shell_command:
           events.push_back(post_event_to_virtual_devices::queue::event::make_shell_command_event(*(e.get_shell_command()), 0));
+          break;
       }
     }
     return events;
@@ -469,6 +558,7 @@ TEST_CASE("actual examples") {
     time_stamp = 0;
     expected.clear();
 
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
 
@@ -495,12 +585,14 @@ TEST_CASE("actual examples") {
     time_stamp = 0;
     expected.clear();
 
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -521,6 +613,7 @@ TEST_CASE("actual examples") {
     time_stamp = 0;
     expected.clear();
 
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, f2, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, f2, 0, time_stamp);
 
@@ -548,6 +641,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
 
     REQUIRE(helper.get_events() == expected);
@@ -578,6 +672,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
@@ -611,6 +706,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, left_option, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_option, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_option, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
@@ -619,6 +715,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_option, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -647,14 +744,17 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -687,14 +787,17 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -737,6 +840,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_option, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -771,16 +875,19 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, right_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_control, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, right_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_control, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, right_option, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_option, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -803,7 +910,9 @@ TEST_CASE("actual examples") {
     time_stamp = 0;
     expected.clear();
 
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, f1, 1, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, f1, 0, time_stamp);
@@ -833,6 +942,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -862,6 +972,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, f3, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, f3, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, f3, 0, time_stamp);
@@ -893,12 +1004,14 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, right_option, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_option, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_option, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_option, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -929,8 +1042,10 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, right_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, f5, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, f5, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, f5, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
@@ -939,6 +1054,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -971,14 +1087,17 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_control, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, right_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -1003,6 +1122,8 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_control, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
 
@@ -1047,6 +1168,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -1081,16 +1203,19 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, left_option, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_option, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_option, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_option, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, right_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, right_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -1125,16 +1250,22 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -1165,10 +1296,14 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
 
@@ -1195,9 +1330,12 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, f2, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, f2, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
 
@@ -1229,6 +1367,8 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_command, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, escape, 0, time_stamp);
 
@@ -1253,6 +1393,7 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, f2, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
@@ -1279,8 +1420,11 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, spacebar, 0, time_stamp);
 
@@ -1313,6 +1457,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, page_up, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, page_up, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -1343,6 +1488,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, page_up, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, page_up, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, fn, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, page_up, 0, time_stamp);
 
     REQUIRE(helper.get_events() == expected);
@@ -1372,10 +1518,14 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, p, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, p, 0, time_stamp);
 
@@ -1402,6 +1552,7 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp);
 
@@ -1425,6 +1576,7 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
@@ -1457,14 +1609,17 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -1496,6 +1651,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, p, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_option, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }
@@ -1565,6 +1721,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, a, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
@@ -1573,11 +1730,13 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, a, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 0, time_stamp);
 
     REQUIRE(helper.get_events() == expected);
@@ -1609,12 +1768,15 @@ TEST_CASE("actual examples") {
     ENQUEUE_KEYBOARD_EVENT(expected, a, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, delete_or_backspace, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
 
     REQUIRE(helper.get_events() == expected);
   }

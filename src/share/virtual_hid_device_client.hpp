@@ -111,6 +111,12 @@ public:
     });
   }
 
+  void clear_keyboard_modifier_flags(void) {
+    call_method([this](void) {
+      return pqrs::karabiner_virtual_hid_device_methods::clear_keyboard_modifier_flags(connect_);
+    });
+  }
+
   void initialize_virtual_hid_pointing(void) {
     call_method([this](void) {
       return pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_pointing(connect_);
