@@ -103,6 +103,7 @@ public:
 
       } else if (key == "description" ||
                  key == "conditions" ||
+                 key == "parameters" ||
                  key == "from" ||
                  key == "type") {
         // Do nothing
