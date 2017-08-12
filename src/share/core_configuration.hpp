@@ -121,6 +121,8 @@ public:
       return nullptr;
     }
     simple_modifications* find_simple_modifications(const device_identifiers& identifiers) {
+      add_device(identifiers);
+
       return const_cast<simple_modifications*>(static_cast<const profile&>(*this).find_simple_modifications(identifiers));
     }
 
@@ -140,6 +142,8 @@ public:
       return nullptr;
     }
     simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) {
+      add_device(identifiers);
+
       return const_cast<simple_modifications*>(static_cast<const profile&>(*this).find_fn_function_keys(identifiers));
     }
 
@@ -169,7 +173,8 @@ public:
     const std::vector<device>& get_devices(void) const {
       return devices_;
     }
-    bool get_device_ignore(const device_identifiers& identifiers) {
+
+    bool get_device_ignore(const device_identifiers& identifiers) const {
       for (const auto& d : devices_) {
         if (d.get_identifiers() == identifiers) {
           return d.get_ignore();
@@ -179,20 +184,16 @@ public:
     }
     void set_device_ignore(const device_identifiers& identifiers,
                            bool ignore) {
+      add_device(identifiers);
+
       for (auto&& device : devices_) {
         if (device.get_identifiers() == identifiers) {
           device.set_ignore(ignore);
           return;
         }
       }
-
-      auto json = nlohmann::json({
-          {"identifiers", identifiers.to_json()},
-          {"ignore", ignore},
-      });
-      devices_.emplace_back(json);
     }
-    bool get_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers) {
+    bool get_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers) const {
       for (const auto& d : devices_) {
         if (d.get_identifiers() == identifiers) {
           return d.get_disable_built_in_keyboard_if_exists();
@@ -202,21 +203,30 @@ public:
     }
     void set_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers,
                                                         bool disable_built_in_keyboard_if_exists) {
+      add_device(identifiers);
+
       for (auto&& device : devices_) {
         if (device.get_identifiers() == identifiers) {
           device.set_disable_built_in_keyboard_if_exists(disable_built_in_keyboard_if_exists);
           return;
         }
       }
+    }
+
+  private:
+    void add_device(const device_identifiers& identifiers) {
+      for (auto&& device : devices_) {
+        if (device.get_identifiers() == identifiers) {
+          return;
+        }
+      }
 
       auto json = nlohmann::json({
           {"identifiers", identifiers.to_json()},
-          {"disable_built_in_keyboard_if_exists", disable_built_in_keyboard_if_exists},
       });
       devices_.emplace_back(json);
     }
 
-  private:
     nlohmann::json json_;
     std::string name_;
     bool selected_;
