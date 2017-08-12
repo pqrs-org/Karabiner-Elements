@@ -1,5 +1,12 @@
 # Version 0.91.12
 
+* Add per device support in `Simple Modifications` and `Fn Function Keys`.
+  ![Simple Modifications](https://pqrs.org/osx/karabiner/img/news/v0.91.12_0.png)
+* The modifier flag event handling has been improved.
+
+
+# Version 0.91.12
+
 * `device_if` and `device_unless` has been added to `conditions`.
   * An example: https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_device.json
 
