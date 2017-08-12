@@ -1,7 +1,7 @@
-# Version 0.91.12
+# Version 0.91.13
 
 * Add per device support in `Simple Modifications` and `Fn Function Keys`.
-  ![Simple Modifications](https://pqrs.org/osx/karabiner/img/news/v0.91.12_0.png)
+  ![Simple Modifications](https://pqrs.org/osx/karabiner/img/news/v0.91.13_0.png)
 * The modifier flag event handling has been improved.
 
 
