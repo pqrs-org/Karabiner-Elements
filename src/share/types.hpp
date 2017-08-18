@@ -180,8 +180,10 @@ enum class key_code : uint32_t {
   right_option = kHIDUsage_KeyboardRightAlt,
   right_command = kHIDUsage_KeyboardRightGUI,
 
-  // 0x1000 - are karabiner own virtual key codes or keys not in keyboard_or_keypad usage page.
-  extra_ = 0x1000,
+  // usage in keyboard_or_keypad usage page is reserved until 0xffff.
+
+  // 0x10000 - are karabiner own virtual key codes or keys not in keyboard_or_keypad usage page.
+  extra_ = 0x10000,
   // A pseudo key that does not send any event.
   vk_none,
 
