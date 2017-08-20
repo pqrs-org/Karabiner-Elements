@@ -16,7 +16,7 @@ main() {
         exit 1
     fi
 
-    # Sign with CODESIGN_IDENTITY
+    # Sign with codesign
     if 1>"$LOGFILE" 2>&1 productsign --sign "$CODESIGN_IDENTITY" "$1" "$1".signed; then
         cat $LOGFILE
         mv "$1".signed "$1"
