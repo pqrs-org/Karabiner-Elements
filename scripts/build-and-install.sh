@@ -7,7 +7,7 @@ readonly TOPDIR=`dirname $0`/..
 main() {
     cd "$TOPDIR"
 
-    # remove macports include paths
+    # Remove macports include paths
     unset CPATH
 
     if [ "$1" != "--no-rebase" ]; then
