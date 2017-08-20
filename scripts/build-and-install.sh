@@ -32,5 +32,5 @@ main() {
     hdiutil detach "$VOL"
 }
 
-main
+main "$1"
 
