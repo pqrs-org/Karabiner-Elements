@@ -1,9 +1,9 @@
 @import Carbon;
 #import "AppDelegate.h"
 #import "FrontmostApplicationController.h"
-#import "VariablesController.h"
 #import "KeyResponder.h"
 #import "PreferencesKeys.h"
+#import "VariablesController.h"
 #import "weakify.h"
 
 @interface AppDelegate ()
