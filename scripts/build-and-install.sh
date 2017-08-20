@@ -17,7 +17,6 @@ main() {
     make
 
     DMG=$(ls *.dmg)
-
     VOL=`hdiutil attach "$DMG" | grep -o "/Volumes/.*"`
 
     echo
