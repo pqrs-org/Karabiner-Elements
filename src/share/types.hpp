@@ -72,6 +72,7 @@ enum class hid_usage : uint32_t {
 enum class event_type : uint32_t {
   key_down,
   key_up,
+  single,
 };
 
 enum class key_code : uint32_t {
@@ -992,12 +993,27 @@ struct operation_type_shell_command_execution_struct {
   }
 
 KRBN_TYPES_STREAM_OUTPUT(device_id);
-KRBN_TYPES_STREAM_OUTPUT(event_type);
 KRBN_TYPES_STREAM_OUTPUT(key_code);
 KRBN_TYPES_STREAM_OUTPUT(modifier_flag);
 KRBN_TYPES_STREAM_OUTPUT(pointing_button);
 
 #undef KRBN_TYPES_STREAM_OUTPUT
+
+inline std::ostream& operator<<(std::ostream& stream, const event_type& value) {
+  switch (value) {
+    case event_type::key_down:
+      stream << "key_down";
+      break;
+    case event_type::key_up:
+      stream << "key_up";
+      break;
+    case event_type::single:
+      stream << "single";
+      break;
+  }
+
+  return stream;
+}
 
 inline void to_json(nlohmann::json& json, const device_identifiers& identifiers) {
   json = identifiers.to_json();

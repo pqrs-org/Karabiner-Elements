@@ -343,7 +343,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     ENQUEUE_EVENT(input_event_queue, 1, 100, spacebar_event, key_down, spacebar_event);
     ENQUEUE_EVENT(input_event_queue, 2, 200, spacebar_event, key_down, spacebar_event);
     ENQUEUE_EVENT(input_event_queue, 1, 300, spacebar_event, key_up, spacebar_event);
-    ENQUEUE_EVENT(input_event_queue, 1, 400, device_ungrabbed_event, key_down, device_ungrabbed_event);
+    ENQUEUE_EVENT(input_event_queue, 1, 400, device_ungrabbed_event, single, device_ungrabbed_event);
 
     // ----------------------------------------
     // test
@@ -357,7 +357,7 @@ TEST_CASE("manipulator.manipulator_manager") {
       PUSH_BACK_QUEUED_EVENT(expected, 1, 100, escape_event, key_down, spacebar_event);
       PUSH_BACK_QUEUED_EVENT(expected, 2, 200, escape_event, key_down, spacebar_event);
       PUSH_BACK_QUEUED_EVENT(expected, 1, 300, escape_event, key_up, spacebar_event);
-      PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_ungrabbed_event, key_down, device_ungrabbed_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_ungrabbed_event, single, device_ungrabbed_event);
 
       REQUIRE(input_event_queue.get_events().empty());
       REQUIRE(output_event_queue.get_events() == expected);
@@ -384,7 +384,7 @@ TEST_CASE("manipulator.manipulator_manager") {
     ENQUEUE_EVENT(input_event_queue, 1, 100, spacebar_event, key_down, spacebar_event);
     ENQUEUE_EVENT(input_event_queue, 2, 200, spacebar_event, key_down, spacebar_event);
     ENQUEUE_EVENT(input_event_queue, 1, 300, spacebar_event, key_up, spacebar_event);
-    ENQUEUE_EVENT(input_event_queue, 2, 400, device_ungrabbed_event, key_down, device_ungrabbed_event);
+    ENQUEUE_EVENT(input_event_queue, 2, 400, device_ungrabbed_event, single, device_ungrabbed_event);
 
     connector.manipulate();
 
@@ -393,7 +393,7 @@ TEST_CASE("manipulator.manipulator_manager") {
       PUSH_BACK_QUEUED_EVENT(expected, 1, 100, escape_event, key_down, spacebar_event);
       PUSH_BACK_QUEUED_EVENT(expected, 2, 200, escape_event, key_down, spacebar_event);
       PUSH_BACK_QUEUED_EVENT(expected, 1, 300, escape_event, key_up, spacebar_event);
-      PUSH_BACK_QUEUED_EVENT(expected, 2, 400, device_ungrabbed_event, key_down, device_ungrabbed_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 2, 400, device_ungrabbed_event, single, device_ungrabbed_event);
 
       REQUIRE(input_event_queue.get_events().empty());
       REQUIRE(output_event_queue.get_events() == expected);
@@ -417,13 +417,13 @@ TEST_CASE("manipulator.manipulator_manager") {
 
     output_event_queue.clear_events();
 
-    ENQUEUE_EVENT(input_event_queue, 3, 100, device_ungrabbed_event, key_down, device_ungrabbed_event);
+    ENQUEUE_EVENT(input_event_queue, 3, 100, device_ungrabbed_event, single, device_ungrabbed_event);
 
     connector.manipulate();
 
     {
       std::vector<krbn::event_queue::queued_event> expected;
-      PUSH_BACK_QUEUED_EVENT(expected, 3, 100, device_ungrabbed_event, key_down, device_ungrabbed_event);
+      PUSH_BACK_QUEUED_EVENT(expected, 3, 100, device_ungrabbed_event, single, device_ungrabbed_event);
 
       REQUIRE(input_event_queue.get_events().empty());
       REQUIRE(output_event_queue.get_events() == expected);

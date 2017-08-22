@@ -151,58 +151,64 @@ public:
       uint64_t key_down_time_stamp = 0;
       bool alone = false;
 
-      if (front_input_event.get_event_type() == event_type::key_down) {
+      switch (front_input_event.get_event_type()) {
+        case event_type::key_down:
+          // ----------------------------------------
+          // Check whether event is target.
 
-        // ----------------------------------------
-        // Check whether event is target.
+          if (!valid_) {
+            is_target = false;
+          }
 
-        if (!valid_) {
-          is_target = false;
-        }
+          if (is_target) {
+            if (auto modifiers = from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
+              from_mandatory_modifiers = *modifiers;
+            } else {
+              is_target = false;
+            }
+          }
 
-        if (is_target) {
-          if (auto modifiers = from_.test_modifiers(output_event_queue.get_modifier_flag_manager())) {
-            from_mandatory_modifiers = *modifiers;
+          if (is_target) {
+            if (!condition_manager_.is_fulfilled(front_input_event,
+                                                 output_event_queue.get_manipulator_environment())) {
+              is_target = false;
+            }
+          }
+
+          // ----------------------------------------
+
+          if (is_target) {
+            manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
+                                                      front_input_event.get_original_event(),
+                                                      from_mandatory_modifiers,
+                                                      front_input_event.get_time_stamp());
+          }
+          break;
+
+        case event_type::key_up: {
+          // event_type::key_up
+
+          // Check original_event in order to determine the correspond key_down is manipulated.
+
+          auto it = std::find_if(std::begin(manipulated_original_events_),
+                                 std::end(manipulated_original_events_),
+                                 [&](const auto& manipulated_original_event) {
+                                   return manipulated_original_event.get_device_id() == front_input_event.get_device_id() &&
+                                          manipulated_original_event.get_original_event() == front_input_event.get_original_event();
+                                 });
+          if (it != std::end(manipulated_original_events_)) {
+            from_mandatory_modifiers = it->get_from_mandatory_modifiers();
+            key_down_time_stamp = it->get_key_down_time_stamp();
+            alone = it->get_alone();
+            manipulated_original_events_.erase(it);
           } else {
             is_target = false;
           }
+          break;
         }
 
-        if (is_target) {
-          if (!condition_manager_.is_fulfilled(front_input_event,
-                                               output_event_queue.get_manipulator_environment())) {
-            is_target = false;
-          }
-        }
-
-        // ----------------------------------------
-
-        if (is_target) {
-          manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
-                                                    front_input_event.get_original_event(),
-                                                    from_mandatory_modifiers,
-                                                    front_input_event.get_time_stamp());
-        }
-
-      } else {
-        // event_type::key_up
-
-        // Check original_event in order to determine the correspond key_down is manipulated.
-
-        auto it = std::find_if(std::begin(manipulated_original_events_),
-                               std::end(manipulated_original_events_),
-                               [&](const auto& manipulated_original_event) {
-                                 return manipulated_original_event.get_device_id() == front_input_event.get_device_id() &&
-                                        manipulated_original_event.get_original_event() == front_input_event.get_original_event();
-                               });
-        if (it != std::end(manipulated_original_events_)) {
-          from_mandatory_modifiers = it->get_from_mandatory_modifiers();
-          key_down_time_stamp = it->get_key_down_time_stamp();
-          alone = it->get_alone();
-          manipulated_original_events_.erase(it);
-        } else {
-          is_target = false;
-        }
+        case event_type::single:
+          break;
       }
 
       if (is_target) {
@@ -230,48 +236,30 @@ public:
 
         for (size_t i = 0; i < to_.size(); ++i) {
           if (auto event = to_[i].to_event()) {
-            if (front_input_event.get_event_type() == event_type::key_down) {
-              enqueue_to_modifiers(to_[i],
-                                   event_type::key_down,
-                                   front_input_event,
-                                   !preserve_to_modifiers_down(),
-                                   time_stamp_delay,
-                                   output_event_queue);
-
-              output_event_queue.emplace_back_event(front_input_event.get_device_id(),
-                                                    front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                    *event,
-                                                    event_type::key_down,
-                                                    front_input_event.get_original_event());
-
-              if (i != to_.size() - 1) {
-                output_event_queue.emplace_back_event(front_input_event.get_device_id(),
-                                                      front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                      *event,
-                                                      event_type::key_up,
-                                                      front_input_event.get_original_event());
-              }
-
-              if (i != to_.size() - 1 || !preserve_to_modifiers_down()) {
+            switch (front_input_event.get_event_type()) {
+              case event_type::key_down:
                 enqueue_to_modifiers(to_[i],
-                                     event_type::key_up,
+                                     event_type::key_down,
                                      front_input_event,
                                      !preserve_to_modifiers_down(),
                                      time_stamp_delay,
                                      output_event_queue);
-              }
 
-            } else {
-              // event_type::key_up
-
-              if (i == to_.size() - 1) {
                 output_event_queue.emplace_back_event(front_input_event.get_device_id(),
                                                       front_input_event.get_time_stamp() + time_stamp_delay++,
                                                       *event,
-                                                      event_type::key_up,
+                                                      event_type::key_down,
                                                       front_input_event.get_original_event());
 
-                if (preserve_to_modifiers_down()) {
+                if (i != to_.size() - 1) {
+                  output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                        front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                        *event,
+                                                        event_type::key_up,
+                                                        front_input_event.get_original_event());
+                }
+
+                if (i != to_.size() - 1 || !preserve_to_modifiers_down()) {
                   enqueue_to_modifiers(to_[i],
                                        event_type::key_up,
                                        front_input_event,
@@ -279,21 +267,43 @@ public:
                                        time_stamp_delay,
                                        output_event_queue);
                 }
+                break;
 
-                send_extra_to_events(front_input_event,
-                                     to_after_key_up_,
-                                     time_stamp_delay,
-                                     output_event_queue);
+              case event_type::key_up:
+                if (i == to_.size() - 1) {
+                  output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                        front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                        *event,
+                                                        event_type::key_up,
+                                                        front_input_event.get_original_event());
 
-                uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
-                if (alone &&
-                    nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                  if (preserve_to_modifiers_down()) {
+                    enqueue_to_modifiers(to_[i],
+                                         event_type::key_up,
+                                         front_input_event,
+                                         !preserve_to_modifiers_down(),
+                                         time_stamp_delay,
+                                         output_event_queue);
+                  }
+
                   send_extra_to_events(front_input_event,
-                                       to_if_alone_,
+                                       to_after_key_up_,
                                        time_stamp_delay,
                                        output_event_queue);
+
+                  uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
+                  if (alone &&
+                      nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                    send_extra_to_events(front_input_event,
+                                         to_if_alone_,
+                                         time_stamp_delay,
+                                         output_event_queue);
+                  }
                 }
-              }
+                break;
+
+              case event_type::single:
+                break;
             }
           }
         }

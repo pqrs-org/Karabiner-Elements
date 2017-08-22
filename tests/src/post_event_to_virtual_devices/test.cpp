@@ -117,9 +117,9 @@ TEST_CASE("generic") {
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, escape_event, key_up);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, tab_event, key_down);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, button1_event, key_down);
-    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, pointing_x_m10_event, key_down);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, pointing_x_m10_event, single);
     ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, button1_event, key_up);
-    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, pointing_y_10_event, key_down);
+    ENQUEUE_EVENT(input_event_queue, 1, time_stamp += interval, pointing_y_10_event, single);
 
     connector.manipulate();
 
@@ -298,8 +298,8 @@ TEST_CASE("device_ungrabbed event") {
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
-    ENQUEUE_EVENT(input_event_queue, 1, interval * 6, device_ungrabbed_event, key_down);
-    ENQUEUE_EVENT(input_event_queue, 3, interval * 6, device_ungrabbed_event, key_down);
+    ENQUEUE_EVENT(input_event_queue, 1, interval * 6, device_ungrabbed_event, single);
+    ENQUEUE_EVENT(input_event_queue, 3, interval * 6, device_ungrabbed_event, single);
 
     connector.manipulate();
 
@@ -311,7 +311,7 @@ TEST_CASE("device_ungrabbed event") {
 
     REQUIRE(manipulator->get_queue().get_events() == expected);
 
-    ENQUEUE_EVENT(input_event_queue, 2, interval * 8, device_ungrabbed_event, key_down);
+    ENQUEUE_EVENT(input_event_queue, 2, interval * 8, device_ungrabbed_event, single);
 
     connector.manipulate();
 
@@ -574,7 +574,7 @@ TEST_CASE("actual examples") {
 
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp, device_keys_are_released_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp, device_keys_are_released_event, single);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp, left_shift_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
@@ -1280,13 +1280,13 @@ TEST_CASE("actual examples") {
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
 
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
-    ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(helper.get_input_event_queue(), 2, time_stamp += interval, pointing_vertical_wheel_100_event, key_down);
+    ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(helper.get_input_event_queue(), 2, time_stamp += interval, pointing_vertical_wheel_100_event, single);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
 
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_down);
     ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(helper.get_input_event_queue(), 2, time_stamp += interval, spacebar_event, key_up);
-    ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, pointing_x_m10_event, key_down);
-    ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, pointing_vertical_wheel_0_event, key_down);
+    ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, pointing_x_m10_event, single);
+    ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, pointing_vertical_wheel_0_event, single);
     ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_control_event, key_up);
 
     helper.manipulate();

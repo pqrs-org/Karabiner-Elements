@@ -133,9 +133,9 @@ TEST_CASE("emplace_back_event") {
     // Other events (not key_code) order are preserved.
 
     ENQUEUE_EVENT(event_queue, 1, 400, left_shift_event, key_down, left_shift_event);
-    ENQUEUE_EVENT(event_queue, 1, 400, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    ENQUEUE_EVENT(event_queue, 1, 400, device_keys_are_released_event, single, device_keys_are_released_event);
 
-    ENQUEUE_EVENT(event_queue, 1, 500, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    ENQUEUE_EVENT(event_queue, 1, 500, device_keys_are_released_event, single, device_keys_are_released_event);
     ENQUEUE_EVENT(event_queue, 1, 500, left_shift_event, key_down, left_shift_event);
 
     std::vector<krbn::event_queue::queued_event> expected;
@@ -147,8 +147,8 @@ TEST_CASE("emplace_back_event") {
     PUSH_BACK_QUEUED_EVENT(expected, 1, 300, left_shift_event, key_up, left_shift_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 300, left_control_event, key_up, left_control_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 400, left_shift_event, key_down, left_shift_event);
-    PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_keys_are_released_event, key_down, device_keys_are_released_event);
-    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_keys_are_released_event, single, device_keys_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, device_keys_are_released_event, single, device_keys_are_released_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 500, left_shift_event, key_down, left_shift_event);
     REQUIRE(event_queue.get_events() == expected);
   }
@@ -202,14 +202,14 @@ TEST_CASE("emplace_back_event") {
 
     ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_up, b_event);
     ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_up, a_event);
-    ENQUEUE_EVENT(event_queue, 1, 100, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, device_keys_are_released_event, single, device_keys_are_released_event);
     ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
     ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
 
     std::vector<krbn::event_queue::queued_event> expected;
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_up, b_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_up, a_event);
-    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, device_keys_are_released_event, key_down, device_keys_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, device_keys_are_released_event, single, device_keys_are_released_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
     REQUIRE(event_queue.get_events() == expected);
@@ -276,8 +276,8 @@ TEST_CASE("emplace_back_event.usage_page") {
   PUSH_BACK_QUEUED_EVENT(expected, 1, 200, tab_event, key_up, tab_event);
   PUSH_BACK_QUEUED_EVENT(expected, 1, 300, button2_event, key_down, button2_event);
   PUSH_BACK_QUEUED_EVENT(expected, 1, 400, button2_event, key_up, button2_event);
-  PUSH_BACK_QUEUED_EVENT(expected, 1, 500, pointing_x_10_event, key_down, pointing_x_10_event);
-  PUSH_BACK_QUEUED_EVENT(expected, 1, 600, pointing_y_m10_event, key_down, pointing_y_m10_event);
+  PUSH_BACK_QUEUED_EVENT(expected, 1, 500, pointing_x_10_event, single, pointing_x_10_event);
+  PUSH_BACK_QUEUED_EVENT(expected, 1, 600, pointing_y_m10_event, single, pointing_y_m10_event);
   REQUIRE(event_queue.get_events() == expected);
 }
 
@@ -318,21 +318,21 @@ TEST_CASE("caps_lock_state_changed") {
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, key_down, caps_lock_state_changed_1_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, single, caps_lock_state_changed_1_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
 
     // Send twice
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, key_down, caps_lock_state_changed_1_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, single, caps_lock_state_changed_1_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_0_event, key_down, caps_lock_state_changed_0_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_0_event, single, caps_lock_state_changed_0_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
 
-    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, key_down, caps_lock_state_changed_1_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, single, caps_lock_state_changed_1_event);
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
   }

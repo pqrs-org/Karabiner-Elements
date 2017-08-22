@@ -404,6 +404,7 @@ public:
     // Dispatch modifier key event only when front_input_event is key_down or modifier key.
 
     bool dispatch_modifier_key_event = false;
+    bool dispatch_modifier_key_event_before = false;
     {
       auto modifier_flag = modifier_flag::zero;
       if (auto key_code = front_input_event.get_event().get_key_code()) {
@@ -414,17 +415,23 @@ public:
         // front_input_event is modifier key event.
         if (!front_input_event.get_lazy()) {
           dispatch_modifier_key_event = true;
+          dispatch_modifier_key_event_before = false;
         }
 
       } else {
-        if (front_input_event.get_event_type() == event_type::key_down) {
+        if (front_input_event.get_event_type() == event_type::key_down ||
+            front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_x ||
+            front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_y ||
+            front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel ||
+            front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
           dispatch_modifier_key_event = true;
+          dispatch_modifier_key_event_before = true;
         }
       }
     }
 
     if (dispatch_modifier_key_event &&
-        front_input_event.get_event_type() == event_type::key_down) {
+        dispatch_modifier_key_event_before) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
                                                         front_input_event.get_time_stamp());
@@ -434,15 +441,22 @@ public:
       case event_queue::queued_event::event::type::key_code:
         if (auto key_code = front_input_event.get_event().get_key_code()) {
           if (types::get_modifier_flag(*key_code) == modifier_flag::zero) {
-            if (front_input_event.get_event_type() == event_type::key_down) {
-              key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
-                                                            *key_code,
+            switch (front_input_event.get_event_type()) {
+              case event_type::key_down:
+                key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
+                                                              *key_code,
+                                                              queue_,
+                                                              front_input_event.get_time_stamp());
+                break;
+
+              case event_type::key_up:
+                key_event_dispatcher_.dispatch_key_up_event(*key_code,
                                                             queue_,
                                                             front_input_event.get_time_stamp());
-            } else {
-              key_event_dispatcher_.dispatch_key_up_event(*key_code,
-                                                          queue_,
-                                                          front_input_event.get_time_stamp());
+                break;
+
+              case event_type::single:
+                break;
             }
           }
         }
@@ -514,7 +528,7 @@ public:
     }
 
     if (dispatch_modifier_key_event &&
-        front_input_event.get_event_type() == event_type::key_up) {
+        !dispatch_modifier_key_event_before) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
                                                         front_input_event.get_time_stamp());

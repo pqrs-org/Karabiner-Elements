@@ -215,7 +215,7 @@ public:
       merged_input_event_queue_.emplace_back_event(device_id(0),
                                                    mach_absolute_time(),
                                                    event,
-                                                   event_type::key_down,
+                                                   event_type::single,
                                                    event);
       manipulate();
     });
@@ -356,7 +356,7 @@ private:
     merged_input_event_queue_.emplace_back_event(device_id,
                                                  mach_absolute_time(),
                                                  event,
-                                                 event_type::key_down,
+                                                 event_type::single,
                                                  event);
     manipulate();
   }
@@ -366,7 +366,7 @@ private:
     merged_input_event_queue_.emplace_back_event(device_id(0),
                                                  mach_absolute_time(),
                                                  event,
-                                                 event_type::key_down,
+                                                 event_type::single,
                                                  event);
     manipulate();
   }

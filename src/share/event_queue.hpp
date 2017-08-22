@@ -306,7 +306,7 @@ public:
             emplace_back_event(device_id,
                                time_stamp,
                                event,
-                               event_type::key_down,
+                               event_type::single,
                                event);
             return true;
           }
@@ -316,7 +316,7 @@ public:
             emplace_back_event(device_id,
                                time_stamp,
                                event,
-                               event_type::key_down,
+                               event_type::single,
                                event);
             return true;
           }
@@ -326,7 +326,7 @@ public:
             emplace_back_event(device_id,
                                time_stamp,
                                event,
-                               event_type::key_down,
+                               event_type::single,
                                event);
             return true;
           }
@@ -343,7 +343,7 @@ public:
             emplace_back_event(device_id,
                                time_stamp,
                                event,
-                               event_type::key_down,
+                               event_type::single,
                                event);
             return true;
           }
