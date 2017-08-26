@@ -784,21 +784,21 @@ public:
     return boost::none;
   }
 
-  static boost::optional<pqrs::karabiner_virtual_hid_device::usage_page> get_usage_page(key_code key_code) {
+  static boost::optional<hid_usage_page> make_hid_usage_page(key_code key_code) {
     switch (key_code) {
       case key_code::fn:
       case key_code::illumination_decrement:
       case key_code::illumination_increment:
       case key_code::apple_top_case_display_brightness_decrement:
       case key_code::apple_top_case_display_brightness_increment:
-        return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_top_case;
+        return hid_usage_page::apple_vendor_top_case;
 
       case key_code::dashboard:
       case key_code::launchpad:
       case key_code::mission_control:
       case key_code::apple_display_brightness_decrement:
       case key_code::apple_display_brightness_increment:
-        return pqrs::karabiner_virtual_hid_device::usage_page::apple_vendor_keyboard;
+        return hid_usage_page::apple_vendor_keyboard;
 
       case key_code::mute:
       case key_code::volume_decrement:
@@ -809,80 +809,80 @@ public:
       case key_code::play_or_pause:
       case key_code::fastforward:
       case key_code::eject:
-        return pqrs::karabiner_virtual_hid_device::usage_page::consumer;
+        return hid_usage_page::consumer;
 
       case key_code::vk_none:
         return boost::none;
 
       default:
-        return pqrs::karabiner_virtual_hid_device::usage_page::keyboard_or_keypad;
+        return hid_usage_page::keyboard_or_keypad;
     }
   }
 
-  static boost::optional<pqrs::karabiner_virtual_hid_device::usage> get_usage(key_code key_code) {
+  static boost::optional<hid_usage> make_hid_usage(key_code key_code) {
     switch (key_code) {
       case key_code::fn:
-        return pqrs::karabiner_virtual_hid_device::usage::av_top_case_keyboard_fn;
+        return hid_usage::av_top_case_keyboard_fn;
 
       case key_code::illumination_decrement:
-        return pqrs::karabiner_virtual_hid_device::usage::av_top_case_illumination_down;
+        return hid_usage::av_top_case_illumination_down;
 
       case key_code::illumination_increment:
-        return pqrs::karabiner_virtual_hid_device::usage::av_top_case_illumination_up;
+        return hid_usage::av_top_case_illumination_up;
 
       case key_code::apple_top_case_display_brightness_decrement:
-        return pqrs::karabiner_virtual_hid_device::usage::av_top_case_brightness_down;
+        return hid_usage::av_top_case_brightness_down;
 
       case key_code::apple_top_case_display_brightness_increment:
-        return pqrs::karabiner_virtual_hid_device::usage::av_top_case_brightness_up;
+        return hid_usage::av_top_case_brightness_up;
 
       case key_code::dashboard:
-        return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_dashboard;
+        return hid_usage::apple_vendor_keyboard_dashboard;
 
       case key_code::launchpad:
-        return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_launchpad;
+        return hid_usage::apple_vendor_keyboard_launchpad;
 
       case key_code::mission_control:
-        return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_expose_all;
+        return hid_usage::apple_vendor_keyboard_expose_all;
 
       case key_code::apple_display_brightness_decrement:
-        return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_brightness_down;
+        return hid_usage::apple_vendor_keyboard_brightness_down;
 
       case key_code::apple_display_brightness_increment:
-        return pqrs::karabiner_virtual_hid_device::usage::apple_vendor_keyboard_brightness_up;
+        return hid_usage::apple_vendor_keyboard_brightness_up;
 
       case key_code::mute:
-        return pqrs::karabiner_virtual_hid_device::usage::csmr_mute;
+        return hid_usage::csmr_mute;
 
       case key_code::volume_decrement:
-        return pqrs::karabiner_virtual_hid_device::usage::csmr_volume_decrement;
+        return hid_usage::csmr_volume_decrement;
 
       case key_code::volume_increment:
-        return pqrs::karabiner_virtual_hid_device::usage::csmr_volume_increment;
+        return hid_usage::csmr_volume_increment;
 
       case key_code::display_brightness_decrement:
-        return pqrs::karabiner_virtual_hid_device::usage::csmr_display_brightness_decrement;
+        return hid_usage::csmr_display_brightness_decrement;
 
       case key_code::display_brightness_increment:
-        return pqrs::karabiner_virtual_hid_device::usage::csmr_display_brightness_increment;
+        return hid_usage::csmr_display_brightness_increment;
 
       case key_code::rewind:
-        return pqrs::karabiner_virtual_hid_device::usage::csmr_rewind;
+        return hid_usage::csmr_rewind;
 
       case key_code::play_or_pause:
-        return pqrs::karabiner_virtual_hid_device::usage::csmr_play_or_pause;
+        return hid_usage::csmr_play_or_pause;
 
       case key_code::fastforward:
-        return pqrs::karabiner_virtual_hid_device::usage::csmr_fastforward;
+        return hid_usage::csmr_fastforward;
 
       case key_code::eject:
-        return pqrs::karabiner_virtual_hid_device::usage::csmr_eject;
+        return hid_usage::csmr_eject;
 
       case key_code::vk_none:
         return boost::none;
 
       default:
-        return pqrs::karabiner_virtual_hid_device::usage(key_code);
+        return hid_usage(key_code);
     }
   }
 

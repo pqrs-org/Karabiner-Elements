@@ -114,28 +114,25 @@ public:
       return events_;
     }
 
-    void emplace_back_event(key_code key_code,
-                            event_type event_type,
-                            uint64_t time_stamp) {
-      if (auto usage_page = types::get_usage_page(key_code)) {
-        if (auto usage = types::get_usage(key_code)) {
-          pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-          keyboard_event.usage_page = *usage_page;
-          keyboard_event.usage = *usage;
-          keyboard_event.value = (event_type == event_type::key_down);
+    void emplace_back_key_event(hid_usage_page hid_usage_page,
+                                hid_usage hid_usage,
+                                event_type event_type,
+                                uint64_t time_stamp) {
+      pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
+      keyboard_event.usage_page = static_cast<pqrs::karabiner_virtual_hid_device::usage_page>(hid_usage_page);
+      keyboard_event.usage = static_cast<pqrs::karabiner_virtual_hid_device::usage>(hid_usage);
+      keyboard_event.value = (event_type == event_type::key_down);
 
-          // ----------------------------------------
-          // modify time_stamp if needed
+      // ----------------------------------------
+      // modify time_stamp if needed
 
-          auto m = types::get_modifier_flag(key_code);
-          adjust_time_stamp(time_stamp, m != modifier_flag::zero);
+      auto m = types::make_modifier_flag(hid_usage_page, hid_usage);
+      adjust_time_stamp(time_stamp, m != modifier_flag::zero);
 
-          // ----------------------------------------
+      // ----------------------------------------
 
-          events_.emplace_back(keyboard_event,
-                               time_stamp);
-        }
-      }
+      events_.emplace_back(keyboard_event,
+                           time_stamp);
     }
 
     void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
@@ -275,30 +272,33 @@ public:
   class key_event_dispatcher final {
   public:
     void dispatch_key_down_event(device_id device_id,
-                                 key_code key_code,
+                                 hid_usage_page hid_usage_page,
+                                 hid_usage hid_usage,
                                  queue& queue,
                                  uint64_t time_stamp) {
       // Enqueue key_down event if it is not sent yet.
 
-      if (!find_key_code(key_code)) {
-        pressed_keys_.emplace_back(device_id, key_code);
-        enqueue_key_event(key_code, event_type::key_down, queue, time_stamp);
+      if (!key_event_exists(hid_usage_page, hid_usage)) {
+        pressed_keys_.emplace_back(device_id, std::make_pair(hid_usage_page, hid_usage));
+        enqueue_key_event(hid_usage_page, hid_usage, event_type::key_down, queue, time_stamp);
       }
     }
 
-    void dispatch_key_up_event(key_code key_code,
+    void dispatch_key_up_event(hid_usage_page hid_usage_page,
+                               hid_usage hid_usage,
                                queue& queue,
                                uint64_t time_stamp) {
       // Enqueue key_up event if it is already sent.
 
-      if (find_key_code(key_code)) {
+      if (key_event_exists(hid_usage_page, hid_usage)) {
         pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
                                            std::end(pressed_keys_),
                                            [&](auto& k) {
-                                             return k.second == key_code;
+                                             return k.second.first == hid_usage_page &&
+                                                    k.second.second == hid_usage;
                                            }),
                             std::end(pressed_keys_));
-        enqueue_key_event(key_code, event_type::key_up, queue, time_stamp);
+        enqueue_key_event(hid_usage_page, hid_usage, event_type::key_up, queue, time_stamp);
       }
     }
 
@@ -322,7 +322,11 @@ public:
         if (modifier_flag_manager.is_pressed(m)) {
           if (!pressed) {
             if (auto key_code = types::get_key_code(m)) {
-              enqueue_key_event(*key_code, event_type::key_down, queue, time_stamp);
+              if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
+                if (auto hid_usage = types::make_hid_usage(*key_code)) {
+                  enqueue_key_event(*hid_usage_page, *hid_usage, event_type::key_down, queue, time_stamp);
+                }
+              }
             }
             pressed_modifier_flags_.insert(m);
           }
@@ -330,7 +334,11 @@ public:
         } else {
           if (pressed) {
             if (auto key_code = types::get_key_code(m)) {
-              enqueue_key_event(*key_code, event_type::key_up, queue, time_stamp);
+              if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
+                if (auto hid_usage = types::make_hid_usage(*key_code)) {
+                  enqueue_key_event(*hid_usage_page, *hid_usage, event_type::key_up, queue, time_stamp);
+                }
+              }
             }
             pressed_modifier_flags_.erase(m);
           }
@@ -350,7 +358,8 @@ public:
         for (const auto& k : pressed_keys_) {
           if (k.first == device_id) {
             found = true;
-            dispatch_key_up_event(k.second,
+            dispatch_key_up_event(k.second.first,
+                                  k.second.second,
                                   queue,
                                   time_stamp);
             break;
@@ -362,28 +371,31 @@ public:
       }
     }
 
-    const std::vector<std::pair<device_id, key_code>>& get_pressed_keys(void) const {
+    const std::vector<std::pair<device_id, std::pair<hid_usage_page, hid_usage>>>& get_pressed_keys(void) const {
       return pressed_keys_;
     }
 
   private:
-    bool find_key_code(key_code key_code) {
+    bool key_event_exists(hid_usage_page usage_page,
+                          hid_usage usage) {
       auto it = std::find_if(std::begin(pressed_keys_),
                              std::end(pressed_keys_),
                              [&](auto& k) {
-                               return k.second == key_code;
+                               return k.second.first == usage_page &&
+                                      k.second.second == usage;
                              });
       return (it != std::end(pressed_keys_));
     }
 
-    void enqueue_key_event(key_code key_code,
+    void enqueue_key_event(hid_usage_page usage_page,
+                           hid_usage usage,
                            event_type event_type,
                            queue& queue,
                            uint64_t time_stamp) {
-      queue.emplace_back_event(key_code, event_type, time_stamp);
+      queue.emplace_back_key_event(usage_page, usage, event_type, time_stamp);
     }
 
-    std::vector<std::pair<device_id, key_code>> pressed_keys_;
+    std::vector<std::pair<device_id, std::pair<hid_usage_page, hid_usage>>> pressed_keys_;
     std::unordered_set<modifier_flag> pressed_modifier_flags_;
   };
 
@@ -440,23 +452,29 @@ public:
     switch (front_input_event.get_event().get_type()) {
       case event_queue::queued_event::event::type::key_code:
         if (auto key_code = front_input_event.get_event().get_key_code()) {
-          if (types::get_modifier_flag(*key_code) == modifier_flag::zero) {
-            switch (front_input_event.get_event_type()) {
-              case event_type::key_down:
-                key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
-                                                              *key_code,
-                                                              queue_,
-                                                              front_input_event.get_time_stamp());
-                break;
+          if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
+            if (auto hid_usage = types::make_hid_usage(*key_code)) {
+              if (types::get_modifier_flag(*key_code) == modifier_flag::zero) {
+                switch (front_input_event.get_event_type()) {
+                  case event_type::key_down:
+                    key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
+                                                                  *hid_usage_page,
+                                                                  *hid_usage,
+                                                                  queue_,
+                                                                  front_input_event.get_time_stamp());
+                    break;
 
-              case event_type::key_up:
-                key_event_dispatcher_.dispatch_key_up_event(*key_code,
-                                                            queue_,
-                                                            front_input_event.get_time_stamp());
-                break;
+                  case event_type::key_up:
+                    key_event_dispatcher_.dispatch_key_up_event(*hid_usage_page,
+                                                                *hid_usage,
+                                                                queue_,
+                                                                front_input_event.get_time_stamp());
+                    break;
 
-              case event_type::single:
-                break;
+                  case event_type::single:
+                    break;
+                }
+              }
             }
           }
         }

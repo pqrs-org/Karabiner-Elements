@@ -30,13 +30,13 @@
                            EVENT,                                           \
                            true);
 
-#define ENQUEUE_KEYBOARD_EVENT(EVENTS, KEY_CODE, VALUE, TIME_STAMP)                            \
-  {                                                                                            \
-    pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;      \
-    keyboard_event.usage_page = *(krbn::types::get_usage_page(krbn::key_code::KEY_CODE));      \
-    keyboard_event.usage = *(krbn::types::get_usage(krbn::key_code::KEY_CODE));                \
-    keyboard_event.value = VALUE;                                                              \
-    EVENTS.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, TIME_STAMP)); \
+#define ENQUEUE_KEYBOARD_EVENT(EVENTS, KEY_CODE, VALUE, TIME_STAMP)                                                                                         \
+  {                                                                                                                                                         \
+    pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;                                                                   \
+    keyboard_event.usage_page = static_cast<pqrs::karabiner_virtual_hid_device::usage_page>(*(krbn::types::make_hid_usage_page(krbn::key_code::KEY_CODE))); \
+    keyboard_event.usage = static_cast<pqrs::karabiner_virtual_hid_device::usage>(*(krbn::types::make_hid_usage(krbn::key_code::KEY_CODE)));                \
+    keyboard_event.value = VALUE;                                                                                                                           \
+    EVENTS.push_back(post_event_to_virtual_devices::queue::event(keyboard_event, TIME_STAMP));                                                              \
   }
 
 #define ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(EVENTS, TIME_STAMP) \
@@ -187,8 +187,8 @@ TEST_CASE("generic") {
     }
 
     {
-      std::vector<std::pair<krbn::device_id, krbn::key_code>> expected({
-          std::make_pair(krbn::device_id(1), krbn::key_code::tab),
+      std::vector<std::pair<krbn::device_id, std::pair<krbn::hid_usage_page, krbn::hid_usage>>> expected({
+          std::make_pair(krbn::device_id(1), std::make_pair(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardTab))),
       });
       REQUIRE(manipulator->get_key_event_dispatcher().get_pressed_keys() == expected);
     }

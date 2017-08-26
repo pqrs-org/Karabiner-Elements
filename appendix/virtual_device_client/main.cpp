@@ -26,12 +26,18 @@ int main(int argc, const char* argv[]) {
 
     {
       auto time_stamp = mach_absolute_time();
-      queue.emplace_back_event(krbn::key_code::spacebar, krbn::event_type::key_down, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardSpacebar),
+                                   krbn::event_type::key_down,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
     }
     {
       auto time_stamp = mach_absolute_time();
-      queue.emplace_back_event(krbn::key_code::spacebar, krbn::event_type::key_up, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardSpacebar),
+                                   krbn::event_type::key_up,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
     }
 
@@ -40,50 +46,86 @@ int main(int argc, const char* argv[]) {
 
       // Put `Bc`.
 
-      queue.emplace_back_event(krbn::key_code::left_shift, krbn::event_type::key_down, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardLeftShift),
+                                   krbn::event_type::key_down,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
 
-      queue.emplace_back_event(krbn::key_code::b, krbn::event_type::key_down, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardB),
+                                   krbn::event_type::key_down,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
 
-      queue.emplace_back_event(krbn::key_code::b, krbn::event_type::key_up, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardB),
+                                   krbn::event_type::key_up,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
 
-      queue.emplace_back_event(krbn::key_code::left_shift, krbn::event_type::key_up, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardLeftShift),
+                                   krbn::event_type::key_up,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
 
-      queue.emplace_back_event(krbn::key_code::c, krbn::event_type::key_down, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardC),
+                                   krbn::event_type::key_down,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
 
-      queue.emplace_back_event(krbn::key_code::left_shift, krbn::event_type::key_down, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardLeftShift),
+                                   krbn::event_type::key_down,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
 
-      queue.emplace_back_event(krbn::key_code::c, krbn::event_type::key_up, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardC),
+                                   krbn::event_type::key_up,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
 
-      queue.emplace_back_event(krbn::key_code::left_shift, krbn::event_type::key_up, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardLeftShift),
+                                   krbn::event_type::key_up,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
     }
 
     {
       auto time_stamp = mach_absolute_time() + krbn::time_utility::nano_to_absolute(NSEC_PER_SEC);
-      queue.emplace_back_event(krbn::key_code::a, krbn::event_type::key_down, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardA),
+                                   krbn::event_type::key_down,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
     }
     {
       auto time_stamp = mach_absolute_time() + krbn::time_utility::nano_to_absolute(2 * NSEC_PER_SEC);
-      queue.emplace_back_event(krbn::key_code::a, krbn::event_type::key_up, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardA),
+                                   krbn::event_type::key_up,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
     }
 
     {
       auto time_stamp = mach_absolute_time();
-      queue.emplace_back_event(krbn::key_code::b, krbn::event_type::key_down, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardB),
+                                   krbn::event_type::key_down,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
     }
     {
       auto time_stamp = mach_absolute_time();
-      queue.emplace_back_event(krbn::key_code::b, krbn::event_type::key_up, time_stamp);
+      queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
+                                   krbn::hid_usage(kHIDUsage_KeyboardB),
+                                   krbn::event_type::key_up,
+                                   time_stamp);
       queue.post_events(*virtual_hid_device_client_ptr);
     }
   });
