@@ -61,6 +61,14 @@ TEST_CASE("get_modifier_flag") {
   REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::button, krbn::hid_usage(1)) == krbn::modifier_flag::zero);
 }
 
+TEST_CASE("make_consumer_key_code") {
+  REQUIRE(krbn::types::make_consumer_key_code(krbn::hid_usage_page::consumer, krbn::hid_usage::csmr_mute) == krbn::consumer_key_code::mute);
+  REQUIRE(!krbn::types::make_consumer_key_code(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardA)));
+
+  REQUIRE(krbn::types::make_hid_usage_page(krbn::consumer_key_code::mute) == krbn::hid_usage_page::consumer);
+  REQUIRE(krbn::types::make_hid_usage(krbn::consumer_key_code::mute) == krbn::hid_usage::csmr_mute);
+}
+
 TEST_CASE("get_pointing_button") {
   {
     auto actual = krbn::types::get_pointing_button(krbn::hid_usage_page(kHIDPage_Button),

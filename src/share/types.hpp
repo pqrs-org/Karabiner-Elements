@@ -233,6 +233,21 @@ enum class key_code : uint32_t {
   apple_top_case_display_brightness_increment,
 };
 
+enum class consumer_key_code : uint32_t {
+  power = kHIDUsage_Csmr_Power,
+  display_brightness_increment = kHIDUsage_Csmr_DisplayBrightnessIncrement,
+  display_brightness_decrement = kHIDUsage_Csmr_DisplayBrightnessDecrement,
+  fastforward = kHIDUsage_Csmr_FastForward,
+  rewind = kHIDUsage_Csmr_Rewind,
+  scan_next_track = kHIDUsage_Csmr_ScanNextTrack,
+  scan_previous_track = kHIDUsage_Csmr_ScanPreviousTrack,
+  eject = kHIDUsage_Csmr_Eject,
+  play_or_pause = kHIDUsage_Csmr_PlayOrPause,
+  mute = kHIDUsage_Csmr_Mute,
+  volume_increment = kHIDUsage_Csmr_VolumeIncrement,
+  volume_decrement = kHIDUsage_Csmr_VolumeDecrement,
+};
+
 enum class pointing_button : uint32_t {
   zero,
 
@@ -886,6 +901,42 @@ public:
     }
   }
 
+  static boost::optional<consumer_key_code> make_consumer_key_code(hid_usage_page usage_page, hid_usage usage) {
+    auto u = static_cast<uint32_t>(usage);
+
+    switch (usage_page) {
+      case hid_usage_page::consumer:
+        switch (consumer_key_code(u)) {
+          case consumer_key_code::power:
+          case consumer_key_code::display_brightness_increment:
+          case consumer_key_code::display_brightness_decrement:
+          case consumer_key_code::fastforward:
+          case consumer_key_code::rewind:
+          case consumer_key_code::scan_next_track:
+          case consumer_key_code::scan_previous_track:
+          case consumer_key_code::eject:
+          case consumer_key_code::play_or_pause:
+          case consumer_key_code::mute:
+          case consumer_key_code::volume_increment:
+          case consumer_key_code::volume_decrement:
+            return consumer_key_code(u);
+        }
+
+      default:
+        break;
+    }
+
+    return boost::none;
+  }
+
+  static boost::optional<hid_usage_page> make_hid_usage_page(consumer_key_code consumer_key_code) {
+    return hid_usage_page::consumer;
+  }
+
+  static boost::optional<hid_usage> make_hid_usage(consumer_key_code consumer_key_code) {
+    return hid_usage(static_cast<uint32_t>(consumer_key_code));
+  }
+
   static const std::unordered_map<std::string, pointing_button>& get_pointing_button_map(void) {
     static std::unordered_map<std::string, pointing_button> map({
         // From IOHIDUsageTables.h
@@ -1026,8 +1077,11 @@ struct operation_type_shell_command_execution_struct {
   }
 
 KRBN_TYPES_STREAM_OUTPUT(device_id);
+KRBN_TYPES_STREAM_OUTPUT(hid_usage_page);
+KRBN_TYPES_STREAM_OUTPUT(hid_usage);
 KRBN_TYPES_STREAM_OUTPUT(key_code);
 KRBN_TYPES_STREAM_OUTPUT(modifier_flag);
+KRBN_TYPES_STREAM_OUTPUT(consumer_key_code);
 KRBN_TYPES_STREAM_OUTPUT(pointing_button);
 
 #undef KRBN_TYPES_STREAM_OUTPUT
