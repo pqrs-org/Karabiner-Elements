@@ -54,6 +54,11 @@ TEST_CASE("get_modifier_flag") {
   REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::right_option) == krbn::modifier_flag::right_option);
   REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::right_command) == krbn::modifier_flag::right_command);
   REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::fn) == krbn::modifier_flag::fn);
+
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardA)) == krbn::modifier_flag::zero);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardErrorRollOver)) == krbn::modifier_flag::zero);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardLeftShift)) == krbn::modifier_flag::left_shift);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::button, krbn::hid_usage(1)) == krbn::modifier_flag::zero);
 }
 
 TEST_CASE("get_pointing_button") {

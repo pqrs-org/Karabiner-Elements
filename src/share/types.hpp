@@ -452,6 +452,13 @@ public:
     }
   }
 
+  static modifier_flag make_modifier_flag(hid_usage_page usage_page, hid_usage usage) {
+    if (auto key_code = get_key_code(usage_page, usage)) {
+      return get_modifier_flag(*key_code);
+    }
+    return modifier_flag::zero;
+  }
+
   static boost::optional<key_code> get_key_code(modifier_flag modifier_flag) {
     switch (modifier_flag) {
       case modifier_flag::zero:
