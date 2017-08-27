@@ -8,34 +8,50 @@ TEST_CASE("keyboard_repeat_detector.is_repeating") {
   krbn::human_interface_device::keyboard_repeat_detector keyboard_repeat_detector;
   REQUIRE(keyboard_repeat_detector.is_repeating() == false);
 
-  keyboard_repeat_detector.set(krbn::key_code::spacebar, krbn::event_type::key_up);
+  keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
+                               *(krbn::types::make_hid_usage(krbn::key_code::spacebar)),
+                               krbn::event_type::key_up);
   REQUIRE(keyboard_repeat_detector.is_repeating() == false);
 
   // ----------------------------------------
   // Cancel by modifier key
 
-  keyboard_repeat_detector.set(krbn::key_code::spacebar, krbn::event_type::key_down);
+  keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
+                               *(krbn::types::make_hid_usage(krbn::key_code::spacebar)),
+                               krbn::event_type::key_down);
   REQUIRE(keyboard_repeat_detector.is_repeating() == true);
 
-  keyboard_repeat_detector.set(krbn::key_code::left_shift, krbn::event_type::key_down);
+  keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::left_shift)),
+                               *(krbn::types::make_hid_usage(krbn::key_code::left_shift)),
+                               krbn::event_type::key_down);
   REQUIRE(keyboard_repeat_detector.is_repeating() == false);
 
   // ----------------------------------------
   // Cancel by key_up
 
-  keyboard_repeat_detector.set(krbn::key_code::spacebar, krbn::event_type::key_down);
+  keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
+                               *(krbn::types::make_hid_usage(krbn::key_code::spacebar)),
+                               krbn::event_type::key_down);
   REQUIRE(keyboard_repeat_detector.is_repeating() == true);
 
-  keyboard_repeat_detector.set(krbn::key_code::escape, krbn::event_type::key_down);
+  keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::escape)),
+                               *(krbn::types::make_hid_usage(krbn::key_code::escape)),
+                               krbn::event_type::key_down);
   REQUIRE(keyboard_repeat_detector.is_repeating() == true);
 
-  keyboard_repeat_detector.set(krbn::key_code::left_shift, krbn::event_type::key_up);
+  keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::left_shift)),
+                               *(krbn::types::make_hid_usage(krbn::key_code::left_shift)),
+                               krbn::event_type::key_up);
   REQUIRE(keyboard_repeat_detector.is_repeating() == true);
 
-  keyboard_repeat_detector.set(krbn::key_code::spacebar, krbn::event_type::key_up);
+  keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
+                               *(krbn::types::make_hid_usage(krbn::key_code::spacebar)),
+                               krbn::event_type::key_up);
   REQUIRE(keyboard_repeat_detector.is_repeating() == true);
 
-  keyboard_repeat_detector.set(krbn::key_code::escape, krbn::event_type::key_up);
+  keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::escape)),
+                               *(krbn::types::make_hid_usage(krbn::key_code::escape)),
+                               krbn::event_type::key_up);
   REQUIRE(keyboard_repeat_detector.is_repeating() == false);
 }
 
