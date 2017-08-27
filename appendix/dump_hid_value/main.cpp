@@ -112,6 +112,14 @@ private:
           }
           break;
 
+        case krbn::event_queue::queued_event::event::type::consumer_key_code:
+          if (auto consumer_key_code = queued_event.get_event().get_consumer_key_code()) {
+            std::cout << "ConsumerKey: " << std::dec << static_cast<uint32_t>(*consumer_key_code) << " "
+                      << queued_event.get_event_type()
+                      << std::endl;
+          }
+          break;
+
         case krbn::event_queue::queued_event::event::type::pointing_button:
           if (auto pointing_button = queued_event.get_event().get_pointing_button()) {
             std::cout << "Button: " << std::dec << static_cast<uint32_t>(*pointing_button) << " "

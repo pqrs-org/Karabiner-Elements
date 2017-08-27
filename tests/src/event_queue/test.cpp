@@ -38,6 +38,8 @@ krbn::event_queue::queued_event::event right_shift_event(krbn::key_code::right_s
 krbn::event_queue::queued_event::event spacebar_event(krbn::key_code::spacebar);
 krbn::event_queue::queued_event::event tab_event(krbn::key_code::tab);
 
+krbn::event_queue::queued_event::event mute_event(krbn::consumer_key_code::mute);
+
 krbn::event_queue::queued_event::event button2_event(krbn::pointing_button::button2);
 
 krbn::event_queue::queued_event::event pointing_x_10_event(krbn::event_queue::queued_event::event::type::pointing_x, 10);
@@ -57,6 +59,11 @@ TEST_CASE("get_key_code") {
   REQUIRE(caps_lock_state_changed_1_event.get_key_code() == boost::none);
   REQUIRE(caps_lock_state_changed_0_event.get_key_code() == boost::none);
   REQUIRE(device_keys_are_released_event.get_key_code() == boost::none);
+}
+
+TEST_CASE("get_consumer_key_code") {
+  REQUIRE(spacebar_event.get_consumer_key_code() == boost::none);
+  REQUIRE(mute_event.get_consumer_key_code() == krbn::consumer_key_code::mute);
 }
 
 TEST_CASE("get_frontmost_application_bundle_identifier") {

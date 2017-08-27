@@ -19,6 +19,7 @@ public:
     public:
       enum class type {
         key_code,
+        consumer_key_code,
         pointing_button,
         pointing_x,
         pointing_y,
@@ -37,6 +38,10 @@ public:
 
       event(key_code key_code) : type_(type::key_code),
                                  value_(key_code) {
+      }
+
+      event(consumer_key_code consumer_key_code) : type_(type::consumer_key_code),
+                                                   value_(consumer_key_code) {
       }
 
       event(pointing_button pointing_button) : type_(type::pointing_button),
@@ -93,6 +98,13 @@ public:
       boost::optional<key_code> get_key_code(void) const {
         if (type_ == type::key_code) {
           return boost::get<key_code>(value_);
+        }
+        return boost::none;
+      }
+
+      boost::optional<consumer_key_code> get_consumer_key_code(void) const {
+        if (type_ == type::consumer_key_code) {
+          return boost::get<consumer_key_code>(value_);
         }
         return boost::none;
       }
@@ -188,11 +200,12 @@ public:
 
       type type_;
 
-      boost::variant<key_code,        // For type::key_code
-                     pointing_button, // For type::pointing_button
-                     int64_t,         // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
-                     std::string,     // For shell_command
-                     boost::blank,    // For virtual events
+      boost::variant<key_code,          // For type::key_code
+                     consumer_key_code, // For type::consumer_key_code
+                     pointing_button,   // For type::pointing_button
+                     int64_t,           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+                     std::string,       // For shell_command
+                     boost::blank,      // For virtual events
                      frontmost_application,
                      std::pair<std::string, int> // For set_variable
                      >
@@ -280,6 +293,16 @@ public:
                           int64_t integer_value) {
     if (auto key_code = types::get_key_code(usage_page, usage)) {
       queued_event::event event(*key_code);
+      emplace_back_event(device_id,
+                         time_stamp,
+                         event,
+                         integer_value ? event_type::key_down : event_type::key_up,
+                         event);
+      return true;
+    }
+
+    if (auto consumer_key_code = types::make_consumer_key_code(usage_page, usage)) {
+      queued_event::event event(*consumer_key_code);
       emplace_back_event(device_id,
                          time_stamp,
                          event,

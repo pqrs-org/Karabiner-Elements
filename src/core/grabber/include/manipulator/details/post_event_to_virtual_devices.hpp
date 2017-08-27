@@ -480,6 +480,34 @@ public:
         }
         break;
 
+      case event_queue::queued_event::event::type::consumer_key_code:
+        if (auto consumer_key_code = front_input_event.get_event().get_consumer_key_code()) {
+          if (auto hid_usage_page = types::make_hid_usage_page(*consumer_key_code)) {
+            if (auto hid_usage = types::make_hid_usage(*consumer_key_code)) {
+              switch (front_input_event.get_event_type()) {
+                case event_type::key_down:
+                  key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
+                                                                *hid_usage_page,
+                                                                *hid_usage,
+                                                                queue_,
+                                                                front_input_event.get_time_stamp());
+                  break;
+
+                case event_type::key_up:
+                  key_event_dispatcher_.dispatch_key_up_event(*hid_usage_page,
+                                                              *hid_usage,
+                                                              queue_,
+                                                              front_input_event.get_time_stamp());
+                  break;
+
+                case event_type::single:
+                  break;
+              }
+            }
+          }
+        }
+        break;
+
       case event_queue::queued_event::event::type::pointing_button:
       case event_queue::queued_event::event::type::pointing_x:
       case event_queue::queued_event::event::type::pointing_y:
@@ -502,6 +530,7 @@ public:
               report.horizontal_wheel = *integer_value;
               break;
             case event_queue::queued_event::event::type::key_code:
+            case event_queue::queued_event::event::type::consumer_key_code:
             case event_queue::queued_event::event::type::pointing_button:
             case event_queue::queued_event::event::type::set_variable:
             case event_queue::queued_event::event::type::shell_command:
