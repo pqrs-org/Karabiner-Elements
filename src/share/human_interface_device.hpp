@@ -54,18 +54,29 @@ public:
 
   class keyboard_repeat_detector final {
   public:
-    void set(key_code key_code, event_type event_type) {
-      if (event_type == event_type::key_down) {
-        if (types::get_modifier_flag(key_code) != modifier_flag::zero) {
-          repeating_key_ = boost::none;
-        } else {
-          repeating_key_ = key_code;
-        }
+    void set(hid_usage_page hid_usage_page,
+             hid_usage hid_usage,
+             event_type event_type) {
+      switch (event_type) {
+        case event_type::key_down:
+          if (types::make_modifier_flag(hid_usage_page, hid_usage) != modifier_flag::zero) {
+            repeating_key_ = boost::none;
+          } else {
+            repeating_key_ = std::make_pair(hid_usage_page, hid_usage);
+          }
+          break;
 
-      } else if (event_type == event_type::key_up) {
-        if (repeating_key_ == key_code) {
-          repeating_key_ = boost::none;
-        }
+        case event_type::key_up:
+          if (repeating_key_ &&
+              repeating_key_->first == hid_usage_page &&
+              repeating_key_->second == hid_usage) {
+            repeating_key_ = boost::none;
+          }
+          break;
+
+        case event_type::single:
+          // Do nothing
+          break;
       }
     }
 
@@ -74,7 +85,7 @@ public:
     }
 
   private:
-    boost::optional<key_code> repeating_key_;
+    boost::optional<std::pair<hid_usage_page, hid_usage>> repeating_key_;
   };
 
   human_interface_device(const human_interface_device&) = delete;
@@ -719,10 +730,11 @@ private:
 
             auto& element_event = input_event_queue_.get_events().back();
 
-            if (auto key_code = element_event.get_event().get_key_code()) {
+            if (element_event.get_event().get_key_code() ||
+                element_event.get_event().get_consumer_key_code()) {
               // Update keyboard_repeat_detector_
 
-              keyboard_repeat_detector_.set(*key_code, element_event.get_event_type());
+              keyboard_repeat_detector_.set(usage_page, usage, element_event.get_event_type());
 
               // Send `device_keys_are_released` event if needed.
 
