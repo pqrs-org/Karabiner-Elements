@@ -579,17 +579,19 @@ private:
     simple_modifications_manipulator_manager_.invalidate_manipulators();
 
     for (const auto& device : profile_.get_devices()) {
-      for (const auto& pair : device.get_simple_modifications().make_key_code_map()) {
-        auto m = make_simple_modifications_manipulator(pair);
-        auto c = make_device_if_condition(device);
-        m->push_back_condition(c);
-        simple_modifications_manipulator_manager_.push_back_manipulator(m);
+      for (const auto& pair : device.get_simple_modifications().get_pairs()) {
+        if (auto m = make_simple_modifications_manipulator(pair)) {
+          auto c = make_device_if_condition(device);
+          m->push_back_condition(c);
+          simple_modifications_manipulator_manager_.push_back_manipulator(m);
+        }
       }
     }
 
-    for (const auto& pair : profile_.get_simple_modifications().make_key_code_map()) {
-      auto m = make_simple_modifications_manipulator(pair);
-      simple_modifications_manipulator_manager_.push_back_manipulator(m);
+    for (const auto& pair : profile_.get_simple_modifications().get_pairs()) {
+      if (auto m = make_simple_modifications_manipulator(pair)) {
+        simple_modifications_manipulator_manager_.push_back_manipulator(m);
+      }
     }
   }
 
@@ -597,16 +599,23 @@ private:
     return std::make_shared<manipulator::details::conditions::device>(device.get_identifiers());
   }
 
-  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<key_code, key_code>& pair) {
-    return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
-                                                             pair.first,
-                                                             {},
-                                                             {
-                                                                 manipulator::details::event_definition::modifier::any,
-                                                             }),
-                                                         manipulator::details::to_event_definition(
-                                                             pair.second,
-                                                             {}));
+  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<std::string, std::string>& pair) {
+    if (!pair.first.empty() && !pair.second.empty()) {
+      if (auto from_event = types::get_key_code(pair.first)) {
+        if (auto to_event = types::get_key_code(pair.second)) {
+          return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
+                                                                   *from_event,
+                                                                   {},
+                                                                   {
+                                                                       manipulator::details::event_definition::modifier::any,
+                                                                   }),
+                                                               manipulator::details::to_event_definition(
+                                                                   *to_event,
+                                                                   {}));
+        }
+      }
+    }
+    return nullptr;
   }
 
   void update_complex_modifications_manipulators(void) {
@@ -679,23 +688,25 @@ private:
     // from_modifiers+f1 -> display_brightness_decrement ...
 
     for (const auto& device : profile_.get_devices()) {
-      for (const auto& pair : device.get_fn_function_keys().make_key_code_map()) {
-        auto m = make_fn_function_keys_manipulator(pair,
-                                                   from_mandatory_modifiers,
-                                                   from_optional_modifiers,
-                                                   to_modifiers);
-        auto c = make_device_if_condition(device);
-        m->push_back_condition(c);
-        fn_function_keys_manipulator_manager_.push_back_manipulator(m);
+      for (const auto& pair : device.get_fn_function_keys().get_pairs()) {
+        if (auto m = make_fn_function_keys_manipulator(pair,
+                                                       from_mandatory_modifiers,
+                                                       from_optional_modifiers,
+                                                       to_modifiers)) {
+          auto c = make_device_if_condition(device);
+          m->push_back_condition(c);
+          fn_function_keys_manipulator_manager_.push_back_manipulator(m);
+        }
       }
     }
 
-    for (const auto& pair : profile_.get_fn_function_keys().make_key_code_map()) {
-      auto m = make_fn_function_keys_manipulator(pair,
-                                                 from_mandatory_modifiers,
-                                                 from_optional_modifiers,
-                                                 to_modifiers);
-      fn_function_keys_manipulator_manager_.push_back_manipulator(m);
+    for (const auto& pair : profile_.get_fn_function_keys().get_pairs()) {
+      if (auto m = make_fn_function_keys_manipulator(pair,
+                                                     from_mandatory_modifiers,
+                                                     from_optional_modifiers,
+                                                     to_modifiers)) {
+        fn_function_keys_manipulator_manager_.push_back_manipulator(m);
+      }
     }
 
     // fn+return_or_enter -> keypad_enter ...
@@ -726,17 +737,24 @@ private:
     }
   }
 
-  std::shared_ptr<manipulator::details::base> make_fn_function_keys_manipulator(const std::pair<key_code, key_code>& pair,
+  std::shared_ptr<manipulator::details::base> make_fn_function_keys_manipulator(const std::pair<std::string, std::string>& pair,
                                                                                 const std::unordered_set<manipulator::details::event_definition::modifier>& from_mandatory_modifiers,
                                                                                 const std::unordered_set<manipulator::details::event_definition::modifier>& from_optional_modifiers,
                                                                                 const std::unordered_set<manipulator::details::event_definition::modifier>& to_modifiers) {
-    return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
-                                                             pair.first,
-                                                             from_mandatory_modifiers,
-                                                             from_optional_modifiers),
-                                                         manipulator::details::to_event_definition(
-                                                             pair.second,
-                                                             to_modifiers));
+    if (!pair.first.empty() && !pair.second.empty()) {
+      if (auto from_event = types::get_key_code(pair.first)) {
+        if (auto to_event = types::get_key_code(pair.second)) {
+          return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
+                                                                   *from_event,
+                                                                   from_mandatory_modifiers,
+                                                                   from_optional_modifiers),
+                                                               manipulator::details::to_event_definition(
+                                                                   *to_event,
+                                                                   to_modifiers));
+        }
+      }
+    }
+    return nullptr;
   }
 
   virtual_hid_device_client& virtual_hid_device_client_;

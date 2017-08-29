@@ -113,33 +113,6 @@ public:
     }
   }
 
-  std::unordered_map<key_code, key_code> make_key_code_map(void) const {
-    std::unordered_map<key_code, key_code> map;
-
-    for (const auto& it : pairs_) {
-      auto& from_string = it.first;
-      auto& to_string = it.second;
-
-      if (to_string.empty()) {
-        continue;
-      }
-
-      auto from_key_code = types::get_key_code(from_string);
-      if (!from_key_code) {
-        continue;
-      }
-
-      auto to_key_code = types::get_key_code(to_string);
-      if (!to_key_code) {
-        continue;
-      }
-
-      map[*from_key_code] = *to_key_code;
-    }
-
-    return map;
-  }
-
 private:
   std::vector<std::pair<std::string, std::string>> pairs_;
 };

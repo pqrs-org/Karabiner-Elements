@@ -9,11 +9,11 @@ TEST_CASE("valid") {
   krbn::core_configuration configuration("json/example.json");
 
   {
-    std::unordered_map<krbn::key_code, krbn::key_code> expected{
-        {*(krbn::types::get_key_code("caps_lock")), *(krbn::types::get_key_code("delete_or_backspace"))},
-        {*(krbn::types::get_key_code("escape")), *(krbn::types::get_key_code("spacebar"))},
+    std::vector<std::pair<std::string, std::string>> expected{
+        {"caps_lock", "delete_or_backspace"},
+        {"escape", "spacebar"},
     };
-    REQUIRE(configuration.get_selected_profile().get_simple_modifications().make_key_code_map() == expected);
+    REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs() == expected);
   }
   {
     auto manipulator = configuration.get_selected_profile().get_complex_modifications().get_rules()[0].get_manipulators()[0].get_json();
@@ -21,21 +21,21 @@ TEST_CASE("valid") {
     REQUIRE(manipulator["from"]["key_code"] == "open_bracket");
   }
   {
-    std::unordered_map<krbn::key_code, krbn::key_code> expected{
-        {krbn::key_code::f1, krbn::key_code::display_brightness_decrement},
-        {krbn::key_code::f10, krbn::key_code::mute},
-        {krbn::key_code::f11, krbn::key_code::volume_decrement},
-        {krbn::key_code::f12, krbn::key_code::volume_increment},
-        {krbn::key_code::f2, krbn::key_code::display_brightness_increment},
-        {krbn::key_code::f3, krbn::key_code::mission_control},
-        {krbn::key_code::f4, krbn::key_code::launchpad},
-        {krbn::key_code::f5, krbn::key_code::illumination_decrement},
-        {krbn::key_code::f6, krbn::key_code::illumination_increment},
-        {krbn::key_code::f7, krbn::key_code::rewind},
-        {krbn::key_code::f8, krbn::key_code::play_or_pause},
-        {krbn::key_code::f9, krbn::key_code::fastforward},
+    std::vector<std::pair<std::string, std::string>> expected{
+        {"f1", "display_brightness_decrement"},
+        {"f2", "display_brightness_increment"},
+        {"f3", "mission_control"},
+        {"f4", "launchpad"},
+        {"f5", "illumination_decrement"},
+        {"f6", "illumination_increment"},
+        {"f7", "rewind"},
+        {"f8", "play_or_pause"},
+        {"f9", "fastforward"},
+        {"f10", "mute"},
+        {"f11", "volume_decrement"},
+        {"f12", "volume_increment"},
     };
-    REQUIRE(configuration.get_selected_profile().get_fn_function_keys().make_key_code_map() == expected);
+    REQUIRE(configuration.get_selected_profile().get_fn_function_keys().get_pairs() == expected);
   }
   {
     auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
@@ -86,10 +86,7 @@ TEST_CASE("broken.json") {
   {
     krbn::core_configuration configuration("json/broken.json");
 
-    {
-      std::unordered_map<krbn::key_code, krbn::key_code> expected;
-      REQUIRE(configuration.get_selected_profile().get_simple_modifications().make_key_code_map() == expected);
-    }
+    REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
     REQUIRE(configuration.is_loaded() == false);
 
     REQUIRE(configuration.get_global_configuration().get_check_for_updates_on_startup() == true);
@@ -110,8 +107,7 @@ TEST_CASE("broken.json") {
   {
     krbn::core_configuration configuration("a.out");
 
-    std::unordered_map<krbn::key_code, krbn::key_code> expected;
-    REQUIRE(configuration.get_selected_profile().get_simple_modifications().make_key_code_map() == expected);
+    REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
     REQUIRE(configuration.is_loaded() == false);
   }
 }
@@ -119,10 +115,11 @@ TEST_CASE("broken.json") {
 TEST_CASE("invalid_key_code_name.json") {
   krbn::core_configuration configuration("json/invalid_key_code_name.json");
 
-  std::unordered_map<krbn::key_code, krbn::key_code> expected{
-      {krbn::key_code(41), krbn::key_code(44)},
+  std::vector<std::pair<std::string, std::string>> expected{
+      {"caps_lock_2", "delete_or_backspace"},
+      {"escape", "spacebar"},
   };
-  REQUIRE(configuration.get_selected_profile().get_simple_modifications().make_key_code_map() == expected);
+  REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs() == expected);
   REQUIRE(configuration.is_loaded() == true);
 }
 
@@ -736,14 +733,6 @@ TEST_CASE("simple_modifications") {
           {"f4", "dummy"},
       });
       REQUIRE(simple_modifications.get_pairs() == expected);
-    }
-
-    {
-      std::unordered_map<krbn::key_code, krbn::key_code> expected({
-          {*(krbn::types::get_key_code("a")), *(krbn::types::get_key_code("f1"))},
-          {*(krbn::types::get_key_code("b")), *(krbn::types::get_key_code("f2"))},
-      });
-      REQUIRE(simple_modifications.make_key_code_map() == expected);
     }
   }
 
