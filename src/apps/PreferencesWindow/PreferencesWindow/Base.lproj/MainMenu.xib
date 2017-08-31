@@ -2068,7 +2068,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                     <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn identifier="ComplexModificationsAssetsNameColumn" width="658" minWidth="40" maxWidth="100000" id="nlS-o3-ZB6">
+                                        <tableColumn identifier="ComplexModificationsAssetsNameColumn" width="615" minWidth="40" maxWidth="100000" id="nlS-o3-ZB6">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2082,7 +2082,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="ComplexModificationsAssetsNameCellView" id="jC6-SG-vL6">
-                                                    <rect key="frame" x="1" y="1" width="658" height="26"/>
+                                                    <rect key="frame" x="1" y="1" width="615" height="26"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Nl-EE-cbX">
@@ -2104,7 +2104,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 </tableCellView>
                                             </prototypeCellViews>
                                         </tableColumn>
-                                        <tableColumn identifier="ComplexModificationsAssetsButtonsColumn" width="100" minWidth="40" maxWidth="1000" id="3W8-oi-dL7">
+                                        <tableColumn identifier="ComplexModificationsAssetsButtonsColumn" width="143" minWidth="40" maxWidth="1000" id="3W8-oi-dL7">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2118,11 +2118,11 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="ComplexModificationsAssetsButtonsCellView" id="8TG-IN-f4f" customClass="ComplexModificationsAssetsOutlineCellView">
-                                                    <rect key="frame" x="662" y="1" width="100" height="26"/>
+                                                    <rect key="frame" x="619" y="1" width="143" height="26"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="553-rb-9Yn">
-                                                            <rect key="frame" x="59" y="-4" width="42" height="32"/>
+                                                            <rect key="frame" x="102" y="-4" width="42" height="32"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="30" id="CAG-fq-yBI"/>
                                                             </constraints>
@@ -2132,7 +2132,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                             </buttonCell>
                                                         </button>
                                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aoS-Bs-ODT">
-                                                            <rect key="frame" x="-1" y="-5" width="102" height="32"/>
+                                                            <rect key="frame" x="42" y="-5" width="102" height="32"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="90" id="9hR-Yv-mhJ"/>
                                                             </constraints>
@@ -2141,14 +2141,27 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                                 <font key="font" metaFont="system"/>
                                                             </buttonCell>
                                                         </button>
+                                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lKf-rC-tnd" userLabel="Enable All Button">
+                                                            <rect key="frame" x="-6" y="-4" width="110" height="32"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="98" id="Jf2-Ib-pBe"/>
+                                                            </constraints>
+                                                            <buttonCell key="cell" type="push" title="Enable All" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Uj4-jt-x6W">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                            </buttonCell>
+                                                        </button>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstAttribute="trailing" secondItem="553-rb-9Yn" secondAttribute="trailing" constant="5" id="5NR-Vl-JKl"/>
+                                                        <constraint firstItem="553-rb-9Yn" firstAttribute="leading" secondItem="lKf-rC-tnd" secondAttribute="trailing" constant="10" id="XEa-gN-08g"/>
                                                         <constraint firstItem="aoS-Bs-ODT" firstAttribute="centerY" secondItem="8TG-IN-f4f" secondAttribute="centerY" id="a7d-U1-thg"/>
                                                         <constraint firstAttribute="trailing" secondItem="aoS-Bs-ODT" secondAttribute="trailing" constant="5" id="pZb-WJ-0nk"/>
                                                         <constraint firstItem="553-rb-9Yn" firstAttribute="centerY" secondItem="8TG-IN-f4f" secondAttribute="centerY" id="rvr-HU-xGD"/>
+                                                        <constraint firstItem="lKf-rC-tnd" firstAttribute="centerY" secondItem="8TG-IN-f4f" secondAttribute="centerY" id="yas-UC-W7V"/>
                                                     </constraints>
                                                     <connections>
+                                                        <outlet property="enableAllButton" destination="lKf-rC-tnd" id="Lrz-lR-9hq"/>
                                                         <outlet property="enableButton" destination="aoS-Bs-ODT" id="8vq-ae-Iun"/>
                                                         <outlet property="eraseButton" destination="553-rb-9Yn" id="T8L-wW-oGR"/>
                                                     </connections>

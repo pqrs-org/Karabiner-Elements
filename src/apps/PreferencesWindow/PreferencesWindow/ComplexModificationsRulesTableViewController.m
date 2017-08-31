@@ -144,6 +144,24 @@
   }
 }
 
+- (void)addAllRules:(NSButton*)sender {
+  if (sender.superview.class == ComplexModificationsAssetsOutlineCellView.class) {
+    ComplexModificationsAssetsOutlineCellView* view = (ComplexModificationsAssetsOutlineCellView*)(sender.superview);
+
+    NSArray* files = [KarabinerKitComplexModificationsAssetsManager sharedManager].assetsFileModels;
+    if (view.fileIndex < files.count) {
+      KarabinerKitComplexModificationsAssetsFileModel* fileModel = files[view.fileIndex];
+      for (KarabinerKitComplexModificationsAssetsRuleModel* ruleModel in fileModel.rules) {
+        KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+        [ruleModel addRuleToCoreConfigurationProfile:coreConfigurationModel];
+        [coreConfigurationModel save];
+        [self.tableView reloadData];
+      }
+    }
+  }
+  [self.window endSheet:self.addRulePanel];
+}
+
 - (void)addRule:(NSButton*)sender {
   if (sender.superview.class == ComplexModificationsAssetsOutlineCellView.class) {
     ComplexModificationsAssetsOutlineCellView* view = (ComplexModificationsAssetsOutlineCellView*)(sender.superview);

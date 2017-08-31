@@ -41,8 +41,12 @@
         result.eraseButton.hidden = NO;
         result.eraseButton.action = @selector(eraseImportedFile:);
         result.eraseButton.target = self.complexModificationsRulesTableViewController;
+        result.enableAllButton.hidden = NO;
+        result.enableAllButton.action = @selector(addAllRules:);
+        result.enableAllButton.target = self.complexModificationsRulesTableViewController;
       } else {
         result.eraseButton.hidden = YES;
+        result.enableAllButton.hidden = YES;
       }
       result.enableButton.hidden = YES;
       result.fileIndex = fileModel.fileIndex;
@@ -52,6 +56,7 @@
     if (ruleModel) {
       ComplexModificationsAssetsOutlineCellView* result = [outlineView makeViewWithIdentifier:@"ComplexModificationsAssetsButtonsCellView" owner:self];
       result.eraseButton.hidden = YES;
+      result.enableAllButton.hidden = YES;
       result.enableButton.action = @selector(addRule:);
       result.enableButton.target = self.complexModificationsRulesTableViewController;
       result.enableButton.hidden = NO;
