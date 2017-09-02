@@ -19,6 +19,7 @@ public:
   enum class type {
     none,
     key_code,
+    consumer_key_code,
     pointing_button,
     any,
     shell_command,
@@ -58,6 +59,13 @@ public:
     return boost::none;
   }
 
+  boost::optional<consumer_key_code> get_consumer_key_code(void) const {
+    if (type_ == type::consumer_key_code) {
+      return boost::get<consumer_key_code>(value_);
+    }
+    return boost::none;
+  }
+
   boost::optional<pointing_button> get_pointing_button(void) const {
     if (type_ == type::pointing_button) {
       return boost::get<pointing_button>(value_);
@@ -92,6 +100,8 @@ public:
         return boost::none;
       case type::key_code:
         return event_queue::queued_event::event(boost::get<key_code>(value_));
+      case type::consumer_key_code:
+        return event_queue::queued_event::event(boost::get<consumer_key_code>(value_));
       case type::pointing_button:
         return event_queue::queued_event::event(boost::get<pointing_button>(value_));
       case type::any:
@@ -249,6 +259,10 @@ protected:
                                         value_(key_code) {
   }
 
+  event_definition(consumer_key_code consumer_key_code) : type_(type::consumer_key_code),
+                                                          value_(consumer_key_code) {
+  }
+
   event_definition(pointing_button pointing_button) : type_(type::pointing_button),
                                                       value_(pointing_button) {
   }
@@ -279,6 +293,21 @@ protected:
         if (auto key_code = types::get_key_code(value.get<std::string>())) {
           type_ = type::key_code;
           value_ = *key_code;
+        }
+
+      } else if (key == "consumer_key_code") {
+        if (type_ != type::none) {
+          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+          continue;
+        }
+        if (!value.is_string()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of consumer_key_code: {0}", json.dump());
+          continue;
+        }
+
+        if (auto consumer_key_code = types::make_consumer_key_code(value.get<std::string>())) {
+          type_ = type::consumer_key_code;
+          value_ = *consumer_key_code;
         }
 
       } else if (key == "pointing_button") {
@@ -377,6 +406,7 @@ protected:
 
   type type_;
   boost::variant<key_code,
+                 consumer_key_code,
                  pointing_button,
                  type,                       // For any
                  std::string,                // For shell_command

@@ -599,10 +599,10 @@ private:
     return std::make_shared<manipulator::details::conditions::device>(device.get_identifiers());
   }
 
-  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<std::string, std::string>& pair) {
-    if (!pair.first.empty() && !pair.second.empty()) {
-      if (auto from_event = types::get_key_code(pair.first)) {
-        if (auto to_event = types::get_key_code(pair.second)) {
+  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<core_configuration::profile::simple_modifications::definition, core_configuration::profile::simple_modifications::definition>& pair) {
+    if (pair.first.valid() && pair.second.valid()) {
+      if (auto from_event = types::get_key_code(pair.first.get_value())) {
+        if (auto to_event = types::get_key_code(pair.second.get_value())) {
           return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                    *from_event,
                                                                    {},
@@ -737,13 +737,13 @@ private:
     }
   }
 
-  std::shared_ptr<manipulator::details::base> make_fn_function_keys_manipulator(const std::pair<std::string, std::string>& pair,
+  std::shared_ptr<manipulator::details::base> make_fn_function_keys_manipulator(const std::pair<core_configuration::profile::simple_modifications::definition, core_configuration::profile::simple_modifications::definition>& pair,
                                                                                 const std::unordered_set<manipulator::details::event_definition::modifier>& from_mandatory_modifiers,
                                                                                 const std::unordered_set<manipulator::details::event_definition::modifier>& from_optional_modifiers,
                                                                                 const std::unordered_set<manipulator::details::event_definition::modifier>& to_modifiers) {
-    if (!pair.first.empty() && !pair.second.empty()) {
-      if (auto from_event = types::get_key_code(pair.first)) {
-        if (auto to_event = types::get_key_code(pair.second)) {
+    if (pair.first.valid() && pair.second.valid()) {
+      if (auto from_event = types::get_key_code(pair.first.get_value())) {
+        if (auto to_event = types::get_key_code(pair.second.get_value())) {
           return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                    *from_event,
                                                                    from_mandatory_modifiers,
