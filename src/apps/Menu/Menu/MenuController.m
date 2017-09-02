@@ -6,42 +6,54 @@
 
 @property(weak) IBOutlet NSMenu* menu;
 @property NSStatusItem* statusItem;
+@property NSImage* menuIcon;
 
 @end
 
 @implementation MenuController
 
 - (void)setup {
-  if (![KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.globalConfigurationShowInMenuBar) {
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel =
+    [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+  if (!coreConfigurationModel.globalConfigurationShowInMenuBar &&
+    !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
     [NSApp terminate:nil];
   }
 
-  NSImage* image = [NSImage imageNamed:@"MenuIcon"];
-  [image setTemplate:YES];
+  self.menuIcon = [NSImage imageNamed:@"MenuIcon"];
+  [self.menuIcon setTemplate:YES];
 
   self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
-
-  self.statusItem.button.image = image;
   self.statusItem.button.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
-  self.statusItem.button.imagePosition = NSImageLeft;
   self.statusItem.menu = self.menu;
 
+  [self setStatusItemImage];
   [self setStatusItemTitle];
 
   [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  if (![KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.globalConfigurationShowInMenuBar) {
-                                                    [NSApp terminate:nil];
-                                                  }
-
-                                                  [self setStatusItemTitle];
-                                                }];
+    object:nil
+    queue:[NSOperationQueue mainQueue]
+    usingBlock:^(NSNotification* note) {
+      if (!coreConfigurationModel.globalConfigurationShowInMenuBar
+        && !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
+        [NSApp terminate:nil];
+      }
+      [self setStatusItemImage];
+      [self setStatusItemTitle];
+    }];
 }
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)setStatusItemImage {
+  if ([KarabinerKitConfigurationManager sharedManager].coreConfigurationModel.globalConfigurationShowInMenuBar) {
+    self.statusItem.button.imagePosition = NSImageLeft;
+    self.statusItem.button.image = self.menuIcon;
+  } else {
+    self.statusItem.button.image = nil;
+  }
 }
 
 - (void)setStatusItemTitle {
