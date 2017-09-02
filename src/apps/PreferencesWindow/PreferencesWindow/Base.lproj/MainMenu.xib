@@ -1859,7 +1859,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                     <constraint firstAttribute="bottom" secondItem="TNd-jk-kpr" secondAttribute="bottom" constant="8" id="GQ0-ap-Rnz"/>
                                                     <constraint firstItem="TNd-jk-kpr" firstAttribute="top" secondItem="AHk-df-Lmk" secondAttribute="bottom" constant="10" id="JbR-OF-0u2"/>
                                                     <constraint firstItem="AHk-df-Lmk" firstAttribute="leading" secondItem="9XA-gC-pTe" secondAttribute="leading" constant="17" id="dGb-ZH-I2O"/>
-                                                    <constraint firstItem="TNd-jk-kpr" firstAttribute="leading" secondItem="AHk-df-Lmk" secondAttribute="leading" constant="20" id="rnM-zX-mB6"/>
+                                                    <constraint firstItem="TNd-jk-kpr" firstAttribute="leading" secondItem="9XA-gC-pTe" secondAttribute="leading" constant="17" id="rnM-zX-mB6"/>
                                                     <constraint firstItem="AHk-df-Lmk" firstAttribute="top" secondItem="9XA-gC-pTe" secondAttribute="top" constant="8" id="tBi-fH-cEd"/>
                                                 </constraints>
                                             </view>
