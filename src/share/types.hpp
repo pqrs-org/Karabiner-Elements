@@ -542,6 +542,9 @@ public:
 
   // string -> hid usage map
   static const std::unordered_map<std::string, key_code>& get_key_code_map(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
     static std::unordered_map<std::string, key_code> map({
         // From IOHIDUsageTables.h
         {"a", key_code(kHIDUsage_KeyboardA)},
@@ -901,6 +904,37 @@ public:
     }
   }
 
+  static const std::unordered_map<std::string, consumer_key_code>& get_consumer_key_code_map(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
+    static std::unordered_map<std::string, consumer_key_code> map({
+        {"power", consumer_key_code::power},
+        {"display_brightness_increment", consumer_key_code::display_brightness_increment},
+        {"display_brightness_decrement", consumer_key_code::display_brightness_decrement},
+        {"fastforward", consumer_key_code::fastforward},
+        {"rewind", consumer_key_code::rewind},
+        {"scan_next_track", consumer_key_code::scan_next_track},
+        {"scan_previous_track", consumer_key_code::scan_previous_track},
+        {"eject", consumer_key_code::eject},
+        {"play_or_pause", consumer_key_code::play_or_pause},
+        {"mute", consumer_key_code::mute},
+        {"volume_increment", consumer_key_code::volume_increment},
+        {"volume_decrement", consumer_key_code::volume_decrement},
+    });
+    return map;
+  }
+
+  static boost::optional<consumer_key_code> make_consumer_key_code(const std::string& name) {
+    auto& map = get_consumer_key_code_map();
+    auto it = map.find(name);
+    if (it == map.end()) {
+      logger::get_logger().error("unknown consumer_key_code: \"{0}\"", name);
+      return boost::none;
+    }
+    return it->second;
+  }
+
   static boost::optional<consumer_key_code> make_consumer_key_code(hid_usage_page usage_page, hid_usage usage) {
     auto u = static_cast<uint32_t>(usage);
 
@@ -938,6 +972,9 @@ public:
   }
 
   static const std::unordered_map<std::string, pointing_button>& get_pointing_button_map(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
     static std::unordered_map<std::string, pointing_button> map({
         // From IOHIDUsageTables.h
 
