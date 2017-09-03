@@ -7,24 +7,34 @@
         {
             "name": "Default profile",
             "selected": true,
-            "simple_modifications": {
-                "caps_lock": "delete_or_backspace",
-                "escape": "spacebar"
-            },
-            "fn_function_keys": {
-                "f1": "display_brightness_decrement",
-                "f2": "display_brightness_increment",
-                "f3": "mission_control",
-                "f4": "launchpad",
-                "f5": "illumination_decrement",
-                "f6": "illumination_increment",
-                "f7": "rewind",
-                "f8": "play_or_pause",
-                "f9": "fastforward",
-                "f10": "mute",
-                "f11": "volume_decrement",
-                "f12": "volume_increment"
-            },
+            "simple_modifications": [
+                {
+                    "from": {
+                        "key_code": "caps_lock"
+                    },
+                    "to": {
+                        "key_code": "delete_or_backspace"
+                    }
+                },
+                {
+                    "from": {
+                        "key_code": "escape"
+                    },
+                    "to": {
+                        "key_code": "spacebar"
+                    }
+                }
+            ],
+            "fn_function_keys": [
+                {
+                    "from": {
+                        "key_code": "f1"
+                    },
+                    "to": {
+                        "key_code": "escape"
+                    }
+                }
+            ],
             "complex_modifications": {
                 "rules": [
                     {
@@ -130,13 +140,34 @@
                         "is_pointing_device": false
                     },
                     "ignore": false,
-                    "simple_modifications": {
-                        "caps_lock": "left_control"
-                    },
-                    "fn_function_keys": {
-                        "f1": "escape",
-                        "f2": ""
-                    }
+                    "simple_modifications": [
+                        {
+                            "from": {
+                                "key_code": "caps_lock"
+                            },
+                            "to": {
+                                "key_code": "left_control"
+                            }
+                        }
+                    ],
+                    "fn_function_keys": [
+                        {
+                            "from": {
+                                "key_code": "f1"
+                            },
+                            "to": {
+                                "key_code": "escape"
+                            }
+                        },
+                        {
+                            "from": {
+                                "key_code": "f2"
+                            },
+                            "to": {
+                                "key_code": ""
+                            }
+                        }
+                    ]
                 },
                 {
                     "identifiers": {
@@ -147,12 +178,35 @@
                     },
                     "ignore": true,
                     "disable_built_in_keyboard_if_exists": true
+                },
+                {
+                    "identifiers": {
+                        "vendor_id": 1234,
+                        "product_id": 50475,
+                        "is_keyboard": true,
+                        "is_pointing_device": false
+                    },
+                    "ignore": false,
+                    "simple_modifications": {
+                        "caps_lock": "left_control"
+                    },
+                    "fn_function_keys": {
+                        "f1": "escape",
+                        "f2": ""
+                    }
                 }
             ]
         },
         {
             "name": "Empty",
             "selected": false
+        },
+        {
+            "name": "fn_function_keys v1",
+            "selected": false,
+            "fn_function_keys": {
+                "f1": "escape"
+            }
         }
     ],
     "dummy": {

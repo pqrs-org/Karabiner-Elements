@@ -2,16 +2,20 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "core_configuration.hpp"
+#include "manipulator/details/types.hpp"
 #include "thread_utility.hpp"
+#include <boost/optional/optional_io.hpp>
 #include <iostream>
+
+using simple_modifications = krbn::core_configuration::profile::simple_modifications;
 
 TEST_CASE("valid") {
   krbn::core_configuration configuration("json/example.json");
 
   {
-    std::vector<std::pair<std::string, std::string>> expected{
-        {"caps_lock", "delete_or_backspace"},
-        {"escape", "spacebar"},
+    std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> expected{
+        {{"key_code", "caps_lock"}, {"key_code", "delete_or_backspace"}},
+        {{"key_code", "escape"}, {"key_code", "spacebar"}},
     };
     REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs() == expected);
   }
@@ -21,19 +25,19 @@ TEST_CASE("valid") {
     REQUIRE(manipulator["from"]["key_code"] == "open_bracket");
   }
   {
-    std::vector<std::pair<std::string, std::string>> expected{
-        {"f1", "display_brightness_decrement"},
-        {"f2", "display_brightness_increment"},
-        {"f3", "mission_control"},
-        {"f4", "launchpad"},
-        {"f5", "illumination_decrement"},
-        {"f6", "illumination_increment"},
-        {"f7", "rewind"},
-        {"f8", "play_or_pause"},
-        {"f9", "fastforward"},
-        {"f10", "mute"},
-        {"f11", "volume_decrement"},
-        {"f12", "volume_increment"},
+    std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> expected{
+        {{"key_code", "f1"}, {"key_code", "escape"}},
+        {{"key_code", "f2"}, {"key_code", "display_brightness_increment"}},
+        {{"key_code", "f3"}, {"key_code", "mission_control"}},
+        {{"key_code", "f4"}, {"key_code", "launchpad"}},
+        {{"key_code", "f5"}, {"key_code", "illumination_decrement"}},
+        {{"key_code", "f6"}, {"key_code", "illumination_increment"}},
+        {{"key_code", "f7"}, {"key_code", "rewind"}},
+        {{"key_code", "f8"}, {"key_code", "play_or_pause"}},
+        {{"key_code", "f9"}, {"key_code", "fastforward"}},
+        {{"key_code", "f10"}, {"key_code", "mute"}},
+        {{"key_code", "f11"}, {"key_code", "volume_decrement"}},
+        {{"key_code", "f12"}, {"key_code", "volume_increment"}},
     };
     REQUIRE(configuration.get_selected_profile().get_fn_function_keys().get_pairs() == expected);
   }
@@ -53,7 +57,7 @@ TEST_CASE("valid") {
   }
   {
     auto& actual = configuration.get_selected_profile().get_devices();
-    REQUIRE(actual.size() == 2);
+    REQUIRE(actual.size() == 3);
 
     REQUIRE(actual[0].get_identifiers().get_vendor_id() == krbn::vendor_id(1133));
     REQUIRE(actual[0].get_identifiers().get_product_id() == krbn::product_id(50475));
@@ -115,9 +119,9 @@ TEST_CASE("broken.json") {
 TEST_CASE("invalid_key_code_name.json") {
   krbn::core_configuration configuration("json/invalid_key_code_name.json");
 
-  std::vector<std::pair<std::string, std::string>> expected{
-      {"caps_lock_2", "delete_or_backspace"},
-      {"escape", "spacebar"},
+  std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> expected{
+      {{"key_code", "caps_lock_2"}, {"key_code", "delete_or_backspace"}},
+      {{"key_code", "escape"}, {"key_code", "spacebar"}},
   };
   REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs() == expected);
   REQUIRE(configuration.is_loaded() == true);
@@ -194,20 +198,8 @@ TEST_CASE("global_configuration.to_json") {
 
 namespace {
 nlohmann::json get_default_fn_function_keys_json(void) {
-  return nlohmann::json({
-      {"f1", "display_brightness_decrement"},
-      {"f10", "mute"},
-      {"f11", "volume_decrement"},
-      {"f12", "volume_increment"},
-      {"f2", "display_brightness_increment"},
-      {"f3", "mission_control"},
-      {"f4", "launchpad"},
-      {"f5", "illumination_decrement"},
-      {"f6", "illumination_increment"},
-      {"f7", "rewind"},
-      {"f8", "play_or_pause"},
-      {"f9", "fastforward"},
-  });
+  std::ifstream input("json/default_fn_function_keys.json");
+  return nlohmann::json::parse(input);
 }
 
 nlohmann::json get_default_virtual_hid_keyboard_json(void) {
@@ -217,20 +209,20 @@ nlohmann::json get_default_virtual_hid_keyboard_json(void) {
   });
 }
 
-std::vector<std::pair<std::string, std::string>> get_default_fn_function_keys_pairs(void) {
-  return std::vector<std::pair<std::string, std::string>>({
-      {"f1", "display_brightness_decrement"},
-      {"f2", "display_brightness_increment"},
-      {"f3", "mission_control"},
-      {"f4", "launchpad"},
-      {"f5", "illumination_decrement"},
-      {"f6", "illumination_increment"},
-      {"f7", "rewind"},
-      {"f8", "play_or_pause"},
-      {"f9", "fastforward"},
-      {"f10", "mute"},
-      {"f11", "volume_decrement"},
-      {"f12", "volume_increment"},
+std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> make_default_fn_function_keys_pairs(void) {
+  return std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>>({
+      {{"key_code", "f1"}, {"key_code", "display_brightness_decrement"}},
+      {{"key_code", "f2"}, {"key_code", "display_brightness_increment"}},
+      {{"key_code", "f3"}, {"key_code", "mission_control"}},
+      {{"key_code", "f4"}, {"key_code", "launchpad"}},
+      {{"key_code", "f5"}, {"key_code", "illumination_decrement"}},
+      {{"key_code", "f6"}, {"key_code", "illumination_increment"}},
+      {{"key_code", "f7"}, {"key_code", "rewind"}},
+      {{"key_code", "f8"}, {"key_code", "play_or_pause"}},
+      {{"key_code", "f9"}, {"key_code", "fastforward"}},
+      {{"key_code", "f10"}, {"key_code", "mute"}},
+      {{"key_code", "f11"}, {"key_code", "volume_decrement"}},
+      {{"key_code", "f12"}, {"key_code", "volume_increment"}},
   });
 }
 } // namespace
@@ -243,7 +235,7 @@ TEST_CASE("profile") {
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().get_pairs().size() == 0);
-    REQUIRE(profile.get_fn_function_keys().get_pairs() == get_default_fn_function_keys_pairs());
+    REQUIRE(profile.get_fn_function_keys().get_pairs() == make_default_fn_function_keys_pairs());
     REQUIRE(profile.get_devices().size() == 0);
   }
 
@@ -339,18 +331,20 @@ TEST_CASE("profile") {
     REQUIRE(profile.get_name() == std::string("profile 1"));
     REQUIRE(profile.get_selected() == true);
     {
-      std::vector<std::pair<std::string, std::string>> expected({
-          {"from 1", "to 1"},
-          {"from 2", "to 2"},
-          {"from 3", "to 3"},
-          {"from 10", "to 10"},
+      std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> expected({
+          {{"key_code", "from 1"}, {"key_code", "to 1"}},
+          {{"key_code", "from 2"}, {"key_code", "to 2"}},
+          {{"key_code", "from 3"}, {"key_code", "to 3"}},
+          {{"key_code", "from 10"}, {"key_code", "to 10"}},
       });
       REQUIRE(profile.get_simple_modifications().get_pairs() == expected);
     }
     {
-      auto expected = get_default_fn_function_keys_pairs();
-      expected[2].second = "to f3";
-      expected[3].second = "to f4";
+      auto expected = make_default_fn_function_keys_pairs();
+      expected[2].second.set_value("to f3");
+      expected[3].second.set_value("to f4");
+      expected.emplace_back(simple_modifications::definition("key_code", "f13"),
+                            simple_modifications::definition("key_code", "to f13"));
       REQUIRE(profile.get_fn_function_keys().get_pairs() == expected);
     }
     {
@@ -476,7 +470,7 @@ TEST_CASE("profile") {
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().get_pairs().size() == 0);
-    REQUIRE(profile.get_fn_function_keys().get_pairs() == get_default_fn_function_keys_pairs());
+    REQUIRE(profile.get_fn_function_keys().get_pairs() == make_default_fn_function_keys_pairs());
   }
   {
     nlohmann::json json({
@@ -497,8 +491,8 @@ TEST_CASE("profile") {
     });
     krbn::core_configuration::profile profile(json);
     {
-      std::vector<std::pair<std::string, std::string>> expected({
-          {"key", "value"},
+      std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> expected({
+          {{"key_code", "key"}, {"key_code", "value"}},
       });
       REQUIRE(profile.get_simple_modifications().get_pairs() == expected);
     }
@@ -517,7 +511,7 @@ TEST_CASE("profile.to_json") {
         {"devices", nlohmann::json::array()},
         {"name", ""},
         {"selected", false},
-        {"simple_modifications", nlohmann::json::object()},
+        {"simple_modifications", nlohmann::json::array()},
         {"fn_function_keys", get_default_fn_function_keys_json()},
         {"virtual_hid_keyboard", get_default_virtual_hid_keyboard_json()},
     });
@@ -652,7 +646,7 @@ TEST_CASE("profile.to_json") {
     profile.get_virtual_hid_keyboard().set_keyboard_type("iso");
 
     auto expected_fn_function_keys = get_default_fn_function_keys_json();
-    expected_fn_function_keys["f3"] = "to f3";
+    expected_fn_function_keys[2]["to"]["key_code"] = "to f3";
     auto expected_virtual_hid_keyboard = get_default_virtual_hid_keyboard_json();
     expected_virtual_hid_keyboard["keyboard_type"] = "iso";
     nlohmann::json expected({
@@ -678,30 +672,31 @@ TEST_CASE("profile.to_json") {
                                             }},
                             {"ignore", true},
                             {"disable_built_in_keyboard_if_exists", true},
-                            {"simple_modifications", nlohmann::json::object()},
-                            {"fn_function_keys", nlohmann::json::object()},
+                            {"simple_modifications", nlohmann::json::array()},
+                            {"fn_function_keys", nlohmann::json::array()},
                         },
                     }},
         {"dummy", {{"keep_me", true}}},
         {"name", "profile 1"},
         {"selected", true},
-        {"simple_modifications", {
-                                     {
-                                         "from 1", "to 1",
-                                     },
-                                     {
-                                         "from 2", "to 2",
-                                     },
-                                     {
-                                         "from 4", "to 4",
-                                     },
-                                     {
-                                         "from 5", "to 5",
-                                     },
-                                 }},
+        {"simple_modifications", nlohmann::json::array()},
         {"fn_function_keys", expected_fn_function_keys},
         {"virtual_hid_keyboard", expected_virtual_hid_keyboard},
     });
+
+    expected["simple_modifications"].push_back(nlohmann::json::object());
+    expected["simple_modifications"].back()["from"]["key_code"] = "from 1";
+    expected["simple_modifications"].back()["to"]["key_code"] = "to 1";
+    expected["simple_modifications"].push_back(nlohmann::json::object());
+    expected["simple_modifications"].back()["from"]["key_code"] = "from 4";
+    expected["simple_modifications"].back()["to"]["key_code"] = "to 4";
+    expected["simple_modifications"].push_back(nlohmann::json::object());
+    expected["simple_modifications"].back()["from"]["key_code"] = "from 2";
+    expected["simple_modifications"].back()["to"]["key_code"] = "to 2";
+    expected["simple_modifications"].push_back(nlohmann::json::object());
+    expected["simple_modifications"].back()["from"]["key_code"] = "from 5";
+    expected["simple_modifications"].back()["to"]["key_code"] = "to 5";
+
     REQUIRE(profile.to_json() == expected);
   }
 }
@@ -714,7 +709,43 @@ TEST_CASE("simple_modifications") {
     REQUIRE(simple_modifications.get_pairs().size() == 0);
   }
 
-  // load values from json
+  // load values from json (v2)
+  {
+    auto json = nlohmann::json::array();
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "a";
+    json.back()["to"]["key_code"] = "f1";
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "b";
+    json.back()["to"]["key_code"] = "f2";
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "dummy";
+    json.back()["to"]["key_code"] = "f3";
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f4";
+    json.back()["to"]["key_code"] = "dummy";
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f5";
+    json.back()["to"]["key_code"] = nlohmann::json();
+    json.push_back(nlohmann::json::object());
+    json.back()["dummy"]["key_code"] = nlohmann::json();
+
+    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
+    REQUIRE(simple_modifications.get_pairs().size() == 5);
+
+    {
+      std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> expected({
+          {{"key_code", "a"}, {"key_code", "f1"}},
+          {{"key_code", "b"}, {"key_code", "f2"}},
+          {{"key_code", "dummy"}, {"key_code", "f3"}},
+          {{"key_code", "f4"}, {"key_code", "dummy"}},
+          {{"key_code", "f5"}, {"", ""}},
+      });
+      REQUIRE(simple_modifications.get_pairs() == expected);
+    }
+  }
+
+  // load values from json (v1)
   {
     nlohmann::json json({
         {"a", "f1"},
@@ -726,11 +757,11 @@ TEST_CASE("simple_modifications") {
     REQUIRE(simple_modifications.get_pairs().size() == 4);
 
     {
-      std::vector<std::pair<std::string, std::string>> expected({
-          {"a", "f1"},
-          {"b", "f2"},
-          {"dummy", "f3"},
-          {"f4", "dummy"},
+      std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> expected({
+          {{"key_code", "a"}, {"key_code", "f1"}},
+          {{"key_code", "b"}, {"key_code", "f2"}},
+          {{"key_code", "dummy"}, {"key_code", "f3"}},
+          {{"key_code", "f4"}, {"key_code", "dummy"}},
       });
       REQUIRE(simple_modifications.get_pairs() == expected);
     }
@@ -747,7 +778,7 @@ TEST_CASE("simple_modifications.to_json") {
   {
     nlohmann::json json;
     krbn::core_configuration::profile::simple_modifications simple_modifications(json);
-    REQUIRE(simple_modifications.to_json() == nlohmann::json::object());
+    REQUIRE(simple_modifications.to_json() == nlohmann::json::array());
   }
   {
     nlohmann::json json({
@@ -761,13 +792,54 @@ TEST_CASE("simple_modifications.to_json") {
     simple_modifications.replace_pair(4, "a", "f5"); // will be ignored since "a" already exists.
     simple_modifications.push_back_pair();
     simple_modifications.replace_pair(5, "c", "f6");
-    REQUIRE(simple_modifications.to_json() == nlohmann::json({
-                                                  {"a", "f1"},
-                                                  {"b", "f2"},
-                                                  {"c", "f6"},
-                                                  {"dummy", "f3"},
-                                                  {"f4", "dummy"},
-                                              }));
+
+    auto expected = nlohmann::json::array();
+    expected.push_back(nlohmann::json::object());
+    expected.back()["from"]["key_code"] = "a";
+    expected.back()["to"]["key_code"] = "f1";
+    expected.push_back(nlohmann::json::object());
+    expected.back()["from"]["key_code"] = "b";
+    expected.back()["to"]["key_code"] = "f2";
+    expected.push_back(nlohmann::json::object());
+    expected.back()["from"]["key_code"] = "dummy";
+    expected.back()["to"]["key_code"] = "f3";
+    expected.push_back(nlohmann::json::object());
+    expected.back()["from"]["key_code"] = "f4";
+    expected.back()["to"]["key_code"] = "dummy";
+    expected.push_back(nlohmann::json::object());
+    expected.back()["from"]["key_code"] = "c";
+    expected.back()["to"]["key_code"] = "f6";
+
+    REQUIRE(simple_modifications.to_json() == expected);
+  }
+  {
+    // simple_modifications.to_json have to be compatible with manipulator::details::event_definition
+
+    auto json = nlohmann::json::array();
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["consumer_key_code"] = "mute";
+    json.back()["to"]["pointing_button"] = "button3";
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "a";
+    json.back()["to"]["key_code"] = "f1";
+
+    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
+    {
+      krbn::manipulator::details::from_event_definition from_event_definition(simple_modifications.get_pairs()[0].first.to_json());
+      REQUIRE(from_event_definition.get_consumer_key_code() == krbn::consumer_key_code::mute);
+    }
+    {
+      krbn::manipulator::details::to_event_definition to_event_definition(simple_modifications.get_pairs()[0].second.to_json());
+      REQUIRE(to_event_definition.get_pointing_button() == krbn::pointing_button::button3);
+    }
+    {
+      krbn::manipulator::details::from_event_definition from_event_definition(simple_modifications.get_pairs()[1].first.to_json());
+      REQUIRE(from_event_definition.get_key_code() == krbn::key_code::a);
+    }
+    {
+      krbn::manipulator::details::to_event_definition to_event_definition(simple_modifications.get_pairs()[1].second.to_json());
+      REQUIRE(to_event_definition.get_key_code() == krbn::key_code::f1);
+    }
   }
 }
 
@@ -803,13 +875,19 @@ TEST_CASE("complex_modifications") {
 
   // invalid values in json
   {
-    nlohmann::json json({
-        {
-            "rules", "rule 1",
-        },
-    });
-    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
-    REQUIRE(complex_modifications.get_rules().empty());
+    {
+      nlohmann::json json({
+          {
+              "rules", "rule 1",
+          },
+      });
+      krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+      REQUIRE(complex_modifications.get_rules().empty());
+    }
+    {
+      krbn::core_configuration::profile::complex_modifications complex_modifications(nlohmann::json::array());
+      REQUIRE(complex_modifications.get_rules().empty());
+    }
   }
 }
 
@@ -1174,8 +1252,8 @@ TEST_CASE("device.to_json") {
                         }},
         {"ignore", false},
         {"disable_built_in_keyboard_if_exists", false},
-        {"simple_modifications", nlohmann::json::object()},
-        {"fn_function_keys", nlohmann::json::object()},
+        {"simple_modifications", nlohmann::json::array()},
+        {"fn_function_keys", nlohmann::json::array()},
     });
     REQUIRE(device.to_json() == expected);
 
@@ -1216,8 +1294,8 @@ TEST_CASE("device.to_json") {
                         }},
         {"ignore", true},
         {"disable_built_in_keyboard_if_exists", false},
-        {"simple_modifications", nlohmann::json::object()},
-        {"fn_function_keys", nlohmann::json::object()},
+        {"simple_modifications", nlohmann::json::array()},
+        {"fn_function_keys", nlohmann::json::array()},
         {"dummy", {{"keep_me", true}}},
     });
     REQUIRE(device.to_json() == expected);

@@ -29,7 +29,7 @@ public:
 
     profile(const nlohmann::json& json) : json_(json),
                                           selected_(false),
-                                          simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json()),
+                                          simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json::array()),
                                           fn_function_keys_(nlohmann::json({
                                               {"f1", "display_brightness_decrement"},
                                               {"f2", "display_brightness_increment"},
@@ -44,8 +44,8 @@ public:
                                               {"f11", "volume_decrement"},
                                               {"f12", "volume_increment"},
                                           })),
-                                          complex_modifications_(json.find("complex_modifications") != json.end() ? json["complex_modifications"] : nlohmann::json()),
-                                          virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json()) {
+                                          complex_modifications_(json.find("complex_modifications") != json.end() ? json["complex_modifications"] : nlohmann::json::object()),
+                                          virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json::object()) {
       {
         const std::string key = "name";
         if (json.find(key) != json.end() && json[key].is_string()) {
@@ -60,13 +60,8 @@ public:
       }
       {
         const std::string key = "fn_function_keys";
-        if (json.find(key) != json.end() && json[key].is_object()) {
-          for (auto it = json[key].begin(); it != json[key].end(); ++it) {
-            // it.key() is always std::string.
-            if (it.value().is_string()) {
-              fn_function_keys_.replace_second(it.key(), it.value());
-            }
-          }
+        if (json.find(key) != json.end()) {
+          fn_function_keys_.update(json[key]);
         }
       }
       {

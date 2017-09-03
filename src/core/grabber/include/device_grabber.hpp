@@ -601,19 +601,13 @@ private:
 
   std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<core_configuration::profile::simple_modifications::definition, core_configuration::profile::simple_modifications::definition>& pair) {
     if (pair.first.valid() && pair.second.valid()) {
-      if (auto from_event = types::get_key_code(pair.first.get_value())) {
-        if (auto to_event = types::get_key_code(pair.second.get_value())) {
-          return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
-                                                                   *from_event,
-                                                                   {},
-                                                                   {
-                                                                       manipulator::details::event_definition::modifier::any,
-                                                                   }),
-                                                               manipulator::details::to_event_definition(
-                                                                   *to_event,
-                                                                   {}));
-        }
-      }
+      auto from_json = pair.first.to_json();
+      from_json["modifiers"]["optional"] = "any";
+
+      auto to_json = pair.second.to_json();
+
+      return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(from_json),
+                                                           manipulator::details::to_event_definition(to_json));
     }
     return nullptr;
   }

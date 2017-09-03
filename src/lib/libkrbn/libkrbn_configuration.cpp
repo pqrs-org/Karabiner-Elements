@@ -191,7 +191,7 @@ const char* libkrbn_core_configuration_get_selected_profile_simple_modification_
   if (auto m = find_simple_modifications(p, device_identifiers)) {
     const auto& pairs = m->get_pairs();
     if (index < pairs.size()) {
-      return pairs[index].first.c_str();
+      return pairs[index].first.get_value().c_str();
     }
   }
   return nullptr;
@@ -203,7 +203,7 @@ const char* libkrbn_core_configuration_get_selected_profile_simple_modification_
   if (auto m = find_simple_modifications(p, device_identifiers)) {
     const auto& pairs = m->get_pairs();
     if (index < pairs.size()) {
-      return pairs[index].second.c_str();
+      return pairs[index].second.get_value().c_str();
     }
   }
   return nullptr;
@@ -250,7 +250,7 @@ const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_functio
   if (auto k = find_fn_function_keys(p, device_identifiers)) {
     const auto& pairs = k->get_pairs();
     if (index < pairs.size()) {
-      return pairs[index].first.c_str();
+      return pairs[index].first.get_value().c_str();
     }
   }
   return nullptr;
@@ -262,7 +262,7 @@ const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_functio
   if (auto k = find_fn_function_keys(p, device_identifiers)) {
     const auto& pairs = k->get_pairs();
     if (index < pairs.size()) {
-      return pairs[index].second.c_str();
+      return pairs[index].second.get_value().c_str();
     }
   }
   return nullptr;

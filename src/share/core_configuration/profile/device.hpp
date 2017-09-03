@@ -6,21 +6,8 @@ public:
                                        identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json()),
                                        ignore_(false),
                                        disable_built_in_keyboard_if_exists_(false),
-                                       simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json()),
-                                       fn_function_keys_(nlohmann::json({
-                                           {"f1", ""},
-                                           {"f2", ""},
-                                           {"f3", ""},
-                                           {"f4", ""},
-                                           {"f5", ""},
-                                           {"f6", ""},
-                                           {"f7", ""},
-                                           {"f8", ""},
-                                           {"f9", ""},
-                                           {"f10", ""},
-                                           {"f11", ""},
-                                           {"f12", ""},
-                                       })) {
+                                       simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json::array()),
+                                       fn_function_keys_(nlohmann::json::array()) {
     {
       const std::string key = "ignore";
       if (json.find(key) != json.end() && json[key].is_boolean()) {
@@ -35,13 +22,8 @@ public:
     }
     {
       const std::string key = "fn_function_keys";
-      if (json.find(key) != json.end() && json[key].is_object()) {
-        for (auto it = json[key].begin(); it != json[key].end(); ++it) {
-          // it.key() is always std::string.
-          if (it.value().is_string()) {
-            fn_function_keys_.replace_second(it.key(), it.value());
-          }
-        }
+      if (json.find(key) != json.end()) {
+        fn_function_keys_.update(json[key]);
       }
     }
   }

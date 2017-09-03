@@ -2,7 +2,8 @@ include ../Makefile.common
 
 CXXFLAGS += \
 	-I../../../src/share \
-	-I../../../src/vendor
+	-I../../../src/vendor \
+	-I../../../src/core/grabber/include
 
 LDFLAGS += -framework CoreFoundation -framework SystemConfiguration
 
