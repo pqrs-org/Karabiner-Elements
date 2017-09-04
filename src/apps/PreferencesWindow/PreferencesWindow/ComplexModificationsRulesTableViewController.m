@@ -151,12 +151,12 @@
     NSArray* files = [KarabinerKitComplexModificationsAssetsManager sharedManager].assetsFileModels;
     if (view.fileIndex < files.count) {
       KarabinerKitComplexModificationsAssetsFileModel* fileModel = files[view.fileIndex];
+      KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
       for (KarabinerKitComplexModificationsAssetsRuleModel* ruleModel in fileModel.rules) {
-        KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
         [ruleModel addRuleToCoreConfigurationProfile:coreConfigurationModel];
-        [coreConfigurationModel save];
-        [self.tableView reloadData];
       }
+      [coreConfigurationModel save];
+      [self.tableView reloadData];
     }
   }
   [self.window endSheet:self.addRulePanel];
@@ -170,8 +170,8 @@
     if (view.fileIndex < files.count) {
       KarabinerKitComplexModificationsAssetsFileModel* fileModel = files[view.fileIndex];
       if (view.ruleIndex < fileModel.rules.count) {
-        KarabinerKitComplexModificationsAssetsRuleModel* ruleModel = fileModel.rules[view.ruleIndex];
         KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+        KarabinerKitComplexModificationsAssetsRuleModel* ruleModel = fileModel.rules[view.ruleIndex];
         [ruleModel addRuleToCoreConfigurationProfile:coreConfigurationModel];
         [coreConfigurationModel save];
         [self.tableView reloadData];

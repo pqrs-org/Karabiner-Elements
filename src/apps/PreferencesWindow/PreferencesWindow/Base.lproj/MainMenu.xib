@@ -442,11 +442,11 @@
                         <tabViewItems>
                             <tabViewItem label="Simple Modifications" identifier="1" id="SOT-pf-9fT">
                                 <view key="view" id="aYZ-Ew-w2F">
-                                    <rect key="frame" x="10" y="33" width="865" height="535"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cqw-ll-1Rg">
-                                            <rect key="frame" x="176" y="494" width="513" height="31"/>
+                                            <rect key="frame" x="171" y="447" width="513" height="31"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oB5-NY-D3P">
                                                     <rect key="frame" x="101" y="2" width="405" height="26"/>
@@ -481,20 +481,20 @@
                                             </constraints>
                                         </customView>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r4-lM-Seb">
-                                            <rect key="frame" x="17" y="43" width="831" height="441"/>
+                                            <rect key="frame" x="17" y="43" width="820" height="394"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
-                                                <rect key="frame" x="1" y="0.0" width="829" height="440"/>
+                                                <rect key="frame" x="1" y="0.0" width="818" height="393"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
-                                                        <rect key="frame" x="0.0" y="0.0" width="829" height="417"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="370"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn identifier="SimpleModificationsFromColumn" width="361" minWidth="40" maxWidth="10000" id="zOn-42-oxZ">
+                                                            <tableColumn identifier="SimpleModificationsFromColumn" width="350" minWidth="40" maxWidth="10000" id="zOn-42-oxZ">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="From key">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -508,11 +508,11 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="SimpleModificationsFromCellView" id="Vw4-ce-qQw" customClass="SimpleModificationsTableCellView">
-                                                                        <rect key="frame" x="1" y="1" width="361" height="26"/>
+                                                                        <rect key="frame" x="1" y="1" width="350" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="l7m-AB-Jzs">
-                                                                                <rect key="frame" x="8" y="0.0" width="346" height="26"/>
+                                                                                <rect key="frame" x="8" y="0.0" width="335" height="26"/>
                                                                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="32z-u1-2FH">
                                                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                                                     <font key="font" metaFont="menu"/>
@@ -545,7 +545,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="SimpleModificationsToCellView" id="o0g-iq-ccT" customClass="SimpleModificationsTableCellView">
-                                                                        <rect key="frame" x="365" y="1" width="350" height="26"/>
+                                                                        <rect key="frame" x="354" y="1" width="350" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="grX-GY-0Tj">
@@ -582,7 +582,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="SimpleModificationsDeleteCellView" id="Tg2-rB-0jS" customClass="SimpleModificationsTableCellView">
-                                                                        <rect key="frame" x="718" y="1" width="109" height="26"/>
+                                                                        <rect key="frame" x="707" y="1" width="109" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zfo-6t-308">
@@ -623,7 +623,7 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" id="bin-92-FO9">
-                                                <rect key="frame" x="0.0" y="0.0" width="829" height="23"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="818" height="23"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
@@ -837,26 +837,26 @@
                             </tabViewItem>
                             <tabViewItem label="Complex Modifications" identifier="" id="zkg-mg-aXH" userLabel="Complex Modifications">
                                 <view key="view" id="QKn-8U-Fy4">
-                                    <rect key="frame" x="10" y="33" width="854" height="438"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tabView translatesAutoresizingMaskIntoConstraints="NO" id="1c1-vs-xhU">
-                                            <rect key="frame" x="10" y="7" width="834" height="429"/>
+                                            <rect key="frame" x="10" y="7" width="834" height="479"/>
                                             <font key="font" metaFont="system"/>
                                             <tabViewItems>
                                                 <tabViewItem label="Rules" identifier="1" id="UOy-mW-Ddj">
                                                     <view key="view" id="cFJ-9E-eEA">
-                                                        <rect key="frame" x="10" y="33" width="814" height="383"/>
+                                                        <rect key="frame" x="10" y="33" width="814" height="433"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZVI-Dx-0Da">
-                                                                <rect key="frame" x="17" y="41" width="780" height="334"/>
+                                                                <rect key="frame" x="17" y="41" width="780" height="384"/>
                                                                 <clipView key="contentView" id="Z0i-ZA-lV3">
-                                                                    <rect key="frame" x="1" y="0.0" width="778" height="333"/>
-                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                    <rect key="frame" x="1" y="0.0" width="778" height="383"/>
+                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="778" height="310"/>
+                                                                            <rect key="frame" x="0.0" y="0.0" width="778" height="360"/>
                                                                             <autoresizingMask key="autoresizingMask"/>
                                                                             <size key="intercellSpacing" width="3" height="2"/>
                                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1099,17 +1099,17 @@
                             </tabViewItem>
                             <tabViewItem label="Devices" identifier="" id="mRQ-0i-hdC">
                                 <view key="view" id="IwQ-P2-Whx">
-                                    <rect key="frame" x="10" y="33" width="854" height="438"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dj4-13-m3Q">
-                                            <rect key="frame" x="17" y="220" width="820" height="210"/>
+                                            <rect key="frame" x="17" y="220" width="820" height="260"/>
                                             <clipView key="contentView" id="FOg-OF-77U">
-                                                <rect key="frame" x="1" y="0.0" width="818" height="209"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <rect key="frame" x="1" y="0.0" width="818" height="259"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="PyG-O0-i8x" viewBased="YES" id="W1W-Xd-0KJ">
-                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="186"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="236"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1311,7 +1311,7 @@
                                                         <rect key="frame" x="8" y="8" width="802" height="137"/>
                                                         <clipView key="contentView" id="tle-ie-uoi">
                                                             <rect key="frame" x="1" y="1" width="800" height="135"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" id="aIG-lD-1bK">
                                                                     <rect key="frame" x="0.0" y="0.0" width="800" height="135"/>
@@ -1423,11 +1423,11 @@
                             </tabViewItem>
                             <tabViewItem label="Virtual Keyboard" identifier="" id="mRV-XM-rli" userLabel="Virtual Keyboard">
                                 <view key="view" id="z9H-0i-wnG">
-                                    <rect key="frame" x="10" y="33" width="854" height="438"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SbY-ZN-51c">
-                                            <rect key="frame" x="15" y="384" width="824" height="34"/>
+                                            <rect key="frame" x="15" y="434" width="824" height="34"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="vh8-NI-szY">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">Karabiner-Elements gathers input events from all keyboards and then post them to the Karabiner's virtual keyboard.
@@ -1437,7 +1437,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </textFieldCell>
                                         </textField>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="iJC-5f-F7u">
-                                            <rect key="frame" x="287" y="290" width="280" height="64"/>
+                                            <rect key="frame" x="287" y="340" width="280" height="64"/>
                                             <subviews>
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zBP-Pe-eYU">
                                                     <rect key="frame" x="13" y="43" width="99" height="17"/>
@@ -1532,17 +1532,17 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                             </tabViewItem>
                             <tabViewItem label="Profiles" identifier="" id="ev8-d5-r1R">
                                 <view key="view" id="7Zc-pb-qgV">
-                                    <rect key="frame" x="10" y="33" width="854" height="438"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nFr-Ff-HgQ">
-                                            <rect key="frame" x="17" y="34" width="820" height="396"/>
+                                            <rect key="frame" x="17" y="34" width="820" height="446"/>
                                             <clipView key="contentView" id="KqJ-JT-0VB">
-                                                <rect key="frame" x="1" y="0.0" width="818" height="395"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <rect key="frame" x="1" y="0.0" width="818" height="445"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="4rB-73-cgf" viewBased="YES" id="Y8t-wV-kQb" customClass="ProfilesTableView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="372"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="818" height="422"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1678,11 +1678,11 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                             </tabViewItem>
                             <tabViewItem label="Misc" identifier="" id="fzE-23-c8B">
                                 <view key="view" id="oZ9-PG-xey">
-                                    <rect key="frame" x="10" y="33" width="865" height="535"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DOX-q0-HoN">
-                                            <rect key="frame" x="15" y="510" width="175" height="17"/>
+                                            <rect key="frame" x="15" y="463" width="175" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Karabiner-Elements version:" id="Xg6-y2-MuI">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1690,7 +1690,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </textFieldCell>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sau-jf-Dqb">
-                                            <rect key="frame" x="191" y="510" width="37" height="17"/>
+                                            <rect key="frame" x="191" y="463" width="37" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="XEU-p8-QQc">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1698,7 +1698,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9Ub-kd-yPy">
-                                            <rect key="frame" x="652" y="501" width="202" height="32"/>
+                                            <rect key="frame" x="641" y="454" width="202" height="32"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="190" id="Ssn-Xw-tsW"/>
                                             </constraints>
@@ -1711,9 +1711,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </connections>
                                         </button>
                                         <box borderType="line" title="Update" translatesAutoresizingMaskIntoConstraints="NO" id="3j8-8U-bBH">
-                                            <rect key="frame" x="14" y="423" width="837" height="77"/>
+                                            <rect key="frame" x="14" y="376" width="826" height="77"/>
                                             <view key="contentView" id="Blg-HH-9LH">
-                                                <rect key="frame" x="1" y="1" width="835" height="61"/>
+                                                <rect key="frame" x="1" y="1" width="824" height="61"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="xCD-vQ-a37">
@@ -1740,7 +1740,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         </connections>
                                                     </button>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lRS-BL-uVJ">
-                                                        <rect key="frame" x="622" y="1" width="202" height="32"/>
+                                                        <rect key="frame" x="611" y="1" width="202" height="32"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="190" id="wAU-Ry-Ona"/>
                                                         </constraints>
@@ -1765,9 +1765,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </view>
                                         </box>
                                         <box borderType="line" title="Uninstall" translatesAutoresizingMaskIntoConstraints="NO" id="bRw-jJ-vdo">
-                                            <rect key="frame" x="14" y="359" width="837" height="53"/>
+                                            <rect key="frame" x="14" y="312" width="826" height="53"/>
                                             <view key="contentView" id="E8s-vq-cpp">
-                                                <rect key="frame" x="1" y="1" width="835" height="37"/>
+                                                <rect key="frame" x="1" y="1" width="824" height="37"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CzP-aW-AzB">
@@ -1792,9 +1792,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </view>
                                         </box>
                                         <box borderType="line" title="Web Sites" translatesAutoresizingMaskIntoConstraints="NO" id="ZAS-Lc-pSo">
-                                            <rect key="frame" x="14" y="295" width="837" height="53"/>
+                                            <rect key="frame" x="14" y="248" width="826" height="53"/>
                                             <view key="contentView" id="ibU-6J-Zdv">
-                                                <rect key="frame" x="1" y="1" width="835" height="37"/>
+                                                <rect key="frame" x="1" y="1" width="824" height="37"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="i87-Pa-TZD">
@@ -1829,9 +1829,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </view>
                                         </box>
                                         <box title="Miscellaneous" translatesAutoresizingMaskIntoConstraints="NO" id="BAq-6J-75B">
-                                            <rect key="frame" x="14" y="108" width="837" height="71"/>
+                                            <rect key="frame" x="14" y="61" width="826" height="71"/>
                                             <view key="contentView" id="9XA-gC-pTe">
-                                                <rect key="frame" x="2" y="2" width="833" height="54"/>
+                                                <rect key="frame" x="2" y="2" width="822" height="54"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="AHk-df-Lmk">
@@ -1865,13 +1865,13 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </view>
                                         </box>
                                         <box borderType="line" title="System Default Configuration" translatesAutoresizingMaskIntoConstraints="NO" id="gUV-If-Nhn">
-                                            <rect key="frame" x="14" y="190" width="837" height="94"/>
+                                            <rect key="frame" x="14" y="143" width="826" height="94"/>
                                             <view key="contentView" id="TF9-1O-zm8">
-                                                <rect key="frame" x="1" y="1" width="835" height="78"/>
+                                                <rect key="frame" x="1" y="1" width="824" height="78"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5oB-kz-f5x">
-                                                        <rect key="frame" x="15" y="36" width="805" height="34"/>
+                                                        <rect key="frame" x="15" y="36" width="794" height="34"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="gSI-ND-aKs">
                                                             <font key="font" metaFont="system"/>
                                                             <string key="title">You can use Karabiner-Elements even before login by setting the system default configuration.
@@ -1957,20 +1957,20 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                             </tabViewItem>
                             <tabViewItem label="Log" identifier="" id="0dg-UV-jta">
                                 <view key="view" id="Osp-HS-cfM">
-                                    <rect key="frame" x="10" y="33" width="854" height="438"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T7K-bf-5ph">
-                                            <rect key="frame" x="17" y="48" width="820" height="382"/>
+                                            <rect key="frame" x="17" y="48" width="820" height="432"/>
                                             <clipView key="contentView" id="h3K-SC-sFn">
-                                                <rect key="frame" x="1" y="1" width="803" height="380"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <rect key="frame" x="1" y="1" width="803" height="430"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" richText="NO" findStyle="panel" id="vyq-xs-cqF">
-                                                        <rect key="frame" x="0.0" y="0.0" width="803" height="380"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="803" height="430"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <size key="minSize" width="803" height="380"/>
+                                                        <size key="minSize" width="803" height="430"/>
                                                         <size key="maxSize" width="820" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     </textView>
@@ -1982,7 +1982,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="wFw-Pp-emO">
-                                                <rect key="frame" x="804" y="1" width="15" height="380"/>
+                                                <rect key="frame" x="804" y="1" width="15" height="430"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
@@ -2058,7 +2058,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         <rect key="frame" x="17" y="61" width="766" height="288"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
                             <rect key="frame" x="1" y="1" width="764" height="286"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
                                     <rect key="frame" x="0.0" y="0.0" width="764" height="286"/>
@@ -2126,7 +2126,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="30" id="CAG-fq-yBI"/>
                                                             </constraints>
-                                                            <buttonCell key="cell" type="push" alternateTitle="Erase imported file" bezelStyle="rounded" image="ic_delete_forever_18pt" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QMI-8g-K8d">
+                                                            <buttonCell key="cell" type="push" alternateTitle="Erase imported file" bezelStyle="rounded" image="ic_delete_forever_18pt" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QMI-8g-K8d">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                 <font key="font" metaFont="system"/>
                                                             </buttonCell>
@@ -2142,13 +2142,13 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                             </buttonCell>
                                                         </button>
                                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lKf-rC-tnd" userLabel="Enable All Button">
-                                                            <rect key="frame" x="-6" y="-4" width="110" height="32"/>
+                                                            <rect key="frame" x="17" y="5" width="82" height="16"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="width" constant="98" id="Jf2-Ib-pBe"/>
+                                                                <constraint firstAttribute="width" constant="80" id="Jf2-Ib-pBe"/>
                                                             </constraints>
-                                                            <buttonCell key="cell" type="push" title="Enable All" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Uj4-jt-x6W">
+                                                            <buttonCell key="cell" type="push" title="Enable All" bezelStyle="rounded" image="ic_add_circle_18pt" alignment="center" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Uj4-jt-x6W">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                <font key="font" metaFont="system"/>
+                                                                <font key="font" metaFont="miniSystem"/>
                                                             </buttonCell>
                                                         </button>
                                                     </subviews>
@@ -2282,7 +2282,7 @@ Gw
                         <rect key="frame" x="80" y="61" width="640" height="82"/>
                         <clipView key="contentView" id="uNg-oR-13T">
                             <rect key="frame" x="1" y="1" width="623" height="80"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
                                     <rect key="frame" x="0.0" y="0.0" width="623" height="80"/>
