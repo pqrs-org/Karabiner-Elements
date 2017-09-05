@@ -5,8 +5,6 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
 # ------------------------------------------------------------
 # Relaunch karabiner_grabber
 
-killall Karabiner-Menu
-killall Karabiner-Elements
 killall karabiner_grabber
 killall karabiner_console_user_server
 

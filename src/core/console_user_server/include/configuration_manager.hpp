@@ -19,6 +19,8 @@ public:
   configuration_manager(void) : need_to_check_for_updates_(true) {
     filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
 
+    application_launcher::kill_menu();
+
     configuration_monitor_ = std::make_unique<configuration_monitor>(constants::get_user_core_configuration_file_path(),
                                                                      std::bind(&configuration_manager::core_configuration_updated_callback, this, std::placeholders::_1));
   }
