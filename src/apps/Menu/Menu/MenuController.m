@@ -13,11 +13,12 @@
 @implementation MenuController
 
 - (void)setup {
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel =
-      [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  if (!coreConfigurationModel.globalConfigurationShowInMenuBar &&
-      !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
-    [NSApp terminate:nil];
+  {
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    if (!coreConfigurationModel.globalConfigurationShowInMenuBar &&
+        !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
+      [NSApp terminate:nil];
+    }
   }
 
   self.menuIcon = [NSImage imageNamed:@"MenuIcon"];
@@ -34,7 +35,9 @@
                                                     object:nil
                                                      queue:[NSOperationQueue mainQueue]
                                                 usingBlock:^(NSNotification* note) {
-                                                  if (!coreConfigurationModel.globalConfigurationShowInMenuBar && !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
+                                                  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+                                                  if (!coreConfigurationModel.globalConfigurationShowInMenuBar &&
+                                                      !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
                                                     [NSApp terminate:nil];
                                                   }
                                                   [self setStatusItemImage];
