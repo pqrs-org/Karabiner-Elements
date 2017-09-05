@@ -14,9 +14,9 @@
 
 - (void)setup {
   KarabinerKitCoreConfigurationModel* coreConfigurationModel =
-    [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+      [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   if (!coreConfigurationModel.globalConfigurationShowInMenuBar &&
-    !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
+      !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
     [NSApp terminate:nil];
   }
 
@@ -31,16 +31,15 @@
   [self setStatusItemTitle];
 
   [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-    object:nil
-    queue:[NSOperationQueue mainQueue]
-    usingBlock:^(NSNotification* note) {
-      if (!coreConfigurationModel.globalConfigurationShowInMenuBar
-        && !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
-        [NSApp terminate:nil];
-      }
-      [self setStatusItemImage];
-      [self setStatusItemTitle];
-    }];
+                                                    object:nil
+                                                     queue:[NSOperationQueue mainQueue]
+                                                usingBlock:^(NSNotification* note) {
+                                                  if (!coreConfigurationModel.globalConfigurationShowInMenuBar && !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
+                                                    [NSApp terminate:nil];
+                                                  }
+                                                  [self setStatusItemImage];
+                                                  [self setStatusItemTitle];
+                                                }];
 }
 
 - (void)dealloc {
