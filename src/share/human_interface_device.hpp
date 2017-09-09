@@ -565,6 +565,19 @@ public:
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
     }
 
+    // Ungrabbable while modifier keys are pressed
+
+    if (!pressed_modifier_flags_.empty()) {
+      std::stringstream ss;
+      ss << "We cannot grab " << get_name_for_log() << " while any modifier flags are pressed. (";
+      for (const auto& m : pressed_modifier_flags_) {
+        ss << m << " ";
+      }
+      ss << ")";
+      is_grabbable_callback_log_reducer_.warn(ss.str());
+      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+    }
+
     // ----------------------------------------
     // Ungrabbable while pointing button is pressed.
 
@@ -734,6 +747,18 @@ private:
 
               keyboard_repeat_detector_.set(usage_page, usage, element_event.get_event_type());
 
+              // Update pressed_modifier_flags_
+              {
+                auto m = types::make_modifier_flag(usage_page, usage);
+                if (m != modifier_flag::zero) {
+                  if (integer_value) {
+                    pressed_modifier_flags_.insert(m);
+                  } else {
+                    pressed_modifier_flags_.erase(m);
+                  }
+                }
+              }
+
               // Send `device_keys_are_released` event if needed.
 
               if (integer_value) {
@@ -873,6 +898,7 @@ private:
   std::unique_ptr<connected_devices::device> connected_device_;
 
   keyboard_repeat_detector keyboard_repeat_detector_;
+  std::unordered_set<modifier_flag> pressed_modifier_flags_;
 
   std::unordered_set<uint64_t> pressed_keys_;
   std::unordered_set<uint64_t> pressed_pointing_buttons_;
