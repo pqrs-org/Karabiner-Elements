@@ -566,6 +566,9 @@ public:
     }
 
     // Ungrabbable while modifier keys are pressed
+    //
+    // We have to check the modifier keys state to avoid pressed physical modifiers affects in mouse events.
+    // (See DEVELOPMENT.md > Modifier flags handling in kernel)
 
     if (!pressed_modifier_flags_.empty()) {
       std::stringstream ss;
