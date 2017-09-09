@@ -1117,7 +1117,6 @@ KRBN_TYPES_STREAM_OUTPUT(device_id);
 KRBN_TYPES_STREAM_OUTPUT(hid_usage_page);
 KRBN_TYPES_STREAM_OUTPUT(hid_usage);
 KRBN_TYPES_STREAM_OUTPUT(key_code);
-KRBN_TYPES_STREAM_OUTPUT(modifier_flag);
 KRBN_TYPES_STREAM_OUTPUT(consumer_key_code);
 KRBN_TYPES_STREAM_OUTPUT(pointing_button);
 
@@ -1134,6 +1133,30 @@ inline std::ostream& operator<<(std::ostream& stream, const event_type& value) {
     case event_type::single:
       stream << "single";
       break;
+  }
+
+  return stream;
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const modifier_flag& value) {
+#define KRBN_MODIFIER_FLAG_STREAM_OUTPUT(NAME) \
+  case modifier_flag::NAME:                    \
+    stream << #NAME;                           \
+    break;
+
+  switch (value) {
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(zero);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(caps_lock);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(left_control);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(left_shift);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(left_option);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(left_command);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(right_control);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(right_shift);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(right_option);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(right_command);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(fn);
+    KRBN_MODIFIER_FLAG_STREAM_OUTPUT(end_);
   }
 
   return stream;
