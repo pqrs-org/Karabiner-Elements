@@ -1,3 +1,9 @@
+# Version 0.91.14
+
+* Karabiner-Elements waits grabbing device until all modifier keys are released in order to avoid modifier flags stuck issue in mouse events.
+* Support consumer keys (e.g., media key events in Logitech keyboards.)
+
+
 # Version 0.91.13
 
 * Add per device support in `Simple Modifications` and `Fn Function Keys`.
