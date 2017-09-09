@@ -59,9 +59,7 @@ public:
              event_type event_type) {
       switch (event_type) {
         case event_type::key_down:
-          if (types::make_modifier_flag(hid_usage_page, hid_usage) != modifier_flag::zero) {
-            repeating_key_ = boost::none;
-          } else {
+          if (types::make_modifier_flag(hid_usage_page, hid_usage) == modifier_flag::zero) {
             repeating_key_ = std::make_pair(hid_usage_page, hid_usage);
           }
           break;

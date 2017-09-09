@@ -14,7 +14,7 @@ TEST_CASE("keyboard_repeat_detector.is_repeating") {
   REQUIRE(keyboard_repeat_detector.is_repeating() == false);
 
   // ----------------------------------------
-  // Cancel by modifier key
+  // Ignore modifier keys
 
   keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
                                *(krbn::types::make_hid_usage(krbn::key_code::spacebar)),
@@ -24,7 +24,7 @@ TEST_CASE("keyboard_repeat_detector.is_repeating") {
   keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::left_shift)),
                                *(krbn::types::make_hid_usage(krbn::key_code::left_shift)),
                                krbn::event_type::key_down);
-  REQUIRE(keyboard_repeat_detector.is_repeating() == false);
+  REQUIRE(keyboard_repeat_detector.is_repeating() == true);
 
   // ----------------------------------------
   // Cancel by key_up
