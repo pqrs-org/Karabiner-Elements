@@ -7,7 +7,7 @@ public:
                                        ignore_(false),
                                        disable_built_in_keyboard_if_exists_(false),
                                        simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json::array()),
-                                       fn_function_keys_(nlohmann::json::array()) {
+                                       fn_function_keys_(make_default_fn_function_keys_json()) {
     {
       const std::string key = "ignore";
       if (json.find(key) != json.end() && json[key].is_boolean()) {
@@ -26,6 +26,60 @@ public:
         fn_function_keys_.update(json[key]);
       }
     }
+  }
+
+  static nlohmann::json make_default_fn_function_keys_json(void) {
+    auto json = nlohmann::json::array();
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f1";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f2";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f3";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f4";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f5";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f6";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f7";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f8";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f9";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f10";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f11";
+    json.back()["to"][""] = "";
+
+    json.push_back(nlohmann::json::object());
+    json.back()["from"]["key_code"] = "f12";
+    json.back()["to"][""] = "";
+
+    return json;
   }
 
   nlohmann::json to_json(void) const {
