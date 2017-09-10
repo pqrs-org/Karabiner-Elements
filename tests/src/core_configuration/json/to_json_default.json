@@ -19,7 +19,7 @@
                         "key_code": "f1"
                     },
                     "to": {
-                        "key_code": "display_brightness_decrement"
+                        "consumer_key_code": "display_brightness_decrement"
                     }
                 },
                 {
@@ -27,7 +27,7 @@
                         "key_code": "f2"
                     },
                     "to": {
-                        "key_code": "display_brightness_increment"
+                        "consumer_key_code": "display_brightness_increment"
                     }
                 },
                 {
@@ -67,7 +67,7 @@
                         "key_code": "f7"
                     },
                     "to": {
-                        "key_code": "rewind"
+                        "consumer_key_code": "rewind"
                     }
                 },
                 {
@@ -75,7 +75,7 @@
                         "key_code": "f8"
                     },
                     "to": {
-                        "key_code": "play_or_pause"
+                        "consumer_key_code": "play_or_pause"
                     }
                 },
                 {
@@ -83,7 +83,7 @@
                         "key_code": "f9"
                     },
                     "to": {
-                        "key_code": "fastforward"
+                        "consumer_key_code": "fastforward"
                     }
                 },
                 {
@@ -91,7 +91,7 @@
                         "key_code": "f10"
                     },
                     "to": {
-                        "key_code": "mute"
+                        "consumer_key_code": "mute"
                     }
                 },
                 {
@@ -99,7 +99,7 @@
                         "key_code": "f11"
                     },
                     "to": {
-                        "key_code": "volume_decrement"
+                        "consumer_key_code": "volume_decrement"
                     }
                 },
                 {
@@ -107,7 +107,7 @@
                         "key_code": "f12"
                     },
                     "to": {
-                        "key_code": "volume_increment"
+                        "consumer_key_code": "volume_increment"
                     }
                 }
             ],

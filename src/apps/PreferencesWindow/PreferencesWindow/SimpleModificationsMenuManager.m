@@ -33,7 +33,7 @@
       NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"---------------------------------------- (use default key)"
                                                     action:NULL
                                              keyEquivalent:@""];
-      item.representedObject = @"";
+      item.representedObject = [KarabinerKitCoreConfigurationSimpleModificationsDefinition new];
       [self.toMenuWithInherited addItem:item];
       item.enabled = YES;
       [self.toMenuWithInherited addItem:[NSMenuItem separatorItem]];
@@ -72,18 +72,29 @@
         }
         label = [NSString stringWithFormat:@"  %@", label];
 
+        NSString* type = dict[@"type"];
+        if (!type) {
+          type = @"key_code";
+        }
+
         if (!dict[@"not_from"]) {
           NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                         action:NULL
                                                  keyEquivalent:@""];
-          item.representedObject = name;
+          KarabinerKitCoreConfigurationSimpleModificationsDefinition* d = [KarabinerKitCoreConfigurationSimpleModificationsDefinition new];
+          d.type = type;
+          d.value = name;
+          item.representedObject = d;
           [self.fromMenu addItem:item];
         }
         if (!dict[@"not_to"]) {
           NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                         action:NULL
                                                  keyEquivalent:@""];
-          item.representedObject = name;
+          KarabinerKitCoreConfigurationSimpleModificationsDefinition* d = [KarabinerKitCoreConfigurationSimpleModificationsDefinition new];
+          d.type = type;
+          d.value = name;
+          item.representedObject = d;
           [self.toMenu addItem:item];
           [self.toMenuWithInherited addItem:[item copy]];
         }

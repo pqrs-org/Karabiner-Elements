@@ -328,10 +328,12 @@
     },
     {
         "name": "display_brightness_decrement",
+        "type": "consumer_key_code",
         "not_from": true
     },
     {
         "name": "display_brightness_increment",
+        "type": "consumer_key_code",
         "not_from": true
     },
     {
@@ -356,24 +358,27 @@
     },
     {
         "name": "rewind",
-        "not_from": true
+        "type": "consumer_key_code"
     },
     {
         "name": "play_or_pause",
-        "not_from": true
+        "type": "consumer_key_code"
     },
     {
         "name": "fastforward",
-        "not_from": true
+        "type": "consumer_key_code"
     },
     {
-        "name": "mute"
+        "name": "mute",
+        "type": "consumer_key_code"
     },
     {
-        "name": "volume_decrement"
+        "name": "volume_decrement",
+        "type": "consumer_key_code"
     },
     {
-        "name": "volume_increment"
+        "name": "volume_increment",
+        "type": "consumer_key_code"
     },
     {
         "name": "eject",
@@ -394,6 +399,16 @@
     {
         "name": "apple_top_case_display_brightness_increment",
         "not_from": true
+    },
+    {
+        "label": "consumer_key_code::scan_previous_track",
+        "name": "scan_previous_track",
+        "type": "consumer_key_code"
+    },
+    {
+        "label": "consumer_key_code::scan_next_track",
+        "name": "scan_next_track",
+        "type": "consumer_key_code"
     },
     {
         "category": "Keypad keys"
@@ -765,5 +780,42 @@
     {
         "name": "volume_up",
         "label": "volume_up (equal to `volume_increment`)"
+    },
+    {
+        "name": "display_brightness_decrement",
+        "label": "key_code::display_brightness_decrement",
+        "not_from": true
+    },
+    {
+        "name": "display_brightness_increment",
+        "label": "key_code::display_brightness_increment",
+        "not_from": true
+    },
+    {
+        "name": "rewind",
+        "label": "key_code::rewind",
+        "not_from": true
+    },
+    {
+        "name": "play_or_pause",
+        "label": "key_code::play_or_pause",
+        "not_from": true
+    },
+    {
+        "name": "fastforward",
+        "label": "key_code::fastforward",
+        "not_from": true
+    },
+    {
+        "name": "mute",
+        "label": "key_code::mute"
+    },
+    {
+        "name": "volume_decrement",
+        "label": "key_code::volume_decrement"
+    },
+    {
+        "name": "volume_increment",
+        "label": "key_code::volume_increment"
     }
 ]

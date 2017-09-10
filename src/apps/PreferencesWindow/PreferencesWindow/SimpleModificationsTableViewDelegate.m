@@ -24,9 +24,9 @@
     result.popUpButton.menu = [self.simpleModificationsMenuManager.fromMenu copy];
 
     NSInteger connectedDeviceIndex = self.simpleModificationsTableViewController.selectedConnectedDeviceIndex;
-    NSString* fromValue = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row
-                                                                           connectedDeviceIndex:connectedDeviceIndex];
-    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:fromValue];
+    KarabinerKitCoreConfigurationSimpleModificationsDefinition* from = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row
+                                                                                                                        connectedDeviceIndex:connectedDeviceIndex];
+    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton definition:from];
 
     return result;
   }
@@ -40,17 +40,17 @@
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     NSInteger connectedDeviceIndex = self.simpleModificationsTableViewController.selectedConnectedDeviceIndex;
-    NSString* fromValue = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row
-                                                                           connectedDeviceIndex:connectedDeviceIndex];
-    if ([fromValue length] > 0) {
+    KarabinerKitCoreConfigurationSimpleModificationsDefinition* from = [coreConfigurationModel selectedProfileSimpleModificationFirstAtIndex:row
+                                                                                                                        connectedDeviceIndex:connectedDeviceIndex];
+    if ([from.value length] > 0) {
       result.popUpButton.enabled = YES;
     } else {
       result.popUpButton.enabled = NO;
     }
 
-    NSString* toValue = [coreConfigurationModel selectedProfileSimpleModificationSecondAtIndex:row
-                                                                          connectedDeviceIndex:connectedDeviceIndex];
-    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:toValue];
+    KarabinerKitCoreConfigurationSimpleModificationsDefinition* to = [coreConfigurationModel selectedProfileSimpleModificationSecondAtIndex:row
+                                                                                                                       connectedDeviceIndex:connectedDeviceIndex];
+    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton definition:to];
 
     return result;
   }

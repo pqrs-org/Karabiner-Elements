@@ -15,6 +15,11 @@ typedef struct {
   bool is_pointing_device;
 } libkrbn_device_identifiers;
 
+typedef struct {
+  const char* _Nullable type;
+  const char* _Nullable value;
+} libkrbn_simple_modifications_definition;
+
 void libkrbn_initialize(void);
 
 const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
@@ -73,16 +78,16 @@ void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* _Nonnu
 
 size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* _Nonnull p,
                                                                                  libkrbn_device_identifiers* _Nullable device_identifiers);
-const char* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* _Nonnull p,
-                                                                                                size_t index,
-                                                                                                libkrbn_device_identifiers* _Nullable device_identifiers);
-const char* _Nullable libkrbn_core_configuration_get_selected_profile_simple_modification_second(libkrbn_core_configuration* _Nonnull p,
-                                                                                                 size_t index,
-                                                                                                 libkrbn_device_identifiers* _Nullable device_identifiers);
+libkrbn_simple_modifications_definition libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* _Nonnull p,
+                                                                                                                  size_t index,
+                                                                                                                  libkrbn_device_identifiers* _Nullable device_identifiers);
+libkrbn_simple_modifications_definition libkrbn_core_configuration_get_selected_profile_simple_modification_second(libkrbn_core_configuration* _Nonnull p,
+                                                                                                                   size_t index,
+                                                                                                                   libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_replace_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p,
                                                                              size_t index,
-                                                                             const char* _Nonnull from,
-                                                                             const char* _Nonnull to,
+                                                                             const libkrbn_simple_modifications_definition* _Nonnull from,
+                                                                             const libkrbn_simple_modifications_definition* _Nonnull to,
                                                                              libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p,
                                                                                libkrbn_device_identifiers* _Nullable device_identifiers);
@@ -93,15 +98,15 @@ void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkr
 
 size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(libkrbn_core_configuration* _Nonnull p,
                                                                              libkrbn_device_identifiers* _Nullable device_identifiers);
-const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_function_key_first(libkrbn_core_configuration* _Nonnull p,
-                                                                                            size_t index,
-                                                                                            libkrbn_device_identifiers* _Nullable device_identifiers);
-const char* _Nullable libkrbn_core_configuration_get_selected_profile_fn_function_key_second(libkrbn_core_configuration* _Nonnull p,
-                                                                                             size_t index,
-                                                                                             libkrbn_device_identifiers* _Nullable device_identifiers);
+libkrbn_simple_modifications_definition libkrbn_core_configuration_get_selected_profile_fn_function_key_first(libkrbn_core_configuration* _Nonnull p,
+                                                                                                              size_t index,
+                                                                                                              libkrbn_device_identifiers* _Nullable device_identifiers);
+libkrbn_simple_modifications_definition libkrbn_core_configuration_get_selected_profile_fn_function_key_second(libkrbn_core_configuration* _Nonnull p,
+                                                                                                               size_t index,
+                                                                                                               libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn_core_configuration* _Nonnull p,
-                                                                         const char* _Nonnull from,
-                                                                         const char* _Nonnull to,
+                                                                         const libkrbn_simple_modifications_definition* _Nonnull from,
+                                                                         const libkrbn_simple_modifications_definition* _Nonnull to,
                                                                          libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // profile:complex_modifications

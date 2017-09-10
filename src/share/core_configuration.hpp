@@ -30,20 +30,7 @@ public:
     profile(const nlohmann::json& json) : json_(json),
                                           selected_(false),
                                           simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json::array()),
-                                          fn_function_keys_(nlohmann::json({
-                                              {"f1", "display_brightness_decrement"},
-                                              {"f2", "display_brightness_increment"},
-                                              {"f3", "mission_control"},
-                                              {"f4", "launchpad"},
-                                              {"f5", "illumination_decrement"},
-                                              {"f6", "illumination_increment"},
-                                              {"f7", "rewind"},
-                                              {"f8", "play_or_pause"},
-                                              {"f9", "fastforward"},
-                                              {"f10", "mute"},
-                                              {"f11", "volume_decrement"},
-                                              {"f12", "volume_increment"},
-                                          })),
+                                          fn_function_keys_(make_default_fn_function_keys_json()),
                                           complex_modifications_(json.find("complex_modifications") != json.end() ? json["complex_modifications"] : nlohmann::json::object()),
                                           virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json::object()) {
       {
@@ -72,6 +59,60 @@ public:
           }
         }
       }
+    }
+
+    static nlohmann::json make_default_fn_function_keys_json(void) {
+      auto json = nlohmann::json::array();
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f1";
+      json.back()["to"]["consumer_key_code"] = "display_brightness_decrement";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f2";
+      json.back()["to"]["consumer_key_code"] = "display_brightness_increment";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f3";
+      json.back()["to"]["key_code"] = "mission_control";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f4";
+      json.back()["to"]["key_code"] = "launchpad";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f5";
+      json.back()["to"]["key_code"] = "illumination_decrement";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f6";
+      json.back()["to"]["key_code"] = "illumination_increment";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f7";
+      json.back()["to"]["consumer_key_code"] = "rewind";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f8";
+      json.back()["to"]["consumer_key_code"] = "play_or_pause";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f9";
+      json.back()["to"]["consumer_key_code"] = "fastforward";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f10";
+      json.back()["to"]["consumer_key_code"] = "mute";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f11";
+      json.back()["to"]["consumer_key_code"] = "volume_decrement";
+
+      json.push_back(nlohmann::json::object());
+      json.back()["from"]["key_code"] = "f12";
+      json.back()["to"]["consumer_key_code"] = "volume_increment";
+
+      return json;
     }
 
     nlohmann::json to_json(void) const {

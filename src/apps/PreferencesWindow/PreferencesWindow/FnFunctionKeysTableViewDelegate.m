@@ -21,7 +21,8 @@
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     NSInteger connectedDeviceIndex = self.fnFunctionKeysTableViewController.selectedConnectedDeviceIndex;
     result.textField.stringValue = [coreConfigurationModel selectedProfileFnFunctionKeyFirstAtIndex:row
-                                                                               connectedDeviceIndex:connectedDeviceIndex];
+                                                                               connectedDeviceIndex:connectedDeviceIndex]
+                                       .value;
 
     return result;
   }
@@ -39,9 +40,9 @@
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     NSInteger connectedDeviceIndex = self.fnFunctionKeysTableViewController.selectedConnectedDeviceIndex;
-    NSString* toValue = [coreConfigurationModel selectedProfileFnFunctionKeySecondAtIndex:row
-                                                                     connectedDeviceIndex:connectedDeviceIndex];
-    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton representedObject:toValue];
+    KarabinerKitCoreConfigurationSimpleModificationsDefinition* to = [coreConfigurationModel selectedProfileFnFunctionKeySecondAtIndex:row
+                                                                                                                  connectedDeviceIndex:connectedDeviceIndex];
+    [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton definition:to];
 
     return result;
   }

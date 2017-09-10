@@ -117,8 +117,8 @@ public:
   }
 
   void push_back_pair(void) {
-    pairs_.emplace_back(definition("key_code", ""),
-                        definition("key_code", ""));
+    pairs_.emplace_back(definition("", ""),
+                        definition("", ""));
   }
 
   void erase_pair(size_t index) {
@@ -127,17 +127,25 @@ public:
     }
   }
 
-  void replace_pair(size_t index, const std::string& from, const std::string& to) {
+  void replace_pair(size_t index,
+                    const std::pair<std::string, std::string>& from,
+                    const std::pair<std::string, std::string>& to) {
     if (index < pairs_.size()) {
-      pairs_[index].first.set_value(from);
-      pairs_[index].second.set_value(to);
+      pairs_[index].first.set_type(from.first);
+      pairs_[index].first.set_value(from.second);
+      pairs_[index].second.set_type(to.first);
+      pairs_[index].second.set_value(to.second);
     }
   }
 
-  void replace_second(const std::string& from, const std::string& to) {
+  void replace_second(const std::pair<std::string, std::string>& from,
+                      const std::pair<std::string, std::string>& to) {
+    definition d(from.first, from.second);
+
     for (auto&& it : pairs_) {
-      if (it.first.get_value() == from) {
-        it.second.set_value(to);
+      if (it.first == d) {
+        it.second.set_type(to.first);
+        it.second.set_value(to.second);
         return;
       }
     }

@@ -14,13 +14,18 @@
 
 @implementation SimpleModificationsTableViewController
 
-+ (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton representedObject:(NSString*)representedObject {
++ (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton
+                   definition:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)definition {
   NSArray* items = popUpButton.itemArray;
   if (items) {
     for (NSMenuItem* item in items) {
-      if ([item.representedObject isEqualToString:representedObject]) {
-        [popUpButton selectItem:item];
-        return;
+      KarabinerKitCoreConfigurationSimpleModificationsDefinition* representedObject = item.representedObject;
+      if ([representedObject isKindOfClass:KarabinerKitCoreConfigurationSimpleModificationsDefinition.class]) {
+        if ([representedObject.type isEqualToString:definition.type] &&
+            [representedObject.value isEqualToString:definition.value]) {
+          [popUpButton selectItem:item];
+          return;
+        }
       }
     }
   }
@@ -56,20 +61,22 @@
   SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
   SimpleModificationsTableCellView* toCellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
 
-  NSString* fromValue = fromCellView.popUpButton.selectedItem.representedObject;
-  if (fromValue && ![fromValue isEqualToString:@""]) {
+  KarabinerKitCoreConfigurationSimpleModificationsDefinition* from = fromCellView.popUpButton.selectedItem.representedObject;
+  if ([from isKindOfClass:KarabinerKitCoreConfigurationSimpleModificationsDefinition.class]) {
     // If toCellView is not selected, set fromCellView value to toCellView.
-    NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
-    if (!toValue || [toValue isEqualToString:@""]) {
-      [SimpleModificationsTableViewController selectPopUpButtonMenu:toCellView.popUpButton representedObject:fromValue];
-      toValue = toCellView.popUpButton.selectedItem.representedObject;
+    KarabinerKitCoreConfigurationSimpleModificationsDefinition* to = toCellView.popUpButton.selectedItem.representedObject;
+    if (![to isKindOfClass:KarabinerKitCoreConfigurationSimpleModificationsDefinition.class] ||
+        [to.value length] == 0) {
+      [SimpleModificationsTableViewController selectPopUpButtonMenu:toCellView.popUpButton
+                                                         definition:from];
+      to = toCellView.popUpButton.selectedItem.representedObject;
     }
     toCellView.popUpButton.enabled = YES;
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     [coreConfigurationModel setSelectedProfileSimpleModificationAtIndex:row
-                                                                   from:fromValue
-                                                                     to:toValue
+                                                                   from:from
+                                                                     to:to
                                                    connectedDeviceIndex:self.selectedConnectedDeviceIndex];
     [coreConfigurationModel save];
   }

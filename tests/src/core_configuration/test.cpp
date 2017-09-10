@@ -27,17 +27,17 @@ TEST_CASE("valid") {
   {
     std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> expected{
         {{"key_code", "f1"}, {"key_code", "escape"}},
-        {{"key_code", "f2"}, {"key_code", "display_brightness_increment"}},
+        {{"key_code", "f2"}, {"consumer_key_code", "display_brightness_increment"}},
         {{"key_code", "f3"}, {"key_code", "mission_control"}},
         {{"key_code", "f4"}, {"key_code", "launchpad"}},
         {{"key_code", "f5"}, {"key_code", "illumination_decrement"}},
         {{"key_code", "f6"}, {"key_code", "illumination_increment"}},
-        {{"key_code", "f7"}, {"key_code", "rewind"}},
-        {{"key_code", "f8"}, {"key_code", "play_or_pause"}},
-        {{"key_code", "f9"}, {"key_code", "fastforward"}},
-        {{"key_code", "f10"}, {"key_code", "mute"}},
-        {{"key_code", "f11"}, {"key_code", "volume_decrement"}},
-        {{"key_code", "f12"}, {"key_code", "volume_increment"}},
+        {{"key_code", "f7"}, {"consumer_key_code", "rewind"}},
+        {{"key_code", "f8"}, {"consumer_key_code", "play_or_pause"}},
+        {{"key_code", "f9"}, {"consumer_key_code", "fastforward"}},
+        {{"key_code", "f10"}, {"consumer_key_code", "mute"}},
+        {{"key_code", "f11"}, {"consumer_key_code", "volume_decrement"}},
+        {{"key_code", "f12"}, {"consumer_key_code", "volume_increment"}},
     };
     REQUIRE(configuration.get_selected_profile().get_fn_function_keys().get_pairs() == expected);
   }
@@ -211,18 +211,18 @@ nlohmann::json get_default_virtual_hid_keyboard_json(void) {
 
 std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>> make_default_fn_function_keys_pairs(void) {
   return std::vector<std::pair<simple_modifications::definition, simple_modifications::definition>>({
-      {{"key_code", "f1"}, {"key_code", "display_brightness_decrement"}},
-      {{"key_code", "f2"}, {"key_code", "display_brightness_increment"}},
+      {{"key_code", "f1"}, {"consumer_key_code", "display_brightness_decrement"}},
+      {{"key_code", "f2"}, {"consumer_key_code", "display_brightness_increment"}},
       {{"key_code", "f3"}, {"key_code", "mission_control"}},
       {{"key_code", "f4"}, {"key_code", "launchpad"}},
       {{"key_code", "f5"}, {"key_code", "illumination_decrement"}},
       {{"key_code", "f6"}, {"key_code", "illumination_increment"}},
-      {{"key_code", "f7"}, {"key_code", "rewind"}},
-      {{"key_code", "f8"}, {"key_code", "play_or_pause"}},
-      {{"key_code", "f9"}, {"key_code", "fastforward"}},
-      {{"key_code", "f10"}, {"key_code", "mute"}},
-      {{"key_code", "f11"}, {"key_code", "volume_decrement"}},
-      {{"key_code", "f12"}, {"key_code", "volume_increment"}},
+      {{"key_code", "f7"}, {"consumer_key_code", "rewind"}},
+      {{"key_code", "f8"}, {"consumer_key_code", "play_or_pause"}},
+      {{"key_code", "f9"}, {"consumer_key_code", "fastforward"}},
+      {{"key_code", "f10"}, {"consumer_key_code", "mute"}},
+      {{"key_code", "f11"}, {"consumer_key_code", "volume_decrement"}},
+      {{"key_code", "f12"}, {"consumer_key_code", "volume_increment"}},
   });
 }
 } // namespace
@@ -551,14 +551,14 @@ TEST_CASE("profile.to_json") {
     // }
 
     profile.get_simple_modifications().push_back_pair();
-    profile.get_simple_modifications().replace_pair(1, "from 1", "to 1");
+    profile.get_simple_modifications().replace_pair(1, {"key_code", "from 1"}, {"key_code", "to 1"});
     // {
     //   "": "",
     //   "from 1": "to 1"
     // }
 
     profile.get_simple_modifications().push_back_pair();
-    profile.get_simple_modifications().replace_pair(2, "from 3", "to 3");
+    profile.get_simple_modifications().replace_pair(2, {"key_code", "from 3"}, {"key_code", "to 3"});
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -566,7 +566,7 @@ TEST_CASE("profile.to_json") {
     // }
 
     profile.get_simple_modifications().push_back_pair();
-    profile.get_simple_modifications().replace_pair(3, "from 4", "to 4");
+    profile.get_simple_modifications().replace_pair(3, {"key_code", "from 4"}, {"key_code", "to 4"});
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -575,7 +575,7 @@ TEST_CASE("profile.to_json") {
     // }
 
     profile.get_simple_modifications().push_back_pair();
-    profile.get_simple_modifications().replace_pair(4, "from 2", "to 2");
+    profile.get_simple_modifications().replace_pair(4, {"key_code", "from 2"}, {"key_code", "to 2"});
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -585,7 +585,7 @@ TEST_CASE("profile.to_json") {
     // }
 
     profile.get_simple_modifications().push_back_pair();
-    profile.get_simple_modifications().replace_pair(5, "from 2", "to 2.0");
+    profile.get_simple_modifications().replace_pair(5, {"key_code", "from 2"}, {"key_code", "to 2.0"});
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -605,7 +605,7 @@ TEST_CASE("profile.to_json") {
     // }
 
     profile.get_simple_modifications().push_back_pair();
-    profile.get_simple_modifications().replace_pair(5, "", "to 0");
+    profile.get_simple_modifications().replace_pair(5, {"key_code", ""}, {"key_code", "to 0"});
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -616,7 +616,7 @@ TEST_CASE("profile.to_json") {
     // }
 
     profile.get_simple_modifications().push_back_pair();
-    profile.get_simple_modifications().replace_pair(6, "from 0", "");
+    profile.get_simple_modifications().replace_pair(6, {"key_code", "from 0"}, {"key_code", ""});
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -628,7 +628,7 @@ TEST_CASE("profile.to_json") {
     // }
 
     profile.get_simple_modifications().push_back_pair();
-    profile.get_simple_modifications().replace_pair(7, "from 5", "to 5");
+    profile.get_simple_modifications().replace_pair(7, {"key_code", "from 5"}, {"key_code", "to 5"});
     // {
     //   "": "",
     //   "from 1": "to 1",
@@ -640,8 +640,8 @@ TEST_CASE("profile.to_json") {
     //   "from 5": "to 5"
     // }
 
-    profile.get_fn_function_keys().replace_second("f3", "to f3");
-    profile.get_fn_function_keys().replace_second("not found", "do nothing");
+    profile.get_fn_function_keys().replace_second({"key_code", "f3"}, {"key_code", "to f3"});
+    profile.get_fn_function_keys().replace_second({"key_code", "not found"}, {"key_code", "do nothing"});
 
     profile.get_virtual_hid_keyboard().set_keyboard_type("iso");
 
@@ -789,9 +789,9 @@ TEST_CASE("simple_modifications.to_json") {
     });
     krbn::core_configuration::profile::simple_modifications simple_modifications(json);
     simple_modifications.push_back_pair();
-    simple_modifications.replace_pair(4, "a", "f5"); // will be ignored since "a" already exists.
+    simple_modifications.replace_pair(4, {"key_code", "a"}, {"key_code", "f5"}); // will be ignored since "a" already exists.
     simple_modifications.push_back_pair();
-    simple_modifications.replace_pair(5, "c", "f6");
+    simple_modifications.replace_pair(5, {"key_code", "c"}, {"key_code", "f6"});
 
     auto expected = nlohmann::json::array();
     expected.push_back(nlohmann::json::object());

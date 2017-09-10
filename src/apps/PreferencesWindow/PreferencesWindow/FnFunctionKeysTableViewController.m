@@ -44,13 +44,15 @@
   SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
   SimpleModificationsTableCellView* toCellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
 
-  NSString* fromValue = fromCellView.textField.stringValue;
-  NSString* toValue = toCellView.popUpButton.selectedItem.representedObject;
+  KarabinerKitCoreConfigurationSimpleModificationsDefinition* from = [KarabinerKitCoreConfigurationSimpleModificationsDefinition new];
+  from.type = @"key_code";
+  from.value = fromCellView.textField.stringValue;
+  KarabinerKitCoreConfigurationSimpleModificationsDefinition* to = toCellView.popUpButton.selectedItem.representedObject;
 
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
 
-  [coreConfigurationModel setSelectedProfileFnFunctionKey:fromValue
-                                                       to:toValue
+  [coreConfigurationModel setSelectedProfileFnFunctionKey:from
+                                                       to:to
                                      connectedDeviceIndex:self.selectedConnectedDeviceIndex];
   [coreConfigurationModel save];
 }

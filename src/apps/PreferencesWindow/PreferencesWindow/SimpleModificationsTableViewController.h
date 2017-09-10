@@ -1,10 +1,12 @@
 // -*- Mode: objc -*-
 
 @import Cocoa;
+#import "KarabinerKit/KarabinerKit.h"
 
 @interface SimpleModificationsTableViewController : NSObject
 
-+ (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton representedObject:(NSString*)representedObject;
++ (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton
+                   definition:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)definition;
 
 - (void)setup;
 - (void)valueChanged:(id)sender;
