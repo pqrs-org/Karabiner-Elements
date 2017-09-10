@@ -1159,7 +1159,19 @@ inline std::ostream& operator<<(std::ostream& stream, const modifier_flag& value
     KRBN_MODIFIER_FLAG_STREAM_OUTPUT(end_);
   }
 
+#undef KRBN_MODIFIER_FLAG_STREAM_OUTPUT
+
   return stream;
+}
+
+template <template <class T, class A> class container>
+inline std::ostream& operator<<(std::ostream& stream, const container<modifier_flag, std::allocator<modifier_flag>>& values) {
+  return stream_utility::output_enums(stream, values);
+}
+
+template <template <class T, class H, class K, class A> class container>
+inline std::ostream& operator<<(std::ostream& stream, const container<modifier_flag, std::hash<modifier_flag>, std::equal_to<modifier_flag>, std::allocator<modifier_flag>>& values) {
+  return stream_utility::output_enums(stream, values);
 }
 
 inline void to_json(nlohmann::json& json, const device_identifiers& identifiers) {
