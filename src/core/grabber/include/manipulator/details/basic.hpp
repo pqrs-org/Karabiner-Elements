@@ -135,6 +135,12 @@ public:
         is_target = true;
       }
     }
+    if (auto consumer_key_code = front_input_event.get_event().get_consumer_key_code()) {
+      if (from_.get_consumer_key_code() == consumer_key_code ||
+          from_.get_any_type() == event_definition::type::consumer_key_code) {
+        is_target = true;
+      }
+    }
     if (auto pointing_button = front_input_event.get_event().get_pointing_button()) {
       if (from_.get_pointing_button() == pointing_button ||
           from_.get_any_type() == event_definition::type::pointing_button) {
@@ -460,6 +466,7 @@ private:
   void unset_alone_if_needed(const event_queue::queued_event::event& event,
                              event_type event_type) {
     if (event.get_type() == event_queue::queued_event::event::type::key_code ||
+        event.get_type() == event_queue::queued_event::event::type::consumer_key_code ||
         event.get_type() == event_queue::queued_event::event::type::pointing_button) {
       if (event_type == event_type::key_down) {
         goto run;
