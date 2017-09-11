@@ -1,0 +1,38 @@
+{
+    "profiles": [
+        {
+            "name": "Support for '^' and '<>' keys with Apple intl. keyboards",
+            "selected": true,
+            "simple_modifications": [
+                {
+                    "disabled": false,
+                    "from": "non_us_backslash",
+                    "product_id": 602,
+                    "to": "grave_accent_and_tilde",
+                    "vendor_id": 1452
+                },
+                {
+                    "disabled": false,
+                    "from": "grave_accent_and_tilde",
+                    "product_id": 602,
+                    "to": "non_us_backslash",
+                    "vendor_id": 1452
+                },
+                {
+                    "disabled": false,
+                    "from": "non_us_backslash",
+                    "product_id": 598,
+                    "to": "grave_accent_and_tilde",
+                    "vendor_id": 1452
+                },
+                {
+                    "disabled": false,
+                    "from": "grave_accent_and_tilde",
+                    "product_id": 598,
+                    "to": "non_us_backslash",
+                    "vendor_id": 1452
+                }
+            ],
+        }
+    ]
+}
