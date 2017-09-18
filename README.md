@@ -3,13 +3,16 @@
 
 # Karabiner-Elements
 
-Karabiner-Elements provides a subset of the features planned for the next generation [Karabiner](https://pqrs.org/osx/karabiner) for macOS Sierra. The current version of Karabiner does not work with Sierra, so Karabiner-Elements was created to keep Sierra users up and running until a new version of Karabiner is published.
+Karabiner-Elements is a powerful utility for keyboard customization on macOS Sierra or later.
+
+[Karabiner](https://pqrs.org/osx/karabiner) stopped working because of the keyboard driver architecture changes at macOS Sierra.
+Thus, Karabiner-Elements was made from scratch for new macOS.
 
 ## Project Status
 
 Karabiner-Elements is ready to use today. It provides a useful subset of Karabiner's features that you can begin using immediately.
 
-You can download the latest Karabiner-Elements from https://pqrs.org/latest/karabiner-elements-latest.dmg
+You can download the latest Karabiner-Elements from https://pqrs.org/osx/karabiner/
 
 ### Old releases
 
@@ -24,7 +27,7 @@ https://github.com/tekezo/pqrs.org/tree/master/webroot/osx/karabiner/files
 
 # Usage
 
-Detailed usage instructions are provided in [the Usage README](usage/README.md).
+https://pqrs.org/osx/karabiner/document.html
 
 ## Features
 
