@@ -1,3 +1,9 @@
+# Version 11.0.0
+
+* The first stable release of Karabiner-Elements.
+  (There is no changes from Karabiner-Elements 0.91.16.)
+
+
 # Version 0.91.16
 
 * Karabiner-Elements waits grabbing device until all modifier keys are released in order to avoid modifier flags stuck issue in mouse events.
