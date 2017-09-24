@@ -240,16 +240,21 @@ public:
 
         // Send events
 
-        for (size_t i = 0; i < to_.size(); ++i) {
-          if (auto event = to_[i].to_event()) {
+        for (auto it = std::begin(to_); it != std::end(to_); std::advance(it, 1)) {
+          if (auto event = it->to_event()) {
             switch (front_input_event.get_event_type()) {
               case event_type::key_down:
-                enqueue_to_modifiers(to_[i],
-                                     event_type::key_down,
-                                     front_input_event,
-                                     !preserve_to_modifiers_down(),
-                                     time_stamp_delay,
-                                     output_event_queue);
+                // to_modifier down, to_key down, to_key up, to_modifier up
+
+                {
+                  bool lazy = !preserve_to_modifiers_down();
+                  enqueue_to_modifiers(*it,
+                                       event_type::key_down,
+                                       front_input_event,
+                                       lazy,
+                                       time_stamp_delay,
+                                       output_event_queue);
+                }
 
                 output_event_queue.emplace_back_event(front_input_event.get_device_id(),
                                                       front_input_event.get_time_stamp() + time_stamp_delay++,
@@ -257,7 +262,7 @@ public:
                                                       event_type::key_down,
                                                       front_input_event.get_original_event());
 
-                if (i != to_.size() - 1) {
+                if (it != std::end(to_) - 1) {
                   output_event_queue.emplace_back_event(front_input_event.get_device_id(),
                                                         front_input_event.get_time_stamp() + time_stamp_delay++,
                                                         *event,
@@ -265,8 +270,10 @@ public:
                                                         front_input_event.get_original_event());
                 }
 
-                if (i != to_.size() - 1 || !preserve_to_modifiers_down()) {
-                  enqueue_to_modifiers(to_[i],
+                if (it == std::end(to_) - 1 && preserve_to_modifiers_down()) {
+                  // Do nothing
+                } else {
+                  enqueue_to_modifiers(*it,
                                        event_type::key_up,
                                        front_input_event,
                                        !preserve_to_modifiers_down(),
@@ -276,7 +283,7 @@ public:
                 break;
 
               case event_type::key_up:
-                if (i == to_.size() - 1) {
+                if (it == std::end(to_) - 1) {
                   output_event_queue.emplace_back_event(front_input_event.get_device_id(),
                                                         front_input_event.get_time_stamp() + time_stamp_delay++,
                                                         *event,
@@ -284,10 +291,10 @@ public:
                                                         front_input_event.get_original_event());
 
                   if (preserve_to_modifiers_down()) {
-                    enqueue_to_modifiers(to_[i],
+                    enqueue_to_modifiers(*it,
                                          event_type::key_up,
                                          front_input_event,
-                                         !preserve_to_modifiers_down(),
+                                         false,
                                          time_stamp_delay,
                                          output_event_queue);
                   }
@@ -401,7 +408,7 @@ public:
                                                 event_queue::queued_event::event(*key_code),
                                                 event_type,
                                                 front_input_event.get_original_event(),
-                                                !preserve_to_modifiers_down());
+                                                lazy);
         }
       }
     }
@@ -432,7 +439,8 @@ private:
                             const std::vector<to_event_definition>& to_events,
                             uint64_t& time_stamp_delay,
                             event_queue& output_event_queue) {
-    for (const auto& to : to_events) {
+    for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
+      auto& to = *it;
       if (auto event = to.to_event()) {
         enqueue_to_modifiers(to,
                              event_type::key_down,
@@ -453,6 +461,7 @@ private:
                                               event_type::key_up,
                                               front_input_event.get_original_event());
 
+        bool lazy = (it != std::end(to_events) - 1);
         enqueue_to_modifiers(to,
                              event_type::key_up,
                              front_input_event,
