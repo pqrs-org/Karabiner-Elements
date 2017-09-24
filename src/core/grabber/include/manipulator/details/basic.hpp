@@ -273,10 +273,11 @@ public:
                 if (it == std::end(to_) - 1 && preserve_to_modifiers_down()) {
                   // Do nothing
                 } else {
+                  bool lazy = !preserve_to_modifiers_down();
                   enqueue_to_modifiers(*it,
                                        event_type::key_up,
                                        front_input_event,
-                                       !preserve_to_modifiers_down(),
+                                       lazy,
                                        time_stamp_delay,
                                        output_event_queue);
                 }
@@ -465,7 +466,7 @@ private:
         enqueue_to_modifiers(to,
                              event_type::key_up,
                              front_input_event,
-                             true,
+                             lazy,
                              time_stamp_delay,
                              output_event_queue);
       }
