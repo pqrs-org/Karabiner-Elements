@@ -272,6 +272,8 @@ public:
     if (auto registry_entry_id = get_registry_entry_id(device)) {
       logger::get_logger().info("  registry_entry_id: {0}", *registry_entry_id);
     }
+    logger::get_logger().info("  is_keyboard: {0}", is_keyboard(device));
+    logger::get_logger().info("  is_pointing_device: {0}", is_pointing_device(device));
   }
 
   static void log_removal_device(IOHIDDeviceRef _Nonnull device) {
