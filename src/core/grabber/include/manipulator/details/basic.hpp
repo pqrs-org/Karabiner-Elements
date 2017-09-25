@@ -462,11 +462,10 @@ private:
                                               event_type::key_up,
                                               front_input_event.get_original_event());
 
-        bool lazy = (it != std::end(to_events) - 1);
         enqueue_to_modifiers(to,
                              event_type::key_up,
                              front_input_event,
-                             lazy,
+                             true,
                              time_stamp_delay,
                              output_event_queue);
       }
