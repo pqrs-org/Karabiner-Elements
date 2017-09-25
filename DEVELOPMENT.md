@@ -42,6 +42,13 @@ The highest layer is IOHIDQueue which provides us the HID values.
 
 `karabiner_grabber` uses this method.
 
+### IOKit with Apple Trackpads
+
+IOKit cannot catch events from Apple Trackpads.<br />
+(== Apple Trackpad driver does not send events to IOKit.)
+
+Thus, we should use CGEventTap together for pointing devices.
+
 ## CGEventTapCreate
 
 `CGEventTapCreate` is a limited approach.<br />
