@@ -66,7 +66,11 @@ private:
     hids_[device] = std::make_unique<krbn::human_interface_device>(device);
     auto& dev = hids_[device];
 
-    dev->open();
+    auto r = dev->open();
+    if (r != kIOReturnSuccess) {
+      krbn::logger::get_logger().error("failed to open");
+      return;
+    }
     dev->register_report_callback(boost::bind(&dump_hid_report::report_callback, this, _1, _2, _3, _4, _5));
     dev->schedule();
   }
