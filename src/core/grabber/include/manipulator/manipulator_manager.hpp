@@ -28,10 +28,20 @@ public:
       switch (front_input_event.get_event().get_type()) {
         case event_queue::queued_event::event::type::device_keys_are_released:
           output_event_queue.erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());
+
+          for (auto&& m : manipulators_) {
+            m->force_post_modifier_key_event(front_input_event,
+                                             output_event_queue);
+          }
           break;
 
         case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
           output_event_queue.erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
+
+          for (auto&& m : manipulators_) {
+            m->force_post_pointing_button_event(front_input_event,
+                                                output_event_queue);
+          }
           break;
 
         case event_queue::queued_event::event::type::device_ungrabbed:

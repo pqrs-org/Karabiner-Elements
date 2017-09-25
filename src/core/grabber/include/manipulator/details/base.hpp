@@ -31,6 +31,12 @@ public:
   virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
                                                 event_queue& output_event_queue) = 0;
 
+  virtual void force_post_modifier_key_event(const event_queue::queued_event& front_input_event,
+                                              event_queue& output_event_queue) = 0;
+
+  virtual void force_post_pointing_button_event(const event_queue::queued_event& front_input_event,
+                                                event_queue& output_event_queue) = 0;
+
   bool get_valid(void) const {
     return valid_;
   }

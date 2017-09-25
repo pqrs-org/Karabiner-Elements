@@ -624,6 +624,23 @@ public:
                                                       front_input_event.get_time_stamp());
   }
 
+  virtual void force_post_modifier_key_event(const event_queue::queued_event& front_input_event,
+                                              event_queue& output_event_queue) {
+    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                      queue_,
+                                                      front_input_event.get_time_stamp());
+  }
+
+  virtual void force_post_pointing_button_event(const event_queue::queued_event& front_input_event,
+                                                event_queue& output_event_queue) {
+    auto report = output_event_queue.get_pointing_button_manager().make_pointing_input_report();
+    queue_.emplace_back_event(report,
+                              front_input_event.get_time_stamp());
+
+    // Save bits for `handle_device_ungrabbed_event`.
+    pressed_buttons_ = output_event_queue.get_pointing_button_manager().get_hid_report_bits();
+  }
+
   virtual void set_valid(bool value) {
     // This manipulator is always valid.
   }
