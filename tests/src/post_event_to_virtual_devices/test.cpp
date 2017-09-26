@@ -588,6 +588,7 @@ TEST_CASE("actual examples") {
     ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
     ENQUEUE_KEYBOARD_EVENT(expected, left_shift, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
     ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
