@@ -10,11 +10,18 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
   std::cout << "CGEventGetFlags 0x" << std::hex << CGEventGetFlags(event) << std::dec << std::endl;
 
   switch (type) {
+    case kCGEventTapDisabledByTimeout:
+      krbn::logger::get_logger().info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
+      CGEventTapEnable(eventtap_, true);
+      break;
+
     case kCGEventKeyDown:
       std::cout << "kCGEventKeyDown" << std::endl;
       break;
+
     case kCGEventKeyUp:
       std::cout << "kCGEventKeyUp" << std::endl;
+
     default:
       std::cout << "callback:" << type << std::endl;
       break;
@@ -40,14 +47,14 @@ int main(int argc, const char* argv[]) {
                                kCGHeadInsertEventTap,
                                kCGEventTapOptionDefault,
                                CGEventMaskBit(kCGEventLeftMouseDown) |
-                                   CGEventMaskBit(kCGEventLeftMouseUp) |
-                                   CGEventMaskBit(kCGEventRightMouseDown) |
-                                   CGEventMaskBit(kCGEventRightMouseUp) |
-                                   CGEventMaskBit(kCGEventMouseMoved) |
-                                   CGEventMaskBit(kCGEventLeftMouseDragged) |
-                                   CGEventMaskBit(kCGEventRightMouseDragged) |
-                                   CGEventMaskBit(kCGEventKeyDown) |
-                                   CGEventMaskBit(kCGEventKeyUp),
+                               CGEventMaskBit(kCGEventLeftMouseUp) |
+                               CGEventMaskBit(kCGEventRightMouseDown) |
+                               CGEventMaskBit(kCGEventRightMouseUp) |
+                               CGEventMaskBit(kCGEventMouseMoved) |
+                               CGEventMaskBit(kCGEventLeftMouseDragged) |
+                               CGEventMaskBit(kCGEventRightMouseDragged) |
+                               CGEventMaskBit(kCGEventKeyDown) |
+                               CGEventMaskBit(kCGEventKeyUp),
                                callback,
                                nullptr);
 
