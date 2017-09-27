@@ -193,6 +193,13 @@ SU_EXPORT extern NSString *const SUUpdaterAppcastNotificationKey;
 - (void)updaterWillRelaunchApplication:(SUUpdater *)updater;
 
 /*!
+ Called immediately after relaunching. SUUpdater delegate must be set before applicationDidFinishLaunching: to catch this event.
+ 
+ \param updater The SUUpdater instance.
+ */
+- (void)updaterDidRelaunchApplication:(SUUpdater *)updater;
+
+/*!
  Returns an object that compares version numbers to determine their arithmetic relation to each other.
  
  This method allows you to provide a custom version comparator.

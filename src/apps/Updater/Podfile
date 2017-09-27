@@ -1,3 +1,5 @@
+platform :osx, '10.11'
+
 target 'Updater' do
   pod 'Sparkle'
 end
