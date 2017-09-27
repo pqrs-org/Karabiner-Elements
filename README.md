@@ -53,8 +53,8 @@ https://pqrs.org/osx/karabiner/document.html
 
 System requirements:
 
-* OS X 10.11+
-* Xcode 8+
+* OS X 10.12+
+* Xcode 9+
 * Command Line Tools for Xcode
 * Boost 1.61.0+ (header-only) http://www.boost.org/
 
