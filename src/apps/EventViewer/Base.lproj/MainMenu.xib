@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1510" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -35,7 +34,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="122" width="874" height="550"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
             <value key="minSize" type="size" width="874" height="550"/>
             <view key="contentView" wantsLayer="YES" id="372">
                 <rect key="frame" x="0.0" y="0.0" width="874" height="550"/>
@@ -80,7 +79,7 @@
                                                         <rect key="frame" x="17" y="10" width="770" height="238"/>
                                                         <clipView key="contentView" id="OS0-60-iDz">
                                                             <rect key="frame" x="1" y="0.0" width="753" height="237"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
                                                                 <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" enabled="NO" rowHeight="14" headerView="565" id="564">
                                                                     <rect key="frame" x="0.0" y="0.0" width="753" height="214"/>
@@ -182,6 +181,7 @@
                                                     <constraint firstItem="561" firstAttribute="top" secondItem="541" secondAttribute="bottom" constant="10" id="eZ2-ey-mm9"/>
                                                     <constraint firstItem="539" firstAttribute="leading" secondItem="541" secondAttribute="trailing" constant="10" id="lnu-2U-wtg"/>
                                                     <constraint firstItem="561" firstAttribute="leading" secondItem="541" secondAttribute="leading" id="pfn-WU-u72"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="539" secondAttribute="trailing" constant="20" symbolic="YES" id="z4N-2m-jQX"/>
                                                 </constraints>
                                             </view>
                                         </box>
@@ -215,7 +215,7 @@
                                     <rect key="frame" x="10" y="33" width="834" height="493"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sZl-yu-fW5">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sZl-yu-fW5">
                                             <rect key="frame" x="15" y="466" width="500" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="You can investigate a bundle identifier and a file path of the frontmost application." id="OUp-OJ-jvF">
                                                 <font key="font" metaFont="system"/>
@@ -231,7 +231,7 @@
                                             </constraints>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="NSInfo" id="sNn-Pg-r7N"/>
                                         </imageView>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BNM-S7-jNe">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BNM-S7-jNe">
                                             <rect key="frame" x="49" y="436" width="582" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="You cannot use shortcut keys in EventViewer. Copy the result text from the context menu." id="TLt-or-bkT">
                                                 <font key="font" metaFont="systemBold"/>
@@ -243,9 +243,9 @@
                                             <rect key="frame" x="17" y="17" width="800" height="389"/>
                                             <clipView key="contentView" id="Oc9-TS-hYQ">
                                                 <rect key="frame" x="1" y="1" width="783" height="387"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
-                                                    <textView editable="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="KEZ-Np-coZ">
+                                                    <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="KEZ-Np-coZ">
                                                         <rect key="frame" x="0.0" y="0.0" width="783" height="387"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -274,6 +274,8 @@
                                         <constraint firstItem="sZl-yu-fW5" firstAttribute="top" secondItem="OUd-40-tIR" secondAttribute="top" constant="10" id="Hir-Uj-tMj"/>
                                         <constraint firstItem="pmW-ja-RxN" firstAttribute="top" secondItem="BNM-S7-jNe" secondAttribute="bottom" constant="30" id="dEM-Yb-1Wa"/>
                                         <constraint firstItem="rLa-zN-vtF" firstAttribute="leading" secondItem="sZl-yu-fW5" secondAttribute="leading" id="dtJ-1v-jOA"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="sZl-yu-fW5" secondAttribute="trailing" constant="20" symbolic="YES" id="hVp-IZ-fcE"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="BNM-S7-jNe" secondAttribute="trailing" constant="20" symbolic="YES" id="ili-yx-MXQ"/>
                                         <constraint firstItem="BNM-S7-jNe" firstAttribute="centerY" secondItem="rLa-zN-vtF" secondAttribute="centerY" id="k6C-dT-mOp"/>
                                         <constraint firstAttribute="bottom" secondItem="pmW-ja-RxN" secondAttribute="bottom" constant="17" id="mrf-aG-TBs"/>
                                         <constraint firstItem="sZl-yu-fW5" firstAttribute="leading" secondItem="OUd-40-tIR" secondAttribute="leading" constant="17" id="tAv-2p-ATj"/>
@@ -285,7 +287,7 @@
                                     <rect key="frame" x="10" y="33" width="834" height="493"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lhf-zu-dhb">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lhf-zu-dhb">
                                             <rect key="frame" x="15" y="466" width="371" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="You can investigate internal variables of Karabiner-Elements." id="Rwn-Zi-dJH">
                                                 <font key="font" metaFont="system"/>
@@ -301,7 +303,7 @@
                                             </constraints>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="NSInfo" id="pMs-PO-cpn"/>
                                         </imageView>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nu3-E2-k09">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nu3-E2-k09">
                                             <rect key="frame" x="49" y="435" width="582" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="You cannot use shortcut keys in EventViewer. Copy the result text from the context menu." id="1FH-1H-hUp">
                                                 <font key="font" metaFont="systemBold"/>
@@ -313,9 +315,9 @@
                                             <rect key="frame" x="17" y="17" width="800" height="388"/>
                                             <clipView key="contentView" id="jio-Mp-Rne">
                                                 <rect key="frame" x="1" y="1" width="783" height="386"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
-                                                    <textView editable="NO" importsGraphics="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="Glx-oy-lpN">
+                                                    <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="Glx-oy-lpN">
                                                         <rect key="frame" x="0.0" y="0.0" width="783" height="386"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -340,12 +342,14 @@
                                         <constraint firstAttribute="trailing" secondItem="GP7-yc-xcR" secondAttribute="trailing" constant="17" id="7nz-bn-8gp"/>
                                         <constraint firstItem="Lhf-zu-dhb" firstAttribute="leading" secondItem="xSW-Xf-kXV" secondAttribute="leading" constant="17" id="8Sk-WD-5GA"/>
                                         <constraint firstAttribute="bottom" secondItem="GP7-yc-xcR" secondAttribute="bottom" constant="17" id="Cdk-jZ-4af"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Lhf-zu-dhb" secondAttribute="trailing" constant="20" symbolic="YES" id="CnL-su-XAo"/>
                                         <constraint firstItem="GP7-yc-xcR" firstAttribute="leading" secondItem="xSW-Xf-kXV" secondAttribute="leading" constant="17" id="Et5-Q9-ec6"/>
                                         <constraint firstItem="Lhf-zu-dhb" firstAttribute="top" secondItem="xSW-Xf-kXV" secondAttribute="top" constant="10" id="JqX-8J-d25"/>
                                         <constraint firstItem="GP7-yc-xcR" firstAttribute="top" secondItem="nu3-E2-k09" secondAttribute="bottom" constant="30" id="Kbz-5O-61c"/>
                                         <constraint firstItem="nu3-E2-k09" firstAttribute="centerY" secondItem="Tl1-dp-JpM" secondAttribute="centerY" id="Rhy-RC-Js9"/>
                                         <constraint firstItem="nu3-E2-k09" firstAttribute="leading" secondItem="Tl1-dp-JpM" secondAttribute="trailing" constant="10" id="UZv-2g-MPZ"/>
                                         <constraint firstItem="Tl1-dp-JpM" firstAttribute="leading" secondItem="Lhf-zu-dhb" secondAttribute="leading" id="lVI-2g-aHP"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="nu3-E2-k09" secondAttribute="trailing" constant="20" symbolic="YES" id="ruy-pO-hpH"/>
                                         <constraint firstItem="Tl1-dp-JpM" firstAttribute="top" secondItem="Lhf-zu-dhb" secondAttribute="bottom" constant="10" id="vuR-wf-5Dq"/>
                                     </constraints>
                                 </view>
@@ -386,10 +390,12 @@
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="hsb-w2-bkZ" firstAttribute="top" secondItem="qpH-oY-yl0" secondAttribute="bottom" constant="10" id="Ld3-K7-2WP"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="qpH-oY-yl0" secondAttribute="trailing" constant="20" symbolic="YES" id="UTn-J2-swJ"/>
                                                     <constraint firstItem="qpH-oY-yl0" firstAttribute="top" secondItem="sxi-Co-MLe" secondAttribute="top" constant="10" id="WFY-WW-3Jx"/>
                                                     <constraint firstAttribute="bottom" secondItem="hsb-w2-bkZ" secondAttribute="bottom" constant="10" id="YKc-Zp-u8d"/>
                                                     <constraint firstItem="hsb-w2-bkZ" firstAttribute="leading" secondItem="qpH-oY-yl0" secondAttribute="leading" id="h08-mh-XAX"/>
                                                     <constraint firstItem="qpH-oY-yl0" firstAttribute="leading" secondItem="sxi-Co-MLe" secondAttribute="leading" constant="17" id="nmx-vo-XhA"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="hsb-w2-bkZ" secondAttribute="trailing" constant="20" symbolic="YES" id="zhi-G1-j5z"/>
                                                 </constraints>
                                             </view>
                                         </box>
@@ -413,6 +419,7 @@
                                                 <constraints>
                                                     <constraint firstItem="cCs-zq-ovo" firstAttribute="leading" secondItem="xoA-9x-cwN" secondAttribute="leading" constant="17" id="UTh-8i-Sid"/>
                                                     <constraint firstItem="cCs-zq-ovo" firstAttribute="top" secondItem="xoA-9x-cwN" secondAttribute="top" constant="10" id="XGH-5Q-4x7"/>
+                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="cCs-zq-ovo" secondAttribute="trailing" constant="20" symbolic="YES" id="XVL-1N-PKn"/>
                                                     <constraint firstAttribute="bottom" secondItem="cCs-zq-ovo" secondAttribute="bottom" constant="10" id="od8-gC-Cw7"/>
                                                 </constraints>
                                             </view>
