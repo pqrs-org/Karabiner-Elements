@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -483,7 +484,7 @@
                                             <rect key="frame" x="17" y="43" width="820" height="394"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
                                                 <rect key="frame" x="1" y="0.0" width="818" height="393"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
                                                         <rect key="frame" x="0.0" y="0.0" width="818" height="370"/>
@@ -1538,7 +1539,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             <rect key="frame" x="17" y="34" width="820" height="446"/>
                                             <clipView key="contentView" id="KqJ-JT-0VB">
                                                 <rect key="frame" x="1" y="0.0" width="818" height="445"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="4rB-73-cgf" viewBased="YES" id="Y8t-wV-kQb" customClass="ProfilesTableView">
                                                         <rect key="frame" x="0.0" y="0.0" width="818" height="422"/>
@@ -1844,7 +1845,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="TNd-jk-kpr">
-                                                        <rect key="frame" x="35" y="6" width="292" height="18"/>
+                                                        <rect key="frame" x="15" y="6" width="292" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show profile name in menu bar (Default: Off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="dqN-LK-Qdn">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -2057,7 +2058,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         <rect key="frame" x="17" y="61" width="766" height="288"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
                             <rect key="frame" x="1" y="1" width="764" height="286"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
                                     <rect key="frame" x="0.0" y="0.0" width="764" height="286"/>
@@ -2266,7 +2267,7 @@ Gw
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9oL-YE-FiJ">
                         <rect key="frame" x="114" y="163" width="604" height="17"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="600" id="SHe-uE-Vaq"/>
+                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="600" id="SHe-uE-Vaq"/>
                         </constraints>
                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="https://example.com" id="vyx-b8-V2L">
                             <font key="font" metaFont="system"/>
@@ -2281,7 +2282,7 @@ Gw
                         <rect key="frame" x="80" y="61" width="640" height="82"/>
                         <clipView key="contentView" id="uNg-oR-13T">
                             <rect key="frame" x="1" y="1" width="623" height="80"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
                                     <rect key="frame" x="0.0" y="0.0" width="623" height="80"/>
@@ -2303,12 +2304,9 @@ Gw
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RCh-62-Dln">
-                        <rect key="frame" x="294" y="13" width="92" height="32"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="80" id="oUT-IN-8HD"/>
-                        </constraints>
-                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WIz-od-AHq">
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RCh-62-Dln">
+                        <rect key="frame" x="294" y="13" width="106" height="32"/>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WIz-od-AHq">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                             <string key="keyEquivalent" base64-UTF8="YES">
@@ -2319,12 +2317,9 @@ Gw
                             <action selector="closePanel:" target="1ch-Te-EDv" id="bQk-TR-8Ld"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qHV-O1-rJe">
-                        <rect key="frame" x="414" y="13" width="92" height="32"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="80" id="YDi-V5-MA2"/>
-                        </constraints>
-                        <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" image="ic_file_download_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2lw-6W-9IN">
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qHV-O1-rJe">
+                        <rect key="frame" x="402" y="13" width="104" height="32"/>
+                        <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" image="ic_file_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2lw-6W-9IN">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
@@ -2337,12 +2332,14 @@ Gw
                     <constraint firstItem="X3k-uL-arh" firstAttribute="top" secondItem="YVO-Df-Mre" secondAttribute="top" constant="20" id="47s-jh-RVv"/>
                     <constraint firstItem="9oL-YE-FiJ" firstAttribute="centerY" secondItem="X3k-uL-arh" secondAttribute="centerY" id="AdD-sP-0NK"/>
                     <constraint firstItem="RCh-62-Dln" firstAttribute="leading" secondItem="YVO-Df-Mre" secondAttribute="leading" constant="300" id="Eqs-0D-4Jh"/>
-                    <constraint firstAttribute="trailing" secondItem="qHV-O1-rJe" secondAttribute="trailing" constant="300" id="H0W-4S-gBg"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="qHV-O1-rJe" secondAttribute="trailing" id="H0W-4S-gBg"/>
+                    <constraint firstItem="qHV-O1-rJe" firstAttribute="leading" secondItem="YVO-Df-Mre" secondAttribute="leading" constant="408" id="TPO-Kt-w6K"/>
                     <constraint firstItem="RCh-62-Dln" firstAttribute="top" secondItem="A3J-XY-x60" secondAttribute="bottom" constant="20" id="UFT-No-3Be"/>
                     <constraint firstItem="9Nf-aG-15a" firstAttribute="leading" secondItem="9oL-YE-FiJ" secondAttribute="trailing" constant="10" id="W3U-Ag-RST"/>
                     <constraint firstItem="9Nf-aG-15a" firstAttribute="centerY" secondItem="9oL-YE-FiJ" secondAttribute="centerY" id="Wdd-Qs-ZLM"/>
                     <constraint firstItem="X3k-uL-arh" firstAttribute="leading" secondItem="YVO-Df-Mre" secondAttribute="leading" constant="17" id="XRI-YV-XJb"/>
                     <constraint firstItem="9oL-YE-FiJ" firstAttribute="leading" secondItem="X3k-uL-arh" secondAttribute="trailing" constant="5" id="hm5-ar-Oms"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="RCh-62-Dln" secondAttribute="trailing" constant="20" symbolic="YES" id="jDG-iT-wAV"/>
                     <constraint firstAttribute="bottom" secondItem="RCh-62-Dln" secondAttribute="bottom" constant="20" id="kXU-Wm-AzL"/>
                     <constraint firstItem="A3J-XY-x60" firstAttribute="top" secondItem="X3k-uL-arh" secondAttribute="bottom" constant="20" id="r0b-vj-CSb"/>
                     <constraint firstItem="qHV-O1-rJe" firstAttribute="centerY" secondItem="RCh-62-Dln" secondAttribute="centerY" id="t2Q-9z-7dS"/>
