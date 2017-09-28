@@ -46,6 +46,21 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
+  void set_inputsource(const std::string& inputsource_id) {
+    operation_type_set_inputsource_struct s;
+    
+    if (inputsource_id.length() >= sizeof(s.inputsource_id)) {
+      logger::get_logger().error("shell_command is too long: {0}", inputsource_id);
+      return;
+    }
+    
+    strlcpy(s.inputsource_id,
+            inputsource_id.c_str(),
+            sizeof(s.inputsource_id));
+    
+    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+  
   static std::string make_console_user_server_socket_directory(uid_t uid) {
     std::stringstream ss;
     ss << constants::get_console_user_server_socket_directory() << "/" << uid;

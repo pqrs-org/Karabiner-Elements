@@ -4,6 +4,8 @@
 #include "constants.hpp"
 #include "local_datagram_server.hpp"
 #include "shell_utility.hpp"
+#include "cf_utility.hpp"
+#include "inputsources.hpp"
 #include "types.hpp"
 #include <vector>
 
@@ -67,6 +69,22 @@ private:
               std::string background_shell_command = shell_utility::make_background_command(p->shell_command);
               dispatch_async(dispatch_get_main_queue(), ^{
                 system(background_shell_command.c_str());
+              });
+            }
+            break;
+
+          case operation_type::set_inputsource:
+            if (n != sizeof(operation_type_set_inputsource_struct)) {
+              logger::get_logger().error("invalid size for operation_type::set_inputsource");
+            } else {
+              auto p = reinterpret_cast<operation_type_set_inputsource_struct*>(&(buffer_[0]));
+              
+              // Ensure inputsource_id is null-terminated string even if corrupted data is sent.
+              p->inputsource_id[sizeof(p->inputsource_id) - 1] = '\0';
+              auto inputsource_id(p->inputsource_id);
+              
+              dispatch_async(dispatch_get_main_queue(), ^{
+                inputsources::select(inputsource_id);
               });
             }
             break;

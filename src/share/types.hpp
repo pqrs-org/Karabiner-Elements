@@ -32,6 +32,7 @@ enum class operation_type : uint8_t {
   frontmost_application_changed,
   // grabber -> console_user_server
   shell_command_execution,
+  set_inputsource,
 };
 
 enum class device_id : uint32_t {
@@ -1094,6 +1095,13 @@ struct operation_type_shell_command_execution_struct {
 
   const operation_type operation_type;
   char shell_command[256];
+};
+
+struct operation_type_set_inputsource_struct {
+  operation_type_set_inputsource_struct(void) : operation_type(operation_type::set_inputsource) {}
+
+  const operation_type operation_type;
+  char inputsource_id[256];
 };
 
 // stream output

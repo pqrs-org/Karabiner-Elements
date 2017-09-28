@@ -81,4 +81,93 @@ public:
                                      &kCFTypeDictionaryValueCallBacks);
   }
 };
+  
+class cf_string final {
+public:
+  cf_string(): value_(nullptr) {
+  }
+
+  cf_string(const _Nullable CFStringRef& s, bool retain) {
+    value_ = s;
+    if (retain && value_ != nullptr)
+      CFRetain(value_);
+  }
+
+  cf_string(const std::string& s) {
+    value_ = CFStringCreateWithCString(kCFAllocatorDefault, s.c_str(), kCFStringEncodingUTF8);
+  }
+  
+  cf_string(const cf_string& s) {
+    value_ = s.value_;
+    CFRetain(value_);
+  }
+  
+  ~cf_string() {
+    if (value_ != nullptr)
+      CFRelease(value_);
+  }
+  
+  cf_string& operator=(const cf_string& s) {
+    if (value_ != nullptr)
+      CFRelease(value_);
+
+    value_ = s.value_;
+    if (value_ != nullptr)
+      CFRetain(value_);
+    
+    return *this;
+  }
+  
+  cf_string& operator=(const std::string& s) {
+    if (value_ != nullptr)
+      CFRelease(value_);
+    
+    value_ = CFStringCreateWithCString(kCFAllocatorDefault, s.c_str(), kCFStringEncodingUTF8);
+    
+    return *this;
+  }
+  
+  inline _Nullable CFStringRef get() const {
+    return value_;
+  }
+  
+private:
+  _Nullable CFStringRef value_;
+};
+  
+inline bool operator==(const cf_string& lhs, const cf_string& rhs) {
+  if (lhs.get() == nullptr || rhs.get() == nullptr)
+    return lhs.get() == rhs.get();
+  return CFStringCompare(lhs.get(), rhs.get(), 0) == 0;
+}
+
+inline bool operator==(const _Nullable CFStringRef& lhs, const cf_string& rhs) {
+  if (lhs == nullptr || rhs.get() == nullptr)
+    return lhs == rhs.get();
+  return CFStringCompare(lhs, rhs.get(), 0) == 0;
+}
+
+inline bool operator==(const cf_string& lhs, const _Nullable CFStringRef& rhs) {
+  if (lhs.get() == nullptr || rhs == nullptr)
+    return lhs.get() == rhs;
+  return CFStringCompare(lhs.get(), rhs, 0) == 0;
+}
+
+inline bool operator!=(const cf_string& lhs, const cf_string& rhs) {
+  if (lhs.get() == nullptr || rhs.get() == nullptr)
+    return lhs.get() != rhs.get();
+  return CFStringCompare(lhs.get(), rhs.get(), 0) != 0;
+}
+
+inline bool operator!=(const _Nullable CFStringRef& lhs, const cf_string& rhs) {
+  if (lhs == nullptr || rhs.get() == nullptr)
+    return lhs != rhs.get();
+  return CFStringCompare(lhs, rhs.get(), 0) != 0;
+}
+
+inline bool operator!=(const cf_string& lhs, const _Nullable CFStringRef& rhs) {
+  if (lhs.get() == nullptr || rhs == NULL)
+    return lhs.get() != rhs;
+  return CFStringCompare(lhs.get(), rhs, 0) != 0;
+}
 } // namespace krbn
