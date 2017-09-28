@@ -2041,12 +2041,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                 <rect key="frame" x="0.0" y="0.0" width="800" height="400"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Jox-CI-bt9">
-                        <rect key="frame" x="194" y="357" width="412" height="32"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="400" id="I8e-H1-3Go"/>
-                        </constraints>
-                        <buttonCell key="cell" type="push" title="Import more rules from the Internet (open a web browser)" bezelStyle="rounded" image="ic_cloud_download_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="02O-a2-wtg">
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jox-CI-bt9">
+                        <rect key="frame" x="194" y="357" width="413" height="32"/>
+                        <buttonCell key="cell" type="push" title="Import more rules from the Internet (open a web browser)" bezelStyle="rounded" image="ic_cloud_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="02O-a2-wtg">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
@@ -2096,6 +2093,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstItem="0Nl-EE-cbX" firstAttribute="centerY" secondItem="jC6-SG-vL6" secondAttribute="centerY" id="Dnf-ts-tiT"/>
+                                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="0Nl-EE-cbX" secondAttribute="trailing" constant="20" symbolic="YES" id="NYr-yN-ffJ"/>
                                                         <constraint firstItem="0Nl-EE-cbX" firstAttribute="leading" secondItem="jC6-SG-vL6" secondAttribute="leading" constant="2" id="nKM-Yd-Zjb"/>
                                                     </constraints>
                                                     <connections>
@@ -2121,7 +2119,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                     <rect key="frame" x="619" y="1" width="143" height="26"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="553-rb-9Yn">
+                                                        <button hidden="YES" verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="553-rb-9Yn">
                                                             <rect key="frame" x="102" y="-4" width="42" height="32"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="30" id="CAG-fq-yBI"/>
@@ -2131,21 +2129,15 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                                 <font key="font" metaFont="system"/>
                                                             </buttonCell>
                                                         </button>
-                                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aoS-Bs-ODT">
-                                                            <rect key="frame" x="42" y="-5" width="102" height="32"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="90" id="9hR-Yv-mhJ"/>
-                                                            </constraints>
+                                                        <button hidden="YES" verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aoS-Bs-ODT">
+                                                            <rect key="frame" x="39" y="-5" width="105" height="32"/>
                                                             <buttonCell key="cell" type="push" title="Enable" bezelStyle="rounded" image="ic_add_circle_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6TO-Hp-Ppt">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                 <font key="font" metaFont="system"/>
                                                             </buttonCell>
                                                         </button>
-                                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lKf-rC-tnd" userLabel="Enable All Button">
-                                                            <rect key="frame" x="17" y="5" width="82" height="16"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="80" id="Jf2-Ib-pBe"/>
-                                                            </constraints>
+                                                        <button hidden="YES" verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lKf-rC-tnd" userLabel="Enable All Button">
+                                                            <rect key="frame" x="31" y="5" width="68" height="16"/>
                                                             <buttonCell key="cell" type="push" title="Enable All" bezelStyle="rounded" image="ic_add_circle_18pt" alignment="center" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Uj4-jt-x6W">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                 <font key="font" metaFont="miniSystem"/>
@@ -2154,9 +2146,11 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstAttribute="trailing" secondItem="553-rb-9Yn" secondAttribute="trailing" constant="5" id="5NR-Vl-JKl"/>
-                                                        <constraint firstItem="553-rb-9Yn" firstAttribute="leading" secondItem="lKf-rC-tnd" secondAttribute="trailing" constant="10" id="XEa-gN-08g"/>
+                                                        <constraint firstItem="lKf-rC-tnd" firstAttribute="leading" secondItem="8TG-IN-f4f" secondAttribute="leading" constant="32" id="FPS-Qo-ke1"/>
+                                                        <constraint firstItem="553-rb-9Yn" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lKf-rC-tnd" secondAttribute="trailing" constant="8" symbolic="YES" id="XEa-gN-08g"/>
                                                         <constraint firstItem="aoS-Bs-ODT" firstAttribute="centerY" secondItem="8TG-IN-f4f" secondAttribute="centerY" id="a7d-U1-thg"/>
-                                                        <constraint firstAttribute="trailing" secondItem="aoS-Bs-ODT" secondAttribute="trailing" constant="5" id="pZb-WJ-0nk"/>
+                                                        <constraint firstItem="aoS-Bs-ODT" firstAttribute="leading" secondItem="8TG-IN-f4f" secondAttribute="leading" constant="45" id="aCc-ue-dRp"/>
+                                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="aoS-Bs-ODT" secondAttribute="trailing" id="pZb-WJ-0nk"/>
                                                         <constraint firstItem="553-rb-9Yn" firstAttribute="centerY" secondItem="8TG-IN-f4f" secondAttribute="centerY" id="rvr-HU-xGD"/>
                                                         <constraint firstItem="lKf-rC-tnd" firstAttribute="centerY" secondItem="8TG-IN-f4f" secondAttribute="centerY" id="yas-UC-W7V"/>
                                                     </constraints>
@@ -2185,12 +2179,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lWl-Op-37M">
-                        <rect key="frame" x="12" y="32" width="120" height="28"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="110" id="Ldk-uN-88W"/>
-                        </constraints>
-                        <buttonCell key="cell" type="push" title="Expand tree" bezelStyle="rounded" image="ic_expand_more_18pt" imagePosition="left" alignment="left" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pWt-V1-3zc">
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lWl-Op-37M">
+                        <rect key="frame" x="12" y="32" width="113" height="28"/>
+                        <buttonCell key="cell" type="push" title="Expand tree" bezelStyle="rounded" image="ic_expand_more_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pWt-V1-3zc">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="smallSystem"/>
                         </buttonCell>
@@ -2198,12 +2189,9 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                             <action selector="expandRules:" target="kWQ-dQ-cFu" id="DFH-Wl-u7k"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Tqb-fK-IZi">
-                        <rect key="frame" x="132" y="32" width="120" height="28"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="110" id="Or6-aV-Isb"/>
-                        </constraints>
-                        <buttonCell key="cell" type="push" title="Collapse tree" bezelStyle="rounded" image="ic_chevron_right_18pt" imagePosition="left" alignment="left" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pvE-NN-dNd">
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tqb-fK-IZi">
+                        <rect key="frame" x="125" y="32" width="120" height="28"/>
+                        <buttonCell key="cell" type="push" title="Collapse tree" bezelStyle="rounded" image="ic_chevron_right_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pvE-NN-dNd">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="smallSystem"/>
                         </buttonCell>
@@ -2211,11 +2199,8 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                             <action selector="collapseRules:" target="kWQ-dQ-cFu" id="PZo-Zg-ukC"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iWA-ft-hGI">
-                        <rect key="frame" x="354" y="13" width="92" height="32"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="80" id="YTu-Cq-XtG"/>
-                        </constraints>
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iWA-ft-hGI">
+                        <rect key="frame" x="347" y="13" width="106" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fd0-PH-WES">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2235,6 +2220,7 @@ Gw
                     <constraint firstAttribute="bottom" secondItem="iWA-ft-hGI" secondAttribute="bottom" constant="20" id="Bcg-RX-zfY"/>
                     <constraint firstItem="lWl-Op-37M" firstAttribute="leading" secondItem="jfS-u6-wyb" secondAttribute="leading" id="FLh-gQ-1el"/>
                     <constraint firstAttribute="trailing" secondItem="jfS-u6-wyb" secondAttribute="trailing" constant="17" id="Jhd-Zo-iBQ"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Tqb-fK-IZi" secondAttribute="trailing" constant="20" symbolic="YES" id="QZw-4W-tjZ"/>
                     <constraint firstItem="Tqb-fK-IZi" firstAttribute="leading" secondItem="lWl-Op-37M" secondAttribute="trailing" constant="10" id="YGP-8y-JSe"/>
                     <constraint firstItem="Jox-CI-bt9" firstAttribute="top" secondItem="uOP-Fc-vEW" secondAttribute="top" constant="15" id="a3q-vX-1gN"/>
                     <constraint firstItem="lWl-Op-37M" firstAttribute="top" secondItem="jfS-u6-wyb" secondAttribute="bottom" constant="5" id="bIU-Lt-5pw"/>
