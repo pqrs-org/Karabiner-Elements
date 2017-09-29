@@ -692,7 +692,7 @@
                                             <rect key="frame" x="17" y="60" width="820" height="377"/>
                                             <clipView key="contentView" id="LCo-MQ-oMD">
                                                 <rect key="frame" x="1" y="0.0" width="818" height="376"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="RPX-X6-Et1" viewBased="YES" id="OWP-Cf-tc8">
                                                         <rect key="frame" x="0.0" y="0.0" width="818" height="353"/>
@@ -834,11 +834,11 @@
                             </tabViewItem>
                             <tabViewItem label="Complex Modifications" identifier="" id="zkg-mg-aXH" userLabel="Complex Modifications">
                                 <view key="view" id="QKn-8U-Fy4">
-                                    <rect key="frame" x="10" y="33" width="861" height="488"/>
+                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tabView translatesAutoresizingMaskIntoConstraints="NO" id="1c1-vs-xhU">
-                                            <rect key="frame" x="10" y="7" width="841" height="479"/>
+                                            <rect key="frame" x="10" y="7" width="834" height="479"/>
                                             <font key="font" metaFont="system"/>
                                             <tabViewItems>
                                                 <tabViewItem label="Rules" identifier="1" id="UOy-mW-Ddj">
@@ -1560,7 +1560,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3fl-PC-xYQ">
-                                                                                <rect key="frame" x="4" y="2" width="511" height="22"/>
+                                                                                <rect key="frame" x="4" y="2" width="513" height="22"/>
                                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="Name" drawsBackground="YES" id="q4k-Om-bR0">
                                                                                     <font key="font" metaFont="system"/>
                                                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1603,12 +1603,12 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                                             <constraint firstItem="fqK-Cb-Nrr" firstAttribute="leading" secondItem="7dB-iC-Z4u" secondAttribute="trailing" constant="20" id="3uQ-tJ-R9M"/>
                                                                             <constraint firstItem="fqK-Cb-Nrr" firstAttribute="centerY" secondItem="ggo-9A-yNX" secondAttribute="centerY" id="8kx-XK-xy8"/>
                                                                             <constraint firstItem="wSk-3w-9nX" firstAttribute="centerY" secondItem="ggo-9A-yNX" secondAttribute="centerY" id="I2w-Vt-UYx"/>
-                                                                            <constraint firstAttribute="trailing" secondItem="3fl-PC-xYQ" secondAttribute="trailing" constant="300" id="MA8-nY-zvp"/>
                                                                             <constraint firstItem="Vxo-a6-SRu" firstAttribute="leading" secondItem="wSk-3w-9nX" secondAttribute="trailing" constant="2" id="PJK-sP-ItB"/>
                                                                             <constraint firstItem="3fl-PC-xYQ" firstAttribute="centerY" secondItem="ggo-9A-yNX" secondAttribute="centerY" id="PpG-0H-5vM"/>
                                                                             <constraint firstItem="7dB-iC-Z4u" firstAttribute="centerY" secondItem="ggo-9A-yNX" secondAttribute="centerY" id="Unk-Zz-Tkn"/>
                                                                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Vxo-a6-SRu" secondAttribute="trailing" constant="20" symbolic="YES" id="VWO-5d-6BA"/>
                                                                             <constraint firstItem="wSk-3w-9nX" firstAttribute="leading" secondItem="7dB-iC-Z4u" secondAttribute="leading" id="dgH-dX-7tm"/>
+                                                                            <constraint firstItem="7dB-iC-Z4u" firstAttribute="leading" secondItem="3fl-PC-xYQ" secondAttribute="trailing" constant="100" id="hda-g3-Kif"/>
                                                                             <constraint firstAttribute="trailing" secondItem="fqK-Cb-Nrr" secondAttribute="trailing" constant="10" id="p9T-bt-rEP"/>
                                                                             <constraint firstItem="3fl-PC-xYQ" firstAttribute="leading" secondItem="ggo-9A-yNX" secondAttribute="leading" constant="4" id="zMH-8X-RPE"/>
                                                                         </constraints>
@@ -1943,7 +1943,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             <rect key="frame" x="17" y="48" width="820" height="432"/>
                                             <clipView key="contentView" id="h3K-SC-sFn">
                                                 <rect key="frame" x="1" y="1" width="803" height="430"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" id="vyq-xs-cqF">
                                                         <rect key="frame" x="0.0" y="0.0" width="803" height="430"/>
@@ -2009,7 +2009,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                     <constraint firstItem="W8s-8N-CIx" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="12" id="zWU-Lj-dB2"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="137.5" y="69.5"/>
+            <point key="canvasLocation" x="137" y="69"/>
         </window>
         <window title="Add rule" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqN-OP-TO2" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
@@ -2249,7 +2249,7 @@ Gw
                         <rect key="frame" x="80" y="61" width="640" height="82"/>
                         <clipView key="contentView" id="uNg-oR-13T">
                             <rect key="frame" x="1" y="1" width="623" height="80"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
                                     <rect key="frame" x="0.0" y="0.0" width="623" height="80"/>
@@ -2272,7 +2272,7 @@ Gw
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RCh-62-Dln">
-                        <rect key="frame" x="294" y="13" width="106" height="32"/>
+                        <rect key="frame" x="294" y="13" width="124" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WIz-od-AHq">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2285,7 +2285,7 @@ Gw
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qHV-O1-rJe">
-                        <rect key="frame" x="402" y="13" width="104" height="32"/>
+                        <rect key="frame" x="402" y="13" width="122" height="32"/>
                         <buttonCell key="cell" type="push" title="Import" bezelStyle="rounded" image="ic_file_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2lw-6W-9IN">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
