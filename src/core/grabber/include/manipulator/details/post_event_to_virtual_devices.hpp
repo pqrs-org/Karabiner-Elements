@@ -625,7 +625,7 @@ public:
   }
 
   virtual void force_post_modifier_key_event(const event_queue::queued_event& front_input_event,
-                                              event_queue& output_event_queue) {
+                                             event_queue& output_event_queue) {
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                       queue_,
                                                       front_input_event.get_time_stamp());

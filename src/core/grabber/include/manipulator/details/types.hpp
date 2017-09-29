@@ -408,8 +408,8 @@ protected:
   boost::variant<key_code,
                  consumer_key_code,
                  pointing_button,
-                 type,                       // For any
-                 std::string,                // For shell_command
+                 type, // For any
+                 std::string, // For shell_command
                  std::pair<std::string, int> // For set_variable
                  >
       value_;

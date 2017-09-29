@@ -414,11 +414,11 @@ enum {
 }
 
 - (void)push:(NSString*)eventType code:(NSString*)code name:(NSString*)name flags:(NSString*)flags misc:(NSString*)misc {
-  NSDictionary* dict = @{ @"eventType" : eventType,
-                          @"code" : code,
-                          @"name" : name,
-                          @"flags" : flags,
-                          @"misc" : misc };
+  NSDictionary* dict = @{@"eventType" : eventType,
+                         @"code" : code,
+                         @"name" : name,
+                         @"flags" : flags,
+                         @"misc" : misc};
 
   [self.queue insertObject:dict atIndex:0];
   if ([self.queue count] > MAXNUM) {
