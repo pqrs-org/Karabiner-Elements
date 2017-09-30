@@ -24,6 +24,7 @@ public:
     any,
     shell_command,
     set_variable,
+    set_inputsource,
   };
 
   enum class modifier {
@@ -94,6 +95,13 @@ public:
     return boost::none;
   }
 
+  boost::optional<std::string> get_set_inputsource(void) const {
+    if (type_ == type::set_inputsource) {
+      return boost::get<std::string>(value_);
+    }
+    return boost::none;
+  }
+
   boost::optional<event_queue::queued_event::event> to_event(void) const {
     switch (type_) {
       case type::none:
@@ -110,6 +118,8 @@ public:
         return event_queue::queued_event::event::make_shell_command_event(boost::get<std::string>(value_));
       case type::set_variable:
         return event_queue::queued_event::event::make_set_variable_event(boost::get<std::pair<std::string, int>>(value_));
+      case type::set_inputsource:
+        return event_queue::queued_event::event::make_set_inputsource_event(boost::get<std::string>(value_));
     }
   }
 
@@ -393,6 +403,19 @@ protected:
         type_ = type::set_variable;
         value_ = std::make_pair(variable_name, variable_value);
 
+      } else if (key == "set_inputsource") {
+        if (type_ != type::none) {
+          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+          continue;
+        }
+        if (!value.is_string()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of set_inputsource: {0}", json.dump());
+          continue;
+        }
+        
+        type_ = type::set_inputsource;
+        value_ = value.get<std::string>();
+        
       } else if (key == "description") {
         // Do nothing
 
@@ -409,7 +432,7 @@ protected:
                  consumer_key_code,
                  pointing_button,
                  type, // For any
-                 std::string, // For shell_command
+                 std::string, // For shell_command, set_inputsource
                  std::pair<std::string, int> // For set_variable
                  >
       value_;

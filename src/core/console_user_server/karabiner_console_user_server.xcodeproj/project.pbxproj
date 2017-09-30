@@ -68,6 +68,8 @@
 		34DA28A11D8FA4A40029E37D /* file_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = file_monitor.hpp; sourceTree = "<group>"; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		34F4D5171E647EAD007D5065 /* configuration_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = configuration_monitor.hpp; sourceTree = "<group>"; };
+		7C95EC091F7E91BE00D3E523 /* inputsources.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = inputsources.hpp; sourceTree = "<group>"; };
+		7C95EC0A1F7E91E700D3E523 /* cf_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cf_utility.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +117,8 @@
 		3495C6801D3CE652007CB9E7 /* share */ = {
 			isa = PBXGroup;
 			children = (
+				7C95EC0A1F7E91E700D3E523 /* cf_utility.hpp */,
+				7C95EC091F7E91BE00D3E523 /* inputsources.hpp */,
 				344608C31E3E5DE4007956BD /* application_launcher.hpp */,
 				345AC0051D621651009D1FB4 /* boost_defs.hpp */,
 				34F4D5171E647EAD007D5065 /* configuration_monitor.hpp */,

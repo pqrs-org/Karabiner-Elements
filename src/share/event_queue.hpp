@@ -34,6 +34,7 @@ public:
         event_from_ignored_device,
         frontmost_application_changed,
         set_variable,
+        set_inputsource,
       };
 
       event(key_code key_code) : type_(type::key_code),
@@ -88,6 +89,13 @@ public:
         event e;
         e.type_ = type::set_variable;
         e.value_ = pair;
+        return e;
+      }
+
+      static event make_set_inputsource_event(const std::string& inputsource_id) {
+        event e;
+        e.type_ = type::set_inputsource;
+        e.value_ = inputsource_id;
         return e;
       }
 
@@ -157,6 +165,13 @@ public:
         return boost::none;
       }
 
+      boost::optional<std::string> get_set_inputsource(void) const {
+        if (type_ == type::set_inputsource) {
+          return boost::get<std::string>(value_);
+        }
+        return boost::none;
+      }
+
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
                value_ == other.value_;
@@ -204,7 +219,7 @@ public:
                      consumer_key_code, // For type::consumer_key_code
                      pointing_button,   // For type::pointing_button
                      int64_t,           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
-                     std::string,       // For shell_command
+                     std::string,       // For shell_command, set_inputsource
                      boost::blank,      // For virtual events
                      frontmost_application,
                      std::pair<std::string, int> // For set_variable
