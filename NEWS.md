@@ -1,3 +1,8 @@
+# Version 11.0.1
+
+* Fixed an issue that modifier flags state is not changed properly in pointing device events from Apple trackpads.
+
+
 # Version 11.0.0
 
 * The first stable release of Karabiner-Elements.
