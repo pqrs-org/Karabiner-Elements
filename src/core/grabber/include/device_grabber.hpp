@@ -492,7 +492,8 @@ private:
 
       case kCGEventScrollWheel:
         pseudo_event_type = event_type::single;
-        pseudo_event = event_queue::queued_event::event(event_queue::queued_event::event::type::pointing_vertical_wheel, 0);
+        // Set non-zero value for `manipulator::details::base::unset_alone_if_needed`.
+        pseudo_event = event_queue::queued_event::event(event_queue::queued_event::event::type::pointing_vertical_wheel, 1);
         break;
 
       case kCGEventNull:
