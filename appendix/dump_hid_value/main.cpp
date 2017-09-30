@@ -189,6 +189,10 @@ private:
         case krbn::event_queue::queued_event::event::type::set_variable:
           std::cout << "set_variable" << std::endl;
           break;
+
+        case krbn::event_queue::queued_event::event::type::set_inputsource:
+          std::cout << "set_inputsource" << std::endl;
+          break;
       }
     }
 
