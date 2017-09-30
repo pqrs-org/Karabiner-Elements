@@ -305,6 +305,8 @@ public:
     void dispatch_modifier_key_event(const modifier_flag_manager& modifier_flag_manager,
                                      queue& queue,
                                      uint64_t time_stamp) {
+      size_t previous_pressed_modifier_flags_size = pressed_modifier_flags_.size();
+
       auto modifier_flags = {
           modifier_flag::left_control,
           modifier_flag::left_shift,
@@ -345,7 +347,7 @@ public:
         }
       }
 
-      if (pressed_modifier_flags_.empty()) {
+      if (pressed_modifier_flags_.empty() && previous_pressed_modifier_flags_size > 0) {
         queue.push_back_clear_keyboard_modifier_flags_event(time_stamp);
       }
     }
