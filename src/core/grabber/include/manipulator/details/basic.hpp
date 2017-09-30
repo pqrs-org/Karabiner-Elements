@@ -381,6 +381,12 @@ public:
                           front_input_event.get_event_type());
   }
 
+  virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
+                                                           event_queue& output_event_queue) {
+    unset_alone_if_needed(front_input_event.get_original_event(),
+                          front_input_event.get_event_type());
+  }
+
   virtual void force_post_modifier_key_event(const event_queue::queued_event& front_input_event,
                                              event_queue& output_event_queue) {
   }

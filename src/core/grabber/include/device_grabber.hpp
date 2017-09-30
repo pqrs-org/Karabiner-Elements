@@ -112,7 +112,13 @@ public:
 
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_manager here.
-      event_tap_manager_ = std::make_unique<event_tap_manager>(std::bind(&device_grabber::caps_lock_state_changed_callback, this, std::placeholders::_1));
+      event_tap_manager_ = std::make_unique<event_tap_manager>(std::bind(&device_grabber::caps_lock_state_changed_callback,
+                                                                         this,
+                                                                         std::placeholders::_1),
+                                                               std::bind(&device_grabber::event_tap_pointing_device_event_callback,
+                                                                         this,
+                                                                         std::placeholders::_1,
+                                                                         std::placeholders::_2));
 
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path,
                                                                        [this](std::shared_ptr<core_configuration> core_configuration) {
@@ -439,6 +445,76 @@ private:
   void caps_lock_state_changed_callback(bool caps_lock_state) {
     post_caps_lock_state_changed_callback(caps_lock_state);
     update_caps_lock_led(caps_lock_state);
+  }
+
+  void event_tap_pointing_device_event_callback(CGEventType type, CGEventRef _Nullable event) {
+    boost::optional<event_type> pseudo_event_type;
+    boost::optional<event_queue::queued_event::event> pseudo_event;
+
+    switch (type) {
+      case kCGEventLeftMouseDown:
+        pseudo_event_type = event_type::key_down;
+        pseudo_event = event_queue::queued_event::event(pointing_button::button1);
+        break;
+
+      case kCGEventLeftMouseUp:
+        pseudo_event_type = event_type::key_up;
+        pseudo_event = event_queue::queued_event::event(pointing_button::button1);
+        break;
+
+      case kCGEventRightMouseDown:
+        pseudo_event_type = event_type::key_down;
+        pseudo_event = event_queue::queued_event::event(pointing_button::button2);
+        break;
+
+      case kCGEventRightMouseUp:
+        pseudo_event_type = event_type::key_up;
+        pseudo_event = event_queue::queued_event::event(pointing_button::button2);
+        break;
+
+      case kCGEventOtherMouseDown:
+        pseudo_event_type = event_type::key_down;
+        pseudo_event = event_queue::queued_event::event(pointing_button::button3);
+        break;
+
+      case kCGEventOtherMouseUp:
+        pseudo_event_type = event_type::key_up;
+        pseudo_event = event_queue::queued_event::event(pointing_button::button3);
+        break;
+
+      case kCGEventMouseMoved:
+      case kCGEventLeftMouseDragged:
+      case kCGEventRightMouseDragged:
+      case kCGEventOtherMouseDragged:
+        pseudo_event_type = event_type::single;
+        pseudo_event = event_queue::queued_event::event(event_queue::queued_event::event::type::pointing_x, 0);
+        break;
+
+      case kCGEventScrollWheel:
+        pseudo_event_type = event_type::single;
+        pseudo_event = event_queue::queued_event::event(event_queue::queued_event::event::type::pointing_vertical_wheel, 0);
+        break;
+
+      case kCGEventNull:
+      case kCGEventKeyDown:
+      case kCGEventKeyUp:
+      case kCGEventFlagsChanged:
+      case kCGEventTabletPointer:
+      case kCGEventTabletProximity:
+      case kCGEventTapDisabledByTimeout:
+      case kCGEventTapDisabledByUserInput:
+        break;
+    }
+
+    if (pseudo_event_type && pseudo_event) {
+      auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
+      merged_input_event_queue_.emplace_back_event(device_id(0),
+                                                   mach_absolute_time(),
+                                                   e,
+                                                   *pseudo_event_type,
+                                                   *pseudo_event);
+      manipulate();
+    }
   }
 
   void update_caps_lock_led(bool caps_lock_state) {

@@ -43,18 +43,23 @@ int main(int argc, const char* argv[]) {
     CFRelease(source);
   }
 
+  auto mask = CGEventMaskBit(kCGEventFlagsChanged) |
+              CGEventMaskBit(kCGEventLeftMouseDown) |
+              CGEventMaskBit(kCGEventLeftMouseUp) |
+              CGEventMaskBit(kCGEventRightMouseDown) |
+              CGEventMaskBit(kCGEventRightMouseUp) |
+              CGEventMaskBit(kCGEventMouseMoved) |
+              CGEventMaskBit(kCGEventLeftMouseDragged) |
+              CGEventMaskBit(kCGEventRightMouseDragged) |
+              CGEventMaskBit(kCGEventScrollWheel) |
+              CGEventMaskBit(kCGEventOtherMouseDown) |
+              CGEventMaskBit(kCGEventOtherMouseUp) |
+              CGEventMaskBit(kCGEventOtherMouseDragged);
+
   eventtap_ = CGEventTapCreate(kCGHIDEventTap,
                                kCGHeadInsertEventTap,
                                kCGEventTapOptionDefault,
-                               CGEventMaskBit(kCGEventLeftMouseDown) |
-                                   CGEventMaskBit(kCGEventLeftMouseUp) |
-                                   CGEventMaskBit(kCGEventRightMouseDown) |
-                                   CGEventMaskBit(kCGEventRightMouseUp) |
-                                   CGEventMaskBit(kCGEventMouseMoved) |
-                                   CGEventMaskBit(kCGEventLeftMouseDragged) |
-                                   CGEventMaskBit(kCGEventRightMouseDragged) |
-                                   CGEventMaskBit(kCGEventKeyDown) |
-                                   CGEventMaskBit(kCGEventKeyUp),
+                               mask,
                                callback,
                                nullptr);
 

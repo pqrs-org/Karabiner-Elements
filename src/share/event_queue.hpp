@@ -32,6 +32,7 @@ public:
         device_ungrabbed,
         caps_lock_state_changed,
         event_from_ignored_device,
+        pointing_device_event_from_event_tap,
         frontmost_application_changed,
         set_variable,
       };
@@ -74,6 +75,10 @@ public:
 
       static event make_event_from_ignored_device_event(void) {
         return make_virtual_event(type::event_from_ignored_device);
+      }
+
+      static event make_pointing_device_event_from_event_tap_event(void) {
+        return make_virtual_event(type::pointing_device_event_from_event_tap);
       }
 
       static event make_frontmost_application_changed_event(const std::string& bundle_identifier,
@@ -200,12 +205,12 @@ public:
 
       type type_;
 
-      boost::variant<key_code,          // For type::key_code
+      boost::variant<key_code, // For type::key_code
                      consumer_key_code, // For type::consumer_key_code
-                     pointing_button,   // For type::pointing_button
-                     int64_t,           // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
-                     std::string,       // For shell_command
-                     boost::blank,      // For virtual events
+                     pointing_button, // For type::pointing_button
+                     int64_t, // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+                     std::string, // For shell_command
+                     boost::blank, // For virtual events
                      frontmost_application,
                      std::pair<std::string, int> // For set_variable
                      >

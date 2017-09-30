@@ -11,14 +11,33 @@ namespace krbn {
 class event_tap_manager final {
 public:
   typedef std::function<void(bool)> caps_lock_state_changed_callback;
+  typedef std::function<void(CGEventType, CGEventRef _Nullable)> pointing_device_event_callback;
 
   event_tap_manager(const event_tap_manager&) = delete;
 
-  event_tap_manager(const caps_lock_state_changed_callback& caps_lock_state_changed_callback) : caps_lock_state_changed_callback_(caps_lock_state_changed_callback),
-                                                                                                event_tap_(nullptr),
-                                                                                                run_loop_source_(nullptr) {
-    // Observe flags changed in order to get the caps lock state.
-    auto mask = CGEventMaskBit(kCGEventFlagsChanged);
+  event_tap_manager(const caps_lock_state_changed_callback& caps_lock_state_changed_callback,
+                    const pointing_device_event_callback& pointing_device_event_callback) : caps_lock_state_changed_callback_(caps_lock_state_changed_callback),
+                                                                                            pointing_device_event_callback_(pointing_device_event_callback),
+                                                                                            event_tap_(nullptr),
+                                                                                            run_loop_source_(nullptr) {
+    // Observe flags changed in order to get the caps lock state and pointing device events from Apple trackpads.
+    //
+    // Note:
+    // We cannot catch pointing device events from Apple trackpads without eventtap.
+    // (Apple trackpad driver does not send events to IOKit.)
+
+    auto mask = CGEventMaskBit(kCGEventFlagsChanged) |
+                CGEventMaskBit(kCGEventLeftMouseDown) |
+                CGEventMaskBit(kCGEventLeftMouseUp) |
+                CGEventMaskBit(kCGEventRightMouseDown) |
+                CGEventMaskBit(kCGEventRightMouseUp) |
+                CGEventMaskBit(kCGEventMouseMoved) |
+                CGEventMaskBit(kCGEventLeftMouseDragged) |
+                CGEventMaskBit(kCGEventRightMouseDragged) |
+                CGEventMaskBit(kCGEventScrollWheel) |
+                CGEventMaskBit(kCGEventOtherMouseDown) |
+                CGEventMaskBit(kCGEventOtherMouseUp) |
+                CGEventMaskBit(kCGEventOtherMouseDragged);
 
     event_tap_ = CGEventTapCreate(kCGHIDEventTap,
                                   kCGHeadInsertEventTap,
@@ -74,31 +93,65 @@ private:
   }
 
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
-    if (type == kCGEventTapDisabledByTimeout) {
-      logger::get_logger().info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
-      CGEventTapEnable(event_tap_, true);
-    } else if (type == kCGEventFlagsChanged) {
-      // The caps lock key event from keyboard might be ignored by caps lock delay.
-      // Thus, we need to observe kCGEventFlagsChanged event in EventTap to detect the caps lock state change.
+    switch (type) {
+      case kCGEventTapDisabledByTimeout:
+        logger::get_logger().info("Re-enable event_tap_ by kCGEventTapDisabledByTimeout");
+        CGEventTapEnable(event_tap_, true);
+        break;
 
-      auto old_caps_lock_state = get_caps_lock_state();
-      last_flags_ = CGEventGetFlags(event);
-      auto new_caps_lock_state = get_caps_lock_state();
+      case kCGEventTapDisabledByUserInput:
+        break;
 
-      if (old_caps_lock_state &&
-          new_caps_lock_state &&
-          *old_caps_lock_state == *new_caps_lock_state) {
-        // the caps lock state is not changed.
-      } else {
-        if (caps_lock_state_changed_callback_) {
-          caps_lock_state_changed_callback_(*new_caps_lock_state);
+      case kCGEventFlagsChanged:
+        // The caps lock key event from keyboard might be ignored by caps lock delay.
+        // Thus, we need to observe kCGEventFlagsChanged event in EventTap to detect the caps lock state change.
+        if (event) {
+          auto old_caps_lock_state = get_caps_lock_state();
+          last_flags_ = CGEventGetFlags(event);
+          auto new_caps_lock_state = get_caps_lock_state();
+
+          if (old_caps_lock_state &&
+              new_caps_lock_state &&
+              *old_caps_lock_state == *new_caps_lock_state) {
+            // the caps lock state is not changed.
+          } else {
+            if (caps_lock_state_changed_callback_) {
+              caps_lock_state_changed_callback_(*new_caps_lock_state);
+            }
+          }
         }
-      }
+        break;
+
+      case kCGEventLeftMouseDown:
+      case kCGEventLeftMouseUp:
+      case kCGEventRightMouseDown:
+      case kCGEventRightMouseUp:
+      case kCGEventMouseMoved:
+      case kCGEventLeftMouseDragged:
+      case kCGEventRightMouseDragged:
+      case kCGEventScrollWheel:
+      case kCGEventOtherMouseDown:
+      case kCGEventOtherMouseUp:
+      case kCGEventOtherMouseDragged:
+        if (pointing_device_event_callback_) {
+          pointing_device_event_callback_(type, event);
+        }
+        break;
+
+      case kCGEventNull:
+      case kCGEventKeyDown:
+      case kCGEventKeyUp:
+      case kCGEventTabletPointer:
+      case kCGEventTabletProximity:
+        // These events are not captured.
+        break;
     }
+
     return event;
   }
 
   caps_lock_state_changed_callback caps_lock_state_changed_callback_;
+  pointing_device_event_callback pointing_device_event_callback_;
 
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;

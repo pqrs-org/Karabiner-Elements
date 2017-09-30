@@ -36,6 +36,10 @@ public:
                                                 event_queue& output_event_queue) {
   }
 
+  virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
+                                                           event_queue& output_event_queue) {
+  }
+
   virtual void force_post_modifier_key_event(const event_queue::queued_event& front_input_event,
                                              event_queue& output_event_queue) {
   }

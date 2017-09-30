@@ -539,6 +539,7 @@ public:
             case event_queue::queued_event::event::type::device_ungrabbed:
             case event_queue::queued_event::event::type::caps_lock_state_changed:
             case event_queue::queued_event::event::type::event_from_ignored_device:
+            case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
             case event_queue::queued_event::event::type::frontmost_application_changed:
               // Do nothing
               break;
@@ -569,6 +570,7 @@ public:
       case event_queue::queued_event::event::type::device_ungrabbed:
       case event_queue::queued_event::event::type::caps_lock_state_changed:
       case event_queue::queued_event::event::type::event_from_ignored_device:
+      case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
       case event_queue::queued_event::event::type::frontmost_application_changed:
         // Do nothing
         break;
@@ -619,6 +621,13 @@ public:
 
   virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
                                                 event_queue& output_event_queue) {
+    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                      queue_,
+                                                      front_input_event.get_time_stamp());
+  }
+
+  virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
+                                                           event_queue& output_event_queue) {
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                       queue_,
                                                       front_input_event.get_time_stamp());

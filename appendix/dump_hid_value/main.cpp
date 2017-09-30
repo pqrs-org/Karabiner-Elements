@@ -180,6 +180,10 @@ private:
           std::cout << "event_from_ignored_device from " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
           break;
 
+        case krbn::event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
+          std::cout << "pointing_device_event_from_event_tap from " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          break;
+
         case krbn::event_queue::queued_event::event::type::frontmost_application_changed:
           std::cout << "frontmost_application_changed "
                     << queued_event.get_event().get_frontmost_application_bundle_identifier() << " "
