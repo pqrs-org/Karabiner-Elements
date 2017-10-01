@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "console_user_server_client.hpp"
+#include "keyboard_repeat_detector.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "stream_utility.hpp"
@@ -114,6 +115,10 @@ public:
       return events_;
     }
 
+    const keyboard_repeat_detector& get_keyboard_repeat_detector(void) const {
+      return keyboard_repeat_detector_;
+    }
+
     void emplace_back_key_event(hid_usage_page hid_usage_page,
                                 hid_usage hid_usage,
                                 event_type event_type,
@@ -133,6 +138,8 @@ public:
 
       events_.emplace_back(keyboard_event,
                            time_stamp);
+
+      keyboard_repeat_detector_.set(hid_usage_page, hid_usage, event_type);
     }
 
     void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
@@ -211,6 +218,7 @@ public:
 
     void clear(void) {
       events_.clear();
+      keyboard_repeat_detector_.clear();
     }
 
   private:
@@ -232,6 +240,8 @@ public:
 
     std::vector<event> events_;
     std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
+
+    keyboard_repeat_detector keyboard_repeat_detector_;
 
     // We should add a wait between modifier events and other events in order to
     // ensure window system handles modifier by properly order.
@@ -623,16 +633,20 @@ public:
 
   virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
                                                 event_queue& output_event_queue) {
-    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
-                                                      queue_,
-                                                      front_input_event.get_time_stamp());
+    if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
+      key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                        queue_,
+                                                        front_input_event.get_time_stamp());
+    }
   }
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
                                                            event_queue& output_event_queue) {
-    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
-                                                      queue_,
-                                                      front_input_event.get_time_stamp());
+    if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
+      key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                        queue_,
+                                                        front_input_event.get_time_stamp());
+    }
   }
 
   virtual void force_post_modifier_key_event(const event_queue::queued_event& front_input_event,
