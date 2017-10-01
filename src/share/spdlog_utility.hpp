@@ -2,9 +2,12 @@
 
 #include "boost_defs.hpp"
 
-#include "logger.hpp"
+BEGIN_BOOST_INCLUDE
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
+END_BOOST_INCLUDE
+
+#include "logger.hpp"
 #include <deque>
 #include <iomanip>
 
