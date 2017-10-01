@@ -9,6 +9,7 @@
 #include "event_queue.hpp"
 #include "gcd_utility.hpp"
 #include "iokit_utility.hpp"
+#include "keyboard_repeat_detector.hpp"
 #include "logger.hpp"
 #include "spdlog_utility.hpp"
 #include "types.hpp"
@@ -51,40 +52,6 @@ public:
   typedef std::function<void(human_interface_device& device)> grabbed_callback;
   typedef std::function<void(human_interface_device& device)> ungrabbed_callback;
   typedef std::function<void(human_interface_device& device)> disabled_callback;
-
-  class keyboard_repeat_detector final {
-  public:
-    void set(hid_usage_page hid_usage_page,
-             hid_usage hid_usage,
-             event_type event_type) {
-      switch (event_type) {
-        case event_type::key_down:
-          if (types::make_modifier_flag(hid_usage_page, hid_usage) == modifier_flag::zero) {
-            repeating_key_ = std::make_pair(hid_usage_page, hid_usage);
-          }
-          break;
-
-        case event_type::key_up:
-          if (repeating_key_ &&
-              repeating_key_->first == hid_usage_page &&
-              repeating_key_->second == hid_usage) {
-            repeating_key_ = boost::none;
-          }
-          break;
-
-        case event_type::single:
-          // Do nothing
-          break;
-      }
-    }
-
-    bool is_repeating(void) const {
-      return repeating_key_ != boost::none;
-    }
-
-  private:
-    boost::optional<std::pair<hid_usage_page, hid_usage>> repeating_key_;
-  };
 
   human_interface_device(const human_interface_device&) = delete;
 

@@ -1,11 +1,11 @@
 #define CATCH_CONFIG_RUNNER
 #include "../../vendor/catch/catch.hpp"
 
-#include "human_interface_device.hpp"
+#include "keyboard_repeat_detector.hpp"
 #include "thread_utility.hpp"
 
-TEST_CASE("keyboard_repeat_detector.is_repeating") {
-  krbn::human_interface_device::keyboard_repeat_detector keyboard_repeat_detector;
+TEST_CASE("is_repeating") {
+  krbn::keyboard_repeat_detector keyboard_repeat_detector;
   REQUIRE(keyboard_repeat_detector.is_repeating() == false);
 
   keyboard_repeat_detector.set(*(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
