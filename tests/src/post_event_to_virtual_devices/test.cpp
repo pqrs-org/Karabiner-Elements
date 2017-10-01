@@ -22,6 +22,13 @@
                            krbn::event_type::EVENT_TYPE,                                                   \
                            EVENT);
 
+#define ENQUEUE_POINTING_DEVICE_EVENT_FROM_EVENT_TAP(QUEUE, TIME_STAMP, EVENT, EVENT_TYPE)                            \
+  QUEUE.emplace_back_event(krbn::device_id(0),                                                                        \
+                           TIME_STAMP,                                                                                \
+                           krbn::event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event(), \
+                           krbn::event_type::EVENT_TYPE,                                                              \
+                           EVENT);
+
 #define ENQUEUE_LAZY_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE) \
   QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                      \
                            TIME_STAMP,                                      \
@@ -86,7 +93,6 @@ krbn::event_queue::queued_event::event pointing_vertical_wheel_0_event(krbn::eve
 krbn::event_queue::queued_event::event pointing_vertical_wheel_100_event(krbn::event_queue::queued_event::event::type::pointing_vertical_wheel, 100);
 auto device_ungrabbed_event = krbn::event_queue::queued_event::event::make_device_ungrabbed_event();
 auto device_keys_are_released_event = krbn::event_queue::queued_event::event::make_device_keys_are_released_event();
-auto event_from_ignored_device_event = krbn::event_queue::queued_event::event::make_event_from_ignored_device_event();
 
 uint64_t modifier_wait = krbn::time_utility::nano_to_absolute(NSEC_PER_MSEC);
 } // namespace
@@ -1521,6 +1527,7 @@ TEST_CASE("actual examples") {
     REQUIRE(helper.get_events() == expected);
   }
 
+  // event_from_ignored_device
   {
     actual_examples_helper helper("complex_modifications.json");
 
@@ -1545,6 +1552,79 @@ TEST_CASE("actual examples") {
 
     REQUIRE(helper.get_events() == expected);
   }
+
+  // event_from_ignored_device and key repeat
+  {
+    actual_examples_helper helper("complex_modifications.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down);
+    ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(helper.get_input_event_queue(), 2, time_stamp += interval, spacebar_event, key_up);
+
+    helper.manipulate();
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  // pointing_device_event_from_event_tap
+  {
+    actual_examples_helper helper("complex_modifications.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_up);
+    ENQUEUE_POINTING_DEVICE_EVENT_FROM_EVENT_TAP(helper.get_input_event_queue(), time_stamp += interval, button1_event, key_down);
+
+    helper.manipulate();
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  // pointing_device_event_from_event_tap and key repeat
+  {
+    actual_examples_helper helper("complex_modifications.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down);
+    ENQUEUE_POINTING_DEVICE_EVENT_FROM_EVENT_TAP(helper.get_input_event_queue(), time_stamp += interval, button1_event, key_down);
+
+    helper.manipulate();
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
 
   // ----------------------------------------
   // control+p to up_arrow (from modifiers.optional)
