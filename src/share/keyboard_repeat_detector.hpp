@@ -33,6 +33,10 @@ public:
     }
   }
 
+  void clear(void) {
+    repeating_key_ = boost::none;
+  }
+
   bool is_repeating(void) const {
     return repeating_key_ != boost::none;
   }
