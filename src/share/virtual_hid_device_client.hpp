@@ -221,7 +221,9 @@ private:
 
     auto kr = method();
     if (kr != KERN_SUCCESS) {
-      logger::get_logger().error("IOConnectCallStructMethod error: {1} ({2}) @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_error_name(kr), kr);
+      if (virtual_hid_keyboard_ready_) {
+        logger::get_logger().error("IOConnectCallStructMethod error: {1} ({2}) @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_error_name(kr), kr);
+      }
       return false;
     }
 
