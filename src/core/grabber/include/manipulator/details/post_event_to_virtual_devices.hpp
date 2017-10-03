@@ -633,6 +633,12 @@ public:
 
   virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
                                                 event_queue& output_event_queue) {
+    // We should not dispatch modifier key events while key repeating.
+    //
+    // macOS does not ignore the modifier state change while key repeating.
+    // If you enabled `control-f -> right_arrow` configuration,
+    // apps will catch control-right_arrow event if release the lazy modifier here while right_arrow key is repeating.
+
     if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
@@ -642,6 +648,9 @@ public:
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
                                                            event_queue& output_event_queue) {
+    // We should not dispatch modifier key events while key repeating.
+    // (See a comment in `handle_event_from_ignored_device`.)
+
     if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
