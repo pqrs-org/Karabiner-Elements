@@ -69,7 +69,7 @@ private:
                    const std::shared_ptr<buffer>& ptr) {
     // buffer will be released.
     if (ec) {
-      logger::get_logger().error("local_datagram_client error: {0}", ec.message());
+      logger::get_logger().warn("local_datagram_client error: {0}", ec.message());
     }
   }
 
