@@ -1,4 +1,4 @@
-# Version 11.0.1
+# Version 11.1.0
 
 * Fixed an issue that modifier flags becomes improperly state by mouse events.
 
