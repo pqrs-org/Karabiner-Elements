@@ -310,6 +310,7 @@ private:
         dev->set_removed();
         dev->ungrab();
         if (dev->is_pqrs_virtual_hid_keyboard()) {
+          virtual_hid_device_client_.terminate_virtual_hid_keyboard();
           ungrab_devices();
         }
         hids_.erase(it);
