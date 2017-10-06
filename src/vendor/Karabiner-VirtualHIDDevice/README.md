@@ -9,6 +9,7 @@ Karabiner-VirtualHIDDevice is a virtual HID device driver for macOS.
 
 * OS X 10.11.*
 * OS X 10.12.*
+* OS X 10.13.*
 
 ## How to build
 

@@ -22,4 +22,8 @@ public:
   virtual IOReturn newReportDescriptor(IOMemoryDescriptor** descriptor) const override;
   virtual OSString* newSerialNumberString() const override;
   virtual OSNumber* newLocationIDNumber() const override;
+
+  static const char* serialNumberCString(void) {
+    return VIRTUAL_HID_POINTING_CLASS_STRING;
+  }
 };

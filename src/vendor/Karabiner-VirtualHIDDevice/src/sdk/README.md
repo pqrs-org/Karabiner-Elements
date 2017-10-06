@@ -3,6 +3,3 @@ So, we have to use `MacOSX10.11.sdk/IOHIDEventService` to build VirtualHIDEventS
 
 Note:
 `kextload` will be failed with the following error message when you load kexts with `MacOSX10.12.sdk/IOHIDEventService` in macOS 10.11.
-
-
-

@@ -16,6 +16,11 @@ install:
 	sudo cp -R dist/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext /Library/Extensions
 	sudo kextload /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext
 
+tmpinstall:
+	sudo rm -rf /tmp/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext
+	sudo cp -R dist/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext /tmp
+	sudo kextload /tmp/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext
+
 uninstall:
 	sudo sh dist/uninstall.sh
 

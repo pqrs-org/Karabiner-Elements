@@ -24,6 +24,6 @@ public:
   virtual OSNumber* newLocationIDNumber() const override;
 
   static const char* serialNumberCString(void) {
-    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.VirtualHIDKeyboard";
+    return VIRTUAL_HID_KEYBOARD_CLASS_STRING;
   }
 };

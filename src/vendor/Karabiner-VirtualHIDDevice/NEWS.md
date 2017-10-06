@@ -1,3 +1,8 @@
+# Version 4.9.0
+
+* A version string has been included into virtual device's serial number.
+
+
 # Version 4.8.0
 
 * `clear_keyboard_modifier_flags` method has been added.
