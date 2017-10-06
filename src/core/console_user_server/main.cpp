@@ -1,6 +1,7 @@
 #include "connection_manager.hpp"
 #include "constants.hpp"
 #include "filesystem.hpp"
+#include "grabber_alerts_monitor.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "migration.hpp"
@@ -40,6 +41,11 @@ int main(int argc, const char* argv[]) {
 
   auto version_monitor_ptr = std::make_unique<krbn::version_monitor>([] {
     exit(0);
+  });
+
+  auto grabber_alerts_monitor_ptr = std::make_unique<krbn::grabber_alerts_monitor>([] {
+    krbn::logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
+    krbn::application_launcher::launch_preferences();
   });
 
   krbn::migration::migrate_v1();

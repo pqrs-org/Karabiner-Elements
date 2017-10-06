@@ -55,6 +55,7 @@
 		3463EABE1E2FCD9400427A81 /* version_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version_monitor.hpp; sourceTree = "<group>"; };
 		347113151D871EC1001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = process_monitor.hpp; sourceTree = "<group>"; };
 		348A6C461E17D28D00DB5FA4 /* migration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = migration.hpp; path = include/migration.hpp; sourceTree = SOURCE_ROOT; };
+		3491DBED1F87F3D3007B6FF4 /* grabber_alerts_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = grabber_alerts_monitor.hpp; sourceTree = "<group>"; };
 		3492C9BC1D772D8B0055988F /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = filesystem.hpp; sourceTree = "<group>"; };
 		349950651D898530004FE466 /* system_preferences_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = system_preferences_monitor.hpp; sourceTree = "<group>"; };
 		34A88A971D685A4600DD480B /* connection_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = connection_manager.hpp; path = include/connection_manager.hpp; sourceTree = SOURCE_ROOT; };
@@ -127,6 +128,7 @@
 				345EF8DB1F09FA0B003E7A67 /* frontmost_application_observer_objc.m */,
 				345EF8DC1F09FA0B003E7A67 /* frontmost_application_observer.hpp */,
 				3431346F1DB710E80008F284 /* gcd_utility.hpp */,
+				3491DBED1F87F3D3007B6FF4 /* grabber_alerts_monitor.hpp */,
 				34A88A981D685A4600DD480B /* grabber_client.hpp */,
 				341F59DB1D57789500B441A8 /* iokit_utility.hpp */,
 				34A88AA01D685A5C00DD480B /* karabiner_version.h */,
