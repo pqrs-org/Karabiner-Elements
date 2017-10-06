@@ -555,33 +555,35 @@ private:
   }
 
   void update_virtual_hid_keyboard(void) {
-    if (mode_ == mode::grabbing &&
-        virtual_hid_device_client_.is_connected()) {
-      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-      if (auto k = types::get_keyboard_type(profile_.get_virtual_hid_keyboard().get_keyboard_type())) {
-        properties.keyboard_type = *k;
+    if (virtual_hid_device_client_.is_connected()) {
+      if (mode_ == mode::grabbing) {
+        pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
+        if (auto k = types::get_keyboard_type(profile_.get_virtual_hid_keyboard().get_keyboard_type())) {
+          properties.keyboard_type = *k;
+        }
+        auto caps_lock_delay_milliseconds = profile_.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
+        properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(caps_lock_delay_milliseconds);
+
+        virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
+        return;
       }
-      auto caps_lock_delay_milliseconds = profile_.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
-      properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(caps_lock_delay_milliseconds);
 
-      virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
-      return;
+      virtual_hid_device_client_.terminate_virtual_hid_keyboard();
     }
-
-    virtual_hid_device_client_.terminate_virtual_hid_keyboard();
   }
 
   void update_virtual_hid_pointing(void) {
-    if (mode_ == mode::grabbing &&
-        virtual_hid_device_client_.is_connected()) {
-      if (is_pointing_device_grabbed() ||
-          manipulator_managers_connector_.needs_virtual_hid_pointing()) {
-        virtual_hid_device_client_.initialize_virtual_hid_pointing();
-        return;
+    if (virtual_hid_device_client_.is_connected()) {
+      if (mode_ == mode::grabbing) {
+        if (is_pointing_device_grabbed() ||
+            manipulator_managers_connector_.needs_virtual_hid_pointing()) {
+          virtual_hid_device_client_.initialize_virtual_hid_pointing();
+          return;
+        }
       }
-    }
 
-    virtual_hid_device_client_.terminate_virtual_hid_pointing();
+      virtual_hid_device_client_.terminate_virtual_hid_pointing();
+    }
   }
 
   boost::optional<const core_configuration::profile::device&> find_device_configuration(const human_interface_device& device) {
