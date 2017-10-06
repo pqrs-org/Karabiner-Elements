@@ -15,6 +15,7 @@
 #include "spdlog_utility.hpp"
 #include "system_preferences.hpp"
 #include "types.hpp"
+#include "virtual_hid_device_client.hpp"
 #include <IOKit/hid/IOHIDManager.h>
 #include <boost/algorithm/string.hpp>
 #include <fstream>
@@ -27,12 +28,21 @@ class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(virtual_hid_device_client& virtual_hid_device_client) : virtual_hid_device_client_(virtual_hid_device_client),
-                                                                         profile_(nlohmann::json()),
-                                                                         mode_(mode::observing),
-                                                                         suspended_(false) {
-    virtual_hid_device_client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect(
-        boost::bind(&device_grabber::virtual_hid_device_client_disconnected_callback, this));
+  device_grabber(void) : profile_(nlohmann::json()),
+                         mode_(mode::observing),
+                         suspended_(false) {
+    virtual_hid_device_client_.client_connected.connect([&]() {
+      logger::get_logger().info("virtual_hid_device_client_ is connected");
+
+      update_virtual_hid_keyboard();
+      update_virtual_hid_pointing();
+    });
+
+    virtual_hid_device_client_.client_disconnected.connect([&]() {
+      logger::get_logger().info("virtual_hid_device_client_ is disconnected");
+
+      stop_grabbing();
+    });
 
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>();
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
@@ -99,16 +109,12 @@ public:
       }
 
       led_monitor_timer_ = nullptr;
-
-      virtual_hid_device_client_disconnected_connection.disconnect();
     });
   }
 
   void start_grabbing(const std::string& user_core_configuration_file_path) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       mode_ = mode::grabbing;
-
-      virtual_hid_device_client_.terminate_virtual_hid_pointing();
 
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_manager here.
@@ -128,6 +134,8 @@ public:
                                                                          set_profile(core_configuration_->get_selected_profile());
                                                                          grab_devices();
                                                                        });
+
+      virtual_hid_device_client_.connect();
     });
   }
 
@@ -139,9 +147,9 @@ public:
 
       mode_ = mode::observing;
 
-      virtual_hid_device_client_.terminate_virtual_hid_pointing();
-
       event_tap_manager_ = nullptr;
+
+      virtual_hid_device_client_.close();
     });
   }
 
@@ -233,10 +241,6 @@ private:
     grabbing,
   };
 
-  void virtual_hid_device_client_disconnected_callback(void) {
-    stop_grabbing();
-  }
-
   static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
     if (result != kIOReturnSuccess) {
       return;
@@ -310,8 +314,11 @@ private:
         dev->set_removed();
         dev->ungrab();
         if (dev->is_pqrs_virtual_hid_keyboard()) {
-          virtual_hid_device_client_.terminate_virtual_hid_keyboard();
+          virtual_hid_device_client_.close();
           ungrab_devices();
+
+          virtual_hid_device_client_.connect();
+          grab_devices();
         }
         hids_.erase(it);
       }
@@ -547,13 +554,34 @@ private:
     return false;
   }
 
-  void update_virtual_hid_pointing(void) {
-    if (is_pointing_device_grabbed() ||
-        manipulator_managers_connector_.needs_virtual_hid_pointing()) {
-      virtual_hid_device_client_.initialize_virtual_hid_pointing();
-    } else {
-      virtual_hid_device_client_.terminate_virtual_hid_pointing();
+  void update_virtual_hid_keyboard(void) {
+    if (mode_ == mode::grabbing &&
+        virtual_hid_device_client_.is_connected()) {
+      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
+      if (auto k = types::get_keyboard_type(profile_.get_virtual_hid_keyboard().get_keyboard_type())) {
+        properties.keyboard_type = *k;
+      }
+      auto caps_lock_delay_milliseconds = profile_.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
+      properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(caps_lock_delay_milliseconds);
+
+      virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
+      return;
     }
+
+    virtual_hid_device_client_.terminate_virtual_hid_keyboard();
+  }
+
+  void update_virtual_hid_pointing(void) {
+    if (mode_ == mode::grabbing &&
+        virtual_hid_device_client_.is_connected()) {
+      if (is_pointing_device_grabbed() ||
+          manipulator_managers_connector_.needs_virtual_hid_pointing()) {
+        virtual_hid_device_client_.initialize_virtual_hid_pointing();
+        return;
+      }
+    }
+
+    virtual_hid_device_client_.terminate_virtual_hid_pointing();
   }
 
   boost::optional<const core_configuration::profile::device&> find_device_configuration(const human_interface_device& device) {
@@ -640,16 +668,7 @@ private:
     update_complex_modifications_manipulators();
     update_fn_function_keys_manipulators();
 
-    // Update virtual_hid_keyboard
-    {
-      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-      if (auto k = types::get_keyboard_type(profile.get_virtual_hid_keyboard().get_keyboard_type())) {
-        properties.keyboard_type = *k;
-      }
-      properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(profile.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds());
-      virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
-    }
-
+    update_virtual_hid_keyboard();
     update_virtual_hid_pointing();
   }
 
@@ -829,9 +848,7 @@ private:
     return nullptr;
   }
 
-  virtual_hid_device_client& virtual_hid_device_client_;
-
-  boost::signals2::connection virtual_hid_device_client_disconnected_connection;
+  virtual_hid_device_client virtual_hid_device_client_;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
   std::shared_ptr<core_configuration> core_configuration_;

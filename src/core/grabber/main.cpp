@@ -8,7 +8,6 @@
 #include "process_utility.hpp"
 #include "thread_utility.hpp"
 #include "version_monitor.hpp"
-#include "virtual_hid_device_client.hpp"
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -90,9 +89,7 @@ int main(int argc, const char* argv[]) {
     chmod(krbn::constants::get_console_user_server_socket_directory(), 0755);
   }
 
-  auto virtual_hid_device_client_ptr = std::make_unique<krbn::virtual_hid_device_client>();
-  virtual_hid_device_client_ptr->connect();
-  auto device_grabber_ptr = std::make_unique<krbn::device_grabber>(*virtual_hid_device_client_ptr);
+  auto device_grabber_ptr = std::make_unique<krbn::device_grabber>();
   krbn::connection_manager connection_manager(*version_monitor_ptr, *device_grabber_ptr);
 
   krbn::notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
