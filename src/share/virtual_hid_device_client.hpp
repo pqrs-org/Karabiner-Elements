@@ -34,6 +34,10 @@ public:
     }
   }
 
+  void close(void) {
+    close_connection();
+  }
+
   bool is_connected(void) const {
     return connect_ != IO_OBJECT_NULL;
   }
@@ -192,6 +196,8 @@ private:
   }
 
   void close_connection(void) {
+    logger::get_logger().info("virtual_hid_device_client::close_connection");
+
     if (connect_) {
       auto kr = IOServiceClose(connect_);
       if (kr != kIOReturnSuccess) {
@@ -199,8 +205,6 @@ private:
       }
       connect_ = IO_OBJECT_NULL;
     }
-
-    logger::get_logger().info("IOServiceClose is succeeded @ {0}", __PRETTY_FUNCTION__);
 
     if (service_) {
       IOObjectRelease(service_);
