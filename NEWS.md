@@ -1,3 +1,8 @@
+# Version 11.2.0 (beta)
+
+* The virtual keyboard handling has been improved.
+
+
 # Version 11.1.0
 
 * Fixed an issue that modifier flags becomes improperly state by mouse events.
