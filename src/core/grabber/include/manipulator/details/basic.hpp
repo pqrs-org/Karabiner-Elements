@@ -101,6 +101,16 @@ public:
           to_if_alone_.emplace_back(j);
         }
 
+      } else if (key == "to_if_doublepress") {
+          if (!value.is_array()) {
+              logger::get_logger().error("complex_modifications json error: `to_if_doublepress` should be array: {0}", json.dump());
+              continue;
+          }
+          
+          for (const auto& j : value) {
+              to_if_doublepress_.emplace_back(j);
+          }
+
       } else if (key == "description" ||
                  key == "conditions" ||
                  key == "parameters" ||
@@ -151,11 +161,16 @@ public:
     if (!front_input_event.get_valid()) {
       return;
     }
+      
+    if (!is_target) {
+      pressCount = 0;
+    }
 
     if (is_target) {
       std::unordered_set<modifier_flag> from_mandatory_modifiers;
       uint64_t key_down_time_stamp = 0;
       bool alone = false;
+      uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - last_key_down_time_stamp);
 
       switch (front_input_event.get_event_type()) {
         case event_type::key_down:
@@ -189,6 +204,13 @@ public:
                                                       from_mandatory_modifiers,
                                                       front_input_event.get_time_stamp());
           }
+              
+          if (is_target) {
+            if (pressCount == 0 || nanoseconds >= 500 * NSEC_PER_MSEC) {
+              pressCount = 0;
+              last_key_down_time_stamp = front_input_event.get_time_stamp();
+            }
+          }
           break;
 
         case event_type::key_up: {
@@ -207,6 +229,11 @@ public:
             key_down_time_stamp = it->get_key_down_time_stamp();
             alone = it->get_alone();
             manipulated_original_events_.erase(it);
+              
+              
+            if (nanoseconds < 500 * NSEC_PER_MSEC) {
+              ++pressCount;
+            }
           } else {
             is_target = false;
           }
@@ -305,14 +332,23 @@ public:
                                        time_stamp_delay,
                                        output_event_queue);
 
-                  uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
-                  if (alone &&
-                      nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+//                  uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
+                  
+                  if (alone && pressCount >= 2 && nanoseconds < parameters_.get_basic_to_if_doublepress_timeout_milliseconds() * NSEC_PER_MSEC) {
+                    pressCount = 0;
                     send_extra_to_events(front_input_event,
+                                         to_if_doublepress_,
+                                         time_stamp_delay,
+                                         output_event_queue);
+                      
+                  } else if (alone &&
+                      nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                        send_extra_to_events(front_input_event,
                                          to_if_alone_,
                                          time_stamp_delay,
                                          output_event_queue);
                   }
+                
                 }
                 break;
 
@@ -518,8 +554,12 @@ private:
   std::vector<to_event_definition> to_;
   std::vector<to_event_definition> to_after_key_up_;
   std::vector<to_event_definition> to_if_alone_;
+  std::vector<to_event_definition> to_if_doublepress_;
 
   std::vector<manipulated_original_event> manipulated_original_events_;
+    
+  int64_t last_key_down_time_stamp = 0;
+  int64_t pressCount = 0;
 };
 } // namespace details
 } // namespace manipulator
