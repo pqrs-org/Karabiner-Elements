@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <spdlog/common.h>
-#include <spdlog/details/os.h>
+#include "spdlog/common.h"
+#include "spdlog/details/os.h"
 
 
 #include <string>
@@ -19,7 +19,10 @@ namespace details
 struct log_msg
 {
     log_msg() = default;
-    log_msg(const std::string *loggers_name, level::level_enum lvl) : logger_name(loggers_name), level(lvl)
+    log_msg(const std::string *loggers_name, level::level_enum lvl) :
+        logger_name(loggers_name),
+        level(lvl),
+        msg_id(0)
     {
 #ifndef SPDLOG_NO_DATETIME
         time = os::now();
@@ -41,6 +44,7 @@ struct log_msg
     size_t thread_id;
     fmt::MemoryWriter raw;
     fmt::MemoryWriter formatted;
+    size_t msg_id;
 };
 }
 }

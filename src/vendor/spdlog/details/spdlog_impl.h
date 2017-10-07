@@ -8,23 +8,23 @@
 //
 // Global registry functions
 //
-#include <spdlog/spdlog.h>
-#include <spdlog/details/registry.h>
-#include <spdlog/sinks/file_sinks.h>
-#include <spdlog/sinks/stdout_sinks.h>
+#include "spdlog/spdlog.h"
+#include "spdlog/details/registry.h"
+#include "spdlog/sinks/file_sinks.h"
+#include "spdlog/sinks/stdout_sinks.h"
 #ifdef SPDLOG_ENABLE_SYSLOG
-#include <spdlog/sinks/syslog_sink.h>
+#include "spdlog/sinks/syslog_sink.h"
 #endif
 
 #ifdef _WIN32
-#include <spdlog/sinks/wincolor_sink.h>
+#include "spdlog/sinks/wincolor_sink.h"
 #else
-#include <spdlog/sinks/ansicolor_sink.h>
+#include "spdlog/sinks/ansicolor_sink.h"
 #endif
 
 
 #ifdef __ANDROID__
-#include <spdlog/sinks/android_sink.h>
+#include "spdlog/sinks/android_sink.h"
 #endif
 
 #include <chrono>
@@ -137,25 +137,25 @@ inline std::shared_ptr<spdlog::logger> spdlog::stderr_color_st(const std::string
 
 inline std::shared_ptr<spdlog::logger> spdlog::stdout_color_mt(const std::string& logger_name)
 {
-    auto sink = std::make_shared<spdlog::sinks::ansicolor_sink>(spdlog::sinks::stdout_sink_mt::instance());
+    auto sink = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
     return spdlog::details::registry::instance().create(logger_name, sink);
 }
 
 inline std::shared_ptr<spdlog::logger> spdlog::stdout_color_st(const std::string& logger_name)
 {
-    auto sink = std::make_shared<spdlog::sinks::ansicolor_sink>(spdlog::sinks::stdout_sink_st::instance());
+    auto sink = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_st>();
     return spdlog::details::registry::instance().create(logger_name, sink);
 }
 
 inline std::shared_ptr<spdlog::logger> spdlog::stderr_color_mt(const std::string& logger_name)
 {
-    auto sink = std::make_shared<spdlog::sinks::ansicolor_sink>(spdlog::sinks::stderr_sink_mt::instance());
+    auto sink = std::make_shared<spdlog::sinks::ansicolor_stderr_sink_mt>();
     return spdlog::details::registry::instance().create(logger_name, sink);
 }
 
 inline std::shared_ptr<spdlog::logger> spdlog::stderr_color_st(const std::string& logger_name)
 {
-    auto sink = std::make_shared<spdlog::sinks::ansicolor_sink>(spdlog::sinks::stderr_sink_st::instance());
+    auto sink = std::make_shared<spdlog::sinks::ansicolor_stderr_sink_st>();
     return spdlog::details::registry::instance().create(logger_name, sink);
 }
 #endif
@@ -201,6 +201,24 @@ template<class It>
 inline std::shared_ptr<spdlog::logger> spdlog::create(const std::string& logger_name, const It& sinks_begin, const It& sinks_end)
 {
     return details::registry::instance().create(logger_name, sinks_begin, sinks_end);
+}
+
+// Create and register an async logger with a single sink
+inline std::shared_ptr<spdlog::logger> spdlog::create_async(const std::string& logger_name, const sink_ptr& sink, size_t queue_size, const async_overflow_policy overflow_policy, const std::function<void()>& worker_warmup_cb, const std::chrono::milliseconds& flush_interval_ms, const std::function<void()>& worker_teardown_cb)
+{
+    return details::registry::instance().create_async(logger_name, queue_size, overflow_policy, worker_warmup_cb, flush_interval_ms, worker_teardown_cb, sink);
+}
+
+// Create and register an async logger with multiple sinks
+inline std::shared_ptr<spdlog::logger> spdlog::create_async(const std::string& logger_name, sinks_init_list sinks, size_t queue_size, const async_overflow_policy overflow_policy, const std::function<void()>& worker_warmup_cb, const std::chrono::milliseconds& flush_interval_ms, const std::function<void()>& worker_teardown_cb )
+{
+    return details::registry::instance().create_async(logger_name, queue_size, overflow_policy, worker_warmup_cb, flush_interval_ms, worker_teardown_cb, sinks);
+}
+
+template<class It>
+inline std::shared_ptr<spdlog::logger> spdlog::create_async(const std::string& logger_name, const It& sinks_begin, const It& sinks_end, size_t queue_size, const async_overflow_policy overflow_policy, const std::function<void()>& worker_warmup_cb, const std::chrono::milliseconds& flush_interval_ms, const std::function<void()>& worker_teardown_cb)
+{
+    return details::registry::instance().create_async(logger_name, queue_size, overflow_policy, worker_warmup_cb, flush_interval_ms, worker_teardown_cb, sinks_begin, sinks_end);
 }
 
 inline void spdlog::set_formatter(spdlog::formatter_ptr f)

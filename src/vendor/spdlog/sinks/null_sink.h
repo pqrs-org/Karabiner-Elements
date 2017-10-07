@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <spdlog/sinks/base_sink.h>
-#include <spdlog/details/null_mutex.h>
+#include "spdlog/sinks/base_sink.h"
+#include "spdlog/details/null_mutex.h"
 
 #include <mutex>
 
@@ -22,7 +22,7 @@ protected:
     void _sink_it(const details::log_msg&) override
     {}
 
-    void flush() override
+    void _flush() override
     {}
 
 };

@@ -18,7 +18,7 @@
 #include <locale>
 #endif
 
-#include <spdlog/details/null_mutex.h>
+#include "spdlog/details/null_mutex.h"
 
 //visual studio upto 2013 does not support noexcept nor constexpr
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
@@ -27,6 +27,11 @@
 #else
 #define SPDLOG_NOEXCEPT noexcept
 #define SPDLOG_CONSTEXPR constexpr
+#endif
+
+// See tweakme.h
+#if !defined(SPDLOG_FINAL)
+#define SPDLOG_FINAL
 #endif
 
 #if defined(__GNUC__)  || defined(__clang__)
@@ -38,7 +43,7 @@
 #endif
 
 
-#include <spdlog/fmt/fmt.h>
+#include "spdlog/fmt/fmt.h"
 
 namespace spdlog
 {
@@ -76,7 +81,10 @@ typedef enum
     off = 6
 } level_enum;
 
-static const char* level_names[] { "trace", "debug", "info",  "warning", "error", "critical", "off" };
+#if !defined(SPDLOG_LEVEL_NAMES)
+#define SPDLOG_LEVEL_NAMES { "trace", "debug", "info",  "warning", "error", "critical", "off" };
+#endif
+static const char* level_names[] SPDLOG_LEVEL_NAMES
 
 static const char* short_level_names[] { "T", "D", "I", "W", "E", "C", "O" };
 
@@ -101,6 +109,15 @@ enum class async_overflow_policy
     discard_log_msg // Discard the message it enqueue fails
 };
 
+//
+// Pattern time - specific time getting to use for pattern_formatter.
+// local time by default
+//
+enum class pattern_time_type
+{
+    local, // log localtime
+    utc    // log utc
+};
 
 //
 // Log exception

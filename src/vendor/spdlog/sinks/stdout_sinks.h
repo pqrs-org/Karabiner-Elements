@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <spdlog/details/null_mutex.h>
-#include <spdlog/sinks/base_sink.h>
+#include "spdlog/details/null_mutex.h"
+#include "spdlog/sinks/base_sink.h"
 
 #include <cstdio>
 #include <memory>
@@ -18,7 +18,7 @@ namespace sinks
 {
 
 template <class Mutex>
-class stdout_sink: public base_sink<Mutex>
+class stdout_sink SPDLOG_FINAL : public base_sink<Mutex>
 {
     using MyType = stdout_sink<Mutex>;
 public:
@@ -29,14 +29,14 @@ public:
         static std::shared_ptr<MyType> instance = std::make_shared<MyType>();
         return instance;
     }
-
+protected:
     void _sink_it(const details::log_msg& msg) override
     {
         fwrite(msg.formatted.data(), sizeof(char), msg.formatted.size(), stdout);
-        flush();
+        _flush();
     }
 
-    void flush() override
+    void _flush() override
     {
         fflush(stdout);
     }
@@ -47,7 +47,7 @@ typedef stdout_sink<std::mutex> stdout_sink_mt;
 
 
 template <class Mutex>
-class stderr_sink: public base_sink<Mutex>
+class stderr_sink SPDLOG_FINAL : public base_sink<Mutex>
 {
     using MyType = stderr_sink<Mutex>;
 public:
@@ -58,14 +58,14 @@ public:
         static std::shared_ptr<MyType> instance = std::make_shared<MyType>();
         return instance;
     }
-
+protected:
     void _sink_it(const details::log_msg& msg) override
     {
         fwrite(msg.formatted.data(), sizeof(char), msg.formatted.size(), stderr);
-        flush();
+        _flush();
     }
 
-    void flush() override
+    void _flush() override
     {
         fflush(stderr);
     }

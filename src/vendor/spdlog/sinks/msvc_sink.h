@@ -7,8 +7,8 @@
 
 #if defined(_MSC_VER)
 
-#include <spdlog/sinks/base_sink.h>
-#include <spdlog/details/null_mutex.h>
+#include "spdlog/sinks/base_sink.h"
+#include "spdlog/details/null_mutex.h"
 
 #include <WinBase.h>
 
@@ -30,15 +30,16 @@ public:
     {
     }
 
-    void flush() override
-    {
-    }
+
 
 protected:
     void _sink_it(const details::log_msg& msg) override
     {
         OutputDebugStringA(msg.formatted.c_str());
     }
+
+    void _flush() override
+    {}
 };
 
 typedef msvc_sink<std::mutex> msvc_sink_mt;

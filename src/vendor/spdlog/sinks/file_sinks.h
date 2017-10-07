@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include <spdlog/sinks/base_sink.h>
-#include <spdlog/details/null_mutex.h>
-#include <spdlog/details/file_helper.h>
-#include <spdlog/fmt/fmt.h>
+#include "spdlog/sinks/base_sink.h"
+#include "spdlog/details/null_mutex.h"
+#include "spdlog/details/file_helper.h"
+#include "spdlog/fmt/fmt.h"
 
 #include <algorithm>
 #include <chrono>
@@ -26,17 +26,14 @@ namespace sinks
  * Trivial file sink with single file as target
  */
 template<class Mutex>
-class simple_file_sink : public base_sink < Mutex >
+class simple_file_sink SPDLOG_FINAL : public base_sink < Mutex >
 {
 public:
     explicit simple_file_sink(const filename_t &filename, bool truncate = false):_force_flush(false)
     {
         _file_helper.open(filename, truncate);
     }
-    void flush() override
-    {
-        _file_helper.flush();
-    }
+
     void set_force_flush(bool force_flush)
     {
         _force_flush = force_flush;
@@ -48,6 +45,10 @@ protected:
         _file_helper.write(msg);
         if(_force_flush)
             _file_helper.flush();
+    }
+    void _flush() override
+    {
+        _file_helper.flush();
     }
 private:
     details::file_helper _file_helper;
@@ -61,7 +62,7 @@ typedef simple_file_sink<details::null_mutex> simple_file_sink_st;
  * Rotating file sink based on size
  */
 template<class Mutex>
-class rotating_file_sink : public base_sink < Mutex >
+class rotating_file_sink SPDLOG_FINAL : public base_sink < Mutex >
 {
 public:
     rotating_file_sink(const filename_t &base_filename,
@@ -76,10 +77,6 @@ public:
         _current_size = _file_helper.size(); //expensive. called only once
     }
 
-    void flush() override
-    {
-        _file_helper.flush();
-    }
 
 protected:
     void _sink_it(const details::log_msg& msg) override
@@ -91,6 +88,11 @@ protected:
             _current_size = msg.formatted.size();
         }
         _file_helper.write(msg);
+    }
+
+    void _flush() override
+    {
+        _file_helper.flush();
     }
 
 private:
@@ -177,7 +179,7 @@ struct dateonly_daily_file_name_calculator
  * Rotating file sink based on date. rotates at midnight
  */
 template<class Mutex, class FileNameCalc = default_daily_file_name_calculator>
-class daily_file_sink :public base_sink < Mutex >
+class daily_file_sink SPDLOG_FINAL :public base_sink < Mutex >
 {
 public:
     //create daily file sink which rotates on given time
@@ -194,10 +196,6 @@ public:
         _file_helper.open(FileNameCalc::calc_filename(_base_filename));
     }
 
-    void flush() override
-    {
-        _file_helper.flush();
-    }
 
 protected:
     void _sink_it(const details::log_msg& msg) override
@@ -208,6 +206,11 @@ protected:
             _rotation_tp = _next_rotation_tp();
         }
         _file_helper.write(msg);
+    }
+
+    void _flush() override
+    {
+        _file_helper.flush();
     }
 
 private:
