@@ -23,30 +23,35 @@ public:
     };
     file_monitor_ = std::make_unique<file_monitor>(targets,
                                                    [this](const std::string&) {
-                                                     std::ifstream stream(constants::get_grabber_alerts_json_file_path());
+                                                     auto file_path = constants::get_grabber_alerts_json_file_path();
+                                                     std::ifstream stream(file_path);
                                                      if (stream) {
-                                                       auto json = nlohmann::json::parse(stream);
+                                                       try {
+                                                         auto json = nlohmann::json::parse(stream);
 
-                                                       // json example
-                                                       //
-                                                       // {
-                                                       //     "alerts": [
-                                                       //         "system_policy_prevents_loading_kext"
-                                                       //     ]
-                                                       // }
+                                                         // json example
+                                                         //
+                                                         // {
+                                                         //     "alerts": [
+                                                         //         "system_policy_prevents_loading_kext"
+                                                         //     ]
+                                                         // }
 
-                                                       const std::string key = "alerts";
-                                                       if (json.find(key) != std::end(json)) {
-                                                         auto alerts = json[key];
-                                                         if (alerts.is_array() && !alerts.empty()) {
-                                                           auto s = json.dump();
-                                                           if (json_string_ != s) {
-                                                             json_string_ = s;
-                                                             if (callback_) {
-                                                               callback_();
+                                                         const std::string key = "alerts";
+                                                         if (json.find(key) != std::end(json)) {
+                                                           auto alerts = json[key];
+                                                           if (alerts.is_array() && !alerts.empty()) {
+                                                             auto s = json.dump();
+                                                             if (json_string_ != s) {
+                                                               json_string_ = s;
+                                                               if (callback_) {
+                                                                 callback_();
+                                                               }
                                                              }
                                                            }
                                                          }
+                                                       } catch (std::exception& e) {
+                                                         logger::get_logger().error("parse error in {0}: {1}", file_path, e.what());
                                                        }
                                                      }
                                                    });
