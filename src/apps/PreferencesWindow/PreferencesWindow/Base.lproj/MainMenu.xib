@@ -433,11 +433,11 @@
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
             <value key="minSize" type="size" width="900" height="550"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="900" height="550"/>
+                <rect key="frame" x="0.0" y="0.0" width="907" height="550"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="874" height="534"/>
+                        <rect key="frame" x="13" y="10" width="881" height="534"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Simple Modifications" identifier="1" id="SOT-pf-9fT">
@@ -834,11 +834,11 @@
                             </tabViewItem>
                             <tabViewItem label="Complex Modifications" identifier="" id="zkg-mg-aXH" userLabel="Complex Modifications">
                                 <view key="view" id="QKn-8U-Fy4">
-                                    <rect key="frame" x="10" y="33" width="854" height="488"/>
+                                    <rect key="frame" x="10" y="33" width="861" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tabView translatesAutoresizingMaskIntoConstraints="NO" id="1c1-vs-xhU">
-                                            <rect key="frame" x="10" y="7" width="834" height="479"/>
+                                            <rect key="frame" x="10" y="7" width="841" height="479"/>
                                             <font key="font" metaFont="system"/>
                                             <tabViewItems>
                                                 <tabViewItem label="Rules" identifier="1" id="UOy-mW-Ddj">
@@ -878,7 +878,7 @@
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <subviews>
                                                                                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wAy-4z-0CI">
-                                                                                                    <rect key="frame" x="8" y="5" width="97" height="17"/>
+                                                                                                    <rect key="frame" x="8" y="5" width="96" height="17"/>
                                                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="cfi-CT-NxM">
                                                                                                         <font key="font" metaFont="system"/>
                                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1045,7 +1045,7 @@
                                                                             </connections>
                                                                         </stepper>
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B6h-dy-l1f">
-                                                                            <rect key="frame" x="356" y="13" width="140" height="17"/>
+                                                                            <rect key="frame" x="356" y="13" width="141" height="17"/>
                                                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(Default value is 1000)" id="Fo2-yn-bIz">
                                                                                 <font key="font" metaFont="system"/>
                                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1095,7 +1095,7 @@
                                             <rect key="frame" x="17" y="220" width="820" height="260"/>
                                             <clipView key="contentView" id="FOg-OF-77U">
                                                 <rect key="frame" x="1" y="0.0" width="818" height="259"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="PyG-O0-i8x" viewBased="YES" id="W1W-Xd-0KJ">
                                                         <rect key="frame" x="0.0" y="0.0" width="818" height="236"/>
@@ -1301,7 +1301,7 @@
                                                         <rect key="frame" x="8" y="8" width="802" height="137"/>
                                                         <clipView key="contentView" id="tle-ie-uoi">
                                                             <rect key="frame" x="1" y="1" width="800" height="135"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
                                                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" id="aIG-lD-1bK">
                                                                     <rect key="frame" x="0.0" y="0.0" width="800" height="135"/>
@@ -1532,7 +1532,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             <rect key="frame" x="17" y="34" width="820" height="446"/>
                                             <clipView key="contentView" id="KqJ-JT-0VB">
                                                 <rect key="frame" x="1" y="0.0" width="818" height="445"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="4rB-73-cgf" viewBased="YES" id="Y8t-wV-kQb" customClass="ProfilesTableView">
                                                         <rect key="frame" x="0.0" y="0.0" width="818" height="422"/>
@@ -1542,7 +1542,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn width="815" minWidth="40" maxWidth="10000" id="hdQ-pY-WkB">
+                                                            <tableColumn identifier="" width="815" minWidth="40" maxWidth="10000" id="hdQ-pY-WkB">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Profile name">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1703,7 +1703,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="xCD-vQ-a37">
-                                                        <rect key="frame" x="15" y="37" width="281" height="18"/>
+                                                        <rect key="frame" x="15" y="37" width="282" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Check for updates on startup (Default: On)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Wug-gg-zmP">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -1779,7 +1779,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i87-Pa-TZD">
-                                                        <rect key="frame" x="11" y="1" width="345" height="32"/>
+                                                        <rect key="frame" x="11" y="1" width="344" height="32"/>
                                                         <buttonCell key="cell" type="push" title="https://github.com/tekezo/Karabiner-Elements" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PWa-pr-xeD">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -1789,7 +1789,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         </connections>
                                                     </button>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="c8u-qB-WbK">
-                                                        <rect key="frame" x="358" y="10" width="88" height="17"/>
+                                                        <rect key="frame" x="357" y="10" width="89" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="(source code)" id="pmQ-71-PVZ">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1885,7 +1885,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                         </connections>
                                                     </button>
                                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="TNd-jk-kpr">
-                                                        <rect key="frame" x="15" y="6" width="292" height="18"/>
+                                                        <rect key="frame" x="15" y="6" width="293" height="18"/>
                                                         <buttonCell key="cell" type="check" title="Show profile name in menu bar (Default: Off)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="dqN-LK-Qdn">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -2023,7 +2023,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jox-CI-bt9">
-                        <rect key="frame" x="194" y="357" width="413" height="32"/>
+                        <rect key="frame" x="185" y="357" width="431" height="32"/>
                         <buttonCell key="cell" type="push" title="Import more rules from the Internet (open a web browser)" bezelStyle="rounded" image="ic_cloud_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="02O-a2-wtg">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2064,7 +2064,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Nl-EE-cbX">
-                                                            <rect key="frame" x="0.0" y="5" width="97" height="17"/>
+                                                            <rect key="frame" x="0.0" y="5" width="96" height="17"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="F9E-xT-Pxc">
                                                                 <font key="font" metaFont="system"/>
                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2161,7 +2161,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lWl-Op-37M">
-                        <rect key="frame" x="12" y="32" width="113" height="28"/>
+                        <rect key="frame" x="12" y="32" width="131" height="28"/>
                         <buttonCell key="cell" type="push" title="Expand tree" bezelStyle="rounded" image="ic_expand_more_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pWt-V1-3zc">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="smallSystem"/>
@@ -2171,7 +2171,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tqb-fK-IZi">
-                        <rect key="frame" x="125" y="32" width="120" height="28"/>
+                        <rect key="frame" x="143" y="32" width="138" height="28"/>
                         <buttonCell key="cell" type="push" title="Collapse tree" bezelStyle="rounded" image="ic_chevron_right_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pvE-NN-dNd">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="smallSystem"/>
@@ -2181,7 +2181,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iWA-ft-hGI">
-                        <rect key="frame" x="347" y="13" width="106" height="32"/>
+                        <rect key="frame" x="338" y="13" width="124" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fd0-PH-WES">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2249,7 +2249,7 @@ Gw
                         <rect key="frame" x="80" y="61" width="640" height="82"/>
                         <clipView key="contentView" id="uNg-oR-13T">
                             <rect key="frame" x="1" y="1" width="623" height="80"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
                                     <rect key="frame" x="0.0" y="0.0" width="623" height="80"/>
@@ -2392,7 +2392,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </connections>
                                         </button>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8N5-fM-hfp">
-                                            <rect key="frame" x="58" y="44" width="665" height="290"/>
+                                            <rect key="frame" x="-278" y="44" width="1336" height="290"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="290" id="5o6-Bd-EEQ"/>
                                             </constraints>
@@ -2424,6 +2424,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                     <constraint firstItem="kqu-77-2mK" firstAttribute="top" secondItem="GkP-Rg-Yqv" secondAttribute="bottom" constant="20" id="xPW-tP-BeS"/>
                 </constraints>
             </view>
+            <point key="canvasLocation" x="312" y="317"/>
         </window>
     </objects>
     <resources>
@@ -2444,6 +2445,6 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
         <image name="ic_refresh_18pt" width="36" height="36"/>
         <image name="ic_remove_circle_18pt" width="36" height="36"/>
         <image name="ic_star_rate_18pt" width="36" height="36"/>
-        <image name="kext_policy" width="665" height="568"/>
+        <image name="kext_policy" width="1336" height="1146"/>
     </resources>
 </document>
