@@ -45,7 +45,6 @@ end
 check_value('objectVersion', '47')
 check_value('GCC_TREAT_WARNINGS_AS_ERRORS', 'YES')
 check_value('GCC_WARN_64_TO_32_BIT_CONVERSION', 'YES')
-check_value('GCC_WARN_ABOUT_MISSING_NEWLINE', 'YES')
 check_value('GCC_WARN_ABOUT_RETURN_TYPE', 'YES')
 check_value('GCC_WARN_CHECK_SWITCH_STATEMENTS', 'YES')
 check_value('GCC_WARN_NON_VIRTUAL_DESTRUCTOR', 'YES')
