@@ -10,7 +10,8 @@
             "is_keyboard": true,
             "is_pointing_device": false
         },
-        "is_built_in_keyboard": true
+        "is_built_in_keyboard": true,
+        "is_built_in_trackpad": false
     },
     {
         "descriptions": {
@@ -23,7 +24,8 @@
             "is_keyboard": false,
             "is_pointing_device": true
         },
-        "is_built_in_keyboard": false
+        "is_built_in_keyboard": false,
+        "is_built_in_trackpad": true
     },
     {
         "descriptions": {
@@ -36,6 +38,7 @@
             "is_keyboard": false,
             "is_pointing_device": true
         },
-        "is_built_in_keyboard": false
+        "is_built_in_keyboard": false,
+        "is_built_in_trackpad": false
     }
 ]
