@@ -260,10 +260,6 @@ enum {
 
 - (NSString*)buttonToString:(NSEvent*)event {
   NSInteger number = [event buttonNumber];
-  if (number == 0) return @"left";
-  if (number == 1) return @"right";
-  if (number == 2) return @"middle";
-
   return [NSString stringWithFormat:@"button%d", (int)(number + 1)];
 }
 
