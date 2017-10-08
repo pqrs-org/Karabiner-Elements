@@ -137,17 +137,32 @@ public:
     // ----------------------------------------
     // Setup elements_
 
+    // Note:
+    // Some devices has duplicated entries for same usage_page and usage.
+    //
+    // For example, there are entries of Microsoft Designer Mouse:
+    //
+    //   * Microsoft Designer Mouse usage_page 1 usage 2
+    //   * Microsoft Designer Mouse usage_page 1 usage 2
+    //   * Microsoft Designer Mouse usage_page 1 usage 1
+    //   * Microsoft Designer Mouse usage_page 1 usage 56
+    //   * Microsoft Designer Mouse usage_page 1 usage 56
+    //   * Microsoft Designer Mouse usage_page 1 usage 568
+    //   * Microsoft Designer Mouse usage_page 12 usage 568
+    //   * Microsoft Designer Mouse usage_page 9 usage 1
+    //   * Microsoft Designer Mouse usage_page 9 usage 2
+    //   * Microsoft Designer Mouse usage_page 9 usage 3
+    //   * Microsoft Designer Mouse usage_page 9 usage 4
+    //   * Microsoft Designer Mouse usage_page 9 usage 5
+    //   * Microsoft Designer Mouse usage_page 1 usage 48
+    //   * Microsoft Designer Mouse usage_page 1 usage 49
+
     if (auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone)) {
       for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
         // Add to elements_.
-        auto element = cf_utility::get_value<IOHIDElementRef>(elements, i);
-        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(element));
-        auto usage = hid_usage(IOHIDElementGetUsage(element));
-
-        auto key = elements_key(usage_page, usage);
-        if (elements_.find(key) == elements_.end()) {
-          CFRetain(element);
-          elements_[key] = element;
+        if (auto e = cf_utility::get_value<IOHIDElementRef>(elements, i)) {
+          CFRetain(e);
+          elements_.push_back(e);
         }
       }
       CFRelease(elements);
@@ -162,8 +177,8 @@ public:
       logger::get_logger().error("IOHIDQueueCreate error @ {0}", __PRETTY_FUNCTION__);
     } else {
       // Add elements into queue_.
-      for (const auto& it : elements_) {
-        IOHIDQueueAddElement(queue_, it.second);
+      for (const auto& e : elements_) {
+        IOHIDQueueAddElement(queue_, e);
       }
       IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
     }
@@ -191,8 +206,8 @@ public:
       // ----------------------------------------
       // Release elements_
 
-      for (const auto& it : elements_) {
-        CFRelease(it.second);
+      for (const auto& e : elements_) {
+        CFRelease(e);
       }
       elements_.clear();
 
@@ -828,13 +843,14 @@ private:
   }
 
   IOHIDElementRef _Nullable get_element(hid_usage_page usage_page, hid_usage usage) const {
-    auto key = elements_key(usage_page, usage);
-    auto it = elements_.find(key);
-    if (it == elements_.end()) {
-      return nullptr;
-    } else {
-      return it->second;
+    for (const auto& e : elements_) {
+      if (usage_page == hid_usage_page(IOHIDElementGetUsagePage(e)) &&
+          usage == hid_usage(IOHIDElementGetUsage(e))) {
+        return e;
+      }
     }
+
+    return nullptr;
   }
 
   void resize_report_buffer(void) {
@@ -853,7 +869,7 @@ private:
   IOHIDDeviceRef _Nonnull device_;
   device_id device_id_;
   IOHIDQueueRef _Nullable queue_;
-  std::unordered_map<uint64_t, IOHIDElementRef> elements_;
+  std::vector<IOHIDElementRef> elements_;
 
   std::string name_for_log_;
 
