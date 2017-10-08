@@ -34,7 +34,7 @@ public:
     });
   }
 
-  std::shared_ptr<connected_devices> get_connected_devices(void) {
+  std::shared_ptr<connected_devices> get_connected_devices(void) const {
     return connected_devices_;
   }
 
