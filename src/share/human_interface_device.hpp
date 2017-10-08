@@ -162,6 +162,16 @@ public:
         // Add to elements_.
         if (auto e = cf_utility::get_value<IOHIDElementRef>(elements, i)) {
           CFRetain(e);
+
+#if 0
+          logger::get_logger().info("{0} usage_page:{1} usage:{2} min:{3} max:{4}",
+                                    name_for_log_,
+                                    IOHIDElementGetUsagePage(e),
+                                    IOHIDElementGetUsage(e),
+                                    IOHIDElementGetLogicalMin(e),
+                                    IOHIDElementGetLogicalMax(e));
+#endif
+
           elements_.push_back(e);
         }
       }
