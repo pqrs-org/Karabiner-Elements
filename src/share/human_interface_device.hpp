@@ -121,9 +121,17 @@ public:
         is_built_in_keyboard = true;
       }
 
+      bool is_built_in_trackpad = false;
+      if (!is_keyboard &&
+          is_pointing_device &&
+          descriptions.get_product().find("Apple Internal ") != std::string::npos) {
+        is_built_in_trackpad = true;
+      }
+
       connected_device_ = std::make_unique<connected_devices::device>(descriptions,
                                                                       identifiers,
-                                                                      is_built_in_keyboard);
+                                                                      is_built_in_keyboard,
+                                                                      is_built_in_trackpad);
     }
 
     // ----------------------------------------
@@ -656,6 +664,10 @@ public:
 
   bool is_built_in_keyboard(void) const {
     return connected_device_->get_is_built_in_keyboard();
+  }
+
+  bool is_built_in_trackpad(void) const {
+    return connected_device_->get_is_built_in_trackpad();
   }
 
   bool is_pqrs_device(void) const {

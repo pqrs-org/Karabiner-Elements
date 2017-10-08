@@ -21,7 +21,8 @@
 //             "product_id": 515,
 //             "vendor_id": 1278
 //         },
-//         "is_built_in_keyboard": false
+//         "is_built_in_keyboard": false,
+//         "is_built_in_trackpad": false
 //     },
 //     {
 //         "descriptions": {
@@ -34,7 +35,8 @@
 //             "product_id": 610,
 //             "vendor_id": 1452
 //         },
-//         "is_built_in_keyboard": true
+//         "is_built_in_keyboard": true,
+//         "is_built_in_trackpad": false
 //     }
 // ]
 
@@ -94,17 +96,26 @@ public:
 
     device(const descriptions& descriptions,
            const device_identifiers& identifiers,
-           bool is_built_in_keyboard) : descriptions_(descriptions),
+           bool is_built_in_keyboard,
+           bool is_built_in_trackpad) : descriptions_(descriptions),
                                         identifiers_(identifiers),
-                                        is_built_in_keyboard_(is_built_in_keyboard) {
+                                        is_built_in_keyboard_(is_built_in_keyboard),
+                                        is_built_in_trackpad_(is_built_in_trackpad) {
     }
     device(const nlohmann::json& json) : descriptions_(json.find("descriptions") != json.end() ? json["descriptions"] : nlohmann::json()),
                                          identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json()),
-                                         is_built_in_keyboard_(false) {
+                                         is_built_in_keyboard_(false),
+                                         is_built_in_trackpad_(false) {
       {
         const std::string key = "is_built_in_keyboard";
         if (json.find(key) != json.end() && json[key].is_boolean()) {
           is_built_in_keyboard_ = json[key];
+        }
+      }
+      {
+        const std::string key = "is_built_in_trackpad";
+        if (json.find(key) != json.end() && json[key].is_boolean()) {
+          is_built_in_trackpad_ = json[key];
         }
       }
     }
@@ -114,6 +125,7 @@ public:
           {"descriptions", descriptions_},
           {"identifiers", identifiers_},
           {"is_built_in_keyboard", is_built_in_keyboard_},
+          {"is_built_in_trackpad", is_built_in_trackpad_},
       });
     }
 
@@ -129,6 +141,10 @@ public:
       return is_built_in_keyboard_;
     }
 
+    bool get_is_built_in_trackpad(void) const {
+      return is_built_in_trackpad_;
+    }
+
     bool operator==(const device& other) const {
       return identifiers_ == other.identifiers_;
     }
@@ -137,6 +153,7 @@ public:
     descriptions descriptions_;
     device_identifiers identifiers_;
     bool is_built_in_keyboard_;
+    bool is_built_in_trackpad_;
   };
 
   connected_devices(void) : loaded_(true) {
