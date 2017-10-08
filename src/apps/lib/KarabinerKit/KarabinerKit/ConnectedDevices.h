@@ -12,5 +12,6 @@
 - (NSString*)productAtIndex:(NSUInteger)index;
 - (libkrbn_device_identifiers)deviceIdentifiersAtIndex:(NSUInteger)index;
 - (BOOL)isBuiltInKeyboardAtIndex:(NSUInteger)index;
+- (BOOL)isBuiltInTrackpadAtIndex:(NSUInteger)index;
 
 @end

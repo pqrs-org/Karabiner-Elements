@@ -439,6 +439,8 @@ private:
       }
       update_caps_lock_led(state);
     }
+
+    update_virtual_hid_pointing();
   }
 
   void ungrabbed_callback(human_interface_device& device) {
@@ -535,7 +537,7 @@ private:
     }
   }
 
-  bool is_keyboard_connected(void) {
+  bool is_keyboard_connected(void) const {
     for (const auto& it : hids_) {
       if ((it.second)->is_keyboard()) {
         return true;
@@ -544,7 +546,7 @@ private:
     return false;
   }
 
-  bool is_pointing_device_grabbed(void) {
+  bool is_pointing_device_grabbed(void) const {
     for (const auto& it : hids_) {
       if ((it.second)->is_pointing_device() &&
           (it.second)->is_grabbed()) {
@@ -586,46 +588,22 @@ private:
     }
   }
 
-  boost::optional<const core_configuration::profile::device&> find_device_configuration(const human_interface_device& device) {
+  bool is_ignored_device(const human_interface_device& device) const {
     if (core_configuration_) {
-      for (const auto& d : core_configuration_->get_selected_profile().get_devices()) {
-        if (d.get_identifiers() == device.get_connected_device().get_identifiers()) {
-          return d;
-        }
-      }
-    }
-    return boost::none;
-  }
-
-  bool is_ignored_device(const human_interface_device& device) {
-    if (auto s = find_device_configuration(device)) {
-      return s->get_ignore();
-    }
-
-    if (device.is_pointing_device()) {
-      return true;
-    }
-
-    if (auto v = device.get_vendor_id()) {
-      if (auto p = device.get_product_id()) {
-        // Touch Bar on MacBook Pro 2016
-        if (*v == vendor_id(0x05ac) && *p == product_id(0x8600)) {
-          return true;
-        }
-      }
+      return core_configuration_->get_selected_profile().get_device_ignore(device.get_connected_device().get_identifiers());
     }
 
     return false;
   }
 
-  bool get_disable_built_in_keyboard_if_exists(const human_interface_device& device) {
-    if (auto s = find_device_configuration(device)) {
-      return s->get_disable_built_in_keyboard_if_exists();
+  bool get_disable_built_in_keyboard_if_exists(const human_interface_device& device) const {
+    if (core_configuration_) {
+      return core_configuration_->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(device.get_connected_device().get_identifiers());
     }
     return false;
   }
 
-  bool need_to_disable_built_in_keyboard(void) {
+  bool need_to_disable_built_in_keyboard(void) const {
     for (const auto& it : hids_) {
       if (get_disable_built_in_keyboard_if_exists(*(it.second))) {
         return true;
@@ -644,13 +622,10 @@ private:
     }
   }
 
-  void output_devices_json(void) {
+  void output_devices_json(void) const {
     connected_devices connected_devices;
     for (const auto& it : hids_) {
       if ((it.second)->is_pqrs_device()) {
-        continue;
-      }
-      if (!(it.second)->is_keyboard()) {
         continue;
       }
 
@@ -694,11 +669,11 @@ private:
     }
   }
 
-  std::shared_ptr<manipulator::details::conditions::base> make_device_if_condition(const core_configuration::profile::device& device) {
+  std::shared_ptr<manipulator::details::conditions::base> make_device_if_condition(const core_configuration::profile::device& device) const {
     return std::make_shared<manipulator::details::conditions::device>(device.get_identifiers());
   }
 
-  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<core_configuration::profile::simple_modifications::definition, core_configuration::profile::simple_modifications::definition>& pair) {
+  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<core_configuration::profile::simple_modifications::definition, core_configuration::profile::simple_modifications::definition>& pair) const {
     if (pair.first.valid() && pair.second.valid()) {
       auto from_json = pair.first.to_json();
       from_json["modifiers"]["optional"] = "any";

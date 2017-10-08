@@ -33,6 +33,15 @@
       result.checkbox.state = NSOnState;
     }
 
+    result.checkbox.enabled = YES;
+    if (deviceIdentifiers.vendor_id == 0x05ac ||
+        deviceIdentifiers.vendor_id == 0x004c) {
+      // Apple
+      if (deviceIdentifiers.is_pointing_device) {
+        result.checkbox.enabled = NO;
+      }
+    }
+
     return result;
   }
 
@@ -74,7 +83,8 @@
                                                        deviceIdentifiers.product_id];
     result.checkbox.state = NSOffState;
 
-    if ([connectedDevices isBuiltInKeyboardAtIndex:row]) {
+    if ([connectedDevices isBuiltInKeyboardAtIndex:row] ||
+        [connectedDevices isBuiltInTrackpadAtIndex:row]) {
       result.checkbox.enabled = NO;
     } else {
       result.checkbox.enabled = YES;

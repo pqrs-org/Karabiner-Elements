@@ -99,6 +99,16 @@ bool libkrbn_connected_devices_get_is_built_in_keyboard(libkrbn_connected_device
   return 0;
 }
 
+bool libkrbn_connected_devices_get_is_built_in_trackpad(libkrbn_connected_devices* p, size_t index) {
+  if (auto c = reinterpret_cast<libkrbn_connected_devices_class*>(p)) {
+    const auto& devices = c->get_connected_devices().get_devices();
+    if (index < devices.size()) {
+      return devices[index].get_is_built_in_trackpad();
+    }
+  }
+  return 0;
+}
+
 bool libkrbn_connected_devices_monitor_initialize(libkrbn_connected_devices_monitor** out,
                                                   libkrbn_connected_devices_monitor_callback callback,
                                                   void* refcon) {

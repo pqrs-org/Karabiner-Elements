@@ -216,6 +216,17 @@ public:
           return d.get_ignore();
         }
       }
+
+      if (identifiers.get_is_pointing_device()) {
+        return true;
+      }
+
+      // Touch Bar on MacBook Pro 2016
+      if (identifiers.get_vendor_id() == vendor_id(0x05ac) &&
+          identifiers.get_product_id() == product_id(0x8600)) {
+        return true;
+      }
+
       return false;
     }
     void set_device_ignore(const device_identifiers& identifiers,
