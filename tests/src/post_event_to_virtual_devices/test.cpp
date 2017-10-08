@@ -1625,7 +1625,6 @@ TEST_CASE("actual examples") {
     REQUIRE(helper.get_events() == expected);
   }
 
-
   // ----------------------------------------
   // control+p to up_arrow (from modifiers.optional)
   // control-p, tab
