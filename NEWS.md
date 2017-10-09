@@ -2,7 +2,7 @@
 
 * Mouse button modifications has been added.<br />
   Note:
-  * You have to enable your Mouse manually in Devices tab.
+  * You have to enable your Mouse manually in Preferences &gt; Devices tab.
   * Karabiner-Elements cannot modify Apple's pointing devices.
 * The virtual keyboard handling has been improved.
 
