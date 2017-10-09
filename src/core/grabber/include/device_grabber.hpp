@@ -85,6 +85,7 @@ public:
     auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
+        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
     });
     if (device_matching_dictionaries) {
       IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
@@ -257,6 +258,18 @@ private:
   void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
     if (!device) {
       return;
+    }
+
+    // Skip if same device is already matched.
+    // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
+    if (auto registry_entry_id = iokit_utility::get_registry_entry_id(device)) {
+      for (const auto& h : hids_) {
+        if (auto e = h.second->get_registry_entry_id()) {
+          if (*registry_entry_id == *e) {
+            return;
+          }
+        }
+      }
     }
 
     iokit_utility::log_matching_device(device);
