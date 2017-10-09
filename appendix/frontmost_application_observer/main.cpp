@@ -12,6 +12,8 @@ void callback(const std::string& bundle_identifier, const std::string& file_path
 } // namespace
 
 int main(int argc, char** argv) {
+  krbn::thread_utility::register_main_thread();
+
   krbn::logger::get_logger().set_level(spdlog::level::off);
 
   for (int i = 0; i < 100; ++i) {
