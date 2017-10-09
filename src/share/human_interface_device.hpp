@@ -612,19 +612,24 @@ public:
     boost::optional<led_state> __block state = boost::none;
 
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (auto element = get_element(hid_usage_page::leds, hid_usage::led_caps_lock)) {
-        auto max = IOHIDElementGetLogicalMax(element);
+      for (const auto& e : elements_) {
+        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(e));
+        auto usage = hid_usage(IOHIDElementGetUsage(e));
 
-        IOHIDValueRef value;
-        auto r = IOHIDDeviceGetValue(device_, element, &value);
-        if (r != kIOReturnSuccess) {
-          logger::get_logger().error("IOHIDDeviceGetValue error: {1} @ {0}", __PRETTY_FUNCTION__, r);
-        } else {
-          auto integer_value = IOHIDValueGetIntegerValue(value);
-          if (integer_value == max) {
-            state = led_state::on;
-          } else {
-            state = led_state::off;
+        if (usage_page == hid_usage_page::leds &&
+            usage == hid_usage::led_caps_lock) {
+          auto max = IOHIDElementGetLogicalMax(e);
+
+          IOHIDValueRef value;
+          auto r = IOHIDDeviceGetValue(device_, e, &value);
+          if (r == kIOReturnSuccess) {
+            auto integer_value = IOHIDValueGetIntegerValue(value);
+            if (integer_value == max) {
+              state = led_state::on;
+            } else {
+              state = led_state::off;
+            }
+            break;
           }
         }
       }
@@ -649,25 +654,24 @@ public:
     IOReturn __block r = kIOReturnError;
 
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (auto element = get_element(hid_usage_page::leds, hid_usage::led_caps_lock)) {
-        CFIndex integer_value = 0;
-        if (state == led_state::on) {
-          integer_value = IOHIDElementGetLogicalMax(element);
-        } else {
-          integer_value = IOHIDElementGetLogicalMin(element);
-        }
+      for (const auto& e : elements_) {
+        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(e));
+        auto usage = hid_usage(IOHIDElementGetUsage(e));
 
-        if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault, element, mach_absolute_time(), integer_value)) {
-          r = IOHIDDeviceSetValue(device_, element, value);
-
-          if (r != kIOReturnSuccess) {
-            logger::get_logger().error("IOHIDDeviceSetValue error {1} for {2} @ {0}", __PRETTY_FUNCTION__, r, get_name_for_log());
+        if (usage_page == hid_usage_page::leds &&
+            usage == hid_usage::led_caps_lock) {
+          CFIndex integer_value = 0;
+          if (state == led_state::on) {
+            integer_value = IOHIDElementGetLogicalMax(e);
+          } else {
+            integer_value = IOHIDElementGetLogicalMin(e);
           }
 
-          CFRelease(value);
+          if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault, e, mach_absolute_time(), integer_value)) {
+            IOHIDDeviceSetValue(device_, e, value);
 
-        } else {
-          logger::get_logger().error("IOHIDValueCreateWithIntegerValue error @ {0}", __PRETTY_FUNCTION__);
+            CFRelease(value);
+          }
         }
       }
     });
@@ -850,17 +854,6 @@ private:
 
   uint64_t elements_key(hid_usage_page usage_page, hid_usage usage) const {
     return ((static_cast<uint64_t>(usage_page) << 32) | static_cast<uint32_t>(usage));
-  }
-
-  IOHIDElementRef _Nullable get_element(hid_usage_page usage_page, hid_usage usage) const {
-    for (const auto& e : elements_) {
-      if (usage_page == hid_usage_page(IOHIDElementGetUsagePage(e)) &&
-          usage == hid_usage(IOHIDElementGetUsage(e))) {
-        return e;
-      }
-    }
-
-    return nullptr;
   }
 
   void resize_report_buffer(void) {
