@@ -63,5 +63,23 @@ public:
       CFRelease(cfname);
     }
   }
+
+  static void unobserve_distributed_notification(const void* _Nullable observer,
+                                                 const char* _Nonnull name) {
+    if (auto cfname = CFStringCreateWithCString(kCFAllocatorDefault,
+                                                name,
+                                                kCFStringEncodingUTF8)) {
+      if (auto observed_object = CFStringCreateWithCString(kCFAllocatorDefault,
+                                                           constants::get_distributed_notification_observed_object(),
+                                                           kCFStringEncodingUTF8)) {
+        CFNotificationCenterRemoveObserver(CFNotificationCenterGetDistributedCenter(),
+                                           observer,
+                                           cfname,
+                                           observed_object);
+        CFRelease(observed_object);
+      }
+      CFRelease(cfname);
+    }
+  }
 };
 } // namespace krbn
