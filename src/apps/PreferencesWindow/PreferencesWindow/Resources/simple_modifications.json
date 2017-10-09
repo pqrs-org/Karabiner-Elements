@@ -640,6 +640,46 @@
         "not_to": true
     },
     {
+        "category": "Mouse buttons"
+    },
+    {
+        "name": "button1",
+        "type": "pointing_button",
+        "not_from": true
+    },
+    {
+        "name": "button2",
+        "type": "pointing_button"
+    },
+    {
+        "name": "button3",
+        "type": "pointing_button"
+    },
+    {
+        "name": "button4",
+        "type": "pointing_button"
+    },
+    {
+        "name": "button5",
+        "type": "pointing_button"
+    },
+    {
+        "name": "button6",
+        "type": "pointing_button"
+    },
+    {
+        "name": "button7",
+        "type": "pointing_button"
+    },
+    {
+        "name": "button8",
+        "type": "pointing_button"
+    },
+    {
+        "name": "button9",
+        "type": "pointing_button"
+    },
+    {
         "category": "Others"
     },
     {
