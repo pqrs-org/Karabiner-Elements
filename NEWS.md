@@ -1,5 +1,7 @@
 # Version 11.2.0 (beta)
 
+* Mouse button modifications has been added.<br />
+  Note: You have to enable your Mouse manually in Devices tab.
 * The virtual keyboard handling has been improved.
 
 
