@@ -649,6 +649,7 @@ public:
     if (auto v = get_vendor_id()) {
       if (auto p = get_product_id()) {
         if ((*v == vendor_id(0x22ea) && *p == product_id(0xf)) /* Bit Touch (Bit Trade One LTD.) */ ||
+            (*v == vendor_id(0x17ef) && *p == product_id(0x6083)) /* ThinkPad Multi Connect Bluetooth Keyboard with Trackpoint */ ||
             false) {
           return kIOReturnSuccess;
         }
