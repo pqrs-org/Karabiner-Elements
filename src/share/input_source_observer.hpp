@@ -22,6 +22,8 @@ public:
                                     kTISNotifySelectedKeyboardInputSourceChanged,
                                     nullptr,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
+
+    input_source_changed_callback();
   }
 
   ~input_source_observer(void) {
