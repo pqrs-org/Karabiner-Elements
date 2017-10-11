@@ -67,6 +67,8 @@
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34DA289F1D8E94FB0029E37D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		34DA28A11D8FA4A40029E37D /* file_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = file_monitor.hpp; sourceTree = "<group>"; };
+		34DD886D1F8E6D2400D752DF /* input_source_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = input_source_observer.hpp; sourceTree = "<group>"; };
+		34DD886E1F8E6D2B00D752DF /* input_source_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = input_source_utility.hpp; sourceTree = "<group>"; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		34F4D5171E647EAD007D5065 /* configuration_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = configuration_monitor.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -130,6 +132,8 @@
 				3431346F1DB710E80008F284 /* gcd_utility.hpp */,
 				3491DBED1F87F3D3007B6FF4 /* grabber_alerts_monitor.hpp */,
 				34A88A981D685A4600DD480B /* grabber_client.hpp */,
+				34DD886D1F8E6D2400D752DF /* input_source_observer.hpp */,
+				34DD886E1F8E6D2B00D752DF /* input_source_utility.hpp */,
 				341F59DB1D57789500B441A8 /* iokit_utility.hpp */,
 				34A88AA01D685A5C00DD480B /* karabiner_version.h */,
 				341F59D51D535D2500B441A8 /* local_datagram_client.hpp */,

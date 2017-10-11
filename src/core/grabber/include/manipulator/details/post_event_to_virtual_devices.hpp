@@ -553,6 +553,7 @@ public:
             case event_queue::queued_event::event::type::event_from_ignored_device:
             case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
             case event_queue::queued_event::event::type::frontmost_application_changed:
+            case event_queue::queued_event::event::type::input_source_changed:
               // Do nothing
               break;
           }
@@ -584,6 +585,7 @@ public:
       case event_queue::queued_event::event::type::event_from_ignored_device:
       case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
       case event_queue::queued_event::event::type::frontmost_application_changed:
+      case event_queue::queued_event::event::type::input_source_changed:
         // Do nothing
         break;
     }

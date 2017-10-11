@@ -5,6 +5,7 @@
 #include "frontmost_application_observer.hpp"
 #include "gcd_utility.hpp"
 #include "grabber_client.hpp"
+#include "input_source_observer.hpp"
 #include "logger.hpp"
 #include "notification_center.hpp"
 #include "receiver.hpp"
@@ -59,6 +60,11 @@ public:
                       std::bind(&connection_manager::frontmost_application_changed_callback, this, std::placeholders::_1, std::placeholders::_2));
                 }
 
+                if (!input_source_observer_) {
+                  input_source_observer_ = std::make_unique<input_source_observer>(
+                      std::bind(&connection_manager::input_source_changed_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+                }
+
                 return;
 
               } catch (std::exception& ex) {
@@ -84,6 +90,7 @@ public:
 
 private:
   void release(void) {
+    input_source_observer_ = nullptr;
     frontmost_application_observer_ = nullptr;
     configuration_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
@@ -125,6 +132,14 @@ private:
     }
   }
 
+  void input_source_changed_callback(const boost::optional<std::string>& language,
+                                     const boost::optional<std::string>& input_source_id,
+                                     const boost::optional<std::string>& input_mode_id) {
+    if (grabber_client_) {
+      grabber_client_->input_source_changed(language, input_source_id, input_mode_id);
+    }
+  }
+
   version_monitor& version_monitor_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> timer_;
@@ -138,5 +153,7 @@ private:
   // `frontmost_application_observer` does not work properly in karabiner_grabber after fast user switching.
   // Therefore, we have to use `frontmost_application_observer` in `console_user_server`.
   std::unique_ptr<frontmost_application_observer> frontmost_application_observer_;
+
+  std::unique_ptr<input_source_observer> input_source_observer_;
 };
 } // namespace krbn

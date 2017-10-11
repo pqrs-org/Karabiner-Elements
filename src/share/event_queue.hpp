@@ -34,6 +34,7 @@ public:
         event_from_ignored_device,
         pointing_device_event_from_event_tap,
         frontmost_application_changed,
+        input_source_changed,
         set_variable,
       };
 
@@ -86,6 +87,17 @@ public:
         event e;
         e.type_ = type::frontmost_application_changed;
         e.value_ = frontmost_application(bundle_identifier, file_path);
+        return e;
+      }
+
+      static event make_input_source_changed_event(const std::string& language,
+                                                   const std::string& input_source_id,
+                                                   const std::string& input_mode_id) {
+        event e;
+        e.type_ = type::input_source_changed;
+        e.value_ = manipulator_environment::input_source(language,
+                                                         input_source_id,
+                                                         input_mode_id);
         return e;
       }
 
@@ -155,6 +167,13 @@ public:
         return boost::none;
       }
 
+      boost::optional<manipulator_environment::input_source> get_input_source(void) const {
+        if (type_ == type::input_source_changed) {
+          return boost::get<manipulator_environment::input_source>(value_);
+        }
+        return boost::none;
+      }
+
       boost::optional<std::pair<std::string, int>> get_set_variable(void) const {
         if (type_ == type::set_variable) {
           return boost::get<std::pair<std::string, int>>(value_);
@@ -212,6 +231,7 @@ public:
                      std::string, // For shell_command
                      boost::blank, // For virtual events
                      frontmost_application,
+                     manipulator_environment::input_source,
                      std::pair<std::string, int> // For set_variable
                      >
           value_;
@@ -449,6 +469,9 @@ public:
         manipulator_environment_.set_frontmost_application_bundle_identifier(*bundle_identifier);
         manipulator_environment_.set_frontmost_application_file_path(*file_path);
       }
+    }
+    if (auto input_source = event.get_input_source()) {
+      manipulator_environment_.set_input_source(*input_source);
     }
     if (event_type == event_type::key_down) {
       if (auto set_variable = event.get_set_variable()) {

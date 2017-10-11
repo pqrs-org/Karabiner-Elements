@@ -30,6 +30,7 @@ enum class operation_type : uint8_t {
   connect,
   system_preferences_values_updated,
   frontmost_application_changed,
+  input_source_changed,
   // grabber -> console_user_server
   shell_command_execution,
 };
@@ -1082,15 +1083,33 @@ struct operation_type_system_preferences_values_updated_struct {
 };
 
 struct operation_type_frontmost_application_changed_struct {
-  operation_type_frontmost_application_changed_struct(void) : operation_type(operation_type::frontmost_application_changed) {}
+  operation_type_frontmost_application_changed_struct(void) : operation_type(operation_type::frontmost_application_changed) {
+    bundle_identifier[0] = '\0';
+    file_path[0] = '\0';
+  }
 
   const operation_type operation_type;
   char bundle_identifier[256];
   char file_path[_POSIX_PATH_MAX];
 };
 
+struct operation_type_input_source_changed_struct {
+  operation_type_input_source_changed_struct(void) : operation_type(operation_type::input_source_changed) {
+    language[0] = '\0';
+    input_source_id[0] = '\0';
+    input_mode_id[0] = '\0';
+  }
+
+  const operation_type operation_type;
+  char language[256];
+  char input_source_id[256];
+  char input_mode_id[256];
+};
+
 struct operation_type_shell_command_execution_struct {
-  operation_type_shell_command_execution_struct(void) : operation_type(operation_type::shell_command_execution) {}
+  operation_type_shell_command_execution_struct(void) : operation_type(operation_type::shell_command_execution) {
+    shell_command[0] = '\0';
+  }
 
   const operation_type operation_type;
   char shell_command[256];

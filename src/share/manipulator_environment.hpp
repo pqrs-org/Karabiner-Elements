@@ -50,6 +50,50 @@ public:
     uint32_t update_count_;
   };
 
+  class input_source final {
+  public:
+    input_source(void) {
+    }
+
+    input_source(const std::string& language,
+                 const std::string& input_source_id,
+                 const std::string& input_mode_id) : language_(language),
+                                                     input_source_id_(input_source_id),
+                                                     input_mode_id_(input_mode_id) {
+    }
+
+    nlohmann::json to_json(void) const {
+      return nlohmann::json({
+          {"language", language_},
+          {"input_source_id", input_source_id_},
+          {"input_mode_id", input_mode_id_},
+      });
+    }
+
+    const std::string& get_language(void) const {
+      return language_;
+    }
+
+    const std::string& get_input_source_id(void) const {
+      return input_source_id_;
+    }
+
+    const std::string& get_input_mode_id(void) const {
+      return input_mode_id_;
+    }
+
+    bool operator==(const input_source& other) const {
+      return language_ == other.language_ &&
+             input_source_id_ == other.input_source_id_ &&
+             input_mode_id_ == other.input_mode_id_;
+    }
+
+  private:
+    std::string language_;
+    std::string input_source_id_;
+    std::string input_mode_id_;
+  };
+
   manipulator_environment(const manipulator_environment&) = delete;
 
   manipulator_environment(void) {
@@ -58,6 +102,7 @@ public:
   nlohmann::json to_json(void) const {
     return nlohmann::json({
         {"frontmost_application", frontmost_application_.to_json()},
+        {"input_source", input_source_.to_json()},
         {"variables", variables_},
     });
   }
@@ -81,6 +126,11 @@ public:
 
   void set_frontmost_application_file_path(const std::string& value) {
     frontmost_application_.set_file_path(value);
+    save_to_file();
+  }
+
+  void set_input_source(const input_source& input_source) {
+    input_source_ = input_source;
     save_to_file();
   }
 
@@ -114,6 +164,7 @@ private:
 
   std::string output_json_file_path_;
   frontmost_application frontmost_application_;
+  input_source input_source_;
   std::unordered_map<std::string, int> variables_;
 };
 } // namespace krbn

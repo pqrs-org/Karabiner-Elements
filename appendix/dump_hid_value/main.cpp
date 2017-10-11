@@ -190,6 +190,15 @@ private:
                     << queued_event.get_event().get_frontmost_application_file_path() << std::endl;
           break;
 
+        case krbn::event_queue::queued_event::event::type::input_source_changed:
+          if (auto input_source = queued_event.get_event().get_input_source()) {
+            std::cout << "input_source_changed "
+                      << input_source->get_language() << " "
+                      << input_source->get_input_source_id() << " "
+                      << input_source->get_input_mode_id() << std::endl;
+          }
+          break;
+
         case krbn::event_queue::queued_event::event::type::set_variable:
           std::cout << "set_variable" << std::endl;
           break;

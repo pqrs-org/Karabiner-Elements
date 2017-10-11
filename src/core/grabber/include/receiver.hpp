@@ -104,6 +104,23 @@ private:
             }
             break;
 
+          case operation_type::input_source_changed:
+            if (n < sizeof(operation_type_input_source_changed_struct)) {
+              logger::get_logger().error("invalid size for operation_type::input_source_changed ({0})", n);
+            } else {
+              auto p = reinterpret_cast<operation_type_input_source_changed_struct*>(&(buffer_[0]));
+
+              // Ensure bundle_identifier and file_path are null-terminated string even if corrupted data is sent.
+              p->language[sizeof(p->language) - 1] = '\0';
+              p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
+              p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
+
+              device_grabber_.post_input_source_changed_event(p->language,
+                                                              p->input_source_id,
+                                                              p->input_mode_id);
+            }
+            break;
+
           default:
             break;
         }
@@ -113,6 +130,7 @@ private:
 
   void console_user_server_exit_callback(void) {
     device_grabber_.post_frontmost_application_changed_event("", "");
+    device_grabber_.post_input_source_changed_event("", "", "");
 
     device_grabber_.stop_grabbing();
 
