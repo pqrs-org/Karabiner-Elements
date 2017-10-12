@@ -73,18 +73,16 @@ public:
     switch (button.get_type()) {
       case active_pointing_button::type::increase:
         active_pointing_buttons_.push_back(button);
-        erase_pairs();
         break;
 
       case active_pointing_button::type::decrease:
-        // Push back if paired type::increase contains in active_pointing_buttons_.
-        for (const auto& b : active_pointing_buttons_) {
-          if (b.is_paired(button)) {
-            active_pointing_buttons_.push_back(button);
-            erase_pairs();
-            break;
-          }
-        }
+        // Erase all paired entries to avoid button lock when same type::increase button pushed twice.
+        active_pointing_buttons_.erase(std::remove_if(std::begin(active_pointing_buttons_),
+                                                      std::end(active_pointing_buttons_),
+                                                      [&](auto& b) {
+                                                        return b.is_paired(button);
+                                                      }),
+                                       std::end(active_pointing_buttons_));
         break;
     }
   }
@@ -147,21 +145,6 @@ public:
   }
 
 private:
-  void erase_pairs(void) {
-    for (size_t i1 = 0; i1 < active_pointing_buttons_.size(); ++i1) {
-      for (size_t i2 = i1 + 1; i2 < active_pointing_buttons_.size(); ++i2) {
-        if (active_pointing_buttons_[i1].is_paired(active_pointing_buttons_[i2])) {
-          active_pointing_buttons_.erase(std::begin(active_pointing_buttons_) + i2);
-          active_pointing_buttons_.erase(std::begin(active_pointing_buttons_) + i1);
-          if (i1 > 0) {
-            --i1;
-          }
-          break;
-        }
-      }
-    }
-  }
-
   std::vector<active_pointing_button> active_pointing_buttons_;
 };
 } // namespace krbn
