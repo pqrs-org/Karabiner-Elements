@@ -52,9 +52,9 @@ public:
     }
 
     bool is_paired(const active_pointing_button& other) const {
+      // ignore device_id_
       return get_type() == other.get_inverse_type() &&
-             get_pointing_button() == other.get_pointing_button() &&
-             get_device_id() == other.get_device_id();
+             get_pointing_button() == other.get_pointing_button();
     }
 
     bool operator==(const active_pointing_button& other) const {
