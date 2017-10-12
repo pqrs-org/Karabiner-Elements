@@ -4,6 +4,11 @@
         "file_path": "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal",
         "update_count": 2
     },
+    "input_source": {
+        "input_mode_id": "",
+        "input_source_id": "",
+        "language": ""
+    },
     "variables": {
         "value1": 100,
         "value2": 200
