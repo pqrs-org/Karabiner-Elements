@@ -70,6 +70,10 @@ void libkrbn_launchctl_manage_console_user_server(bool load) {
   krbn::launchctl_utility::manage_console_user_server(load);
 }
 
+void libkrbn_launchctl_restart_console_user_server(void) {
+  krbn::launchctl_utility::restart_console_user_server();
+}
+
 void libkrbn_check_for_updates_in_background(void) {
   krbn::update_utility::check_for_updates_in_background();
 }

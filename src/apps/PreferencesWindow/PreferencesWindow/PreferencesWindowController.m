@@ -276,6 +276,11 @@
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[sender title]]];
 }
 
+- (IBAction)restart:(id)sender {
+  libkrbn_launchctl_restart_console_user_server();
+  [KarabinerKit relaunch];
+}
+
 - (IBAction)quitWithConfirmation:(id)sender {
   [KarabinerKit quitKarabinerWithConfirmation];
 }

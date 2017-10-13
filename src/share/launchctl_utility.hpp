@@ -45,5 +45,13 @@ public:
       notification_center::post_distributed_notification(constants::get_distributed_notification_console_user_server_is_disabled());
     }
   }
+
+  static void restart_console_user_server(void) {
+    uid_t uid = getuid();
+    auto service_target = (std::stringstream() << "gui/" << uid << "/org.pqrs.karabiner.karabiner_console_user_server").str();
+
+    auto command = std::string("/bin/launchctl kickstart -k ") + service_target;
+    system(command.c_str());
+  }
 };
 } // namespace krbn

@@ -36,6 +36,7 @@ void libkrbn_unlock_single_application(void);
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string);
 
 void libkrbn_launchctl_manage_console_user_server(bool load);
+void libkrbn_launchctl_restart_console_user_server(void);
 
 void libkrbn_check_for_updates_in_background(void);
 void libkrbn_check_for_updates_stable_only(void);

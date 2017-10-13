@@ -433,11 +433,11 @@
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
             <value key="minSize" type="size" width="900" height="550"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="907" height="550"/>
+                <rect key="frame" x="0.0" y="0.0" width="900" height="550"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <tabView initialItem="SOT-pf-9fT" translatesAutoresizingMaskIntoConstraints="NO" id="W8s-8N-CIx">
-                        <rect key="frame" x="13" y="10" width="881" height="534"/>
+                        <rect key="frame" x="13" y="10" width="874" height="534"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Simple Modifications" identifier="1" id="SOT-pf-9fT">
@@ -850,7 +850,7 @@
                                                                 <rect key="frame" x="17" y="41" width="787" height="384"/>
                                                                 <clipView key="contentView" id="Z0i-ZA-lV3">
                                                                     <rect key="frame" x="1" y="0.0" width="785" height="383"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
                                                                             <rect key="frame" x="0.0" y="0.0" width="785" height="360"/>
@@ -1687,13 +1687,23 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Ub-kd-yPy">
-                                            <rect key="frame" x="630" y="454" width="213" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Quit Karabiner-Elements" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DMD-gs-Fc2">
+                                            <rect key="frame" x="663" y="457" width="179" height="28"/>
+                                            <buttonCell key="cell" type="push" title="Quit Karabiner-Elements" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DMD-gs-Fc2">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="smallSystem"/>
                                             </buttonCell>
                                             <connections>
                                                 <action selector="quitWithConfirmation:" target="5ke-qB-Wr5" id="Z2I-rE-DWi"/>
+                                            </connections>
+                                        </button>
+                                        <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VG0-yy-2JZ" userLabel="Restart Karabiner-Elements">
+                                            <rect key="frame" x="468" y="457" width="195" height="28"/>
+                                            <buttonCell key="cell" type="push" title="Restart Karabiner-Elements" bezelStyle="rounded" image="ic_refresh_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="PvM-2w-cA8">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="restart:" target="5ke-qB-Wr5" id="5Or-Na-RaT"/>
                                             </connections>
                                         </button>
                                         <box borderType="line" title="Update" translatesAutoresizingMaskIntoConstraints="NO" id="3j8-8U-bBH">
@@ -1909,7 +1919,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" constant="17" id="0eo-bc-F4Z"/>
-                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="9Ub-kd-yPy" secondAttribute="trailing" id="9hZ-mz-UVd"/>
+                                        <constraint firstAttribute="trailing" secondItem="9Ub-kd-yPy" secondAttribute="trailing" constant="17" id="4Mp-Vt-6au"/>
                                         <constraint firstItem="BAq-6J-75B" firstAttribute="top" secondItem="gUV-If-Nhn" secondAttribute="bottom" constant="20" id="DFT-q3-UWe"/>
                                         <constraint firstItem="sau-jf-Dqb" firstAttribute="leading" secondItem="DOX-q0-HoN" secondAttribute="trailing" constant="5" id="Fyg-bc-bgi"/>
                                         <constraint firstItem="3j8-8U-bBH" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="17" id="G3Y-Zf-g9c"/>
@@ -1919,7 +1929,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                         <constraint firstItem="DOX-q0-HoN" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="17" id="Okn-qw-iEx"/>
                                         <constraint firstItem="DOX-q0-HoN" firstAttribute="top" secondItem="oZ9-PG-xey" secondAttribute="top" constant="8" id="Qji-lS-jHg"/>
                                         <constraint firstItem="BAq-6J-75B" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="UEh-kf-9oL"/>
-                                        <constraint firstItem="9Ub-kd-yPy" firstAttribute="leading" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="636" id="UW9-g4-jvA"/>
+                                        <constraint firstItem="9Ub-kd-yPy" firstAttribute="leading" secondItem="VG0-yy-2JZ" secondAttribute="trailing" constant="10" id="V53-hn-Jte"/>
                                         <constraint firstItem="ZAS-Lc-pSo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="aQo-bz-os7"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="leading" secondItem="3j8-8U-bBH" secondAttribute="leading" id="cu0-mY-LNc"/>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="fV2-yM-QGE"/>
@@ -1929,6 +1939,8 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                                         <constraint firstItem="bRw-jJ-vdo" firstAttribute="top" secondItem="3j8-8U-bBH" secondAttribute="bottom" constant="20" id="otG-Wg-M9X"/>
                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="sau-jf-Dqb" secondAttribute="trailing" constant="20" symbolic="YES" id="rge-vm-TG9"/>
                                         <constraint firstItem="gUV-If-Nhn" firstAttribute="top" secondItem="ZAS-Lc-pSo" secondAttribute="bottom" constant="20" id="rh2-qf-lBp"/>
+                                        <constraint firstItem="VG0-yy-2JZ" firstAttribute="centerY" secondItem="9Ub-kd-yPy" secondAttribute="centerY" id="rz2-JV-k6d"/>
+                                        <constraint firstItem="VG0-yy-2JZ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="oZ9-PG-xey" secondAttribute="leading" constant="20" symbolic="YES" id="uyO-dq-CIb"/>
                                         <constraint firstItem="BAq-6J-75B" firstAttribute="trailing" secondItem="3j8-8U-bBH" secondAttribute="trailing" id="yhU-hH-Shb"/>
                                         <constraint firstItem="3j8-8U-bBH" firstAttribute="top" secondItem="DOX-q0-HoN" secondAttribute="bottom" constant="20" id="zkN-OQ-f0K"/>
                                     </constraints>
@@ -2023,7 +2035,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jox-CI-bt9">
-                        <rect key="frame" x="185" y="357" width="431" height="32"/>
+                        <rect key="frame" x="194" y="357" width="413" height="32"/>
                         <buttonCell key="cell" type="push" title="Import more rules from the Internet (open a web browser)" bezelStyle="rounded" image="ic_cloud_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="02O-a2-wtg">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2161,7 +2173,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lWl-Op-37M">
-                        <rect key="frame" x="12" y="32" width="131" height="28"/>
+                        <rect key="frame" x="12" y="32" width="113" height="28"/>
                         <buttonCell key="cell" type="push" title="Expand tree" bezelStyle="rounded" image="ic_expand_more_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pWt-V1-3zc">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="smallSystem"/>
@@ -2171,7 +2183,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tqb-fK-IZi">
-                        <rect key="frame" x="143" y="32" width="138" height="28"/>
+                        <rect key="frame" x="125" y="32" width="120" height="28"/>
                         <buttonCell key="cell" type="push" title="Collapse tree" bezelStyle="rounded" image="ic_chevron_right_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pvE-NN-dNd">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="smallSystem"/>
@@ -2181,7 +2193,7 @@ Please change the keyboard type if your keyboards are not ANSI layout.</string>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iWA-ft-hGI">
-                        <rect key="frame" x="338" y="13" width="124" height="32"/>
+                        <rect key="frame" x="347" y="13" width="106" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fd0-PH-WES">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2249,7 +2261,7 @@ Gw
                         <rect key="frame" x="80" y="61" width="640" height="82"/>
                         <clipView key="contentView" id="uNg-oR-13T">
                             <rect key="frame" x="1" y="1" width="623" height="80"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
                                     <rect key="frame" x="0.0" y="0.0" width="623" height="80"/>
