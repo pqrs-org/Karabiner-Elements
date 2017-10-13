@@ -3,6 +3,7 @@
 #include "filesystem.hpp"
 #include "logger.hpp"
 #include <fstream>
+#include <iostream>
 #include <json/json.hpp>
 #include <string>
 
@@ -11,43 +12,37 @@ class manipulator_environment final {
 public:
   class frontmost_application final {
   public:
-    frontmost_application(void) : update_count_(0) {
+    frontmost_application(void) {
+    }
+
+    frontmost_application(const std::string& bundle_identifier,
+                          const std::string& file_path) : bundle_identifier_(bundle_identifier),
+                                                          file_path_(file_path) {
     }
 
     nlohmann::json to_json(void) const {
       return nlohmann::json({
           {"bundle_identifier", bundle_identifier_},
           {"file_path", file_path_},
-          {"update_count", update_count_},
       });
     }
 
     const std::string& get_bundle_identifier(void) const {
       return bundle_identifier_;
     }
-    void set_bundle_identifier(const std::string& value) {
-      //logger::get_logger().info("bundle_identifier_ {0}", value);
-      bundle_identifier_ = value;
-      ++update_count_;
-    }
 
     const std::string& get_file_path(void) const {
       return file_path_;
     }
-    void set_file_path(const std::string& value) {
-      //logger::get_logger().info("file_path_ {0}", value);
-      file_path_ = value;
-      ++update_count_;
-    }
 
-    uint32_t get_update_count(void) const {
-      return update_count_;
+    bool operator==(const frontmost_application& other) const {
+      return bundle_identifier_ == other.bundle_identifier_ &&
+             file_path_ == other.file_path_;
     }
 
   private:
     std::string bundle_identifier_;
     std::string file_path_;
-    uint32_t update_count_;
   };
 
   class input_source final {
@@ -119,18 +114,13 @@ public:
     return frontmost_application_;
   }
 
-  void set_frontmost_application_bundle_identifier(const std::string& value) {
-    frontmost_application_.set_bundle_identifier(value);
+  void set_frontmost_application(const frontmost_application& value) {
+    frontmost_application_ = value;
     save_to_file();
   }
 
-  void set_frontmost_application_file_path(const std::string& value) {
-    frontmost_application_.set_file_path(value);
-    save_to_file();
-  }
-
-  void set_input_source(const input_source& input_source) {
-    input_source_ = input_source;
+  void set_input_source(const input_source& value) {
+    input_source_ = value;
     save_to_file();
   }
 
@@ -167,4 +157,9 @@ private:
   input_source input_source_;
   std::unordered_map<std::string, int> variables_;
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const manipulator_environment::frontmost_application& value) {
+  stream << value.get_bundle_identifier() << "," << value.get_file_path();
+  return stream;
+}
 } // namespace krbn

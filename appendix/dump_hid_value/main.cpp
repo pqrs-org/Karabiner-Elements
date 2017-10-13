@@ -185,9 +185,11 @@ private:
           break;
 
         case krbn::event_queue::queued_event::event::type::frontmost_application_changed:
-          std::cout << "frontmost_application_changed "
-                    << queued_event.get_event().get_frontmost_application_bundle_identifier() << " "
-                    << queued_event.get_event().get_frontmost_application_file_path() << std::endl;
+          if (auto frontmost_application = queued_event.get_event().get_frontmost_application()) {
+            std::cout << "frontmost_application_changed "
+                      << frontmost_application->get_bundle_identifier() << " "
+                      << frontmost_application->get_file_path() << std::endl;
+          }
           break;
 
         case krbn::event_queue::queued_event::event::type::input_source_changed:

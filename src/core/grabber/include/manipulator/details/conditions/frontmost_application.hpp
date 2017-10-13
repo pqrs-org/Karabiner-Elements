@@ -17,9 +17,7 @@ public:
   };
 
   frontmost_application(const nlohmann::json& json) : base(),
-                                                      type_(type::frontmost_application_if),
-                                                      cached_update_count_(0),
-                                                      cached_result_(true) {
+                                                      type_(type::frontmost_application_if) {
     if (json.is_object()) {
       for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
         // it.key() is always std::string.
@@ -75,8 +73,8 @@ public:
 
   virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
                             const manipulator_environment& manipulator_environment) const {
-    if (manipulator_environment.get_frontmost_application().get_update_count() == cached_update_count_) {
-      return cached_result_;
+    if (cached_result_ && cached_result_->first == manipulator_environment.get_frontmost_application()) {
+      return cached_result_->second;
     }
 
     auto& current_bundle_identifier = manipulator_environment.get_frontmost_application().get_bundle_identifier();
@@ -84,15 +82,19 @@ public:
 
     // Bundle identifiers
 
+    bool result = false;
+
     for (const auto& b : bundle_identifiers_) {
       if (regex_search(std::begin(current_bundle_identifier),
                        std::end(current_bundle_identifier),
                        b)) {
         switch (type_) {
           case type::frontmost_application_if:
-            return true;
+            result = true;
+            goto finish;
           case type::frontmost_application_unless:
-            return false;
+            result = false;
+            goto finish;
         }
       }
     }
@@ -105,9 +107,11 @@ public:
                        f)) {
         switch (type_) {
           case type::frontmost_application_if:
-            return true;
+            result = true;
+            goto finish;
           case type::frontmost_application_unless:
-            return false;
+            result = false;
+            goto finish;
         }
       }
     }
@@ -116,10 +120,16 @@ public:
 
     switch (type_) {
       case type::frontmost_application_if:
-        return false;
+        result = false;
+        goto finish;
       case type::frontmost_application_unless:
-        return true;
+        result = true;
+        goto finish;
     }
+
+  finish:
+    cached_result_ = std::make_pair(manipulator_environment.get_frontmost_application(), result);
+    return result;
   }
 
 private:
@@ -127,8 +137,7 @@ private:
   std::vector<std::regex> bundle_identifiers_;
   std::vector<std::regex> file_paths_;
 
-  uint32_t cached_update_count_;
-  bool cached_result_;
+  mutable boost::optional<std::pair<manipulator_environment::frontmost_application, bool>> cached_result_;
 };
 } // namespace conditions
 } // namespace details

@@ -86,7 +86,8 @@ public:
                                                             const std::string& file_path) {
         event e;
         e.type_ = type::frontmost_application_changed;
-        e.value_ = frontmost_application(bundle_identifier, file_path);
+        e.value_ = manipulator_environment::frontmost_application(bundle_identifier,
+                                                                  file_path);
         return e;
       }
 
@@ -151,18 +152,9 @@ public:
         return boost::none;
       }
 
-      boost::optional<std::string> get_frontmost_application_bundle_identifier(void) const {
+      boost::optional<manipulator_environment::frontmost_application> get_frontmost_application(void) const {
         if (type_ == type::frontmost_application_changed) {
-          const auto& v = boost::get<frontmost_application>(value_);
-          return v.get_bundle_identifier();
-        }
-        return boost::none;
-      }
-
-      boost::optional<std::string> get_frontmost_application_file_path(void) const {
-        if (type_ == type::frontmost_application_changed) {
-          const auto& v = boost::get<frontmost_application>(value_);
-          return v.get_file_path();
+          return boost::get<manipulator_environment::frontmost_application>(value_);
         }
         return boost::none;
       }
@@ -187,31 +179,6 @@ public:
       }
 
     private:
-      class frontmost_application final {
-      public:
-        frontmost_application(const std::string& bundle_identifier,
-                              const std::string& file_path) : bundle_identifier_(bundle_identifier),
-                                                              file_path_(file_path) {
-        }
-
-        const std::string& get_bundle_identifier(void) const {
-          return bundle_identifier_;
-        }
-
-        const std::string& get_file_path(void) const {
-          return file_path_;
-        }
-
-        bool operator==(const frontmost_application& other) const {
-          return bundle_identifier_ == other.bundle_identifier_ &&
-                 file_path_ == other.file_path_;
-        }
-
-      private:
-        std::string bundle_identifier_;
-        std::string file_path_;
-      };
-
       event(void) {
       }
 
@@ -230,7 +197,7 @@ public:
                      int64_t, // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
                      std::string, // For shell_command
                      boost::blank, // For virtual events
-                     frontmost_application,
+                     manipulator_environment::frontmost_application,
                      manipulator_environment::input_source,
                      std::pair<std::string, int> // For set_variable
                      >
@@ -464,11 +431,8 @@ public:
     }
 
     // Update manipulator_environment
-    if (auto bundle_identifier = event.get_frontmost_application_bundle_identifier()) {
-      if (auto file_path = event.get_frontmost_application_file_path()) {
-        manipulator_environment_.set_frontmost_application_bundle_identifier(*bundle_identifier);
-        manipulator_environment_.set_frontmost_application_file_path(*file_path);
-      }
+    if (auto frontmost_application = event.get_frontmost_application()) {
+      manipulator_environment_.set_frontmost_application(*frontmost_application);
     }
     if (auto input_source = event.get_input_source()) {
       manipulator_environment_.set_input_source(*input_source);

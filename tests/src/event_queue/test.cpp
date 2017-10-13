@@ -67,14 +67,16 @@ TEST_CASE("get_consumer_key_code") {
 }
 
 TEST_CASE("get_frontmost_application_bundle_identifier") {
-  REQUIRE(a_event.get_frontmost_application_bundle_identifier() == boost::none);
+  REQUIRE(a_event.get_frontmost_application() == boost::none);
 
   {
     std::string bundle_identifier = "org.pqrs.example";
     std::string file_path = "/opt/bin/examle";
     auto e = krbn::event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
                                                                                               file_path);
-    REQUIRE(e.get_frontmost_application_bundle_identifier() == bundle_identifier);
+    REQUIRE(e.get_frontmost_application() != boost::none);
+    REQUIRE(e.get_frontmost_application()->get_bundle_identifier() == bundle_identifier);
+    REQUIRE(e.get_frontmost_application()->get_file_path() == file_path);
   }
 }
 

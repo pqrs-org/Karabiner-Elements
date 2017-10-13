@@ -1,8 +1,7 @@
 {
     "frontmost_application": {
         "bundle_identifier": "com.apple.Terminal",
-        "file_path": "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal",
-        "update_count": 2
+        "file_path": "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"
     },
     "input_source": {
         "input_mode_id": "",
