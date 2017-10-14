@@ -119,6 +119,10 @@ public:
     save_to_file();
   }
 
+  const input_source& get_input_source(void) const {
+    return input_source_;
+  }
+
   void set_input_source(const input_source& value) {
     input_source_ = value;
     save_to_file();
@@ -160,6 +164,11 @@ private:
 
 inline std::ostream& operator<<(std::ostream& stream, const manipulator_environment::frontmost_application& value) {
   stream << value.get_bundle_identifier() << "," << value.get_file_path();
+  return stream;
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const manipulator_environment::input_source& value) {
+  stream << value.get_language() << "," << value.get_input_source_id() << "," << value.get_input_mode_id();
   return stream;
 }
 } // namespace krbn

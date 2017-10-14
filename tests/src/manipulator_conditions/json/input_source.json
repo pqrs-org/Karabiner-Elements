@@ -1,0 +1,27 @@
+[
+    {
+        "type": "input_source_if",
+        "input_sources": [
+            {
+                "input_source_id": "^com\\.apple\\.keylayout\\.US$"
+            },
+            {
+                "input_mode_id": "^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman"
+            },
+            {
+                "language": "^en$"
+            }
+        ]
+    },
+    {
+        "type": "unknown"
+    },
+    {
+        "type": "input_source_unless",
+        "input_sources": [
+            {
+                "language": "^fr$"
+            }
+        ]
+    }
+]

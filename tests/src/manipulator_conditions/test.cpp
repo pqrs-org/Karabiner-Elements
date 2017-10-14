@@ -41,6 +41,22 @@ TEST_CASE("manipulator.manipulator_factory") {
   }
   {
     nlohmann::json json({
+        {"type", "input_source_if"},
+    });
+    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::input_source*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+  }
+  {
+    nlohmann::json json({
+        {"type", "input_source_unless"},
+    });
+    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::input_source*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+  }
+  {
+    nlohmann::json json({
         {"type", "variable_if"},
         {"name", "variable_name"},
         {"value", 1},
@@ -123,13 +139,64 @@ TEST_CASE("conditions.frontmost_application") {
   REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
                                                       manipulator_environment) == true);
 
-  // frontmost_application_not
+  // frontmost_application_unless
   manipulator_environment.set_frontmost_application({"com.googlecode.iterm2",
                                                      "/Applications/iTerm.app"});
   REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
                                                       manipulator_environment) == true);
   manipulator_environment.set_frontmost_application({"com.googlecode.iterm2",
                                                      "/Users/tekezo/Applications/iTerm.app"});
+  REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                      manipulator_environment) == false);
+}
+
+TEST_CASE("conditions.input_source") {
+  actual_examples_helper helper("input_source.json");
+  krbn::manipulator_environment manipulator_environment;
+  krbn::event_queue::queued_event queued_event(krbn::device_id(1),
+                                               0,
+                                               krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                               krbn::event_type::key_down,
+                                               krbn::event_queue::queued_event::event(krbn::key_code::a));
+
+  // language matching
+  manipulator_environment.set_input_source({"en",
+                                            "com.apple.keylayout.Australian",
+                                            ""});
+  REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                      manipulator_environment) == true);
+  // use cache
+  REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                      manipulator_environment) == true);
+
+  // Test regex escape works properly
+  manipulator_environment.set_input_source({"ja",
+                                            "com/apple/keylayout/Australian",
+                                            ""});
+  REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                      manipulator_environment) == false);
+  // use cache
+  REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                      manipulator_environment) == false);
+
+  // input_source_id matching
+  manipulator_environment.set_input_source({"ja",
+                                            "com.apple.keylayout.US",
+                                            ""});
+  REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                      manipulator_environment) == true);
+
+  // input_mode_id matching
+  manipulator_environment.set_input_source({"ja",
+                                            "com.apple.keylayout.Australian",
+                                            "com.apple.inputmethod.Japanese.FullWidthRoman"});
+  REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                      manipulator_environment) == true);
+
+  // input_source_unless
+  manipulator_environment.set_input_source({"fr",
+                                            "com.apple.keylayout.US",
+                                            ""});
   REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
                                                       manipulator_environment) == false);
 }
