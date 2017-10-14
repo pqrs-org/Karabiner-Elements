@@ -4,6 +4,10 @@
   Note:
   * You have to enable your Mouse manually in Preferences &gt; Devices tab.
   * Karabiner-Elements cannot modify Apple's pointing devices.
+* `input_source_if` and `input_source_unless` has been added to `conditions`.
+  * Examples
+    * https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_input_source.json
+    * https://github.com/tekezo/Karabiner-Elements/blob/master/tests/src/manipulator_conditions/json/input_source.json
 * The virtual keyboard handling has been improved.
 
 
