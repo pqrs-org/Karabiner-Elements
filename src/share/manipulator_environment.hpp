@@ -2,6 +2,7 @@
 
 #include "filesystem.hpp"
 #include "logger.hpp"
+#include "types.hpp"
 #include <fstream>
 #include <iostream>
 #include <json/json.hpp>
