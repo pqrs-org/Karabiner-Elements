@@ -3,10 +3,9 @@
         "bundle_identifier": "com.apple.Terminal",
         "file_path": "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"
     },
-    "input_source": {
-        "input_mode_id": "",
-        "input_source_id": "",
-        "language": ""
+    "input_source_identifiers": {
+        "input_source_id": "com.apple.keylayout.US",
+        "language": "en"
     },
     "variables": {
         "value1": 100,

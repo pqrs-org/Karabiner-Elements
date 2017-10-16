@@ -102,6 +102,9 @@ TEST_CASE("manipulator_environment.save_to_file") {
   manipulator_environment.enable_json_output("tmp/manipulator_environment.json");
   manipulator_environment.set_frontmost_application({"com.apple.Terminal",
                                                      "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"});
+  manipulator_environment.set_input_source_identifiers({std::string("en"),
+                                                        std::string("com.apple.keylayout.US"),
+                                                        boost::none});
   manipulator_environment.set_variable("value1", 100);
   manipulator_environment.set_variable("value2", 200);
 }
@@ -160,9 +163,9 @@ TEST_CASE("conditions.input_source") {
                                                krbn::event_queue::queued_event::event(krbn::key_code::a));
 
   // language matching
-  manipulator_environment.set_input_source({"en",
-                                            "com.apple.keylayout.Australian",
-                                            ""});
+  manipulator_environment.set_input_source_identifiers({std::string("en"),
+                                                        std::string("com.apple.keylayout.Australian"),
+                                                        boost::none});
   REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
                                                       manipulator_environment) == true);
   // use cache
@@ -170,9 +173,9 @@ TEST_CASE("conditions.input_source") {
                                                       manipulator_environment) == true);
 
   // Test regex escape works properly
-  manipulator_environment.set_input_source({"ja",
-                                            "com/apple/keylayout/Australian",
-                                            ""});
+  manipulator_environment.set_input_source_identifiers({std::string("ja"),
+                                                        std::string("com/apple/keylayout/Australian"),
+                                                        boost::none});
   REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
                                                       manipulator_environment) == false);
   // use cache
@@ -180,23 +183,23 @@ TEST_CASE("conditions.input_source") {
                                                       manipulator_environment) == false);
 
   // input_source_id matching
-  manipulator_environment.set_input_source({"ja",
-                                            "com.apple.keylayout.US",
-                                            ""});
+  manipulator_environment.set_input_source_identifiers({std::string("ja"),
+                                                        std::string("com.apple.keylayout.US"),
+                                                        boost::none});
   REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
                                                       manipulator_environment) == true);
 
   // input_mode_id matching
-  manipulator_environment.set_input_source({"ja",
-                                            "com.apple.keylayout.Australian",
-                                            "com.apple.inputmethod.Japanese.FullWidthRoman"});
+  manipulator_environment.set_input_source_identifiers({std::string("ja"),
+                                                        std::string("com.apple.keylayout.Australian"),
+                                                        std::string("com.apple.inputmethod.Japanese.FullWidthRoman")});
   REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
                                                       manipulator_environment) == true);
 
   // input_source_unless
-  manipulator_environment.set_input_source({"fr",
-                                            "com.apple.keylayout.US",
-                                            ""});
+  manipulator_environment.set_input_source_identifiers({std::string("fr"),
+                                                        std::string("com.apple.keylayout.US"),
+                                                        boost::none});
   REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
                                                       manipulator_environment) == false);
 }

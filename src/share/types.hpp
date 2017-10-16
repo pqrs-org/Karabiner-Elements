@@ -18,6 +18,7 @@
 #include <cstring>
 #include <iostream>
 #include <json/json.hpp>
+#include <regex>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -442,11 +443,11 @@ public:
                                                   input_mode_id_(input_source_utility::get_input_mode_id(p)) {
   }
 
-  input_source_identifiers(const std::string& language,
-                           const std::string& input_source_id,
-                           const std::string& input_mode_id) : language_(language),
-                                                               input_source_id_(input_source_id),
-                                                               input_mode_id_(input_mode_id) {
+  input_source_identifiers(const boost::optional<std::string>& language,
+                           const boost::optional<std::string>& input_source_id,
+                           const boost::optional<std::string>& input_mode_id) : language_(language),
+                                                                                input_source_id_(input_source_id),
+                                                                                input_mode_id_(input_mode_id) {
   }
 
   nlohmann::json to_json(void) const {
@@ -489,6 +490,60 @@ private:
   boost::optional<std::string> language_;
   boost::optional<std::string> input_source_id_;
   boost::optional<std::string> input_mode_id_;
+};
+
+class input_source_selector final {
+public:
+  void set_language_regex(const std::regex& value) {
+    language_regex_ = value;
+  }
+
+  void set_input_source_id_regex(const std::regex& value) {
+    input_source_id_regex_ = value;
+  }
+
+  void set_input_mode_id_regex(const std::regex& value) {
+    input_mode_id_regex_ = value;
+  }
+
+  bool test(const input_source_identifiers& input_source_identifiers) const {
+    if (language_regex_) {
+      if (auto& v = input_source_identifiers.get_language()) {
+        if (regex_search(std::begin(*v),
+                         std::end(*v),
+                         *language_regex_)) {
+          return true;
+        }
+      }
+    }
+
+    if (input_source_id_regex_) {
+      if (auto& v = input_source_identifiers.get_input_source_id()) {
+        if (regex_search(std::begin(*v),
+                         std::end(*v),
+                         *input_source_id_regex_)) {
+          return true;
+        }
+      }
+    }
+
+    if (input_mode_id_regex_) {
+      if (auto& v = input_source_identifiers.get_input_mode_id()) {
+        if (regex_search(std::begin(*v),
+                         std::end(*v),
+                         *input_mode_id_regex_)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+private:
+  boost::optional<std::regex> language_regex_;
+  boost::optional<std::regex> input_source_id_regex_;
+  boost::optional<std::regex> input_mode_id_regex_;
 };
 
 class types final {
