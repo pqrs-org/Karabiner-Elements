@@ -494,50 +494,51 @@ private:
 
 class input_source_selector final {
 public:
-  void set_language_regex(const std::regex& value) {
-    language_regex_ = value;
-  }
-
-  void set_input_source_id_regex(const std::regex& value) {
-    input_source_id_regex_ = value;
-  }
-
-  void set_input_mode_id_regex(const std::regex& value) {
-    input_mode_id_regex_ = value;
+  input_source_selector(const boost::optional<std::regex>& language_regex,
+                        const boost::optional<std::regex>& input_source_id_regex,
+                        const boost::optional<std::regex>& input_mode_id_regex) : language_regex_(language_regex),
+                                                                                  input_source_id_regex_(input_source_id_regex),
+                                                                                  input_mode_id_regex_(input_mode_id_regex) {
   }
 
   bool test(const input_source_identifiers& input_source_identifiers) const {
     if (language_regex_) {
       if (auto& v = input_source_identifiers.get_language()) {
-        if (regex_search(std::begin(*v),
-                         std::end(*v),
-                         *language_regex_)) {
-          return true;
+        if (!regex_search(std::begin(*v),
+                          std::end(*v),
+                          *language_regex_)) {
+          return false;
         }
+      } else {
+        return false;
       }
     }
 
     if (input_source_id_regex_) {
       if (auto& v = input_source_identifiers.get_input_source_id()) {
-        if (regex_search(std::begin(*v),
-                         std::end(*v),
-                         *input_source_id_regex_)) {
-          return true;
+        if (!regex_search(std::begin(*v),
+                          std::end(*v),
+                          *input_source_id_regex_)) {
+          return false;
         }
+      } else {
+        return false;
       }
     }
 
     if (input_mode_id_regex_) {
       if (auto& v = input_source_identifiers.get_input_mode_id()) {
-        if (regex_search(std::begin(*v),
-                         std::end(*v),
-                         *input_mode_id_regex_)) {
-          return true;
+        if (!regex_search(std::begin(*v),
+                          std::end(*v),
+                          *input_mode_id_regex_)) {
+          return false;
         }
+      } else {
+        return false;
       }
     }
 
-    return false;
+    return true;
   }
 
 private:

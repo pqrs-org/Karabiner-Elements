@@ -5,6 +5,139 @@
 #include "types.hpp"
 #include <boost/optional/optional_io.hpp>
 
+TEST_CASE("input_source_selector") {
+  // language
+  {
+    krbn::input_source_selector selector(std::regex("^en$"),
+                                         boost::none,
+                                         boost::none);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         boost::none,
+                                                         boost::none)) == false);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
+                                                         boost::none,
+                                                         boost::none)) == true);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
+                                                         std::string("com.apple.keylayout.US"),
+                                                         std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
+
+    // regex
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en2"),
+                                                         boost::none,
+                                                         boost::none)) == false);
+  }
+
+  // input_source_id
+  {
+    krbn::input_source_selector selector(boost::none,
+                                         std::regex("^com\\.apple\\.keylayout\\.US$"),
+                                         boost::none);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         boost::none,
+                                                         boost::none)) == false);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         std::string("com.apple.keylayout.US"),
+                                                         boost::none)) == true);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
+                                                         std::string("com.apple.keylayout.US"),
+                                                         std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
+
+    // regex
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         std::string("com/apple/keylayout/US"),
+                                                         boost::none)) == false);
+  }
+
+  // input_mode_id
+  {
+    krbn::input_source_selector selector(boost::none,
+                                         boost::none,
+                                         std::regex("^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$"));
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         boost::none,
+                                                         boost::none)) == false);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         boost::none,
+                                                         std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
+                                                         std::string("com.apple.keylayout.US"),
+                                                         std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
+
+    // regex
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         boost::none,
+                                                         std::string("com/apple/inputmethod/Japanese/FullWidthRoman"))) == false);
+  }
+
+  // combination
+  {
+    krbn::input_source_selector selector(std::regex("^en$"),
+                                         std::regex("^com\\.apple\\.keylayout\\.US$"),
+                                         std::regex("^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$"));
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         boost::none,
+                                                         boost::none)) == false);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
+                                                         boost::none,
+                                                         boost::none)) == false);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         std::string("com.apple.keylayout.US"),
+                                                         boost::none)) == false);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         boost::none,
+                                                         std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == false);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
+                                                         std::string("com.apple.keylayout.US"),
+                                                         std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
+
+    // combination
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
+                                                         std::string("com/apple/keylayout/US"),
+                                                         std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == false);
+  }
+
+  // none selector
+  {
+    krbn::input_source_selector selector(boost::none,
+                                         boost::none,
+                                         boost::none);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         boost::none,
+                                                         boost::none)) == true);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
+                                                         boost::none,
+                                                         boost::none)) == true);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         std::string("com.apple.keylayout.US"),
+                                                         boost::none)) == true);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
+                                                         boost::none,
+                                                         std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
+
+    REQUIRE(selector.test(krbn::input_source_identifiers(std::string("en"),
+                                                         std::string("com.apple.keylayout.US"),
+                                                         std::string("com.apple.inputmethod.Japanese.FullWidthRoman"))) == true);
+  }
+}
+
 TEST_CASE("get_key_code") {
   {
     auto actual = krbn::types::get_key_code(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
