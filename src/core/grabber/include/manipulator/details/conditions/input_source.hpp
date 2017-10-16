@@ -51,14 +51,14 @@ public:
 
   virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
                             const manipulator_environment& manipulator_environment) const {
-    if (cached_result_ && cached_result_->first == manipulator_environment.get_input_source()) {
+    if (cached_result_ && cached_result_->first == manipulator_environment.get_input_source_identifiers()) {
       return cached_result_->second;
     }
 
     bool result = false;
 
     for (const auto& e : entries_) {
-      if (e.is_matched(manipulator_environment.get_input_source())) {
+      if (e.is_matched(manipulator_environment.get_input_source_identifiers())) {
         switch (type_) {
           case type::input_source_if:
             result = true;
@@ -82,7 +82,7 @@ public:
     }
 
   finish:
-    cached_result_ = std::make_pair(manipulator_environment.get_input_source(), result);
+    cached_result_ = std::make_pair(manipulator_environment.get_input_source_identifiers(), result);
     return result;
   }
 
@@ -123,28 +123,34 @@ private:
       }
     }
 
-    bool is_matched(const manipulator_environment::input_source& input_source) const {
+    bool is_matched(const input_source_identifiers& input_source_identifiers) const {
       if (language_) {
-        if (regex_search(std::begin(input_source.get_language()),
-                         std::end(input_source.get_language()),
-                         *language_)) {
-          return true;
+        if (auto& v = input_source_identifiers.get_language()) {
+          if (regex_search(std::begin(*v),
+                           std::end(*v),
+                           *language_)) {
+            return true;
+          }
         }
       }
 
       if (input_source_id_) {
-        if (regex_search(std::begin(input_source.get_input_source_id()),
-                         std::end(input_source.get_input_source_id()),
-                         *input_source_id_)) {
-          return true;
+        if (auto& v = input_source_identifiers.get_input_source_id()) {
+          if (regex_search(std::begin(*v),
+                           std::end(*v),
+                           *input_source_id_)) {
+            return true;
+          }
         }
       }
 
       if (input_mode_id_) {
-        if (regex_search(std::begin(input_source.get_input_mode_id()),
-                         std::end(input_source.get_input_mode_id()),
-                         *input_mode_id_)) {
-          return true;
+        if (auto& v = input_source_identifiers.get_input_mode_id()) {
+          if (regex_search(std::begin(*v),
+                           std::end(*v),
+                           *input_mode_id_)) {
+            return true;
+          }
         }
       }
 
@@ -160,7 +166,7 @@ private:
   type type_;
   std::vector<entry> entries_;
 
-  mutable boost::optional<std::pair<manipulator_environment::input_source, bool>> cached_result_;
+  mutable boost::optional<std::pair<input_source_identifiers, bool>> cached_result_;
 };
 } // namespace conditions
 } // namespace details

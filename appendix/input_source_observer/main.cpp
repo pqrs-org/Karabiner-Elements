@@ -4,18 +4,16 @@
 #include <Carbon/Carbon.h>
 
 namespace {
-void callback(const boost::optional<std::string>& language,
-              const boost::optional<std::string>& input_source_id,
-              const boost::optional<std::string>& input_mode_id) {
+void callback(const krbn::input_source_identifiers& input_source_identifiers) {
   krbn::logger::get_logger().info("callback");
-  if (language) {
-    krbn::logger::get_logger().info("  language: {0}", *language);
+  if (auto& v = input_source_identifiers.get_language()) {
+    krbn::logger::get_logger().info("  language: {0}", *v);
   }
-  if (input_source_id) {
-    krbn::logger::get_logger().info("  input_source_id: {0}", *input_source_id);
+  if (auto& v = input_source_identifiers.get_input_source_id()) {
+    krbn::logger::get_logger().info("  input_source_id: {0}", *v);
   }
-  if (input_mode_id) {
-    krbn::logger::get_logger().info("  input_mode_id: {0}", *input_mode_id);
+  if (auto& v = input_source_identifiers.get_input_mode_id()) {
+    krbn::logger::get_logger().info("  input_mode_id: {0}", *v);
   }
 }
 } // namespace

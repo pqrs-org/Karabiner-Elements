@@ -91,14 +91,10 @@ public:
         return e;
       }
 
-      static event make_input_source_changed_event(const std::string& language,
-                                                   const std::string& input_source_id,
-                                                   const std::string& input_mode_id) {
+      static event make_input_source_changed_event(const input_source_identifiers& input_source_identifiers) {
         event e;
         e.type_ = type::input_source_changed;
-        e.value_ = manipulator_environment::input_source(language,
-                                                         input_source_id,
-                                                         input_mode_id);
+        e.value_ = input_source_identifiers;
         return e;
       }
 
@@ -159,9 +155,9 @@ public:
         return boost::none;
       }
 
-      boost::optional<manipulator_environment::input_source> get_input_source(void) const {
+      boost::optional<input_source_identifiers> get_input_source_identifiers(void) const {
         if (type_ == type::input_source_changed) {
-          return boost::get<manipulator_environment::input_source>(value_);
+          return boost::get<input_source_identifiers>(value_);
         }
         return boost::none;
       }
@@ -198,7 +194,7 @@ public:
                      std::string, // For shell_command
                      boost::blank, // For virtual events
                      manipulator_environment::frontmost_application,
-                     manipulator_environment::input_source,
+                     input_source_identifiers, // for input_source_changed
                      std::pair<std::string, int> // For set_variable
                      >
           value_;
@@ -434,8 +430,8 @@ public:
     if (auto frontmost_application = event.get_frontmost_application()) {
       manipulator_environment_.set_frontmost_application(*frontmost_application);
     }
-    if (auto input_source = event.get_input_source()) {
-      manipulator_environment_.set_input_source(*input_source);
+    if (auto input_source_identifiers = event.get_input_source_identifiers()) {
+      manipulator_environment_.set_input_source_identifiers(*input_source_identifiers);
     }
     if (event_type == event_type::key_down) {
       if (auto set_variable = event.get_set_variable()) {

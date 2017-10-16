@@ -236,13 +236,9 @@ public:
     });
   }
 
-  void post_input_source_changed_event(const std::string& language,
-                                       const std::string& input_source_id,
-                                       const std::string& input_mode_id) {
+  void post_input_source_changed_event(const input_source_identifiers& input_source_identifiers) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      auto event = event_queue::queued_event::event::make_input_source_changed_event(language,
-                                                                                     input_source_id,
-                                                                                     input_mode_id);
+      auto event = event_queue::queued_event::event::make_input_source_changed_event(input_source_identifiers);
       merged_input_event_queue_.emplace_back_event(device_id(0),
                                                    mach_absolute_time(),
                                                    event,

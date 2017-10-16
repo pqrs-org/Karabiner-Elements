@@ -5,6 +5,7 @@
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
+#include "input_source_utility.hpp"
 #include "logger.hpp"
 #include "stream_utility.hpp"
 #include "system_preferences.hpp"
@@ -429,6 +430,65 @@ private:
   product_id product_id_;
   bool is_keyboard_;
   bool is_pointing_device_;
+};
+
+class input_source_identifiers final {
+public:
+  input_source_identifiers(void) {
+  }
+
+  input_source_identifiers(TISInputSourceRef p) : language_(input_source_utility::get_language(p)),
+                                                  input_source_id_(input_source_utility::get_input_source_id(p)),
+                                                  input_mode_id_(input_source_utility::get_input_mode_id(p)) {
+  }
+
+  input_source_identifiers(const std::string& language,
+                           const std::string& input_source_id,
+                           const std::string& input_mode_id) : language_(language),
+                                                               input_source_id_(input_source_id),
+                                                               input_mode_id_(input_mode_id) {
+  }
+
+  nlohmann::json to_json(void) const {
+    auto json = nlohmann::json::object();
+
+    if (language_) {
+      json["language"] = *language_;
+    }
+
+    if (input_source_id_) {
+      json["input_source_id"] = *input_source_id_;
+    }
+
+    if (input_mode_id_) {
+      json["input_mode_id"] = *input_mode_id_;
+    }
+
+    return json;
+  }
+
+  const boost::optional<std::string>& get_language(void) const {
+    return language_;
+  }
+
+  const boost::optional<std::string>& get_input_source_id(void) const {
+    return input_source_id_;
+  }
+
+  const boost::optional<std::string>& get_input_mode_id(void) const {
+    return input_mode_id_;
+  }
+
+  bool operator==(const input_source_identifiers& other) const {
+    return language_ == other.language_ &&
+           input_source_id_ == other.input_source_id_ &&
+           input_mode_id_ == other.input_mode_id_;
+  }
+
+private:
+  boost::optional<std::string> language_;
+  boost::optional<std::string> input_source_id_;
+  boost::optional<std::string> input_mode_id_;
 };
 
 class types final {
@@ -1191,6 +1251,34 @@ inline std::ostream& operator<<(std::ostream& stream, const container<modifier_f
 template <template <class T, class H, class K, class A> class container>
 inline std::ostream& operator<<(std::ostream& stream, const container<modifier_flag, std::hash<modifier_flag>, std::equal_to<modifier_flag>, std::allocator<modifier_flag>>& values) {
   return stream_utility::output_enums(stream, values);
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const input_source_identifiers& value) {
+  stream << "language:";
+
+  if (auto& v = value.get_language()) {
+    stream << *v;
+  } else {
+    stream << "---";
+  }
+
+  stream << ",input_source_id:";
+
+  if (auto& v = value.get_input_source_id()) {
+    stream << *v;
+  } else {
+    stream << "---";
+  }
+
+  stream << ",input_mode_id:";
+
+  if (auto& v = value.get_input_mode_id()) {
+    stream << *v;
+  } else {
+    stream << "---";
+  }
+
+  return stream;
 }
 
 inline void to_json(nlohmann::json& json, const device_identifiers& identifiers) {

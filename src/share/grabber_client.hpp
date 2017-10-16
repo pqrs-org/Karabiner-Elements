@@ -59,26 +59,24 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
-  void input_source_changed(const boost::optional<std::string>& language,
-                            const boost::optional<std::string>& input_source_id,
-                            const boost::optional<std::string>& input_mode_id) {
+  void input_source_changed(const input_source_identifiers& input_source_identifiers) {
     operation_type_input_source_changed_struct s;
 
-    if (language) {
+    if (auto& v = input_source_identifiers.get_language()) {
       strlcpy(s.language,
-              language->c_str(),
+              v->c_str(),
               sizeof(s.language));
     }
 
-    if (input_source_id) {
+    if (auto& v = input_source_identifiers.get_input_source_id()) {
       strlcpy(s.input_source_id,
-              input_source_id->c_str(),
+              v->c_str(),
               sizeof(s.input_source_id));
     }
 
-    if (input_mode_id) {
+    if (auto& v = input_source_identifiers.get_input_mode_id()) {
       strlcpy(s.input_mode_id,
-              input_mode_id->c_str(),
+              v->c_str(),
               sizeof(s.input_mode_id));
     }
 

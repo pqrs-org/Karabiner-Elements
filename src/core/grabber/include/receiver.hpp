@@ -115,9 +115,9 @@ private:
               p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
               p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
 
-              device_grabber_.post_input_source_changed_event(p->language,
-                                                              p->input_source_id,
-                                                              p->input_mode_id);
+              device_grabber_.post_input_source_changed_event(input_source_identifiers(p->language,
+                                                                                       p->input_source_id,
+                                                                                       p->input_mode_id));
             }
             break;
 
@@ -130,7 +130,7 @@ private:
 
   void console_user_server_exit_callback(void) {
     device_grabber_.post_frontmost_application_changed_event("", "");
-    device_grabber_.post_input_source_changed_event("", "", "");
+    device_grabber_.post_input_source_changed_event(input_source_identifiers("", "", ""));
 
     device_grabber_.stop_grabbing();
 
