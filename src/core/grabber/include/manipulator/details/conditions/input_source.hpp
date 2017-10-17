@@ -34,11 +34,7 @@ public:
             }
           }
         } else if (key == "input_sources") {
-          if (value.is_array()) {
-            for (const auto& j : value) {
-              entries_.emplace_back(j);
-            }
-          }
+          handle_input_sources(value);
         } else {
           logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
@@ -57,8 +53,8 @@ public:
 
     bool result = false;
 
-    for (const auto& e : entries_) {
-      if (e.is_matched(manipulator_environment.get_input_source_identifiers())) {
+    for (const auto& s : input_source_selectors_) {
+      if (s.test(manipulator_environment.get_input_source_identifiers())) {
         switch (type_) {
           case type::input_source_if:
             result = true;
@@ -87,30 +83,33 @@ public:
   }
 
 private:
-  class entry final {
-  public:
-    entry(const nlohmann::json& json) {
-      if (json.is_object()) {
-        for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+  void handle_input_sources(const nlohmann::json& json) {
+    for (const auto& j : json) {
+      if (j.is_object()) {
+        boost::optional<std::regex> language_regex;
+        boost::optional<std::regex> input_source_id_regex;
+        boost::optional<std::regex> input_mode_id_regex;
+
+        for (auto it = std::begin(j); it != std::end(j); std::advance(it, 1)) {
           // it.key() is always std::string.
           const auto& key = it.key();
           const auto& value = it.value();
 
           if (key == "language") {
             if (value.is_string()) {
-              language_ = std::regex(value.get<std::string>());
+              language_regex = std::regex(value.get<std::string>());
             } else {
               logger::get_logger().error("complex_modifications json error: input_sources.language should be string: {0}", json.dump());
             }
           } else if (key == "input_source_id") {
             if (value.is_string()) {
-              input_source_id_ = std::regex(value.get<std::string>());
+              input_source_id_regex = std::regex(value.get<std::string>());
             } else {
               logger::get_logger().error("complex_modifications json error: input_sources.input_source_id should be string: {0}", json.dump());
             }
           } else if (key == "input_mode_id") {
             if (value.is_string()) {
-              input_mode_id_ = std::regex(value.get<std::string>());
+              input_mode_id_regex = std::regex(value.get<std::string>());
             } else {
               logger::get_logger().error("complex_modifications json error: input_sources.input_mode_id should be string: {0}", json.dump());
             }
@@ -118,53 +117,19 @@ private:
             logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
           }
         }
+
+        input_source_selectors_.emplace_back(language_regex,
+                                             input_source_id_regex,
+                                             input_mode_id_regex);
+
       } else {
         logger::get_logger().error("complex_modifications json error: input_sources should be array of object: {0}", json.dump());
       }
     }
-
-    bool is_matched(const input_source_identifiers& input_source_identifiers) const {
-      if (language_) {
-        if (auto& v = input_source_identifiers.get_language()) {
-          if (regex_search(std::begin(*v),
-                           std::end(*v),
-                           *language_)) {
-            return true;
-          }
-        }
-      }
-
-      if (input_source_id_) {
-        if (auto& v = input_source_identifiers.get_input_source_id()) {
-          if (regex_search(std::begin(*v),
-                           std::end(*v),
-                           *input_source_id_)) {
-            return true;
-          }
-        }
-      }
-
-      if (input_mode_id_) {
-        if (auto& v = input_source_identifiers.get_input_mode_id()) {
-          if (regex_search(std::begin(*v),
-                           std::end(*v),
-                           *input_mode_id_)) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    }
-
-  private:
-    boost::optional<std::regex> language_;
-    boost::optional<std::regex> input_source_id_;
-    boost::optional<std::regex> input_mode_id_;
-  };
+  }
 
   type type_;
-  std::vector<entry> entries_;
+  std::vector<input_source_selector> input_source_selectors_;
 
   mutable boost::optional<std::pair<input_source_identifiers, bool>> cached_result_;
 };
