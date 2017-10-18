@@ -8,6 +8,10 @@
   * Examples
     * https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_input_source.json
     * https://github.com/tekezo/Karabiner-Elements/blob/master/tests/src/manipulator_conditions/json/input_source.json
+* `select_input_source` has been supported.
+  * Example
+    * https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_select_input_source.json
+
 * The virtual keyboard handling has been improved.
 
 
