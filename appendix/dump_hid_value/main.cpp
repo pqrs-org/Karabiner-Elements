@@ -158,6 +158,14 @@ private:
           std::cout << "shell_command" << std::endl;
           break;
 
+        case krbn::event_queue::queued_event::event::type::select_input_source:
+          std::cout << "select_input_source" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::set_variable:
+          std::cout << "set_variable" << std::endl;
+          break;
+
         case krbn::event_queue::queued_event::event::type::device_keys_are_released:
           std::cout << "device_keys_are_released for " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
           break;
@@ -196,10 +204,6 @@ private:
           if (auto input_source_identifiers = queued_event.get_event().get_input_source_identifiers()) {
             std::cout << "input_source_changed " << input_source_identifiers << std::endl;
           }
-          break;
-
-        case krbn::event_queue::queued_event::event::type::set_variable:
-          std::cout << "set_variable" << std::endl;
           break;
       }
     }

@@ -8,7 +8,7 @@
 TEST_CASE("input_source_selector") {
   // language
   {
-    krbn::input_source_selector selector(std::regex("^en$"),
+    krbn::input_source_selector selector(std::string("^en$"),
                                          boost::none,
                                          boost::none);
 
@@ -33,7 +33,7 @@ TEST_CASE("input_source_selector") {
   // input_source_id
   {
     krbn::input_source_selector selector(boost::none,
-                                         std::regex("^com\\.apple\\.keylayout\\.US$"),
+                                         std::string("^com\\.apple\\.keylayout\\.US$"),
                                          boost::none);
 
     REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
@@ -58,7 +58,7 @@ TEST_CASE("input_source_selector") {
   {
     krbn::input_source_selector selector(boost::none,
                                          boost::none,
-                                         std::regex("^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$"));
+                                         std::string("^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$"));
 
     REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
                                                          boost::none,
@@ -80,9 +80,9 @@ TEST_CASE("input_source_selector") {
 
   // combination
   {
-    krbn::input_source_selector selector(std::regex("^en$"),
-                                         std::regex("^com\\.apple\\.keylayout\\.US$"),
-                                         std::regex("^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$"));
+    krbn::input_source_selector selector(std::string("^en$"),
+                                         std::string("^com\\.apple\\.keylayout\\.US$"),
+                                         std::string("^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$"));
 
     REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
                                                          boost::none,

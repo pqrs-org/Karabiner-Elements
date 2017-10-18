@@ -54,6 +54,7 @@
 		345EF8EB1F17C176003E7A67 /* shell_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shell_utility.hpp; sourceTree = "<group>"; };
 		3463EABE1E2FCD9400427A81 /* version_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = version_monitor.hpp; sourceTree = "<group>"; };
 		347113151D871EC1001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = process_monitor.hpp; sourceTree = "<group>"; };
+		348425D91F97BAF40071F883 /* input_source_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = input_source_manager.hpp; sourceTree = "<group>"; };
 		348A6C461E17D28D00DB5FA4 /* migration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = migration.hpp; path = include/migration.hpp; sourceTree = SOURCE_ROOT; };
 		3491DBED1F87F3D3007B6FF4 /* grabber_alerts_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = grabber_alerts_monitor.hpp; sourceTree = "<group>"; };
 		3492C9BC1D772D8B0055988F /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = filesystem.hpp; sourceTree = "<group>"; };
@@ -71,6 +72,7 @@
 		34DD886E1F8E6D2B00D752DF /* input_source_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = input_source_utility.hpp; sourceTree = "<group>"; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		34F4D5171E647EAD007D5065 /* configuration_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = configuration_monitor.hpp; sourceTree = "<group>"; };
+		7C95EC0A1F7E91E700D3E523 /* cf_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cf_utility.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +122,7 @@
 			children = (
 				344608C31E3E5DE4007956BD /* application_launcher.hpp */,
 				345AC0051D621651009D1FB4 /* boost_defs.hpp */,
+				7C95EC0A1F7E91E700D3E523 /* cf_utility.hpp */,
 				34F4D5171E647EAD007D5065 /* configuration_monitor.hpp */,
 				345EF8E81F1682BD003E7A67 /* console_user_server_client.hpp */,
 				341F59CC1D516B1500B441A8 /* constants.hpp */,
@@ -132,6 +135,7 @@
 				3431346F1DB710E80008F284 /* gcd_utility.hpp */,
 				3491DBED1F87F3D3007B6FF4 /* grabber_alerts_monitor.hpp */,
 				34A88A981D685A4600DD480B /* grabber_client.hpp */,
+				348425D91F97BAF40071F883 /* input_source_manager.hpp */,
 				34DD886D1F8E6D2400D752DF /* input_source_observer.hpp */,
 				34DD886E1F8E6D2B00D752DF /* input_source_utility.hpp */,
 				341F59DB1D57789500B441A8 /* iokit_utility.hpp */,

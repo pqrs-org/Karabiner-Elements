@@ -23,6 +23,7 @@ public:
     pointing_button,
     any,
     shell_command,
+    select_input_source,
     set_variable,
   };
 
@@ -87,6 +88,13 @@ public:
     return boost::none;
   }
 
+  boost::optional<input_source_selector> get_input_source_selector(void) const {
+    if (type_ == type::select_input_source) {
+      return boost::get<input_source_selector>(value_);
+    }
+    return boost::none;
+  }
+
   boost::optional<std::pair<std::string, int>> get_set_variable(void) const {
     if (type_ == type::set_variable) {
       return boost::get<std::pair<std::string, int>>(value_);
@@ -108,6 +116,8 @@ public:
         return boost::none;
       case type::shell_command:
         return event_queue::queued_event::event::make_shell_command_event(boost::get<std::string>(value_));
+      case type::select_input_source:
+        return event_queue::queued_event::event::make_select_input_source_event(boost::get<input_source_selector>(value_));
       case type::set_variable:
         return event_queue::queued_event::event::make_set_variable_event(boost::get<std::pair<std::string, int>>(value_));
     }
@@ -358,6 +368,19 @@ protected:
         type_ = type::shell_command;
         value_ = value.get<std::string>();
 
+      } else if (key == "select_input_source") {
+        if (type_ != type::none) {
+          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+          continue;
+        }
+        if (!value.is_object()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of select_input_source: {0}", json.dump());
+          continue;
+        }
+
+        type_ = type::select_input_source;
+        value_ = input_source_selector(value);
+
       } else if (key == "set_variable") {
         if (type_ != type::none) {
           logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
@@ -410,6 +433,7 @@ protected:
                  pointing_button,
                  type, // For any
                  std::string, // For shell_command
+                 input_source_selector, // For select_input_source
                  std::pair<std::string, int> // For set_variable
                  >
       value_;

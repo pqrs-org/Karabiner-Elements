@@ -28,6 +28,7 @@ public:
         pointing_input,
         clear_keyboard_modifier_flags,
         shell_command,
+        select_input_source,
       };
 
       event(const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event,
@@ -59,6 +60,15 @@ public:
         return e;
       }
 
+      static event make_select_input_source_event(const input_source_selector& input_source_selector,
+                                                  uint64_t time_stamp) {
+        event e;
+        e.type_ = type::select_input_source;
+        e.value_ = input_source_selector;
+        e.time_stamp_ = time_stamp;
+        return e;
+      }
+
       type get_type(void) const {
         return type_;
       }
@@ -84,6 +94,13 @@ public:
         return boost::none;
       }
 
+      boost::optional<input_source_selector> get_input_source_selector(void) const {
+        if (type_ == type::select_input_source) {
+          return boost::get<input_source_selector>(value_);
+        }
+        return boost::none;
+      }
+
       uint64_t get_time_stamp(void) const {
         return time_stamp_;
       }
@@ -102,7 +119,9 @@ public:
       boost::variant<pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event,
                      pqrs::karabiner_virtual_hid_device::hid_report::pointing_input,
                      boost::blank, // For clear_keyboard_modifier_flags
-                     std::string>
+                     std::string, // For shell_command
+                     input_source_selector // For select_input_source
+                     >
           value_;
       uint64_t time_stamp_;
     };
@@ -166,6 +185,16 @@ public:
       events_.push_back(e);
     }
 
+    void push_back_select_input_source_event(const input_source_selector& input_source_selector,
+                                             uint64_t time_stamp) {
+      adjust_time_stamp(time_stamp, false);
+
+      auto e = event::make_select_input_source_event(input_source_selector,
+                                                     time_stamp);
+
+      events_.push_back(e);
+    }
+
     bool empty(void) const {
       return events_.empty();
     }
@@ -209,6 +238,16 @@ public:
             }
           } catch (std::exception& e) {
             logger::get_logger().error("error in shell_command: {0}", e.what());
+          }
+        }
+        if (auto input_source_selector = e.get_input_source_selector()) {
+          try {
+            if (auto current_console_user_id = session::get_current_console_user_id()) {
+              console_user_server_client client(*current_console_user_id);
+              client.select_input_source(*input_source_selector);
+            }
+          } catch (std::exception& e) {
+            logger::get_logger().error("error in select_input_source: {0}", e.what());
           }
         }
 
@@ -546,6 +585,7 @@ public:
             case event_queue::queued_event::event::type::pointing_button:
             case event_queue::queued_event::event::type::set_variable:
             case event_queue::queued_event::event::type::shell_command:
+            case event_queue::queued_event::event::type::select_input_source:
             case event_queue::queued_event::event::type::device_keys_are_released:
             case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
             case event_queue::queued_event::event::type::device_ungrabbed:
@@ -573,6 +613,15 @@ public:
           if (front_input_event.get_event_type() == event_type::key_down) {
             queue_.push_back_shell_command_event(*shell_command,
                                                  front_input_event.get_time_stamp());
+          }
+        }
+        break;
+
+      case event_queue::queued_event::event::type::select_input_source:
+        if (auto input_source_selector = front_input_event.get_event().get_input_source_selector()) {
+          if (front_input_event.get_event_type() == event_type::key_down) {
+            queue_.push_back_select_input_source_event(*input_source_selector,
+                                                       front_input_event.get_time_stamp());
           }
         }
         break;

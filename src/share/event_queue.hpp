@@ -27,6 +27,9 @@ public:
         pointing_horizontal_wheel,
         // virtual events
         shell_command,
+        select_input_source,
+        set_variable,
+        // virtual events (passive)
         device_keys_are_released,
         device_pointing_buttons_are_released,
         device_ungrabbed,
@@ -35,7 +38,6 @@ public:
         pointing_device_event_from_event_tap,
         frontmost_application_changed,
         input_source_changed,
-        set_variable,
       };
 
       event(key_code key_code) : type_(type::key_code),
@@ -59,6 +61,20 @@ public:
         event e;
         e.type_ = type::shell_command;
         e.value_ = shell_command;
+        return e;
+      }
+
+      static event make_select_input_source_event(const input_source_selector& input_source_selector) {
+        event e;
+        e.type_ = type::select_input_source;
+        e.value_ = input_source_selector;
+        return e;
+      }
+
+      static event make_set_variable_event(const std::pair<std::string, int>& pair) {
+        event e;
+        e.type_ = type::set_variable;
+        e.value_ = pair;
         return e;
       }
 
@@ -95,13 +111,6 @@ public:
         event e;
         e.type_ = type::input_source_changed;
         e.value_ = input_source_identifiers;
-        return e;
-      }
-
-      static event make_set_variable_event(const std::pair<std::string, int>& pair) {
-        event e;
-        e.type_ = type::set_variable;
-        e.value_ = pair;
         return e;
       }
 
@@ -148,6 +157,20 @@ public:
         return boost::none;
       }
 
+      boost::optional<input_source_selector> get_input_source_selector(void) const {
+        if (type_ == type::select_input_source) {
+          return boost::get<input_source_selector>(value_);
+        }
+        return boost::none;
+      }
+
+      boost::optional<std::pair<std::string, int>> get_set_variable(void) const {
+        if (type_ == type::set_variable) {
+          return boost::get<std::pair<std::string, int>>(value_);
+        }
+        return boost::none;
+      }
+
       boost::optional<manipulator_environment::frontmost_application> get_frontmost_application(void) const {
         if (type_ == type::frontmost_application_changed) {
           return boost::get<manipulator_environment::frontmost_application>(value_);
@@ -158,13 +181,6 @@ public:
       boost::optional<input_source_identifiers> get_input_source_identifiers(void) const {
         if (type_ == type::input_source_changed) {
           return boost::get<input_source_identifiers>(value_);
-        }
-        return boost::none;
-      }
-
-      boost::optional<std::pair<std::string, int>> get_set_variable(void) const {
-        if (type_ == type::set_variable) {
-          return boost::get<std::pair<std::string, int>>(value_);
         }
         return boost::none;
       }
@@ -192,11 +208,11 @@ public:
                      pointing_button, // For type::pointing_button
                      int64_t, // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
                      std::string, // For shell_command
-                     boost::blank, // For virtual events
-                     manipulator_environment::frontmost_application,
-                     input_source_identifiers, // for input_source_changed
-                     std::pair<std::string, int> // For set_variable
-                     >
+                     input_source_selector, // For select_input_source
+                     std::pair<std::string, int>, // For set_variable
+                     manipulator_environment::frontmost_application, // For frontmost_application_changed
+                     input_source_identifiers, // For input_source_changed
+                     boost::blank> // For virtual events
           value_;
     };
 

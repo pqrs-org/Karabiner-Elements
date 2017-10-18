@@ -507,6 +507,9 @@ public:
         case post_event_to_virtual_devices::queue::event::type::shell_command:
           events.push_back(post_event_to_virtual_devices::queue::event::make_shell_command_event(*(e.get_shell_command()), 0));
           break;
+        case post_event_to_virtual_devices::queue::event::type::select_input_source:
+          events.push_back(post_event_to_virtual_devices::queue::event::make_select_input_source_event(*(e.get_input_source_selector()), 0));
+          break;
       }
     }
     return events;

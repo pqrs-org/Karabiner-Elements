@@ -611,6 +611,22 @@ TEST_CASE("manipulator.details.to_event_definition") {
     REQUIRE(event_definition.get_key_code() == boost::none);
     REQUIRE(event_definition.get_pointing_button() == boost::none);
     REQUIRE(event_definition.get_shell_command() == shell_command);
+    REQUIRE(event_definition.get_input_source_selector() == boost::none);
+  }
+  {
+    krbn::input_source_selector input_source_selector(boost::none,
+                                                      std::string("com.apple.keylayout.US"),
+                                                      boost::none);
+
+    nlohmann::json json;
+    json["select_input_source"]["input_source_id"] = "com.apple.keylayout.US";
+
+    krbn::manipulator::details::to_event_definition event_definition(json);
+    REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::select_input_source);
+    REQUIRE(event_definition.get_key_code() == boost::none);
+    REQUIRE(event_definition.get_pointing_button() == boost::none);
+    REQUIRE(event_definition.get_shell_command() == boost::none);
+    REQUIRE(event_definition.get_input_source_selector() == input_source_selector);
   }
 }
 

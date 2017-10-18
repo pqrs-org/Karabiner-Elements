@@ -8,17 +8,16 @@ int main(int argc, char** argv) {
 
   krbn::input_source_manager input_source_manager;
 
-  input_source_manager.select(krbn::input_source_selector(std::regex("fr"),
+  input_source_manager.select(krbn::input_source_selector(std::string("fr"),
                                                           boost::none,
                                                           boost::none));
 
   for (int i = 0; i < 10; ++i) {
-    std::cout << ".";
+    std::cout << i << "/9" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
-  std::cout << std::endl;
 
-  input_source_manager.select(krbn::input_source_selector(std::regex("en"),
+  input_source_manager.select(krbn::input_source_selector(std::string("en"),
                                                           boost::none,
                                                           boost::none));
 
