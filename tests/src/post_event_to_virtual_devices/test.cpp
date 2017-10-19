@@ -1579,6 +1579,65 @@ TEST_CASE("actual examples") {
     REQUIRE(helper.get_events() == expected);
   }
 
+  // pointing_device_event
+  {
+    actual_examples_helper helper("complex_modifications.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_up);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, pointing_x_m10_event, single);
+
+    helper.manipulate();
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 0, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    {
+      pqrs::karabiner_virtual_hid_device::hid_report::pointing_input pointing_input;
+      pointing_input.x = -10;
+      expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp));
+    }
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
+  // pointing_device_event and key repeat
+  {
+    actual_examples_helper helper("complex_modifications.json");
+
+    time_stamp = 0;
+
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, left_control_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, p_event, key_down);
+    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, pointing_x_m10_event, single);
+
+    helper.manipulate();
+
+    time_stamp = 0;
+    expected.clear();
+
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 1, time_stamp);
+    ENQUEUE_KEYBOARD_EVENT(expected, left_control, 0, time_stamp);
+    ENQUEUE_CLEAR_KEYBOARD_MODIFIER_FLAGS_EVENT(expected, 0);
+    ENQUEUE_KEYBOARD_EVENT(expected, up_arrow, 1, time_stamp);
+    {
+      pqrs::karabiner_virtual_hid_device::hid_report::pointing_input pointing_input;
+      pointing_input.x = -10;
+      expected.push_back(post_event_to_virtual_devices::queue::event(pointing_input, time_stamp));
+    }
+
+    REQUIRE(helper.get_events() == expected);
+  }
+
   // pointing_device_event_from_event_tap
   {
     actual_examples_helper helper("complex_modifications.json");
