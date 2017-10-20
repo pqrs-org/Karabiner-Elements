@@ -483,8 +483,17 @@ public:
 
       } else {
         if (front_input_event.get_event_type() == event_type::key_down) {
-          dispatch_modifier_key_event = true;
-          dispatch_modifier_key_event_before = true;
+          if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
+            if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
+              dispatch_modifier_key_event = true;
+              dispatch_modifier_key_event_before = true;
+            }
+          } else {
+            // key_code, consumer_key_code
+            dispatch_modifier_key_event = true;
+            dispatch_modifier_key_event_before = true;
+          }
+
         } else if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_x ||
                    front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_y ||
                    front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel ||
