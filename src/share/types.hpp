@@ -1322,6 +1322,7 @@ struct operation_type_select_input_source_struct {
   }
 
   const operation_type operation_type;
+  uint64_t time_stamp;
   char language[256];
   char input_source_id[256];
   char input_mode_id[256];
@@ -1458,6 +1459,22 @@ inline std::ostream& operator<<(std::ostream& stream, const input_source_selecto
     stream << "---";
   }
 
+  return stream;
+}
+
+template <template <class T, class A> class container>
+inline std::ostream& operator<<(std::ostream& stream, const container<input_source_selector, std::allocator<input_source_selector>>& values) {
+  bool first = true;
+  stream << "[";
+  for (const auto& v : values) {
+    if (first) {
+      first = false;
+    } else {
+      stream << ",";
+    }
+    stream << v;
+  }
+  stream << "]";
   return stream;
 }
 

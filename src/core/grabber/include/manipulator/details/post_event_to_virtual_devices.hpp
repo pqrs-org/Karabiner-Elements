@@ -60,7 +60,7 @@ public:
         return e;
       }
 
-      static event make_select_input_source_event(const input_source_selector& input_source_selector,
+      static event make_select_input_source_event(const std::vector<input_source_selector>& input_source_selector,
                                                   uint64_t time_stamp) {
         event e;
         e.type_ = type::select_input_source;
@@ -94,9 +94,9 @@ public:
         return boost::none;
       }
 
-      boost::optional<input_source_selector> get_input_source_selector(void) const {
+      boost::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
         if (type_ == type::select_input_source) {
-          return boost::get<input_source_selector>(value_);
+          return boost::get<std::vector<input_source_selector>>(value_);
         }
         return boost::none;
       }
@@ -120,7 +120,7 @@ public:
                      pqrs::karabiner_virtual_hid_device::hid_report::pointing_input,
                      boost::blank, // For clear_keyboard_modifier_flags
                      std::string, // For shell_command
-                     input_source_selector // For select_input_source
+                     std::vector<input_source_selector> // For select_input_source
                      >
           value_;
       uint64_t time_stamp_;
@@ -185,11 +185,11 @@ public:
       events_.push_back(e);
     }
 
-    void push_back_select_input_source_event(const input_source_selector& input_source_selector,
+    void push_back_select_input_source_event(const std::vector<input_source_selector>& input_source_selectors,
                                              uint64_t time_stamp) {
       adjust_time_stamp(time_stamp, false);
 
-      auto e = event::make_select_input_source_event(input_source_selector,
+      auto e = event::make_select_input_source_event(input_source_selectors,
                                                      time_stamp);
 
       events_.push_back(e);
@@ -240,11 +240,13 @@ public:
             logger::get_logger().error("error in shell_command: {0}", e.what());
           }
         }
-        if (auto input_source_selector = e.get_input_source_selector()) {
+        if (auto input_source_selectors = e.get_input_source_selectors()) {
           try {
             if (auto current_console_user_id = session::get_current_console_user_id()) {
               console_user_server_client client(*current_console_user_id);
-              client.select_input_source(*input_source_selector);
+              for (const auto& s : *input_source_selectors) {
+                client.select_input_source(s, now);
+              }
             }
           } catch (std::exception& e) {
             logger::get_logger().error("error in select_input_source: {0}", e.what());
@@ -631,9 +633,9 @@ public:
         break;
 
       case event_queue::queued_event::event::type::select_input_source:
-        if (auto input_source_selector = front_input_event.get_event().get_input_source_selector()) {
+        if (auto input_source_selectors = front_input_event.get_event().get_input_source_selectors()) {
           if (front_input_event.get_event_type() == event_type::key_down) {
-            queue_.push_back_select_input_source_event(*input_source_selector,
+            queue_.push_back_select_input_source_event(*input_source_selectors,
                                                        front_input_event.get_time_stamp());
           }
         }

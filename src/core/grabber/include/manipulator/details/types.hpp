@@ -88,9 +88,9 @@ public:
     return boost::none;
   }
 
-  boost::optional<input_source_selector> get_input_source_selector(void) const {
+  boost::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
     if (type_ == type::select_input_source) {
-      return boost::get<input_source_selector>(value_);
+      return boost::get<std::vector<input_source_selector>>(value_);
     }
     return boost::none;
   }
@@ -117,7 +117,7 @@ public:
       case type::shell_command:
         return event_queue::queued_event::event::make_shell_command_event(boost::get<std::string>(value_));
       case type::select_input_source:
-        return event_queue::queued_event::event::make_select_input_source_event(boost::get<input_source_selector>(value_));
+        return event_queue::queued_event::event::make_select_input_source_event(boost::get<std::vector<input_source_selector>>(value_));
       case type::set_variable:
         return event_queue::queued_event::event::make_set_variable_event(boost::get<std::pair<std::string, int>>(value_));
     }
@@ -373,13 +373,22 @@ protected:
           logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
           continue;
         }
-        if (!value.is_object()) {
+
+        std::vector<input_source_selector> input_source_selectors;
+
+        if (value.is_object()) {
+          input_source_selectors.emplace_back(value);
+        } else if (value.is_array()) {
+          for (const auto& v : value) {
+            input_source_selectors.emplace_back(v);
+          }
+        } else {
           logger::get_logger().error("complex_modifications json error: Invalid form of select_input_source: {0}", json.dump());
           continue;
         }
 
         type_ = type::select_input_source;
-        value_ = input_source_selector(value);
+        value_ = input_source_selectors;
 
       } else if (key == "set_variable") {
         if (type_ != type::none) {
@@ -433,7 +442,7 @@ protected:
                  pointing_button,
                  type, // For any
                  std::string, // For shell_command
-                 input_source_selector, // For select_input_source
+                 std::vector<input_source_selector>, // For select_input_source
                  std::pair<std::string, int> // For set_variable
                  >
       value_;

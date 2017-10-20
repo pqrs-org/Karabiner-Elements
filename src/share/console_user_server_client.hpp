@@ -46,8 +46,9 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
-  void select_input_source(const input_source_selector& input_source_selector) {
+  void select_input_source(const input_source_selector& input_source_selector, uint64_t time_stamp) {
     operation_type_select_input_source_struct s;
+    s.time_stamp = time_stamp;
 
     if (auto& v = input_source_selector.get_language_string()) {
       if (v->length() >= sizeof(s.language)) {

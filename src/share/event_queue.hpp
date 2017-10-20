@@ -64,7 +64,7 @@ public:
         return e;
       }
 
-      static event make_select_input_source_event(const input_source_selector& input_source_selector) {
+      static event make_select_input_source_event(const std::vector<input_source_selector>& input_source_selector) {
         event e;
         e.type_ = type::select_input_source;
         e.value_ = input_source_selector;
@@ -157,9 +157,9 @@ public:
         return boost::none;
       }
 
-      boost::optional<input_source_selector> get_input_source_selector(void) const {
+      boost::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
         if (type_ == type::select_input_source) {
-          return boost::get<input_source_selector>(value_);
+          return boost::get<std::vector<input_source_selector>>(value_);
         }
         return boost::none;
       }
@@ -208,7 +208,7 @@ public:
                      pointing_button, // For type::pointing_button
                      int64_t, // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
                      std::string, // For shell_command
-                     input_source_selector, // For select_input_source
+                     std::vector<input_source_selector>, // For select_input_source
                      std::pair<std::string, int>, // For set_variable
                      manipulator_environment::frontmost_application, // For frontmost_application_changed
                      input_source_identifiers, // For input_source_changed

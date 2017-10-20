@@ -13,7 +13,8 @@ class receiver final {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(void) : exit_loop_(false) {
+  receiver(void) : exit_loop_(false),
+                   last_select_input_source_time_stamp_(0) {
     const size_t buffer_length = 32 * 1024;
     buffer_.resize(buffer_length);
 
@@ -83,6 +84,7 @@ private:
               p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
               p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
 
+              uint64_t time_stamp = p->time_stamp;
               boost::optional<std::string> language(std::string(p->language));
               boost::optional<std::string> input_source_id(std::string(p->input_source_id));
               boost::optional<std::string> input_mode_id(std::string(p->input_mode_id));
@@ -101,7 +103,12 @@ private:
                                                           input_mode_id);
 
               dispatch_async(dispatch_get_main_queue(), ^{
-                input_source_manager_.select(input_source_selector);
+                if (last_select_input_source_time_stamp_ == time_stamp) {
+                  return;
+                }
+                if (input_source_manager_.select(input_source_selector)) {
+                  last_select_input_source_time_stamp_ = time_stamp;
+                }
               });
             }
             break;
@@ -120,5 +127,6 @@ private:
   std::atomic<bool> exit_loop_;
 
   input_source_manager input_source_manager_;
+  uint64_t last_select_input_source_time_stamp_;
 };
 } // namespace krbn
