@@ -94,7 +94,7 @@ krbn::event_queue::queued_event::event pointing_vertical_wheel_100_event(krbn::e
 auto device_ungrabbed_event = krbn::event_queue::queued_event::event::make_device_ungrabbed_event();
 auto device_keys_are_released_event = krbn::event_queue::queued_event::event::make_device_keys_are_released_event();
 
-uint64_t modifier_wait = krbn::time_utility::nano_to_absolute(NSEC_PER_MSEC);
+uint64_t modifier_wait = krbn::time_utility::nano_to_absolute(5 * NSEC_PER_MSEC);
 } // namespace
 
 TEST_CASE("generic") {
