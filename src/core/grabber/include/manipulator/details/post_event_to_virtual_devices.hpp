@@ -271,7 +271,6 @@ public:
       // * If wait is 1 millisecond, Google Chrome issue below is sometimes happen.
       //
 
-      //auto wait = time_utility::nano_to_absolute(500 * NSEC_PER_MSEC);
       auto wait = time_utility::nano_to_absolute(5 * NSEC_PER_MSEC);
 
       if (last_event_modifier_key_ != is_modifier_key &&
