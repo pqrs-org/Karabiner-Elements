@@ -1,0 +1,34 @@
+{
+    "title": "Press Command+Q twice to Quit Application",
+    "rules": [
+        {
+            "description": "Press Command+Q twice to Quit Application",
+            "manipulators":[
+                {
+                    "from": {
+                        "key_code": "q",
+                        "modifiers": {
+                          "mandatory": [
+                            "command"
+                          ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "vk_none"
+                        }
+                    ],
+                    "to_if_doublepress": [
+                        {
+                            "key_code": "q",
+                            "modifiers": [
+                              "left_command"
+                            ]
+                        }
+                    ],
+                    "type": "basic"
+                }
+            ]
+        }
+    ]
+}
