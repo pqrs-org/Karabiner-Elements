@@ -265,8 +265,14 @@ public:
   private:
     void adjust_time_stamp(uint64_t& time_stamp,
                            bool is_modifier_key) {
-      // wait is 1 milliseconds
-      auto wait = time_utility::nano_to_absolute(NSEC_PER_MSEC);
+      // Wait is 5 milliseconds
+      //
+      // Note:
+      // * If wait is 1 millisecond, Google Chrome issue below is sometimes happen.
+      //
+
+      //auto wait = time_utility::nano_to_absolute(500 * NSEC_PER_MSEC);
+      auto wait = time_utility::nano_to_absolute(5 * NSEC_PER_MSEC);
 
       if (last_event_modifier_key_ != is_modifier_key &&
           time_stamp < last_event_time_stamp_ + wait) {
