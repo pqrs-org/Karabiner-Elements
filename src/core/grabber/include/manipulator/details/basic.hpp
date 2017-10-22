@@ -16,7 +16,7 @@ public:
   public:
     manipulated_original_event(device_id device_id,
                                const event_queue::queued_event::event& original_event,
-                               const std::unordered_set<modifier_flag> from_mandatory_modifiers,
+                               const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
                                uint64_t key_down_time_stamp) : device_id_(device_id),
                                                                original_event_(original_event),
                                                                from_mandatory_modifiers_(from_mandatory_modifiers),
