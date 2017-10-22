@@ -1,7 +1,7 @@
 #pragma once
 
+#include "apple_notification_center.hpp"
 #include "constants.hpp"
-#include "notification_center.hpp"
 #include <cstdlib>
 #include <sstream>
 #include <string>
@@ -42,7 +42,7 @@ public:
         system(command.c_str());
       }
 
-      notification_center::post_distributed_notification(constants::get_distributed_notification_console_user_server_is_disabled());
+      apple_notification_center::post_distributed_notification(constants::get_distributed_notification_console_user_server_is_disabled());
     }
   }
 

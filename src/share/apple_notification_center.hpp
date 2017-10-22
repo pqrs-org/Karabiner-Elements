@@ -5,7 +5,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 namespace krbn {
-class notification_center final {
+class apple_notification_center final {
 public:
   static void post_distributed_notification(const char* _Nonnull name) {
     if (auto cfname = CFStringCreateWithCString(kCFAllocatorDefault,

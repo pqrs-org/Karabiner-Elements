@@ -1,5 +1,6 @@
 #pragma once
 
+#include "apple_notification_center.hpp"
 #include "configuration_manager.hpp"
 #include "constants.hpp"
 #include "frontmost_application_observer.hpp"
@@ -7,7 +8,6 @@
 #include "grabber_client.hpp"
 #include "input_source_observer.hpp"
 #include "logger.hpp"
-#include "notification_center.hpp"
 #include "receiver.hpp"
 #include "session.hpp"
 #include "system_preferences_monitor.hpp"
@@ -20,9 +20,9 @@ public:
   connection_manager(const connection_manager&) = delete;
 
   connection_manager(version_monitor& version_monitor) : version_monitor_(version_monitor) {
-    notification_center::observe_distributed_notification(this,
-                                                          static_grabber_is_launched_callback,
-                                                          constants::get_distributed_notification_grabber_is_launched());
+    apple_notification_center::observe_distributed_notification(this,
+                                                                static_grabber_is_launched_callback,
+                                                                constants::get_distributed_notification_grabber_is_launched());
 
     auto current_uid = getuid();
 
@@ -84,8 +84,8 @@ public:
       release();
     });
 
-    notification_center::unobserve_distributed_notification(this,
-                                                            constants::get_distributed_notification_grabber_is_launched());
+    apple_notification_center::unobserve_distributed_notification(this,
+                                                                  constants::get_distributed_notification_grabber_is_launched());
   }
 
 private:

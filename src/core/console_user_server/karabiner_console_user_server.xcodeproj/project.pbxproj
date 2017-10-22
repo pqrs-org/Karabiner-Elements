@@ -43,7 +43,7 @@
 		345A9DE31D7DD6E600578F84 /* configuration_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_manager.hpp; path = include/configuration_manager.hpp; sourceTree = SOURCE_ROOT; };
 		345A9DE41D7DD7A200578F84 /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = core_configuration.hpp; sourceTree = "<group>"; };
 		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = system_preferences.hpp; sourceTree = "<group>"; };
-		345AC0031D620E28009D1FB4 /* notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = notification_center.hpp; sourceTree = "<group>"; };
+		345AC0031D620E28009D1FB4 /* apple_notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = apple_notification_center.hpp; sourceTree = "<group>"; };
 		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = boost_defs.hpp; sourceTree = "<group>"; };
 		345EF8DA1F09FA0B003E7A67 /* frontmost_application_observer_objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frontmost_application_observer_objc.h; sourceTree = "<group>"; };
 		345EF8DB1F09FA0B003E7A67 /* frontmost_application_observer_objc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = frontmost_application_observer_objc.m; sourceTree = "<group>"; };
@@ -120,6 +120,7 @@
 		3495C6801D3CE652007CB9E7 /* share */ = {
 			isa = PBXGroup;
 			children = (
+				345AC0031D620E28009D1FB4 /* apple_notification_center.hpp */,
 				344608C31E3E5DE4007956BD /* application_launcher.hpp */,
 				345AC0051D621651009D1FB4 /* boost_defs.hpp */,
 				7C95EC0A1F7E91E700D3E523 /* cf_utility.hpp */,
@@ -143,7 +144,6 @@
 				341F59D51D535D2500B441A8 /* local_datagram_client.hpp */,
 				341C8E871D4CF4AE0018D32C /* local_datagram_server.hpp */,
 				342BE67D1EF2846600149985 /* logger.hpp */,
-				345AC0031D620E28009D1FB4 /* notification_center.hpp */,
 				347113151D871EC1001AC60D /* process_monitor.hpp */,
 				340C7F671E424D2C00F9B911 /* process_utility.hpp */,
 				34A88A9D1D685A4600DD480B /* session.hpp */,

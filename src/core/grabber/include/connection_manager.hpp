@@ -5,7 +5,6 @@
 #include "device_grabber.hpp"
 #include "gcd_utility.hpp"
 #include "logger.hpp"
-#include "notification_center.hpp"
 #include "receiver.hpp"
 #include "session.hpp"
 #include "version_monitor.hpp"

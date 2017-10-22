@@ -1,10 +1,10 @@
+#include "apple_notification_center.hpp"
 #include "connection_manager.hpp"
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include "grabber_alerts_manager.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
-#include "notification_center.hpp"
 #include "process_utility.hpp"
 #include "thread_utility.hpp"
 #include "version_monitor.hpp"
@@ -92,7 +92,7 @@ int main(int argc, const char* argv[]) {
   auto device_grabber_ptr = std::make_unique<krbn::device_grabber>();
   krbn::connection_manager connection_manager(*version_monitor_ptr, *device_grabber_ptr);
 
-  krbn::notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
+  krbn::apple_notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
 
   CFRunLoopRun();
 
