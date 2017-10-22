@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gcd_utility.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "time_utility.hpp"
@@ -261,7 +262,7 @@ public:
                           front_input_event.get_event_type());
 
     if (to_delayed_action_) {
-      to_delayed_action_->cancel(output_event_queue);
+      to_delayed_action_->cancel(front_input_event, output_event_queue);
     }
 
     bool is_target = false;
