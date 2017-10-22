@@ -300,7 +300,7 @@ public:
                                          output_event_queue);
                   }
 
-                  send_extra_to_events(front_input_event,
+                  post_extra_to_events(front_input_event,
                                        to_after_key_up_,
                                        time_stamp_delay,
                                        output_event_queue);
@@ -308,7 +308,7 @@ public:
                   uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
                   if (alone &&
                       nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
-                    send_extra_to_events(front_input_event,
+                    post_extra_to_events(front_input_event,
                                          to_if_alone_,
                                          time_stamp_delay,
                                          output_event_queue);
@@ -450,7 +450,7 @@ private:
     return preserve_from_mandatory_modifiers_up();
   }
 
-  void send_extra_to_events(const event_queue::queued_event& front_input_event,
+  void post_extra_to_events(const event_queue::queued_event& front_input_event,
                             const std::vector<to_event_definition>& to_events,
                             uint64_t& time_stamp_delay,
                             event_queue& output_event_queue) {
