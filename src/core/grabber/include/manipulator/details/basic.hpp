@@ -225,17 +225,11 @@ public:
         // Release from_mandatory_modifiers
 
         if (front_input_event.get_event_type() == event_type::key_down) {
-          for (const auto& m : from_mandatory_modifiers) {
-            if (auto key_code = types::get_key_code(m)) {
-              event_queue::queued_event event(front_input_event.get_device_id(),
-                                              front_input_event.get_time_stamp() + time_stamp_delay++,
-                                              event_queue::queued_event::event(*key_code),
-                                              event_type::key_up,
-                                              front_input_event.get_original_event(),
-                                              true);
-              output_event_queue.push_back_event(event);
-            }
-          }
+          post_lazy_modifier_key_events(front_input_event,
+                                        from_mandatory_modifiers,
+                                        event_type::key_up,
+                                        time_stamp_delay,
+                                        output_event_queue);
         }
 
         // Send events
@@ -326,17 +320,11 @@ public:
 
         if ((front_input_event.get_event_type() == event_type::key_down && !preserve_from_mandatory_modifiers_up()) ||
             (front_input_event.get_event_type() == event_type::key_up && preserve_from_mandatory_modifiers_up())) {
-          for (const auto& m : from_mandatory_modifiers) {
-            if (auto key_code = types::get_key_code(m)) {
-              event_queue::queued_event event(front_input_event.get_device_id(),
-                                              front_input_event.get_time_stamp() + time_stamp_delay++,
-                                              event_queue::queued_event::event(*key_code),
-                                              event_type::key_down,
-                                              front_input_event.get_original_event(),
-                                              true);
-              output_event_queue.push_back_event(event);
-            }
-          }
+          post_lazy_modifier_key_events(front_input_event,
+                                        from_mandatory_modifiers,
+                                        event_type::key_down,
+                                        time_stamp_delay,
+                                        output_event_queue);
         }
 
         if (time_stamp_delay > 0) {
@@ -448,6 +436,24 @@ private:
 
   bool preserve_to_modifiers_down(void) const {
     return preserve_from_mandatory_modifiers_up();
+  }
+
+  void post_lazy_modifier_key_events(const event_queue::queued_event& front_input_event,
+                                     const std::unordered_set<modifier_flag>& modifiers,
+                                     event_type event_type,
+                                     uint64_t& time_stamp_delay,
+                                     event_queue& output_event_queue) {
+    for (const auto& m : modifiers) {
+      if (auto key_code = types::get_key_code(m)) {
+        event_queue::queued_event event(front_input_event.get_device_id(),
+                                        front_input_event.get_time_stamp() + time_stamp_delay++,
+                                        event_queue::queued_event::event(*key_code),
+                                        event_type,
+                                        front_input_event.get_original_event(),
+                                        true);
+        output_event_queue.push_back_event(event);
+      }
+    }
   }
 
   void post_extra_to_events(const event_queue::queued_event& front_input_event,
