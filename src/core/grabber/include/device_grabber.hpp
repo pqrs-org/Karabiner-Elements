@@ -9,6 +9,7 @@
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
+#include "krbn_notification_center.hpp"
 #include "logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
@@ -31,14 +32,14 @@ public:
   device_grabber(void) : profile_(nlohmann::json()),
                          mode_(mode::observing),
                          suspended_(false) {
-    virtual_hid_device_client_.client_connected.connect([&]() {
+    client_connected_connection = virtual_hid_device_client_.client_connected.connect([&]() {
       logger::get_logger().info("virtual_hid_device_client_ is connected");
 
       update_virtual_hid_keyboard();
       update_virtual_hid_pointing();
     });
 
-    virtual_hid_device_client_.client_disconnected.connect([&]() {
+    client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect([&]() {
       logger::get_logger().info("virtual_hid_device_client_ is disconnected");
 
       stop_grabbing();
@@ -60,6 +61,10 @@ public:
                                                             fn_function_keys_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
                                                             posted_event_queue_);
+
+    input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
+      manipulate();
+    });
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
     // The behavior causes LED state mismatch because device_grabber does not change the caps lock state of physical keyboards.
@@ -103,6 +108,8 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       stop_grabbing();
 
+      input_event_arrived_connection.disconnect();
+
       if (manager_) {
         IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
         CFRelease(manager_);
@@ -110,6 +117,9 @@ public:
       }
 
       led_monitor_timer_ = nullptr;
+
+      client_connected_connection.disconnect();
+      client_disconnected_connection.disconnect();
     });
   }
 
@@ -232,7 +242,8 @@ public:
                                                    event,
                                                    event_type::single,
                                                    event);
-      manipulate();
+
+      krbn_notification_center::get_instance().input_event_arrived();
     });
   }
 
@@ -244,7 +255,8 @@ public:
                                                    event,
                                                    event_type::single,
                                                    event);
-      manipulate();
+
+      krbn_notification_center::get_instance().input_event_arrived();
     });
   }
 
@@ -386,7 +398,7 @@ private:
       }
     }
 
-    manipulate();
+    krbn_notification_center::get_instance().input_event_arrived();
     // manipulator_managers_connector_.log_events_sizes(logger::get_logger());
   }
 
@@ -397,7 +409,8 @@ private:
                                                  event,
                                                  event_type::single,
                                                  event);
-    manipulate();
+
+    krbn_notification_center::get_instance().input_event_arrived();
   }
 
   void post_caps_lock_state_changed_callback(bool caps_lock_state) {
@@ -407,7 +420,8 @@ private:
                                                  event,
                                                  event_type::single,
                                                  event);
-    manipulate();
+
+    krbn_notification_center::get_instance().input_event_arrived();
   }
 
   human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
@@ -549,7 +563,8 @@ private:
                                                    e,
                                                    *pseudo_event_type,
                                                    *pseudo_event);
-      manipulate();
+
+      krbn_notification_center::get_instance().input_event_arrived();
     }
   }
 
@@ -851,6 +866,8 @@ private:
   }
 
   virtual_hid_device_client virtual_hid_device_client_;
+  boost::signals2::connection client_connected_connection;
+  boost::signals2::connection client_disconnected_connection;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
   std::shared_ptr<core_configuration> core_configuration_;
@@ -864,6 +881,7 @@ private:
   system_preferences::values system_preferences_values_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
+  boost::signals2::connection input_event_arrived_connection;
 
   event_queue merged_input_event_queue_;
 

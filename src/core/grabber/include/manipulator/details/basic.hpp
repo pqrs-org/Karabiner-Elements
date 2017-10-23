@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gcd_utility.hpp"
+#include "krbn_notification_center.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "time_utility.hpp"
@@ -182,6 +183,8 @@ public:
                                              event_type::key_down,
                                              time_stamp_delay,
                                              output_event_queue);
+
+        krbn_notification_center::get_instance().input_event_arrived();
       }
     }
 

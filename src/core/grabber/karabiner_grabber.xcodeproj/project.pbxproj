@@ -57,6 +57,7 @@
 		347113141D871C6C001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = process_monitor.hpp; sourceTree = "<group>"; };
 		3476862C1E22A7A700A7DFAB /* cf_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cf_utility.hpp; sourceTree = "<group>"; };
 		348FC00A1D9B76830083F98F /* virtual_hid_device_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_device_client.hpp; sourceTree = "<group>"; };
+		3494274B1F9D736800A24707 /* krbn_notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = krbn_notification_center.hpp; sourceTree = "<group>"; };
 		349863321E784DC800DF3644 /* connected_devices.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = connected_devices.hpp; sourceTree = "<group>"; };
 		349950691D89A2EF004FE466 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = system_preferences.hpp; sourceTree = "<group>"; };
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
@@ -80,7 +81,6 @@
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		34EED7101D6FA38400399AD1 /* apple_hid_usage_tables.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = apple_hid_usage_tables.hpp; sourceTree = "<group>"; };
 		34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = human_interface_device.hpp; sourceTree = "<group>"; };
-		7C95EC081F7DBE5F00D3E523 /* inputsources.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = inputsources.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,11 +152,11 @@
 				3469EB701D814F140005D30D /* filesystem.hpp */,
 				3431346E1DB70C900008F284 /* gcd_utility.hpp */,
 				34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */,
-				7C95EC081F7DBE5F00D3E523 /* inputsources.hpp */,
 				341F59DC1D5778A000B441A8 /* iokit_utility.hpp */,
 				3431346C1DB3CD8A0008F284 /* iopm_client.hpp */,
 				34A88A941D68446C00DD480B /* karabiner_version.h */,
 				3447719E1F80FEE7004CEFC3 /* keyboard_repeat_detector.hpp */,
+				3494274B1F9D736800A24707 /* krbn_notification_center.hpp */,
 				341F59D11D5244F200B441A8 /* local_datagram_client.hpp */,
 				341C8E861D4CF1E10018D32C /* local_datagram_server.hpp */,
 				342BE67C1EF27CA300149985 /* logger.hpp */,

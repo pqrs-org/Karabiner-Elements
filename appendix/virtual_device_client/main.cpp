@@ -14,14 +14,14 @@ int main(int argc, const char* argv[]) {
   auto virtual_hid_device_client_ptr = std::make_unique<krbn::virtual_hid_device_client>();
   krbn::manipulator::details::post_event_to_virtual_devices::queue queue;
 
-  virtual_hid_device_client_ptr->client_connected.connect([&]() {
+  auto client_connected_connection = virtual_hid_device_client_ptr->client_connected.connect([&]() {
     std::cout << "connected" << std::endl;
 
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
     virtual_hid_device_client_ptr->initialize_virtual_hid_keyboard(properties);
   });
 
-  virtual_hid_device_client_ptr->virtual_hid_keyboard_ready.connect([&]() {
+  auto virtual_hid_keyboard_ready_connection = virtual_hid_device_client_ptr->virtual_hid_keyboard_ready.connect([&]() {
     std::cout << "virtual_hid_keyboard_ready" << std::endl;
 
     {
@@ -133,5 +133,9 @@ int main(int argc, const char* argv[]) {
   virtual_hid_device_client_ptr->connect();
 
   CFRunLoopRun();
+
+  client_connected_connection.disconnect();
+  virtual_hid_keyboard_ready_connection.disconnect();
+
   return 0;
 }
