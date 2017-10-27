@@ -182,21 +182,21 @@ TEST_CASE("make_key_code (modifier_flag)") {
 }
 
 TEST_CASE("make_modifier_flag") {
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::caps_lock) == krbn::modifier_flag::zero);
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::left_control) == krbn::modifier_flag::left_control);
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::left_shift) == krbn::modifier_flag::left_shift);
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::left_option) == krbn::modifier_flag::left_option);
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::left_command) == krbn::modifier_flag::left_command);
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::right_control) == krbn::modifier_flag::right_control);
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::right_shift) == krbn::modifier_flag::right_shift);
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::right_option) == krbn::modifier_flag::right_option);
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::right_command) == krbn::modifier_flag::right_command);
-  REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::fn) == krbn::modifier_flag::fn);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::caps_lock) == boost::none);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::left_control) == krbn::modifier_flag::left_control);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::left_shift) == krbn::modifier_flag::left_shift);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::left_option) == krbn::modifier_flag::left_option);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::left_command) == krbn::modifier_flag::left_command);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::right_control) == krbn::modifier_flag::right_control);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::right_shift) == krbn::modifier_flag::right_shift);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::right_option) == krbn::modifier_flag::right_option);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::right_command) == krbn::modifier_flag::right_command);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::key_code::fn) == krbn::modifier_flag::fn);
 
-  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardA)) == krbn::modifier_flag::zero);
-  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardErrorRollOver)) == krbn::modifier_flag::zero);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardA)) == boost::none);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardErrorRollOver)) == boost::none);
   REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardLeftShift)) == krbn::modifier_flag::left_shift);
-  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::button, krbn::hid_usage(1)) == krbn::modifier_flag::zero);
+  REQUIRE(krbn::types::make_modifier_flag(krbn::hid_usage_page::button, krbn::hid_usage(1)) == boost::none);
 }
 
 TEST_CASE("make_consumer_key_code") {

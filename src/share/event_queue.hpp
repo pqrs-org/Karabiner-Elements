@@ -472,12 +472,11 @@ public:
     // Update modifier_flag_manager
 
     if (auto key_code = event.get_key_code()) {
-      auto modifier_flag = types::get_modifier_flag(*key_code);
-      if (modifier_flag != modifier_flag::zero) {
+      if (auto modifier_flag = types::make_modifier_flag(*key_code)) {
         auto type = (event_type == event_type::key_down ? modifier_flag_manager::active_modifier_flag::type::increase
                                                         : modifier_flag_manager::active_modifier_flag::type::decrease);
         modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
-                                                                         modifier_flag,
+                                                                         *modifier_flag,
                                                                          device_id);
         modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
       }
@@ -644,13 +643,12 @@ public:
       auto key_code2 = v2.get_event().get_key_code();
 
       if (key_code1 && key_code2) {
-        auto modifier_flag1 = types::get_modifier_flag(*key_code1);
-        auto modifier_flag2 = types::get_modifier_flag(*key_code2);
+        auto modifier_flag1 = types::make_modifier_flag(*key_code1);
+        auto modifier_flag2 = types::make_modifier_flag(*key_code2);
 
         // If either modifier_flag1 or modifier_flag2 is modifier, reorder it before.
 
-        if (modifier_flag1 == modifier_flag::zero &&
-            modifier_flag2 != modifier_flag::zero) {
+        if (!modifier_flag1 && modifier_flag2) {
           // v2 is modifier_flag
           if (v2.get_event_type() == event_type::key_up) {
             return false;
@@ -660,8 +658,7 @@ public:
           }
         }
 
-        if (modifier_flag1 != modifier_flag::zero &&
-            modifier_flag2 == modifier_flag::zero) {
+        if (modifier_flag1 && !modifier_flag2) {
           // v1 is modifier_flag
           if (v1.get_event_type() == event_type::key_up) {
             // reorder to v2,v1 if v1 is released.

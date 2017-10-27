@@ -766,12 +766,11 @@ private:
 
               // Update pressed_modifier_flags_
               {
-                auto m = types::make_modifier_flag(usage_page, usage);
-                if (m != modifier_flag::zero) {
+                if (auto m = types::make_modifier_flag(usage_page, usage)) {
                   if (integer_value) {
-                    pressed_modifier_flags_.insert(m);
+                    pressed_modifier_flags_.insert(*m);
                   } else {
-                    pressed_modifier_flags_.erase(m);
+                    pressed_modifier_flags_.erase(*m);
                   }
                 }
               }

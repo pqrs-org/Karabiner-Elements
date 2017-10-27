@@ -570,7 +570,7 @@ private:
 
     if (auto event = to_.back().to_event()) {
       if (auto key_code = event->get_key_code()) {
-        if (types::get_modifier_flag(*key_code) != modifier_flag::zero) {
+        if (types::make_modifier_flag(*key_code) != boost::none) {
           return true;
         }
       }

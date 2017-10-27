@@ -151,7 +151,7 @@ public:
       // modify time_stamp if needed
 
       auto m = types::make_modifier_flag(hid_usage_page, hid_usage);
-      adjust_time_stamp(time_stamp, m != modifier_flag::zero);
+      adjust_time_stamp(time_stamp, m != boost::none);
 
       // ----------------------------------------
 
@@ -476,12 +476,12 @@ public:
     bool dispatch_modifier_key_event = false;
     bool dispatch_modifier_key_event_before = false;
     {
-      auto modifier_flag = modifier_flag::zero;
+      boost::optional<modifier_flag> m;
       if (auto key_code = front_input_event.get_event().get_key_code()) {
-        modifier_flag = types::get_modifier_flag(*key_code);
+        m = types::make_modifier_flag(*key_code);
       }
 
-      if (modifier_flag != modifier_flag::zero) {
+      if (m) {
         // front_input_event is modifier key event.
         if (!front_input_event.get_lazy()) {
           dispatch_modifier_key_event = true;
@@ -525,7 +525,7 @@ public:
         if (auto key_code = front_input_event.get_event().get_key_code()) {
           if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
             if (auto hid_usage = types::make_hid_usage(*key_code)) {
-              if (types::get_modifier_flag(*key_code) == modifier_flag::zero) {
+              if (types::make_modifier_flag(*key_code) == boost::none) {
                 switch (front_input_event.get_event_type()) {
                   case event_type::key_down:
                     key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),

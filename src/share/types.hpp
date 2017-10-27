@@ -666,8 +666,8 @@ public:
     return &(it->second);
   }
 
-  static modifier_flag get_modifier_flag(key_code key_code) {
-    // get_modifier_flag(key_code::caps_lock) == modifier_flag::zero.
+  static boost::optional<modifier_flag> make_modifier_flag(key_code key_code) {
+    // make_modifier_flag(key_code::caps_lock) == boost::none
 
     switch (key_code) {
       case key_code::left_control:
@@ -689,15 +689,15 @@ public:
       case key_code::fn:
         return modifier_flag::fn;
       default:
-        return modifier_flag::zero;
+        return boost::none;
     }
   }
 
-  static modifier_flag make_modifier_flag(hid_usage_page usage_page, hid_usage usage) {
+  static boost::optional<modifier_flag> make_modifier_flag(hid_usage_page usage_page, hid_usage usage) {
     if (auto key_code = make_key_code(usage_page, usage)) {
-      return get_modifier_flag(*key_code);
+      return make_modifier_flag(*key_code);
     }
-    return modifier_flag::zero;
+    return boost::none;
   }
 
   static boost::optional<key_code> make_key_code(modifier_flag modifier_flag) {
