@@ -850,8 +850,8 @@ private:
                                                                                 const std::unordered_set<manipulator::details::event_definition::modifier>& from_optional_modifiers,
                                                                                 const std::unordered_set<manipulator::details::event_definition::modifier>& to_modifiers) {
     if (pair.first.valid() && pair.second.valid()) {
-      if (auto from_event = types::get_key_code(pair.first.get_value())) {
-        if (auto to_event = types::get_key_code(pair.second.get_value())) {
+      if (auto from_event = types::make_key_code(pair.first.get_value())) {
+        if (auto to_event = types::make_key_code(pair.second.get_value())) {
           return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
                                                                    *from_event,
                                                                    from_mandatory_modifiers,

@@ -694,13 +694,13 @@ public:
   }
 
   static modifier_flag make_modifier_flag(hid_usage_page usage_page, hid_usage usage) {
-    if (auto key_code = get_key_code(usage_page, usage)) {
+    if (auto key_code = make_key_code(usage_page, usage)) {
       return get_modifier_flag(*key_code);
     }
     return modifier_flag::zero;
   }
 
-  static boost::optional<key_code> get_key_code(modifier_flag modifier_flag) {
+  static boost::optional<key_code> make_key_code(modifier_flag modifier_flag) {
     switch (modifier_flag) {
       case modifier_flag::zero:
         return boost::none;
@@ -741,11 +741,11 @@ public:
   }
 
   // string -> hid usage map
-  static const std::unordered_map<std::string, key_code>& get_key_code_map(void) {
+  static const std::vector<std::pair<std::string, key_code>>& get_key_code_name_value_pairs(void) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
-    static std::unordered_map<std::string, key_code> map({
+    static std::vector<std::pair<std::string, key_code>> pairs({
         // From IOHIDUsageTables.h
         {"a", key_code(kHIDUsage_KeyboardA)},
         {"b", key_code(kHIDUsage_KeyboardB)},
@@ -960,11 +960,32 @@ public:
         {"volume_down", key_code(kHIDUsage_KeyboardVolumeDown)},
         {"volume_up", key_code(kHIDUsage_KeyboardVolumeUp)},
     });
+
+    return pairs;
+  }
+
+  static const std::unordered_map<std::string, key_code>& get_key_code_name_value_map(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
+    static std::unordered_map<std::string, key_code> map;
+
+    if (map.empty()) {
+      for (const auto& pair : get_key_code_name_value_pairs()) {
+        auto it = map.find(pair.first);
+        if (it != std::end(map)) {
+          logger::get_logger().error("duplicate entry in get_key_code_name_value_pairs: {0}", pair.first);
+        } else {
+          map.emplace(pair.first, pair.second);
+        }
+      }
+    }
+
     return map;
   }
 
-  static boost::optional<key_code> get_key_code(const std::string& name) {
-    auto& map = get_key_code_map();
+  static boost::optional<key_code> make_key_code(const std::string& name) {
+    auto& map = get_key_code_name_value_map();
     auto it = map.find(name);
     if (it == map.end()) {
       logger::get_logger().error("unknown key_code: \"{0}\"", name);
@@ -973,7 +994,7 @@ public:
     return it->second;
   }
 
-  static boost::optional<key_code> get_key_code(hid_usage_page usage_page, hid_usage usage) {
+  static boost::optional<key_code> make_key_code(hid_usage_page usage_page, hid_usage usage) {
     auto u = static_cast<uint32_t>(usage);
 
     switch (usage_page) {
@@ -999,6 +1020,15 @@ public:
         break;
     }
 
+    return boost::none;
+  }
+
+  static boost::optional<std::string> make_key_code_name(key_code key_code) {
+    for (const auto& pair : get_key_code_name_value_pairs()) {
+      if (pair.second == key_code) {
+        return pair.first;
+      }
+    }
     return boost::none;
   }
 

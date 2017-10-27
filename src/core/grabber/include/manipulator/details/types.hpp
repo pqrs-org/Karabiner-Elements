@@ -300,7 +300,7 @@ protected:
           continue;
         }
 
-        if (auto key_code = types::get_key_code(value.get<std::string>())) {
+        if (auto key_code = types::make_key_code(value.get<std::string>())) {
           type_ = type::key_code;
           value_ = *key_code;
         }

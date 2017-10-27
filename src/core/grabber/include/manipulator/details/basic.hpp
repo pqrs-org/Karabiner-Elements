@@ -550,7 +550,7 @@ public:
       auto modifier_flags = event_definition::get_modifier_flags(modifier);
       if (!modifier_flags.empty()) {
         auto modifier_flag = modifier_flags.front();
-        if (auto key_code = types::get_key_code(modifier_flag)) {
+        if (auto key_code = types::make_key_code(modifier_flag)) {
           output_event_queue.emplace_back_event(front_input_event.get_device_id(),
                                                 front_input_event.get_time_stamp() + time_stamp_delay++,
                                                 event_queue::queued_event::event(*key_code),
@@ -589,7 +589,7 @@ private:
                                      uint64_t& time_stamp_delay,
                                      event_queue& output_event_queue) {
     for (const auto& m : modifiers) {
-      if (auto key_code = types::get_key_code(m)) {
+      if (auto key_code = types::make_key_code(m)) {
         event_queue::queued_event event(front_input_event.get_device_id(),
                                         front_input_event.get_time_stamp() + time_stamp_delay++,
                                         event_queue::queued_event::event(*key_code),

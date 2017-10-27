@@ -360,7 +360,7 @@ public:
                           hid_usage_page usage_page,
                           hid_usage usage,
                           int64_t integer_value) {
-    if (auto key_code = types::get_key_code(usage_page, usage)) {
+    if (auto key_code = types::make_key_code(usage_page, usage)) {
       queued_event::event event(*key_code);
       emplace_back_event(device_id,
                          time_stamp,

@@ -138,45 +138,50 @@ TEST_CASE("input_source_selector") {
   }
 }
 
-TEST_CASE("get_key_code") {
+TEST_CASE("make_key_code") {
+  REQUIRE(krbn::types::make_key_code("spacebar") == krbn::key_code::spacebar);
+  REQUIRE(krbn::types::make_key_code("unknown") == boost::none);
+  REQUIRE(krbn::types::make_key_code_name(krbn::key_code::spacebar) == std::string("spacebar"));
+  REQUIRE(krbn::types::make_key_code_name(krbn::key_code::left_option) == std::string("left_alt"));
+
   {
-    auto actual = krbn::types::get_key_code(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
-                                            krbn::hid_usage(kHIDUsage_KeyboardTab));
+    auto actual = krbn::types::make_key_code(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                                             krbn::hid_usage(kHIDUsage_KeyboardTab));
     REQUIRE(*actual == krbn::key_code(kHIDUsage_KeyboardTab));
   }
   {
-    auto actual = krbn::types::get_key_code(krbn::hid_usage_page(krbn::kHIDPage_AppleVendorTopCase),
-                                            krbn::hid_usage(krbn::kHIDUsage_AV_TopCase_KeyboardFn));
+    auto actual = krbn::types::make_key_code(krbn::hid_usage_page(krbn::kHIDPage_AppleVendorTopCase),
+                                             krbn::hid_usage(krbn::kHIDUsage_AV_TopCase_KeyboardFn));
     REQUIRE(*actual == krbn::key_code::fn);
   }
   {
-    auto actual = krbn::types::get_key_code(krbn::hid_usage_page(krbn::kHIDPage_AppleVendorKeyboard),
-                                            krbn::hid_usage(krbn::kHIDUsage_AppleVendorKeyboard_Function));
+    auto actual = krbn::types::make_key_code(krbn::hid_usage_page(krbn::kHIDPage_AppleVendorKeyboard),
+                                             krbn::hid_usage(krbn::kHIDUsage_AppleVendorKeyboard_Function));
     REQUIRE(*actual == krbn::key_code::fn);
   }
   {
-    auto actual = krbn::types::get_key_code(krbn::hid_usage_page(kHIDPage_Button),
-                                            krbn::hid_usage(1));
+    auto actual = krbn::types::make_key_code(krbn::hid_usage_page(kHIDPage_Button),
+                                             krbn::hid_usage(1));
     REQUIRE(actual == boost::none);
   }
 }
 
-TEST_CASE("get_key_code (modifier_flag)") {
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::zero) == boost::none);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::caps_lock) == krbn::key_code::caps_lock);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::left_control) == krbn::key_code::left_control);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::left_shift) == krbn::key_code::left_shift);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::left_option) == krbn::key_code::left_option);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::left_command) == krbn::key_code::left_command);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::right_control) == krbn::key_code::right_control);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::right_shift) == krbn::key_code::right_shift);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::right_option) == krbn::key_code::right_option);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::right_command) == krbn::key_code::right_command);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::fn) == krbn::key_code::fn);
-  REQUIRE(krbn::types::get_key_code(krbn::modifier_flag::end_) == boost::none);
+TEST_CASE("make_key_code (modifier_flag)") {
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::zero) == boost::none);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::caps_lock) == krbn::key_code::caps_lock);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::left_control) == krbn::key_code::left_control);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::left_shift) == krbn::key_code::left_shift);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::left_option) == krbn::key_code::left_option);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::left_command) == krbn::key_code::left_command);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::right_control) == krbn::key_code::right_control);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::right_shift) == krbn::key_code::right_shift);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::right_option) == krbn::key_code::right_option);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::right_command) == krbn::key_code::right_command);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::fn) == krbn::key_code::fn);
+  REQUIRE(krbn::types::make_key_code(krbn::modifier_flag::end_) == boost::none);
 }
 
-TEST_CASE("get_modifier_flag") {
+TEST_CASE("make_modifier_flag") {
   REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::caps_lock) == krbn::modifier_flag::zero);
   REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::left_control) == krbn::modifier_flag::left_control);
   REQUIRE(krbn::types::get_modifier_flag(krbn::key_code::left_shift) == krbn::modifier_flag::left_shift);
@@ -205,7 +210,7 @@ TEST_CASE("make_consumer_key_code") {
   REQUIRE(krbn::types::make_hid_usage(krbn::consumer_key_code::mute) == krbn::hid_usage::csmr_mute);
 }
 
-TEST_CASE("get_pointing_button") {
+TEST_CASE("make_pointing_button") {
   {
     auto actual = krbn::types::get_pointing_button(krbn::hid_usage_page(kHIDPage_Button),
                                                    krbn::hid_usage(1));
