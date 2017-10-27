@@ -9,6 +9,15 @@ public:
   manipulator_manager(const manipulator_manager&) = delete;
 
   manipulator_manager(void) {
+    manipulator_timer_connection_ = manipulator_timer::get_instance().timer_invoked.connect([&](auto timer_id) {
+      for (auto&& m : manipulators_) {
+        m->manipulator_timer_invoked(timer_id);
+      }
+    });
+  }
+
+  ~manipulator_manager(void) {
+    manipulator_timer_connection_.disconnect();
   }
 
   void push_back_manipulator(const nlohmann::json& json,
@@ -137,6 +146,7 @@ private:
   }
 
   std::vector<std::shared_ptr<details::base>> manipulators_;
+  boost::signals2::connection manipulator_timer_connection_;
 };
 } // namespace manipulator
 } // namespace krbn

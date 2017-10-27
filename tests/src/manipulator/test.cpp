@@ -5,6 +5,7 @@
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
+#include "manipulator/manipulator_timer.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
@@ -545,6 +546,32 @@ TEST_CASE("manipulator.manipulator_manager") {
       PUSH_BACK_QUEUED_EVENT(expected, 1, 602, tab_event, key_up, spacebar_event);
     }
   }
+}
+
+TEST_CASE("manipulator_timer") {
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries().empty());
+
+  std::vector<krbn::manipulator::manipulator_timer::timer_id> timer_ids;
+  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(1234));
+  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(1234));
+  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(5678));
+  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(5678));
+  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(2345));
+  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(2345));
+
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries().size() == 6);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[0].get_when() == 1234);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[1].get_when() == 1234);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[2].get_when() == 2345);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[3].get_when() == 2345);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[4].get_when() == 5678);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[5].get_when() == 5678);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[0].get_timer_id() == timer_ids[0]);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[1].get_timer_id() == timer_ids[1]);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[2].get_timer_id() == timer_ids[4]);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[3].get_timer_id() == timer_ids[5]);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[4].get_timer_id() == timer_ids[2]);
+  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[5].get_timer_id() == timer_ids[3]);
 }
 
 TEST_CASE("needs_virtual_hid_pointing") {

@@ -746,6 +746,9 @@ public:
     pressed_buttons_ = output_event_queue.get_pointing_button_manager().get_hid_report_bits();
   }
 
+  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+  }
+
   virtual void set_valid(bool value) {
     // This manipulator is always valid.
   }

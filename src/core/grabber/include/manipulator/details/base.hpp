@@ -2,6 +2,7 @@
 
 #include "event_queue.hpp"
 #include "manipulator/condition_manager.hpp"
+#include "manipulator/manipulator_timer.hpp"
 #include "modifier_flag_manager.hpp"
 
 namespace krbn {
@@ -39,6 +40,8 @@ public:
 
   virtual void force_post_pointing_button_event(const event_queue::queued_event& front_input_event,
                                                 event_queue& output_event_queue) = 0;
+
+  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) = 0;
 
   bool get_valid(void) const {
     return valid_;

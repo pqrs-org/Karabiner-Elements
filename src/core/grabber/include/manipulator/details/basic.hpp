@@ -1,6 +1,5 @@
 #pragma once
 
-#include "gcd_utility.hpp"
 #include "krbn_notification_center.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
@@ -67,7 +66,8 @@ public:
   class to_delayed_action final {
   public:
     to_delayed_action(basic& basic,
-                      const nlohmann::json& json) : basic_(basic) {
+                      const nlohmann::json& json) : basic_(basic),
+                                                    output_event_queue_(nullptr) {
       if (json.is_object()) {
         for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
           // it.key() is always std::string.
@@ -117,37 +117,37 @@ public:
 
       front_input_event_ = front_input_event;
       from_mandatory_modifiers_ = from_mandatory_modifiers;
+      output_event_queue_ = &output_event_queue;
 
-      timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-          dispatch_time(DISPATCH_TIME_NOW, 300 * NSEC_PER_MSEC),
-          1 * NSEC_PER_SEC,
-          0,
-          ^{
-            post_events(to_invoked_, output_event_queue);
-
-            timer_ = nullptr;
-          });
+      manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(dispatch_time(DISPATCH_TIME_NOW, 300 * NSEC_PER_MSEC));
     }
 
-    void cancel(const event_queue::queued_event& front_input_event,
-                event_queue& output_event_queue) {
+    void cancel(const event_queue::queued_event& front_input_event) {
       if (front_input_event.get_event_type() != event_type::key_down) {
         return;
       }
 
-      if (!timer_) {
+      if (!manipulator_timer_id_) {
         return;
       }
 
-      timer_ = nullptr;
+      manipulator_timer_id_ = boost::none;
 
-      post_events(to_canceled_, output_event_queue);
+      post_events(to_canceled_);
+    }
+
+    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+      if (timer_id == manipulator_timer_id_) {
+        manipulator_timer_id_ = boost::none;
+        post_events(to_invoked_);
+        krbn_notification_center::get_instance().input_event_arrived();
+      }
     }
 
   private:
-    void post_events(const std::vector<to_event_definition>& events,
-                     event_queue& output_event_queue) const {
-      if (front_input_event_) {
+    void post_events(const std::vector<to_event_definition>& events) const {
+      if (front_input_event_ &&
+          output_event_queue_) {
         uint64_t time_stamp_delay = 0;
 
         // Release from_mandatory_modifiers
@@ -156,25 +156,14 @@ public:
                                              from_mandatory_modifiers_,
                                              event_type::key_up,
                                              time_stamp_delay,
-                                             output_event_queue);
+                                             *output_event_queue_);
 
         // Post events
 
-        for (const auto& e : events) {
-          if (auto event = e.to_event()) {
-            output_event_queue.emplace_back_event(front_input_event_->get_device_id(),
-                                                  front_input_event_->get_time_stamp() + time_stamp_delay++,
-                                                  *event,
-                                                  event_type::key_down,
-                                                  front_input_event_->get_original_event());
-
-            output_event_queue.emplace_back_event(front_input_event_->get_device_id(),
-                                                  front_input_event_->get_time_stamp() + time_stamp_delay++,
-                                                  *event,
-                                                  event_type::key_up,
-                                                  front_input_event_->get_original_event());
-          }
-        }
+        basic_.post_extra_to_events(*front_input_event_,
+                                    events,
+                                    time_stamp_delay,
+                                    *output_event_queue_);
 
         // Restore from_mandatory_modifiers
 
@@ -182,18 +171,17 @@ public:
                                              from_mandatory_modifiers_,
                                              event_type::key_down,
                                              time_stamp_delay,
-                                             output_event_queue);
-
-        krbn_notification_center::get_instance().input_event_arrived();
+                                             *output_event_queue_);
       }
     }
 
     basic& basic_;
     std::vector<to_event_definition> to_invoked_;
     std::vector<to_event_definition> to_canceled_;
-    std::unique_ptr<gcd_utility::main_queue_timer> timer_;
+    boost::optional<manipulator_timer::timer_id> manipulator_timer_id_;
     boost::optional<event_queue::queued_event> front_input_event_;
     std::unordered_set<modifier_flag> from_mandatory_modifiers_;
+    event_queue* output_event_queue_;
   };
 
   basic(const nlohmann::json& json,
@@ -265,7 +253,7 @@ public:
                           front_input_event.get_event_type());
 
     if (to_delayed_action_) {
-      to_delayed_action_->cancel(front_input_event, output_event_queue);
+      to_delayed_action_->cancel(front_input_event);
     }
 
     bool is_target = false;
@@ -532,6 +520,12 @@ public:
 
   virtual void force_post_pointing_button_event(const event_queue::queued_event& front_input_event,
                                                 event_queue& output_event_queue) {
+  }
+
+  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+    if (to_delayed_action_) {
+      to_delayed_action_->manipulator_timer_invoked(timer_id);
+    }
   }
 
   const from_event_definition& get_from(void) const {

@@ -5,6 +5,7 @@
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
+#include "manipulator/manipulator_timer.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 

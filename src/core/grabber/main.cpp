@@ -89,6 +89,7 @@ int main(int argc, const char* argv[]) {
     chmod(krbn::constants::get_console_user_server_socket_directory(), 0755);
   }
 
+  krbn::manipulator::manipulator_timer::get_instance().enable();
   auto device_grabber_ptr = std::make_unique<krbn::device_grabber>();
   krbn::connection_manager connection_manager(*version_monitor_ptr, *device_grabber_ptr);
 
