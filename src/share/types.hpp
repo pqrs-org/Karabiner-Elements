@@ -994,6 +994,15 @@ public:
     return it->second;
   }
 
+  static boost::optional<std::string> make_key_code_name(key_code key_code) {
+    for (const auto& pair : get_key_code_name_value_pairs()) {
+      if (pair.second == key_code) {
+        return pair.first;
+      }
+    }
+    return boost::none;
+  }
+
   static boost::optional<key_code> make_key_code(hid_usage_page usage_page, hid_usage usage) {
     auto u = static_cast<uint32_t>(usage);
 
@@ -1020,15 +1029,6 @@ public:
         break;
     }
 
-    return boost::none;
-  }
-
-  static boost::optional<std::string> make_key_code_name(key_code key_code) {
-    for (const auto& pair : get_key_code_name_value_pairs()) {
-      if (pair.second == key_code) {
-        return pair.first;
-      }
-    }
     return boost::none;
   }
 
@@ -1134,11 +1134,11 @@ public:
     }
   }
 
-  static const std::unordered_map<std::string, consumer_key_code>& get_consumer_key_code_map(void) {
+  static const std::vector<std::pair<std::string, consumer_key_code>>& get_consumer_key_code_name_value_pairs(void) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
-    static std::unordered_map<std::string, consumer_key_code> map({
+    static std::vector<std::pair<std::string, consumer_key_code>> pairs({
         {"power", consumer_key_code::power},
         {"display_brightness_increment", consumer_key_code::display_brightness_increment},
         {"display_brightness_decrement", consumer_key_code::display_brightness_decrement},
@@ -1152,17 +1152,47 @@ public:
         {"volume_increment", consumer_key_code::volume_increment},
         {"volume_decrement", consumer_key_code::volume_decrement},
     });
+
+    return pairs;
+  }
+
+  static const std::unordered_map<std::string, consumer_key_code>& get_consumer_key_code_name_value_map(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
+    static std::unordered_map<std::string, consumer_key_code> map;
+
+    if (map.empty()) {
+      for (const auto& pair : get_consumer_key_code_name_value_pairs()) {
+        auto it = map.find(pair.first);
+        if (it != std::end(map)) {
+          logger::get_logger().error("duplicate entry in get_consumer_key_code_name_value_pairs: {0}", pair.first);
+        } else {
+          map.emplace(pair.first, pair.second);
+        }
+      }
+    }
+
     return map;
   }
 
   static boost::optional<consumer_key_code> make_consumer_key_code(const std::string& name) {
-    auto& map = get_consumer_key_code_map();
+    auto& map = get_consumer_key_code_name_value_map();
     auto it = map.find(name);
     if (it == map.end()) {
       logger::get_logger().error("unknown consumer_key_code: \"{0}\"", name);
       return boost::none;
     }
     return it->second;
+  }
+
+  static boost::optional<std::string> make_consumer_key_code_name(consumer_key_code consumer_key_code) {
+    for (const auto& pair : get_consumer_key_code_name_value_pairs()) {
+      if (pair.second == consumer_key_code) {
+        return pair.first;
+      }
+    }
+    return boost::none;
   }
 
   static boost::optional<consumer_key_code> make_consumer_key_code(hid_usage_page usage_page, hid_usage usage) {
@@ -1201,11 +1231,11 @@ public:
     return hid_usage(static_cast<uint32_t>(consumer_key_code));
   }
 
-  static const std::unordered_map<std::string, pointing_button>& get_pointing_button_map(void) {
+  static const std::vector<std::pair<std::string, pointing_button>>& get_pointing_button_name_value_pairs(void) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
-    static std::unordered_map<std::string, pointing_button> map({
+    static std::vector<std::pair<std::string, pointing_button>> pairs({
         // From IOHIDUsageTables.h
 
         {"button1", pointing_button::button1},
@@ -1244,17 +1274,47 @@ public:
         {"button31", pointing_button::button31},
         {"button32", pointing_button::button32},
     });
+
+    return pairs;
+  }
+
+  static const std::unordered_map<std::string, pointing_button>& get_pointing_button_name_value_map(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
+    static std::unordered_map<std::string, pointing_button> map;
+
+    if (map.empty()) {
+      for (const auto& pair : get_pointing_button_name_value_pairs()) {
+        auto it = map.find(pair.first);
+        if (it != std::end(map)) {
+          logger::get_logger().error("duplicate entry in get_pointing_button_name_value_pairs: {0}", pair.first);
+        } else {
+          map.emplace(pair.first, pair.second);
+        }
+      }
+    }
+
     return map;
   }
 
   static boost::optional<pointing_button> make_pointing_button(const std::string& name) {
-    auto& map = get_pointing_button_map();
+    auto& map = get_pointing_button_name_value_map();
     auto it = map.find(name);
     if (it == map.end()) {
       logger::get_logger().error("unknown pointing_button: \"{0}\"", name);
       return boost::none;
     }
     return it->second;
+  }
+
+  static boost::optional<std::string> make_pointing_button_name(pointing_button pointing_button) {
+    for (const auto& pair : get_pointing_button_name_value_pairs()) {
+      if (pair.second == pointing_button) {
+        return pair.first;
+      }
+    }
+    return boost::none;
   }
 
   static boost::optional<pointing_button> make_pointing_button(hid_usage_page usage_page, hid_usage usage) {

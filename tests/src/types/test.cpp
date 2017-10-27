@@ -203,6 +203,8 @@ TEST_CASE("make_consumer_key_code") {
   REQUIRE(krbn::types::make_consumer_key_code("mute") == krbn::consumer_key_code::mute);
   REQUIRE(!krbn::types::make_consumer_key_code("unknown"));
 
+  REQUIRE(krbn::types::make_consumer_key_code_name(krbn::consumer_key_code::mute) == std::string("mute"));
+
   REQUIRE(krbn::types::make_consumer_key_code(krbn::hid_usage_page::consumer, krbn::hid_usage::csmr_mute) == krbn::consumer_key_code::mute);
   REQUIRE(!krbn::types::make_consumer_key_code(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(kHIDUsage_KeyboardA)));
 
@@ -211,6 +213,11 @@ TEST_CASE("make_consumer_key_code") {
 }
 
 TEST_CASE("make_pointing_button") {
+  REQUIRE(krbn::types::make_pointing_button("button1") == krbn::pointing_button::button1);
+  REQUIRE(!krbn::types::make_pointing_button("unknown"));
+
+  REQUIRE(krbn::types::make_pointing_button_name(krbn::pointing_button::button1) == std::string("button1"));
+
   {
     auto actual = krbn::types::make_pointing_button(krbn::hid_usage_page(kHIDPage_Button),
                                                     krbn::hid_usage(1));
