@@ -110,8 +110,8 @@ private:
                        uint8_t* report,
                        CFIndex report_length) {
     // Logitech Unifying Receiver sends a lot of null report. We ignore them.
-    if (auto manufacturer = device.get_manufacturer()) {
-      if (auto product = device.get_product()) {
+    if (auto manufacturer = device.find_manufacturer()) {
+      if (auto product = device.find_product()) {
         if (*manufacturer == "Logitech" && *product == "USB Receiver") {
           if (report_id == 0) {
             return;

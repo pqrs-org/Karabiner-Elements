@@ -286,9 +286,9 @@ private:
 
     // Skip if same device is already matched.
     // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
-    if (auto registry_entry_id = iokit_utility::get_registry_entry_id(device)) {
+    if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
       for (const auto& h : hids_) {
-        if (auto e = h.second->get_registry_entry_id()) {
+        if (auto e = h.second->find_registry_entry_id()) {
           if (*registry_entry_id == *e) {
             return;
           }

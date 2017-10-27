@@ -74,11 +74,11 @@ public:
     {
       std::stringstream stream;
 
-      if (auto product_name = get_product()) {
+      if (auto product_name = find_product()) {
         stream << boost::trim_copy(*product_name);
       } else {
-        if (auto vendor_id = get_vendor_id()) {
-          if (auto product_id = get_product_id()) {
+        if (auto vendor_id = find_vendor_id()) {
+          if (auto product_id = find_product_id()) {
             stream << std::hex
                    << "(vendor_id:0x" << static_cast<uint32_t>(*vendor_id)
                    << ", product_id:0x" << static_cast<uint32_t>(*product_id)
@@ -96,10 +96,10 @@ public:
     {
       std::string manufacturer;
       std::string product;
-      if (auto m = iokit_utility::get_manufacturer(device_)) {
+      if (auto m = iokit_utility::find_manufacturer(device_)) {
         manufacturer = *m;
       }
-      if (auto p = iokit_utility::get_product(device_)) {
+      if (auto p = iokit_utility::find_product(device_)) {
         product = *p;
       }
       connected_devices::device::descriptions descriptions(manufacturer, product);
@@ -483,40 +483,40 @@ public:
     });
   }
 
-  boost::optional<uint64_t> get_registry_entry_id(void) const {
-    return iokit_utility::get_registry_entry_id(device_);
+  boost::optional<uint64_t> find_registry_entry_id(void) const {
+    return iokit_utility::find_registry_entry_id(device_);
   }
 
-  boost::optional<long> get_max_input_report_size(void) const {
-    return iokit_utility::get_max_input_report_size(device_);
+  boost::optional<long> find_max_input_report_size(void) const {
+    return iokit_utility::find_max_input_report_size(device_);
   }
 
-  boost::optional<vendor_id> get_vendor_id(void) const {
+  boost::optional<vendor_id> find_vendor_id(void) const {
     return iokit_utility::find_vendor_id(device_);
   }
 
-  boost::optional<product_id> get_product_id(void) const {
+  boost::optional<product_id> find_product_id(void) const {
     return iokit_utility::find_product_id(device_);
   }
 
-  boost::optional<location_id> get_location_id(void) const {
-    return iokit_utility::get_location_id(device_);
+  boost::optional<location_id> find_location_id(void) const {
+    return iokit_utility::find_location_id(device_);
   }
 
-  boost::optional<std::string> get_manufacturer(void) const {
-    return iokit_utility::get_manufacturer(device_);
+  boost::optional<std::string> find_manufacturer(void) const {
+    return iokit_utility::find_manufacturer(device_);
   }
 
-  boost::optional<std::string> get_product(void) const {
-    return iokit_utility::get_product(device_);
+  boost::optional<std::string> find_product(void) const {
+    return iokit_utility::find_product(device_);
   }
 
-  boost::optional<std::string> get_serial_number(void) const {
-    return iokit_utility::get_serial_number(device_);
+  boost::optional<std::string> find_serial_number(void) const {
+    return iokit_utility::find_serial_number(device_);
   }
 
-  boost::optional<std::string> get_transport(void) const {
-    return iokit_utility::get_transport(device_);
+  boost::optional<std::string> find_transport(void) const {
+    return iokit_utility::find_transport(device_);
   }
 
   std::string get_name_for_log(void) const {
@@ -649,8 +649,8 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       // `IOHIDDeviceSetValue` will block forever with some buggy devices. (e.g., Bit Touch)
       // This, we use a blacklist.
-      if (auto v = get_vendor_id()) {
-        if (auto p = get_product_id()) {
+      if (auto v = find_vendor_id()) {
+        if (auto p = find_product_id()) {
           if ((*v == vendor_id(0x22ea) && *p == product_id(0xf)) /* Bit Touch (Bit Trade One LTD.) */ ||
               (*v == vendor_id(0x17ef) && *p == product_id(0x6083)) /* ThinkPad Multi Connect Bluetooth Keyboard with Trackpoint */ ||
               false) {
@@ -706,7 +706,7 @@ public:
   }
 
   bool is_pqrs_device(void) const {
-    if (auto manufacturer = get_manufacturer()) {
+    if (auto manufacturer = find_manufacturer()) {
       if (*manufacturer == "pqrs.org") {
         return true;
       }
@@ -716,8 +716,8 @@ public:
   }
 
   bool is_pqrs_virtual_hid_keyboard(void) const {
-    if (auto manufacturer = get_manufacturer()) {
-      if (auto product = get_product()) {
+    if (auto manufacturer = find_manufacturer()) {
+      if (auto product = find_product()) {
         if (*manufacturer == "pqrs.org" &&
             *product == "Karabiner VirtualHIDKeyboard") {
           return true;
@@ -864,7 +864,7 @@ private:
 
   void resize_report_buffer(void) {
     size_t buffer_size = 32; // use this provisional value if we cannot get max input report size from device.
-    if (auto size = get_max_input_report_size()) {
+    if (auto size = find_max_input_report_size()) {
       buffer_size = *size;
     }
 
