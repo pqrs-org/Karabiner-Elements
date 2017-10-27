@@ -12,6 +12,12 @@ TEST_CASE("input_source_selector") {
                                          boost::none,
                                          boost::none);
 
+    {
+      nlohmann::json expected;
+      expected["language"] = "^en$";
+      REQUIRE(selector.to_json() == expected);
+    }
+
     REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
                                                          boost::none,
                                                          boost::none)) == false);
@@ -36,6 +42,12 @@ TEST_CASE("input_source_selector") {
                                          std::string("^com\\.apple\\.keylayout\\.US$"),
                                          boost::none);
 
+    {
+      nlohmann::json expected;
+      expected["input_source_id"] = "^com\\.apple\\.keylayout\\.US$";
+      REQUIRE(selector.to_json() == expected);
+    }
+
     REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
                                                          boost::none,
                                                          boost::none)) == false);
@@ -59,6 +71,12 @@ TEST_CASE("input_source_selector") {
     krbn::input_source_selector selector(boost::none,
                                          boost::none,
                                          std::string("^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$"));
+
+    {
+      nlohmann::json expected;
+      expected["input_mode_id"] = "^com\\.apple\\.inputmethod\\.Japanese\\.FullWidthRoman$";
+      REQUIRE(selector.to_json() == expected);
+    }
 
     REQUIRE(selector.test(krbn::input_source_identifiers(boost::none,
                                                          boost::none,

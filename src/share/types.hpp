@@ -539,6 +539,24 @@ public:
     update_regexs();
   }
 
+  nlohmann::json to_json(void) const {
+    auto json = nlohmann::json::object();
+
+    if (language_string_) {
+      json["language"] = *language_string_;
+    }
+
+    if (input_source_id_string_) {
+      json["input_source_id"] = *input_source_id_string_;
+    }
+
+    if (input_mode_id_string_) {
+      json["input_mode_id"] = *input_mode_id_string_;
+    }
+
+    return json;
+  }
+
   const boost::optional<std::string>& get_language_string(void) const {
     return language_string_;
   }
@@ -1572,4 +1590,7 @@ inline void to_json(nlohmann::json& json, const device_identifiers& identifiers)
   json = identifiers.to_json();
 }
 
+inline void to_json(nlohmann::json& json, const input_source_selector& input_source_selector) {
+  json = input_source_selector.to_json();
+}
 } // namespace krbn
