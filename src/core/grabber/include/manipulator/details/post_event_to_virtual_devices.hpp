@@ -600,6 +600,7 @@ public:
             case event_queue::queued_event::event::type::pointing_horizontal_wheel:
               report.horizontal_wheel = *integer_value;
               break;
+            case event_queue::queued_event::event::type::none:
             case event_queue::queued_event::event::type::key_code:
             case event_queue::queued_event::event::type::consumer_key_code:
             case event_queue::queued_event::event::type::pointing_button:
@@ -646,6 +647,7 @@ public:
         }
         break;
 
+      case event_queue::queued_event::event::type::none:
       case event_queue::queued_event::event::type::set_variable:
       case event_queue::queued_event::event::type::device_keys_are_released:
       case event_queue::queued_event::event::type::device_pointing_buttons_are_released:

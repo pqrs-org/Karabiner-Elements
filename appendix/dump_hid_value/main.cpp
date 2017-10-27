@@ -104,6 +104,10 @@ private:
                       krbn::event_queue& event_queue) {
     for (const auto& queued_event : event_queue.get_events()) {
       switch (queued_event.get_event().get_type()) {
+        case krbn::event_queue::queued_event::event::type::none:
+          std::cout << "none" << std::endl;
+          break;
+
         case krbn::event_queue::queued_event::event::type::key_code:
           if (auto key_code = queued_event.get_event().get_key_code()) {
             std::cout << "Key: " << std::dec << static_cast<uint32_t>(*key_code) << " "

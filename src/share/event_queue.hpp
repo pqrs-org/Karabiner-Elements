@@ -18,6 +18,7 @@ public:
     class event {
     public:
       enum class type {
+        none,
         key_code,
         consumer_key_code,
         pointing_button,
@@ -199,6 +200,70 @@ public:
         e.type_ = type;
         e.value_ = boost::blank();
         return e;
+      }
+
+      static const char* to_c_string(type t) {
+#define TO_C_STRING(TYPE) \
+  case type::TYPE:        \
+    return #TYPE;
+
+        switch (t) {
+          TO_C_STRING(none);
+          TO_C_STRING(key_code);
+          TO_C_STRING(consumer_key_code);
+          TO_C_STRING(pointing_button);
+          TO_C_STRING(pointing_x);
+          TO_C_STRING(pointing_y);
+          TO_C_STRING(pointing_vertical_wheel);
+          TO_C_STRING(pointing_horizontal_wheel);
+          TO_C_STRING(shell_command);
+          TO_C_STRING(select_input_source);
+          TO_C_STRING(set_variable);
+          TO_C_STRING(device_keys_are_released);
+          TO_C_STRING(device_pointing_buttons_are_released);
+          TO_C_STRING(device_ungrabbed);
+          TO_C_STRING(caps_lock_state_changed);
+          TO_C_STRING(event_from_ignored_device);
+          TO_C_STRING(pointing_device_event_from_event_tap);
+          TO_C_STRING(frontmost_application_changed);
+          TO_C_STRING(input_source_changed);
+        }
+
+#undef TO_C_STRING
+
+        return nullptr;
+      }
+
+      static type to_type(const char* t) {
+#define TO_TYPE(TYPE)    \
+  {                      \
+    if (t == #TYPE) {    \
+      return type::TYPE; \
+    }                    \
+  }
+
+        TO_TYPE(key_code);
+        TO_TYPE(consumer_key_code);
+        TO_TYPE(pointing_button);
+        TO_TYPE(pointing_x);
+        TO_TYPE(pointing_y);
+        TO_TYPE(pointing_vertical_wheel);
+        TO_TYPE(pointing_horizontal_wheel);
+        TO_TYPE(shell_command);
+        TO_TYPE(select_input_source);
+        TO_TYPE(set_variable);
+        TO_TYPE(device_keys_are_released);
+        TO_TYPE(device_pointing_buttons_are_released);
+        TO_TYPE(device_ungrabbed);
+        TO_TYPE(caps_lock_state_changed);
+        TO_TYPE(event_from_ignored_device);
+        TO_TYPE(pointing_device_event_from_event_tap);
+        TO_TYPE(frontmost_application_changed);
+        TO_TYPE(input_source_changed);
+
+#undef TO_TYPE
+
+        return type::none;
       }
 
       type type_;

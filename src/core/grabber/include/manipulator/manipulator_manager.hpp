@@ -79,6 +79,7 @@ public:
           }
           break;
 
+        case event_queue::queued_event::event::type::none:
         case event_queue::queued_event::event::type::caps_lock_state_changed:
         case event_queue::queued_event::event::type::frontmost_application_changed:
         case event_queue::queued_event::event::type::input_source_changed:
