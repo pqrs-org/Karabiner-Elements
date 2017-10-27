@@ -1275,7 +1275,7 @@ public:
     return map;
   }
 
-  static boost::optional<pqrs::karabiner_virtual_hid_device::properties::keyboard_type> get_keyboard_type(const std::string& name) {
+  static boost::optional<pqrs::karabiner_virtual_hid_device::properties::keyboard_type> make_keyboard_type(const std::string& name) {
     auto& map = get_keyboard_type_map();
     auto it = map.find(name);
     if (it == map.end()) {

@@ -600,7 +600,7 @@ private:
     if (virtual_hid_device_client_.is_connected()) {
       if (mode_ == mode::grabbing) {
         pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-        if (auto k = types::get_keyboard_type(profile_.get_virtual_hid_keyboard().get_keyboard_type())) {
+        if (auto k = types::make_keyboard_type(profile_.get_virtual_hid_keyboard().get_keyboard_type())) {
           properties.keyboard_type = *k;
         }
         auto caps_lock_delay_milliseconds = profile_.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
