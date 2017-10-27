@@ -51,6 +51,44 @@ krbn::event_queue::queued_event::event caps_lock_state_changed_0_event(krbn::eve
 auto device_keys_are_released_event = krbn::event_queue::queued_event::event::make_device_keys_are_released_event();
 } // namespace
 
+TEST_CASE("json") {
+  {
+    nlohmann::json expected;
+    expected["type"] = "key_code";
+    expected["key_code"] = "a";
+    REQUIRE(a_event.to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "consumer_key_code";
+    expected["consumer_key_code"] = "mute";
+    REQUIRE(mute_event.to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "pointing_button";
+    expected["pointing_button"] = "button2";
+    REQUIRE(button2_event.to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "pointing_x";
+    expected["integer_value"] = 10;
+    REQUIRE(pointing_x_10_event.to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "caps_lock_state_changed";
+    expected["integer_value"] = 1;
+    REQUIRE(caps_lock_state_changed_1_event.to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "device_keys_are_released";
+    REQUIRE(device_keys_are_released_event.to_json() == expected);
+  }
+}
+
 TEST_CASE("get_key_code") {
   REQUIRE(spacebar_event.get_key_code() == krbn::key_code::spacebar);
   REQUIRE(button2_event.get_key_code() == boost::none);

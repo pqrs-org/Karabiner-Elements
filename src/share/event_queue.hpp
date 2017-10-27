@@ -41,6 +41,90 @@ public:
         input_source_changed,
       };
 
+      nlohmann::json to_json(void) const {
+        nlohmann::json json;
+        json["type"] = to_c_string(type_);
+
+        switch (type_) {
+          case type::none:
+            break;
+
+          case type::key_code:
+            if (auto v = get_key_code()) {
+              if (auto s = types::make_key_code_name(*v)) {
+                json["key_code"] = *s;
+              }
+            }
+            break;
+
+          case type::consumer_key_code:
+            if (auto v = get_consumer_key_code()) {
+              if (auto s = types::make_consumer_key_code_name(*v)) {
+                json["consumer_key_code"] = *s;
+              }
+            }
+            break;
+
+          case type::pointing_button:
+            if (auto v = get_pointing_button()) {
+              if (auto s = types::make_pointing_button_name(*v)) {
+                json["pointing_button"] = *s;
+              }
+            }
+            break;
+
+          case type::pointing_x:
+          case type::pointing_y:
+          case type::pointing_vertical_wheel:
+          case type::pointing_horizontal_wheel:
+          case type::caps_lock_state_changed:
+            if (auto v = get_integer_value()) {
+              json["integer_value"] = *v;
+            }
+            break;
+
+          case type::shell_command:
+            if (auto v = get_shell_command()) {
+              json["shell_command"] = *v;
+            }
+            break;
+
+          case type::select_input_source:
+            if (auto v = get_input_source_selectors()) {
+              json["input_source_selector"] = *v;
+            }
+            break;
+
+          case type::set_variable:
+            if (auto v = get_set_variable()) {
+              json["set_variable"]["name"] = v->first;
+              json["set_variable"]["value"] = v->second;
+            }
+            break;
+
+          case type::frontmost_application_changed:
+            if (auto v = get_frontmost_application()) {
+              json["frontmost_application"] = v->to_json();
+            }
+            break;
+
+          case type::input_source_changed:
+            if (auto v = get_input_source_identifiers()) {
+              json["input_source_identifiers"] = v->to_json();
+            }
+            break;
+
+          case type::device_keys_are_released:
+          case type::device_pointing_buttons_are_released:
+          case type::device_ungrabbed:
+          case type::event_from_ignored_device:
+          case type::pointing_device_event_from_event_tap:
+            break;
+        }
+
+        return json;
+      }
+
       event(key_code key_code) : type_(type::key_code),
                                  value_(key_code) {
       }
