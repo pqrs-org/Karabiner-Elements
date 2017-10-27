@@ -212,13 +212,13 @@ TEST_CASE("make_consumer_key_code") {
 
 TEST_CASE("make_pointing_button") {
   {
-    auto actual = krbn::types::get_pointing_button(krbn::hid_usage_page(kHIDPage_Button),
-                                                   krbn::hid_usage(1));
+    auto actual = krbn::types::make_pointing_button(krbn::hid_usage_page(kHIDPage_Button),
+                                                    krbn::hid_usage(1));
     REQUIRE(*actual == krbn::pointing_button::button1);
   }
   {
-    auto actual = krbn::types::get_pointing_button(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
-                                                   krbn::hid_usage(kHIDUsage_KeyboardTab));
+    auto actual = krbn::types::make_pointing_button(krbn::hid_usage_page(kHIDPage_KeyboardOrKeypad),
+                                                    krbn::hid_usage(kHIDUsage_KeyboardTab));
     REQUIRE(actual == boost::none);
   }
 }

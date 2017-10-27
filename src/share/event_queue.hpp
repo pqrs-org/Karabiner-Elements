@@ -380,7 +380,7 @@ public:
       return true;
     }
 
-    if (auto pointing_button = types::get_pointing_button(usage_page, usage)) {
+    if (auto pointing_button = types::make_pointing_button(usage_page, usage)) {
       queued_event::event event(*pointing_button);
       emplace_back_event(device_id,
                          time_stamp,

@@ -330,7 +330,7 @@ protected:
           continue;
         }
 
-        if (auto pointing_button = types::get_pointing_button(value.get<std::string>())) {
+        if (auto pointing_button = types::make_pointing_button(value.get<std::string>())) {
           type_ = type::pointing_button;
           value_ = *pointing_button;
         }

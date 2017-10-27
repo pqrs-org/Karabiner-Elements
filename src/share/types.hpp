@@ -1247,7 +1247,7 @@ public:
     return map;
   }
 
-  static boost::optional<pointing_button> get_pointing_button(const std::string& name) {
+  static boost::optional<pointing_button> make_pointing_button(const std::string& name) {
     auto& map = get_pointing_button_map();
     auto it = map.find(name);
     if (it == map.end()) {
@@ -1257,7 +1257,7 @@ public:
     return it->second;
   }
 
-  static boost::optional<pointing_button> get_pointing_button(hid_usage_page usage_page, hid_usage usage) {
+  static boost::optional<pointing_button> make_pointing_button(hid_usage_page usage_page, hid_usage usage) {
     if (usage_page == hid_usage_page::button) {
       return pointing_button(usage);
     }
