@@ -91,7 +91,7 @@ public:
 
           case type::select_input_source:
             if (auto v = get_input_source_selectors()) {
-              json["input_source_selector"] = *v;
+              json["input_source_selectors"] = *v;
             }
             break;
 

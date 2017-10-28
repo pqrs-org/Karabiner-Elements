@@ -84,6 +84,49 @@ TEST_CASE("json") {
   }
   {
     nlohmann::json expected;
+    expected["type"] = "shell_command";
+    expected["shell_command"] = "open https://pqrs.org";
+    REQUIRE(krbn::event_queue::queued_event::event::make_shell_command_event("open https://pqrs.org").to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "select_input_source";
+    expected["input_source_selectors"] = nlohmann::json::array();
+    expected["input_source_selectors"].push_back(nlohmann::json::object());
+    expected["input_source_selectors"].back()["language"] = "en";
+    auto e = krbn::event_queue::queued_event::event::make_select_input_source_event({krbn::input_source_selector(std::string("en"),
+                                                                                                                 boost::none,
+                                                                                                                 boost::none)});
+    REQUIRE(e.to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "set_variable";
+    expected["set_variable"]["name"] = "example1";
+    expected["set_variable"]["value"] = 100;
+    REQUIRE(krbn::event_queue::queued_event::event::make_set_variable_event(std::make_pair("example1", 100)).to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "frontmost_application_changed";
+    expected["frontmost_application"]["bundle_identifier"] = "com.apple.Terminal";
+    expected["frontmost_application"]["file_path"] = "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
+    auto e = krbn::event_queue::queued_event::event::make_frontmost_application_changed_event("com.apple.Terminal",
+                                                                                              "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+    REQUIRE(e.to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
+    expected["type"] = "input_source_changed";
+    expected["input_source_identifiers"]["language"] = "en";
+    expected["input_source_identifiers"]["input_source_id"] = "com.apple.keylayout.US";
+    auto e = krbn::event_queue::queued_event::event::make_input_source_changed_event({std::string("en"),
+                                                                                      std::string("com.apple.keylayout.US"),
+                                                                                      boost::none});
+    REQUIRE(e.to_json() == expected);
+  }
+  {
+    nlohmann::json expected;
     expected["type"] = "device_keys_are_released";
     REQUIRE(device_keys_are_released_event.to_json() == expected);
   }
