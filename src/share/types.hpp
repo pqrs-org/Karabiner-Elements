@@ -451,6 +451,40 @@ public:
                                                                                 input_mode_id_(input_mode_id) {
   }
 
+  input_source_identifiers(const nlohmann::json& json) {
+    if (json.is_object()) {
+      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+        // it.key() is always std::string.
+        const auto& key = it.key();
+        const auto& value = it.value();
+
+        if (key == "language") {
+          if (value.is_string()) {
+            language_ = value.get<std::string>();
+          } else {
+            logger::get_logger().error("language should be string: {0}", json.dump());
+          }
+        } else if (key == "input_source_id") {
+          if (value.is_string()) {
+            input_source_id_ = value.get<std::string>();
+          } else {
+            logger::get_logger().error("input_source_id should be string: {0}", json.dump());
+          }
+        } else if (key == "input_mode_id") {
+          if (value.is_string()) {
+            input_mode_id_ = value.get<std::string>();
+          } else {
+            logger::get_logger().error("input_mode_id should be string: {0}", json.dump());
+          }
+        } else {
+          logger::get_logger().error("json error: Unknown key: {0} in {1}", key, json.dump());
+        }
+      }
+    } else {
+      logger::get_logger().error("input_source_identifiers should be object: {0}", json.dump());
+    }
+  }
+
   nlohmann::json to_json(void) const {
     auto json = nlohmann::json::object();
 
