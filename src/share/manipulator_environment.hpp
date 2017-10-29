@@ -21,6 +21,34 @@ public:
                                                           file_path_(file_path) {
     }
 
+    frontmost_application(const nlohmann::json& json) {
+      if (json.is_object()) {
+        for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+          // it.key() is always std::string.
+          const auto& key = it.key();
+          const auto& value = it.value();
+
+          if (key == "bundle_identifier") {
+            if (value.is_string()) {
+              bundle_identifier_ = value.get<std::string>();
+            } else {
+              logger::get_logger().error("bundle_identifier should be string: {0}", json.dump());
+            }
+          } else if (key == "file_path") {
+            if (value.is_string()) {
+              file_path_ = value.get<std::string>();
+            } else {
+              logger::get_logger().error("file_path should be string: {0}", json.dump());
+            }
+          } else {
+            logger::get_logger().error("json error: Unknown key: {0} in {1}", key, json.dump());
+          }
+        }
+      } else {
+        logger::get_logger().error("frontmost_application should be object: {0}", json.dump());
+      }
+    }
+
     nlohmann::json to_json(void) const {
       return nlohmann::json({
           {"bundle_identifier", bundle_identifier_},
