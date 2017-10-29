@@ -525,6 +525,18 @@ public:
                                       original_event_(original_event) {
     }
 
+    nlohmann::json to_json(void) const {
+      return nlohmann::json({
+          {"device_id", static_cast<uint32_t>(device_id_)},
+          {"time_stamp", time_stamp_},
+          {"valid", valid_},
+          {"lazy", lazy_},
+          {"event", event_},
+          {"event_type", event_type_},
+          {"original_event", original_event_},
+      });
+    }
+
     device_id get_device_id(void) const {
       return device_id_;
     }
@@ -966,4 +978,11 @@ inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_
   return stream;
 }
 
+inline void to_json(nlohmann::json& json, const event_queue::queued_event::event& value) {
+  json = value.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const event_queue::queued_event& value) {
+  json = value.to_json();
+}
 } // namespace krbn

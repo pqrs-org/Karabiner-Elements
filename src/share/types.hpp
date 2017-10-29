@@ -1620,6 +1620,20 @@ inline std::ostream& operator<<(std::ostream& stream, const container<input_sour
   return stream;
 }
 
+inline void to_json(nlohmann::json& json, const event_type& value) {
+  switch (value) {
+    case event_type::key_down:
+      json = "key_down";
+      break;
+    case event_type::key_up:
+      json = "key_up";
+      break;
+    case event_type::single:
+      json = "single";
+      break;
+  }
+}
+
 inline void to_json(nlohmann::json& json, const device_identifiers& identifiers) {
   json = identifiers.to_json();
 }
