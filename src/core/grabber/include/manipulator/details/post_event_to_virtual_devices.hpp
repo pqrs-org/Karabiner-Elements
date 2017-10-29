@@ -467,65 +467,95 @@ public:
 
   virtual void manipulate(event_queue::queued_event& front_input_event,
                           const event_queue& input_event_queue,
-                          event_queue& output_event_queue) {
-    output_event_queue.push_back_event(front_input_event);
-    front_input_event.set_valid(false);
+                          const std::shared_ptr<event_queue>& output_event_queue) {
+    if (output_event_queue) {
+      output_event_queue->push_back_event(front_input_event);
+      front_input_event.set_valid(false);
 
-    // Dispatch modifier key event only when front_input_event is key_down or modifier key.
+      // Dispatch modifier key event only when front_input_event is key_down or modifier key.
 
-    bool dispatch_modifier_key_event = false;
-    bool dispatch_modifier_key_event_before = false;
-    {
-      boost::optional<modifier_flag> m;
-      if (auto key_code = front_input_event.get_event().get_key_code()) {
-        m = types::make_modifier_flag(*key_code);
-      }
-
-      if (m) {
-        // front_input_event is modifier key event.
-        if (!front_input_event.get_lazy()) {
-          dispatch_modifier_key_event = true;
-          dispatch_modifier_key_event_before = false;
+      bool dispatch_modifier_key_event = false;
+      bool dispatch_modifier_key_event_before = false;
+      {
+        boost::optional<modifier_flag> m;
+        if (auto key_code = front_input_event.get_event().get_key_code()) {
+          m = types::make_modifier_flag(*key_code);
         }
 
-      } else {
-        if (front_input_event.get_event_type() == event_type::key_down) {
-          if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
+        if (m) {
+          // front_input_event is modifier key event.
+          if (!front_input_event.get_lazy()) {
+            dispatch_modifier_key_event = true;
+            dispatch_modifier_key_event_before = false;
+          }
+
+        } else {
+          if (front_input_event.get_event_type() == event_type::key_down) {
+            if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
+              if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
+                dispatch_modifier_key_event = true;
+                dispatch_modifier_key_event_before = true;
+              }
+            } else {
+              // key_code, consumer_key_code
+              dispatch_modifier_key_event = true;
+              dispatch_modifier_key_event_before = true;
+            }
+
+          } else if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_x ||
+                     front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_y ||
+                     front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel ||
+                     front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
             if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
               dispatch_modifier_key_event = true;
               dispatch_modifier_key_event_before = true;
             }
-          } else {
-            // key_code, consumer_key_code
-            dispatch_modifier_key_event = true;
-            dispatch_modifier_key_event_before = true;
-          }
-
-        } else if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_x ||
-                   front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_y ||
-                   front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel ||
-                   front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
-          if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
-            dispatch_modifier_key_event = true;
-            dispatch_modifier_key_event_before = true;
           }
         }
       }
-    }
 
-    if (dispatch_modifier_key_event &&
-        dispatch_modifier_key_event_before) {
-      key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
-                                                        queue_,
-                                                        front_input_event.get_time_stamp());
-    }
+      if (dispatch_modifier_key_event &&
+          dispatch_modifier_key_event_before) {
+        key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
+                                                          queue_,
+                                                          front_input_event.get_time_stamp());
+      }
 
-    switch (front_input_event.get_event().get_type()) {
-      case event_queue::queued_event::event::type::key_code:
-        if (auto key_code = front_input_event.get_event().get_key_code()) {
-          if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
-            if (auto hid_usage = types::make_hid_usage(*key_code)) {
-              if (types::make_modifier_flag(*key_code) == boost::none) {
+      switch (front_input_event.get_event().get_type()) {
+        case event_queue::queued_event::event::type::key_code:
+          if (auto key_code = front_input_event.get_event().get_key_code()) {
+            if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
+              if (auto hid_usage = types::make_hid_usage(*key_code)) {
+                if (types::make_modifier_flag(*key_code) == boost::none) {
+                  switch (front_input_event.get_event_type()) {
+                    case event_type::key_down:
+                      key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
+                                                                    *hid_usage_page,
+                                                                    *hid_usage,
+                                                                    queue_,
+                                                                    front_input_event.get_time_stamp());
+                      break;
+
+                    case event_type::key_up:
+                      key_event_dispatcher_.dispatch_key_up_event(*hid_usage_page,
+                                                                  *hid_usage,
+                                                                  queue_,
+                                                                  front_input_event.get_time_stamp());
+                      break;
+
+                    case event_type::single:
+                      break;
+                  }
+                }
+              }
+            }
+          }
+          break;
+
+        case event_queue::queued_event::event::type::consumer_key_code:
+          if (auto consumer_key_code = front_input_event.get_event().get_consumer_key_code()) {
+            if (auto hid_usage_page = types::make_hid_usage_page(*consumer_key_code)) {
+              if (auto hid_usage = types::make_hid_usage(*consumer_key_code)) {
                 switch (front_input_event.get_event_type()) {
                   case event_type::key_down:
                     key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
@@ -548,124 +578,96 @@ public:
               }
             }
           }
-        }
-        break;
+          break;
 
-      case event_queue::queued_event::event::type::consumer_key_code:
-        if (auto consumer_key_code = front_input_event.get_event().get_consumer_key_code()) {
-          if (auto hid_usage_page = types::make_hid_usage_page(*consumer_key_code)) {
-            if (auto hid_usage = types::make_hid_usage(*consumer_key_code)) {
-              switch (front_input_event.get_event_type()) {
-                case event_type::key_down:
-                  key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
-                                                                *hid_usage_page,
-                                                                *hid_usage,
-                                                                queue_,
-                                                                front_input_event.get_time_stamp());
-                  break;
+        case event_queue::queued_event::event::type::pointing_button:
+        case event_queue::queued_event::event::type::pointing_x:
+        case event_queue::queued_event::event::type::pointing_y:
+        case event_queue::queued_event::event::type::pointing_vertical_wheel:
+        case event_queue::queued_event::event::type::pointing_horizontal_wheel: {
+          auto report = output_event_queue->get_pointing_button_manager().make_pointing_input_report();
 
-                case event_type::key_up:
-                  key_event_dispatcher_.dispatch_key_up_event(*hid_usage_page,
-                                                              *hid_usage,
-                                                              queue_,
-                                                              front_input_event.get_time_stamp());
-                  break;
-
-                case event_type::single:
-                  break;
-              }
+          if (auto integer_value = front_input_event.get_event().get_integer_value()) {
+            switch (front_input_event.get_event().get_type()) {
+              case event_queue::queued_event::event::type::pointing_x:
+                report.x = *integer_value;
+                break;
+              case event_queue::queued_event::event::type::pointing_y:
+                report.y = *integer_value;
+                break;
+              case event_queue::queued_event::event::type::pointing_vertical_wheel:
+                report.vertical_wheel = *integer_value;
+                break;
+              case event_queue::queued_event::event::type::pointing_horizontal_wheel:
+                report.horizontal_wheel = *integer_value;
+                break;
+              case event_queue::queued_event::event::type::none:
+              case event_queue::queued_event::event::type::key_code:
+              case event_queue::queued_event::event::type::consumer_key_code:
+              case event_queue::queued_event::event::type::pointing_button:
+              case event_queue::queued_event::event::type::set_variable:
+              case event_queue::queued_event::event::type::shell_command:
+              case event_queue::queued_event::event::type::select_input_source:
+              case event_queue::queued_event::event::type::device_keys_are_released:
+              case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+              case event_queue::queued_event::event::type::device_ungrabbed:
+              case event_queue::queued_event::event::type::caps_lock_state_changed:
+              case event_queue::queued_event::event::type::event_from_ignored_device:
+              case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
+              case event_queue::queued_event::event::type::frontmost_application_changed:
+              case event_queue::queued_event::event::type::input_source_changed:
+                // Do nothing
+                break;
             }
           }
+
+          queue_.emplace_back_event(report,
+                                    front_input_event.get_time_stamp());
+
+          // Save bits for `handle_device_ungrabbed_event`.
+          pressed_buttons_ = output_event_queue->get_pointing_button_manager().get_hid_report_bits();
+
+          break;
         }
-        break;
 
-      case event_queue::queued_event::event::type::pointing_button:
-      case event_queue::queued_event::event::type::pointing_x:
-      case event_queue::queued_event::event::type::pointing_y:
-      case event_queue::queued_event::event::type::pointing_vertical_wheel:
-      case event_queue::queued_event::event::type::pointing_horizontal_wheel: {
-        auto report = output_event_queue.get_pointing_button_manager().make_pointing_input_report();
-
-        if (auto integer_value = front_input_event.get_event().get_integer_value()) {
-          switch (front_input_event.get_event().get_type()) {
-            case event_queue::queued_event::event::type::pointing_x:
-              report.x = *integer_value;
-              break;
-            case event_queue::queued_event::event::type::pointing_y:
-              report.y = *integer_value;
-              break;
-            case event_queue::queued_event::event::type::pointing_vertical_wheel:
-              report.vertical_wheel = *integer_value;
-              break;
-            case event_queue::queued_event::event::type::pointing_horizontal_wheel:
-              report.horizontal_wheel = *integer_value;
-              break;
-            case event_queue::queued_event::event::type::none:
-            case event_queue::queued_event::event::type::key_code:
-            case event_queue::queued_event::event::type::consumer_key_code:
-            case event_queue::queued_event::event::type::pointing_button:
-            case event_queue::queued_event::event::type::set_variable:
-            case event_queue::queued_event::event::type::shell_command:
-            case event_queue::queued_event::event::type::select_input_source:
-            case event_queue::queued_event::event::type::device_keys_are_released:
-            case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
-            case event_queue::queued_event::event::type::device_ungrabbed:
-            case event_queue::queued_event::event::type::caps_lock_state_changed:
-            case event_queue::queued_event::event::type::event_from_ignored_device:
-            case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
-            case event_queue::queued_event::event::type::frontmost_application_changed:
-            case event_queue::queued_event::event::type::input_source_changed:
-              // Do nothing
-              break;
+        case event_queue::queued_event::event::type::shell_command:
+          if (auto shell_command = front_input_event.get_event().get_shell_command()) {
+            if (front_input_event.get_event_type() == event_type::key_down) {
+              queue_.push_back_shell_command_event(*shell_command,
+                                                   front_input_event.get_time_stamp());
+            }
           }
-        }
+          break;
 
-        queue_.emplace_back_event(report,
-                                  front_input_event.get_time_stamp());
+        case event_queue::queued_event::event::type::select_input_source:
+          if (auto input_source_selectors = front_input_event.get_event().get_input_source_selectors()) {
+            if (front_input_event.get_event_type() == event_type::key_down) {
+              queue_.push_back_select_input_source_event(*input_source_selectors,
+                                                         front_input_event.get_time_stamp());
+            }
+          }
+          break;
 
-        // Save bits for `handle_device_ungrabbed_event`.
-        pressed_buttons_ = output_event_queue.get_pointing_button_manager().get_hid_report_bits();
-
-        break;
+        case event_queue::queued_event::event::type::none:
+        case event_queue::queued_event::event::type::set_variable:
+        case event_queue::queued_event::event::type::device_keys_are_released:
+        case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+        case event_queue::queued_event::event::type::device_ungrabbed:
+        case event_queue::queued_event::event::type::caps_lock_state_changed:
+        case event_queue::queued_event::event::type::event_from_ignored_device:
+        case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
+        case event_queue::queued_event::event::type::frontmost_application_changed:
+        case event_queue::queued_event::event::type::input_source_changed:
+          // Do nothing
+          break;
       }
 
-      case event_queue::queued_event::event::type::shell_command:
-        if (auto shell_command = front_input_event.get_event().get_shell_command()) {
-          if (front_input_event.get_event_type() == event_type::key_down) {
-            queue_.push_back_shell_command_event(*shell_command,
-                                                 front_input_event.get_time_stamp());
-          }
-        }
-        break;
-
-      case event_queue::queued_event::event::type::select_input_source:
-        if (auto input_source_selectors = front_input_event.get_event().get_input_source_selectors()) {
-          if (front_input_event.get_event_type() == event_type::key_down) {
-            queue_.push_back_select_input_source_event(*input_source_selectors,
-                                                       front_input_event.get_time_stamp());
-          }
-        }
-        break;
-
-      case event_queue::queued_event::event::type::none:
-      case event_queue::queued_event::event::type::set_variable:
-      case event_queue::queued_event::event::type::device_keys_are_released:
-      case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
-      case event_queue::queued_event::event::type::device_ungrabbed:
-      case event_queue::queued_event::event::type::caps_lock_state_changed:
-      case event_queue::queued_event::event::type::event_from_ignored_device:
-      case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
-      case event_queue::queued_event::event::type::frontmost_application_changed:
-      case event_queue::queued_event::event::type::input_source_changed:
-        // Do nothing
-        break;
-    }
-
-    if (dispatch_modifier_key_event &&
-        !dispatch_modifier_key_event_before) {
-      key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
-                                                        queue_,
-                                                        front_input_event.get_time_stamp());
+      if (dispatch_modifier_key_event &&
+          !dispatch_modifier_key_event_before) {
+        key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
+                                                          queue_,
+                                                          front_input_event.get_time_stamp());
+      }
     }
   }
 

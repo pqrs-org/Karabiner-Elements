@@ -101,7 +101,7 @@ public:
             for (auto&& m : manipulators_) {
               m->manipulate(front_input_event,
                             *input_event_queue,
-                            *output_event_queue);
+                            output_event_queue);
             }
             break;
         }
