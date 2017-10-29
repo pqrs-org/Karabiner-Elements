@@ -29,89 +29,92 @@ public:
     manipulators_.push_back(ptr);
   }
 
-  void manipulate(event_queue& input_event_queue,
-                  event_queue& output_event_queue) {
-    while (!input_event_queue.empty()) {
-      auto& front_input_event = input_event_queue.get_front_event();
+  void manipulate(const std::shared_ptr<event_queue>& input_event_queue,
+                  const std::shared_ptr<event_queue>& output_event_queue) {
+    if (input_event_queue &&
+        output_event_queue) {
+      while (!input_event_queue->empty()) {
+        auto& front_input_event = input_event_queue->get_front_event();
 
-      switch (front_input_event.get_event().get_type()) {
-        case event_queue::queued_event::event::type::device_keys_are_released:
-          output_event_queue.erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());
+        switch (front_input_event.get_event().get_type()) {
+          case event_queue::queued_event::event::type::device_keys_are_released:
+            output_event_queue->erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());
 
-          for (auto&& m : manipulators_) {
-            m->force_post_modifier_key_event(front_input_event,
-                                             output_event_queue);
-          }
-          break;
+            for (auto&& m : manipulators_) {
+              m->force_post_modifier_key_event(front_input_event,
+                                               *output_event_queue);
+            }
+            break;
 
-        case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
-          output_event_queue.erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
+          case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+            output_event_queue->erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
 
-          for (auto&& m : manipulators_) {
-            m->force_post_pointing_button_event(front_input_event,
-                                                output_event_queue);
-          }
-          break;
+            for (auto&& m : manipulators_) {
+              m->force_post_pointing_button_event(front_input_event,
+                                                  *output_event_queue);
+            }
+            break;
 
-        case event_queue::queued_event::event::type::device_ungrabbed:
-          // Reset modifier_flags and pointing_buttons before `handle_device_ungrabbed_event`
-          // in order to send key_up events in `post_event_to_virtual_devices::handle_device_ungrabbed_event`.
-          output_event_queue.erase_all_active_modifier_flags(front_input_event.get_device_id());
-          output_event_queue.erase_all_active_pointing_buttons(front_input_event.get_device_id());
-          for (auto&& m : manipulators_) {
-            m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
-                                             output_event_queue,
-                                             front_input_event.get_time_stamp());
-          }
-          break;
+          case event_queue::queued_event::event::type::device_ungrabbed:
+            // Reset modifier_flags and pointing_buttons before `handle_device_ungrabbed_event`
+            // in order to send key_up events in `post_event_to_virtual_devices::handle_device_ungrabbed_event`.
+            output_event_queue->erase_all_active_modifier_flags(front_input_event.get_device_id());
+            output_event_queue->erase_all_active_pointing_buttons(front_input_event.get_device_id());
+            for (auto&& m : manipulators_) {
+              m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
+                                               *output_event_queue,
+                                               front_input_event.get_time_stamp());
+            }
+            break;
 
-        case event_queue::queued_event::event::type::event_from_ignored_device:
-          for (auto&& m : manipulators_) {
-            m->handle_event_from_ignored_device(front_input_event,
-                                                output_event_queue);
-          }
-          break;
+          case event_queue::queued_event::event::type::event_from_ignored_device:
+            for (auto&& m : manipulators_) {
+              m->handle_event_from_ignored_device(front_input_event,
+                                                  *output_event_queue);
+            }
+            break;
 
-        case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
-          for (auto&& m : manipulators_) {
-            m->handle_pointing_device_event_from_event_tap(front_input_event,
-                                                           output_event_queue);
-          }
-          break;
+          case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
+            for (auto&& m : manipulators_) {
+              m->handle_pointing_device_event_from_event_tap(front_input_event,
+                                                             *output_event_queue);
+            }
+            break;
 
-        case event_queue::queued_event::event::type::none:
-        case event_queue::queued_event::event::type::caps_lock_state_changed:
-        case event_queue::queued_event::event::type::frontmost_application_changed:
-        case event_queue::queued_event::event::type::input_source_changed:
-        case event_queue::queued_event::event::type::set_variable:
-          // Do nothing
-          break;
+          case event_queue::queued_event::event::type::none:
+          case event_queue::queued_event::event::type::caps_lock_state_changed:
+          case event_queue::queued_event::event::type::frontmost_application_changed:
+          case event_queue::queued_event::event::type::input_source_changed:
+          case event_queue::queued_event::event::type::set_variable:
+            // Do nothing
+            break;
 
-        case event_queue::queued_event::event::type::key_code:
-        case event_queue::queued_event::event::type::consumer_key_code:
-        case event_queue::queued_event::event::type::pointing_button:
-        case event_queue::queued_event::event::type::pointing_x:
-        case event_queue::queued_event::event::type::pointing_y:
-        case event_queue::queued_event::event::type::pointing_vertical_wheel:
-        case event_queue::queued_event::event::type::pointing_horizontal_wheel:
-        case event_queue::queued_event::event::type::shell_command:
-        case event_queue::queued_event::event::type::select_input_source:
-          for (auto&& m : manipulators_) {
-            m->manipulate(front_input_event,
-                          input_event_queue,
-                          output_event_queue);
-          }
-          break;
+          case event_queue::queued_event::event::type::key_code:
+          case event_queue::queued_event::event::type::consumer_key_code:
+          case event_queue::queued_event::event::type::pointing_button:
+          case event_queue::queued_event::event::type::pointing_x:
+          case event_queue::queued_event::event::type::pointing_y:
+          case event_queue::queued_event::event::type::pointing_vertical_wheel:
+          case event_queue::queued_event::event::type::pointing_horizontal_wheel:
+          case event_queue::queued_event::event::type::shell_command:
+          case event_queue::queued_event::event::type::select_input_source:
+            for (auto&& m : manipulators_) {
+              m->manipulate(front_input_event,
+                            *input_event_queue,
+                            *output_event_queue);
+            }
+            break;
+        }
+
+        if (input_event_queue->get_front_event().get_valid()) {
+          output_event_queue->push_back_event(input_event_queue->get_front_event());
+        }
+
+        input_event_queue->erase_front_event();
       }
 
-      if (input_event_queue.get_front_event().get_valid()) {
-        output_event_queue.push_back_event(input_event_queue.get_front_event());
-      }
-
-      input_event_queue.erase_front_event();
+      remove_invalid_manipulators();
     }
-
-    remove_invalid_manipulators();
   }
 
   void invalidate_manipulators(void) {

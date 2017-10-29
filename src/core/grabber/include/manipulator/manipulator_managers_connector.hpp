@@ -18,12 +18,8 @@ public:
     }
 
     void manipulate(void) {
-      if (auto ieq = input_event_queue_.lock()) {
-        if (auto oeq = output_event_queue_.lock()) {
-          manipulator_manager_.manipulate(*ieq,
-                                          *oeq);
-        }
-      }
+      manipulator_manager_.manipulate(input_event_queue_.lock(),
+                                      output_event_queue_.lock());
     }
 
     void invalidate_manipulators(void) {
