@@ -10,33 +10,33 @@
 #include <boost/optional/optional_io.hpp>
 
 #define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE) \
-  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                 \
-                           TIME_STAMP,                                 \
-                           EVENT,                                      \
-                           krbn::event_type::EVENT_TYPE,               \
-                           EVENT);
+  QUEUE->emplace_back_event(krbn::device_id(DEVICE_ID),                \
+                            TIME_STAMP,                                \
+                            EVENT,                                     \
+                            krbn::event_type::EVENT_TYPE,              \
+                            EVENT);
 
-#define ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE)           \
-  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                                     \
-                           TIME_STAMP,                                                                     \
-                           krbn::event_queue::queued_event::event::make_event_from_ignored_device_event(), \
-                           krbn::event_type::EVENT_TYPE,                                                   \
-                           EVENT);
+#define ENQUEUE_EVENT_FROM_IGNORED_DEVICE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE)            \
+  QUEUE->emplace_back_event(krbn::device_id(DEVICE_ID),                                                     \
+                            TIME_STAMP,                                                                     \
+                            krbn::event_queue::queued_event::event::make_event_from_ignored_device_event(), \
+                            krbn::event_type::EVENT_TYPE,                                                   \
+                            EVENT);
 
-#define ENQUEUE_POINTING_DEVICE_EVENT_FROM_EVENT_TAP(QUEUE, TIME_STAMP, EVENT, EVENT_TYPE)                            \
-  QUEUE.emplace_back_event(krbn::device_id(0),                                                                        \
-                           TIME_STAMP,                                                                                \
-                           krbn::event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event(), \
-                           krbn::event_type::EVENT_TYPE,                                                              \
-                           EVENT);
+#define ENQUEUE_POINTING_DEVICE_EVENT_FROM_EVENT_TAP(QUEUE, TIME_STAMP, EVENT, EVENT_TYPE)                             \
+  QUEUE->emplace_back_event(krbn::device_id(0),                                                                        \
+                            TIME_STAMP,                                                                                \
+                            krbn::event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event(), \
+                            krbn::event_type::EVENT_TYPE,                                                              \
+                            EVENT);
 
 #define ENQUEUE_LAZY_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE) \
-  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                      \
-                           TIME_STAMP,                                      \
-                           EVENT,                                           \
-                           krbn::event_type::EVENT_TYPE,                    \
-                           EVENT,                                           \
-                           true);
+  QUEUE->emplace_back_event(krbn::device_id(DEVICE_ID),                     \
+                            TIME_STAMP,                                     \
+                            EVENT,                                          \
+                            krbn::event_type::EVENT_TYPE,                   \
+                            EVENT,                                          \
+                            true);
 
 #define ENQUEUE_KEYBOARD_EVENT(EVENTS, KEY_CODE, VALUE, TIME_STAMP)                                                                                         \
   {                                                                                                                                                         \
@@ -105,8 +105,8 @@ TEST_CASE("generic") {
     auto manipulator = std::make_shared<post_event_to_virtual_devices>();
     manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
@@ -203,8 +203,8 @@ TEST_CASE("Same modifier twice from different devices") {
     auto manipulator = std::make_shared<post_event_to_virtual_devices>();
     manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
@@ -247,8 +247,8 @@ TEST_CASE("device_ungrabbed event") {
     auto manipulator = std::make_shared<post_event_to_virtual_devices>();
     manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
@@ -326,8 +326,8 @@ TEST_CASE("wait around modifier") {
     auto manipulator = std::make_shared<post_event_to_virtual_devices>();
     manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
@@ -393,8 +393,8 @@ TEST_CASE("lazy events") {
     auto manipulator = std::make_shared<post_event_to_virtual_devices>();
     manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
@@ -461,7 +461,9 @@ TEST_CASE("lazy events") {
 namespace {
 class actual_examples_helper final {
 public:
-  actual_examples_helper(const std::string& file_name) {
+  actual_examples_helper(const std::string& file_name) : input_event_queue_(std::make_shared<krbn::event_queue>()),
+                                                         middle_event_queue_(std::make_shared<krbn::event_queue>()),
+                                                         output_event_queue_(std::make_shared<krbn::event_queue>()) {
     std::ifstream input(std::string("json/") + file_name);
     auto json = nlohmann::json::parse(input);
     for (const auto& j : json) {
@@ -483,7 +485,7 @@ public:
                                        output_event_queue_);
   }
 
-  krbn::event_queue& get_input_event_queue(void) {
+  const std::shared_ptr<krbn::event_queue>& get_input_event_queue(void) {
     return input_event_queue_;
   }
 
@@ -520,9 +522,9 @@ private:
   krbn::manipulator::manipulator_manager modifications_manipulator_manager_;
   krbn::manipulator::manipulator_manager post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<post_event_to_virtual_devices> manipulator_;
-  krbn::event_queue input_event_queue_;
-  krbn::event_queue middle_event_queue_;
-  krbn::event_queue output_event_queue_;
+  std::shared_ptr<krbn::event_queue> input_event_queue_;
+  std::shared_ptr<krbn::event_queue> middle_event_queue_;
+  std::shared_ptr<krbn::event_queue> output_event_queue_;
   krbn::manipulator::manipulator_managers_connector connector_;
 };
 } // namespace

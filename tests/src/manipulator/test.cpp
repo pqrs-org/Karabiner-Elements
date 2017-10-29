@@ -10,19 +10,19 @@
 #include <boost/optional/optional_io.hpp>
 
 #define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
-  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                 \
-                           TIME_STAMP,                                                 \
-                           EVENT,                                                      \
-                           krbn::event_type::EVENT_TYPE,                               \
-                           ORIGINAL_EVENT);
+  QUEUE->emplace_back_event(krbn::device_id(DEVICE_ID),                                \
+                            TIME_STAMP,                                                \
+                            EVENT,                                                     \
+                            krbn::event_type::EVENT_TYPE,                              \
+                            ORIGINAL_EVENT);
 
 #define ENQUEUE_LAZY_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
-  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                      \
-                           TIME_STAMP,                                                      \
-                           EVENT,                                                           \
-                           krbn::event_type::EVENT_TYPE,                                    \
-                           ORIGINAL_EVENT,                                                  \
-                           true);
+  QUEUE->emplace_back_event(krbn::device_id(DEVICE_ID),                                     \
+                            TIME_STAMP,                                                     \
+                            EVENT,                                                          \
+                            krbn::event_type::EVENT_TYPE,                                   \
+                            ORIGINAL_EVENT,                                                 \
+                            true);
 
 #define PUSH_BACK_QUEUED_EVENT(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
   VECTOR.push_back(krbn::event_queue::queued_event(krbn::device_id(DEVICE_ID),                   \
@@ -137,8 +137,8 @@ TEST_CASE("manipulator.manipulator_manager") {
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
@@ -164,8 +164,8 @@ TEST_CASE("manipulator.manipulator_manager") {
     PUSH_BACK_QUEUED_EVENT(expected, 1, 300, tab_event, key_up, spacebar_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 400, escape_event, key_up, escape_event);
 
-    REQUIRE(input_event_queue.get_events().empty());
-    REQUIRE(output_event_queue.get_events() == expected);
+    REQUIRE(input_event_queue->get_events().empty());
+    REQUIRE(output_event_queue->get_events() == expected);
   }
 
   {
@@ -225,8 +225,8 @@ TEST_CASE("manipulator.manipulator_manager") {
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
@@ -269,8 +269,8 @@ TEST_CASE("manipulator.manipulator_manager") {
     time_stamp += 100;
     PUSH_BACK_QUEUED_EVENT(expected, 1, time_stamp += 100, a_event, key_up, tab_event);
 
-    REQUIRE(input_event_queue.get_events().empty());
-    REQUIRE(output_event_queue.get_events() == expected);
+    REQUIRE(input_event_queue->get_events().empty());
+    REQUIRE(output_event_queue->get_events() == expected);
   }
 
   {
@@ -284,8 +284,8 @@ TEST_CASE("manipulator.manipulator_manager") {
       manipulator_manager.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
@@ -305,8 +305,8 @@ TEST_CASE("manipulator.manipulator_manager") {
     std::vector<krbn::event_queue::queued_event> expected;
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, spacebar_event, key_up, spacebar_event);
 
-    REQUIRE(input_event_queue.get_events().empty());
-    REQUIRE(output_event_queue.get_events() == expected);
+    REQUIRE(input_event_queue->get_events().empty());
+    REQUIRE(output_event_queue->get_events() == expected);
   }
 
   {
@@ -327,9 +327,9 @@ TEST_CASE("manipulator.manipulator_manager") {
       manipulator_manager2.push_back_manipulator(std::shared_ptr<krbn::manipulator::details::base>(manipulator));
     }
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue middle_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto middle_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager1,
@@ -360,11 +360,11 @@ TEST_CASE("manipulator.manipulator_manager") {
       PUSH_BACK_QUEUED_EVENT(expected, 1, 300, escape_event, key_up, spacebar_event);
       PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_ungrabbed_event, single, device_ungrabbed_event);
 
-      REQUIRE(input_event_queue.get_events().empty());
-      REQUIRE(output_event_queue.get_events() == expected);
+      REQUIRE(input_event_queue->get_events().empty());
+      REQUIRE(output_event_queue->get_events() == expected);
     }
 
-    output_event_queue.clear_events();
+    output_event_queue->clear_events();
 
     ENQUEUE_EVENT(input_event_queue, 2, 600, spacebar_event, key_up, spacebar_event);
 
@@ -374,11 +374,11 @@ TEST_CASE("manipulator.manipulator_manager") {
       std::vector<krbn::event_queue::queued_event> expected;
       PUSH_BACK_QUEUED_EVENT(expected, 2, 600, escape_event, key_up, spacebar_event);
 
-      REQUIRE(input_event_queue.get_events().empty());
-      REQUIRE(output_event_queue.get_events() == expected);
+      REQUIRE(input_event_queue->get_events().empty());
+      REQUIRE(output_event_queue->get_events() == expected);
     }
 
-    output_event_queue.clear_events();
+    output_event_queue->clear_events();
 
     // device_ungrabbed for device_id 2
 
@@ -396,11 +396,11 @@ TEST_CASE("manipulator.manipulator_manager") {
       PUSH_BACK_QUEUED_EVENT(expected, 1, 300, escape_event, key_up, spacebar_event);
       PUSH_BACK_QUEUED_EVENT(expected, 2, 400, device_ungrabbed_event, single, device_ungrabbed_event);
 
-      REQUIRE(input_event_queue.get_events().empty());
-      REQUIRE(output_event_queue.get_events() == expected);
+      REQUIRE(input_event_queue->get_events().empty());
+      REQUIRE(output_event_queue->get_events() == expected);
     }
 
-    output_event_queue.clear_events();
+    output_event_queue->clear_events();
 
     ENQUEUE_EVENT(input_event_queue, 2, 600, spacebar_event, key_up, spacebar_event);
 
@@ -410,13 +410,13 @@ TEST_CASE("manipulator.manipulator_manager") {
       std::vector<krbn::event_queue::queued_event> expected;
       PUSH_BACK_QUEUED_EVENT(expected, 2, 600, spacebar_event, key_up, spacebar_event);
 
-      REQUIRE(input_event_queue.get_events().empty());
-      REQUIRE(output_event_queue.get_events() == expected);
+      REQUIRE(input_event_queue->get_events().empty());
+      REQUIRE(output_event_queue->get_events() == expected);
     }
 
     // device_ungrabbed for device_id 3
 
-    output_event_queue.clear_events();
+    output_event_queue->clear_events();
 
     ENQUEUE_EVENT(input_event_queue, 3, 100, device_ungrabbed_event, single, device_ungrabbed_event);
 
@@ -426,8 +426,8 @@ TEST_CASE("manipulator.manipulator_manager") {
       std::vector<krbn::event_queue::queued_event> expected;
       PUSH_BACK_QUEUED_EVENT(expected, 3, 100, device_ungrabbed_event, single, device_ungrabbed_event);
 
-      REQUIRE(input_event_queue.get_events().empty());
-      REQUIRE(output_event_queue.get_events() == expected);
+      REQUIRE(input_event_queue->get_events().empty());
+      REQUIRE(output_event_queue->get_events() == expected);
     }
   }
 
@@ -451,8 +451,8 @@ TEST_CASE("manipulator.manipulator_manager") {
       REQUIRE(manipulator_manager.get_manipulators_size() == 2);
     }
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
@@ -474,8 +474,8 @@ TEST_CASE("manipulator.manipulator_manager") {
       std::vector<krbn::event_queue::queued_event> expected;
       PUSH_BACK_QUEUED_EVENT(expected, 1, 100, tab_event, key_down, spacebar_event);
 
-      REQUIRE(input_event_queue.get_events().empty());
-      REQUIRE(output_event_queue.get_events() == expected);
+      REQUIRE(input_event_queue->get_events().empty());
+      REQUIRE(output_event_queue->get_events() == expected);
     }
 
     REQUIRE(manipulator_manager.get_manipulators_size() == 1);
@@ -511,8 +511,8 @@ TEST_CASE("manipulator.manipulator_manager") {
       REQUIRE(manipulator_manager.get_manipulators_size() == 1);
     }
 
-    krbn::event_queue input_event_queue;
-    krbn::event_queue output_event_queue;
+    auto input_event_queue = std::make_shared<krbn::event_queue>();
+    auto output_event_queue = std::make_shared<krbn::event_queue>();
 
     krbn::manipulator::manipulator_managers_connector connector;
     connector.emplace_back_connection(manipulator_manager,
