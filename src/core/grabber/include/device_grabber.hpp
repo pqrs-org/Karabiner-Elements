@@ -30,6 +30,11 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(void) : profile_(nlohmann::json()),
+                         merged_input_event_queue_(std::make_shared<event_queue>()),
+                         simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
+                         complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
+                         fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
+                         posted_event_queue_(std::make_shared<event_queue>()),
                          mode_(mode::observing),
                          suspended_(false) {
     client_connected_connection = virtual_hid_device_client_.client_connected.connect([&]() {
@@ -48,19 +53,19 @@ public:
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>();
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
 
-    complex_modifications_applied_event_queue_.enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
+    complex_modifications_applied_event_queue_->enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
 
     // Connect manipulator_managers
 
     manipulator_managers_connector_.emplace_back_connection(simple_modifications_manipulator_manager_,
-                                                            merged_input_event_queue_,
-                                                            simple_modifications_applied_event_queue_);
+                                                            *merged_input_event_queue_,
+                                                            *simple_modifications_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(complex_modifications_manipulator_manager_,
-                                                            complex_modifications_applied_event_queue_);
+                                                            *complex_modifications_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(fn_function_keys_manipulator_manager_,
-                                                            fn_function_keys_applied_event_queue_);
+                                                            *fn_function_keys_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
-                                                            posted_event_queue_);
+                                                            *posted_event_queue_);
 
     input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
       manipulate();
@@ -237,11 +242,11 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       auto event = event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
                                                                                               file_path);
-      merged_input_event_queue_.emplace_back_event(device_id(0),
-                                                   mach_absolute_time(),
-                                                   event,
-                                                   event_type::single,
-                                                   event);
+      merged_input_event_queue_->emplace_back_event(device_id(0),
+                                                    mach_absolute_time(),
+                                                    event,
+                                                    event_type::single,
+                                                    event);
 
       krbn_notification_center::get_instance().input_event_arrived();
     });
@@ -250,11 +255,11 @@ public:
   void post_input_source_changed_event(const input_source_identifiers& input_source_identifiers) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       auto event = event_queue::queued_event::event::make_input_source_changed_event(input_source_identifiers);
-      merged_input_event_queue_.emplace_back_event(device_id(0),
-                                                   mach_absolute_time(),
-                                                   event,
-                                                   event_type::single,
-                                                   event);
+      merged_input_event_queue_->emplace_back_event(device_id(0),
+                                                    mach_absolute_time(),
+                                                    event,
+                                                    event_type::single,
+                                                    event);
 
       krbn_notification_center::get_instance().input_event_arrived();
     });
@@ -374,7 +379,7 @@ private:
   void manipulate(void) {
     manipulator_managers_connector_.manipulate();
 
-    posted_event_queue_.clear_events();
+    posted_event_queue_->clear_events();
     post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
   }
 
@@ -385,15 +390,15 @@ private:
     } else {
       for (const auto& queued_event : event_queue.get_events()) {
         if (device.is_grabbed()) {
-          merged_input_event_queue_.push_back_event(queued_event);
+          merged_input_event_queue_->push_back_event(queued_event);
         } else {
           // device is ignored
           auto event = event_queue::queued_event::event::make_event_from_ignored_device_event();
-          merged_input_event_queue_.emplace_back_event(queued_event.get_device_id(),
-                                                       queued_event.get_time_stamp(),
-                                                       event,
-                                                       queued_event.get_event_type(),
-                                                       queued_event.get_event());
+          merged_input_event_queue_->emplace_back_event(queued_event.get_device_id(),
+                                                        queued_event.get_time_stamp(),
+                                                        event,
+                                                        queued_event.get_event_type(),
+                                                        queued_event.get_event());
         }
       }
     }
@@ -404,22 +409,22 @@ private:
 
   void post_device_ungrabbed_event(device_id device_id) {
     auto event = event_queue::queued_event::event::make_device_ungrabbed_event();
-    merged_input_event_queue_.emplace_back_event(device_id,
-                                                 mach_absolute_time(),
-                                                 event,
-                                                 event_type::single,
-                                                 event);
+    merged_input_event_queue_->emplace_back_event(device_id,
+                                                  mach_absolute_time(),
+                                                  event,
+                                                  event_type::single,
+                                                  event);
 
     krbn_notification_center::get_instance().input_event_arrived();
   }
 
   void post_caps_lock_state_changed_callback(bool caps_lock_state) {
     event_queue::queued_event::event event(event_queue::queued_event::event::type::caps_lock_state_changed, caps_lock_state);
-    merged_input_event_queue_.emplace_back_event(device_id(0),
-                                                 mach_absolute_time(),
-                                                 event,
-                                                 event_type::single,
-                                                 event);
+    merged_input_event_queue_->emplace_back_event(device_id(0),
+                                                  mach_absolute_time(),
+                                                  event,
+                                                  event_type::single,
+                                                  event);
 
     krbn_notification_center::get_instance().input_event_arrived();
   }
@@ -558,11 +563,11 @@ private:
 
     if (pseudo_event_type && pseudo_event) {
       auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
-      merged_input_event_queue_.emplace_back_event(device_id(0),
-                                                   mach_absolute_time(),
-                                                   e,
-                                                   *pseudo_event_type,
-                                                   *pseudo_event);
+      merged_input_event_queue_->emplace_back_event(device_id(0),
+                                                    mach_absolute_time(),
+                                                    e,
+                                                    *pseudo_event_type,
+                                                    *pseudo_event);
 
       krbn_notification_center::get_instance().input_event_arrived();
     }
@@ -883,20 +888,20 @@ private:
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
   boost::signals2::connection input_event_arrived_connection;
 
-  event_queue merged_input_event_queue_;
+  std::shared_ptr<event_queue> merged_input_event_queue_;
 
   manipulator::manipulator_manager simple_modifications_manipulator_manager_;
-  event_queue simple_modifications_applied_event_queue_;
+  std::shared_ptr<event_queue> simple_modifications_applied_event_queue_;
 
   manipulator::manipulator_manager complex_modifications_manipulator_manager_;
-  event_queue complex_modifications_applied_event_queue_;
+  std::shared_ptr<event_queue> complex_modifications_applied_event_queue_;
 
   manipulator::manipulator_manager fn_function_keys_manipulator_manager_;
-  event_queue fn_function_keys_applied_event_queue_;
+  std::shared_ptr<event_queue> fn_function_keys_applied_event_queue_;
 
   std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   manipulator::manipulator_manager post_event_to_virtual_devices_manipulator_manager_;
-  event_queue posted_event_queue_;
+  std::shared_ptr<event_queue> posted_event_queue_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> led_monitor_timer_;
 
