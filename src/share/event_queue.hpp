@@ -41,6 +41,125 @@ public:
         input_source_changed,
       };
 
+      event(const nlohmann::json& json) : type_(type::none),
+                                          value_(boost::blank()) {
+        auto it_type = json.find("type");
+        if (it_type != std::end(json)) {
+          type_ = to_type(it_type->get<std::string>());
+
+          switch (type_) {
+            case type::none:
+              break;
+
+            case type::key_code: {
+              auto it = json.find("key_code");
+              if (it != std::end(json)) {
+                if (auto v = types::make_key_code(it->get<std::string>())) {
+                  value_ = *v;
+                }
+              }
+              break;
+            }
+
+            case type::consumer_key_code: {
+              auto it = json.find("consumer_key_code");
+              if (it != std::end(json)) {
+                if (auto v = types::make_consumer_key_code(it->get<std::string>())) {
+                  value_ = *v;
+                }
+              }
+              break;
+            }
+
+            case type::pointing_button: {
+              auto it = json.find("pointing_button");
+              if (it != std::end(json)) {
+                if (auto v = types::make_pointing_button(it->get<std::string>())) {
+                  value_ = *v;
+                }
+              }
+              break;
+            }
+
+            case type::pointing_x:
+            case type::pointing_y:
+            case type::pointing_vertical_wheel:
+            case type::pointing_horizontal_wheel:
+            case type::caps_lock_state_changed: {
+              auto it = json.find("integer_value");
+              if (it != std::end(json)) {
+                value_ = it->get<int>();
+              }
+              break;
+            }
+
+            case type::shell_command: {
+              auto it = json.find("shell_command");
+              if (it != std::end(json)) {
+                value_ = it->get<std::string>();
+              }
+              break;
+            }
+
+            case type::select_input_source: {
+              auto it = json.find("input_source_selectors");
+              if (it != std::end(json)) {
+                std::vector<input_source_selector> input_source_selectors;
+                for (const auto& j : *it) {
+                  input_source_selectors.emplace_back(j);
+                }
+                value_ = input_source_selectors;
+              }
+              break;
+            }
+
+            case type::set_variable: {
+              auto it = json.find("set_variable");
+              if (it != std::end(json)) {
+                std::pair<std::string, int> pair;
+                {
+                  auto i = it->find("name");
+                  if (i != std::end(*it)) {
+                    pair.first = *i;
+                  }
+                }
+                {
+                  auto i = it->find("value");
+                  if (i != std::end(*it)) {
+                    pair.second = *i;
+                  }
+                }
+                value_ = pair;
+              }
+              break;
+            }
+
+            case type::frontmost_application_changed: {
+              auto it = json.find("frontmost_application");
+              if (it != std::end(json)) {
+                value_ = manipulator_environment::frontmost_application(*it);
+              }
+              break;
+            }
+
+            case type::input_source_changed: {
+              auto it = json.find("input_source_identifiers");
+              if (it != std::end(json)) {
+                value_ = input_source_identifiers(*it);
+              }
+              break;
+            }
+
+            case type::device_keys_are_released:
+            case type::device_pointing_buttons_are_released:
+            case type::device_ungrabbed:
+            case type::event_from_ignored_device:
+            case type::pointing_device_event_from_event_tap:
+              break;
+          }
+        }
+      }
+
       nlohmann::json to_json(void) const {
         nlohmann::json json;
         json["type"] = to_c_string(type_);
@@ -204,68 +323,95 @@ public:
       }
 
       boost::optional<key_code> get_key_code(void) const {
-        if (type_ == type::key_code) {
-          return boost::get<key_code>(value_);
+        try {
+          if (type_ == type::key_code) {
+            return boost::get<key_code>(value_);
+          }
+        } catch (boost::bad_get&) {
         }
         return boost::none;
       }
 
       boost::optional<consumer_key_code> get_consumer_key_code(void) const {
-        if (type_ == type::consumer_key_code) {
-          return boost::get<consumer_key_code>(value_);
+        try {
+          if (type_ == type::consumer_key_code) {
+            return boost::get<consumer_key_code>(value_);
+          }
+        } catch (boost::bad_get&) {
         }
         return boost::none;
       }
 
       boost::optional<pointing_button> get_pointing_button(void) const {
-        if (type_ == type::pointing_button) {
-          return boost::get<pointing_button>(value_);
+        try {
+          if (type_ == type::pointing_button) {
+            return boost::get<pointing_button>(value_);
+          }
+        } catch (boost::bad_get&) {
         }
         return boost::none;
       }
 
       boost::optional<int64_t> get_integer_value(void) const {
-        if (type_ == type::pointing_x ||
-            type_ == type::pointing_y ||
-            type_ == type::pointing_vertical_wheel ||
-            type_ == type::pointing_horizontal_wheel ||
-            type_ == type::caps_lock_state_changed) {
-          return boost::get<int64_t>(value_);
+        try {
+          if (type_ == type::pointing_x ||
+              type_ == type::pointing_y ||
+              type_ == type::pointing_vertical_wheel ||
+              type_ == type::pointing_horizontal_wheel ||
+              type_ == type::caps_lock_state_changed) {
+            return boost::get<int64_t>(value_);
+          }
+        } catch (boost::bad_get&) {
         }
         return boost::none;
       }
 
       boost::optional<std::string> get_shell_command(void) const {
-        if (type_ == type::shell_command) {
-          return boost::get<std::string>(value_);
+        try {
+          if (type_ == type::shell_command) {
+            return boost::get<std::string>(value_);
+          }
+        } catch (boost::bad_get&) {
         }
         return boost::none;
       }
 
       boost::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
-        if (type_ == type::select_input_source) {
-          return boost::get<std::vector<input_source_selector>>(value_);
+        try {
+          if (type_ == type::select_input_source) {
+            return boost::get<std::vector<input_source_selector>>(value_);
+          }
+        } catch (boost::bad_get&) {
         }
         return boost::none;
       }
 
       boost::optional<std::pair<std::string, int>> get_set_variable(void) const {
-        if (type_ == type::set_variable) {
-          return boost::get<std::pair<std::string, int>>(value_);
+        try {
+          if (type_ == type::set_variable) {
+            return boost::get<std::pair<std::string, int>>(value_);
+          }
+        } catch (boost::bad_get&) {
         }
         return boost::none;
       }
 
       boost::optional<manipulator_environment::frontmost_application> get_frontmost_application(void) const {
-        if (type_ == type::frontmost_application_changed) {
-          return boost::get<manipulator_environment::frontmost_application>(value_);
+        try {
+          if (type_ == type::frontmost_application_changed) {
+            return boost::get<manipulator_environment::frontmost_application>(value_);
+          }
+        } catch (boost::bad_get&) {
         }
         return boost::none;
       }
 
       boost::optional<input_source_identifiers> get_input_source_identifiers(void) const {
-        if (type_ == type::input_source_changed) {
-          return boost::get<input_source_identifiers>(value_);
+        try {
+          if (type_ == type::input_source_changed) {
+            return boost::get<input_source_identifiers>(value_);
+          }
+        } catch (boost::bad_get&) {
         }
         return boost::none;
       }
@@ -318,7 +464,7 @@ public:
         return nullptr;
       }
 
-      static type to_type(const char* t) {
+      static type to_type(const std::string& t) {
 #define TO_TYPE(TYPE)    \
   {                      \
     if (t == #TYPE) {    \

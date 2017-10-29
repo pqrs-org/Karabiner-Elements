@@ -56,37 +56,55 @@ TEST_CASE("json") {
     nlohmann::json expected;
     expected["type"] = "key_code";
     expected["key_code"] = "a";
-    REQUIRE(a_event.to_json() == expected);
+    auto json = a_event.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
     expected["type"] = "consumer_key_code";
     expected["consumer_key_code"] = "mute";
-    REQUIRE(mute_event.to_json() == expected);
+    auto json = mute_event.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
     expected["type"] = "pointing_button";
     expected["pointing_button"] = "button2";
-    REQUIRE(button2_event.to_json() == expected);
+    auto json = button2_event.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
     expected["type"] = "pointing_x";
     expected["integer_value"] = 10;
-    REQUIRE(pointing_x_10_event.to_json() == expected);
+    auto json = pointing_x_10_event.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
     expected["type"] = "caps_lock_state_changed";
     expected["integer_value"] = 1;
-    REQUIRE(caps_lock_state_changed_1_event.to_json() == expected);
+    auto json = caps_lock_state_changed_1_event.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
     expected["type"] = "shell_command";
     expected["shell_command"] = "open https://pqrs.org";
-    REQUIRE(krbn::event_queue::queued_event::event::make_shell_command_event("open https://pqrs.org").to_json() == expected);
+    auto json = krbn::event_queue::queued_event::event::make_shell_command_event("open https://pqrs.org").to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
@@ -97,14 +115,20 @@ TEST_CASE("json") {
     auto e = krbn::event_queue::queued_event::event::make_select_input_source_event({krbn::input_source_selector(std::string("en"),
                                                                                                                  boost::none,
                                                                                                                  boost::none)});
-    REQUIRE(e.to_json() == expected);
+    auto json = e.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
     expected["type"] = "set_variable";
     expected["set_variable"]["name"] = "example1";
     expected["set_variable"]["value"] = 100;
-    REQUIRE(krbn::event_queue::queued_event::event::make_set_variable_event(std::make_pair("example1", 100)).to_json() == expected);
+    auto json = krbn::event_queue::queued_event::event::make_set_variable_event(std::make_pair("example1", 100)).to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
@@ -113,7 +137,10 @@ TEST_CASE("json") {
     expected["frontmost_application"]["file_path"] = "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
     auto e = krbn::event_queue::queued_event::event::make_frontmost_application_changed_event("com.apple.Terminal",
                                                                                               "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
-    REQUIRE(e.to_json() == expected);
+    auto json = e.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
@@ -123,12 +150,18 @@ TEST_CASE("json") {
     auto e = krbn::event_queue::queued_event::event::make_input_source_changed_event({std::string("en"),
                                                                                       std::string("com.apple.keylayout.US"),
                                                                                       boost::none});
-    REQUIRE(e.to_json() == expected);
+    auto json = e.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
   {
     nlohmann::json expected;
     expected["type"] = "device_keys_are_released";
-    REQUIRE(device_keys_are_released_event.to_json() == expected);
+    auto json = device_keys_are_released_event.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
   }
 }
 
