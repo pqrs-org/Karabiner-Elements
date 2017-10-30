@@ -41,121 +41,127 @@ public:
         input_source_changed,
       };
 
+      event(void) : type_(type::none),
+                    value_(boost::blank()) {
+      }
+
       event(const nlohmann::json& json) : type_(type::none),
                                           value_(boost::blank()) {
-        auto it_type = json.find("type");
-        if (it_type != std::end(json)) {
-          type_ = to_type(it_type->get<std::string>());
+        if (json.is_object()) {
+          auto it_type = json.find("type");
+          if (it_type != std::end(json)) {
+            type_ = to_type(it_type->get<std::string>());
 
-          switch (type_) {
-            case type::none:
-              break;
+            switch (type_) {
+              case type::none:
+                break;
 
-            case type::key_code: {
-              auto it = json.find("key_code");
-              if (it != std::end(json)) {
-                if (auto v = types::make_key_code(it->get<std::string>())) {
-                  value_ = *v;
-                }
-              }
-              break;
-            }
-
-            case type::consumer_key_code: {
-              auto it = json.find("consumer_key_code");
-              if (it != std::end(json)) {
-                if (auto v = types::make_consumer_key_code(it->get<std::string>())) {
-                  value_ = *v;
-                }
-              }
-              break;
-            }
-
-            case type::pointing_button: {
-              auto it = json.find("pointing_button");
-              if (it != std::end(json)) {
-                if (auto v = types::make_pointing_button(it->get<std::string>())) {
-                  value_ = *v;
-                }
-              }
-              break;
-            }
-
-            case type::pointing_x:
-            case type::pointing_y:
-            case type::pointing_vertical_wheel:
-            case type::pointing_horizontal_wheel:
-            case type::caps_lock_state_changed: {
-              auto it = json.find("integer_value");
-              if (it != std::end(json)) {
-                value_ = it->get<int>();
-              }
-              break;
-            }
-
-            case type::shell_command: {
-              auto it = json.find("shell_command");
-              if (it != std::end(json)) {
-                value_ = it->get<std::string>();
-              }
-              break;
-            }
-
-            case type::select_input_source: {
-              auto it = json.find("input_source_selectors");
-              if (it != std::end(json)) {
-                std::vector<input_source_selector> input_source_selectors;
-                for (const auto& j : *it) {
-                  input_source_selectors.emplace_back(j);
-                }
-                value_ = input_source_selectors;
-              }
-              break;
-            }
-
-            case type::set_variable: {
-              auto it = json.find("set_variable");
-              if (it != std::end(json)) {
-                std::pair<std::string, int> pair;
-                {
-                  auto i = it->find("name");
-                  if (i != std::end(*it)) {
-                    pair.first = *i;
+              case type::key_code: {
+                auto it = json.find("key_code");
+                if (it != std::end(json)) {
+                  if (auto v = types::make_key_code(it->get<std::string>())) {
+                    value_ = *v;
                   }
                 }
-                {
-                  auto i = it->find("value");
-                  if (i != std::end(*it)) {
-                    pair.second = *i;
+                break;
+              }
+
+              case type::consumer_key_code: {
+                auto it = json.find("consumer_key_code");
+                if (it != std::end(json)) {
+                  if (auto v = types::make_consumer_key_code(it->get<std::string>())) {
+                    value_ = *v;
                   }
                 }
-                value_ = pair;
+                break;
               }
-              break;
-            }
 
-            case type::frontmost_application_changed: {
-              auto it = json.find("frontmost_application");
-              if (it != std::end(json)) {
-                value_ = manipulator_environment::frontmost_application(*it);
+              case type::pointing_button: {
+                auto it = json.find("pointing_button");
+                if (it != std::end(json)) {
+                  if (auto v = types::make_pointing_button(it->get<std::string>())) {
+                    value_ = *v;
+                  }
+                }
+                break;
               }
-              break;
-            }
 
-            case type::input_source_changed: {
-              auto it = json.find("input_source_identifiers");
-              if (it != std::end(json)) {
-                value_ = input_source_identifiers(*it);
+              case type::pointing_x:
+              case type::pointing_y:
+              case type::pointing_vertical_wheel:
+              case type::pointing_horizontal_wheel:
+              case type::caps_lock_state_changed: {
+                auto it = json.find("integer_value");
+                if (it != std::end(json)) {
+                  value_ = it->get<int>();
+                }
+                break;
               }
-              break;
-            }
 
-            case type::device_keys_are_released:
-            case type::device_pointing_buttons_are_released:
-            case type::device_ungrabbed:
-            case type::event_from_ignored_device:
-            case type::pointing_device_event_from_event_tap:
-              break;
+              case type::shell_command: {
+                auto it = json.find("shell_command");
+                if (it != std::end(json)) {
+                  value_ = it->get<std::string>();
+                }
+                break;
+              }
+
+              case type::select_input_source: {
+                auto it = json.find("input_source_selectors");
+                if (it != std::end(json)) {
+                  std::vector<input_source_selector> input_source_selectors;
+                  for (const auto& j : *it) {
+                    input_source_selectors.emplace_back(j);
+                  }
+                  value_ = input_source_selectors;
+                }
+                break;
+              }
+
+              case type::set_variable: {
+                auto it = json.find("set_variable");
+                if (it != std::end(json)) {
+                  std::pair<std::string, int> pair;
+                  {
+                    auto i = it->find("name");
+                    if (i != std::end(*it)) {
+                      pair.first = *i;
+                    }
+                  }
+                  {
+                    auto i = it->find("value");
+                    if (i != std::end(*it)) {
+                      pair.second = *i;
+                    }
+                  }
+                  value_ = pair;
+                }
+                break;
+              }
+
+              case type::frontmost_application_changed: {
+                auto it = json.find("frontmost_application");
+                if (it != std::end(json)) {
+                  value_ = manipulator_environment::frontmost_application(*it);
+                }
+                break;
+              }
+
+              case type::input_source_changed: {
+                auto it = json.find("input_source_identifiers");
+                if (it != std::end(json)) {
+                  value_ = input_source_identifiers(*it);
+                }
+                break;
+              }
+
+              case type::device_keys_are_released:
+              case type::device_pointing_buttons_are_released:
+              case type::device_ungrabbed:
+              case type::event_from_ignored_device:
+              case type::pointing_device_event_from_event_tap:
+                break;
+            }
           }
         }
       }
@@ -422,9 +428,6 @@ public:
       }
 
     private:
-      event(void) {
-      }
-
       static event make_virtual_event(type type) {
         event e;
         e.type_ = type;
@@ -523,6 +526,57 @@ public:
                                       event_(event),
                                       event_type_(event_type),
                                       original_event_(original_event) {
+    }
+
+    queued_event(const nlohmann::json& json) : device_id_(device_id::zero),
+                                               time_stamp_(0),
+                                               valid_(true),
+                                               lazy_(false),
+                                               event_type_(event_type::key_down) {
+      if (json.is_object()) {
+        {
+          auto it = json.find("device_id");
+          if (it != std::end(json)) {
+            device_id_ = device_id(it->get<int>());
+          }
+        }
+        {
+          auto it = json.find("time_stamp");
+          if (it != std::end(json)) {
+            time_stamp_ = *it;
+          }
+        }
+        {
+          auto it = json.find("valid");
+          if (it != std::end(json)) {
+            valid_ = *it;
+          }
+        }
+        {
+          auto it = json.find("lazy");
+          if (it != std::end(json)) {
+            lazy_ = *it;
+          }
+        }
+        {
+          auto it = json.find("event");
+          if (it != std::end(json)) {
+            event_ = *it;
+          }
+        }
+        {
+          auto it = json.find("event_type");
+          if (it != std::end(json)) {
+            event_type_ = *it;
+          }
+        }
+        {
+          auto it = json.find("original_event");
+          if (it != std::end(json)) {
+            original_event_ = *it;
+          }
+        }
+      }
     }
 
     nlohmann::json to_json(void) const {
