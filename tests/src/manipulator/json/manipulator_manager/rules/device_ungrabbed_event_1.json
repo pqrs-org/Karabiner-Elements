@@ -1,0 +1,13 @@
+[
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "spacebar"
+        },
+        "to": [
+            {
+                "key_code": "tab"
+            }
+        ]
+    }
+]

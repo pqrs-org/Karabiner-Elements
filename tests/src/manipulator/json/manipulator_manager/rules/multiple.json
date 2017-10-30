@@ -1,0 +1,80 @@
+[
+    {
+        "description": "spacebar -> tab",
+        "type": "basic",
+        "from": {
+            "key_code": "spacebar"
+        },
+        "to": [
+            {
+                "key_code": "tab"
+            }
+        ]
+    },
+    {
+        "description": "spacebar -> escape",
+        "type": "basic",
+        "from": {
+            "key_code": "spacebar"
+        },
+        "to": [
+            {
+                "key_code": "escape"
+            }
+        ]
+    },
+    {
+        "description": "tab (any) -> a",
+        "type": "basic",
+        "from": {
+            "key_code": "tab",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "a"
+            }
+        ]
+    },
+    {
+        "description": "escape -> left_shift",
+        "type": "basic",
+        "from": {
+            "key_code": "escape"
+        },
+        "to": [
+            {
+                "key_code": "left_shift"
+            }
+        ]
+    },
+    {
+        "description": "left_shift -> tab",
+        "type": "basic",
+        "from": {
+            "key_code": "left_shift"
+        },
+        "to": [
+            {
+                "key_code": "tab"
+            }
+        ]
+    },
+    {
+        "description": "f1 -> empty",
+        "type": "basic",
+        "from": {
+            "key_code": "f1",
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        }
+    }
+]

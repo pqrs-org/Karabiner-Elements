@@ -1,0 +1,53 @@
+[
+    {
+        "description": "spacebar -> tab",
+        "rules": [
+            "json/manipulator_manager/rules/spacebar_to_tab.json"
+        ],
+        "input_event_queue": "json/manipulator_manager/input_event_queue/spacebar_to_tab.json",
+        "expected_event_queue": "json/manipulator_manager/expected_event_queue/spacebar_to_tab.json"
+    },
+    {
+        "description": "spacebar -> tab (key_up only)",
+        "rules": [
+            "json/manipulator_manager/rules/spacebar_to_tab.json"
+        ],
+        "input_event_queue": "json/manipulator_manager/input_event_queue/spacebar_to_tab_key_up.json",
+        "expected_event_queue": "json/manipulator_manager/expected_event_queue/spacebar_to_tab_key_up.json"
+    },
+    {
+        "description": "multiple",
+        "rules": [
+            "json/manipulator_manager/rules/multiple.json"
+        ],
+        "input_event_queue": "json/manipulator_manager/input_event_queue/multiple.json",
+        "expected_event_queue": "json/manipulator_manager/expected_event_queue/multiple.json"
+    },
+    {
+        "description": "device_ungrabbed_event_1",
+        "rules": [
+            "json/manipulator_manager/rules/device_ungrabbed_event_1.json",
+            "json/manipulator_manager/rules/device_ungrabbed_event_2.json"
+        ],
+        "input_event_queue": "json/manipulator_manager/input_event_queue/device_ungrabbed_event_1.json",
+        "expected_event_queue": "json/manipulator_manager/expected_event_queue/device_ungrabbed_event_1.json"
+    },
+    {
+        "description": "device_ungrabbed_event_2",
+        "rules": [
+            "json/manipulator_manager/rules/device_ungrabbed_event_1.json",
+            "json/manipulator_manager/rules/device_ungrabbed_event_2.json"
+        ],
+        "input_event_queue": "json/manipulator_manager/input_event_queue/device_ungrabbed_event_2.json",
+        "expected_event_queue": "json/manipulator_manager/expected_event_queue/device_ungrabbed_event_2.json"
+    },
+    {
+        "description": "device_ungrabbed_event_3",
+        "rules": [
+            "json/manipulator_manager/rules/device_ungrabbed_event_1.json",
+            "json/manipulator_manager/rules/device_ungrabbed_event_2.json"
+        ],
+        "input_event_queue": "json/manipulator_manager/input_event_queue/device_ungrabbed_event_3.json",
+        "expected_event_queue": "json/manipulator_manager/expected_event_queue/device_ungrabbed_event_3.json"
+    }
+]

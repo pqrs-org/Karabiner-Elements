@@ -1,0 +1,13 @@
+[
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "tab"
+        },
+        "to": [
+            {
+                "key_code": "escape"
+            }
+        ]
+    }
+]

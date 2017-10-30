@@ -1,0 +1,17 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "time_stamp": 100,
+        "valid": true
+    }
+]

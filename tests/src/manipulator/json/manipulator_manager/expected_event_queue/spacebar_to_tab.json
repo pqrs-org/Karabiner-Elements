@@ -1,0 +1,62 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "time_stamp": 100,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "time_stamp": 200,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "time_stamp": 300,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "time_stamp": 400,
+        "valid": true
+    }
+]
