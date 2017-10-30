@@ -1634,6 +1634,18 @@ inline void to_json(nlohmann::json& json, const event_type& value) {
   }
 }
 
+inline void from_json(const nlohmann::json& json, event_type& value) {
+  auto s = json.get<std::string>();
+
+  if (s == "key_up") {
+    value = event_type::key_up;
+  } else if (s == "single") {
+    value = event_type::single;
+  } else {
+    value = event_type::key_down;
+  }
+}
+
 inline void to_json(nlohmann::json& json, const device_identifiers& identifiers) {
   json = identifiers.to_json();
 }
