@@ -458,10 +458,10 @@ public:
   }
 
   from_event_definition(key_code key_code,
-                        std::unordered_set<modifier> mandatory_modifiers,
-                        std::unordered_set<modifier> optional_modifiers) : event_definition(key_code),
-                                                                           mandatory_modifiers_(mandatory_modifiers),
-                                                                           optional_modifiers_(optional_modifiers) {
+                        const std::unordered_set<modifier>& mandatory_modifiers,
+                        const std::unordered_set<modifier>& optional_modifiers) : event_definition(key_code),
+                                                                                  mandatory_modifiers_(mandatory_modifiers),
+                                                                                  optional_modifiers_(optional_modifiers) {
   }
 
   virtual ~from_event_definition(void) {
@@ -595,8 +595,8 @@ public:
   }
 
   to_event_definition(key_code key_code,
-                      std::unordered_set<modifier> modifiers) : event_definition(key_code),
-                                                                modifiers_(modifiers) {
+                      const std::unordered_set<modifier>& modifiers) : event_definition(key_code),
+                                                                       modifiers_(modifiers) {
   }
 
   virtual ~to_event_definition(void) {
