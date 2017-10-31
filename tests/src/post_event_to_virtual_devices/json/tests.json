@@ -1,5 +1,37 @@
 [
     {
+        "description": "not_changed_1",
+        "rules": [
+            "json/rules/from_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/not_changed_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/not_changed_1.json"
+    },
+    {
+        "description": "f1 -> f2 (key to key)",
+        "rules": [
+            "json/rules/from_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/key_to_key_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_key_1.json"
+    },
+    {
+        "description": "f2 -> left_shift (key to modifier)",
+        "rules": [
+            "json/rules/from_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/key_to_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_1.json"
+    },
+    {
+        "description": "f3 -> left_command+spacebar (key to modifier+key)",
+        "rules": [
+            "json/rules/from_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/key_to_modifier_key_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_key_1.json"
+    },
+    {
         "description": "f4 -> left_command+left_option (key to modifier+modifier)",
         "rules": [
             "json/rules/from_key.json"
@@ -270,5 +302,13 @@
         ],
         "input_event_queue": "json/input_event_queue/multiple_to_keys_2.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/multiple_to_keys_2.json"
+    },
+    {
+        "description": "device_keys_are_released_1",
+        "rules": [
+            "json/rules/from_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/device_keys_are_released_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_keys_are_released_1.json"
     }
 ]

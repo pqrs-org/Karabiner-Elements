@@ -1,0 +1,70 @@
+[
+    {
+        "keyboard_event": {
+            "key_code": "left_gui",
+            "value": 1
+        },
+        "time_stamp": 5000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "spacebar",
+            "value": 1
+        },
+        "time_stamp": 10000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "spacebar",
+            "value": 0
+        },
+        "time_stamp": 4000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "spacebar",
+            "value": 1
+        },
+        "time_stamp": 6000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_gui",
+            "value": 0
+        },
+        "time_stamp": 15000000,
+        "type": "keyboard_event"
+    },
+    {
+        "time_stamp": 8000000,
+        "type": "clear_keyboard_modifier_flags"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "tab",
+            "value": 1
+        },
+        "time_stamp": 20000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "spacebar",
+            "value": 0
+        },
+        "time_stamp": 10000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "tab",
+            "value": 0
+        },
+        "time_stamp": 12000000,
+        "type": "keyboard_event"
+    }
+]
