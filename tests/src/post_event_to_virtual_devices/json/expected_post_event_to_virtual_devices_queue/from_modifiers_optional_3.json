@@ -1,0 +1,74 @@
+[
+    {
+        "keyboard_event": {
+            "key_code": "left_control",
+            "value": 1
+        },
+        "time_stamp": 5000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_shift",
+            "value": 1
+        },
+        "time_stamp": 4000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_control",
+            "value": 0
+        },
+        "time_stamp": 6000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "up_arrow",
+            "value": 1
+        },
+        "time_stamp": 11000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "up_arrow",
+            "value": 0
+        },
+        "time_stamp": 8000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "up_arrow",
+            "value": 1
+        },
+        "time_stamp": 10000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "up_arrow",
+            "value": 0
+        },
+        "time_stamp": 12000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "p",
+            "value": 1
+        },
+        "time_stamp": 16000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "p",
+            "value": 0
+        },
+        "time_stamp": 18000000,
+        "type": "keyboard_event"
+    }
+]
