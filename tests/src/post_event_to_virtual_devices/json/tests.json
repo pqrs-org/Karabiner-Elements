@@ -1,5 +1,29 @@
 [
     {
+        "description": "f4 -> left_command+left_option (key to modifier+modifier)",
+        "rules": [
+            "json/rules/from_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/key_to_modifier_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_modifier_1.json"
+    },
+    {
+        "description": "left_shift+f5 -> spacebar (modifier+key to key)",
+        "rules": [
+            "json/rules/from_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/modifier_key_to_key_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_key_1.json"
+    },
+    {
+        "description": "left_command+f6 -> fn (modifier+key to modifier)",
+        "rules": [
+            "json/rules/from_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/modifier_key_to_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_1.json"
+    },
+    {
         "description": "right_option+f7 -> right_command+spacebar (modifier+key to modifier+key)",
         "rules": [
             "json/rules/from_key.json"
