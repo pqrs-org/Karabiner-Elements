@@ -1,0 +1,137 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "time_stamp": 1000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "time_stamp": 2000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "time_stamp": 2000000001,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "time_stamp": 3000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "time_stamp": 3000000001,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "time_stamp": 4000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "time_stamp": 4000000001,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "time_stamp": 5000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "escape",
+            "type": "key_code"
+        },
+        "time_stamp": 5000000001,
+        "valid": true
+    }
+]

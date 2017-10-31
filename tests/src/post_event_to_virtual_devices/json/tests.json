@@ -1,5 +1,61 @@
 [
     {
+        "description": "same_modifier_twice_from_different_devices_1",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/same_modifier_twice_from_different_devices_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/same_modifier_twice_from_different_devices_1.json"
+    },
+    {
+        "description": "same_modifier_twice_from_different_devices_2",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/same_modifier_twice_from_different_devices_2.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/same_modifier_twice_from_different_devices_2.json"
+    },
+    {
+        "description": "device_ungrabbed_event_1",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/device_ungrabbed_event_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_1.json"
+    },
+    {
+        "description": "device_ungrabbed_event_2",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/device_ungrabbed_event_2.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_2.json"
+    },
+    {
+        "description": "device_ungrabbed_event_3",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/device_ungrabbed_event_3.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_3.json"
+    },
+    {
+        "description": "wait_around_modifier_1",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/wait_around_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_around_modifier_1.json"
+    },
+    {
+        "description": "collapse_lazy_events_1",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/collapse_lazy_events_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/collapse_lazy_events_1.json"
+    },
+    {
         "description": "not_changed_1",
         "rules": [
             "json/rules/from_key.json"

@@ -1,0 +1,58 @@
+[
+    {
+        "keyboard_event": {
+            "key_code": "tab",
+            "value": 1
+        },
+        "time_stamp": 1000000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "escape",
+            "value": 1
+        },
+        "time_stamp": 2000000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "spacebar",
+            "value": 1
+        },
+        "time_stamp": 3000000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "tab",
+            "value": 0
+        },
+        "time_stamp": 4000000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_shift",
+            "value": 1
+        },
+        "time_stamp": 5000000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "return_or_enter",
+            "value": 1
+        },
+        "time_stamp": 6000000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "a",
+            "value": 1
+        },
+        "time_stamp": 7000000000,
+        "type": "keyboard_event"
+    }
+]

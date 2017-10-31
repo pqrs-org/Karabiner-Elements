@@ -1,0 +1,182 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": true,
+        "original_event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "time_stamp": 1000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "left_control",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": true,
+        "original_event": {
+            "key_code": "left_control",
+            "type": "key_code"
+        },
+        "time_stamp": 2000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": true,
+        "original_event": {
+            "key_code": "left_shift",
+            "type": "key_code"
+        },
+        "time_stamp": 3000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "left_control",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "left_control",
+            "type": "key_code"
+        },
+        "time_stamp": 4000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "fn",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "fn",
+            "type": "key_code"
+        },
+        "time_stamp": 5000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "time_stamp": 6000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "fn",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": true,
+        "original_event": {
+            "key_code": "fn",
+            "type": "key_code"
+        },
+        "time_stamp": 7000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": true,
+        "original_event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "time_stamp": 8000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "fn",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "fn",
+            "type": "key_code"
+        },
+        "time_stamp": 9000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "time_stamp": 10000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "fn",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "fn",
+            "type": "key_code"
+        },
+        "time_stamp": 11000000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "time_stamp": 12000000000,
+        "valid": true
+    }
+]
