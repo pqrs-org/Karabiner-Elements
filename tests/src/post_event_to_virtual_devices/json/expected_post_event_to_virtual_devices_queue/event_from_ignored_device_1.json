@@ -1,0 +1,46 @@
+[
+    {
+        "keyboard_event": {
+            "key_code": "left_control",
+            "value": 1
+        },
+        "time_stamp": 5000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_control",
+            "value": 0
+        },
+        "time_stamp": 4000001,
+        "type": "keyboard_event"
+    },
+    {
+        "time_stamp": 4000001,
+        "type": "clear_keyboard_modifier_flags"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "up_arrow",
+            "value": 1
+        },
+        "time_stamp": 10000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "up_arrow",
+            "value": 0
+        },
+        "time_stamp": 6000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_control",
+            "value": 1
+        },
+        "time_stamp": 15000000,
+        "type": "keyboard_event"
+    }
+]

@@ -1,7 +1,7 @@
 [
     {
         "keyboard_event": {
-            "key_code": "left_control",
+            "key_code": "right_control",
             "value": 1
         },
         "time_stamp": 5000000,
@@ -9,35 +9,35 @@
     },
     {
         "keyboard_event": {
-            "key_code": "left_control",
+            "key_code": "left_shift",
+            "value": 1
+        },
+        "time_stamp": 4000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "right_control",
             "value": 0
         },
         "time_stamp": 4000001,
         "type": "keyboard_event"
     },
     {
-        "time_stamp": 4000001,
-        "type": "clear_keyboard_modifier_flags"
-    },
-    {
         "keyboard_event": {
-            "key_code": "up_arrow",
-            "value": 1
-        },
-        "time_stamp": 10000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "up_arrow",
+            "key_code": "left_shift",
             "value": 0
         },
         "time_stamp": 6000000,
         "type": "keyboard_event"
     },
     {
+        "time_stamp": 6000000,
+        "type": "clear_keyboard_modifier_flags"
+    },
+    {
         "keyboard_event": {
-            "key_code": "up_arrow",
+            "key_code": "left_shift",
             "value": 1
         },
         "time_stamp": 8000001,
@@ -45,26 +45,10 @@
     },
     {
         "keyboard_event": {
-            "key_code": "up_arrow",
-            "value": 0
-        },
-        "time_stamp": 10000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "left_control",
-            "value": 1
-        },
-        "time_stamp": 15000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
             "key_code": "tab",
             "value": 1
         },
-        "time_stamp": 20000000,
+        "time_stamp": 13000001,
         "type": "keyboard_event"
     },
     {
@@ -72,35 +56,55 @@
             "key_code": "tab",
             "value": 0
         },
+        "time_stamp": 12000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_shift",
+            "value": 0
+        },
+        "time_stamp": 18000001,
+        "type": "keyboard_event"
+    },
+    {
         "time_stamp": 14000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "left_control",
-            "value": 0
-        },
-        "time_stamp": 25000000,
-        "type": "keyboard_event"
-    },
-    {
-        "time_stamp": 16000000,
         "type": "clear_keyboard_modifier_flags"
     },
     {
         "keyboard_event": {
-            "key_code": "p",
+            "key_code": "right_control",
             "value": 1
         },
-        "time_stamp": 30000000,
+        "time_stamp": 16000000,
         "type": "keyboard_event"
     },
     {
         "keyboard_event": {
-            "key_code": "p",
+            "key_code": "tab",
+            "value": 1
+        },
+        "time_stamp": 23000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "tab",
             "value": 0
         },
-        "time_stamp": 20000000,
+        "time_stamp": 18000000,
         "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "right_control",
+            "value": 0
+        },
+        "time_stamp": 28000001,
+        "type": "keyboard_event"
+    },
+    {
+        "time_stamp": 20000000,
+        "type": "clear_keyboard_modifier_flags"
     }
 ]

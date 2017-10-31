@@ -1,7 +1,7 @@
 [
     {
         "keyboard_event": {
-            "key_code": "left_control",
+            "key_code": "left_shift",
             "value": 1
         },
         "time_stamp": 5000000,
@@ -9,7 +9,7 @@
     },
     {
         "keyboard_event": {
-            "key_code": "left_control",
+            "key_code": "left_shift",
             "value": 0
         },
         "time_stamp": 4000001,
@@ -21,7 +21,7 @@
     },
     {
         "keyboard_event": {
-            "key_code": "up_arrow",
+            "key_code": "f2",
             "value": 1
         },
         "time_stamp": 10000000,
@@ -29,31 +29,7 @@
     },
     {
         "keyboard_event": {
-            "key_code": "up_arrow",
-            "value": 0
-        },
-        "time_stamp": 6000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "up_arrow",
-            "value": 1
-        },
-        "time_stamp": 8000001,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "up_arrow",
-            "value": 0
-        },
-        "time_stamp": 10000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "left_control",
+            "key_code": "left_shift",
             "value": 1
         },
         "time_stamp": 15000000,
@@ -72,35 +48,31 @@
             "key_code": "tab",
             "value": 0
         },
-        "time_stamp": 14000000,
+        "time_stamp": 8000000,
         "type": "keyboard_event"
     },
     {
         "keyboard_event": {
-            "key_code": "left_control",
+            "key_code": "f2",
             "value": 0
         },
-        "time_stamp": 25000000,
+        "time_stamp": 10000000,
         "type": "keyboard_event"
     },
     {
-        "time_stamp": 16000000,
-        "type": "clear_keyboard_modifier_flags"
-    },
-    {
         "keyboard_event": {
-            "key_code": "p",
+            "key_code": "escape",
             "value": 1
         },
-        "time_stamp": 30000000,
+        "time_stamp": 10000001,
         "type": "keyboard_event"
     },
     {
         "keyboard_event": {
-            "key_code": "p",
+            "key_code": "escape",
             "value": 0
         },
-        "time_stamp": 20000000,
+        "time_stamp": 10000002,
         "type": "keyboard_event"
     }
 ]

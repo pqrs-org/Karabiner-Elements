@@ -2,13 +2,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "left_control",
+            "key_code": "right_control",
             "type": "key_code"
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "key_code": "left_control",
+            "key_code": "right_control",
             "type": "key_code"
         },
         "time_stamp": 2000000,
@@ -17,13 +17,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "p",
+            "key_code": "tab",
             "type": "key_code"
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "key_code": "p",
+            "key_code": "tab",
             "type": "key_code"
         },
         "time_stamp": 4000000,
@@ -32,13 +32,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "p",
+            "key_code": "tab",
             "type": "key_code"
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "key_code": "p",
+            "key_code": "tab",
             "type": "key_code"
         },
         "time_stamp": 6000000,
@@ -47,13 +47,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "p",
+            "key_code": "right_control",
             "type": "key_code"
         },
-        "event_type": "key_down",
+        "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "key_code": "p",
+            "key_code": "right_control",
             "type": "key_code"
         },
         "time_stamp": 8000000,
@@ -62,13 +62,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "p",
+            "key_code": "right_control",
             "type": "key_code"
         },
-        "event_type": "key_up",
+        "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "key_code": "p",
+            "key_code": "right_control",
             "type": "key_code"
         },
         "time_stamp": 10000000,
@@ -77,13 +77,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "tab",
+            "key_code": "right_control",
             "type": "key_code"
         },
-        "event_type": "key_down",
+        "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "key_code": "tab",
+            "key_code": "right_control",
             "type": "key_code"
         },
         "time_stamp": 12000000,
@@ -92,13 +92,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "tab",
+            "key_code": "right_control",
             "type": "key_code"
         },
-        "event_type": "key_up",
+        "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "key_code": "tab",
+            "key_code": "right_control",
             "type": "key_code"
         },
         "time_stamp": 14000000,
@@ -107,46 +107,46 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "left_control",
+            "key_code": "right_control",
             "type": "key_code"
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "key_code": "left_control",
+            "key_code": "right_control",
             "type": "key_code"
         },
-        "time_stamp": 16000000,
+        "time_stamp": 1013000000,
         "valid": true
     },
     {
         "device_id": 1,
         "event": {
-            "key_code": "p",
+            "key_code": "right_control",
             "type": "key_code"
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "key_code": "p",
+            "key_code": "right_control",
             "type": "key_code"
         },
-        "time_stamp": 18000000,
+        "time_stamp": 1015000000,
         "valid": true
     },
     {
         "device_id": 1,
         "event": {
-            "key_code": "p",
+            "key_code": "right_control",
             "type": "key_code"
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "key_code": "p",
+            "key_code": "right_control",
             "type": "key_code"
         },
-        "time_stamp": 20000000,
+        "time_stamp": 2016000000,
         "valid": true
     }
 ]
