@@ -69,6 +69,70 @@ public:
         return e;
       }
 
+      nlohmann::json to_json(void) const {
+        nlohmann::json json;
+        json["type"] = to_c_string(type_);
+        json["time_stamp"] = time_stamp_;
+
+        switch (type_) {
+          case type::keyboard_event:
+            if (auto v = get_keyboard_event()) {
+              bool found = false;
+              if (auto key_code = types::make_key_code(static_cast<hid_usage_page>(v->usage_page),
+                                                       static_cast<hid_usage>(v->usage))) {
+                if (auto key_code_name = types::make_key_code_name(*key_code)) {
+                  json["keyboard_event"]["key_code"] = *key_code_name;
+                  found = true;
+                }
+              } else if (auto consumer_key_code = types::make_consumer_key_code(static_cast<hid_usage_page>(v->usage_page),
+                                                                                static_cast<hid_usage>(v->usage))) {
+                if (auto consumer_key_code_name = types::make_consumer_key_code_name(*consumer_key_code)) {
+                  json["keyboard_event"]["consumer_key_code"] = *consumer_key_code_name;
+                  found = true;
+                }
+              }
+
+              if (!found) {
+                json["keyboard_event"]["usage_page"] = static_cast<uint32_t>(v->usage_page);
+                json["keyboard_event"]["usage"] = static_cast<uint32_t>(v->usage);
+              }
+              json["keyboard_event"]["value"] = v->value;
+            }
+            break;
+
+          case type::pointing_input:
+            if (auto v = get_pointing_input()) {
+              json["pointing_input"]["buttons"] = nlohmann::json::array();
+              json["pointing_input"]["buttons"].push_back(static_cast<int>(v->buttons[0]));
+              json["pointing_input"]["buttons"].push_back(static_cast<int>(v->buttons[1]));
+              json["pointing_input"]["buttons"].push_back(static_cast<int>(v->buttons[2]));
+              json["pointing_input"]["buttons"].push_back(static_cast<int>(v->buttons[3]));
+              json["pointing_input"]["x"] = static_cast<int>(v->x);
+              json["pointing_input"]["y"] = static_cast<int>(v->y);
+              json["pointing_input"]["vertical_wheel"] = static_cast<int>(v->vertical_wheel);
+              json["pointing_input"]["horizontal_wheel"] = static_cast<int>(v->horizontal_wheel);
+            }
+            break;
+
+          case type::shell_command:
+            if (auto v = get_shell_command()) {
+              json["shell_command"] = *v;
+            }
+            break;
+
+          case type::select_input_source:
+            if (auto v = get_input_source_selectors()) {
+              json["input_source_selectors"] = *v;
+            }
+            break;
+
+          case type::clear_keyboard_modifier_flags:
+            break;
+        }
+
+        return json;
+      }
+
       type get_type(void) const {
         return type_;
       }
@@ -113,6 +177,22 @@ public:
 
     private:
       event(void) {
+      }
+
+      static const char* to_c_string(type t) {
+#define TO_C_STRING(TYPE) \
+  case type::TYPE:        \
+    return #TYPE;
+
+        switch (t) {
+          TO_C_STRING(keyboard_event);
+          TO_C_STRING(pointing_input);
+          TO_C_STRING(clear_keyboard_modifier_flags);
+          TO_C_STRING(shell_command);
+          TO_C_STRING(select_input_source);
+        }
+
+        return nullptr;
       }
 
       type type_;
@@ -810,6 +890,10 @@ inline std::ostream& operator<<(std::ostream& stream, const post_event_to_virtua
   stream << "}";
 
   return stream;
+}
+
+inline void to_json(nlohmann::json& json, const post_event_to_virtual_devices::queue::event& value) {
+  json = value.to_json();
 }
 } // namespace details
 } // namespace manipulator
