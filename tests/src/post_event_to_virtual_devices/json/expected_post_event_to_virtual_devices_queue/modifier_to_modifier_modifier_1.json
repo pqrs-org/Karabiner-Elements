@@ -1,0 +1,90 @@
+[
+    {
+        "keyboard_event": {
+            "key_code": "fn",
+            "value": 1
+        },
+        "time_stamp": 5000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "right_alt",
+            "value": 1
+        },
+        "time_stamp": 2000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "right_alt",
+            "value": 0
+        },
+        "time_stamp": 4000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "fn",
+            "value": 0
+        },
+        "time_stamp": 4000001,
+        "type": "keyboard_event"
+    },
+    {
+        "time_stamp": 4000001,
+        "type": "clear_keyboard_modifier_flags"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "fn",
+            "value": 1
+        },
+        "time_stamp": 6000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "right_alt",
+            "value": 1
+        },
+        "time_stamp": 6000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "tab",
+            "value": 1
+        },
+        "time_stamp": 11000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "tab",
+            "value": 0
+        },
+        "time_stamp": 10000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "right_alt",
+            "value": 0
+        },
+        "time_stamp": 16000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "fn",
+            "value": 0
+        },
+        "time_stamp": 12000001,
+        "type": "keyboard_event"
+    },
+    {
+        "time_stamp": 12000001,
+        "type": "clear_keyboard_modifier_flags"
+    }
+]

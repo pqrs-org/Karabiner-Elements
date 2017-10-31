@@ -1,5 +1,21 @@
 [
     {
+        "description": "left_command -> fn+right_option (modifier -> modifier+modifier)",
+        "rules": [
+            "json/rules/from_modifier.json"
+        ],
+        "input_event_queue": "json/input_event_queue/modifier_to_modifier_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_modifier_1.json"
+    },
+    {
+        "description": "right_command+right_option -> f5 (modifier+modifier -> key)",
+        "rules": [
+            "json/rules/from_modifier.json"
+        ],
+        "input_event_queue": "json/input_event_queue/modifier_modifier_to_key_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_key_1.json"
+    },
+    {
         "description": "right_control+right_option -> left_shift (modifier+modifier -> modifier) (1)",
         "rules": [
             "json/rules/from_modifier.json"
