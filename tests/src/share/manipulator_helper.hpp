@@ -12,7 +12,7 @@ class manipulator_helper final {
 public:
   static void run_tests(const nlohmann::json& json) {
     for (const auto& test : json) {
-      logger::get_logger().info(test["description"].get<std::string>());
+      logger::get_logger().info("{0} start", test["description"].get<std::string>());
 
       manipulator::manipulator_managers_connector connector;
       std::vector<std::unique_ptr<manipulator::manipulator_manager>> manipulator_managers;
@@ -42,17 +42,28 @@ public:
       REQUIRE(!manipulator_managers.empty());
       REQUIRE(!event_queues.empty());
 
-      push_back_events(*(event_queues.front()),
-                       nlohmann::json::parse(std::ifstream(test["input_event_queue"].get<std::string>())));
+      for (const auto& j : nlohmann::json::parse(std::ifstream(test["input_event_queue"].get<std::string>()))) {
+        auto action_it = j.find("action");
+        if (action_it == std::end(j)) {
+          auto e = event_queue::queued_event(j);
+          event_queues.front()->push_back_event(e);
+          connector.manipulate();
+        } else {
+          auto s = action_it->get<std::string>();
+          if (s == "invalidate_manipulators") {
+            connector.invalidate_manipulators();
+          }
+        }
+      }
 
       auto expected_event_queue = std::make_shared<event_queue>();
       push_back_events(*expected_event_queue,
                        nlohmann::json::parse(std::ifstream(test["expected_event_queue"].get<std::string>())));
 
-      connector.manipulate();
-
       REQUIRE(event_queues.front()->get_events().empty());
-      REQUIRE(event_queues.back()->get_events() == expected_event_queue->get_events());
+      REQUIRE(nlohmann::json(event_queues.back()->get_events()).dump() == nlohmann::json(expected_event_queue->get_events()).dump());
+
+      logger::get_logger().info("{0} end", test["description"].get<std::string>());
     }
   }
 

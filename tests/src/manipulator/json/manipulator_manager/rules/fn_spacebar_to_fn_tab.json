@@ -1,0 +1,24 @@
+[
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "spacebar",
+            "modifiers": {
+                "mandatory": [
+                    "fn"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "tab",
+                "modifiers": [
+                    "fn"
+                ]
+            }
+        ]
+    }
+]
