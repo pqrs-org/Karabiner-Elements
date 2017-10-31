@@ -1,5 +1,13 @@
 [
     {
+        "description": "generic_1",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/generic_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/generic_1.json"
+    },
+    {
         "description": "same_modifier_twice_from_different_devices_1",
         "rules": [
             "json/rules/empty.json"
