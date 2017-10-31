@@ -1,5 +1,13 @@
 [
     {
+        "description": "right_shift -> f1 (modifier -> key)",
+        "rules": [
+            "json/rules/from_modifier.json"
+        ],
+        "input_event_queue": "json/input_event_queue/modifier_to_key_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_key_1.json"
+    },
+    {
         "description": "left_shift -> fn (modifier -> modifier)",
         "rules": [
             "json/rules/from_modifier.json"

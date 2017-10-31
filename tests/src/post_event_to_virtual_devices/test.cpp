@@ -917,36 +917,6 @@ TEST_CASE("actual examples") {
     REQUIRE(helper.get_events() == expected);
   }
 
-  // ----------------------------------------
-  // right_shift -> f1 (modifier -> key)
-
-  {
-    actual_examples_helper helper("from_modifier.json");
-
-    time_stamp = 0;
-
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_shift_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_down);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, tab_event, key_up);
-    ENQUEUE_EVENT(helper.get_input_event_queue(), 1, time_stamp += interval, right_shift_event, key_up);
-
-    std::cout << nlohmann::json(helper.get_input_event_queue()->get_events()) << std::endl;
-
-    helper.manipulate();
-
-    time_stamp = 0;
-    expected.clear();
-
-    ENQUEUE_KEYBOARD_EVENT(expected, f1, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 1, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, tab, 0, time_stamp);
-    ENQUEUE_KEYBOARD_EVENT(expected, f1, 0, time_stamp);
-
-    std::cout << nlohmann::json(expected) << std::endl;
-
-    REQUIRE(helper.get_events() == expected);
-  }
-
   krbn::unit_testing::manipulator_helper::run_tests(nlohmann::json::parse(std::ifstream("json/tests.json")));
 }
 
