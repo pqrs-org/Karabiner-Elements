@@ -61,6 +61,10 @@ public:
       REQUIRE(!manipulator_managers.empty());
       REQUIRE(!event_queues.empty());
 
+      auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
+          connector.manipulate();
+        });
+
       {
         std::ifstream ifs(test["input_event_queue"].get<std::string>());
         REQUIRE(ifs);
@@ -74,6 +78,12 @@ public:
             auto s = action_it->get<std::string>();
             if (s == "invalidate_manipulators") {
               connector.invalidate_manipulators();
+            } else if (s == "invoke_manipulator_timer") {
+              uint64_t time_stamp = 0;
+              if (j.find("time_stamp") != std::end(j)) {
+                time_stamp = j["time_stamp"];
+              }
+              krbn::manipulator::manipulator_timer::get_instance().signal(time_stamp);
             }
           }
         }
@@ -100,6 +110,8 @@ public:
         logger::get_logger().error("There are not expected results.");
         REQUIRE(false);
       }
+
+      input_event_arrived_connection.disconnect();
     }
 
     logger::get_logger().info("krbn::unit_testing::manipulator_helper::run_tests finished");

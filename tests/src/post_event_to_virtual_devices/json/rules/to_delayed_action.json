@@ -1,0 +1,45 @@
+[
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "f12",
+            "modifiers": {
+                "mandatory": [
+                    "command"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "a"
+            }
+        ],
+        "to_delayed_action": {
+            "to_invoked": [
+                {
+                    "key_code": "b"
+                },
+                {
+                    "key_code": "c",
+                    "modifiers": [
+                        "left_shift"
+                    ]
+                }
+            ],
+            "to_canceled": [
+                {
+                    "key_code": "d"
+                },
+                {
+                    "key_code": "e",
+                    "modifiers": [
+                        "left_shift"
+                    ]
+                }
+            ]
+        }
+    }
+]

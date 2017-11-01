@@ -1,0 +1,102 @@
+[
+    {
+        "keyboard_event": {
+            "key_code": "left_gui",
+            "value": 1
+        },
+        "time_stamp": 5000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_gui",
+            "value": 0
+        },
+        "time_stamp": 4000001,
+        "type": "keyboard_event"
+    },
+    {
+        "time_stamp": 4000001,
+        "type": "clear_keyboard_modifier_flags"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "a",
+            "value": 1
+        },
+        "time_stamp": 10000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "a",
+            "value": 0
+        },
+        "time_stamp": 6000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "d",
+            "value": 1
+        },
+        "time_stamp": 4000001,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "d",
+            "value": 0
+        },
+        "time_stamp": 4000002,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_shift",
+            "value": 1
+        },
+        "time_stamp": 15000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "e",
+            "value": 1
+        },
+        "time_stamp": 20000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "e",
+            "value": 0
+        },
+        "time_stamp": 4000005,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_shift",
+            "value": 0
+        },
+        "time_stamp": 25000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_gui",
+            "value": 1
+        },
+        "time_stamp": 8000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "f13",
+            "value": 1
+        },
+        "time_stamp": 30000000,
+        "type": "keyboard_event"
+    }
+]

@@ -1,0 +1,100 @@
+[
+    {
+        "type": "basic",
+        "conditions": [
+            {
+                "type": "variable_if",
+                "name": "C-x",
+                "value": 1
+            }
+        ],
+        "from": {
+            "key_code": "s",
+            "modifiers": {
+                "mandatory": [
+                    "control"
+                ],
+                "optional": [
+                    "caps_lock"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "s",
+                "modifiers": [
+                    "left_command"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "basic",
+        "conditions": [
+            {
+                "type": "variable_if",
+                "name": "C-x",
+                "value": 1
+            }
+        ],
+        "from": {
+            "key_code": "f",
+            "modifiers": {
+                "mandatory": [
+                    "control"
+                ],
+                "optional": [
+                    "caps_lock"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "o",
+                "modifiers": [
+                    "left_command"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "x",
+            "modifiers": {
+                "mandatory": [
+                    "control"
+                ],
+                "optional": [
+                    "caps_lock"
+                ]
+            }
+        },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "C-x",
+                    "value": 1
+                }
+            }
+        ],
+        "to_delayed_action": {
+            "to_invoked": [
+                {
+                    "set_variable": {
+                        "name": "C-x",
+                        "value": 0
+                    }
+                }
+            ],
+            "to_canceled": [
+                {
+                    "set_variable": {
+                        "name": "C-x",
+                        "value": 0
+                    }
+                }
+            ]
+        }
+    }
+]
