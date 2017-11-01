@@ -8,7 +8,8 @@ public:
     }
 
     parameters(const nlohmann::json& json) : json_(json),
-                                             basic_to_if_alone_timeout_milliseconds_(1000) {
+                                             basic_to_if_alone_timeout_milliseconds_(1000),
+                                             basic_to_delayed_action_delay_milliseconds_(500) {
       update(json);
     }
 
@@ -49,15 +50,21 @@ public:
       return basic_to_if_alone_timeout_milliseconds_;
     }
 
+    int get_basic_to_delayed_action_delay_milliseconds(void) const {
+      return basic_to_delayed_action_delay_milliseconds_;
+    }
+
   private:
     std::unordered_map<std::string, const int&> make_map(void) const {
       return {
           {"basic.to_if_alone_timeout_milliseconds", basic_to_if_alone_timeout_milliseconds_},
+          {"basic.to_delayed_action_delay_milliseconds", basic_to_delayed_action_delay_milliseconds_},
       };
     }
 
     nlohmann::json json_;
     int basic_to_if_alone_timeout_milliseconds_;
+    int basic_to_delayed_action_delay_milliseconds_;
   };
 
   class rule final {

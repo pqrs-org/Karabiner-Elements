@@ -104,7 +104,8 @@ public:
 
     void setup(const event_queue::queued_event& front_input_event,
                const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
-               const std::shared_ptr<event_queue>& output_event_queue) {
+               const std::shared_ptr<event_queue>& output_event_queue,
+               int delay_milliseconds) {
       if (front_input_event.get_event_type() != event_type::key_down) {
         return;
       }
@@ -118,7 +119,8 @@ public:
       from_mandatory_modifiers_ = from_mandatory_modifiers;
       output_event_queue_ = output_event_queue;
 
-      manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(front_input_event.get_time_stamp() + time_utility::nano_to_absolute(300 * NSEC_PER_MSEC));
+      auto when = front_input_event.get_time_stamp() + time_utility::nano_to_absolute(delay_milliseconds * NSEC_PER_MSEC);
+      manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(when);
     }
 
     void cancel(const event_queue::queued_event& front_input_event) {
@@ -462,7 +464,8 @@ public:
           if (to_delayed_action_) {
             to_delayed_action_->setup(front_input_event,
                                       from_mandatory_modifiers,
-                                      output_event_queue);
+                                      output_event_queue,
+                                      parameters_.get_basic_to_delayed_action_delay_milliseconds());
           }
 
           // increase_time_stamp_delay
