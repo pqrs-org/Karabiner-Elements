@@ -118,7 +118,7 @@ public:
       from_mandatory_modifiers_ = from_mandatory_modifiers;
       output_event_queue_ = output_event_queue;
 
-      manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(dispatch_time(DISPATCH_TIME_NOW, 300 * NSEC_PER_MSEC));
+      manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(front_input_event.get_time_stamp() + time_utility::nano_to_absolute(300 * NSEC_PER_MSEC));
     }
 
     void cancel(const event_queue::queued_event& front_input_event) {
