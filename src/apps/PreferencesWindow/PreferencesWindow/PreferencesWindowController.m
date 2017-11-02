@@ -26,7 +26,12 @@
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 @property(weak) IBOutlet NSTextField* versionLabel;
-@property(weak) IBOutlet NSPopUpButton* virtualHIDKeyboardTypePopupButton;
+@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeANSIImageButton;
+@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeANSIRadioButton;
+@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeISOImageButton;
+@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeISORadioButton;
+@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeJISImageButton;
+@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeJISRadioButton;
 @property(weak) IBOutlet NSTextField* virtualHIDKeyboardCapsLockDelayMillisecondsText;
 @property(weak) IBOutlet NSStepper* virtualHIDKeyboardCapsLockDelayMillisecondsStepper;
 @property(weak) IBOutlet NSButton* checkForUpdateOnStartupButton;
@@ -54,7 +59,7 @@
   [self.complexModificationsRulesTableViewController setup];
   [self.complexModificationsParametersTabController setup];
   [self.devicesTableViewController setup];
-  [self setupVirtualHIDKeyboardTypePopUpButton];
+  [self setupVirtualHIDKeyboardTypeButtons];
   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
   [self.profilesTableViewController setup];
   [self setupMiscTabControls];
@@ -68,7 +73,7 @@
                                                   @strongify(self);
                                                   if (!self) return;
 
-                                                  [self setupVirtualHIDKeyboardTypePopUpButton];
+                                                  [self setupVirtualHIDKeyboardTypeButtons];
                                                   [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
                                                   [self setupMiscTabControls];
                                                 }];
@@ -111,44 +116,20 @@
   [self.logFileTextViewController updateTabLabel];
 }
 
-- (void)setupVirtualHIDKeyboardTypePopUpButton {
-  NSMenu* menu = [NSMenu new];
-
-  {
-    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"ANSI"
-                                                  action:NULL
-                                           keyEquivalent:@""];
-    item.representedObject = @"ansi";
-    [menu addItem:item];
-  }
-  {
-    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"ISO"
-                                                  action:NULL
-                                           keyEquivalent:@""];
-    item.representedObject = @"iso";
-    [menu addItem:item];
-  }
-  {
-    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"JIS"
-                                                  action:NULL
-                                           keyEquivalent:@""];
-    item.representedObject = @"jis";
-    [menu addItem:item];
-  }
-
-  self.virtualHIDKeyboardTypePopupButton.menu = menu;
-
-  // ----------------------------------------
-  // Select item
-
+- (void)setupVirtualHIDKeyboardTypeButtons {
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   NSString* keyboardType = coreConfigurationModel.selectedProfileVirtualHIDKeyboardKeyboardType;
 
-  for (NSMenuItem* item in self.virtualHIDKeyboardTypePopupButton.itemArray) {
-    if ([item.representedObject isEqualToString:keyboardType]) {
-      [self.virtualHIDKeyboardTypePopupButton selectItem:item];
-      break;
-    }
+  self.virtualHIDKeyboardTypeANSIRadioButton.state = NSControlStateValueOff;
+  self.virtualHIDKeyboardTypeISORadioButton.state = NSControlStateValueOff;
+  self.virtualHIDKeyboardTypeJISRadioButton.state = NSControlStateValueOff;
+
+  if ([keyboardType isEqualToString:@"iso"]) {
+    self.virtualHIDKeyboardTypeISORadioButton.state = NSControlStateValueOn;
+  } else if ([keyboardType isEqualToString:@"jis"]) {
+    self.virtualHIDKeyboardTypeJISRadioButton.state = NSControlStateValueOn;
+  } else {
+    self.virtualHIDKeyboardTypeANSIRadioButton.state = NSControlStateValueOn;
   }
 }
 
@@ -165,11 +146,24 @@
 }
 
 - (IBAction)changeVirtualHIDKeyboardTYpe:(id)sender {
-  NSMenuItem* selectedItem = self.virtualHIDKeyboardTypePopupButton.selectedItem;
-  if (selectedItem) {
+  NSString* keyboardType = nil;
+  if (sender == self.virtualHIDKeyboardTypeANSIImageButton ||
+      sender == self.virtualHIDKeyboardTypeANSIRadioButton) {
+    keyboardType = @"ansi";
+  } else if (sender == self.virtualHIDKeyboardTypeISOImageButton ||
+             sender == self.virtualHIDKeyboardTypeISORadioButton) {
+    keyboardType = @"iso";
+  } else if (sender == self.virtualHIDKeyboardTypeJISImageButton ||
+             sender == self.virtualHIDKeyboardTypeJISRadioButton) {
+    keyboardType = @"jis";
+  }
+
+  if (keyboardType) {
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    coreConfigurationModel.selectedProfileVirtualHIDKeyboardKeyboardType = selectedItem.representedObject;
+    coreConfigurationModel.selectedProfileVirtualHIDKeyboardKeyboardType = keyboardType;
     [coreConfigurationModel save];
+
+    [self setupVirtualHIDKeyboardTypeButtons];
   }
 }
 

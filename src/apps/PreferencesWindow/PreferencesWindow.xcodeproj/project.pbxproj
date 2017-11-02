@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		34226BE71FAB7EDC008B03CE /* keyboard_type_iso.png in Resources */ = {isa = PBXBuildFile; fileRef = 34226BE41FAB7EDC008B03CE /* keyboard_type_iso.png */; };
+		34226BE81FAB7EDC008B03CE /* keyboard_type_jis.png in Resources */ = {isa = PBXBuildFile; fileRef = 34226BE51FAB7EDC008B03CE /* keyboard_type_jis.png */; };
+		34226BE91FAB7EDC008B03CE /* keyboard_type_ansi.png in Resources */ = {isa = PBXBuildFile; fileRef = 34226BE61FAB7EDC008B03CE /* keyboard_type_ansi.png */; };
 		3423B0131F26474A009502CC /* AlertWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3423B0121F26474A009502CC /* AlertWindowController.m */; };
 		3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */; };
 		3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */; };
@@ -51,6 +54,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		34226BE41FAB7EDC008B03CE /* keyboard_type_iso.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keyboard_type_iso.png; path = Resources/keyboard_type_iso.png; sourceTree = "<group>"; };
+		34226BE51FAB7EDC008B03CE /* keyboard_type_jis.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keyboard_type_jis.png; path = Resources/keyboard_type_jis.png; sourceTree = "<group>"; };
+		34226BE61FAB7EDC008B03CE /* keyboard_type_ansi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keyboard_type_ansi.png; path = Resources/keyboard_type_ansi.png; sourceTree = "<group>"; };
 		3423B0111F26474A009502CC /* AlertWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlertWindowController.h; sourceTree = "<group>"; };
 		3423B0121F26474A009502CC /* AlertWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertWindowController.m; sourceTree = "<group>"; };
 		342853091DCB8BD700164476 /* SystemPreferencesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemPreferencesModel.h; sourceTree = "<group>"; };
@@ -255,6 +261,9 @@
 			isa = PBXGroup;
 			children = (
 				34586FD01F2A61D600F7DAA5 /* kext_policy.png */,
+				34226BE61FAB7EDC008B03CE /* keyboard_type_ansi.png */,
+				34226BE41FAB7EDC008B03CE /* keyboard_type_iso.png */,
+				34226BE51FAB7EDC008B03CE /* keyboard_type_jis.png */,
 				345F954D1DAB8EC2002854B8 /* simple_modifications.json */,
 			);
 			name = Resources;
@@ -336,7 +345,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				345F954E1DAB8EC2002854B8 /* simple_modifications.json in Resources */,
+				34226BE71FAB7EDC008B03CE /* keyboard_type_iso.png in Resources */,
+				34226BE91FAB7EDC008B03CE /* keyboard_type_ansi.png in Resources */,
 				34586FD11F2A61D600F7DAA5 /* kext_policy.png in Resources */,
+				34226BE81FAB7EDC008B03CE /* keyboard_type_jis.png in Resources */,
 				3445E06C1D801AF7004555F9 /* Assets.xcassets in Resources */,
 				3445E06F1D801AF7004555F9 /* MainMenu.xib in Resources */,
 			);
