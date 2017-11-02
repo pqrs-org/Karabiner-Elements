@@ -73,24 +73,24 @@ public:
           const auto& key = it.key();
           const auto& value = it.value();
 
-          if (key == "to_invoked") {
+          if (key == "to_if_invoked") {
             if (!value.is_array()) {
-              logger::get_logger().error("complex_modifications json error: `to_invoked` should be array: {0}", json.dump());
+              logger::get_logger().error("complex_modifications json error: `to_if_invoked` should be array: {0}", json.dump());
               continue;
             }
 
             for (const auto& j : value) {
-              to_invoked_.emplace_back(j);
+              to_if_invoked_.emplace_back(j);
             }
 
-          } else if (key == "to_canceled") {
+          } else if (key == "to_if_canceled") {
             if (!value.is_array()) {
-              logger::get_logger().error("complex_modifications json error: `to_canceled` should be array: {0}", json.dump());
+              logger::get_logger().error("complex_modifications json error: `to_if_canceled` should be array: {0}", json.dump());
               continue;
             }
 
             for (const auto& j : value) {
-              to_canceled_.emplace_back(j);
+              to_if_canceled_.emplace_back(j);
             }
 
           } else {
@@ -110,8 +110,8 @@ public:
         return;
       }
 
-      if (to_invoked_.empty() &&
-          to_canceled_.empty()) {
+      if (to_if_invoked_.empty() &&
+          to_if_canceled_.empty()) {
         return;
       }
 
@@ -134,13 +134,13 @@ public:
 
       manipulator_timer_id_ = boost::none;
 
-      post_events(to_canceled_);
+      post_events(to_if_canceled_);
     }
 
     void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
       if (timer_id == manipulator_timer_id_) {
         manipulator_timer_id_ = boost::none;
-        post_events(to_invoked_);
+        post_events(to_if_invoked_);
         krbn_notification_center::get_instance().input_event_arrived();
       }
     }
@@ -178,8 +178,8 @@ public:
     }
 
     basic& basic_;
-    std::vector<to_event_definition> to_invoked_;
-    std::vector<to_event_definition> to_canceled_;
+    std::vector<to_event_definition> to_if_invoked_;
+    std::vector<to_event_definition> to_if_canceled_;
     boost::optional<manipulator_timer::timer_id> manipulator_timer_id_;
     boost::optional<event_queue::queued_event> front_input_event_;
     std::unordered_set<modifier_flag> from_mandatory_modifiers_;

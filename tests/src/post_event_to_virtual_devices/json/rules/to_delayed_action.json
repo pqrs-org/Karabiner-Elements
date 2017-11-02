@@ -18,7 +18,7 @@
             }
         ],
         "to_delayed_action": {
-            "to_invoked": [
+            "to_if_invoked": [
                 {
                     "key_code": "b"
                 },
@@ -29,7 +29,7 @@
                     ]
                 }
             ],
-            "to_canceled": [
+            "to_if_canceled": [
                 {
                     "key_code": "d"
                 },

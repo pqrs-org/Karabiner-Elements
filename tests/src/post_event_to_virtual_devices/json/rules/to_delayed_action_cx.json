@@ -97,7 +97,7 @@
             }
         ],
         "to_delayed_action": {
-            "to_invoked": [
+            "to_if_invoked": [
                 {
                     "set_variable": {
                         "name": "C-x",
@@ -105,7 +105,7 @@
                     }
                 }
             ],
-            "to_canceled": [
+            "to_if_canceled": [
                 {
                     "set_variable": {
                         "name": "C-x",
