@@ -5,6 +5,8 @@
 
 @property(weak) IBOutlet NSStepper* basicToIfAloneTimeoutMillisecondsStepper;
 @property(weak) IBOutlet NSTextField* basicToIfAloneTimeoutMillisecondsText;
+@property(weak) IBOutlet NSStepper* basicToDelayedActionDelayMillisecondsStepper;
+@property(weak) IBOutlet NSTextField* basicToDelayedActionDelayMillisecondsText;
 
 @end
 
@@ -29,19 +31,40 @@
     self.basicToIfAloneTimeoutMillisecondsStepper.integerValue = value;
     self.basicToIfAloneTimeoutMillisecondsText.integerValue = value;
   }
+  {
+    int value = [coreConfigurationModel getSelectedProfileComplexModificationsParameter:@"basic.to_delayed_action_delay_milliseconds"];
+    self.basicToDelayedActionDelayMillisecondsStepper.integerValue = value;
+    self.basicToDelayedActionDelayMillisecondsText.integerValue = value;
+  }
 }
 
 - (IBAction)valueChanged:(id)sender {
-  if (sender == self.basicToIfAloneTimeoutMillisecondsStepper) {
-    self.basicToIfAloneTimeoutMillisecondsText.integerValue = self.basicToIfAloneTimeoutMillisecondsStepper.integerValue;
+  {
+    NSStepper* stepper = self.basicToIfAloneTimeoutMillisecondsStepper;
+    NSTextField* text = self.basicToIfAloneTimeoutMillisecondsText;
+    if (sender == stepper) {
+      text.integerValue = stepper.integerValue;
+    }
+    if (sender == text) {
+      stepper.integerValue = text.integerValue;
+    }
   }
-  if (sender == self.basicToIfAloneTimeoutMillisecondsText) {
-    self.basicToIfAloneTimeoutMillisecondsStepper.integerValue = self.basicToIfAloneTimeoutMillisecondsText.integerValue;
+  {
+    NSStepper* stepper = self.basicToDelayedActionDelayMillisecondsStepper;
+    NSTextField* text = self.basicToDelayedActionDelayMillisecondsText;
+    if (sender == stepper) {
+      text.integerValue = stepper.integerValue;
+    }
+    if (sender == text) {
+      stepper.integerValue = text.integerValue;
+    }
   }
 
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.to_if_alone_timeout_milliseconds"
                                                                     value:self.basicToIfAloneTimeoutMillisecondsText.intValue];
+  [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.to_delayed_action_delay_milliseconds"
+                                                                    value:self.basicToDelayedActionDelayMillisecondsText.intValue];
   [coreConfigurationModel save];
 }
 
