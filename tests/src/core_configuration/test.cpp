@@ -506,7 +506,10 @@ TEST_CASE("profile.to_json") {
     nlohmann::json expected({
         {"complex_modifications", nlohmann::json::object({
                                       {"rules", nlohmann::json::array()},
-                                      {"parameters", nlohmann::json::object({{"basic.to_if_alone_timeout_milliseconds", 1000}})},
+                                      {"parameters", nlohmann::json::object({
+                                                         {"basic.to_if_alone_timeout_milliseconds", 1000},
+                                                         {"basic.to_delayed_action_delay_milliseconds", 500},
+                                                     })},
                                   })},
         {"devices", nlohmann::json::array()},
         {"name", ""},
@@ -652,7 +655,10 @@ TEST_CASE("profile.to_json") {
     nlohmann::json expected({
         {"complex_modifications", nlohmann::json::object({
                                       {"rules", nlohmann::json::array()},
-                                      {"parameters", nlohmann::json::object({{"basic.to_if_alone_timeout_milliseconds", 1000}})},
+                                      {"parameters", nlohmann::json::object({
+                                                         {"basic.to_if_alone_timeout_milliseconds", 1000},
+                                                         {"basic.to_delayed_action_delay_milliseconds", 500},
+                                                     })},
                                   })},
         {"devices", {
                         {
