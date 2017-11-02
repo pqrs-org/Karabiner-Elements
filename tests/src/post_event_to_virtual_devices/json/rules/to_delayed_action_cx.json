@@ -59,6 +59,24 @@
     },
     {
         "type": "basic",
+        "conditions": [
+            {
+                "type": "variable_if",
+                "name": "C-x",
+                "value": 1
+            }
+        ],
+        "from": {
+            "any": "key_code",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        }
+    },
+    {
+        "type": "basic",
         "from": {
             "key_code": "x",
             "modifiers": {

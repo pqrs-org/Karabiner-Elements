@@ -280,6 +280,14 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_3.json"
     },
     {
+        "description": "to_delayed_action cx",
+        "rules": [
+            "json/rules/to_delayed_action_cx.json"
+        ],
+        "input_event_queue": "json/input_event_queue/to_delayed_action_cx_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_cx_1.json"
+    },
+    {
         "description": "fn+up_arrow to fn+page_up (from modifiers == to modifiers)",
         "rules": [
             "json/rules/complex_modifications.json"

@@ -30,7 +30,16 @@ public:
           std::ifstream ifs(rule.get<std::string>());
           REQUIRE(ifs);
           for (const auto& j : nlohmann::json::parse(ifs)) {
-            manipulator_managers.back()->push_back_manipulator(manipulator::manipulator_factory::make_manipulator(j, parameters));
+            auto m = manipulator::manipulator_factory::make_manipulator(j, parameters);
+
+            auto conditions_it = j.find("conditions");
+            if (conditions_it != std::end(j)) {
+              for (const auto& c : *conditions_it) {
+                m->push_back_condition(krbn::manipulator::manipulator_factory::make_condition(c));
+              }
+            }
+
+            manipulator_managers.back()->push_back_manipulator(m);
           }
         }
 
@@ -62,8 +71,8 @@ public:
       REQUIRE(!event_queues.empty());
 
       auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
-          connector.manipulate();
-        });
+        connector.manipulate();
+      });
 
       {
         std::ifstream ifs(test["input_event_queue"].get<std::string>());

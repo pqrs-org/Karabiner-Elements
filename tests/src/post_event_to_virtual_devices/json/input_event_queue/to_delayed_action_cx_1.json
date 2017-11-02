@@ -1,0 +1,97 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "left_control",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "left_control",
+            "type": "key_code"
+        },
+        "time_stamp": 2000000,
+        "valid": true
+    },
+    {
+        "description": "C-x",
+        "device_id": 1,
+        "event": {
+            "key_code": "x",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "x",
+            "type": "key_code"
+        },
+        "time_stamp": 4000000,
+        "valid": true
+    },
+    {
+        "description": "C-x C-f",
+        "device_id": 1,
+        "event": {
+            "key_code": "f",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f",
+            "type": "key_code"
+        },
+        "time_stamp": 6000000,
+        "valid": true
+    },
+    {
+        "description": "C-f (Post C-f)",
+        "device_id": 1,
+        "event": {
+            "key_code": "f",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f",
+            "type": "key_code"
+        },
+        "time_stamp": 8000000,
+        "valid": true
+    },
+    {
+        "description": "C-x",
+        "device_id": 1,
+        "event": {
+            "key_code": "x",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "x",
+            "type": "key_code"
+        },
+        "time_stamp": 10000000,
+        "valid": true
+    },
+    {
+        "description": "C-x C-f12 (Do nothing)",
+        "device_id": 1,
+        "event": {
+            "key_code": "f12",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f12",
+            "type": "key_code"
+        },
+        "time_stamp": 12000000,
+        "valid": true
+    }
+]
