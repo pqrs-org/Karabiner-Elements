@@ -2171,16 +2171,16 @@
         <window title="Add rule" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqN-OP-TO2" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="800" height="400"/>
+            <rect key="contentRect" x="196" y="132" width="900" height="400"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
-            <value key="minSize" type="size" width="800" height="400"/>
-            <value key="maxSize" type="size" width="800" height="400"/>
+            <value key="minSize" type="size" width="900" height="400"/>
+            <value key="maxSize" type="size" width="900" height="400"/>
             <view key="contentView" id="uOP-Fc-vEW">
-                <rect key="frame" x="0.0" y="0.0" width="800" height="400"/>
+                <rect key="frame" x="0.0" y="0.0" width="900" height="400"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jox-CI-bt9">
-                        <rect key="frame" x="194" y="357" width="413" height="32"/>
+                        <rect key="frame" x="244" y="357" width="413" height="32"/>
                         <buttonCell key="cell" type="push" title="Import more rules from the Internet (open a web browser)" bezelStyle="rounded" image="ic_cloud_download_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="02O-a2-wtg">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2190,20 +2190,20 @@
                         </connections>
                     </button>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="28" horizontalPageScroll="10" verticalLineScroll="28" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jfS-u6-wyb">
-                        <rect key="frame" x="17" y="61" width="766" height="288"/>
+                        <rect key="frame" x="17" y="61" width="866" height="288"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
-                            <rect key="frame" x="1" y="1" width="764" height="286"/>
+                            <rect key="frame" x="1" y="1" width="864" height="286"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
-                                    <rect key="frame" x="0.0" y="0.0" width="764" height="286"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="864" height="286"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn identifier="ComplexModificationsAssetsNameColumn" width="615" minWidth="40" maxWidth="100000" id="nlS-o3-ZB6">
+                                        <tableColumn identifier="ComplexModificationsAssetsNameColumn" width="715" minWidth="40" maxWidth="100000" id="nlS-o3-ZB6">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2217,7 +2217,7 @@
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="ComplexModificationsAssetsNameCellView" id="jC6-SG-vL6">
-                                                    <rect key="frame" x="1" y="1" width="615" height="26"/>
+                                                    <rect key="frame" x="1" y="1" width="715" height="26"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Nl-EE-cbX">
@@ -2254,7 +2254,7 @@
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="ComplexModificationsAssetsButtonsCellView" id="8TG-IN-f4f" customClass="ComplexModificationsAssetsOutlineCellView">
-                                                    <rect key="frame" x="619" y="1" width="143" height="26"/>
+                                                    <rect key="frame" x="719" y="1" width="143" height="26"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <button hidden="YES" verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="553-rb-9Yn">
@@ -2338,7 +2338,7 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iWA-ft-hGI">
-                        <rect key="frame" x="347" y="13" width="106" height="32"/>
+                        <rect key="frame" x="397" y="13" width="106" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fd0-PH-WES">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -2372,12 +2372,12 @@ Gw
         <window title="Import complex modifications file" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="ZY4-nd-9zB" userLabel="Import Complex Modifications File Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="800" height="200"/>
+            <rect key="contentRect" x="196" y="132" width="900" height="200"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
-            <value key="minSize" type="size" width="800" height="200"/>
-            <value key="maxSize" type="size" width="800" height="200"/>
+            <value key="minSize" type="size" width="900" height="200"/>
+            <value key="maxSize" type="size" width="900" height="200"/>
             <view key="contentView" id="YVO-Df-Mre">
-                <rect key="frame" x="0.0" y="0.0" width="800" height="200"/>
+                <rect key="frame" x="0.0" y="0.0" width="900" height="200"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X3k-uL-arh">
@@ -2403,17 +2403,17 @@ Gw
                         <rect key="frame" x="726" y="164" width="16" height="16"/>
                     </progressIndicator>
                     <scrollView wantsLayer="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A3J-XY-x60">
-                        <rect key="frame" x="80" y="58" width="640" height="85"/>
+                        <rect key="frame" x="80" y="58" width="740" height="85"/>
                         <clipView key="contentView" id="uNg-oR-13T">
-                            <rect key="frame" x="1" y="1" width="623" height="83"/>
+                            <rect key="frame" x="1" y="1" width="723" height="83"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
-                                    <rect key="frame" x="0.0" y="0.0" width="623" height="83"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="723" height="83"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="623" height="83"/>
-                                    <size key="maxSize" width="640" height="10000000"/>
+                                    <size key="minSize" width="723" height="83"/>
+                                    <size key="maxSize" width="723" height="10000000"/>
                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
                             </subviews>
@@ -2424,12 +2424,12 @@ Gw
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="eOh-hu-RTZ">
-                            <rect key="frame" x="624" y="1" width="15" height="83"/>
+                            <rect key="frame" x="724" y="1" width="15" height="83"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="Cnb-iG-cen">
-                        <rect key="frame" x="292" y="17" width="216" height="31"/>
+                        <rect key="frame" x="342" y="17" width="216" height="31"/>
                         <subviews>
                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RCh-62-Dln">
                                 <rect key="frame" x="-1" y="-2" width="106" height="32"/>
@@ -2485,16 +2485,16 @@ Gw
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="WRr-7z-BZH" userLabel="Alert Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="800" height="600"/>
+            <rect key="contentRect" x="196" y="132" width="900" height="600"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
-            <value key="minSize" type="size" width="800" height="600"/>
-            <value key="maxSize" type="size" width="800" height="600"/>
+            <value key="minSize" type="size" width="900" height="600"/>
+            <value key="maxSize" type="size" width="900" height="600"/>
             <view key="contentView" id="t6Q-r2-1Lh">
-                <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                <rect key="frame" x="0.0" y="0.0" width="900" height="600"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="GkP-Rg-Yqv">
-                        <rect key="frame" x="297" y="548" width="206" height="32"/>
+                        <rect key="frame" x="347" y="548" width="206" height="32"/>
                         <subviews>
                             <imageView translatesAutoresizingMaskIntoConstraints="NO" id="jJb-z0-5Vi">
                                 <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
@@ -2519,16 +2519,16 @@ Gw
                         </constraints>
                     </customView>
                     <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="kqu-77-2mK">
-                        <rect key="frame" x="10" y="10" width="780" height="518"/>
+                        <rect key="frame" x="10" y="10" width="880" height="518"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Tab" identifier="1" id="eIG-Ss-b2j">
                                 <view key="view" id="G93-5A-Bfp">
-                                    <rect key="frame" x="0.0" y="0.0" width="780" height="518"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="880" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="hVs-29-H8P">
-                                            <rect key="frame" x="18" y="447" width="744" height="51"/>
+                                            <rect key="frame" x="18" y="447" width="844" height="51"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="c0m-Ay-Y4e">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">System policy prevents loading the kernel extension that is used by Karabiner-Elements.
@@ -2538,7 +2538,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15b-2Z-hf1">
-                                            <rect key="frame" x="207" y="399" width="366" height="32"/>
+                                            <rect key="frame" x="266" y="399" width="348" height="32"/>
                                             <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Te8-FQ-SJa">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -2548,7 +2548,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9f7-D7-XzV">
-                                            <rect key="frame" x="232" y="357" width="316" height="32"/>
+                                            <rect key="frame" x="291" y="357" width="298" height="32"/>
                                             <buttonCell key="cell" type="push" title="Close Karabiner-Elements Preferences" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyW-jE-BlT">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -2558,7 +2558,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </connections>
                                         </button>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8N5-fM-hfp">
-                                            <rect key="frame" x="-278" y="44" width="1336" height="290"/>
+                                            <rect key="frame" x="-228" y="44" width="1336" height="290"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="290" id="5o6-Bd-EEQ"/>
                                             </constraints>
