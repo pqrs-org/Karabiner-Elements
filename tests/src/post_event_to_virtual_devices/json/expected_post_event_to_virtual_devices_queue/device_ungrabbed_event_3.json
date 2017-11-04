@@ -60,7 +60,7 @@
             "key_code": "spacebar",
             "value": 0
         },
-        "time_stamp": 6000000000,
+        "time_stamp": 7005000000,
         "type": "keyboard_event"
     },
     {
@@ -76,7 +76,7 @@
             "key_code": "left_shift",
             "value": 0
         },
-        "time_stamp": 7005000000,
+        "time_stamp": 6000000000,
         "type": "keyboard_event"
     },
     {

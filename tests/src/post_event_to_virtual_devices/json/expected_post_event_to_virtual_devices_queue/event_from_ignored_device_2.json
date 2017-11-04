@@ -12,7 +12,7 @@
             "key_code": "left_control",
             "value": 0
         },
-        "time_stamp": 4000001,
+        "time_stamp": 10000000,
         "type": "keyboard_event"
     },
     {
@@ -24,7 +24,7 @@
             "key_code": "up_arrow",
             "value": 1
         },
-        "time_stamp": 10000000,
+        "time_stamp": 15000000,
         "type": "keyboard_event"
     }
 ]

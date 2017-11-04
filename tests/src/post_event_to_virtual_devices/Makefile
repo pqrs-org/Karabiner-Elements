@@ -7,5 +7,10 @@ CXXFLAGS += \
 
 include ../Makefile.rules
 
-a.out: $(SOURCES)
-	$(CXX) $(CXXFLAGS) -o $@ $(SOURCES) $(LDFLAGS)
+a.out: test.cpp
+	$(CXX) $(CXXFLAGS) -o $@ test.cpp $(LDFLAGS)
+
+.PHONY: overwrite_expected_results
+overwrite_expected_results: overwrite_expected_results.cpp
+	$(CXX) $(CXXFLAGS) -o $@ overwrite_expected_results.cpp $(LDFLAGS)
+	./overwrite_expected_results

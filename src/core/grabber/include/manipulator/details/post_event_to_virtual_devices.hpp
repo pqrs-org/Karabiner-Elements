@@ -206,7 +206,7 @@ public:
       uint64_t time_stamp_;
     };
 
-    queue(void) : last_event_modifier_key_(false),
+    queue(void) : last_event_type_(event_type::single),
                   last_event_time_stamp_(0) {
     }
 
@@ -227,13 +227,7 @@ public:
       keyboard_event.usage = static_cast<pqrs::karabiner_virtual_hid_device::usage>(hid_usage);
       keyboard_event.value = (event_type == event_type::key_down);
 
-      // ----------------------------------------
-      // modify time_stamp if needed
-
-      auto m = types::make_modifier_flag(hid_usage_page, hid_usage);
-      adjust_time_stamp(time_stamp, m != boost::none);
-
-      // ----------------------------------------
+      adjust_time_stamp(time_stamp, event_type);
 
       events_.emplace_back(keyboard_event,
                            time_stamp);
@@ -241,9 +235,10 @@ public:
       keyboard_repeat_detector_.set(hid_usage_page, hid_usage, event_type);
     }
 
-    void emplace_back_event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
-                            uint64_t time_stamp) {
-      adjust_time_stamp(time_stamp, false);
+    void emplace_back_pointing_input(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
+                                     event_type event_type,
+                                     uint64_t time_stamp) {
+      adjust_time_stamp(time_stamp, event_type);
 
       events_.emplace_back(pointing_input,
                            time_stamp);
@@ -257,8 +252,7 @@ public:
 
     void push_back_shell_command_event(const std::string& shell_command,
                                        uint64_t time_stamp) {
-      adjust_time_stamp(time_stamp, false);
-
+      // Do not call adjust_time_stamp.
       auto e = event::make_shell_command_event(shell_command,
                                                time_stamp);
 
@@ -267,8 +261,7 @@ public:
 
     void push_back_select_input_source_event(const std::vector<input_source_selector>& input_source_selectors,
                                              uint64_t time_stamp) {
-      adjust_time_stamp(time_stamp, false);
-
+      // Do not call adjust_time_stamp.
       auto e = event::make_select_input_source_event(input_source_selectors,
                                                      time_stamp);
 
@@ -344,7 +337,7 @@ public:
 
   private:
     void adjust_time_stamp(uint64_t& time_stamp,
-                           bool is_modifier_key) {
+                           event_type et) {
       // Wait is 5 milliseconds
       //
       // Note:
@@ -353,12 +346,28 @@ public:
 
       auto wait = time_utility::nano_to_absolute(5 * NSEC_PER_MSEC);
 
-      if (last_event_modifier_key_ != is_modifier_key &&
+      bool skip = false;
+      switch (et) {
+        case event_type::key_down:
+          break;
+
+        case event_type::key_up:
+          if (last_event_type_ == event_type::key_up) {
+            skip = true;
+          }
+          break;
+
+        case event_type::single:
+          skip = true;
+          break;
+      }
+
+      if (!skip &&
           time_stamp < last_event_time_stamp_ + wait) {
         time_stamp = last_event_time_stamp_ + wait;
       }
 
-      last_event_modifier_key_ = is_modifier_key;
+      last_event_type_ = et;
       if (last_event_time_stamp_ < time_stamp) {
         last_event_time_stamp_ = time_stamp;
       }
@@ -369,24 +378,28 @@ public:
 
     keyboard_repeat_detector keyboard_repeat_detector_;
 
-    // We should add a wait between modifier events and other events in order to
-    // ensure window system handles modifier by properly order.
+    // We should add a wait before `key_down` and `key_up just after key_down` in order to
+    // ensure window system handles events by properly order.
     //
     // Example:
     //
     //   01. left_shift key_down
-    //   02. left_control key_down
-    //       [wait]
-    //   03. a key_down
-    //   04. a key_up
-    //   05. b key_down
-    //   06. b key_up
-    //       [wait]
+    //   02. [wait]
+    //       left_control key_down
+    //   03. [wait]
+    //       a key_down
+    //   04. [wait]
+    //       a key_up
+    //   05. [wait]
+    //       b key_down
+    //   06. [wait]
+    //       b key_up
     //   07. left_shift key_up
     //   08. left_control key_up
-    //       [wait]
-    //   09. button1 down
-    //   10. button1 up
+    //   09. [wait]
+    //       button1 down
+    //   10. [wait]
+    //       button1 up
     //
     // Without wait, window system sometimes reorder modifier flag event.
     // it causes improperly event order such as `a,shift,control,b,button1`.
@@ -401,7 +414,7 @@ public:
     //   "to_if_alone": <%= to([["return_or_enter"]]) %>
     //
 
-    bool last_event_modifier_key_;
+    event_type last_event_type_;
     uint64_t last_event_time_stamp_;
   };
 
@@ -701,8 +714,9 @@ public:
             }
           }
 
-          queue_.emplace_back_event(report,
-                                    front_input_event.get_time_stamp());
+          queue_.emplace_back_pointing_input(report,
+                                             front_input_event.get_event_type(),
+                                             front_input_event.get_time_stamp());
 
           // Save bits for `handle_device_ungrabbed_event`.
           pressed_buttons_ = output_event_queue->get_pointing_button_manager().get_hid_report_bits();
@@ -773,7 +787,9 @@ public:
       auto bits = output_event_queue.get_pointing_button_manager().get_hid_report_bits();
       if (pressed_buttons_ != bits) {
         auto report = output_event_queue.get_pointing_button_manager().make_pointing_input_report();
-        queue_.emplace_back_event(report, time_stamp);
+        queue_.emplace_back_pointing_input(report,
+                                           event_type::key_up,
+                                           time_stamp);
 
         pressed_buttons_ = bits;
       }
@@ -823,8 +839,9 @@ public:
   virtual void force_post_pointing_button_event(const event_queue::queued_event& front_input_event,
                                                 event_queue& output_event_queue) {
     auto report = output_event_queue.get_pointing_button_manager().make_pointing_input_report();
-    queue_.emplace_back_event(report,
-                              front_input_event.get_time_stamp());
+    queue_.emplace_back_pointing_input(report,
+                                       front_input_event.get_event_type(),
+                                       front_input_event.get_time_stamp());
 
     // Save bits for `handle_device_ungrabbed_event`.
     pressed_buttons_ = output_event_queue.get_pointing_button_manager().get_hid_report_bits();

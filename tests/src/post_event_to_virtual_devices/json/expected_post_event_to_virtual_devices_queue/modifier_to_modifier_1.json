@@ -20,7 +20,7 @@
             "key_code": "tab",
             "value": 0
         },
-        "time_stamp": 6000000,
+        "time_stamp": 15000000,
         "type": "keyboard_event"
     },
     {
@@ -28,7 +28,7 @@
             "key_code": "fn",
             "value": 0
         },
-        "time_stamp": 15000000,
+        "time_stamp": 8000000,
         "type": "keyboard_event"
     },
     {

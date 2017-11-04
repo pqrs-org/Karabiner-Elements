@@ -11,7 +11,8 @@ namespace krbn {
 namespace unit_testing {
 class manipulator_helper final {
 public:
-  static void run_tests(const nlohmann::json& json) {
+  static void run_tests(const nlohmann::json& json,
+                        bool overwrite_expected_results = false) {
     logger::get_logger().info("krbn::unit_testing::manipulator_helper::run_tests");
 
     for (const auto& test : json) {
@@ -99,6 +100,12 @@ public:
       }
 
       if (test.find("expected_event_queue") != std::end(test)) {
+        if (overwrite_expected_results) {
+          std::ofstream ofs(test["expected_event_queue"].get<std::string>());
+          REQUIRE(ofs);
+          ofs << nlohmann::json(event_queues.back()->get_events()).dump(4) << std::endl;
+        }
+
         std::ifstream ifs(test["expected_event_queue"].get<std::string>());
         REQUIRE(ifs);
         auto expected = nlohmann::json::parse(ifs);
@@ -107,6 +114,12 @@ public:
         REQUIRE(nlohmann::json(event_queues.back()->get_events()).dump() == expected.dump());
 
       } else if (test.find("expected_post_event_to_virtual_devices_queue") != std::end(test)) {
+        if (overwrite_expected_results) {
+          std::ofstream ofs(test["expected_post_event_to_virtual_devices_queue"].get<std::string>());
+          REQUIRE(ofs);
+          ofs << nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events()).dump(4) << std::endl;
+        }
+
         std::ifstream ifs(test["expected_post_event_to_virtual_devices_queue"].get<std::string>());
         REQUIRE(ifs);
         auto expected = nlohmann::json::parse(ifs);

@@ -12,7 +12,7 @@
             "key_code": "left_gui",
             "value": 0
         },
-        "time_stamp": 4000001,
+        "time_stamp": 10000000,
         "type": "keyboard_event"
     },
     {
@@ -24,7 +24,7 @@
             "key_code": "a",
             "value": 1
         },
-        "time_stamp": 10000000,
+        "time_stamp": 15000000,
         "type": "keyboard_event"
     },
     {
@@ -32,47 +32,47 @@
             "key_code": "a",
             "value": 0
         },
-        "time_stamp": 6000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "d",
-            "value": 1
-        },
-        "time_stamp": 4000001,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "d",
-            "value": 0
-        },
-        "time_stamp": 4000002,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 1
-        },
-        "time_stamp": 15000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "e",
-            "value": 1
-        },
         "time_stamp": 20000000,
         "type": "keyboard_event"
     },
     {
         "keyboard_event": {
+            "key_code": "d",
+            "value": 1
+        },
+        "time_stamp": 25000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "d",
+            "value": 0
+        },
+        "time_stamp": 30000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "left_shift",
+            "value": 1
+        },
+        "time_stamp": 35000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "e",
+            "value": 1
+        },
+        "time_stamp": 40000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
             "key_code": "e",
             "value": 0
         },
-        "time_stamp": 4000005,
+        "time_stamp": 45000000,
         "type": "keyboard_event"
     },
     {
@@ -80,7 +80,7 @@
             "key_code": "left_shift",
             "value": 0
         },
-        "time_stamp": 25000000,
+        "time_stamp": 8000000,
         "type": "keyboard_event"
     },
     {
@@ -88,7 +88,7 @@
             "key_code": "left_gui",
             "value": 1
         },
-        "time_stamp": 8000000,
+        "time_stamp": 50000000,
         "type": "keyboard_event"
     },
     {
@@ -96,7 +96,7 @@
             "key_code": "f13",
             "value": 1
         },
-        "time_stamp": 30000000,
+        "time_stamp": 55000000,
         "type": "keyboard_event"
     }
 ]

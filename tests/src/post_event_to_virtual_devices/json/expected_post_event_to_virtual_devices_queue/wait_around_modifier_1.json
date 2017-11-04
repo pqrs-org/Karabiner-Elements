@@ -36,7 +36,7 @@
             "key_code": "left_shift",
             "value": 0
         },
-        "time_stamp": 3005000000,
+        "time_stamp": 3000000001,
         "type": "keyboard_event"
     },
     {
@@ -76,7 +76,7 @@
             "key_code": "escape",
             "value": 0
         },
-        "time_stamp": 5005000000,
+        "time_stamp": 5000000001,
         "type": "keyboard_event"
     }
 ]
