@@ -1507,7 +1507,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="changeVirtualHIDKeyboardTYpe:" target="5ke-qB-Wr5" id="zFW-ew-dlg"/>
+                                                <action selector="changeVirtualHIDKeyboardType:" target="5ke-qB-Wr5" id="zFW-ew-dlg"/>
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FeT-Tv-Vlp">
