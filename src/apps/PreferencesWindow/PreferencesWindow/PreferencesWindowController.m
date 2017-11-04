@@ -10,6 +10,7 @@
 #import "SimpleModificationsMenuManager.h"
 #import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
+#import "VirtualHIDKeyboardTypeBackgroundView.h"
 #import "libkrbn.h"
 #import "weakify.h"
 
@@ -26,6 +27,8 @@
 @property(weak) IBOutlet NSTableView* fnFunctionKeysTableView;
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 @property(weak) IBOutlet NSTextField* versionLabel;
+@property(weak) IBOutlet NSTabViewItem* virtualHIDKeyboardTabViewItem;
+@property(weak) IBOutlet VirtualHIDKeyboardTypeBackgroundView* virtualHIDKeyboardTypeBackground;
 @property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeANSIImageButton;
 @property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeANSIRadioButton;
 @property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeISOImageButton;
@@ -124,12 +127,21 @@
   self.virtualHIDKeyboardTypeISORadioButton.state = NSControlStateValueOff;
   self.virtualHIDKeyboardTypeJISRadioButton.state = NSControlStateValueOff;
 
-  if ([keyboardType isEqualToString:@"iso"]) {
+  if ([keyboardType isEqualToString:@"ansi"]) {
+    self.virtualHIDKeyboardTypeANSIRadioButton.state = NSControlStateValueOn;
+  } else if ([keyboardType isEqualToString:@"iso"]) {
     self.virtualHIDKeyboardTypeISORadioButton.state = NSControlStateValueOn;
   } else if ([keyboardType isEqualToString:@"jis"]) {
     self.virtualHIDKeyboardTypeJISRadioButton.state = NSControlStateValueOn;
+  }
+
+  if ([keyboardType length] > 0) {
+    self.virtualHIDKeyboardTypeBackground.hidden = YES;
   } else {
-    self.virtualHIDKeyboardTypeANSIRadioButton.state = NSControlStateValueOn;
+    self.virtualHIDKeyboardTypeBackground.hidden = NO;
+    if (self.virtualHIDKeyboardTabViewItem.tabState != NSSelectedTab) {
+      [self.virtualHIDKeyboardTabViewItem.tabView selectTabViewItem:self.virtualHIDKeyboardTabViewItem];
+    }
   }
 }
 
@@ -145,7 +157,7 @@
   }
 }
 
-- (IBAction)changeVirtualHIDKeyboardTYpe:(id)sender {
+- (IBAction)changeVirtualHIDKeyboardType:(id)sender {
   NSString* keyboardType = nil;
   if (sender == self.virtualHIDKeyboardTypeANSIImageButton ||
       sender == self.virtualHIDKeyboardTypeANSIRadioButton) {

@@ -205,7 +205,7 @@ nlohmann::json get_default_fn_function_keys_json(void) {
 nlohmann::json get_default_virtual_hid_keyboard_json(void) {
   return nlohmann::json({
       {"caps_lock_delay_milliseconds", 0},
-      {"keyboard_type", "ansi"},
+      {"keyboard_type", ""},
   });
 }
 
@@ -1035,7 +1035,7 @@ TEST_CASE("virtual_hid_keyboard") {
   {
     nlohmann::json json;
     krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string("ansi"));
+    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string(""));
     REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 0);
   }
 
@@ -1057,7 +1057,7 @@ TEST_CASE("virtual_hid_keyboard") {
         {"caps_lock_delay_milliseconds", nlohmann::json::object()},
     });
     krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string("ansi"));
+    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string(""));
     REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 0);
   }
 }

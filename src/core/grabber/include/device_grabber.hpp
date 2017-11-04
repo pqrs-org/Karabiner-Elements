@@ -607,6 +607,8 @@ private:
         pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
         if (auto k = types::make_keyboard_type(profile_.get_virtual_hid_keyboard().get_keyboard_type())) {
           properties.keyboard_type = *k;
+        } else {
+          properties.keyboard_type = pqrs::karabiner_virtual_hid_device::properties::keyboard_type::ansi;
         }
         auto caps_lock_delay_milliseconds = profile_.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
         properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(caps_lock_delay_milliseconds);

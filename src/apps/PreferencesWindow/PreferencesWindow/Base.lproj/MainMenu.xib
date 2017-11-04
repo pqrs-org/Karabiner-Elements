@@ -118,8 +118,10 @@
                 <outlet property="versionLabel" destination="sau-jf-Dqb" id="maD-61-nBB"/>
                 <outlet property="virtualHIDKeyboardCapsLockDelayMillisecondsStepper" destination="8oq-XL-Uqg" id="JVi-LV-1T5"/>
                 <outlet property="virtualHIDKeyboardCapsLockDelayMillisecondsText" destination="VxT-OA-zK5" id="b3S-aS-BT1"/>
+                <outlet property="virtualHIDKeyboardTabViewItem" destination="mRV-XM-rli" id="rf9-HB-aL5"/>
                 <outlet property="virtualHIDKeyboardTypeANSIImageButton" destination="l6i-Fg-43e" id="5C7-Rt-Fj7"/>
                 <outlet property="virtualHIDKeyboardTypeANSIRadioButton" destination="FeT-Tv-Vlp" id="nai-m6-sQ0"/>
+                <outlet property="virtualHIDKeyboardTypeBackground" destination="X3Q-0C-rVp" id="gQf-9h-CjF"/>
                 <outlet property="virtualHIDKeyboardTypeISOImageButton" destination="wUs-li-x12" id="nfI-ua-hLA"/>
                 <outlet property="virtualHIDKeyboardTypeISORadioButton" destination="6S7-zU-4ai" id="IzY-OO-rev"/>
                 <outlet property="virtualHIDKeyboardTypeJISImageButton" destination="elf-1A-t9S" id="6FX-Zk-d1M"/>
@@ -857,7 +859,7 @@
                                                                 <rect key="frame" x="17" y="41" width="787" height="384"/>
                                                                 <clipView key="contentView" id="Z0i-ZA-lV3">
                                                                     <rect key="frame" x="1" y="0.0" width="785" height="383"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
                                                                             <rect key="frame" x="0.0" y="0.0" width="785" height="360"/>
@@ -1476,6 +1478,9 @@
                                     <rect key="frame" x="10" y="33" width="954" height="488"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
+                                        <customView hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X3Q-0C-rVp" customClass="VirtualHIDKeyboardTypeBackgroundView">
+                                            <rect key="frame" x="0.0" y="200" width="954" height="278"/>
+                                        </customView>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AQR-JI-js8">
                                             <rect key="frame" x="3" y="451" width="542" height="17"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Keyboard type" id="Ufr-eO-GlA">
@@ -1512,7 +1517,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="changeVirtualHIDKeyboardTYpe:" target="5ke-qB-Wr5" id="b7Q-T7-ouf"/>
+                                                <action selector="changeVirtualHIDKeyboardType:" target="5ke-qB-Wr5" id="b7Q-T7-ouf"/>
                                             </connections>
                                         </button>
                                         <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="62a-dp-bJu">
@@ -1529,7 +1534,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="changeVirtualHIDKeyboardTYpe:" target="5ke-qB-Wr5" id="1J4-K7-JEf"/>
+                                                <action selector="changeVirtualHIDKeyboardType:" target="5ke-qB-Wr5" id="1J4-K7-JEf"/>
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6S7-zU-4ai">
@@ -1539,7 +1544,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="changeVirtualHIDKeyboardTYpe:" target="5ke-qB-Wr5" id="Hcj-Z4-Gh9"/>
+                                                <action selector="changeVirtualHIDKeyboardType:" target="5ke-qB-Wr5" id="Hcj-Z4-Gh9"/>
                                             </connections>
                                         </button>
                                         <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="RFq-nD-glm">
@@ -1552,7 +1557,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="changeVirtualHIDKeyboardTYpe:" target="5ke-qB-Wr5" id="Deu-Od-VqR"/>
+                                                <action selector="changeVirtualHIDKeyboardType:" target="5ke-qB-Wr5" id="Deu-Od-VqR"/>
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sXO-Yh-gmJ">
@@ -1562,7 +1567,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="changeVirtualHIDKeyboardTYpe:" target="5ke-qB-Wr5" id="9lL-Hk-MaA"/>
+                                                <action selector="changeVirtualHIDKeyboardType:" target="5ke-qB-Wr5" id="9lL-Hk-MaA"/>
                                             </connections>
                                         </button>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Flm-kx-Ljp">
@@ -1619,12 +1624,15 @@
                                         </stepper>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="X3Q-0C-rVp" firstAttribute="bottom" secondItem="Flm-kx-Ljp" secondAttribute="bottom" constant="-60" id="0rj-W0-bRs"/>
                                         <constraint firstItem="Flm-kx-Ljp" firstAttribute="top" secondItem="6S7-zU-4ai" secondAttribute="bottom" constant="100" id="1jg-8x-MAR"/>
                                         <constraint firstItem="32v-Xj-Ro4" firstAttribute="leading" secondItem="z9H-0i-wnG" secondAttribute="leading" constant="5" id="1kc-Zc-7Cp"/>
                                         <constraint firstItem="sXO-Yh-gmJ" firstAttribute="centerX" secondItem="elf-1A-t9S" secondAttribute="centerX" id="4Ej-d2-Ktj"/>
                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Flm-kx-Ljp" secondAttribute="trailing" constant="20" symbolic="YES" id="83m-1C-Xfo"/>
+                                        <constraint firstAttribute="trailing" secondItem="X3Q-0C-rVp" secondAttribute="trailing" id="8KB-IQ-sKR"/>
                                         <constraint firstItem="RFq-nD-glm" firstAttribute="bottom" secondItem="62a-dp-bJu" secondAttribute="bottom" id="9GU-yN-tLf"/>
                                         <constraint firstItem="2Iy-7C-uaB" firstAttribute="top" secondItem="Flm-kx-Ljp" secondAttribute="bottom" id="9Wp-lT-WEE"/>
+                                        <constraint firstItem="X3Q-0C-rVp" firstAttribute="leading" secondItem="z9H-0i-wnG" secondAttribute="leading" id="BNU-ah-nwF"/>
                                         <constraint firstItem="AQR-JI-js8" firstAttribute="leading" secondItem="z9H-0i-wnG" secondAttribute="leading" constant="5" id="E1d-Ss-gyp"/>
                                         <constraint firstItem="8oq-XL-Uqg" firstAttribute="leading" secondItem="VxT-OA-zK5" secondAttribute="trailing" constant="2" id="E4H-6W-2yO"/>
                                         <constraint firstItem="FeT-Tv-Vlp" firstAttribute="centerY" secondItem="6S7-zU-4ai" secondAttribute="centerY" id="EWg-Bp-wU4"/>
@@ -1665,6 +1673,7 @@
                                         <constraint firstItem="32v-Xj-Ro4" firstAttribute="top" secondItem="AQR-JI-js8" secondAttribute="bottom" id="vTE-Ko-zNK"/>
                                         <constraint firstItem="hOo-aK-YKI" firstAttribute="centerY" secondItem="8oq-XL-Uqg" secondAttribute="centerY" id="vV0-WY-0YA"/>
                                         <constraint firstItem="2Iy-7C-uaB" firstAttribute="leading" secondItem="32v-Xj-Ro4" secondAttribute="leading" id="woC-gk-P5r"/>
+                                        <constraint firstItem="X3Q-0C-rVp" firstAttribute="top" secondItem="AQR-JI-js8" secondAttribute="top" constant="-10" id="z3s-8P-5g7"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
@@ -2413,7 +2422,7 @@ Gw
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <size key="minSize" width="723" height="83"/>
-                                    <size key="maxSize" width="723" height="10000000"/>
+                                    <size key="maxSize" width="740" height="10000000"/>
                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
                             </subviews>
@@ -2538,7 +2547,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="15b-2Z-hf1">
-                                            <rect key="frame" x="266" y="399" width="348" height="32"/>
+                                            <rect key="frame" x="257" y="399" width="366" height="32"/>
                                             <buttonCell key="cell" type="push" title="Open System Preferences &gt; Security &amp; Privacy" bezelStyle="rounded" image="ic_forward_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Te8-FQ-SJa">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -2548,7 +2557,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9f7-D7-XzV">
-                                            <rect key="frame" x="291" y="357" width="298" height="32"/>
+                                            <rect key="frame" x="282" y="357" width="316" height="32"/>
                                             <buttonCell key="cell" type="push" title="Close Karabiner-Elements Preferences" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="left" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qyW-jE-BlT">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -2590,7 +2599,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                     <constraint firstItem="kqu-77-2mK" firstAttribute="top" secondItem="GkP-Rg-Yqv" secondAttribute="bottom" constant="20" id="xPW-tP-BeS"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="312" y="317"/>
+            <point key="canvasLocation" x="76" y="888"/>
         </window>
     </objects>
     <resources>

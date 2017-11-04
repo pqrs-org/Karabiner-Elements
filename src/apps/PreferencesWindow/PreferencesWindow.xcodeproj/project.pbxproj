@@ -10,6 +10,7 @@
 		34226BE71FAB7EDC008B03CE /* keyboard_type_iso.png in Resources */ = {isa = PBXBuildFile; fileRef = 34226BE41FAB7EDC008B03CE /* keyboard_type_iso.png */; };
 		34226BE81FAB7EDC008B03CE /* keyboard_type_jis.png in Resources */ = {isa = PBXBuildFile; fileRef = 34226BE51FAB7EDC008B03CE /* keyboard_type_jis.png */; };
 		34226BE91FAB7EDC008B03CE /* keyboard_type_ansi.png in Resources */ = {isa = PBXBuildFile; fileRef = 34226BE61FAB7EDC008B03CE /* keyboard_type_ansi.png */; };
+		34226BEC1FAD5B34008B03CE /* VirtualHIDKeyboardTypeBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34226BEB1FAD5B33008B03CE /* VirtualHIDKeyboardTypeBackgroundView.m */; };
 		3423B0131F26474A009502CC /* AlertWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3423B0121F26474A009502CC /* AlertWindowController.m */; };
 		3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */; };
 		3428530E1DCCFDEB00164476 /* SystemPreferencesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */; };
@@ -57,6 +58,8 @@
 		34226BE41FAB7EDC008B03CE /* keyboard_type_iso.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keyboard_type_iso.png; path = Resources/keyboard_type_iso.png; sourceTree = "<group>"; };
 		34226BE51FAB7EDC008B03CE /* keyboard_type_jis.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keyboard_type_jis.png; path = Resources/keyboard_type_jis.png; sourceTree = "<group>"; };
 		34226BE61FAB7EDC008B03CE /* keyboard_type_ansi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keyboard_type_ansi.png; path = Resources/keyboard_type_ansi.png; sourceTree = "<group>"; };
+		34226BEA1FAD5B33008B03CE /* VirtualHIDKeyboardTypeBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VirtualHIDKeyboardTypeBackgroundView.h; sourceTree = "<group>"; };
+		34226BEB1FAD5B33008B03CE /* VirtualHIDKeyboardTypeBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VirtualHIDKeyboardTypeBackgroundView.m; sourceTree = "<group>"; };
 		3423B0111F26474A009502CC /* AlertWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlertWindowController.h; sourceTree = "<group>"; };
 		3423B0121F26474A009502CC /* AlertWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertWindowController.m; sourceTree = "<group>"; };
 		342853091DCB8BD700164476 /* SystemPreferencesModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemPreferencesModel.h; sourceTree = "<group>"; };
@@ -245,6 +248,8 @@
 				3428530D1DCCFDEB00164476 /* SystemPreferencesManager.m */,
 				342853091DCB8BD700164476 /* SystemPreferencesModel.h */,
 				3428530A1DCB8BD700164476 /* SystemPreferencesModel.m */,
+				34226BEA1FAD5B33008B03CE /* VirtualHIDKeyboardTypeBackgroundView.h */,
+				34226BEB1FAD5B33008B03CE /* VirtualHIDKeyboardTypeBackgroundView.m */,
 			);
 			path = PreferencesWindow;
 			sourceTree = "<group>";
@@ -364,6 +369,7 @@
 				34ECD8F71E3659BB007D5AB8 /* ProfilesTableViewDelegate.m in Sources */,
 				34EEEEEF1DAE8A9A0026CAF7 /* FnFunctionKeysTableViewDelegate.m in Sources */,
 				34B97B3C1DBEF9CA00EB3583 /* DevicesTableViewController.m in Sources */,
+				34226BEC1FAD5B34008B03CE /* VirtualHIDKeyboardTypeBackgroundView.m in Sources */,
 				342BE6811EF565CC00149985 /* ComplexModificationsRulesTableViewDataSource.m in Sources */,
 				342BE6841EF6B6F800149985 /* ComplexModificationsRulesTableViewDelegate.m in Sources */,
 				3428530B1DCB8BD700164476 /* SystemPreferencesModel.m in Sources */,

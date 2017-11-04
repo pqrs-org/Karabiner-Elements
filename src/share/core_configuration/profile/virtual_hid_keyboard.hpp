@@ -8,8 +8,6 @@ public:
       const std::string key = "keyboard_type";
       if (json.find(key) != json.end() && json[key].is_string()) {
         keyboard_type_ = json[key];
-      } else {
-        keyboard_type_ = "ansi";
       }
     }
     {
