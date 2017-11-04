@@ -398,6 +398,7 @@ public:
             auto r = open(kIOHIDOptionsTypeSeizeDevice);
             if (r != kIOReturnSuccess) {
               logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+              cancel_grab_timer();
               return;
             }
 
