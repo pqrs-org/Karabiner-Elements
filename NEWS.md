@@ -4,6 +4,14 @@
   Note:
   * You have to enable your Mouse manually in Preferences &gt; Devices tab.
   * Karabiner-Elements cannot modify Apple's pointing devices.
+* `to_delayed_action` has been added.
+  * Examples
+    * Quit application by pressing command-q twice
+      * src:  https://github.com/pqrs-org/KE-complex_modifications/blob/master/src/json/command_q.json.erb
+      * json: https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/command_q.json
+    * Emacs key bindings [C-x key strokes]
+      * src:  https://github.com/pqrs-org/KE-complex_modifications/blob/master/src/json/emacs_key_bindings.json.erb
+      * json: https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/emacs_key_bindings.json
 * `input_source_if` and `input_source_unless` has been added to `conditions`.
   * Examples
     * https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_input_source.json
