@@ -52,8 +52,8 @@
         "rules": [
             "json/rules/empty.json"
         ],
-        "input_event_queue": "json/input_event_queue/wait_around_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_around_modifier_1.json"
+        "input_event_queue": "json/input_event_queue/wait_between_events_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_between_events_1.json"
     },
     {
         "description": "collapse_lazy_events_1",
