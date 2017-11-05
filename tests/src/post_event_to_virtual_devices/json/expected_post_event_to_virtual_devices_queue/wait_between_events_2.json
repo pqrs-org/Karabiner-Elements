@@ -1,0 +1,82 @@
+[
+    {
+        "keyboard_event": {
+            "key_code": "a",
+            "value": 1
+        },
+        "time_stamp": 1000000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "b",
+            "value": 1
+        },
+        "time_stamp": 1005000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "c",
+            "value": 1
+        },
+        "time_stamp": 1010000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "a",
+            "value": 0
+        },
+        "time_stamp": 1015000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "b",
+            "value": 0
+        },
+        "time_stamp": 1000000004,
+        "type": "keyboard_event"
+    },
+    {
+        "pointing_input": {
+            "buttons": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 246,
+            "y": 0
+        },
+        "time_stamp": 1000000005,
+        "type": "pointing_input"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "c",
+            "value": 0
+        },
+        "time_stamp": 1000000006,
+        "type": "keyboard_event"
+    },
+    {
+        "pointing_input": {
+            "buttons": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 246,
+            "y": 0
+        },
+        "time_stamp": 1000000007,
+        "type": "pointing_input"
+    }
+]

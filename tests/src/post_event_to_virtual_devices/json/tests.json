@@ -48,12 +48,20 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_3.json"
     },
     {
-        "description": "wait_around_modifier_1",
+        "description": "wait_between_events_1",
         "rules": [
             "json/rules/empty.json"
         ],
         "input_event_queue": "json/input_event_queue/wait_between_events_1.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_between_events_1.json"
+    },
+    {
+        "description": "wait_between_events_2 (key_up and single)",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/wait_between_events_2.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_between_events_2.json"
     },
     {
         "description": "collapse_lazy_events_1",

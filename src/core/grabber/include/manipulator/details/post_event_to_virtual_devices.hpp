@@ -362,12 +362,13 @@ public:
           break;
       }
 
-      if (!skip &&
-          time_stamp < last_event_time_stamp_ + wait) {
-        time_stamp = last_event_time_stamp_ + wait;
+      if (!skip) {
+        if (time_stamp < last_event_time_stamp_ + wait) {
+          time_stamp = last_event_time_stamp_ + wait;
+        }
+        last_event_type_ = et;
       }
 
-      last_event_type_ = et;
       if (last_event_time_stamp_ < time_stamp) {
         last_event_time_stamp_ = time_stamp;
       }
