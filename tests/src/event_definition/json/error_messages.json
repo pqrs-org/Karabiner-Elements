@@ -28,17 +28,37 @@
             "any": "unknown_any"
         },
         {
+            "description": "Duplicated type description",
+            "key_code": "spacebar",
+            "pointing_button": "button1"
+        },
+        {
+            "description": "Unknown key",
+            "unknown_key": "dummy"
+        },
+        {
+            "description": "unknown modifiers",
+            "modifiers": {
+                "unknown_modifiers": "dummy"
+            }
+        }
+    ],
+    "to_event_definition": [
+        {
+            "description": "Invalid modifiers",
+            "modifiers": {
+                "mandatory": [
+                    "shift"
+                ]
+            }
+        },
+        {
             "description": "shell_command is not string",
             "shell_command": 1234
         },
         {
             "description": "set_variable is not object",
             "set_variable": 1234
-        },
-        {
-            "description": "Duplicated type description",
-            "key_code": "spacebar",
-            "pointing_button": "button1"
         },
         {
             "description": "set_variable.name is not found",
@@ -64,26 +84,6 @@
             "set_variable": {
                 "name": "variable_name",
                 "value": "1234"
-            }
-        },
-        {
-            "description": "Unknown key",
-            "unknown_key": "dummy"
-        },
-        {
-            "description": "unknown modifiers",
-            "modifiers": {
-                "unknown_modifiers": "dummy"
-            }
-        }
-    ],
-    "to_event_definition": [
-        {
-            "description": "Invalid modifiers",
-            "modifiers": {
-                "mandatory": [
-                    "shift"
-                ]
             }
         }
     ]

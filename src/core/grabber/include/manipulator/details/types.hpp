@@ -278,7 +278,7 @@ protected:
   }
 
   void handle_json(const nlohmann::json& json,
-                   std::function<bool(const std::string&, const nlohmann::json&)> extra_json_handler) {
+                   std::function<bool(const std::string&, const nlohmann::json&, const nlohmann::json&)> extra_json_handler) {
     if (!json.is_object()) {
       logger::get_logger().error("complex_modifications json error: Invalid form of event_definition: {0}", json.dump());
       return;
@@ -335,101 +335,11 @@ protected:
           value_ = *pointing_button;
         }
 
-      } else if (key == "any") {
-        if (type_ != type::none) {
-          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-          continue;
-        }
-        if (!value.is_string()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of any: {0}", json.dump());
-          continue;
-        }
-
-        if (value == "key_code") {
-          type_ = type::any;
-          value_ = type::key_code;
-        } else if (value == "pointing_button") {
-          type_ = type::any;
-          value_ = type::pointing_button;
-        } else {
-          logger::get_logger().error("complex_modifications json error: Unknown value of any: {0}", json.dump());
-        }
-
-      } else if (key == "shell_command") {
-        if (type_ != type::none) {
-          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-          continue;
-        }
-        if (!value.is_string()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of shell_command: {0}", json.dump());
-          continue;
-        }
-
-        type_ = type::shell_command;
-        value_ = value.get<std::string>();
-
-      } else if (key == "select_input_source") {
-        if (type_ != type::none) {
-          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-          continue;
-        }
-
-        std::vector<input_source_selector> input_source_selectors;
-
-        if (value.is_object()) {
-          input_source_selectors.emplace_back(value);
-        } else if (value.is_array()) {
-          for (const auto& v : value) {
-            input_source_selectors.emplace_back(v);
-          }
-        } else {
-          logger::get_logger().error("complex_modifications json error: Invalid form of select_input_source: {0}", json.dump());
-          continue;
-        }
-
-        type_ = type::select_input_source;
-        value_ = input_source_selectors;
-
-      } else if (key == "set_variable") {
-        if (type_ != type::none) {
-          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-          continue;
-        }
-        if (!value.is_object()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of set_variable: {0}", json.dump());
-          continue;
-        }
-
-        const std::string name_key = "name";
-        const std::string value_key = "value";
-        if (value.find(name_key) == std::end(value)) {
-          logger::get_logger().error("complex_modifications json error: name is not found in set_variable: {0}", json.dump());
-          continue;
-        }
-        if (!value[name_key].is_string()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of set_variable.name: {0}", json.dump());
-          continue;
-        }
-        if (value.find(value_key) == std::end(value)) {
-          logger::get_logger().error("complex_modifications json error: value is not found in set_variable: {0}", json.dump());
-          continue;
-        }
-        if (!value[value_key].is_number()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of set_variable.value: {0}", json.dump());
-          continue;
-        }
-
-        std::string variable_name = value[name_key];
-        int variable_value = value[value_key];
-
-        type_ = type::set_variable;
-        value_ = std::make_pair(variable_name, variable_value);
-
       } else if (key == "description") {
         // Do nothing
 
       } else {
-        if (!extra_json_handler(key, value)) {
+        if (!extra_json_handler(key, value, json)) {
           logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
         }
       }
@@ -452,8 +362,8 @@ class from_event_definition final : public event_definition {
 public:
   from_event_definition(const nlohmann::json& json) {
     handle_json(json,
-                [&](const std::string& key, const nlohmann::json& value) {
-                  return extra_json_handler(key, value);
+                [&](const std::string& key, const nlohmann::json& value, const nlohmann::json& json) {
+                  return extra_json_handler(key, value, json);
                 });
   }
 
@@ -555,7 +465,8 @@ public:
 
 private:
   bool extra_json_handler(const std::string& key,
-                          const nlohmann::json& value) {
+                          const nlohmann::json& value,
+                          const nlohmann::json& json) {
     if (key == "modifiers") {
       if (!value.is_object()) {
         logger::get_logger().error("complex_modifications json error: Invalid form of modifiers: {0}", value.dump());
@@ -576,6 +487,28 @@ private:
         }
       }
       return true;
+
+    } else if (key == "any") {
+      if (type_ != type::none) {
+        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        return true;
+      }
+      if (!value.is_string()) {
+        logger::get_logger().error("complex_modifications json error: Invalid form of any: {0}", json.dump());
+        return true;
+      }
+
+      if (value == "key_code") {
+        type_ = type::any;
+        value_ = type::key_code;
+      } else if (value == "pointing_button") {
+        type_ = type::any;
+        value_ = type::pointing_button;
+      } else {
+        logger::get_logger().error("complex_modifications json error: Unknown value of any: {0}", json.dump());
+      }
+
+      return true;
     }
 
     return false;
@@ -589,8 +522,8 @@ class to_event_definition final : public event_definition {
 public:
   to_event_definition(const nlohmann::json& json) {
     handle_json(json,
-                [&](const std::string& key, const nlohmann::json& value) {
-                  return extra_json_handler(key, value);
+                [&](const std::string& key, const nlohmann::json& value, const nlohmann::json& json) {
+                  return extra_json_handler(key, value, json);
                 });
   }
 
@@ -608,9 +541,86 @@ public:
 
 private:
   bool extra_json_handler(const std::string& key,
-                          const nlohmann::json& value) {
+                          const nlohmann::json& value,
+                          const nlohmann::json& json) {
     if (key == "modifiers") {
       modifiers_ = make_modifiers(value);
+      return true;
+
+    } else if (key == "shell_command") {
+      if (type_ != type::none) {
+        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        return true;
+      }
+      if (!value.is_string()) {
+        logger::get_logger().error("complex_modifications json error: Invalid form of shell_command: {0}", json.dump());
+        return true;
+      }
+
+      type_ = type::shell_command;
+      value_ = value.get<std::string>();
+
+      return true;
+
+    } else if (key == "select_input_source") {
+      if (type_ != type::none) {
+        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        return true;
+      }
+
+      std::vector<input_source_selector> input_source_selectors;
+
+      if (value.is_object()) {
+        input_source_selectors.emplace_back(value);
+      } else if (value.is_array()) {
+        for (const auto& v : value) {
+          input_source_selectors.emplace_back(v);
+        }
+      } else {
+        logger::get_logger().error("complex_modifications json error: Invalid form of select_input_source: {0}", json.dump());
+        return true;
+      }
+
+      type_ = type::select_input_source;
+      value_ = input_source_selectors;
+
+      return true;
+
+    } else if (key == "set_variable") {
+      if (type_ != type::none) {
+        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        return true;
+      }
+      if (!value.is_object()) {
+        logger::get_logger().error("complex_modifications json error: Invalid form of set_variable: {0}", json.dump());
+        return true;
+      }
+
+      const std::string name_key = "name";
+      const std::string value_key = "value";
+      if (value.find(name_key) == std::end(value)) {
+        logger::get_logger().error("complex_modifications json error: name is not found in set_variable: {0}", json.dump());
+        return true;
+      }
+      if (!value[name_key].is_string()) {
+        logger::get_logger().error("complex_modifications json error: Invalid form of set_variable.name: {0}", json.dump());
+        return true;
+      }
+      if (value.find(value_key) == std::end(value)) {
+        logger::get_logger().error("complex_modifications json error: value is not found in set_variable: {0}", json.dump());
+        return true;
+      }
+      if (!value[value_key].is_number()) {
+        logger::get_logger().error("complex_modifications json error: Invalid form of set_variable.value: {0}", json.dump());
+        return true;
+      }
+
+      std::string variable_name = value[name_key];
+      int variable_value = value[value_key];
+
+      type_ = type::set_variable;
+      value_ = std::make_pair(variable_name, variable_value);
+
       return true;
     }
 

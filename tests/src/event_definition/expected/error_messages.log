@@ -4,13 +4,13 @@
 [error] complex_modifications json error: Invalid form of pointing_button: {"description":"pointing_button is not string","pointing_button":1234}
 [error] complex_modifications json error: Invalid form of any: {"any":1234,"description":"any is not string"}
 [error] complex_modifications json error: Unknown value of any: {"any":"unknown_any","description":"any value is not known"}
+[error] complex_modifications json error: Duplicated type definition: {"description":"Duplicated type description","key_code":"spacebar","pointing_button":"button1"}
+[error] complex_modifications json error: Unknown key: unknown_key in {"description":"Unknown key","unknown_key":"dummy"}
+[error] complex_modifications json error: Unknown key: unknown_modifiers in {"unknown_modifiers":"dummy"}
+[error] complex_modifications json error: modifier should be string form: ["shift"]
 [error] complex_modifications json error: Invalid form of shell_command: {"description":"shell_command is not string","shell_command":1234}
 [error] complex_modifications json error: Invalid form of set_variable: {"description":"set_variable is not object","set_variable":1234}
-[error] complex_modifications json error: Duplicated type definition: {"description":"Duplicated type description","key_code":"spacebar","pointing_button":"button1"}
 [error] complex_modifications json error: name is not found in set_variable: {"description":"set_variable.name is not found","set_variable":{"value":1234}}
 [error] complex_modifications json error: Invalid form of set_variable.name: {"description":"set_variable.name is not string","set_variable":{"name":1234,"value":1234}}
 [error] complex_modifications json error: value is not found in set_variable: {"description":"set_variable.value is not found","set_variable":{"name":"variable_name"}}
 [error] complex_modifications json error: Invalid form of set_variable.value: {"description":"set_variable.name is not number","set_variable":{"name":"variable_name","value":"1234"}}
-[error] complex_modifications json error: Unknown key: unknown_key in {"description":"Unknown key","unknown_key":"dummy"}
-[error] complex_modifications json error: Unknown key: unknown_modifiers in {"unknown_modifiers":"dummy"}
-[error] complex_modifications json error: modifier should be string form: ["shift"]
