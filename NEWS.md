@@ -1,5 +1,7 @@
 # Version 11.2.0 (beta)
 
+* The caps lock LED manipulation has been disabled for non Apple keyboards until it is enabled manually.
+  ![has caps lock led](https://pqrs.org/osx/karabiner/img/news/v11.1.16_0.png)
 * Mouse button modifications has been added.<br />
   Note:
   * You have to enable your Mouse manually in Preferences &gt; Devices tab.
