@@ -419,6 +419,11 @@ public:
     return is_pointing_device_;
   }
 
+  bool is_apple(void) const {
+    return vendor_id_ == vendor_id(0x05ac) ||
+           vendor_id_ == vendor_id(0x004c);
+  }
+
   bool operator==(const device_identifiers& other) const {
     return vendor_id_ == other.vendor_id_ &&
            product_id_ == other.product_id_ &&

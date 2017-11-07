@@ -257,16 +257,24 @@ TEST_CASE("make_new_device_id") {
                                                     krbn::product_id(6789),
                                                     false,
                                                     true);
+  auto device_id3 = krbn::types::make_new_device_id(krbn::vendor_id(1452),
+                                                    krbn::product_id(610),
+                                                    true,
+                                                    false);
 
   REQUIRE(krbn::types::find_device_identifiers(device_id1)->get_vendor_id() == krbn::vendor_id(1234));
   REQUIRE(krbn::types::find_device_identifiers(device_id1)->get_product_id() == krbn::product_id(5678));
   REQUIRE(krbn::types::find_device_identifiers(device_id1)->get_is_keyboard() == true);
   REQUIRE(krbn::types::find_device_identifiers(device_id1)->get_is_pointing_device() == false);
+  REQUIRE(krbn::types::find_device_identifiers(device_id1)->is_apple() == false);
 
   REQUIRE(krbn::types::find_device_identifiers(device_id2)->get_vendor_id() == krbn::vendor_id(2345));
   REQUIRE(krbn::types::find_device_identifiers(device_id2)->get_product_id() == krbn::product_id(6789));
   REQUIRE(krbn::types::find_device_identifiers(device_id2)->get_is_keyboard() == false);
   REQUIRE(krbn::types::find_device_identifiers(device_id2)->get_is_pointing_device() == true);
+  REQUIRE(krbn::types::find_device_identifiers(device_id2)->is_apple() == false);
+
+  REQUIRE(krbn::types::find_device_identifiers(device_id3)->is_apple() == true);
 
   REQUIRE(krbn::types::find_device_identifiers(krbn::device_id(-1)) == nullptr);
 
