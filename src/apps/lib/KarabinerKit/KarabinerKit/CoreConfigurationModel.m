@@ -134,7 +134,7 @@
 }
 
 - (libkrbn_device_identifiers*)deviceIdentifiersByIndex:(NSInteger)connectedDeviceIndex
-                                      deviceIdentifiers:(const libkrbn_device_identifiers*)deviceIdentifiers {
+                                      deviceIdentifiers:(libkrbn_device_identifiers*)deviceIdentifiers {
   if (deviceIdentifiers) {
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
     if (0 <= connectedDeviceIndex && connectedDeviceIndex < (NSInteger)(connectedDevices.devicesCount)) {
