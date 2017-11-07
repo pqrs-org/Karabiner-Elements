@@ -62,14 +62,14 @@
 - (int)getSelectedProfileComplexModificationsParameter:(NSString*)name;
 - (void)setSelectedProfileComplexModificationsParameter:(NSString*)name value:(int)value;
 
-- (BOOL)selectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers;
-- (void)setSelectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers
+- (BOOL)selectedProfileDeviceIgnore:(const libkrbn_device_identifiers*)deviceIdentifiers;
+- (void)setSelectedProfileDeviceIgnore:(const libkrbn_device_identifiers*)deviceIdentifiers
                                  value:(BOOL)value;
-- (BOOL)selectedProfileDeviceHasCapsLockLed:(libkrbn_device_identifiers*)deviceIdentifiers;
-- (void)setSelectedProfileDeviceHasCapsLockLed:(libkrbn_device_identifiers*)deviceIdentifiers
+- (BOOL)selectedProfileDeviceHasCapsLockLed:(const libkrbn_device_identifiers*)deviceIdentifiers;
+- (void)setSelectedProfileDeviceHasCapsLockLed:(const libkrbn_device_identifiers*)deviceIdentifiers
                                          value:(BOOL)value;
-- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers;
-- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers
+- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(const libkrbn_device_identifiers*)deviceIdentifiers;
+- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(const libkrbn_device_identifiers*)deviceIdentifiers
                                                          value:(BOOL)value;
 
 @property(copy) NSString* selectedProfileVirtualHIDKeyboardKeyboardType;

@@ -133,7 +133,8 @@
   libkrbn_core_configuration_erase_profile(self.libkrbnCoreConfiguration, index);
 }
 
-- (libkrbn_device_identifiers*)deviceIdentifiersByIndex:(NSInteger)connectedDeviceIndex deviceIdentifiers:(libkrbn_device_identifiers*)deviceIdentifiers {
+- (libkrbn_device_identifiers*)deviceIdentifiersByIndex:(NSInteger)connectedDeviceIndex
+                                      deviceIdentifiers:(const libkrbn_device_identifiers*)deviceIdentifiers {
   if (deviceIdentifiers) {
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
     if (0 <= connectedDeviceIndex && connectedDeviceIndex < (NSInteger)(connectedDevices.devicesCount)) {
@@ -274,36 +275,36 @@
   libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(self.libkrbnCoreConfiguration, [name UTF8String], value);
 }
 
-- (BOOL)selectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers {
+- (BOOL)selectedProfileDeviceIgnore:(const libkrbn_device_identifiers*)deviceIdentifiers {
   return libkrbn_core_configuration_get_selected_profile_device_ignore(self.libkrbnCoreConfiguration,
                                                                        deviceIdentifiers);
 }
 
-- (void)setSelectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers
+- (void)setSelectedProfileDeviceIgnore:(const libkrbn_device_identifiers*)deviceIdentifiers
                                  value:(BOOL)value {
   libkrbn_core_configuration_set_selected_profile_device_ignore(self.libkrbnCoreConfiguration,
                                                                 deviceIdentifiers,
                                                                 value);
 }
 
-- (BOOL)selectedProfileDeviceHasCapsLockLed:(libkrbn_device_identifiers*)deviceIdentifiers {
+- (BOOL)selectedProfileDeviceHasCapsLockLed:(const libkrbn_device_identifiers*)deviceIdentifiers {
   return libkrbn_core_configuration_get_selected_profile_device_has_caps_lock_led(self.libkrbnCoreConfiguration,
                                                                                   deviceIdentifiers);
 }
 
-- (void)setSelectedProfileDeviceHasCapsLockLed:(libkrbn_device_identifiers*)deviceIdentifiers
+- (void)setSelectedProfileDeviceHasCapsLockLed:(const libkrbn_device_identifiers*)deviceIdentifiers
                                          value:(BOOL)value {
   libkrbn_core_configuration_set_selected_profile_device_has_caps_lock_led(self.libkrbnCoreConfiguration,
                                                                            deviceIdentifiers,
                                                                            value);
 }
 
-- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers {
+- (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(const libkrbn_device_identifiers*)deviceIdentifiers {
   return libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(self.libkrbnCoreConfiguration,
                                                                                                     deviceIdentifiers);
 }
 
-- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers
+- (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(const libkrbn_device_identifiers*)deviceIdentifiers
                                                          value:(BOOL)value {
   libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(self.libkrbnCoreConfiguration,
                                                                                              deviceIdentifiers,
