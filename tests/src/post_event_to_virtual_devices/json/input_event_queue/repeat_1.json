@@ -1,0 +1,17 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "time_stamp": 2000000,
+        "valid": true
+    }
+]

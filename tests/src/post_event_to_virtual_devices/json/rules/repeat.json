@@ -1,0 +1,27 @@
+[
+    {
+        "description": "f1 -> f2",
+        "type": "basic",
+        "from": {
+            "key_code": "f1"
+        },
+        "to": [
+            {
+                "key_code": "f2"
+            }
+        ]
+    },
+    {
+        "description": "f3 -> f4 (no repeat)",
+        "type": "basic",
+        "from": {
+            "key_code": "f3"
+        },
+        "to": [
+            {
+                "key_code": "f4",
+                "repeat": false
+            }
+        ]
+    }
+]

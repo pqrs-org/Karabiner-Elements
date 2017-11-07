@@ -1,0 +1,32 @@
+[
+    {
+        "description": "f1 -> left_shift",
+        "type": "basic",
+        "from": {
+            "key_code": "f1"
+        },
+        "to": [
+            {
+                "key_code": "left_shift",
+                "lazy": true
+            }
+        ]
+    },
+    {
+        "description": "left_shift+f3 -> f4",
+        "type": "basic",
+        "from": {
+            "key_code": "f3",
+            "modifiers": {
+                "mandatory": [
+                    "left_shift"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f4"
+            }
+        ]
+    }
+]
