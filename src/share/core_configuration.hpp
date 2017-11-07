@@ -217,17 +217,10 @@ public:
         }
       }
 
-      if (identifiers.get_is_pointing_device()) {
-        return true;
-      }
-
-      // Touch Bar on MacBook Pro 2016
-      if (identifiers.get_vendor_id() == vendor_id(0x05ac) &&
-          identifiers.get_product_id() == product_id(0x8600)) {
-        return true;
-      }
-
-      return false;
+      device d(nlohmann::json({
+          {"identifiers", identifiers.to_json()},
+      }));
+      return d.get_ignore();
     }
     void set_device_ignore(const device_identifiers& identifiers,
                            bool ignore) {
@@ -240,6 +233,31 @@ public:
         }
       }
     }
+
+    bool get_device_has_caps_lock_led(const device_identifiers& identifiers) const {
+      for (const auto& d : devices_) {
+        if (d.get_identifiers() == identifiers) {
+          return d.get_has_caps_lock_led();
+        }
+      }
+
+      device d(nlohmann::json({
+          {"identifiers", identifiers.to_json()},
+      }));
+      return d.get_has_caps_lock_led();
+    }
+    void set_device_has_caps_lock_led(const device_identifiers& identifiers,
+                                      bool has_caps_lock_led) {
+      add_device(identifiers);
+
+      for (auto&& device : devices_) {
+        if (device.get_identifiers() == identifiers) {
+          device.set_has_caps_lock_led(has_caps_lock_led);
+          return;
+        }
+      }
+    }
+
     bool get_device_disable_built_in_keyboard_if_exists(const device_identifiers& identifiers) const {
       for (const auto& d : devices_) {
         if (d.get_identifiers() == identifiers) {

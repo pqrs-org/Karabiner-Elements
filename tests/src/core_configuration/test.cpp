@@ -237,6 +237,15 @@ TEST_CASE("profile") {
     REQUIRE(profile.get_simple_modifications().get_pairs().size() == 0);
     REQUIRE(profile.get_fn_function_keys().get_pairs() == make_default_fn_function_keys_pairs());
     REQUIRE(profile.get_devices().size() == 0);
+
+    REQUIRE(profile.get_device_ignore(krbn::device_identifiers(krbn::vendor_id(0x05ac),
+                                                               krbn::product_id(0x8600),
+                                                               true,
+                                                               false)) == true);
+    REQUIRE(profile.get_device_ignore(krbn::device_identifiers(krbn::vendor_id(0x05ac),
+                                                               krbn::product_id(0x262),
+                                                               true,
+                                                               false)) == false);
   }
 
   // load values from json
@@ -286,6 +295,7 @@ TEST_CASE("profile") {
                                                 },
                                             }},
                             {"ignore", true},
+                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
                         },
                         // duplicated identifiers
@@ -305,6 +315,7 @@ TEST_CASE("profile") {
                                                 },
                                             }},
                             {"ignore", true},
+                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
                         },
                         {
@@ -323,6 +334,7 @@ TEST_CASE("profile") {
                                                 },
                                             }},
                             {"ignore", false},
+                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
                         },
                     }},
@@ -451,7 +463,7 @@ TEST_CASE("profile") {
         REQUIRE((profile.get_devices())[4].get_identifiers().get_product_id() == krbn::product_id(2222));
         REQUIRE((profile.get_devices())[4].get_identifiers().get_is_keyboard() == false);
         REQUIRE((profile.get_devices())[4].get_identifiers().get_is_pointing_device() == true);
-        REQUIRE((profile.get_devices())[4].get_ignore() == false);
+        REQUIRE((profile.get_devices())[4].get_ignore() == true);
         REQUIRE((profile.get_devices())[4].get_disable_built_in_keyboard_if_exists() == true);
       }
     }
@@ -540,6 +552,7 @@ TEST_CASE("profile.to_json") {
                                                 },
                                             }},
                             {"ignore", true},
+                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
                         },
                     }},
@@ -677,6 +690,7 @@ TEST_CASE("profile.to_json") {
                                                 },
                                             }},
                             {"ignore", true},
+                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
                             {"simple_modifications", nlohmann::json::array()},
                             {"fn_function_keys", nlohmann::json::array()},
@@ -1209,6 +1223,7 @@ TEST_CASE("device") {
                             },
                         }},
         {"ignore", true},
+        {"has_caps_lock_led", false},
         {"disable_built_in_keyboard_if_exists", true},
     });
     krbn::core_configuration::profile::device device(json);
@@ -1225,6 +1240,7 @@ TEST_CASE("device") {
     nlohmann::json json({
         {"identifiers", nullptr},
         {"ignore", 1},
+        {"has_caps_lock_led", false},
         {"disable_built_in_keyboard_if_exists", nlohmann::json::array()},
     });
     krbn::core_configuration::profile::device device(json);
@@ -1257,6 +1273,7 @@ TEST_CASE("device.to_json") {
                             },
                         }},
         {"ignore", false},
+        {"has_caps_lock_led", false},
         {"disable_built_in_keyboard_if_exists", false},
         {"simple_modifications", nlohmann::json::array()},
         {"fn_function_keys", nlohmann::json::array()},
@@ -1277,6 +1294,7 @@ TEST_CASE("device.to_json") {
                             },
                         }},
         {"ignore", true},
+        {"has_caps_lock_led", true},
         {"dummy", {{"keep_me", true}}},
     });
     krbn::core_configuration::profile::device device(json);
@@ -1299,6 +1317,7 @@ TEST_CASE("device.to_json") {
                             },
                         }},
         {"ignore", true},
+        {"has_caps_lock_led", true},
         {"disable_built_in_keyboard_if_exists", false},
         {"simple_modifications", nlohmann::json::array()},
         {"fn_function_keys", nlohmann::json::array()},

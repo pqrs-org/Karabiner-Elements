@@ -115,6 +115,7 @@
                             }
                         }
                     ],
+                    "has_caps_lock_led": false,
                     "identifiers": {
                         "is_keyboard": true,
                         "is_pointing_device": false,
@@ -136,6 +137,7 @@
                 {
                     "disable_built_in_keyboard_if_exists": true,
                     "fn_function_keys": [],
+                    "has_caps_lock_led": true,
                     "identifiers": {
                         "is_keyboard": true,
                         "is_pointing_device": false,
@@ -157,6 +159,7 @@
                             }
                         }
                     ],
+                    "has_caps_lock_led": false,
                     "identifiers": {
                         "is_keyboard": true,
                         "is_pointing_device": false,
