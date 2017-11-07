@@ -11,6 +11,8 @@
 @property(weak) IBOutlet NSTableView* externalKeyboardTableView;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
+@property(weak) IBOutlet NSPanel* hasCapsLockLedConfirmationPanel;
+@property(weak) IBOutlet NSWindow* window;
 
 @end
 
@@ -67,16 +69,41 @@ finish:
 }
 
 - (void)hasCapsLockLedChanged:(id)sender {
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-
   NSInteger row = [self.tableView rowForView:sender];
   if (row != -1) {
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     DevicesTableCellView* cellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
     libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
-    [coreConfigurationModel setSelectedProfileDeviceHasCapsLockLed:&(deviceIdentifiers)
-                                                                   value:(cellView.checkbox.state == NSOnState)];
-    [coreConfigurationModel save];
+
+    if (cellView.checkbox.state == NSOffState) {
+      [coreConfigurationModel setSelectedProfileDeviceHasCapsLockLed:&(deviceIdentifiers)
+                                                                     value:NO];
+      [coreConfigurationModel save];
+
+    } else {
+      [self.window beginSheet:self.hasCapsLockLedConfirmationPanel
+            completionHandler:^(NSModalResponse returnCode) {
+              if (returnCode == NSModalResponseOK) {
+                [coreConfigurationModel setSelectedProfileDeviceHasCapsLockLed:&(deviceIdentifiers)
+                                                                               value:YES];
+                [coreConfigurationModel save];
+
+              } else {
+                cellView.checkbox.state = NSOffState;
+              }
+            }];
+    }
   }
+}
+
+- (IBAction)setHasCapsLockLed:(id)sender {
+  [self.window endSheet:self.hasCapsLockLedConfirmationPanel
+             returnCode:NSModalResponseOK];
+}
+
+- (IBAction)cancelSetHasCapsLockLed:(id)sender {
+  [self.window endSheet:self.hasCapsLockLedConfirmationPanel
+             returnCode:NSModalResponseCancel];
 }
 
 @end

@@ -76,8 +76,10 @@
             <connections>
                 <outlet property="externalKeyboardTableView" destination="aIG-lD-1bK" id="mLO-bs-e8W"/>
                 <outlet property="fnFunctionKeysTableViewController" destination="KbW-oV-WOQ" id="0NY-iG-3Ig"/>
+                <outlet property="hasCapsLockLedConfirmationPanel" destination="Q4d-fj-0zt" id="Bie-8z-LPd"/>
                 <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="uUM-J5-NlU"/>
                 <outlet property="tableView" destination="W1W-Xd-0KJ" id="eN4-9F-gvt"/>
+                <outlet property="window" destination="QvC-M9-y7g" id="Z0C-0A-2k6"/>
             </connections>
         </customObject>
         <customObject id="gV5-jV-pot" customClass="DevicesTableViewDataSource"/>
@@ -2636,6 +2638,106 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
                 </constraints>
             </view>
             <point key="canvasLocation" x="76" y="888"/>
+        </window>
+        <window title="HasCapsLockLED Confirmation Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Q4d-fj-0zt" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="132" width="600" height="300"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
+            <view key="contentView" id="Sw1-0x-oK2">
+                <rect key="frame" x="0.0" y="0.0" width="600" height="300"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="Fiz-h9-drK">
+                        <rect key="frame" x="120" y="238" width="361" height="42"/>
+                        <subviews>
+                            <imageView translatesAutoresizingMaskIntoConstraints="NO" id="uBk-Er-iRZ">
+                                <rect key="frame" x="5" y="5" width="32" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="32" id="4Cp-pC-tth"/>
+                                    <constraint firstAttribute="width" constant="32" id="VlC-zN-5cO"/>
+                                </constraints>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyUpOrDown" image="NSCaution" id="6uL-BL-mGG"/>
+                            </imageView>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iSH-0J-JVi">
+                                <rect key="frame" x="45" y="13" width="313" height="17"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Please ensure the device has the caps lock LED." id="OvV-8V-0p0">
+                                    <font key="font" metaFont="systemBold"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="iSH-0J-JVi" firstAttribute="centerY" secondItem="uBk-Er-iRZ" secondAttribute="centerY" id="5xL-dQ-E1j"/>
+                            <constraint firstAttribute="bottom" secondItem="uBk-Er-iRZ" secondAttribute="bottom" constant="5" id="Gtm-Bb-1ig"/>
+                            <constraint firstItem="iSH-0J-JVi" firstAttribute="leading" secondItem="uBk-Er-iRZ" secondAttribute="trailing" constant="10" id="Ro0-H6-AMH"/>
+                            <constraint firstItem="uBk-Er-iRZ" firstAttribute="leading" secondItem="Fiz-h9-drK" secondAttribute="leading" constant="5" id="axI-Om-LQ0"/>
+                            <constraint firstItem="uBk-Er-iRZ" firstAttribute="top" secondItem="Fiz-h9-drK" secondAttribute="top" constant="5" id="dhd-of-LpQ"/>
+                            <constraint firstAttribute="trailing" secondItem="iSH-0J-JVi" secondAttribute="trailing" constant="5" id="hC1-dB-jbT"/>
+                        </constraints>
+                    </customView>
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SRC-bw-neZ">
+                        <rect key="frame" x="95" y="94" width="410" height="114"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="wA7-WV-iav">
+                            <font key="font" metaFont="system"/>
+                            <string key="title">Karabiner-Elements tries to manipulate the caps lock LED.
+However, the LED manipulation might cause a problem if the device does not have a caps lock LED.
+Please keep the checkbox off if the device does not have a caps lock LED.</string>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <string key="userLabel">Karabiner-Elements tries to manipulate the caps lock LED. However, the LED manipulation might cause a problem if the device does not have a caps lock LED. Please keep the checkbox off if the device does not have a caps lock LED.</string>
+                    </textField>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="uTI-aw-tOw">
+                        <rect key="frame" x="85" y="20" width="430" height="31"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rN3-uz-e7c">
+                                <rect key="frame" x="-1" y="-2" width="212" height="32"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="d7p-Jp-xaN"/>
+                                </constraints>
+                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" image="ic_cancel_18pt" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="25x-JO-VcX">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="cancelSetHasCapsLockLed:" target="n2S-Tf-7ZE" id="PTO-7B-uhd"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kmG-ha-BRe">
+                                <rect key="frame" x="250" y="0.0" width="180" height="28"/>
+                                <buttonCell key="cell" type="push" title="Enable LED manipulation" bezelStyle="rounded" image="ic_check_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CzH-uV-HZ1">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="smallSystem"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="setHasCapsLockLed:" target="n2S-Tf-7ZE" id="HSS-bM-QJz"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="rN3-uz-e7c" secondAttribute="bottom" constant="5" id="TUX-uH-RDG"/>
+                            <constraint firstItem="rN3-uz-e7c" firstAttribute="top" secondItem="uTI-aw-tOw" secondAttribute="top" constant="5" id="dnA-KP-for"/>
+                            <constraint firstItem="kmG-ha-BRe" firstAttribute="leading" secondItem="rN3-uz-e7c" secondAttribute="trailing" constant="50" id="hed-kb-5Jd"/>
+                            <constraint firstItem="rN3-uz-e7c" firstAttribute="leading" secondItem="uTI-aw-tOw" secondAttribute="leading" constant="5" id="ibW-0f-gLF"/>
+                            <constraint firstItem="kmG-ha-BRe" firstAttribute="centerY" secondItem="rN3-uz-e7c" secondAttribute="centerY" id="mnz-Fg-X1n"/>
+                            <constraint firstAttribute="trailing" secondItem="kmG-ha-BRe" secondAttribute="trailing" constant="5" id="pkw-YB-zhC"/>
+                        </constraints>
+                    </customView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Fiz-h9-drK" firstAttribute="centerX" secondItem="Sw1-0x-oK2" secondAttribute="centerX" id="2ba-fP-mcf"/>
+                    <constraint firstItem="uTI-aw-tOw" firstAttribute="centerX" secondItem="Sw1-0x-oK2" secondAttribute="centerX" id="TYV-3D-CUO"/>
+                    <constraint firstItem="Fiz-h9-drK" firstAttribute="top" secondItem="Sw1-0x-oK2" secondAttribute="top" constant="20" id="hfv-Gc-1Jb"/>
+                    <constraint firstAttribute="bottom" secondItem="uTI-aw-tOw" secondAttribute="bottom" constant="20" id="mV6-am-cdj"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="168" y="1433"/>
         </window>
     </objects>
     <resources>
