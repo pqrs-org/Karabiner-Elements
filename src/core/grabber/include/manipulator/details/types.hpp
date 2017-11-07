@@ -520,7 +520,8 @@ private:
 
 class to_event_definition final : public event_definition {
 public:
-  to_event_definition(const nlohmann::json& json) {
+  to_event_definition(const nlohmann::json& json) : lazy_(false),
+                                                    repeat_(true) {
     handle_json(json,
                 [&](const std::string& key, const nlohmann::json& value, const nlohmann::json& json) {
                   return extra_json_handler(key, value, json);
@@ -529,7 +530,9 @@ public:
 
   to_event_definition(key_code key_code,
                       const std::unordered_set<modifier>& modifiers) : event_definition(key_code),
-                                                                       modifiers_(modifiers) {
+                                                                       modifiers_(modifiers),
+                                                                       lazy_(false),
+                                                                       repeat_(true) {
   }
 
   virtual ~to_event_definition(void) {
@@ -537,6 +540,14 @@ public:
 
   const std::unordered_set<modifier>& get_modifiers(void) const {
     return modifiers_;
+  }
+
+  bool get_lazy(void) const {
+    return lazy_;
+  }
+
+  bool get_repeat(void) const {
+    return repeat_;
   }
 
 private:
@@ -622,12 +633,34 @@ private:
       value_ = std::make_pair(variable_name, variable_value);
 
       return true;
+
+    } else if (key == "lazy") {
+      if (!value.is_boolean()) {
+        logger::get_logger().error("complex_modifications json error: Invalid form of lazy: {0}", json.dump());
+        return true;
+      }
+
+      lazy_ = value;
+
+      return true;
+
+    } else if (key == "repeat") {
+      if (!value.is_boolean()) {
+        logger::get_logger().error("complex_modifications json error: Invalid form of repeat: {0}", json.dump());
+        return true;
+      }
+
+      repeat_ = value;
+
+      return true;
     }
 
     return false;
   }
 
   std::unordered_set<modifier> modifiers_;
+  bool lazy_;
+  bool repeat_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const event_definition::modifier& value) {

@@ -551,6 +551,8 @@ TEST_CASE("manipulator.details.to_event_definition") {
     krbn::manipulator::details::to_event_definition event_definition(json);
     REQUIRE(event_definition.get_type() == krbn::manipulator::details::event_definition::type::none);
     REQUIRE(event_definition.get_modifiers().size() == 0);
+    REQUIRE(event_definition.get_lazy() == false);
+    REQUIRE(event_definition.get_repeat() == true);
     REQUIRE(!(event_definition.to_event()));
   }
   {
@@ -652,6 +654,22 @@ TEST_CASE("manipulator.details.to_event_definition") {
     REQUIRE(event_definition.get_shell_command() == boost::none);
     REQUIRE(event_definition.get_input_source_selectors() == std::vector<krbn::input_source_selector>({input_source_selector1,
                                                                                                        input_source_selector2}));
+  }
+  // lazy
+  {
+    nlohmann::json json;
+    json["lazy"] = true;
+
+    krbn::manipulator::details::to_event_definition event_definition(json);
+    REQUIRE(event_definition.get_lazy() == true);
+  }
+  // lazy
+  {
+    nlohmann::json json;
+    json["repeat"] = false;
+
+    krbn::manipulator::details::to_event_definition event_definition(json);
+    REQUIRE(event_definition.get_repeat() == false);
   }
 }
 

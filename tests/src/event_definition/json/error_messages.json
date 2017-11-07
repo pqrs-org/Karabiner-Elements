@@ -85,6 +85,14 @@
                 "name": "variable_name",
                 "value": "1234"
             }
+        },
+        {
+            "description": "lazy is not boolean",
+            "lazy": []
+        },
+        {
+            "description": "repeat is not boolean",
+            "repeat": []
         }
     ]
 }

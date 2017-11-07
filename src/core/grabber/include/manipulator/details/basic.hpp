@@ -373,7 +373,7 @@ public:
                   // to_modifier down, to_key down, to_key up, to_modifier up
 
                   {
-                    bool lazy = !preserve_to_modifiers_down();
+                    bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
                     enqueue_to_modifiers(*it,
                                          event_type::key_down,
                                          front_input_event,
@@ -386,20 +386,22 @@ public:
                                                          front_input_event.get_time_stamp() + time_stamp_delay++,
                                                          *event,
                                                          event_type::key_down,
-                                                         front_input_event.get_original_event());
+                                                         front_input_event.get_original_event(),
+                                                         it->get_lazy());
 
-                  if (it != std::end(to_) - 1) {
+                  if (it != std::end(to_) - 1 || !it->get_repeat()) {
                     output_event_queue->emplace_back_event(front_input_event.get_device_id(),
                                                            front_input_event.get_time_stamp() + time_stamp_delay++,
                                                            *event,
                                                            event_type::key_up,
-                                                           front_input_event.get_original_event());
+                                                           front_input_event.get_original_event(),
+                                                           it->get_lazy());
                   }
 
                   if (it == std::end(to_) - 1 && preserve_to_modifiers_down()) {
                     // Do nothing
                   } else {
-                    bool lazy = !preserve_to_modifiers_down();
+                    bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
                     enqueue_to_modifiers(*it,
                                          event_type::key_up,
                                          front_input_event,
@@ -410,7 +412,7 @@ public:
                   break;
 
                 case event_type::key_up:
-                  if (it == std::end(to_) - 1) {
+                  if (it == std::end(to_) - 1 && it->get_repeat()) {
                     output_event_queue->emplace_back_event(front_input_event.get_device_id(),
                                                            front_input_event.get_time_stamp() + time_stamp_delay++,
                                                            *event,
@@ -418,10 +420,11 @@ public:
                                                            front_input_event.get_original_event());
 
                     if (preserve_to_modifiers_down()) {
+                      bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
                       enqueue_to_modifiers(*it,
                                            event_type::key_up,
                                            front_input_event,
-                                           false,
+                                           lazy,
                                            time_stamp_delay,
                                            *output_event_queue);
                     }
@@ -624,13 +627,15 @@ private:
                                               front_input_event.get_time_stamp() + time_stamp_delay++,
                                               *event,
                                               event_type::key_down,
-                                              front_input_event.get_original_event());
+                                              front_input_event.get_original_event(),
+                                              it->get_lazy());
 
         output_event_queue.emplace_back_event(front_input_event.get_device_id(),
                                               front_input_event.get_time_stamp() + time_stamp_delay++,
                                               *event,
                                               event_type::key_up,
-                                              front_input_event.get_original_event());
+                                              front_input_event.get_original_event(),
+                                              it->get_lazy());
 
         enqueue_to_modifiers(to,
                              event_type::key_up,
