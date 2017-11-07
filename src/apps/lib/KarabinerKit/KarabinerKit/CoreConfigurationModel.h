@@ -65,6 +65,9 @@
 - (BOOL)selectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers;
 - (void)setSelectedProfileDeviceIgnore:(libkrbn_device_identifiers*)deviceIdentifiers
                                  value:(BOOL)value;
+- (BOOL)selectedProfileDeviceHasCapsLockLed:(libkrbn_device_identifiers*)deviceIdentifiers;
+- (void)setSelectedProfileDeviceHasCapsLockLed:(libkrbn_device_identifiers*)deviceIdentifiers
+                                         value:(BOOL)value;
 - (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers;
 - (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers
                                                          value:(BOOL)value;

@@ -34,12 +34,35 @@
     }
 
     result.checkbox.enabled = YES;
-    if (deviceIdentifiers.vendor_id == 0x05ac ||
-        deviceIdentifiers.vendor_id == 0x004c) {
-      // Apple
-      if (deviceIdentifiers.is_pointing_device) {
-        result.checkbox.enabled = NO;
-      }
+    if (libkrbn_device_identifiers_is_apple(&deviceIdentifiers) &&
+        deviceIdentifiers.is_pointing_device) {
+      result.checkbox.enabled = NO;
+    }
+
+    return result;
+  }
+
+  if ([tableColumn.identifier isEqualToString:@"DevicesHasCapsLockLEDColumn"]) {
+    DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesHasCapsLockLEDCellView" owner:self];
+    KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
+    libkrbn_device_identifiers deviceIdentifiers = [connectedDevices deviceIdentifiersAtIndex:row];
+
+    result.checkbox.action = @selector(hasCapsLockLedChanged:);
+    result.checkbox.target = self.devicesTableViewController;
+
+    result.deviceIdentifiers = deviceIdentifiers;
+
+    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+    if ([coreConfigurationModel selectedProfileDeviceHasCapsLockLed:(&deviceIdentifiers)]) {
+      result.checkbox.state = NSOnState;
+    } else {
+      result.checkbox.state = NSOffState;
+    }
+
+    result.checkbox.enabled = YES;
+    if (libkrbn_device_identifiers_is_apple(&deviceIdentifiers) ||
+        !deviceIdentifiers.is_keyboard) {
+      result.checkbox.enabled = NO;
     }
 
     return result;

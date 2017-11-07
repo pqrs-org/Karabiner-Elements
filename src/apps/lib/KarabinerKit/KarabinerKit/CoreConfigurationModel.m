@@ -286,6 +286,18 @@
                                                                 value);
 }
 
+- (BOOL)selectedProfileDeviceHasCapsLockLed:(libkrbn_device_identifiers*)deviceIdentifiers {
+  return libkrbn_core_configuration_get_selected_profile_device_has_caps_lock_led(self.libkrbnCoreConfiguration,
+                                                                                  deviceIdentifiers);
+}
+
+- (void)setSelectedProfileDeviceHasCapsLockLed:(libkrbn_device_identifiers*)deviceIdentifiers
+                                         value:(BOOL)value {
+  libkrbn_core_configuration_set_selected_profile_device_has_caps_lock_led(self.libkrbnCoreConfiguration,
+                                                                           deviceIdentifiers,
+                                                                           value);
+}
+
 - (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(libkrbn_device_identifiers*)deviceIdentifiers {
   return libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(self.libkrbnCoreConfiguration,
                                                                                                     deviceIdentifiers);

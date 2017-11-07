@@ -66,4 +66,17 @@ finish:
   [self.fnFunctionKeysTableViewController updateConnectedDevicesMenu];
 }
 
+- (void)hasCapsLockLedChanged:(id)sender {
+  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+
+  NSInteger row = [self.tableView rowForView:sender];
+  if (row != -1) {
+    DevicesTableCellView* cellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
+    libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
+    [coreConfigurationModel setSelectedProfileDeviceHasCapsLockLed:&(deviceIdentifiers)
+                                                                   value:(cellView.checkbox.state == NSOnState)];
+    [coreConfigurationModel save];
+  }
+}
+
 @end
