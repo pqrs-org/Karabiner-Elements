@@ -415,6 +415,28 @@ void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_
   }
 }
 
+bool libkrbn_core_configuration_get_selected_profile_device_has_caps_lock_led(libkrbn_core_configuration* p,
+                                                                              libkrbn_device_identifiers* device_identifiers) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    if (device_identifiers) {
+      auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
+      return c->get_core_configuration().get_selected_profile().get_device_has_caps_lock_led(identifiers);
+    }
+  }
+  return false;
+}
+
+void libkrbn_core_configuration_set_selected_profile_device_has_caps_lock_led(libkrbn_core_configuration* p,
+                                                                              libkrbn_device_identifiers* device_identifiers,
+                                                                              bool value) {
+  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
+    if (device_identifiers) {
+      auto identifiers = libkrbn_cpp::make_device_identifiers(*device_identifiers);
+      c->get_core_configuration().get_selected_profile().set_device_has_caps_lock_led(identifiers, value);
+    }
+  }
+}
+
 bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* p,
                                                                                                 libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {

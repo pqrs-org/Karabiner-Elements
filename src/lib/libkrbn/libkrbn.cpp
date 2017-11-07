@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "core_configuration.hpp"
 #include "launchctl_utility.hpp"
+#include "libkrbn_cpp.hpp"
 #include "process_utility.hpp"
 #include "thread_utility.hpp"
 #include "types.hpp"
@@ -100,4 +101,11 @@ void libkrbn_launch_preferences(void) {
 
 bool libkrbn_system_core_configuration_file_path_exists(void) {
   return krbn::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
+}
+
+bool libkrbn_device_identifiers_is_apple(libkrbn_device_identifiers* p) {
+  if (p) {
+    return libkrbn_cpp::make_device_identifiers(*p).is_apple();
+  }
+  return false;
 }
