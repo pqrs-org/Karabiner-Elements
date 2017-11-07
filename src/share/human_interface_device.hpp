@@ -648,19 +648,6 @@ public:
     IOReturn __block r = kIOReturnError;
 
     gcd_utility::dispatch_sync_in_main_queue(^{
-      // `IOHIDDeviceSetValue` will block forever with some buggy devices. (e.g., Bit Touch)
-      // This, we use a blacklist.
-      if (auto v = find_vendor_id()) {
-        if (auto p = find_product_id()) {
-          if ((*v == vendor_id(0x22ea) && *p == product_id(0xf)) /* Bit Touch (Bit Trade One LTD.) */ ||
-              (*v == vendor_id(0x17ef) && *p == product_id(0x6083)) /* ThinkPad Multi Connect Bluetooth Keyboard with Trackpoint */ ||
-              false) {
-            r = kIOReturnSuccess;
-            return;
-          }
-        }
-      }
-
       for (const auto& e : elements_) {
         auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(e));
         auto usage = hid_usage(IOHIDElementGetUsage(e));
