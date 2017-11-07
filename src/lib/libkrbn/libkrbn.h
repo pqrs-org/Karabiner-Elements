@@ -50,7 +50,7 @@ bool libkrbn_system_core_configuration_file_path_exists(void);
 
 // device_identifiers
 
-bool libkrbn_device_identifiers_is_apple(libkrbn_device_identifiers* _Nonnull p);
+bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* _Nonnull p);
 
 // ----------------------------------------
 // libkrbn_core_configuration
@@ -82,37 +82,37 @@ void libkrbn_core_configuration_erase_profile(libkrbn_core_configuration* _Nonnu
 // profile::simple_modifications
 
 size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(libkrbn_core_configuration* _Nonnull p,
-                                                                                 libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                                 const libkrbn_device_identifiers* _Nullable device_identifiers);
 libkrbn_simple_modifications_definition libkrbn_core_configuration_get_selected_profile_simple_modification_first(libkrbn_core_configuration* _Nonnull p,
                                                                                                                   size_t index,
-                                                                                                                  libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                                                                  const libkrbn_device_identifiers* _Nullable device_identifiers);
 libkrbn_simple_modifications_definition libkrbn_core_configuration_get_selected_profile_simple_modification_second(libkrbn_core_configuration* _Nonnull p,
                                                                                                                    size_t index,
-                                                                                                                   libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                                                                   const libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_replace_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p,
                                                                              size_t index,
                                                                              const libkrbn_simple_modifications_definition* _Nonnull from,
                                                                              const libkrbn_simple_modifications_definition* _Nonnull to,
-                                                                             libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                             const libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_push_back_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p,
-                                                                               libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                               const libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_erase_selected_profile_simple_modification(libkrbn_core_configuration* _Nonnull p, size_t index,
-                                                                           libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                           const libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // profile::fn_function_keys
 
 size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(libkrbn_core_configuration* _Nonnull p,
-                                                                             libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                             const libkrbn_device_identifiers* _Nullable device_identifiers);
 libkrbn_simple_modifications_definition libkrbn_core_configuration_get_selected_profile_fn_function_key_first(libkrbn_core_configuration* _Nonnull p,
                                                                                                               size_t index,
-                                                                                                              libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                                                              const libkrbn_device_identifiers* _Nullable device_identifiers);
 libkrbn_simple_modifications_definition libkrbn_core_configuration_get_selected_profile_fn_function_key_second(libkrbn_core_configuration* _Nonnull p,
                                                                                                                size_t index,
-                                                                                                               libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                                                               const libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_replace_selected_profile_fn_function_key(libkrbn_core_configuration* _Nonnull p,
                                                                          const libkrbn_simple_modifications_definition* _Nonnull from,
                                                                          const libkrbn_simple_modifications_definition* _Nonnull to,
-                                                                         libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                         const libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // profile:complex_modifications
 
@@ -136,19 +136,19 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_caps_l
 // profile::devices
 
 bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_configuration* _Nonnull p,
-                                                                   libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                   const libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* _Nonnull p,
-                                                                   libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                   const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                    bool value);
 bool libkrbn_core_configuration_get_selected_profile_device_has_caps_lock_led(libkrbn_core_configuration* _Nonnull p,
-                                                                              libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                              const libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_has_caps_lock_led(libkrbn_core_configuration* _Nonnull p,
-                                                                              libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                              const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                               bool value);
 bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* _Nonnull p,
-                                                                                                libkrbn_device_identifiers* _Nullable device_identifiers);
+                                                                                                const libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* _Nonnull p,
-                                                                                                libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                                const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                                 bool value);
 
 // ----------------------------------------

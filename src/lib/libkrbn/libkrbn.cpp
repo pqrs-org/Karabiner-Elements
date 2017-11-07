@@ -103,7 +103,7 @@ bool libkrbn_system_core_configuration_file_path_exists(void) {
   return krbn::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
 }
 
-bool libkrbn_device_identifiers_is_apple(libkrbn_device_identifiers* p) {
+bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
   if (p) {
     return libkrbn_cpp::make_device_identifiers(*p).is_apple();
   }
