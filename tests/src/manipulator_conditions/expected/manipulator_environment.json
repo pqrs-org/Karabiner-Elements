@@ -7,6 +7,7 @@
         "input_source_id": "com.apple.keylayout.US",
         "language": "en"
     },
+    "keyboard_type": "iso",
     "variables": {
         "value1": 100,
         "value2": 200

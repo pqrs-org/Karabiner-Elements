@@ -133,6 +133,7 @@ TEST_CASE("manipulator_environment.save_to_file") {
                                                         boost::none});
   manipulator_environment.set_variable("value1", 100);
   manipulator_environment.set_variable("value2", 200);
+  manipulator_environment.set_keyboard_type("iso");
 }
 
 TEST_CASE("conditions.frontmost_application") {
