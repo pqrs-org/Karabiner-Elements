@@ -56,8 +56,12 @@ It does not work with Secure Keyboard Entry even if we use `kCGHIDEventTap` and 
 Thus, it does not work in Terminal.<br />
 You can confirm this behavior in `appendix/eventtap`.
 
-However, we should modify mouse event's modifier flags manually.
-Thus, `karabiner_grabber` uses this method to modify mouse events.
+There is another problem with `CGEventTapCreate`.<br />
+`Shake mouse pointer to locate` feature will be stopped after we call `CGEventTapCreate` with `kCGEventTapOptionDefault`.<br />
+(We confirmed the problem at least on macOS 10.13.1.)<br />
+
+`karabiner_grabber` uses `CGEventTapCreate` with `kCGEventTapOptionListenOnly` in order to catch Apple mouse/trackpad events which we cannot catch in IOKit.
+(See above note.)
 
 --------------------------------------------------------------------------------
 
