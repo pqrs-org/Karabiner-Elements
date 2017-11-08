@@ -209,6 +209,12 @@ private:
             std::cout << "input_source_changed " << input_source_identifiers << std::endl;
           }
           break;
+
+        case krbn::event_queue::queued_event::event::type::keyboard_type_changed:
+          if (auto keyboard_type = queued_event.get_event().get_keyboard_type()) {
+            std::cout << "keyboard_type_changed " << keyboard_type << std::endl;
+          }
+          break;
       }
     }
 

@@ -39,6 +39,7 @@ public:
         pointing_device_event_from_event_tap,
         frontmost_application_changed,
         input_source_changed,
+        keyboard_type_changed,
       };
 
       event(void) : type_(type::none),
@@ -155,6 +156,14 @@ public:
                 break;
               }
 
+              case type::keyboard_type_changed: {
+                auto it = json.find("keyboard_type");
+                if (it != std::end(json)) {
+                  value_ = it->get<std::string>();
+                }
+                break;
+              }
+
               case type::device_keys_are_released:
               case type::device_pointing_buttons_are_released:
               case type::device_ungrabbed:
@@ -236,6 +245,12 @@ public:
           case type::input_source_changed:
             if (auto v = get_input_source_identifiers()) {
               json["input_source_identifiers"] = v->to_json();
+            }
+            break;
+
+          case type::keyboard_type_changed:
+            if (auto v = get_keyboard_type()) {
+              json["keyboard_type"] = *v;
             }
             break;
 
@@ -321,6 +336,13 @@ public:
         event e;
         e.type_ = type::input_source_changed;
         e.value_ = input_source_identifiers;
+        return e;
+      }
+
+      static event make_keyboard_type_changed_event(const std::string& keyboard_type) {
+        event e;
+        e.type_ = type::keyboard_type_changed;
+        e.value_ = keyboard_type;
         return e;
       }
 
@@ -422,6 +444,16 @@ public:
         return boost::none;
       }
 
+      boost::optional<std::string> get_keyboard_type(void) const {
+        try {
+          if (type_ == type::keyboard_type_changed) {
+            return boost::get<std::string>(value_);
+          }
+        } catch (boost::bad_get&) {
+        }
+        return boost::none;
+      }
+
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
                value_ == other.value_;
@@ -460,6 +492,7 @@ public:
           TO_C_STRING(pointing_device_event_from_event_tap);
           TO_C_STRING(frontmost_application_changed);
           TO_C_STRING(input_source_changed);
+          TO_C_STRING(keyboard_type_changed);
         }
 
 #undef TO_C_STRING
@@ -493,6 +526,7 @@ public:
         TO_TYPE(pointing_device_event_from_event_tap);
         TO_TYPE(frontmost_application_changed);
         TO_TYPE(input_source_changed);
+        TO_TYPE(keyboard_type_changed);
 
 #undef TO_TYPE
 
@@ -505,7 +539,7 @@ public:
                      consumer_key_code, // For type::consumer_key_code
                      pointing_button, // For type::pointing_button
                      int64_t, // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
-                     std::string, // For shell_command
+                     std::string, // For shell_command, keyboard_type_changed
                      std::vector<input_source_selector>, // For select_input_source
                      std::pair<std::string, int>, // For set_variable
                      manipulator_environment::frontmost_application, // For frontmost_application_changed
@@ -814,6 +848,9 @@ public:
         manipulator_environment_.set_variable(set_variable->first,
                                               set_variable->second);
       }
+    }
+    if (auto keyboard_type = event.get_keyboard_type()) {
+      manipulator_environment_.set_keyboard_type(*keyboard_type);
     }
   }
 

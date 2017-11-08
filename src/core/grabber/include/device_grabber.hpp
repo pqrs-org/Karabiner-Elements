@@ -149,6 +149,8 @@ public:
                                                                          is_grabbable_callback_log_reducer_.reset();
                                                                          set_profile(core_configuration_->get_selected_profile());
                                                                          grab_devices();
+
+                                                                         post_keyboard_type_changed_event();
                                                                        });
 
       virtual_hid_device_client_.connect();
@@ -262,6 +264,22 @@ public:
                                                     event);
 
       krbn_notification_center::get_instance().input_event_arrived();
+    });
+  }
+
+  void post_keyboard_type_changed_event(void) {
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      if (core_configuration_) {
+        auto keyboard_type = core_configuration_->get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type();
+        auto event = event_queue::queued_event::event::make_keyboard_type_changed_event(keyboard_type);
+        merged_input_event_queue_->emplace_back_event(device_id(0),
+                                                      mach_absolute_time(),
+                                                      event,
+                                                      event_type::single,
+                                                      event);
+
+        krbn_notification_center::get_instance().input_event_arrived();
+      }
     });
   }
 

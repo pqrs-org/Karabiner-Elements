@@ -157,6 +157,16 @@ TEST_CASE("json") {
   }
   {
     nlohmann::json expected;
+    expected["type"] = "keyboard_type_changed";
+    expected["keyboard_type"] = "iso";
+    auto e = krbn::event_queue::queued_event::event::make_keyboard_type_changed_event("iso");
+    auto json = e.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
+  }
+  {
+    nlohmann::json expected;
     expected["type"] = "device_keys_are_released";
     auto json = device_keys_are_released_event.to_json();
     REQUIRE(json == expected);
