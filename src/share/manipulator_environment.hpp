@@ -84,6 +84,7 @@ public:
         {"frontmost_application", frontmost_application_.to_json()},
         {"input_source_identifiers", input_source_identifiers_.to_json()},
         {"variables", variables_},
+        {"keyboard_type", keyboard_type_},
     });
   }
 
@@ -127,6 +128,15 @@ public:
     save_to_file();
   }
 
+  const std::string& get_keyboard_type(void) const {
+    return keyboard_type_;
+  }
+
+  void set_keyboard_type(const std::string& value) {
+    keyboard_type_ = value;
+    save_to_file();
+  }
+
 private:
   void save_to_file(void) const {
     if (!output_json_file_path_.empty()) {
@@ -145,6 +155,7 @@ private:
   frontmost_application frontmost_application_;
   input_source_identifiers input_source_identifiers_;
   std::unordered_map<std::string, int> variables_;
+  std::string keyboard_type_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const manipulator_environment::frontmost_application& value) {
