@@ -57,8 +57,8 @@ int main(int argc, const char* argv[]) {
               CGEventMaskBit(kCGEventOtherMouseDragged);
 
   eventtap_ = CGEventTapCreate(kCGHIDEventTap,
-                               kCGHeadInsertEventTap,
-                               kCGEventTapOptionDefault,
+                               kCGTailAppendEventTap,
+                               kCGEventTapOptionListenOnly,
                                mask,
                                callback,
                                nullptr);

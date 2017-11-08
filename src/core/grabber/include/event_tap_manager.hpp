@@ -40,8 +40,8 @@ public:
                 CGEventMaskBit(kCGEventOtherMouseDragged);
 
     event_tap_ = CGEventTapCreate(kCGHIDEventTap,
-                                  kCGHeadInsertEventTap,
-                                  kCGEventTapOptionDefault,
+                                  kCGTailAppendEventTap,
+                                  kCGEventTapOptionListenOnly,
                                   mask,
                                   event_tap_manager::static_callback,
                                   this);
