@@ -1,4 +1,4 @@
-# Version 11.2.0 (beta)
+# Version 11.2.0
 
 * The caps lock LED manipulation has been disabled for non Apple keyboards until it is enabled manually.
   ![has caps lock led](https://pqrs.org/osx/karabiner/img/news/v11.1.16_0.png)
@@ -26,7 +26,6 @@
     * Change control-[ to escape
       * src:  https://github.com/pqrs-org/KE-complex_modifications/blob/master/src/json/example_keyboard_type.json.erb
       * json: https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_keyboard_type.json
-
 * The virtual keyboard handling has been improved.
 
 
