@@ -7,6 +7,7 @@
 #include "migration.hpp"
 #include "process_utility.hpp"
 #include "spdlog_utility.hpp"
+#include "update_utility.hpp"
 #include "thread_utility.hpp"
 #include "version_monitor.hpp"
 
@@ -54,6 +55,8 @@ int main(int argc, const char* argv[]) {
   krbn::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_user_complex_modifications_assets_directory(), 0700);
 
   krbn::connection_manager manager(*version_monitor_ptr);
+
+  krbn::update_utility::check_for_updates_on_startup();
 
   CFRunLoopRun();
 

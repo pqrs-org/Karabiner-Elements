@@ -1,5 +1,7 @@
 #pragma once
 
+#include "configuration_monitor.hpp"
+#include "logger.hpp"
 #include <cstdlib>
 #include <string>
 
@@ -16,6 +18,17 @@ public:
 
   static void check_for_updates_with_beta_version(void) {
     launch_updater("checkForUpdatesWithBetaVersion");
+  }
+
+  static void check_for_updates_on_startup(void) {
+    configuration_monitor cm(constants::get_user_core_configuration_file_path(),
+                             [](auto&& core_configuration) {});
+    if (auto core_configuration = cm.get_core_configuration()) {
+      if (core_configuration->get_global_configuration().get_check_for_updates_on_startup()) {
+        logger::get_logger().info("Check for updates...");
+        check_for_updates_in_background();
+      }
+    }
   }
 
 private:
