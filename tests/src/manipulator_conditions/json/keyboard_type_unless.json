@@ -1,0 +1,11 @@
+[
+    {
+        "type": "keyboard_type_unless",
+        "keyboard_types": [
+            "iso"
+        ]
+    },
+    {
+        "type": "unknown"
+    }
+]

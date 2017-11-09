@@ -101,6 +101,22 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::variable*>(condition.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
   }
+  {
+    nlohmann::json json;
+    json["type"] = "keyboard_type_if";
+    json["keyboard_types"] = nlohmann::json::array({"iso"});
+    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::keyboard_type*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+  }
+  {
+    nlohmann::json json;
+    json["type"] = "keyboard_type_unless";
+    json["keyboard_types"] = nlohmann::json::array({"iso"});
+    auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::keyboard_type*>(condition.get()) != nullptr);
+    REQUIRE(dynamic_cast<krbn::manipulator::details::conditions::nop*>(condition.get()) == nullptr);
+  }
 }
 
 namespace {
@@ -310,6 +326,38 @@ TEST_CASE("conditions.device") {
   }
 
 #undef QUEUED_EVENT
+}
+
+TEST_CASE("conditions.keyboard_type") {
+  krbn::manipulator_environment manipulator_environment;
+  krbn::event_queue::queued_event queued_event(krbn::device_id(1),
+                                               0,
+                                               krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                               krbn::event_type::key_down,
+                                               krbn::event_queue::queued_event::event(krbn::key_code::a));
+
+  {
+    actual_examples_helper helper("keyboard_type_if.json");
+
+    manipulator_environment.set_keyboard_type("iso");
+    REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                        manipulator_environment) == true);
+
+    manipulator_environment.set_keyboard_type("ansi");
+    REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                        manipulator_environment) == false);
+  }
+  {
+    actual_examples_helper helper("keyboard_type_unless.json");
+
+    manipulator_environment.set_keyboard_type("iso");
+    REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                        manipulator_environment) == false);
+
+    manipulator_environment.set_keyboard_type("ansi");
+    REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
+                                                        manipulator_environment) == true);
+  }
 }
 
 int main(int argc, char* const argv[]) {
