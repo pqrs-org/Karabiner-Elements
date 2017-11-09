@@ -81,17 +81,24 @@ finish:
       [coreConfigurationModel save];
 
     } else {
-      [self.window beginSheet:self.hasCapsLockLedConfirmationPanel
-            completionHandler:^(NSModalResponse returnCode) {
-              if (returnCode == NSModalResponseOK) {
-                [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
-                                                                                      value:YES];
-                [coreConfigurationModel save];
+      if (libkrbn_device_identifiers_is_apple(&deviceIdentifiers)) {
+        [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
+                                                                              value:YES];
+        [coreConfigurationModel save];
 
-              } else {
-                cellView.checkbox.state = NSOffState;
-              }
-            }];
+      } else {
+        [self.window beginSheet:self.hasCapsLockLedConfirmationPanel
+              completionHandler:^(NSModalResponse returnCode) {
+                if (returnCode == NSModalResponseOK) {
+                  [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
+                                                                                        value:YES];
+                  [coreConfigurationModel save];
+
+                } else {
+                  cellView.checkbox.state = NSOffState;
+                }
+              }];
+      }
     }
   }
 }
