@@ -22,7 +22,7 @@
   * Example
     * https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_select_input_source.json
 * `keyboard_type_if` and `keyboard_type_unless` has been added to `conditions`.
-  * Examples
+  * Example
     * Change control-[ to escape
       * src:  https://github.com/pqrs-org/KE-complex_modifications/blob/master/src/json/example_keyboard_type.json.erb
       * json: https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/example_keyboard_type.json
