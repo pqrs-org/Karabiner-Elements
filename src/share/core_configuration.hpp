@@ -234,25 +234,25 @@ public:
       }
     }
 
-    bool get_device_has_caps_lock_led(const device_identifiers& identifiers) const {
+    bool get_device_manipulate_caps_lock_led(const device_identifiers& identifiers) const {
       for (const auto& d : devices_) {
         if (d.get_identifiers() == identifiers) {
-          return d.get_has_caps_lock_led();
+          return d.get_manipulate_caps_lock_led();
         }
       }
 
       device d(nlohmann::json({
           {"identifiers", identifiers.to_json()},
       }));
-      return d.get_has_caps_lock_led();
+      return d.get_manipulate_caps_lock_led();
     }
-    void set_device_has_caps_lock_led(const device_identifiers& identifiers,
-                                      bool has_caps_lock_led) {
+    void set_device_manipulate_caps_lock_led(const device_identifiers& identifiers,
+                                             bool manipulate_caps_lock_led) {
       add_device(identifiers);
 
       for (auto&& device : devices_) {
         if (device.get_identifiers() == identifiers) {
-          device.set_has_caps_lock_led(has_caps_lock_led);
+          device.set_manipulate_caps_lock_led(manipulate_caps_lock_led);
           return;
         }
       }

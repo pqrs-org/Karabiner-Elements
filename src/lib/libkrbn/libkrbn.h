@@ -140,11 +140,11 @@ bool libkrbn_core_configuration_get_selected_profile_device_ignore(libkrbn_core_
 void libkrbn_core_configuration_set_selected_profile_device_ignore(libkrbn_core_configuration* _Nonnull p,
                                                                    const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                    bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_has_caps_lock_led(libkrbn_core_configuration* _Nonnull p,
-                                                                              const libkrbn_device_identifiers* _Nullable device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_has_caps_lock_led(libkrbn_core_configuration* _Nonnull p,
-                                                                              const libkrbn_device_identifiers* _Nullable device_identifiers,
-                                                                              bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* _Nonnull p,
+                                                                                     const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(libkrbn_core_configuration* _Nonnull p,
+                                                                                     const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                     bool value);
 bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* _Nonnull p,
                                                                                                 const libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(libkrbn_core_configuration* _Nonnull p,

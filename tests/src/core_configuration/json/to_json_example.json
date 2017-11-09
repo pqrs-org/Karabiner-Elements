@@ -115,7 +115,6 @@
                             }
                         }
                     ],
-                    "has_caps_lock_led": false,
                     "identifiers": {
                         "is_keyboard": true,
                         "is_pointing_device": false,
@@ -123,6 +122,7 @@
                         "vendor_id": 1133
                     },
                     "ignore": false,
+                    "manipulate_caps_lock_led": false,
                     "simple_modifications": [
                         {
                             "from": {
@@ -137,7 +137,6 @@
                 {
                     "disable_built_in_keyboard_if_exists": true,
                     "fn_function_keys": [],
-                    "has_caps_lock_led": true,
                     "identifiers": {
                         "is_keyboard": true,
                         "is_pointing_device": false,
@@ -145,6 +144,7 @@
                         "vendor_id": 1452
                     },
                     "ignore": true,
+                    "manipulate_caps_lock_led": true,
                     "simple_modifications": []
                 },
                 {
@@ -159,7 +159,6 @@
                             }
                         }
                     ],
-                    "has_caps_lock_led": false,
                     "identifiers": {
                         "is_keyboard": true,
                         "is_pointing_device": false,
@@ -167,6 +166,7 @@
                         "vendor_id": 1234
                     },
                     "ignore": false,
+                    "manipulate_caps_lock_led": false,
                     "simple_modifications": [
                         {
                             "from": {

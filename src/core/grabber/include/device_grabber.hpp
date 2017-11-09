@@ -594,9 +594,10 @@ private:
   void update_caps_lock_led(bool caps_lock_state) {
     if (core_configuration_) {
       for (const auto& it : hids_) {
-        bool has_caps_lock_led = core_configuration_->get_selected_profile().get_device_has_caps_lock_led((it.second)->get_connected_device().get_identifiers());
+        auto& di = (it.second)->get_connected_device().get_identifiers();
+        bool manipulate_caps_lock_led = core_configuration_->get_selected_profile().get_device_manipulate_caps_lock_led(di);
         if ((it.second)->is_grabbed() &&
-            has_caps_lock_led) {
+            manipulate_caps_lock_led) {
           (it.second)->set_caps_lock_led_state(caps_lock_state ? led_state::on : led_state::off);
         }
       }

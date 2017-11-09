@@ -295,8 +295,8 @@ TEST_CASE("profile") {
                                                 },
                                             }},
                             {"ignore", true},
-                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
+                            {"manipulate_caps_lock_led", false},
                         },
                         // duplicated identifiers
                         {
@@ -315,8 +315,8 @@ TEST_CASE("profile") {
                                                 },
                                             }},
                             {"ignore", true},
-                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
+                            {"manipulate_caps_lock_led", false},
                         },
                         {
                             {"identifiers", {
@@ -334,8 +334,8 @@ TEST_CASE("profile") {
                                                 },
                                             }},
                             {"ignore", false},
-                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
+                            {"manipulate_caps_lock_led", false},
                         },
                     }},
     });
@@ -552,8 +552,8 @@ TEST_CASE("profile.to_json") {
                                                 },
                                             }},
                             {"ignore", true},
-                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
+                            {"manipulate_caps_lock_led", false},
                         },
                     }},
     });
@@ -690,10 +690,10 @@ TEST_CASE("profile.to_json") {
                                                 },
                                             }},
                             {"ignore", true},
-                            {"has_caps_lock_led", false},
                             {"disable_built_in_keyboard_if_exists", true},
-                            {"simple_modifications", nlohmann::json::array()},
                             {"fn_function_keys", nlohmann::json::array()},
+                            {"manipulate_caps_lock_led", false},
+                            {"simple_modifications", nlohmann::json::array()},
                         },
                     }},
         {"dummy", {{"keep_me", true}}},
@@ -1222,9 +1222,9 @@ TEST_CASE("device") {
                                 "is_pointing_device", true,
                             },
                         }},
-        {"ignore", true},
-        {"has_caps_lock_led", false},
         {"disable_built_in_keyboard_if_exists", true},
+        {"ignore", true},
+        {"manipulate_caps_lock_led", false},
     });
     krbn::core_configuration::profile::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
@@ -1238,10 +1238,10 @@ TEST_CASE("device") {
   // invalid values in json
   {
     nlohmann::json json({
+        {"disable_built_in_keyboard_if_exists", nlohmann::json::array()},
         {"identifiers", nullptr},
         {"ignore", 1},
-        {"has_caps_lock_led", false},
-        {"disable_built_in_keyboard_if_exists", nlohmann::json::array()},
+        {"manipulate_caps_lock_led", false},
     });
     krbn::core_configuration::profile::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
@@ -1258,6 +1258,7 @@ TEST_CASE("device.to_json") {
     nlohmann::json json;
     krbn::core_configuration::profile::device device(json);
     nlohmann::json expected({
+        {"disable_built_in_keyboard_if_exists", false},
         {"identifiers", {
                             {
                                 "vendor_id", 0,
@@ -1273,10 +1274,9 @@ TEST_CASE("device.to_json") {
                             },
                         }},
         {"ignore", false},
-        {"has_caps_lock_led", false},
-        {"disable_built_in_keyboard_if_exists", false},
-        {"simple_modifications", nlohmann::json::array()},
         {"fn_function_keys", nlohmann::json::array()},
+        {"manipulate_caps_lock_led", false},
+        {"simple_modifications", nlohmann::json::array()},
     });
     REQUIRE(device.to_json() == expected);
 
@@ -1285,6 +1285,7 @@ TEST_CASE("device.to_json") {
   }
   {
     nlohmann::json json({
+        {"dummy", {{"keep_me", true}}},
         {"identifiers", {
                             {
                                 "is_keyboard", true,
@@ -1294,11 +1295,13 @@ TEST_CASE("device.to_json") {
                             },
                         }},
         {"ignore", true},
-        {"has_caps_lock_led", true},
-        {"dummy", {{"keep_me", true}}},
+        {"manipulate_caps_lock_led", true},
     });
     krbn::core_configuration::profile::device device(json);
     nlohmann::json expected({
+        {"disable_built_in_keyboard_if_exists", false},
+        {"dummy", {{"keep_me", true}}},
+        {"fn_function_keys", nlohmann::json::array()},
         {"identifiers", {
                             {
                                 "dummy", {{"keep_me", true}},
@@ -1317,11 +1320,8 @@ TEST_CASE("device.to_json") {
                             },
                         }},
         {"ignore", true},
-        {"has_caps_lock_led", true},
-        {"disable_built_in_keyboard_if_exists", false},
+        {"manipulate_caps_lock_led", true},
         {"simple_modifications", nlohmann::json::array()},
-        {"fn_function_keys", nlohmann::json::array()},
-        {"dummy", {{"keep_me", true}}},
     });
     REQUIRE(device.to_json() == expected);
   }

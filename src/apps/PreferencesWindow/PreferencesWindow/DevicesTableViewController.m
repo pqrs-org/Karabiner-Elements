@@ -76,16 +76,16 @@ finish:
     libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
 
     if (cellView.checkbox.state == NSOffState) {
-      [coreConfigurationModel setSelectedProfileDeviceHasCapsLockLed:&(deviceIdentifiers)
-                                                                     value:NO];
+      [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
+                                                                            value:NO];
       [coreConfigurationModel save];
 
     } else {
       [self.window beginSheet:self.hasCapsLockLedConfirmationPanel
             completionHandler:^(NSModalResponse returnCode) {
               if (returnCode == NSModalResponseOK) {
-                [coreConfigurationModel setSelectedProfileDeviceHasCapsLockLed:&(deviceIdentifiers)
-                                                                               value:YES];
+                [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
+                                                                                      value:YES];
                 [coreConfigurationModel save];
 
               } else {
@@ -96,12 +96,12 @@ finish:
   }
 }
 
-- (IBAction)setHasCapsLockLed:(id)sender {
+- (IBAction)setManipulateCapsLockLed:(id)sender {
   [self.window endSheet:self.hasCapsLockLedConfirmationPanel
              returnCode:NSModalResponseOK];
 }
 
-- (IBAction)cancelSetHasCapsLockLed:(id)sender {
+- (IBAction)cancelSetManipulateCapsLockLed:(id)sender {
   [self.window endSheet:self.hasCapsLockLedConfirmationPanel
              returnCode:NSModalResponseCancel];
 }

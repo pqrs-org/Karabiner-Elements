@@ -42,8 +42,8 @@
     return result;
   }
 
-  if ([tableColumn.identifier isEqualToString:@"DevicesHasCapsLockLEDColumn"]) {
-    DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesHasCapsLockLEDCellView" owner:self];
+  if ([tableColumn.identifier isEqualToString:@"DevicesManipulateCapsLockLEDColumn"]) {
+    DevicesTableCellView* result = [tableView makeViewWithIdentifier:@"DevicesManipulateCapsLockLEDCellView" owner:self];
     KarabinerKitConnectedDevices* connectedDevices = [KarabinerKitDeviceManager sharedManager].connectedDevices;
     libkrbn_device_identifiers deviceIdentifiers = [connectedDevices deviceIdentifiersAtIndex:row];
 
@@ -53,7 +53,7 @@
     result.deviceIdentifiers = deviceIdentifiers;
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    if ([coreConfigurationModel selectedProfileDeviceHasCapsLockLed:(&deviceIdentifiers)]) {
+    if ([coreConfigurationModel selectedProfileDeviceManipulateCapsLockLed:(&deviceIdentifiers)]) {
       result.checkbox.state = NSOnState;
     } else {
       result.checkbox.state = NSOffState;

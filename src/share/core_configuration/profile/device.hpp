@@ -5,7 +5,7 @@ public:
   device(const nlohmann::json& json) : json_(json),
                                        identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json()),
                                        ignore_(false),
-                                       has_caps_lock_led_(false),
+                                       manipulate_caps_lock_led_(false),
                                        disable_built_in_keyboard_if_exists_(false),
                                        simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json::array()),
                                        fn_function_keys_(make_default_fn_function_keys_json()) {
@@ -22,11 +22,11 @@ public:
       ignore_ = true;
     }
 
-    // has_caps_lock_led_
+    // manipulate_caps_lock_led_
 
     if (identifiers_.get_is_keyboard() &&
         identifiers_.is_apple()) {
-      has_caps_lock_led_ = true;
+      manipulate_caps_lock_led_ = true;
     }
 
     // ----------------------------------------
@@ -39,9 +39,9 @@ public:
       }
     }
     {
-      const std::string key = "has_caps_lock_led";
+      const std::string key = "manipulate_caps_lock_led";
       if (json.find(key) != json.end() && json[key].is_boolean()) {
-        has_caps_lock_led_ = json[key];
+        manipulate_caps_lock_led_ = json[key];
       }
     }
     {
@@ -116,7 +116,7 @@ public:
     auto j = json_;
     j["identifiers"] = identifiers_;
     j["ignore"] = ignore_;
-    j["has_caps_lock_led"] = has_caps_lock_led_;
+    j["manipulate_caps_lock_led"] = manipulate_caps_lock_led_;
     j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
     j["simple_modifications"] = simple_modifications_;
     j["fn_function_keys"] = fn_function_keys_;
@@ -134,11 +134,11 @@ public:
     ignore_ = value;
   }
 
-  bool get_has_caps_lock_led(void) const {
-    return has_caps_lock_led_;
+  bool get_manipulate_caps_lock_led(void) const {
+    return manipulate_caps_lock_led_;
   }
-  void set_has_caps_lock_led(bool value) {
-    has_caps_lock_led_ = value;
+  void set_manipulate_caps_lock_led(bool value) {
+    manipulate_caps_lock_led_ = value;
   }
 
   bool get_disable_built_in_keyboard_if_exists(void) const {
@@ -166,7 +166,7 @@ private:
   nlohmann::json json_;
   device_identifiers identifiers_;
   bool ignore_;
-  bool has_caps_lock_led_;
+  bool manipulate_caps_lock_led_;
   bool disable_built_in_keyboard_if_exists_;
   simple_modifications simple_modifications_;
   simple_modifications fn_function_keys_;

@@ -861,7 +861,7 @@
                                                                 <rect key="frame" x="17" y="41" width="880" height="384"/>
                                                                 <clipView key="contentView" id="Z0i-ZA-lV3">
                                                                     <rect key="frame" x="1" y="0.0" width="878" height="383"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
                                                                             <rect key="frame" x="0.0" y="0.0" width="878" height="360"/>
@@ -1167,7 +1167,7 @@
                                                         <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn identifier="DevicesCheckboxColumn" width="623" minWidth="40" maxWidth="10000" id="zRy-dI-ooE">
+                                                            <tableColumn identifier="DevicesCheckboxColumn" width="583" minWidth="40" maxWidth="10000" id="zRy-dI-ooE">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Modify events from this device">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1181,7 +1181,7 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView identifier="DevicesCheckboxCellView" id="Kba-PK-fRo" customClass="DevicesTableCellView">
-                                                                        <rect key="frame" x="1" y="1" width="623" height="26"/>
+                                                                        <rect key="frame" x="1" y="1" width="583" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="vJd-Z6-vgS">
@@ -1203,7 +1203,7 @@
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
                                                             </tableColumn>
-                                                            <tableColumn identifier="DevicesHasCapsLockLEDColumn" width="100" minWidth="10" maxWidth="3.4028234663852886e+38" id="ME1-bQ-Q3U">
+                                                            <tableColumn identifier="DevicesManipulateCapsLockLEDColumn" width="140" minWidth="10" maxWidth="3.4028234663852886e+38" id="ME1-bQ-Q3U">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Caps Lock LED">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1216,13 +1216,13 @@
                                                                 </textFieldCell>
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
-                                                                    <tableCellView identifier="DevicesHasCapsLockLEDCellView" id="yPi-X1-Zqf" customClass="DevicesTableCellView">
-                                                                        <rect key="frame" x="627" y="1" width="100" height="26"/>
+                                                                    <tableCellView identifier="DevicesManipulateCapsLockLEDCellView" id="yPi-X1-Zqf" customClass="DevicesTableCellView">
+                                                                        <rect key="frame" x="587" y="1" width="140" height="26"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="tfa-Ub-Uv8">
-                                                                                <rect key="frame" x="6" y="4" width="85" height="18"/>
-                                                                                <buttonCell key="cell" type="check" title="LED exists" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ytU-CV-2U5">
+                                                                                <rect key="frame" x="6" y="4" width="117" height="18"/>
+                                                                                <buttonCell key="cell" type="check" title="Manipulate LED" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ytU-CV-2U5">
                                                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                                     <font key="font" metaFont="system"/>
                                                                                 </buttonCell>
@@ -2639,7 +2639,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
             </view>
             <point key="canvasLocation" x="76" y="888"/>
         </window>
-        <window title="HasCapsLockLED Confirmation Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Q4d-fj-0zt" customClass="NSPanel">
+        <window title="ManipulateCapsLockLED Confirmation Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Q4d-fj-0zt" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="600" height="300"/>
@@ -2691,7 +2691,7 @@ Please keep the checkbox off if the device does not have a caps lock LED.</strin
                         <string key="userLabel">Karabiner-Elements tries to manipulate the caps lock LED. However, the LED manipulation might cause a problem if the device does not have a caps lock LED. Please keep the checkbox off if the device does not have a caps lock LED.</string>
                     </textField>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="uTI-aw-tOw">
-                        <rect key="frame" x="85" y="20" width="430" height="31"/>
+                        <rect key="frame" x="76" y="20" width="448" height="31"/>
                         <subviews>
                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rN3-uz-e7c">
                                 <rect key="frame" x="-1" y="-2" width="212" height="32"/>
@@ -2706,17 +2706,17 @@ Gw
 </string>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="cancelSetHasCapsLockLed:" target="n2S-Tf-7ZE" id="PTO-7B-uhd"/>
+                                    <action selector="cancelSetManipulateCapsLockLed:" target="n2S-Tf-7ZE" id="PTO-7B-uhd"/>
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kmG-ha-BRe">
-                                <rect key="frame" x="250" y="0.0" width="180" height="28"/>
+                                <rect key="frame" x="250" y="0.0" width="198" height="28"/>
                                 <buttonCell key="cell" type="push" title="Enable LED manipulation" bezelStyle="rounded" image="ic_check_18pt" imagePosition="left" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CzH-uV-HZ1">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="setHasCapsLockLed:" target="n2S-Tf-7ZE" id="HSS-bM-QJz"/>
+                                    <action selector="setManipulateCapsLockLed:" target="n2S-Tf-7ZE" id="HSS-bM-QJz"/>
                                 </connections>
                             </button>
                         </subviews>

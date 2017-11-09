@@ -287,16 +287,16 @@
                                                                 value);
 }
 
-- (BOOL)selectedProfileDeviceHasCapsLockLed:(const libkrbn_device_identifiers*)deviceIdentifiers {
-  return libkrbn_core_configuration_get_selected_profile_device_has_caps_lock_led(self.libkrbnCoreConfiguration,
-                                                                                  deviceIdentifiers);
+- (BOOL)selectedProfileDeviceManipulateCapsLockLed:(const libkrbn_device_identifiers*)deviceIdentifiers {
+  return libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(self.libkrbnCoreConfiguration,
+                                                                                         deviceIdentifiers);
 }
 
-- (void)setSelectedProfileDeviceHasCapsLockLed:(const libkrbn_device_identifiers*)deviceIdentifiers
-                                         value:(BOOL)value {
-  libkrbn_core_configuration_set_selected_profile_device_has_caps_lock_led(self.libkrbnCoreConfiguration,
-                                                                           deviceIdentifiers,
-                                                                           value);
+- (void)setSelectedProfileDeviceManipulateCapsLockLed:(const libkrbn_device_identifiers*)deviceIdentifiers
+                                                value:(BOOL)value {
+  libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(self.libkrbnCoreConfiguration,
+                                                                                  deviceIdentifiers,
+                                                                                  value);
 }
 
 - (BOOL)selectedProfileDeviceDisableBuiltInKeyboardIfExists:(const libkrbn_device_identifiers*)deviceIdentifiers {
