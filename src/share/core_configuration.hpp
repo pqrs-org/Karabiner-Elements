@@ -350,6 +350,8 @@ public:
             json_ = nlohmann::json();
             loaded_ = false;
           }
+        } else {
+          logger::get_logger().error("Failed to open {0}", file_path);
         }
       }
     }
