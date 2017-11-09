@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
 		256AC3DA0F4B6AC300CF3369 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 256AC3D90F4B6AC300CF3369 /* AppDelegate.m */; };
+		3437965A1FB4A77200450D07 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 343796591FB4A76700450D07 /* SystemConfiguration.framework */; };
 		343EEA0E19C5E1D1001A969F /* TabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 343EEA0D19C5E1D1001A969F /* TabView.m */; };
 		344F41331F2110920073B85A /* VariablesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F41321F2110920073B85A /* VariablesController.m */; };
 		345EF8E31F100413003E7A67 /* FrontmostApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345EF8E21F100413003E7A67 /* FrontmostApplicationController.m */; };
@@ -38,6 +39,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		3416816F1F7C074900FF2FB0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		343796591FB4A76700450D07 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		343EEA0C19C5E1D1001A969F /* TabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TabView.h; path = Classes/TabView.h; sourceTree = "<group>"; };
 		343EEA0D19C5E1D1001A969F /* TabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TabView.m; path = Classes/TabView.m; sourceTree = "<group>"; };
 		344F41311F2110920073B85A /* VariablesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VariablesController.h; path = Classes/VariablesController.h; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 				34B97B1B1DBB276B00EB3583 /* libc++.dylib in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				34C92D221122EDA100B0B4ED /* Carbon.framework in Frameworks */,
+				3437965A1FB4A77200450D07 /* SystemConfiguration.framework in Frameworks */,
 				34B97B191DBB276200EB3583 /* libkrbn.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,6 +177,7 @@
 				34B97B181DBB276200EB3583 /* libkrbn.a */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				343796591FB4A76700450D07 /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
