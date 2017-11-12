@@ -1,3 +1,8 @@
+# Version 11.3.0
+
+* Fixed an issue that Karabiner-11.2.0 does not work properly due to a possibility of macOS kernel extension cache problem.
+
+
 # Version 11.2.0
 
 * The caps lock LED manipulation has been disabled with non Apple keyboards until it is enabled manually.
