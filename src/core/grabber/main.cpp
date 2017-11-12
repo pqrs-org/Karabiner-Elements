@@ -56,7 +56,13 @@ int main(int argc, const char* argv[]) {
 
   // load kexts
   while (true) {
-    int exit_status = system("/sbin/kextload /Library/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext");
+    std::stringstream ss;
+    ss << "/sbin/kextload '"
+       << "/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions/"
+       << pqrs::karabiner_virtual_hid_device::get_kernel_extension_name()
+       << "'";
+    krbn::logger::get_logger().info(ss.str());;
+    int exit_status = system(ss.str().c_str());
     exit_status >>= 8;
     krbn::logger::get_logger().info("kextload exit status: {0}", exit_status);
     if (exit_status == 27) {
