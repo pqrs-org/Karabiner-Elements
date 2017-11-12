@@ -4,8 +4,7 @@ basedir=`dirname $0`
 cd "$basedir"
 
 version=$(cat "../version")
-
-version_signature=$(echo $version | ruby -ne 'print "v%02d%02d%02d" % $_.strip.split(/\./)')
+version_signature=$(bash makeversionsignature.sh)
 
 find .. -name '*.tmpl' -print0 | while IFS= read -r -d '' f; do
     if [ -f "$f" ]; then

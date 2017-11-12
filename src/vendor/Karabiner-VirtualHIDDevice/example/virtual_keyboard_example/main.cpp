@@ -17,6 +17,8 @@ int main(int argc, const char* argv[]) {
     std::cerr << "dispatch_keyboard_event_example requires root privilege." << std::endl;
   }
 
+  std::cout << pqrs::karabiner_virtual_hid_device::get_kernel_extension_name() << std::endl;
+
   kern_return_t kr;
   io_connect_t connect = IO_OBJECT_NULL;
   auto service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name()));

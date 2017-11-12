@@ -1,3 +1,8 @@
+# Version 4.10.0
+
+* `pqrs::karabiner_virtual_hid_device::get_kernel_extension_name()` method has been added.
+
+
 # Version 4.9.0
 
 * A version string has been included into virtual device's serial number.
