@@ -162,3 +162,13 @@ uint8_t reserved;
 uint8_t keys[6];
 uint8_t extra_modifiers; // fn
 ```
+
+--------------------------------------------------------------------------------
+
+# Kernel extensions location
+
+There is a macOS problem that macOS load old kext from cache after we update a kext file in /Library/Extensions.
+(It seems macOS failed to update kext cache.)
+
+Thus, Karabiner-VirtualHIDDevice adds the version number to the kext directory name and put kext file into `/Library/Application Support` where is described TN2459.
+https://developer.apple.com/library/content/technotes/tn2459/_index.html
