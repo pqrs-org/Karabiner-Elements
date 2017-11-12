@@ -1,3 +1,8 @@
+# Version 4.11.0
+
+* Uninstaller removes `/Library/Application Support/org.pqrs` directory if it is empty.
+
+
 # Version 4.10.0
 
 * `pqrs::karabiner_virtual_hid_device::get_kernel_extension_name()` method has been added.
