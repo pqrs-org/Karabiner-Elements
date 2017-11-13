@@ -1,3 +1,8 @@
+# Version 11.3.1
+
+* Fixed an issue that the checkbox in `Preferences > Devices` is disabled for keyboards which have pseudo vendor id (Apple Inc.).
+
+
 # Version 11.3.0
 
 * Fixed an issue that Karabiner-11.2.0 does not work properly on some environments due to a possibility of macOS kernel extension cache problem.
