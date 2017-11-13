@@ -35,7 +35,7 @@
 
     result.checkbox.enabled = YES;
     if (libkrbn_device_identifiers_is_apple(&deviceIdentifiers) &&
-        deviceIdentifiers.is_pointing_device) {
+        !deviceIdentifiers.is_keyboard) {
       result.checkbox.enabled = NO;
     }
 
