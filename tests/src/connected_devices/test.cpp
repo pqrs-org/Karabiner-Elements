@@ -208,9 +208,35 @@ TEST_CASE("connected_devices") {
                                              true);
       connected_devices.push_back_device(device);
     }
+    {
+      krbn::connected_devices::device::descriptions descriptions("manufacturer1",
+                                                                 "product4");
+      krbn::device_identifiers identifiers(krbn::vendor_id(123),
+                                           krbn::product_id(678),
+                                           false,
+                                           true);
+      krbn::connected_devices::device device(descriptions,
+                                             identifiers,
+                                             false,
+                                             true);
+      connected_devices.push_back_device(device);
+    }
+    {
+      krbn::connected_devices::device::descriptions descriptions("manufacturer1",
+                                                                 "product4");
+      krbn::device_identifiers identifiers(krbn::vendor_id(123),
+                                           krbn::product_id(678),
+                                           true,
+                                           false);
+      krbn::connected_devices::device device(descriptions,
+                                             identifiers,
+                                             true,
+                                             false);
+      connected_devices.push_back_device(device);
+    }
 
     REQUIRE(connected_devices.is_loaded() == true);
-    REQUIRE(connected_devices.get_devices().size() == 3);
+    REQUIRE(connected_devices.get_devices().size() == 5);
     REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
     REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_product_id() == krbn::product_id(5678));
     REQUIRE(connected_devices.get_devices()[1].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
@@ -227,7 +253,7 @@ TEST_CASE("connected_devices") {
     krbn::connected_devices connected_devices("json/connected_devices.json");
 
     REQUIRE(connected_devices.is_loaded() == true);
-    REQUIRE(connected_devices.get_devices().size() == 3);
+    REQUIRE(connected_devices.get_devices().size() == 5);
     REQUIRE(connected_devices.get_devices()[0].get_is_built_in_keyboard() == true);
     REQUIRE(connected_devices.get_devices()[0].get_is_built_in_trackpad() == false);
     REQUIRE(connected_devices.get_devices()[1].get_is_built_in_keyboard() == false);

@@ -193,32 +193,26 @@ public:
     devices_.push_back(device);
 
     std::sort(devices_.begin(), devices_.end(), [](const class device& a, const class device& b) {
-      auto a_v = a.get_identifiers().get_vendor_id();
-      auto a_p = a.get_identifiers().get_product_id();
+      auto a_name = a.get_descriptions().get_product() + a.get_descriptions().get_manufacturer();
       auto a_kb = a.get_identifiers().get_is_keyboard();
       auto a_pd = a.get_identifiers().get_is_pointing_device();
 
-      auto b_v = b.get_identifiers().get_vendor_id();
-      auto b_p = b.get_identifiers().get_product_id();
+      auto b_name = b.get_descriptions().get_product() + b.get_descriptions().get_manufacturer();
       auto b_kb = b.get_identifiers().get_is_keyboard();
       auto b_pd = b.get_identifiers().get_is_pointing_device();
 
-      if (a_v == b_v) {
-        if (a_p == b_p) {
-          if (a_kb == b_kb) {
-            if (a_pd == b_pd) {
-              return false;
-            } else {
-              return a_pd;
-            }
+      if (a_name == b_name) {
+        if (a_kb == b_kb) {
+          if (a_pd == b_pd) {
+            return false;
           } else {
-            return a_kb;
+            return a_pd;
           }
         } else {
-          return a_p < b_p;
+          return a_kb;
         }
       } else {
-        return a_v < b_v;
+        return a_name < b_name;
       }
       return true;
     });
