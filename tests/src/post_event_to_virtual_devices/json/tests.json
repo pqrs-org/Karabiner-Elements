@@ -424,6 +424,14 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/lazy_1.json"
     },
     {
+        "description": "lazy_2 (with to_if_alone)",
+        "rules": [
+            "json/rules/lazy.json"
+        ],
+        "input_event_queue": "json/input_event_queue/lazy_2.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/lazy_2.json"
+    },
+    {
         "description": "repeat_1",
         "rules": [
             "json/rules/repeat.json"

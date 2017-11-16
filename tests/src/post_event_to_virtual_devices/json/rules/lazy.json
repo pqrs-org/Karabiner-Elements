@@ -28,5 +28,57 @@
                 "key_code": "f4"
             }
         ]
+    },
+    {
+        "description": "right_command -> escape if alone",
+        "type": "basic",
+        "from": {
+            "key_code": "right_command",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "right_command",
+                "lazy": true
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "escape"
+            }
+        ]
+    },
+    {
+        "description": "right_command+right_shift -> tab if alone",
+        "type": "basic",
+        "from": {
+            "key_code": "right_shift",
+            "modifiers": {
+                "mandatory": [
+                    "right_command"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "right_shift",
+                "modifiers": [
+                    "right_command"
+                ],
+                "lazy": true
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "tab"
+            }
+        ]
     }
 ]

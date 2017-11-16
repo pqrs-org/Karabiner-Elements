@@ -417,7 +417,8 @@ public:
                                                            front_input_event.get_time_stamp() + time_stamp_delay++,
                                                            *event,
                                                            event_type::key_up,
-                                                           front_input_event.get_original_event());
+                                                           front_input_event.get_original_event(),
+                                                           it->get_lazy());
 
                     if (preserve_to_modifiers_down()) {
                       bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
