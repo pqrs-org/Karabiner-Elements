@@ -1,4 +1,4 @@
-# Version 11.3.1
+# Since version 11.3
 
 * Fixed an issue that the checkbox in `Preferences > Devices` is disabled for keyboards which do not have their own vendor id.
 
