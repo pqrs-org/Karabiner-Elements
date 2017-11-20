@@ -501,6 +501,9 @@ private:
       if (value == "key_code") {
         type_ = type::any;
         value_ = type::key_code;
+      } else if (value == "consumer_key_code") {
+        type_ = type::any;
+        value_ = type::consumer_key_code;
       } else if (value == "pointing_button") {
         type_ = type::any;
         value_ = type::pointing_button;

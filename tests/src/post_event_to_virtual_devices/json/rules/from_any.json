@@ -1,0 +1,38 @@
+[
+    {
+        "description": "disable shift+key",
+        "type": "basic",
+        "from": {
+            "any": "key_code",
+            "modifiers": {
+                "mandatory": [
+                    "shift"
+                ]
+            }
+        }
+    },
+    {
+        "description": "disable control+consumer_key_code",
+        "type": "basic",
+        "from": {
+            "any": "consumer_key_code",
+            "modifiers": {
+                "mandatory": [
+                    "control"
+                ]
+            }
+        }
+    },
+    {
+        "description": "disable command+pointing_button",
+        "type": "basic",
+        "from": {
+            "any": "pointing_button",
+            "modifiers": {
+                "mandatory": [
+                    "command"
+                ]
+            }
+        }
+    }
+]
