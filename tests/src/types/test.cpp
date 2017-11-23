@@ -195,6 +195,15 @@ TEST_CASE("mouse_key") {
 
     REQUIRE(mouse_key.to_json() == json);
   }
+  {
+    krbn::mouse_key mouse_key1(10, 20, 30, 40);
+    krbn::mouse_key mouse_key2(1, 2, 3, 4);
+    krbn::mouse_key mouse_key = mouse_key1 + mouse_key2;
+    REQUIRE(mouse_key.get_x() == 11);
+    REQUIRE(mouse_key.get_y() == 22);
+    REQUIRE(mouse_key.get_vertical_wheel() == 33);
+    REQUIRE(mouse_key.get_horizontal_wheel() == 44);
+  }
 }
 
 TEST_CASE("make_key_code") {

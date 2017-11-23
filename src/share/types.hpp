@@ -689,6 +689,12 @@ private:
 
 class mouse_key final {
 public:
+  mouse_key(void) : x_(0),
+                    y_(0),
+                    vertical_wheel_(0),
+                    horizontal_wheel_(0) {
+  }
+
   mouse_key(int x,
             int y,
             int vertical_wheel,
@@ -698,10 +704,7 @@ public:
                                     horizontal_wheel_(horizontal_wheel) {
   }
 
-  mouse_key(const nlohmann::json& json) : x_(0),
-                                          y_(0),
-                                          vertical_wheel_(0),
-                                          horizontal_wheel_(0) {
+  mouse_key(const nlohmann::json& json) : mouse_key() {
     if (json.is_object()) {
       for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
         // it.key() is always std::string.
