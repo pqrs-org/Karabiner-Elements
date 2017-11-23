@@ -186,7 +186,6 @@ TEST_CASE("mouse_key") {
     json["y"] = 20;
     json["vertical_wheel"] = 30;
     json["horizontal_wheel"] = 40;
-    json["dummy_key"] = "dummy_value";
 
     krbn::mouse_key mouse_key(json);
     REQUIRE(mouse_key.get_x() == 10);

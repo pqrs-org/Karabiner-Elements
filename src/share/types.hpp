@@ -698,8 +698,7 @@ public:
                                     horizontal_wheel_(horizontal_wheel) {
   }
 
-  mouse_key(const nlohmann::json& json) : json_(json),
-                                          x_(0),
+  mouse_key(const nlohmann::json& json) : x_(0),
                                           y_(0),
                                           vertical_wheel_(0),
                                           horizontal_wheel_(0) {
@@ -741,7 +740,7 @@ public:
   }
 
   nlohmann::json to_json(void) const {
-    auto j = json_;
+    nlohmann::json j;
     j["x"] = x_;
     j["y"] = y_;
     j["vertical_wheel"] = vertical_wheel_;
@@ -765,6 +764,14 @@ public:
     return horizontal_wheel_;
   }
 
+  mouse_key& operator+(const mouse_key& other) {
+    x_ += other.x_;
+    y_ += other.y_;
+    vertical_wheel_ += other.vertical_wheel_;
+    horizontal_wheel_ += other.horizontal_wheel_;
+    return *this;
+  }
+
   bool operator==(const mouse_key& other) const {
     return x_ == other.x_ &&
            y_ == other.y_ &&
@@ -773,7 +780,6 @@ public:
   }
 
 private:
-  nlohmann::json json_;
   int x_;
   int y_;
   int vertical_wheel_;
