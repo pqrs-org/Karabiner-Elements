@@ -639,7 +639,7 @@ public:
                                              event_type::single,
                                              last_time_stamp_);
 
-          uint64_t delay_milliseconds = 30;
+          uint64_t delay_milliseconds = 20;
           auto when = last_time_stamp_ + time_utility::nano_to_absolute(delay_milliseconds * NSEC_PER_MSEC);
           manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(when);
 
