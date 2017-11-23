@@ -4,6 +4,7 @@
 
 #include "console_user_server_client.hpp"
 #include "keyboard_repeat_detector.hpp"
+#include "krbn_notification_center.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "stream_utility.hpp"
