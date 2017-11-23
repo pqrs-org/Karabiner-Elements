@@ -112,6 +112,7 @@ TEST_CASE("needs_virtual_hid_pointing") {
            std::string("json/needs_virtual_hid_pointing_test2.json"),
            std::string("json/needs_virtual_hid_pointing_test3.json"),
            std::string("json/needs_virtual_hid_pointing_test4.json"),
+           std::string("json/needs_virtual_hid_pointing_test5.json"),
        }) {
     std::ifstream json_file(file_name);
     auto json = nlohmann::json::parse(json_file);
@@ -127,7 +128,8 @@ TEST_CASE("needs_virtual_hid_pointing") {
     }
     if (file_name == "json/needs_virtual_hid_pointing_test2.json" ||
         file_name == "json/needs_virtual_hid_pointing_test3.json" ||
-        file_name == "json/needs_virtual_hid_pointing_test4.json") {
+        file_name == "json/needs_virtual_hid_pointing_test4.json" ||
+        file_name == "json/needs_virtual_hid_pointing_test5.json") {
       REQUIRE(manager.needs_virtual_hid_pointing());
     }
   }

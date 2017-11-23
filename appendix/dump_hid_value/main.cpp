@@ -170,6 +170,10 @@ private:
           std::cout << "set_variable" << std::endl;
           break;
 
+        case krbn::event_queue::queued_event::event::type::mouse_key:
+          std::cout << "mouse_key" << std::endl;
+          break;
+
         case krbn::event_queue::queued_event::event::type::device_keys_are_released:
           std::cout << "device_keys_are_released for " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
           break;

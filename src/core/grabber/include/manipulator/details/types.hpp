@@ -25,6 +25,7 @@ public:
     shell_command,
     select_input_source,
     set_variable,
+    mouse_key,
   };
 
   enum class modifier {
@@ -102,6 +103,13 @@ public:
     return boost::none;
   }
 
+  boost::optional<mouse_key> get_mouse_key(void) const {
+    if (type_ == type::mouse_key) {
+      return boost::get<mouse_key>(value_);
+    }
+    return boost::none;
+  }
+
   boost::optional<event_queue::queued_event::event> to_event(void) const {
     switch (type_) {
       case type::none:
@@ -120,6 +128,8 @@ public:
         return event_queue::queued_event::event::make_select_input_source_event(boost::get<std::vector<input_source_selector>>(value_));
       case type::set_variable:
         return event_queue::queued_event::event::make_set_variable_event(boost::get<std::pair<std::string, int>>(value_));
+      case type::mouse_key:
+        return event_queue::queued_event::event::make_mouse_key_event(boost::get<mouse_key>(value_));
     }
   }
 
@@ -353,7 +363,8 @@ protected:
                  type, // For any
                  std::string, // For shell_command
                  std::vector<input_source_selector>, // For select_input_source
-                 std::pair<std::string, int> // For set_variable
+                 std::pair<std::string, int>, // For set_variable
+                 mouse_key // For mouse_key
                  >
       value_;
 }; // namespace details
@@ -553,6 +564,14 @@ public:
     return repeat_;
   }
 
+  bool needs_virtual_hid_pointing(void) const {
+    if (type_ == type::pointing_button ||
+        type_ == type::mouse_key) {
+      return true;
+    }
+    return false;
+  }
+
 private:
   bool extra_json_handler(const std::string& key,
                           const nlohmann::json& value,
@@ -634,6 +653,21 @@ private:
 
       type_ = type::set_variable;
       value_ = std::make_pair(variable_name, variable_value);
+
+      return true;
+
+    } else if (key == "mouse_key") {
+      if (type_ != type::none) {
+        logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+        return true;
+      }
+      if (!value.is_object()) {
+        logger::get_logger().error("complex_modifications json error: Invalid form of mouse_key: {0}", json.dump());
+        return true;
+      }
+
+      type_ = type::mouse_key;
+      value_ = mouse_key(value);
 
       return true;
 

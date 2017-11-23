@@ -699,9 +699,10 @@ public:
               case event_queue::queued_event::event::type::key_code:
               case event_queue::queued_event::event::type::consumer_key_code:
               case event_queue::queued_event::event::type::pointing_button:
-              case event_queue::queued_event::event::type::set_variable:
               case event_queue::queued_event::event::type::shell_command:
               case event_queue::queued_event::event::type::select_input_source:
+              case event_queue::queued_event::event::type::set_variable:
+              case event_queue::queued_event::event::type::mouse_key:
               case event_queue::queued_event::event::type::device_keys_are_released:
               case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
               case event_queue::queued_event::event::type::device_ungrabbed:
@@ -746,6 +747,7 @@ public:
 
         case event_queue::queued_event::event::type::none:
         case event_queue::queued_event::event::type::set_variable:
+        case event_queue::queued_event::event::type::mouse_key:
         case event_queue::queued_event::event::type::device_keys_are_released:
         case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
         case event_queue::queued_event::event::type::device_ungrabbed:
@@ -774,6 +776,10 @@ public:
 
   virtual bool needs_virtual_hid_pointing(void) const {
     return false;
+  }
+
+  virtual void handle_mouse_key_event(const event_queue::queued_event& front_input_event,
+                                      event_queue& output_event_queue) {
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,

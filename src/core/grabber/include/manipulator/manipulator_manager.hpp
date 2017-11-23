@@ -87,6 +87,7 @@ public:
           case event_queue::queued_event::event::type::input_source_changed:
           case event_queue::queued_event::event::type::keyboard_type_changed:
           case event_queue::queued_event::event::type::set_variable:
+          case event_queue::queued_event::event::type::mouse_key:
             // Do nothing
             break;
 

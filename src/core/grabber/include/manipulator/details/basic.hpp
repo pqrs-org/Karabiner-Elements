@@ -145,6 +145,18 @@ public:
       }
     }
 
+    bool needs_virtual_hid_pointing(void) const {
+      for (const auto& events : {to_if_invoked_,
+                                 to_if_canceled_}) {
+        for (const auto& e : events) {
+          if (e.needs_virtual_hid_pointing()) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
   private:
     void post_events(const std::vector<to_event_definition>& events) const {
       if (front_input_event_) {
@@ -491,13 +503,23 @@ public:
                                to_after_key_up_,
                                to_if_alone_}) {
       for (const auto& e : events) {
-        if (e.get_type() == event_definition::type::pointing_button) {
+        if (e.needs_virtual_hid_pointing()) {
           return true;
         }
       }
     }
 
+    if (to_delayed_action_) {
+      if (to_delayed_action_->needs_virtual_hid_pointing()) {
+        return true;
+      }
+    }
+
     return false;
+  }
+
+  virtual void handle_mouse_key_event(const event_queue::queued_event& front_input_event,
+                                      event_queue& output_event_queue) {
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,

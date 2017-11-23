@@ -30,6 +30,7 @@ public:
         shell_command,
         select_input_source,
         set_variable,
+        mouse_key,
         // virtual events (passive)
         device_keys_are_released,
         device_pointing_buttons_are_released,
@@ -140,6 +141,14 @@ public:
                 break;
               }
 
+              case type::mouse_key: {
+                auto it = json.find("mouse_key");
+                if (it != std::end(json)) {
+                  value_ = mouse_key(*it);
+                }
+                break;
+              }
+
               case type::frontmost_application_changed: {
                 auto it = json.find("frontmost_application");
                 if (it != std::end(json)) {
@@ -236,6 +245,12 @@ public:
             }
             break;
 
+          case type::mouse_key:
+            if (auto v = get_mouse_key()) {
+              json["mouse_key"] = v->to_json();
+            }
+            break;
+
           case type::frontmost_application_changed:
             if (auto v = get_frontmost_application()) {
               json["frontmost_application"] = v->to_json();
@@ -300,6 +315,13 @@ public:
         event e;
         e.type_ = type::set_variable;
         e.value_ = pair;
+        return e;
+      }
+
+      static event make_mouse_key_event(const mouse_key& mouse_key) {
+        event e;
+        e.type_ = type::mouse_key;
+        e.value_ = mouse_key;
         return e;
       }
 
@@ -424,6 +446,16 @@ public:
         return boost::none;
       }
 
+      boost::optional<mouse_key> get_mouse_key(void) const {
+        try {
+          if (type_ == type::mouse_key) {
+            return boost::get<mouse_key>(value_);
+          }
+        } catch (boost::bad_get&) {
+        }
+        return boost::none;
+      }
+
       boost::optional<manipulator_environment::frontmost_application> get_frontmost_application(void) const {
         try {
           if (type_ == type::frontmost_application_changed) {
@@ -484,6 +516,7 @@ public:
           TO_C_STRING(shell_command);
           TO_C_STRING(select_input_source);
           TO_C_STRING(set_variable);
+          TO_C_STRING(mouse_key);
           TO_C_STRING(device_keys_are_released);
           TO_C_STRING(device_pointing_buttons_are_released);
           TO_C_STRING(device_ungrabbed);
@@ -518,6 +551,7 @@ public:
         TO_TYPE(shell_command);
         TO_TYPE(select_input_source);
         TO_TYPE(set_variable);
+        TO_TYPE(mouse_key);
         TO_TYPE(device_keys_are_released);
         TO_TYPE(device_pointing_buttons_are_released);
         TO_TYPE(device_ungrabbed);
@@ -542,6 +576,7 @@ public:
                      std::string, // For shell_command, keyboard_type_changed
                      std::vector<input_source_selector>, // For select_input_source
                      std::pair<std::string, int>, // For set_variable
+                     mouse_key, // For mouse_key
                      manipulator_environment::frontmost_application, // For frontmost_application_changed
                      input_source_identifiers, // For input_source_changed
                      boost::blank> // For virtual events
