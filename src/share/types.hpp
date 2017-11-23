@@ -761,6 +761,13 @@ public:
     return horizontal_wheel_;
   }
 
+  bool operator==(const mouse_key& other) const {
+    return x_ == other.x_ &&
+           y_ == other.y_ &&
+           vertical_wheel_ == other.vertical_wheel_ &&
+           horizontal_wheel_ == other.horizontal_wheel_;
+  }
+
 private:
   nlohmann::json json_;
   int x_;
