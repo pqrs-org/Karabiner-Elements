@@ -1,0 +1,34 @@
+[
+    {
+        "pointing_input": {
+            "buttons": [
+                1,
+                0,
+                0,
+                0
+            ],
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": 0
+        },
+        "time_stamp": 5000000,
+        "type": "pointing_input"
+    },
+    {
+        "pointing_input": {
+            "buttons": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 0,
+            "y": 0
+        },
+        "time_stamp": 10000000,
+        "type": "pointing_input"
+    }
+]

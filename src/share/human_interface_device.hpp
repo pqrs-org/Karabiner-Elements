@@ -763,39 +763,27 @@ private:
                 }
               }
 
-              // Send `device_keys_are_released` event if needed.
+              // Send `device_keys_and_pointing_buttons_are_released` event if needed.
 
               if (integer_value) {
                 pressed_keys_.insert(elements_key(usage_page, usage));
               } else {
                 size_t size = pressed_keys_.size();
                 pressed_keys_.erase(elements_key(usage_page, usage));
-                if (size > 0 && pressed_keys_.empty()) {
-                  auto event = event_queue::queued_event::event::make_device_keys_are_released_event();
-                  input_event_queue_.emplace_back_event(device_id_,
-                                                        time_stamp,
-                                                        event,
-                                                        event_type::key_down,
-                                                        event);
+                if (size > 0) {
+                  post_device_keys_and_pointing_buttons_are_released_event_if_needed(time_stamp);
                 }
               }
             }
 
             if (auto pointing_button = element_event.get_event().get_pointing_button()) {
-              // Send `device_pointing_buttons_are_released` event if needed.
-
               if (integer_value) {
                 pressed_pointing_buttons_.insert(elements_key(usage_page, usage));
               } else {
                 size_t size = pressed_pointing_buttons_.size();
                 pressed_pointing_buttons_.erase(elements_key(usage_page, usage));
-                if (size > 0 && pressed_pointing_buttons_.empty()) {
-                  auto event = event_queue::queued_event::event::make_device_pointing_buttons_are_released_event();
-                  input_event_queue_.emplace_back_event(device_id_,
-                                                        time_stamp,
-                                                        event,
-                                                        event_type::key_down,
-                                                        event);
+                if (size > 0) {
+                  post_device_keys_and_pointing_buttons_are_released_event_if_needed(time_stamp);
                 }
               }
             }
@@ -815,6 +803,18 @@ private:
     }
 
     input_event_queue_.clear_events();
+  }
+
+  void post_device_keys_and_pointing_buttons_are_released_event_if_needed(uint64_t time_stamp) {
+    if (pressed_keys_.empty() &&
+        pressed_pointing_buttons_.empty()) {
+      auto event = event_queue::queued_event::event::make_device_keys_and_pointing_buttons_are_released_event();
+      input_event_queue_.emplace_back_event(device_id_,
+                                            time_stamp,
+                                            event,
+                                            event_type::single,
+                                            event);
+    }
   }
 
   static void static_input_report_callback(void* _Nullable context,

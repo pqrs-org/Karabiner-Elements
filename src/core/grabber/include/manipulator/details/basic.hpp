@@ -518,6 +518,10 @@ public:
     return false;
   }
 
+  virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::queued_event& front_input_event,
+                                                                          event_queue& output_event_queue) {
+  }
+
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
                                              uint64_t time_stamp) {
@@ -539,14 +543,6 @@ public:
                                                            event_queue& output_event_queue) {
     unset_alone_if_needed(front_input_event.get_original_event(),
                           front_input_event.get_event_type());
-  }
-
-  virtual void force_post_modifier_key_event(const event_queue::queued_event& front_input_event,
-                                             event_queue& output_event_queue) {
-  }
-
-  virtual void force_post_pointing_button_event(const event_queue::queued_event& front_input_event,
-                                                event_queue& output_event_queue) {
   }
 
   virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {

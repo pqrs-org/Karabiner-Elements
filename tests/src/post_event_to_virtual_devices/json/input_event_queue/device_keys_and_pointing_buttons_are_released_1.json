@@ -32,12 +32,12 @@
     {
         "device_id": 1,
         "event": {
-            "type": "device_keys_are_released"
+            "type": "device_keys_and_pointing_buttons_are_released"
         },
         "event_type": "single",
         "lazy": false,
         "original_event": {
-            "type": "device_keys_are_released"
+            "type": "device_keys_and_pointing_buttons_are_released"
         },
         "time_stamp": 4000000,
         "valid": true

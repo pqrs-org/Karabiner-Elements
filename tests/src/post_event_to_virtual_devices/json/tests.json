@@ -408,12 +408,20 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/multiple_to_keys_2.json"
     },
     {
-        "description": "device_keys_are_released_1",
+        "description": "device_keys_and_pointing_buttons_are_released_1",
         "rules": [
             "json/rules/from_key.json"
         ],
-        "input_event_queue": "json/input_event_queue/device_keys_are_released_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_keys_are_released_1.json"
+        "input_event_queue": "json/input_event_queue/device_keys_and_pointing_buttons_are_released_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_keys_and_pointing_buttons_are_released_1.json"
+    },
+    {
+        "description": "device_keys_and_pointing_buttons_are_released_2",
+        "rules": [
+            "json/rules/from_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/device_keys_and_pointing_buttons_are_released_2.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_keys_and_pointing_buttons_are_released_2.json"
     },
     {
         "description": "lazy_1",

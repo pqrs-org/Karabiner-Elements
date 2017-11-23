@@ -808,8 +808,7 @@ public:
               case event_queue::queued_event::event::type::select_input_source:
               case event_queue::queued_event::event::type::set_variable:
               case event_queue::queued_event::event::type::mouse_key:
-              case event_queue::queued_event::event::type::device_keys_are_released:
-              case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+              case event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
               case event_queue::queued_event::event::type::device_ungrabbed:
               case event_queue::queued_event::event::type::caps_lock_state_changed:
               case event_queue::queued_event::event::type::event_from_ignored_device:
@@ -868,8 +867,7 @@ public:
 
         case event_queue::queued_event::event::type::none:
         case event_queue::queued_event::event::type::set_variable:
-        case event_queue::queued_event::event::type::device_keys_are_released:
-        case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
+        case event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
         case event_queue::queued_event::event::type::device_ungrabbed:
         case event_queue::queued_event::event::type::caps_lock_state_changed:
         case event_queue::queued_event::event::type::event_from_ignored_device:
@@ -896,6 +894,35 @@ public:
 
   virtual bool needs_virtual_hid_pointing(void) const {
     return false;
+  }
+
+  virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::queued_event& front_input_event,
+                                                                          event_queue& output_event_queue) {
+    // modifier flags
+
+    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                      queue_,
+                                                      front_input_event.get_time_stamp());
+
+    // pointing buttons
+
+    {
+      auto bits = output_event_queue.get_pointing_button_manager().get_hid_report_bits();
+      if (pressed_buttons_ != bits) {
+        auto report = output_event_queue.get_pointing_button_manager().make_pointing_input_report();
+        queue_.emplace_back_pointing_input(report,
+                                           event_type::key_up,
+                                           front_input_event.get_time_stamp());
+
+        // Save bits for `handle_device_ungrabbed_event`.
+        pressed_buttons_ = bits;
+      }
+    }
+
+    // mouse keys
+
+    mouse_key_handler_.erase_mouse_keys_by_device_id(front_input_event.get_device_id(),
+                                                     front_input_event.get_time_stamp());
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
@@ -957,24 +984,6 @@ public:
                                                         queue_,
                                                         front_input_event.get_time_stamp());
     }
-  }
-
-  virtual void force_post_modifier_key_event(const event_queue::queued_event& front_input_event,
-                                             event_queue& output_event_queue) {
-    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
-                                                      queue_,
-                                                      front_input_event.get_time_stamp());
-  }
-
-  virtual void force_post_pointing_button_event(const event_queue::queued_event& front_input_event,
-                                                event_queue& output_event_queue) {
-    auto report = output_event_queue.get_pointing_button_manager().make_pointing_input_report();
-    queue_.emplace_back_pointing_input(report,
-                                       front_input_event.get_event_type(),
-                                       front_input_event.get_time_stamp());
-
-    // Save bits for `handle_device_ungrabbed_event`.
-    pressed_buttons_ = output_event_queue.get_pointing_button_manager().get_hid_report_bits();
   }
 
   virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {

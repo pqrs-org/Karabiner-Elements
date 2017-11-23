@@ -48,7 +48,7 @@ krbn::event_queue::queued_event::event pointing_y_m10_event(krbn::event_queue::q
 krbn::event_queue::queued_event::event caps_lock_state_changed_1_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
 krbn::event_queue::queued_event::event caps_lock_state_changed_0_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
 
-auto device_keys_are_released_event = krbn::event_queue::queued_event::event::make_device_keys_are_released_event();
+auto device_keys_and_pointing_buttons_are_released_event = krbn::event_queue::queued_event::event::make_device_keys_and_pointing_buttons_are_released_event();
 } // namespace
 
 TEST_CASE("json") {
@@ -167,8 +167,8 @@ TEST_CASE("json") {
   }
   {
     nlohmann::json expected;
-    expected["type"] = "device_keys_are_released";
-    auto json = device_keys_are_released_event.to_json();
+    expected["type"] = "device_keys_and_pointing_buttons_are_released";
+    auto json = device_keys_and_pointing_buttons_are_released_event.to_json();
     REQUIRE(json == expected);
     krbn::event_queue::queued_event::event event_from_json(json);
     REQUIRE(json == event_from_json.to_json());
@@ -182,7 +182,7 @@ TEST_CASE("get_key_code") {
   REQUIRE(pointing_y_m10_event.get_key_code() == boost::none);
   REQUIRE(caps_lock_state_changed_1_event.get_key_code() == boost::none);
   REQUIRE(caps_lock_state_changed_0_event.get_key_code() == boost::none);
-  REQUIRE(device_keys_are_released_event.get_key_code() == boost::none);
+  REQUIRE(device_keys_and_pointing_buttons_are_released_event.get_key_code() == boost::none);
 }
 
 TEST_CASE("get_consumer_key_code") {
@@ -266,9 +266,9 @@ TEST_CASE("emplace_back_event") {
     // Other events (not key_code) order are preserved.
 
     ENQUEUE_EVENT(event_queue, 1, 400, left_shift_event, key_down, left_shift_event);
-    ENQUEUE_EVENT(event_queue, 1, 400, device_keys_are_released_event, single, device_keys_are_released_event);
+    ENQUEUE_EVENT(event_queue, 1, 400, device_keys_and_pointing_buttons_are_released_event, single, device_keys_and_pointing_buttons_are_released_event);
 
-    ENQUEUE_EVENT(event_queue, 1, 500, device_keys_are_released_event, single, device_keys_are_released_event);
+    ENQUEUE_EVENT(event_queue, 1, 500, device_keys_and_pointing_buttons_are_released_event, single, device_keys_and_pointing_buttons_are_released_event);
     ENQUEUE_EVENT(event_queue, 1, 500, left_shift_event, key_down, left_shift_event);
 
     std::vector<krbn::event_queue::queued_event> expected;
@@ -280,8 +280,8 @@ TEST_CASE("emplace_back_event") {
     PUSH_BACK_QUEUED_EVENT(expected, 1, 300, left_shift_event, key_up, left_shift_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 300, left_control_event, key_up, left_control_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 400, left_shift_event, key_down, left_shift_event);
-    PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_keys_are_released_event, single, device_keys_are_released_event);
-    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, device_keys_are_released_event, single, device_keys_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 400, device_keys_and_pointing_buttons_are_released_event, single, device_keys_and_pointing_buttons_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, device_keys_and_pointing_buttons_are_released_event, single, device_keys_and_pointing_buttons_are_released_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 500, left_shift_event, key_down, left_shift_event);
     REQUIRE(event_queue.get_events() == expected);
   }
@@ -335,14 +335,14 @@ TEST_CASE("emplace_back_event") {
 
     ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_up, b_event);
     ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_up, a_event);
-    ENQUEUE_EVENT(event_queue, 1, 100, device_keys_are_released_event, single, device_keys_are_released_event);
+    ENQUEUE_EVENT(event_queue, 1, 100, device_keys_and_pointing_buttons_are_released_event, single, device_keys_and_pointing_buttons_are_released_event);
     ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
     ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
 
     std::vector<krbn::event_queue::queued_event> expected;
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, b_event, key_up, b_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, a_event, key_up, a_event);
-    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, device_keys_are_released_event, single, device_keys_are_released_event);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 100, device_keys_and_pointing_buttons_are_released_event, single, device_keys_and_pointing_buttons_are_released_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_control_event, key_down, left_control_event);
     PUSH_BACK_QUEUED_EVENT(expected, 1, 100, left_shift_event, key_down, left_shift_event);
     REQUIRE(event_queue.get_events() == expected);

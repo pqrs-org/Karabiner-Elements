@@ -32,8 +32,7 @@ public:
         set_variable,
         mouse_key,
         // virtual events (passive)
-        device_keys_are_released,
-        device_pointing_buttons_are_released,
+        device_keys_and_pointing_buttons_are_released,
         device_ungrabbed,
         caps_lock_state_changed,
         event_from_ignored_device,
@@ -173,8 +172,7 @@ public:
                 break;
               }
 
-              case type::device_keys_are_released:
-              case type::device_pointing_buttons_are_released:
+              case type::device_keys_and_pointing_buttons_are_released:
               case type::device_ungrabbed:
               case type::event_from_ignored_device:
               case type::pointing_device_event_from_event_tap:
@@ -269,8 +267,7 @@ public:
             }
             break;
 
-          case type::device_keys_are_released:
-          case type::device_pointing_buttons_are_released:
+          case type::device_keys_and_pointing_buttons_are_released:
           case type::device_ungrabbed:
           case type::event_from_ignored_device:
           case type::pointing_device_event_from_event_tap:
@@ -325,12 +322,8 @@ public:
         return e;
       }
 
-      static event make_device_keys_are_released_event(void) {
-        return make_virtual_event(type::device_keys_are_released);
-      }
-
-      static event make_device_pointing_buttons_are_released_event(void) {
-        return make_virtual_event(type::device_pointing_buttons_are_released);
+      static event make_device_keys_and_pointing_buttons_are_released_event(void) {
+        return make_virtual_event(type::device_keys_and_pointing_buttons_are_released);
       }
 
       static event make_device_ungrabbed_event(void) {
@@ -517,8 +510,7 @@ public:
           TO_C_STRING(select_input_source);
           TO_C_STRING(set_variable);
           TO_C_STRING(mouse_key);
-          TO_C_STRING(device_keys_are_released);
-          TO_C_STRING(device_pointing_buttons_are_released);
+          TO_C_STRING(device_keys_and_pointing_buttons_are_released);
           TO_C_STRING(device_ungrabbed);
           TO_C_STRING(caps_lock_state_changed);
           TO_C_STRING(event_from_ignored_device);
@@ -552,8 +544,7 @@ public:
         TO_TYPE(select_input_source);
         TO_TYPE(set_variable);
         TO_TYPE(mouse_key);
-        TO_TYPE(device_keys_are_released);
-        TO_TYPE(device_pointing_buttons_are_released);
+        TO_TYPE(device_keys_and_pointing_buttons_are_released);
         TO_TYPE(device_ungrabbed);
         TO_TYPE(caps_lock_state_changed);
         TO_TYPE(event_from_ignored_device);
