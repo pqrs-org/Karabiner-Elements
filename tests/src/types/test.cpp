@@ -204,6 +204,13 @@ TEST_CASE("mouse_key") {
     REQUIRE(mouse_key.get_vertical_wheel() == 33);
     REQUIRE(mouse_key.get_horizontal_wheel() == 44);
   }
+  {
+    REQUIRE(krbn::mouse_key(0, 0, 0, 0).is_zero());
+    REQUIRE(!krbn::mouse_key(1, 0, 0, 0).is_zero());
+    REQUIRE(!krbn::mouse_key(0, 2, 0, 0).is_zero());
+    REQUIRE(!krbn::mouse_key(0, 0, 3, 0).is_zero());
+    REQUIRE(!krbn::mouse_key(0, 0, 0, 4).is_zero());
+  }
 }
 
 TEST_CASE("make_key_code") {

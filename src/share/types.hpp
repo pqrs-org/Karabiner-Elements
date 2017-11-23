@@ -767,6 +767,13 @@ public:
     return horizontal_wheel_;
   }
 
+  bool is_zero(void) const {
+    return x_ == 0 &&
+           y_ == 0 &&
+           vertical_wheel_ == 0 &&
+           horizontal_wheel_ == 0;
+  }
+
   mouse_key& operator+(const mouse_key& other) {
     x_ += other.x_;
     y_ += other.y_;
