@@ -7,8 +7,8 @@
 #include "migration.hpp"
 #include "process_utility.hpp"
 #include "spdlog_utility.hpp"
-#include "update_utility.hpp"
 #include "thread_utility.hpp"
+#include "update_utility.hpp"
 #include "version_monitor.hpp"
 
 int main(int argc, const char* argv[]) {

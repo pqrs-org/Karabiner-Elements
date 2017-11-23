@@ -61,7 +61,7 @@ int main(int argc, const char* argv[]) {
        << "/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions/"
        << pqrs::karabiner_virtual_hid_device::get_kernel_extension_name()
        << "'";
-    krbn::logger::get_logger().info(ss.str());;
+    krbn::logger::get_logger().info(ss.str());
     int exit_status = system(ss.str().c_str());
     exit_status >>= 8;
     krbn::logger::get_logger().info("kextload exit status: {0}", exit_status);
