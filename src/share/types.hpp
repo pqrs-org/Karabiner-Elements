@@ -687,6 +687,88 @@ private:
   boost::optional<std::regex> input_mode_id_regex_;
 };
 
+class mouse_key final {
+public:
+  mouse_key(int x,
+            int y,
+            int vertical_wheel,
+            int horizontal_wheel) : x_(x),
+                                    y_(y),
+                                    vertical_wheel_(vertical_wheel),
+                                    horizontal_wheel_(horizontal_wheel) {
+  }
+
+  mouse_key(const nlohmann::json& json) : json_(json) {
+    if (json.is_object()) {
+      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+        // it.key() is always std::string.
+        const auto& key = it.key();
+        const auto& value = it.value();
+
+        if (key == "x") {
+          if (value.is_number()) {
+            x_ = value.get<int>();
+          } else {
+            logger::get_logger().error("complex_modifications json error: mouse_key.x should be number: {0}", json.dump());
+          }
+        } else if (key == "y") {
+          if (value.is_number()) {
+            y_ = value.get<int>();
+          } else {
+            logger::get_logger().error("complex_modifications json error: mouse_key.y should be number: {0}", json.dump());
+          }
+        } else if (key == "vertical_wheel") {
+          if (value.is_number()) {
+            vertical_wheel_ = value.get<int>();
+          } else {
+            logger::get_logger().error("complex_modifications json error: mouse_key.vertical_wheel should be number: {0}", json.dump());
+          }
+        } else if (key == "horizontal_wheel") {
+          if (value.is_number()) {
+            horizontal_wheel_ = value.get<int>();
+          } else {
+            logger::get_logger().error("complex_modifications json error: mouse_key.horizontal_wheel should be number: {0}", json.dump());
+          }
+        } else {
+          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+        }
+      }
+    }
+  }
+
+  nlohmann::json to_json(void) const {
+    auto j = json_;
+    j["x"] = x_;
+    j["y"] = y_;
+    j["vertical_wheel"] = vertical_wheel_;
+    j["horizontal_wheel"] = horizontal_wheel_;
+    return j;
+  }
+
+  int get_x(void) const {
+    return x_;
+  }
+
+  int get_y(void) const {
+    return y_;
+  }
+
+  int get_vertical_wheel(void) const {
+    return vertical_wheel_;
+  }
+
+  int get_horizontal_wheel(void) const {
+    return horizontal_wheel_;
+  }
+
+private:
+  nlohmann::json json_;
+  int x_;
+  int y_;
+  int vertical_wheel_;
+  int horizontal_wheel_;
+};
+
 class types final {
 public:
   static device_id make_new_device_id(vendor_id vendor_id,

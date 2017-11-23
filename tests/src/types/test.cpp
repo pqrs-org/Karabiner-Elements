@@ -156,6 +156,40 @@ TEST_CASE("input_source_selector") {
   }
 }
 
+TEST_CASE("mouse_key") {
+  {
+    krbn::mouse_key mouse_key(10, 20, 30, 40);
+    REQUIRE(mouse_key.get_x() == 10);
+    REQUIRE(mouse_key.get_x() == 10);
+    REQUIRE(mouse_key.get_x() == 10);
+    REQUIRE(mouse_key.get_x() == 10);
+
+    nlohmann::json json;
+    json["x"] = 10;
+    json["y"] = 20;
+    json["vertical_wheel"] = 30;
+    json["horizontal_wheel"] = 40;
+
+    REQUIRE(mouse_key.to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["x"] = 10;
+    json["y"] = 20;
+    json["vertical_wheel"] = 30;
+    json["horizontal_wheel"] = 40;
+    json["dummy_key"] = "dummy_value";
+
+    krbn::mouse_key mouse_key(json);
+    REQUIRE(mouse_key.get_x() == 10);
+    REQUIRE(mouse_key.get_x() == 10);
+    REQUIRE(mouse_key.get_x() == 10);
+    REQUIRE(mouse_key.get_x() == 10);
+
+    REQUIRE(mouse_key.to_json() == json);
+  }
+}
+
 TEST_CASE("make_key_code") {
   REQUIRE(krbn::types::make_key_code("spacebar") == krbn::key_code::spacebar);
   REQUIRE(krbn::types::make_key_code("unknown") == boost::none);
