@@ -630,10 +630,10 @@ public:
           manipulator_timer_id_ = boost::none;
         } else {
           auto report = oeq->get_pointing_button_manager().make_pointing_input_report();
-          report.x = total.get_x() / 10;
-          report.y = total.get_y() / 10;
-          report.vertical_wheel = total.get_vertical_wheel() / 10;
-          report.horizontal_wheel = total.get_horizontal_wheel() / 10;
+          report.x = total.get_x();
+          report.y = total.get_y();
+          report.vertical_wheel = total.get_vertical_wheel();
+          report.horizontal_wheel = total.get_horizontal_wheel();
 
           queue_.emplace_back_pointing_input(report,
                                              event_type::single,
