@@ -16,6 +16,7 @@ TEST_CASE("main_queue_after_timer") {
 
     {
       krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                      true,
                                                       ^{
                                                         ++value;
                                                       });
@@ -36,6 +37,7 @@ TEST_CASE("main_queue_after_timer") {
       wrapper w;
       wrapper* p = &w;
       w.timer = std::make_shared<krbn::gcd_utility::main_queue_after_timer>(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                                            true,
                                                                             ^{
                                                                               // w is copied before timer was constructed.
                                                                               REQUIRE(w.timer.get() == nullptr);
@@ -58,6 +60,7 @@ TEST_CASE("main_queue_after_timer") {
 
         void set_timer(void) {
           timer_ = std::make_unique<krbn::gcd_utility::main_queue_after_timer>(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                                               true,
                                                                                ^{
                                                                                  // block binds `this`.
 
@@ -89,6 +92,7 @@ TEST_CASE("main_queue_after_timer") {
     {
       {
         krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+                                                        true,
                                                         ^{
                                                           ++value;
                                                         });

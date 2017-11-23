@@ -288,9 +288,11 @@ public:
           // If e.get_time_stamp() is too large, we reduce the delay to 3 seconds.
           auto when = std::min(e.get_time_stamp(), now + time_utility::nano_to_absolute(3 * NSEC_PER_SEC));
 
-          timer_ = std::make_unique<gcd_utility::main_queue_after_timer>(when, ^{
-            post_events(virtual_hid_device_client);
-          });
+          timer_ = std::make_unique<gcd_utility::main_queue_after_timer>(when,
+                                                                         true,
+                                                                         ^{
+                                                                           post_events(virtual_hid_device_client);
+                                                                         });
           return;
         }
 
@@ -551,8 +553,110 @@ public:
     std::unordered_set<modifier_flag> pressed_modifier_flags_;
   };
 
+  class mouse_key_handler final {
+  public:
+    mouse_key_handler(queue& queue) : queue_(queue),
+                                      last_time_stamp_(0) {
+    }
+
+    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+      if (timer_id == manipulator_timer_id_) {
+        manipulator_timer_id_ = boost::none;
+        post_event();
+        krbn_notification_center::get_instance().input_event_arrived();
+      }
+    }
+
+    void push_back_mouse_key(device_id device_id,
+                             const mouse_key& mouse_key,
+                             const std::shared_ptr<event_queue>& output_event_queue,
+                             uint64_t time_stamp) {
+      erase_entry(device_id, mouse_key);
+      entries_.emplace_back(device_id, mouse_key);
+
+      output_event_queue_ = output_event_queue;
+      last_time_stamp_ = time_stamp;
+
+      post_event();
+    }
+
+    void erase_mouse_key(device_id device_id,
+                         const mouse_key& mouse_key,
+                         const std::shared_ptr<event_queue>& output_event_queue,
+                         uint64_t time_stamp) {
+      erase_entry(device_id, mouse_key);
+
+      output_event_queue_ = output_event_queue;
+      last_time_stamp_ = time_stamp;
+
+      post_event();
+    }
+
+    void erase_mouse_keys_by_device_id(device_id device_id,
+                                       uint64_t time_stamp) {
+      entries_.erase(std::remove_if(std::begin(entries_),
+                                    std::end(entries_),
+                                    [&](const auto& pair) {
+                                      return pair.first == device_id;
+                                    }),
+                     std::end(entries_));
+
+      last_time_stamp_ = time_stamp;
+
+      post_event();
+    }
+
+  private:
+    void erase_entry(device_id device_id,
+                     const mouse_key& mouse_key) {
+      entries_.erase(std::remove_if(std::begin(entries_),
+                                    std::end(entries_),
+                                    [&](const auto& pair) {
+                                      return pair.first == device_id &&
+                                             pair.second == mouse_key;
+                                    }),
+                     std::end(entries_));
+    }
+
+    void post_event(void) {
+      if (auto oeq = output_event_queue_.lock()) {
+        mouse_key total;
+        for (const auto& pair : entries_) {
+          total += pair.second;
+        }
+
+        if (total.is_zero()) {
+          manipulator_timer_id_ = boost::none;
+        } else {
+          auto report = oeq->get_pointing_button_manager().make_pointing_input_report();
+          report.x = total.get_x() / 10;
+          report.y = total.get_y() / 10;
+          report.vertical_wheel = total.get_vertical_wheel() / 10;
+          report.horizontal_wheel = total.get_horizontal_wheel() / 10;
+
+          queue_.emplace_back_pointing_input(report,
+                                             event_type::single,
+                                             last_time_stamp_);
+
+          uint64_t delay_milliseconds = 30;
+          auto when = last_time_stamp_ + time_utility::nano_to_absolute(delay_milliseconds * NSEC_PER_MSEC);
+          manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(when);
+
+          last_time_stamp_ = when;
+        }
+      }
+    }
+
+    queue& queue_;
+    std::vector<std::pair<device_id, mouse_key>> entries_;
+    std::weak_ptr<event_queue> output_event_queue_;
+    boost::optional<manipulator_timer::timer_id> manipulator_timer_id_;
+    uint64_t last_time_stamp_;
+  };
+
   post_event_to_virtual_devices(void) : base(),
                                         queue_(),
+                                        mouse_key_handler_(queue_),
                                         pressed_buttons_(0) {
   }
 
@@ -745,9 +849,24 @@ public:
           }
           break;
 
+        case event_queue::queued_event::event::type::mouse_key:
+          if (auto mouse_key = front_input_event.get_event().get_mouse_key()) {
+            if (front_input_event.get_event_type() == event_type::key_down) {
+              mouse_key_handler_.push_back_mouse_key(front_input_event.get_device_id(),
+                                                     *mouse_key,
+                                                     output_event_queue,
+                                                     front_input_event.get_time_stamp());
+            } else {
+              mouse_key_handler_.erase_mouse_key(front_input_event.get_device_id(),
+                                                 *mouse_key,
+                                                 output_event_queue,
+                                                 front_input_event.get_time_stamp());
+            }
+          }
+          break;
+
         case event_queue::queued_event::event::type::none:
         case event_queue::queued_event::event::type::set_variable:
-        case event_queue::queued_event::event::type::mouse_key:
         case event_queue::queued_event::event::type::device_keys_are_released:
         case event_queue::queued_event::event::type::device_pointing_buttons_are_released:
         case event_queue::queued_event::event::type::device_ungrabbed:
@@ -778,10 +897,6 @@ public:
     return false;
   }
 
-  virtual void handle_mouse_key_event(const event_queue::queued_event& front_input_event,
-                                      event_queue& output_event_queue) {
-  }
-
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
                                              uint64_t time_stamp) {
@@ -809,6 +924,11 @@ public:
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                       queue_,
                                                       time_stamp);
+
+    // Release mouse_key_handler_
+
+    mouse_key_handler_.erase_mouse_keys_by_device_id(device_id,
+                                                     time_stamp);
   }
 
   virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
@@ -857,6 +977,7 @@ public:
   }
 
   virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+    mouse_key_handler_.manipulator_timer_invoked(timer_id);
   }
 
   virtual void set_valid(bool value) {
@@ -882,6 +1003,7 @@ public:
 private:
   queue queue_;
   key_event_dispatcher key_event_dispatcher_;
+  mouse_key_handler mouse_key_handler_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   uint32_t pressed_buttons_;
 };

@@ -67,8 +67,13 @@ public:
   // Thus, we don't use `dispatch_after`.
   class main_queue_after_timer final {
   public:
-    main_queue_after_timer(dispatch_time_t when, void (^_Nonnull block)(void)) {
-      timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    main_queue_after_timer(dispatch_time_t when, bool is_strict, void (^_Nonnull block)(void)) {
+      unsigned long mask = 0;
+      if (is_strict) {
+        mask |= DISPATCH_TIMER_STRICT;
+      }
+
+      timer_ = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, mask, dispatch_get_main_queue());
       if (timer_) {
         uint64_t interval = 100.0 * NSEC_PER_SEC; /* dummy value */
         dispatch_source_set_timer(timer_, when, interval, 0);

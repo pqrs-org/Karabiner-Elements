@@ -123,10 +123,12 @@ public:
         return;
       }
 
-      timer_ = std::make_unique<gcd_utility::main_queue_after_timer>(entries_.front().get_when(), ^{
-        uint64_t now = mach_absolute_time();
-        signal(now);
-      });
+      timer_ = std::make_unique<gcd_utility::main_queue_after_timer>(entries_.front().get_when(),
+                                                                     true,
+                                                                     ^{
+                                                                       uint64_t now = mach_absolute_time();
+                                                                       signal(now);
+                                                                     });
     }
 
     std::mutex mutex_;

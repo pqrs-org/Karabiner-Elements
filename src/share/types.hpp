@@ -774,12 +774,18 @@ public:
            horizontal_wheel_ == 0;
   }
 
-  mouse_key& operator+(const mouse_key& other) {
+  mouse_key& operator+=(const mouse_key& other) {
     x_ += other.x_;
     y_ += other.y_;
     vertical_wheel_ += other.vertical_wheel_;
     horizontal_wheel_ += other.horizontal_wheel_;
     return *this;
+  }
+
+  const mouse_key operator+(const mouse_key& other) const {
+    mouse_key result = *this;
+    result += other;
+    return result;
   }
 
   bool operator==(const mouse_key& other) const {

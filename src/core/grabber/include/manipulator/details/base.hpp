@@ -25,9 +25,6 @@ public:
 
   virtual bool needs_virtual_hid_pointing(void) const = 0;
 
-  virtual void handle_mouse_key_event(const event_queue::queued_event& front_input_event,
-                                      event_queue& output_event_queue) = 0;
-
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
                                              uint64_t time_stamp) = 0;
