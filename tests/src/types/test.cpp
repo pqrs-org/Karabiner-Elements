@@ -160,9 +160,9 @@ TEST_CASE("mouse_key") {
   {
     krbn::mouse_key mouse_key(10, 20, 30, 40);
     REQUIRE(mouse_key.get_x() == 10);
-    REQUIRE(mouse_key.get_x() == 10);
-    REQUIRE(mouse_key.get_x() == 10);
-    REQUIRE(mouse_key.get_x() == 10);
+    REQUIRE(mouse_key.get_y() == 20);
+    REQUIRE(mouse_key.get_vertical_wheel() == 30);
+    REQUIRE(mouse_key.get_horizontal_wheel() == 40);
 
     nlohmann::json json;
     json["x"] = 10;
@@ -174,6 +174,14 @@ TEST_CASE("mouse_key") {
   }
   {
     nlohmann::json json;
+    krbn::mouse_key mouse_key(json);
+    REQUIRE(mouse_key.get_x() == 0);
+    REQUIRE(mouse_key.get_y() == 0);
+    REQUIRE(mouse_key.get_vertical_wheel() == 0);
+    REQUIRE(mouse_key.get_horizontal_wheel() == 0);
+  }
+  {
+    nlohmann::json json;
     json["x"] = 10;
     json["y"] = 20;
     json["vertical_wheel"] = 30;
@@ -182,9 +190,9 @@ TEST_CASE("mouse_key") {
 
     krbn::mouse_key mouse_key(json);
     REQUIRE(mouse_key.get_x() == 10);
-    REQUIRE(mouse_key.get_x() == 10);
-    REQUIRE(mouse_key.get_x() == 10);
-    REQUIRE(mouse_key.get_x() == 10);
+    REQUIRE(mouse_key.get_y() == 20);
+    REQUIRE(mouse_key.get_vertical_wheel() == 30);
+    REQUIRE(mouse_key.get_horizontal_wheel() == 40);
 
     REQUIRE(mouse_key.to_json() == json);
   }

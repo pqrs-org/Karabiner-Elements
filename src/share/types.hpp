@@ -698,7 +698,11 @@ public:
                                     horizontal_wheel_(horizontal_wheel) {
   }
 
-  mouse_key(const nlohmann::json& json) : json_(json) {
+  mouse_key(const nlohmann::json& json) : json_(json),
+                                          x_(0),
+                                          y_(0),
+                                          vertical_wheel_(0),
+                                          horizontal_wheel_(0) {
     if (json.is_object()) {
       for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
         // it.key() is always std::string.
