@@ -556,8 +556,44 @@ public:
 
   class mouse_key_handler final {
   public:
+    class count_converter final {
+    public:
+      count_converter(int threshold) : threshold_(threshold),
+                                       count_(0) {
+      }
+
+      uint8_t update(int value) {
+        int result = 0;
+
+        count_ += value;
+
+        while (count_ <= -threshold_) {
+          --result;
+          count_ += threshold_;
+        }
+        while (count_ >= threshold_) {
+          ++result;
+          count_ -= threshold_;
+        }
+
+        return static_cast<uint8_t>(result);
+      }
+
+      void reset(void) {
+        count_ = 0;
+      }
+
+    private:
+      int threshold_;
+      int count_;
+    };
+
     mouse_key_handler(queue& queue) : queue_(queue),
-                                      last_time_stamp_(0) {
+                                      last_time_stamp_(0),
+                                      x_count_converter_(128),
+                                      y_count_converter_(128),
+                                      vertical_wheel_count_converter_(128),
+                                      horizontal_wheel_count_converter_(128) {
     }
 
     void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
@@ -628,12 +664,22 @@ public:
 
         if (total.is_zero()) {
           manipulator_timer_id_ = boost::none;
+          last_mouse_key_total_ = boost::none;
         } else {
+          if (last_mouse_key_total_ != total) {
+            last_mouse_key_total_ = total;
+
+            x_count_converter_.reset();
+            y_count_converter_.reset();
+            vertical_wheel_count_converter_.reset();
+            horizontal_wheel_count_converter_.reset();
+          }
+
           auto report = oeq->get_pointing_button_manager().make_pointing_input_report();
-          report.x = total.get_x();
-          report.y = total.get_y();
-          report.vertical_wheel = total.get_vertical_wheel();
-          report.horizontal_wheel = total.get_horizontal_wheel();
+          report.x = x_count_converter_.update(total.get_x());
+          report.y = y_count_converter_.update(total.get_y());
+          report.vertical_wheel = vertical_wheel_count_converter_.update(total.get_vertical_wheel());
+          report.horizontal_wheel = horizontal_wheel_count_converter_.update(total.get_horizontal_wheel());
 
           queue_.emplace_back_pointing_input(report,
                                              event_type::single,
@@ -653,6 +699,11 @@ public:
     std::weak_ptr<event_queue> output_event_queue_;
     boost::optional<manipulator_timer::timer_id> manipulator_timer_id_;
     uint64_t last_time_stamp_;
+    boost::optional<mouse_key> last_mouse_key_total_;
+    count_converter x_count_converter_;
+    count_converter y_count_converter_;
+    count_converter vertical_wheel_count_converter_;
+    count_converter horizontal_wheel_count_converter_;
   };
 
   post_event_to_virtual_devices(void) : base(),
