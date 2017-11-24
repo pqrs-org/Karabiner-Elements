@@ -462,5 +462,29 @@
         ],
         "input_event_queue": "json/input_event_queue/from_any_1.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_any_1.json"
+    },
+    {
+        "description": "mouse_key_1",
+        "rules": [
+            "json/rules/mouse_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_key_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_1.json"
+    },
+    {
+        "description": "mouse_key_2",
+        "rules": [
+            "json/rules/mouse_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_key_2.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_2.json"
+    },
+    {
+        "description": "mouse_key_3",
+        "rules": [
+            "json/rules/mouse_key.json"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_key_3.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_3.json"
     }
 ]

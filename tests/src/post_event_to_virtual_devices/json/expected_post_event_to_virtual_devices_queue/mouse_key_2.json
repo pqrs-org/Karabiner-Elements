@@ -1,0 +1,54 @@
+[
+    {
+        "keyboard_event": {
+            "key_code": "right_shift",
+            "value": 1
+        },
+        "time_stamp": 5000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "right_shift",
+            "value": 0
+        },
+        "time_stamp": 10000000,
+        "type": "keyboard_event"
+    },
+    {
+        "time_stamp": 4000001,
+        "type": "clear_keyboard_modifier_flags"
+    },
+    {
+        "pointing_input": {
+            "buttons": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 12,
+            "y": 0
+        },
+        "time_stamp": 4000001,
+        "type": "pointing_input"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "right_shift",
+            "value": 1
+        },
+        "time_stamp": 15000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "spacebar",
+            "value": 1
+        },
+        "time_stamp": 20000000,
+        "type": "keyboard_event"
+    }
+]

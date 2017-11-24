@@ -643,6 +643,10 @@ public:
       post_event();
     }
 
+    bool active(void) const {
+      return manipulator_timer_id_ != boost::none;
+    }
+
   private:
     void erase_entry(device_id device_id,
                      const mouse_key& mouse_key) {
@@ -665,6 +669,7 @@ public:
         if (total.is_zero()) {
           manipulator_timer_id_ = boost::none;
           last_mouse_key_total_ = boost::none;
+
         } else {
           if (last_mouse_key_total_ != total) {
             last_mouse_key_total_ = total;
@@ -1017,8 +1022,15 @@ public:
     // macOS does not ignore the modifier state change while key repeating.
     // If you enabled `control-f -> right_arrow` configuration,
     // apps will catch control-right_arrow event if release the lazy modifier here while right_arrow key is repeating.
+    //
 
-    if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
+    // We should not dispatch modifier key events while mouse keys active.
+    //
+    // For example, we should not restore right_shift by physical mouse movement when we use "change right_shift+r to scroll",
+    // because the right_shift key_up event interrupt scroll event.
+
+    if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
+        !mouse_key_handler_.active()) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
                                                         front_input_event.get_time_stamp());
@@ -1030,7 +1042,8 @@ public:
     // We should not dispatch modifier key events while key repeating.
     // (See a comment in `handle_event_from_ignored_device`.)
 
-    if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
+    if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
+        !mouse_key_handler_.active()) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
                                                         front_input_event.get_time_stamp());

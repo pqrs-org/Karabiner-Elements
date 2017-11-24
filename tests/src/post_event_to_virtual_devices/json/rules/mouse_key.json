@@ -1,0 +1,24 @@
+[
+    {
+        "description": "right_shift+d -> mouse_key.x",
+        "type": "basic",
+        "from": {
+            "key_code": "d",
+            "modifiers": {
+                "mandatory": [
+                    "right_shift"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "mouse_key": {
+                    "x": 1536
+                }
+            }
+        ]
+    }
+]
