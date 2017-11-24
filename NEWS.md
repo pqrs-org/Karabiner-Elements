@@ -1,6 +1,7 @@
 # Since version 11.3.0
 
 * Fixed an issue that the checkbox in `Preferences > Devices` is disabled for keyboards which do not have their own vendor id.
+* `mouse_key` has been added.
 
 
 # Version 11.3.0
