@@ -20,5 +20,25 @@
                 }
             }
         ]
+    },
+    {
+        "description": "right_shift+f -> button1",
+        "type": "basic",
+        "from": {
+            "key_code": "f",
+            "modifiers": {
+                "mandatory": [
+                    "right_shift"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "pointing_button": "button1"
+            }
+        ]
     }
 ]
