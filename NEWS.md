@@ -2,7 +2,13 @@
 
 * Fixed an issue that the checkbox in `Preferences > Devices` is disabled for keyboards which do not have their own vendor id.
 * `mouse_key` has been added.
-
+  * Examples:
+    * Mouse keys (simple)
+      * src:  https://github.com/pqrs-org/KE-complex_modifications/blob/master/src/json/mouse_keys_simple.json.erb
+      * json: https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/mouse_keys_simple.json
+    * Mouse keys (full)
+      * src:  https://github.com/pqrs-org/KE-complex_modifications/blob/master/src/json/mouse_keys_full.json.erb
+      * json: https://github.com/pqrs-org/KE-complex_modifications/blob/master/docs/json/mouse_keys_full.json
 
 # Version 11.3.0
 
