@@ -1022,14 +1022,18 @@ public:
     // macOS does not ignore the modifier state change while key repeating.
     // If you enabled `control-f -> right_arrow` configuration,
     // apps will catch control-right_arrow event if release the lazy modifier here while right_arrow key is repeating.
-    //
 
     // We should not dispatch modifier key events while mouse keys active.
     //
     // For example, we should not restore right_shift by physical mouse movement when we use "change right_shift+r to scroll",
     // because the right_shift key_up event interrupt scroll event.
 
+    // We should not dispatch modifier key events while mouse buttons are pressed.
+    // If you enabled `option-f -> button1` configuration,
+    // apps will catch option-button1 event if release the lazy modifier here while button1 is pressed.
+
     if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
+        !pressed_buttons_ &&
         !mouse_key_handler_.active()) {
       key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                         queue_,
@@ -1039,15 +1043,8 @@ public:
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
                                                            event_queue& output_event_queue) {
-    // We should not dispatch modifier key events while key repeating.
-    // (See a comment in `handle_event_from_ignored_device`.)
-
-    if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
-        !mouse_key_handler_.active()) {
-      key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
-                                                        queue_,
-                                                        front_input_event.get_time_stamp());
-    }
+    handle_event_from_ignored_device(front_input_event,
+                                     output_event_queue);
   }
 
   virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
