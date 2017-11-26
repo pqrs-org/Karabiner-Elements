@@ -1032,12 +1032,20 @@ public:
     // If you enabled `option-f -> button1` configuration,
     // apps will catch option-button1 event if release the lazy modifier here while button1 is pressed.
 
-    if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
-        !pressed_buttons_ &&
-        !mouse_key_handler_.active()) {
-      key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
-                                                        queue_,
-                                                        front_input_event.get_time_stamp());
+    switch (front_input_event.get_event_type()) {
+      case event_type::key_down:
+      case event_type::single:
+        if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
+            !pressed_buttons_ &&
+            !mouse_key_handler_.active()) {
+          key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+                                                            queue_,
+                                                            front_input_event.get_time_stamp());
+        }
+        break;
+
+      case event_type::key_up:
+        break;
     }
   }
 

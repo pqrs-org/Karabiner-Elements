@@ -49,7 +49,7 @@
         "event": {
             "type": "event_from_ignored_device"
         },
-        "event_type": "key_up",
+        "event_type": "key_down",
         "lazy": false,
         "original_event": {
             "key_code": "spacebar",
