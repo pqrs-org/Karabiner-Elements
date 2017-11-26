@@ -337,6 +337,7 @@ private:
     hids_[device] = std::move(dev);
 
     output_devices_json();
+    output_device_details_json();
 
     update_virtual_hid_pointing();
 
@@ -385,6 +386,7 @@ private:
     }
 
     output_devices_json();
+    output_device_details_json();
 
     update_virtual_hid_pointing();
 
@@ -705,6 +707,46 @@ private:
     if (connected_devices.save_to_file(file_path)) {
       chmod(file_path, 0644);
     }
+  }
+
+  void output_device_details_json(void) const {
+    auto file_path = constants::get_device_details_json_file_path();
+
+    filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path), 0755);
+
+    std::ofstream output(file_path);
+    if (!output) {
+      return;
+    }
+
+    nlohmann::json json = nlohmann::json::array();
+    for (const auto& pair : hids_) {
+      nlohmann::json j;
+      if (auto v = pair.second->find_vendor_id()) {
+        j["vendor_id"] = static_cast<int>(*v);
+      }
+      if (auto v = pair.second->find_product_id()) {
+        j["product_id"] = static_cast<int>(*v);
+      }
+      if (auto v = pair.second->find_location_id()) {
+        j["location_id"] = static_cast<int>(*v);
+      }
+      if (auto v = pair.second->find_manufacturer()) {
+        j["manufacturer"] = *v;
+      }
+      if (auto v = pair.second->find_product()) {
+        j["product"] = *v;
+      }
+      if (auto v = pair.second->find_serial_number()) {
+        j["serial_number"] = *v;
+      }
+      if (auto v = pair.second->find_transport()) {
+        j["transport"] = *v;
+      }
+      json.push_back(j);
+    }
+
+    output << std::setw(4) << json << std::endl;
   }
 
   void set_profile(const core_configuration::profile& profile) {
