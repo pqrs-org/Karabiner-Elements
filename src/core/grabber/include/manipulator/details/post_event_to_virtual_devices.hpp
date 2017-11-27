@@ -681,10 +681,10 @@ public:
           }
 
           auto report = oeq->get_pointing_button_manager().make_pointing_input_report();
-          report.x = x_count_converter_.update(total.get_x());
-          report.y = y_count_converter_.update(total.get_y());
-          report.vertical_wheel = vertical_wheel_count_converter_.update(total.get_vertical_wheel());
-          report.horizontal_wheel = horizontal_wheel_count_converter_.update(total.get_horizontal_wheel());
+          report.x = x_count_converter_.update(static_cast<int>(total.get_x() * total.get_magnification()));
+          report.y = y_count_converter_.update(static_cast<int>(total.get_y() * total.get_magnification()));
+          report.vertical_wheel = vertical_wheel_count_converter_.update(static_cast<int>(total.get_vertical_wheel() * total.get_magnification()));
+          report.horizontal_wheel = horizontal_wheel_count_converter_.update(static_cast<int>(total.get_horizontal_wheel() * total.get_magnification()));
 
           queue_.emplace_back_pointing_input(report,
                                              event_type::single,
