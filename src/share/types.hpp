@@ -693,18 +693,18 @@ public:
                     y_(0),
                     vertical_wheel_(0),
                     horizontal_wheel_(0),
-                    magnification_(1.0) {
+                    speed_multiplier_(1.0) {
   }
 
   mouse_key(int x,
             int y,
             int vertical_wheel,
             int horizontal_wheel,
-            double magnification) : x_(x),
-                                    y_(y),
-                                    vertical_wheel_(vertical_wheel),
-                                    horizontal_wheel_(horizontal_wheel),
-                                    magnification_(magnification) {
+            double speed_multiplier) : x_(x),
+                                       y_(y),
+                                       vertical_wheel_(vertical_wheel),
+                                       horizontal_wheel_(horizontal_wheel),
+                                       speed_multiplier_(speed_multiplier) {
   }
 
   mouse_key(const nlohmann::json& json) : mouse_key() {
@@ -738,11 +738,11 @@ public:
           } else {
             logger::get_logger().error("complex_modifications json error: mouse_key.horizontal_wheel should be number: {0}", json.dump());
           }
-        } else if (key == "magnification") {
+        } else if (key == "speed_multiplier") {
           if (value.is_number()) {
-            magnification_ = value.get<double>();
+            speed_multiplier_ = value.get<double>();
           } else {
-            logger::get_logger().error("complex_modifications json error: mouse_key.magnification should be number: {0}", json.dump());
+            logger::get_logger().error("complex_modifications json error: mouse_key.speed_multiplier should be number: {0}", json.dump());
           }
         } else {
           logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
@@ -757,7 +757,7 @@ public:
     j["y"] = y_;
     j["vertical_wheel"] = vertical_wheel_;
     j["horizontal_wheel"] = horizontal_wheel_;
-    j["magnification"] = magnification_;
+    j["speed_multiplier"] = speed_multiplier_;
     return j;
   }
 
@@ -777,12 +777,12 @@ public:
     return horizontal_wheel_;
   }
 
-  double get_magnification(void) const {
-    return magnification_;
+  double get_speed_multiplier(void) const {
+    return speed_multiplier_;
   }
 
   bool is_zero(void) const {
-    // Do not check magnification_ here.
+    // Do not check speed_multiplier_ here.
 
     return x_ == 0 &&
            y_ == 0 &&
@@ -796,8 +796,8 @@ public:
     vertical_wheel_ += other.vertical_wheel_;
     horizontal_wheel_ += other.horizontal_wheel_;
 
-    // multiply magnification_.
-    magnification_ *= other.magnification_;
+    // multiply speed_multiplier_.
+    speed_multiplier_ *= other.speed_multiplier_;
 
     return *this;
   }
@@ -813,7 +813,7 @@ public:
            y_ == other.y_ &&
            vertical_wheel_ == other.vertical_wheel_ &&
            horizontal_wheel_ == other.horizontal_wheel_ &&
-           magnification_ == other.magnification_;
+           speed_multiplier_ == other.speed_multiplier_;
   }
 
 private:
@@ -821,7 +821,7 @@ private:
   int y_;
   int vertical_wheel_;
   int horizontal_wheel_;
-  double magnification_;
+  double speed_multiplier_;
 };
 
 class types final {
