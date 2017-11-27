@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "../share/manipulator_helper.hpp"
@@ -9,6 +9,10 @@
 using krbn::manipulator::details::event_definition;
 using krbn::manipulator::details::from_event_definition;
 using krbn::manipulator::details::to_event_definition;
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("manipulator.manipulator_factory") {
   {
@@ -133,9 +137,4 @@ TEST_CASE("needs_virtual_hid_pointing") {
       REQUIRE(manager.needs_virtual_hid_pointing());
     }
   }
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

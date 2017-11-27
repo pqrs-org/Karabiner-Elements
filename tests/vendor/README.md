@@ -1,5 +1,5 @@
 # Files
 
 * catch
-  * version: v1.8.2
-  * https://github.com/philsquared/Catch
+  * version: v2.0.1
+  * https://github.com/catchorg/Catch2/releases

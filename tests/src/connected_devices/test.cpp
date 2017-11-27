@@ -1,9 +1,13 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "connected_devices.hpp"
 #include "thread_utility.hpp"
 #include <iostream>
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("connected_devices::device::descriptions") {
   {
@@ -266,9 +270,4 @@ TEST_CASE("connected_devices") {
     REQUIRE(connected_devices.is_loaded() == false);
     REQUIRE(connected_devices.get_devices().size() == 0);
   }
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

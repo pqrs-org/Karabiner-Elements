@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "boost_defs.hpp"
@@ -8,6 +8,10 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/optional/optional_io.hpp>
 #include <ostream>
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("get_timestamp_number") {
   {
@@ -85,9 +89,4 @@ TEST_CASE("log_reducer") {
     log_reducer.info(std::string("dummy ") + boost::lexical_cast<std::string>(i));
   }
   log_reducer.info("test3");
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

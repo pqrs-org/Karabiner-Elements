@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "boost_defs.hpp"
@@ -7,6 +7,10 @@
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 #include <ostream>
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("exists") {
   REQUIRE(krbn::filesystem::exists("data/file") == true);
@@ -167,9 +171,4 @@ TEST_CASE("realpath") {
 
   actual = krbn::filesystem::realpath("/var/log/system.log");
   REQUIRE(*actual == "/private/var/log/system.log");
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

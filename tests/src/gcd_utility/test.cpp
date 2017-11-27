@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "gcd_utility.hpp"
@@ -8,6 +8,10 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("main_queue_after_timer") {
   auto thread = std::thread([] {
@@ -111,9 +115,4 @@ TEST_CASE("main_queue_after_timer") {
   });
 
   CFRunLoopRun();
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

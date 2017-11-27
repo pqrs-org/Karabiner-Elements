@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "filesystem.hpp"
@@ -36,6 +36,10 @@ void set_null_logger(void) {
   krbn::logger::set_logger(l);
 }
 } // namespace
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("event_definition.make_modifiers") {
   using krbn::manipulator::details::event_definition;
@@ -688,9 +692,4 @@ TEST_CASE("event_definition.error_messages") {
   }
 
   set_null_logger();
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

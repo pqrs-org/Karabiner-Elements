@@ -1,9 +1,13 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "thread_utility.hpp"
 #include "types.hpp"
 #include <boost/optional/optional_io.hpp>
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("input_source_selector") {
   // language
@@ -345,9 +349,4 @@ TEST_CASE("make_new_device_id") {
   krbn::types::detach_device_id(krbn::device_id(-1));
 
   REQUIRE(krbn::types::find_device_identifiers(device_id1) == nullptr);
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

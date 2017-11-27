@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "pointing_button_manager.hpp"
@@ -29,6 +29,10 @@ krbn::pointing_button_manager::active_pointing_button button20_1(krbn::pointing_
                                                                  krbn::pointing_button::button20,
                                                                  krbn::device_id(1));
 } // namespace
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("pointing_button_manager") {
   {
@@ -117,9 +121,4 @@ TEST_CASE("pointing_button_manager") {
     pointing_button_manager.push_back_active_pointing_button(button1_decrease_1);
     REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x0);
   }
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

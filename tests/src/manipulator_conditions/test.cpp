@@ -1,10 +1,14 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "manipulator/condition_manager.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("manipulator.manipulator_factory") {
   {
@@ -358,9 +362,4 @@ TEST_CASE("conditions.keyboard_type") {
     REQUIRE(helper.get_condition_manager().is_fulfilled(queued_event,
                                                         manipulator_environment) == true);
   }
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

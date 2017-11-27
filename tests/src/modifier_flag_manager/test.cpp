@@ -1,8 +1,12 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "modifier_flag_manager.hpp"
 #include "thread_utility.hpp"
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("manipulator.modifier_flag_manager") {
   krbn::modifier_flag_manager::active_modifier_flag left_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
@@ -136,9 +140,4 @@ TEST_CASE("manipulator.modifier_flag_manager") {
     modifier_flag_manager.push_back_active_modifier_flag(decrease_lock_left_shift_1);
     REQUIRE(modifier_flag_manager.is_pressed(krbn::modifier_flag::left_shift) == false);
   }
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

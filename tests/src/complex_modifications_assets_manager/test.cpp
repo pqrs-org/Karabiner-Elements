@@ -1,9 +1,13 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "complex_modifications_assets_manager.hpp"
 #include "thread_utility.hpp"
 #include <iostream>
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("reload") {
   {
@@ -39,9 +43,4 @@ TEST_CASE("reload") {
     auto& files = complex_modifications_assets_manager.get_files();
     REQUIRE(files.size() == 0);
   }
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "event_queue.hpp"
@@ -50,6 +50,10 @@ krbn::event_queue::queued_event::event caps_lock_state_changed_0_event(krbn::eve
 
 auto device_keys_and_pointing_buttons_are_released_event = krbn::event_queue::queued_event::event::make_device_keys_and_pointing_buttons_are_released_event();
 } // namespace
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("json") {
   {
@@ -469,9 +473,4 @@ TEST_CASE("caps_lock_state_changed") {
 
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
   }
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }

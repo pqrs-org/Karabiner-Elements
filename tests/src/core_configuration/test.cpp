@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
 #include "core_configuration.hpp"
@@ -8,6 +8,10 @@
 #include <iostream>
 
 using simple_modifications = krbn::core_configuration::profile::simple_modifications;
+
+TEST_CASE("initialize") {
+  krbn::thread_utility::register_main_thread();
+}
 
 TEST_CASE("valid") {
   krbn::core_configuration configuration("json/example.json");
@@ -1325,9 +1329,4 @@ TEST_CASE("device.to_json") {
     });
     REQUIRE(device.to_json() == expected);
   }
-}
-
-int main(int argc, char* const argv[]) {
-  krbn::thread_utility::register_main_thread();
-  return Catch::Session().run(argc, argv);
 }
