@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
 		256AC3DA0F4B6AC300CF3369 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 256AC3D90F4B6AC300CF3369 /* AppDelegate.m */; };
+		342A1DE91FD44CD2002A07D6 /* DevicesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 342A1DE81FD44CD2002A07D6 /* DevicesController.m */; };
 		3437965A1FB4A77200450D07 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 343796591FB4A76700450D07 /* SystemConfiguration.framework */; };
 		343EEA0E19C5E1D1001A969F /* TabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 343EEA0D19C5E1D1001A969F /* TabView.m */; };
 		344F41331F2110920073B85A /* VariablesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F41321F2110920073B85A /* VariablesController.m */; };
@@ -39,6 +40,8 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		3416816F1F7C074900FF2FB0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		342A1DE71FD44CD1002A07D6 /* DevicesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DevicesController.h; path = Classes/DevicesController.h; sourceTree = "<group>"; };
+		342A1DE81FD44CD2002A07D6 /* DevicesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DevicesController.m; path = Classes/DevicesController.m; sourceTree = "<group>"; };
 		343796591FB4A76700450D07 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		343EEA0C19C5E1D1001A969F /* TabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TabView.h; path = Classes/TabView.h; sourceTree = "<group>"; };
 		343EEA0D19C5E1D1001A969F /* TabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TabView.m; path = Classes/TabView.m; sourceTree = "<group>"; };
@@ -89,6 +92,8 @@
 			children = (
 				256AC3D80F4B6AC300CF3369 /* AppDelegate.h */,
 				256AC3D90F4B6AC300CF3369 /* AppDelegate.m */,
+				342A1DE71FD44CD1002A07D6 /* DevicesController.h */,
+				342A1DE81FD44CD2002A07D6 /* DevicesController.m */,
 				34CA6977174FB72900EC8EFB /* EventQueue.h */,
 				34CA6978174FB72900EC8EFB /* EventQueue.m */,
 				346FDD261BA6E58500B1072E /* EventViewerApplication.h */,
@@ -270,6 +275,7 @@
 				345EF8E61F100484003E7A67 /* frontmost_application_observer_objc.m in Sources */,
 				3481A9BA1BC524280092E8EC /* PreferencesManager.m in Sources */,
 				345EF8E31F100413003E7A67 /* FrontmostApplicationController.m in Sources */,
+				342A1DE91FD44CD2002A07D6 /* DevicesController.m in Sources */,
 				34CA6980174FB72900EC8EFB /* KeyResponder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
