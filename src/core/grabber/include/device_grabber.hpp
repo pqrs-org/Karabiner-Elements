@@ -719,7 +719,10 @@ private:
       return;
     }
 
-    nlohmann::json json = nlohmann::json::array();
+    // ----------------------------------------
+    // Make devices json
+
+    std::vector<nlohmann::json> devices;
     for (const auto& pair : hids_) {
       nlohmann::json j;
       if (auto v = pair.second->find_vendor_id()) {
@@ -743,10 +746,54 @@ private:
       if (auto v = pair.second->find_transport()) {
         j["transport"] = *v;
       }
-      json.push_back(j);
+      if (auto v = pair.second->find_registry_entry_id()) {
+        j["registry_entry_id"] = *v;
+      }
+      devices.push_back(j);
     }
 
-    output << std::setw(4) << json << std::endl;
+    // ----------------------------------------
+    // Sort
+
+    auto make_sort_key = [](const nlohmann::json& j) {
+      std::stringstream ss;
+      {
+        auto it = j.find("product");
+        if (it != std::end(j)) {
+          ss << it->get<std::string>();
+        } else {
+          ss << " ";
+        }
+      }
+      {
+        auto it = j.find("manipulator");
+        if (it != std::end(j)) {
+          ss << it->get<std::string>();
+        } else {
+          ss << " ";
+        }
+      }
+      {
+        auto it = j.find("location_id");
+        if (it != std::end(j)) {
+          ss << it->get<int>();
+        } else {
+          ss << " ";
+        }
+      }
+      return ss.str();
+    };
+
+    std::sort(std::begin(devices),
+              std::end(devices),
+              [&](auto& a, auto& b) {
+                return make_sort_key(a) < make_sort_key(b);
+              });
+
+    // ----------------------------------------
+    // Output
+
+    output << std::setw(4) << nlohmann::json(devices) << std::endl;
   }
 
   void set_profile(const core_configuration::profile& profile) {
