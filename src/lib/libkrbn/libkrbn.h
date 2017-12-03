@@ -257,24 +257,15 @@ bool libkrbn_version_monitor_initialize(libkrbn_version_monitor* _Nullable* _Non
 void libkrbn_version_monitor_terminate(libkrbn_version_monitor* _Nullable* _Nonnull p);
 
 // ----------------------------------------
-// libkrbn_manipulator_environment_monitor
+// libkrbn_file_monitor
 
-typedef void libkrbn_manipulator_environment_monitor;
-typedef void (*libkrbn_manipulator_environment_monitor_callback)(void* _Nullable refcon);
-bool libkrbn_manipulator_environment_monitor_initialize(libkrbn_manipulator_environment_monitor* _Nullable* _Nonnull out,
-                                                        libkrbn_manipulator_environment_monitor_callback _Nullable callback,
-                                                        void* _Nullable refcon);
-void libkrbn_manipulator_environment_monitor_terminate(libkrbn_manipulator_environment_monitor* _Nullable* _Nonnull p);
-
-// ----------------------------------------
-// libkrbn_grabber_alerts_monitor
-
-typedef void libkrbn_grabber_alerts_monitor;
-typedef void (*libkrbn_grabber_alerts_monitor_callback)(void* _Nullable refcon);
-bool libkrbn_grabber_alerts_monitor_initialize(libkrbn_grabber_alerts_monitor* _Nullable* _Nonnull out,
-                                               libkrbn_grabber_alerts_monitor_callback _Nullable callback,
-                                               void* _Nullable refcon);
-void libkrbn_grabber_alerts_monitor_terminate(libkrbn_grabber_alerts_monitor* _Nullable* _Nonnull p);
+typedef void libkrbn_file_monitor;
+typedef void (*libkrbn_file_monitor_callback)(void* _Nullable refcon);
+bool libkrbn_file_monitor_initialize(libkrbn_file_monitor* _Nullable* _Nonnull out,
+                                     const char* _Nonnull file_path,
+                                     libkrbn_file_monitor_callback _Nullable callback,
+                                     void* _Nullable refcon);
+void libkrbn_file_monitor_terminate(libkrbn_file_monitor* _Nullable* _Nonnull p);
 
 #ifdef __cplusplus
 }

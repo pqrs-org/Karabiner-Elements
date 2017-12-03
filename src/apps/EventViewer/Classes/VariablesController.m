@@ -4,7 +4,7 @@
 @interface VariablesController ()
 
 @property(unsafe_unretained) IBOutlet NSTextView* textView;
-@property libkrbn_manipulator_environment_monitor* libkrbn_manipulator_environment_monitor;
+@property libkrbn_file_monitor* libkrbn_file_monitor;
 
 - (void)callback;
 
@@ -18,17 +18,18 @@ static void staticCallback(void* context) {
 @implementation VariablesController
 
 - (void)setup {
-  libkrbn_manipulator_environment_monitor* p = nil;
-  libkrbn_manipulator_environment_monitor_initialize(&p,
-                                                     staticCallback,
-                                                     (__bridge void*)(self));
-  self.libkrbn_manipulator_environment_monitor = p;
+  libkrbn_file_monitor* p = nil;
+  libkrbn_file_monitor_initialize(&p,
+                                  libkrbn_get_manipulator_environment_json_file_path(),
+                                  staticCallback,
+                                  (__bridge void*)(self));
+  self.libkrbn_file_monitor = p;
 }
 
 - (void)dealloc {
-  libkrbn_manipulator_environment_monitor* p = self.libkrbn_manipulator_environment_monitor;
-  libkrbn_manipulator_environment_monitor_terminate(&p);
-  self.libkrbn_manipulator_environment_monitor = nil;
+  libkrbn_file_monitor* p = self.libkrbn_file_monitor;
+  libkrbn_file_monitor_terminate(&p);
+  self.libkrbn_file_monitor = nil;
 }
 
 - (void)callback {
