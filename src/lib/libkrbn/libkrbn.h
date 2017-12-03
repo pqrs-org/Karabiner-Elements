@@ -27,6 +27,7 @@ const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(vo
 const char* _Nonnull libkrbn_get_distributed_notification_console_user_server_is_disabled(void);
 const char* _Nonnull libkrbn_get_grabber_alerts_json_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
+const char* _Nonnull libkrbn_get_device_details_json_file_path(void);
 const char* _Nonnull libkrbn_get_manipulator_environment_json_file_path(void);
 const char* _Nonnull libkrbn_get_user_complex_modifications_assets_directory(void);
 
