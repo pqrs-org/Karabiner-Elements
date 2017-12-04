@@ -12,6 +12,8 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("get_optional") {
+  using namespace std::string_literals;
+
   nlohmann::json json;
   json["number"] = 123;
   json["string"] = "abc";
@@ -26,7 +28,7 @@ TEST_CASE("get_optional") {
 
   REQUIRE(krbn::json_utility::find_optional<std::string>(json, "number") == boost::none);
   REQUIRE(krbn::json_utility::find_optional<std::string>(json, "dummy") == boost::none);
-  REQUIRE(krbn::json_utility::find_optional<std::string>(json, "string") == std::string("abc"));
+  REQUIRE(krbn::json_utility::find_optional<std::string>(json, "string") == "abc"s);
   REQUIRE(krbn::json_utility::find_optional<std::string>(json, "array") == boost::none);
   REQUIRE(krbn::json_utility::find_optional<std::string>(json, "object") == boost::none);
 }
