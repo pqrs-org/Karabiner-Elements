@@ -767,7 +767,13 @@ private:
   }
 
   std::shared_ptr<manipulator::details::conditions::base> make_device_if_condition(const core_configuration::profile::device& device) const {
-    return std::make_shared<manipulator::details::conditions::device>(device.get_identifiers());
+    nlohmann::json json;
+    json["type"] = "device_if";
+    json["identifiers"] = nlohmann::json::array();
+    json["identifiers"].push_back(nlohmann::json::object());
+    json["identifiers"].back()["vendor_id"] = static_cast<int>(device.get_identifiers().get_vendor_id());
+    json["identifiers"].back()["product_id"] = static_cast<int>(device.get_identifiers().get_product_id());
+    return std::make_shared<manipulator::details::conditions::device>(json);
   }
 
   std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<core_configuration::profile::simple_modifications::definition, core_configuration::profile::simple_modifications::definition>& pair) const {
