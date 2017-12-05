@@ -56,6 +56,7 @@
 		3469EB701D814F140005D30D /* filesystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = filesystem.hpp; sourceTree = "<group>"; };
 		347113141D871C6C001AC60D /* process_monitor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = process_monitor.hpp; sourceTree = "<group>"; };
 		3476862C1E22A7A700A7DFAB /* cf_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cf_utility.hpp; sourceTree = "<group>"; };
+		3482F5D81FD6DFF6003290B6 /* device_detail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = device_detail.hpp; sourceTree = "<group>"; };
 		348FC00A1D9B76830083F98F /* virtual_hid_device_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_device_client.hpp; sourceTree = "<group>"; };
 		3494274B1F9D736800A24707 /* krbn_notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = krbn_notification_center.hpp; sourceTree = "<group>"; };
 		349863321E784DC800DF3644 /* connected_devices.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = connected_devices.hpp; sourceTree = "<group>"; };
@@ -148,6 +149,7 @@
 				345EF8E91F1683BD003E7A67 /* console_user_server_client.hpp */,
 				341F59CA1D5167E900B441A8 /* constants.hpp */,
 				342BE67B1EF148BE00149985 /* core_configuration.hpp */,
+				3482F5D81FD6DFF6003290B6 /* device_detail.hpp */,
 				345CCB4F1E902963005B61A8 /* event_queue.hpp */,
 				3469EB701D814F140005D30D /* filesystem.hpp */,
 				3431346E1DB70C900008F284 /* gcd_utility.hpp */,

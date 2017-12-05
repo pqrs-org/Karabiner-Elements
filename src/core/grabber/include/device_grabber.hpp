@@ -5,6 +5,7 @@
 #include "apple_hid_usage_tables.hpp"
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
+#include "device_detail.hpp"
 #include "event_tap_manager.hpp"
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
@@ -720,80 +721,25 @@ private:
     }
 
     // ----------------------------------------
-    // Make devices json
-
-    std::vector<nlohmann::json> devices;
+    std::vector<device_detail> device_details;
     for (const auto& pair : hids_) {
-      nlohmann::json j;
-      if (auto v = pair.second->find_vendor_id()) {
-        j["vendor_id"] = static_cast<int>(*v);
-      }
-      if (auto v = pair.second->find_product_id()) {
-        j["product_id"] = static_cast<int>(*v);
-      }
-      if (auto v = pair.second->find_location_id()) {
-        j["location_id"] = static_cast<int>(*v);
-      }
-      if (auto v = pair.second->find_manufacturer()) {
-        j["manufacturer"] = *v;
-      }
-      if (auto v = pair.second->find_product()) {
-        j["product"] = *v;
-      }
-      if (auto v = pair.second->find_serial_number()) {
-        j["serial_number"] = *v;
-      }
-      if (auto v = pair.second->find_transport()) {
-        j["transport"] = *v;
-      }
-      if (auto v = pair.second->find_registry_entry_id()) {
-        j["registry_entry_id"] = *v;
-      }
-      devices.push_back(j);
+      device_details.emplace_back(pair.second->find_vendor_id(),
+                                  pair.second->find_product_id(),
+                                  pair.second->find_location_id(),
+                                  pair.second->find_manufacturer(),
+                                  pair.second->find_product(),
+                                  pair.second->find_serial_number(),
+                                  pair.second->find_transport(),
+                                  pair.second->find_registry_entry_id());
     }
 
-    // ----------------------------------------
-    // Sort
-
-    auto make_sort_key = [](const nlohmann::json& j) {
-      std::stringstream ss;
-      {
-        auto it = j.find("product");
-        if (it != std::end(j)) {
-          ss << it->get<std::string>();
-        } else {
-          ss << " ";
-        }
-      }
-      {
-        auto it = j.find("manipulator");
-        if (it != std::end(j)) {
-          ss << it->get<std::string>();
-        } else {
-          ss << " ";
-        }
-      }
-      {
-        auto it = j.find("location_id");
-        if (it != std::end(j)) {
-          ss << it->get<int>();
-        } else {
-          ss << " ";
-        }
-      }
-      return ss.str();
-    };
-
-    std::sort(std::begin(devices),
-              std::end(devices),
+    std::sort(std::begin(device_details),
+              std::end(device_details),
               [&](auto& a, auto& b) {
-                return make_sort_key(a) < make_sort_key(b);
+                return a.compare(b);
               });
 
-    // ----------------------------------------
-    // Output
-
-    output << std::setw(4) << nlohmann::json(devices) << std::endl;
+    output << std::setw(4) << nlohmann::json(device_details) << std::endl;
   }
 
   void set_profile(const core_configuration::profile& profile) {

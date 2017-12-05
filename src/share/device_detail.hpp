@@ -26,7 +26,7 @@ public:
                                                                registry_entry_id_(registry_entry_id) {
   }
 
-  nlohmann::json to_json(void) {
+  nlohmann::json to_json(void) const {
     nlohmann::json json;
 
     if (vendor_id_) {
@@ -119,4 +119,8 @@ private:
   boost::optional<std::string> transport_;
   boost::optional<uint64_t> registry_entry_id_;
 };
+
+inline void to_json(nlohmann::json& json, const device_detail& device_detail) {
+  json = device_detail.to_json();
+}
 } // namespace krbn
