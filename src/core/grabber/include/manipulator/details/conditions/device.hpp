@@ -64,6 +64,12 @@ public:
           if (d.product_id && d.product_id != di->get_product_id()) {
             fulfilled = false;
           }
+          if (d.is_keyboard && d.is_keyboard != di->get_is_keyboard()) {
+            fulfilled = false;
+          }
+          if (d.is_pointing_device && d.is_pointing_device != di->get_is_pointing_device()) {
+            fulfilled = false;
+          }
 
           if (fulfilled) {
             switch (type_) {
@@ -92,6 +98,8 @@ private:
     boost::optional<vendor_id> vendor_id;
     boost::optional<product_id> product_id;
     boost::optional<location_id> location_id;
+    boost::optional<bool> is_keyboard;
+    boost::optional<bool> is_pointing_device;
   };
 
   void handle_identifiers_json(const nlohmann::json& json) {
@@ -106,15 +114,31 @@ private:
 
           if (key == "vendor_id") {
             if (value.is_number()) {
-              int v = value;
-              d.vendor_id = vendor_id(v);
+              d.vendor_id = vendor_id(value.get<int>());
             } else {
               logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }
           } else if (key == "product_id") {
             if (value.is_number()) {
-              int v = value;
-              d.product_id = product_id(v);
+              d.product_id = product_id(value.get<int>());
+            } else {
+              logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
+            }
+          } else if (key == "location_id") {
+            if (value.is_number()) {
+              d.location_id = location_id(value.get<int>());
+            } else {
+              logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
+            }
+          } else if (key == "is_keyboard") {
+            if (value.is_boolean()) {
+              d.is_keyboard = value.get<bool>();
+            } else {
+              logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
+            }
+          } else if (key == "is_pointing_device") {
+            if (value.is_boolean()) {
+              d.is_pointing_device = value.get<bool>();
             } else {
               logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, j.dump());
             }

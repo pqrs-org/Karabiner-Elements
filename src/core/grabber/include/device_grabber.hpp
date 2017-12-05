@@ -773,6 +773,8 @@ private:
     json["identifiers"].push_back(nlohmann::json::object());
     json["identifiers"].back()["vendor_id"] = static_cast<int>(device.get_identifiers().get_vendor_id());
     json["identifiers"].back()["product_id"] = static_cast<int>(device.get_identifiers().get_product_id());
+    json["identifiers"].back()["is_keyboard"] = device.get_identifiers().get_is_keyboard();
+    json["identifiers"].back()["is_pointing_device"] = device.get_identifiers().get_is_pointing_device();
     return std::make_shared<manipulator::details::conditions::device>(json);
   }
 

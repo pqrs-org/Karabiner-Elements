@@ -304,6 +304,8 @@ TEST_CASE("conditions.device") {
     json["identifiers"].push_back(nlohmann::json::object());
     json["identifiers"].back()["vendor_id"] = 1000;
     json["identifiers"].back()["product_id"] = 2000;
+    json["identifiers"].back()["is_keyboard"] = true;
+    json["identifiers"].back()["is_pointing_device"] = false;
     krbn::manipulator::details::conditions::device condition(json);
 
     REQUIRE(condition.is_fulfilled(QUEUED_EVENT(device_id_1000_2000),
@@ -316,6 +318,21 @@ TEST_CASE("conditions.device") {
                                                                                 true,
                                                                                 false)),
                                    manipulator_environment) == true);
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
+                                                                                krbn::product_id(2000),
+                                                                                false,
+                                                                                false)),
+                                   manipulator_environment) == false);
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
+                                                                                krbn::product_id(2000),
+                                                                                true,
+                                                                                true)),
+                                   manipulator_environment) == false);
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
+                                                                                krbn::product_id(2000),
+                                                                                false,
+                                                                                true)),
+                                   manipulator_environment) == false);
   }
 
 #undef QUEUED_EVENT
