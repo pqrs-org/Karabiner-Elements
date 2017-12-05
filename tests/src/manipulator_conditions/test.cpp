@@ -298,10 +298,14 @@ TEST_CASE("conditions.device") {
                                                         manipulator_environment) == false);
   }
   {
-    krbn::manipulator::details::conditions::device condition(krbn::device_identifiers(krbn::vendor_id(1000),
-                                                                                      krbn::product_id(2000),
-                                                                                      true,
-                                                                                      false));
+    nlohmann::json json;
+    json["type"] = "device_if";
+    json["identifiers"] = nlohmann::json::array();
+    json["identifiers"].push_back(nlohmann::json::object());
+    json["identifiers"].back()["vendor_id"] = 1000;
+    json["identifiers"].back()["product_id"] = 2000;
+    krbn::manipulator::details::conditions::device condition(json);
+
     REQUIRE(condition.is_fulfilled(QUEUED_EVENT(device_id_1000_2000),
                                    manipulator_environment) == true);
     REQUIRE(condition.is_fulfilled(QUEUED_EVENT(device_id_1000_2001),
@@ -312,21 +316,6 @@ TEST_CASE("conditions.device") {
                                                                                 true,
                                                                                 false)),
                                    manipulator_environment) == true);
-    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
-                                                                                krbn::product_id(2000),
-                                                                                false,
-                                                                                false)),
-                                   manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
-                                                                                krbn::product_id(2000),
-                                                                                true,
-                                                                                true)),
-                                   manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
-                                                                                krbn::product_id(2000),
-                                                                                false,
-                                                                                true)),
-                                   manipulator_environment) == false);
   }
 
 #undef QUEUED_EVENT
