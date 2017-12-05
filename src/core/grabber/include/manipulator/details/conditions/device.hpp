@@ -48,16 +48,6 @@ public:
     }
   }
 
-  device(const device_identifiers& device_identifiers) : base(),
-                                                         type_(type::device_if) {
-    definition d;
-    d.vendor_id = device_identifiers.get_vendor_id();
-    d.product_id = device_identifiers.get_product_id();
-    d.is_keyboard = device_identifiers.get_is_keyboard();
-    d.is_pointing_device = device_identifiers.get_is_pointing_device();
-    definitions_.push_back(d);
-  }
-
   virtual ~device(void) {
   }
 
@@ -72,12 +62,6 @@ public:
             fulfilled = false;
           }
           if (d.product_id && d.product_id != di->get_product_id()) {
-            fulfilled = false;
-          }
-          if (d.is_keyboard && d.is_keyboard != di->get_is_keyboard()) {
-            fulfilled = false;
-          }
-          if (d.is_pointing_device && d.is_pointing_device != di->get_is_pointing_device()) {
             fulfilled = false;
           }
 
@@ -107,8 +91,7 @@ private:
   struct definition final {
     boost::optional<vendor_id> vendor_id;
     boost::optional<product_id> product_id;
-    boost::optional<bool> is_keyboard;
-    boost::optional<bool> is_pointing_device;
+    boost::optional<location_id> location_id;
   };
 
   void handle_identifiers_json(const nlohmann::json& json) {

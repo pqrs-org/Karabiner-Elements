@@ -22,8 +22,12 @@ TEST_CASE("to_json") {
                                       boost::none,
                                       boost::none,
                                       boost::none,
-                                      boost::none);
+                                      boost::none,
+                                      true,
+                                      false);
     nlohmann::json json;
+    json["is_keyboard"] = true;
+    json["is_pointing_device"] = false;
     REQUIRE(device_detail.to_json() == json);
   }
   {
@@ -34,7 +38,9 @@ TEST_CASE("to_json") {
                                       "p"s,
                                       "s"s,
                                       "t"s,
-                                      98765);
+                                      98765,
+                                      false,
+                                      true);
     nlohmann::json json;
     json["vendor_id"] = 123;
     json["product_id"] = 234;
@@ -44,6 +50,8 @@ TEST_CASE("to_json") {
     json["serial_number"] = "s";
     json["transport"] = "t";
     json["registry_entry_id"] = 98765;
+    json["is_keyboard"] = false;
+    json["is_pointing_device"] = true;
 
     REQUIRE(device_detail.to_json() == json);
   }
@@ -59,7 +67,9 @@ TEST_CASE("compare") {
                                      boost::none,
                                      boost::none,
                                      boost::none,
-                                     boost::none);
+                                     boost::none,
+                                     false,
+                                     false);
 
   krbn::device_detail device_detail1(krbn::vendor_id(123),
                                      krbn::product_id(234),
@@ -68,7 +78,9 @@ TEST_CASE("compare") {
                                      "p1"s,
                                      "s1"s,
                                      "t1"s,
-                                     98765);
+                                     98765,
+                                     true,
+                                     true);
 
   krbn::device_detail device_detail2(krbn::vendor_id(123),
                                      krbn::product_id(234),
@@ -77,7 +89,9 @@ TEST_CASE("compare") {
                                      "p1"s,
                                      "s1"s,
                                      "t1"s,
-                                     98765);
+                                     98765,
+                                     true,
+                                     false);
 
   krbn::device_detail device_detail3(krbn::vendor_id(123),
                                      krbn::product_id(234),
@@ -86,7 +100,9 @@ TEST_CASE("compare") {
                                      "p2"s,
                                      "s1"s,
                                      "t1"s,
-                                     98765);
+                                     98765,
+                                     false,
+                                     true);
 
   krbn::device_detail device_detail4(krbn::vendor_id(123),
                                      krbn::product_id(234),
@@ -95,7 +111,9 @@ TEST_CASE("compare") {
                                      "p2"s,
                                      "s1"s,
                                      "t1"s,
-                                     98765);
+                                     98765,
+                                     false,
+                                     false);
 
   REQUIRE(device_detail0.compare(device_detail0) == false);
   REQUIRE(device_detail1.compare(device_detail1) == false);

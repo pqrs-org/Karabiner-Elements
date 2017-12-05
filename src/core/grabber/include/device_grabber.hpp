@@ -723,14 +723,7 @@ private:
     // ----------------------------------------
     std::vector<device_detail> device_details;
     for (const auto& pair : hids_) {
-      device_details.emplace_back(pair.second->find_vendor_id(),
-                                  pair.second->find_product_id(),
-                                  pair.second->find_location_id(),
-                                  pair.second->find_manufacturer(),
-                                  pair.second->find_product(),
-                                  pair.second->find_serial_number(),
-                                  pair.second->find_transport(),
-                                  pair.second->find_registry_entry_id());
+      device_details.push_back(pair.second->make_device_detail());
     }
 
     std::sort(std::begin(device_details),

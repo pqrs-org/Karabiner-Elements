@@ -6,6 +6,7 @@
 #include "cf_utility.hpp"
 #include "connected_devices.hpp"
 #include "core_configuration.hpp"
+#include "device_detail.hpp"
 #include "event_queue.hpp"
 #include "gcd_utility.hpp"
 #include "iokit_utility.hpp"
@@ -714,6 +715,19 @@ public:
     }
 
     return false;
+  }
+
+  device_detail make_device_detail(void) const {
+    return device_detail(find_vendor_id(),
+                         find_product_id(),
+                         find_location_id(),
+                         find_manufacturer(),
+                         find_product(),
+                         find_serial_number(),
+                         find_transport(),
+                         find_registry_entry_id(),
+                         is_keyboard(),
+                         is_pointing_device());
   }
 
 private:
