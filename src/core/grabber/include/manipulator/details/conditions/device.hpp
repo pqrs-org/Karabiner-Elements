@@ -37,7 +37,7 @@ public:
           if (value.is_array()) {
             handle_identifiers_json(value);
           } else {
-            logger::get_logger().error("complex_modifications json error: Invalid form of {0} in {1}", key, json.dump());
+            logger::get_logger().error("complex_modifications json error: {0} should be array {1}", key, json.dump());
           }
         } else if (key == "description") {
           // Do nothing
