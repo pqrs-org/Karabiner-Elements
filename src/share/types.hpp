@@ -26,6 +26,8 @@
 #include <vector>
 
 namespace krbn {
+class device_detail;
+
 enum class operation_type : uint8_t {
   none,
   // console_user_server -> grabber
@@ -826,10 +828,7 @@ private:
 
 class types final {
 public:
-  static device_id make_new_device_id(vendor_id vendor_id,
-                                      product_id product_id,
-                                      bool is_keyboard,
-                                      bool is_pointing_device) {
+  static device_id make_new_device_id(const std::shared_ptr<device_detail>& device_detail) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
@@ -837,27 +836,24 @@ public:
 
     id = device_id(static_cast<uint32_t>(id) + 1);
 
-    auto& map = get_device_identifiers_map();
-    map[id] = device_identifiers(vendor_id,
-                                 product_id,
-                                 is_keyboard,
-                                 is_pointing_device);
+    auto& map = get_device_id_map();
+    map[id] = device_detail;
 
     return id;
   }
 
   static void detach_device_id(device_id device_id) {
-    auto& map = get_device_identifiers_map();
+    auto& map = get_device_id_map();
     map.erase(device_id);
   }
 
-  static const device_identifiers* find_device_identifiers(device_id device_id) {
-    auto& map = get_device_identifiers_map();
+  static const std::shared_ptr<device_detail> find_device_detail(device_id device_id) {
+    auto& map = get_device_id_map();
     auto it = map.find(device_id);
     if (it == std::end(map)) {
       return nullptr;
     }
-    return &(it->second);
+    return it->second;
   }
 
   static boost::optional<modifier_flag> make_modifier_flag(key_code key_code) {
@@ -1540,8 +1536,8 @@ public:
   }
 
 private:
-  static std::unordered_map<device_id, device_identifiers>& get_device_identifiers_map(void) {
-    static std::unordered_map<device_id, device_identifiers> map;
+  static std::unordered_map<device_id, std::shared_ptr<device_detail>>& get_device_id_map(void) {
+    static std::unordered_map<device_id, std::shared_ptr<device_detail>> map;
     return map;
   }
 };
@@ -1635,6 +1631,9 @@ KRBN_TYPES_STREAM_OUTPUT(hid_usage);
 KRBN_TYPES_STREAM_OUTPUT(key_code);
 KRBN_TYPES_STREAM_OUTPUT(consumer_key_code);
 KRBN_TYPES_STREAM_OUTPUT(pointing_button);
+KRBN_TYPES_STREAM_OUTPUT(vendor_id);
+KRBN_TYPES_STREAM_OUTPUT(product_id);
+KRBN_TYPES_STREAM_OUTPUT(location_id);
 
 #undef KRBN_TYPES_STREAM_OUTPUT
 

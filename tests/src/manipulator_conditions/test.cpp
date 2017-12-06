@@ -253,12 +253,42 @@ TEST_CASE("conditions.input_source") {
 
 TEST_CASE("conditions.device") {
   krbn::manipulator_environment manipulator_environment;
-  auto device_id_8888_9999 = krbn::types::make_new_device_id(krbn::vendor_id(8888), krbn::product_id(9999), true, false);
-  auto device_id_1000_2000 = krbn::types::make_new_device_id(krbn::vendor_id(1000), krbn::product_id(2000), true, false);
-  auto device_id_1000_2001 = krbn::types::make_new_device_id(krbn::vendor_id(1000), krbn::product_id(2001), true, false);
-  auto device_id_1001_2000 = krbn::types::make_new_device_id(krbn::vendor_id(1001), krbn::product_id(2000), true, false);
-  auto device_id_1001_2001 = krbn::types::make_new_device_id(krbn::vendor_id(1001), krbn::product_id(2001), true, false);
-  auto device_id_1099_9999 = krbn::types::make_new_device_id(krbn::vendor_id(1099), krbn::product_id(9999), true, false);
+  auto device_id_8888_9999 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+      {"vendor_id", 8888},
+      {"product_id", 9999},
+      {"is_keyboard", true},
+      {"is_pointing_device", false},
+  })));
+  auto device_id_1000_2000 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+      {"vendor_id", 1000},
+      {"product_id", 2000},
+      {"is_keyboard", true},
+      {"is_pointing_device", false},
+  })));
+  auto device_id_1000_2001 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+      {"vendor_id", 1000},
+      {"product_id", 2001},
+      {"is_keyboard", true},
+      {"is_pointing_device", false},
+  })));
+  auto device_id_1001_2000 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+      {"vendor_id", 1001},
+      {"product_id", 2000},
+      {"is_keyboard", true},
+      {"is_pointing_device", false},
+  })));
+  auto device_id_1001_2001 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+      {"vendor_id", 1001},
+      {"product_id", 2001},
+      {"is_keyboard", true},
+      {"is_pointing_device", false},
+  })));
+  auto device_id_1099_9999 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+      {"vendor_id", 1099},
+      {"product_id", 9999},
+      {"is_keyboard", true},
+      {"is_pointing_device", false},
+  })));
 
 #define QUEUED_EVENT(DEVICE_ID)                                                              \
   krbn::event_queue::queued_event(DEVICE_ID,                                                 \
@@ -313,25 +343,33 @@ TEST_CASE("conditions.device") {
     REQUIRE(condition.is_fulfilled(QUEUED_EVENT(device_id_1000_2001),
                                    manipulator_environment) == false);
 
-    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
-                                                                                krbn::product_id(2000),
-                                                                                true,
-                                                                                false)),
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+                                       {"vendor_id", 1000},
+                                       {"product_id", 2000},
+                                       {"is_keyboard", true},
+                                       {"is_pointing_device", false},
+                                   })))),
                                    manipulator_environment) == true);
-    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
-                                                                                krbn::product_id(2000),
-                                                                                false,
-                                                                                false)),
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+                                       {"vendor_id", 1000},
+                                       {"product_id", 2000},
+                                       {"is_keyboard", false},
+                                       {"is_pointing_device", false},
+                                   })))),
                                    manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
-                                                                                krbn::product_id(2000),
-                                                                                true,
-                                                                                true)),
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+                                       {"vendor_id", 1000},
+                                       {"product_id", 2000},
+                                       {"is_keyboard", true},
+                                       {"is_pointing_device", true},
+                                   })))),
                                    manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(krbn::vendor_id(1000),
-                                                                                krbn::product_id(2000),
-                                                                                false,
-                                                                                true)),
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+                                       {"vendor_id", 1000},
+                                       {"product_id", 2000},
+                                       {"is_keyboard", false},
+                                       {"is_pointing_device", true},
+                                   })))),
                                    manipulator_environment) == false);
   }
 

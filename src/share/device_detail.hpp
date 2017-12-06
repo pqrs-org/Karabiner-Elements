@@ -6,6 +6,7 @@
 #include "json_utility.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace krbn {
 class device_detail final {
@@ -113,11 +114,58 @@ public:
     return json;
   }
 
+  boost::optional<vendor_id> get_vendor_id(void) const {
+    return vendor_id_;
+  }
+
+  boost::optional<product_id> get_product_id(void) const {
+    return product_id_;
+  }
+
+  boost::optional<location_id> get_location_id(void) const {
+    return location_id_;
+  }
+
+  boost::optional<std::string> get_manufacturer(void) const {
+    return manufacturer_;
+  }
+
+  boost::optional<std::string> get_product(void) const {
+    return product_;
+  }
+
+  boost::optional<std::string> get_serial_number(void) const {
+    return serial_number_;
+  }
+
+  boost::optional<std::string> get_transport(void) const {
+    return transport_;
+  }
+
+  boost::optional<uint64_t> get_registry_entry_id(void) const {
+    return registry_entry_id_;
+  }
+
+  boost::optional<bool> get_is_keyboard(void) const {
+    return is_keyboard_;
+  }
+
+  boost::optional<bool> get_is_pointing_device(void) const {
+    return is_pointing_device_;
+  }
+
+  bool is_apple(void) const {
+    if (manufacturer_) {
+      return boost::starts_with(*manufacturer_, "Apple ");
+    }
+    return false;
+  }
+
   bool compare(const device_detail& other) {
     // product
     {
-      auto p1 = get_product_string();
-      auto p2 = other.get_product_string();
+      auto p1 = make_product_value();
+      auto p2 = other.make_product_value();
       if (p1 != p2) {
         return p1 < p2;
       }
@@ -125,8 +173,8 @@ public:
 
     // manufacturer
     {
-      auto m1 = get_manufacturer_string();
-      auto m2 = other.get_manufacturer_string();
+      auto m1 = make_manufacturer_value();
+      auto m2 = other.make_manufacturer_value();
       if (m1 != m2) {
         return m1 < m2;
       }
@@ -134,8 +182,8 @@ public:
 
     // is_keyboard
     {
-      auto k1 = get_is_keyboard();
-      auto k2 = other.get_is_keyboard();
+      auto k1 = make_is_keyboard_value();
+      auto k2 = other.make_is_keyboard_value();
       if (k1 != k2) {
         return k1;
       }
@@ -143,8 +191,8 @@ public:
 
     // is_pointing_device
     {
-      auto p1 = get_is_pointing_device();
-      auto p2 = other.get_is_pointing_device();
+      auto p1 = make_is_pointing_device_value();
+      auto p2 = other.make_is_pointing_device_value();
       if (p1 != p2) {
         return p1;
       }
@@ -152,8 +200,8 @@ public:
 
     // registry_entry_id
     {
-      auto r1 = get_registry_entry_id_number();
-      auto r2 = other.get_registry_entry_id_number();
+      auto r1 = make_registry_entry_id_value();
+      auto r2 = other.make_registry_entry_id_value();
       if (r1 != r2) {
         return r1 < r2;
       }
@@ -163,35 +211,35 @@ public:
   }
 
 private:
-  std::string get_manufacturer_string(void) const {
+  std::string make_manufacturer_value(void) const {
     if (manufacturer_) {
       return *manufacturer_;
     }
     return "";
   }
 
-  std::string get_product_string(void) const {
+  std::string make_product_value(void) const {
     if (product_) {
       return *product_;
     }
     return "";
   }
 
-  bool get_is_keyboard(void) const {
+  bool make_is_keyboard_value(void) const {
     if (is_keyboard_) {
       return *is_keyboard_;
     }
     return false;
   }
 
-  bool get_is_pointing_device(void) const {
+  bool make_is_pointing_device_value(void) const {
     if (is_pointing_device_) {
       return *is_pointing_device_;
     }
     return false;
   }
 
-  uint64_t get_registry_entry_id_number(void) const {
+  uint64_t make_registry_entry_id_value(void) const {
     if (registry_entry_id_) {
       return *registry_entry_id_;
     }

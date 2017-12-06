@@ -1,5 +1,6 @@
 #pragma once
 
+#include "device_detail.hpp"
 #include "manipulator/details/conditions/base.hpp"
 #include <boost/optional.hpp>
 #include <string>
@@ -54,20 +55,20 @@ public:
   virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
                             const manipulator_environment& manipulator_environment) const {
     if (!definitions_.empty()) {
-      if (auto di = types::find_device_identifiers(queued_event.get_device_id())) {
+      if (auto dd = types::find_device_detail(queued_event.get_device_id())) {
         for (const auto& d : definitions_) {
           bool fulfilled = true;
 
-          if (d.vendor_id && d.vendor_id != di->get_vendor_id()) {
+          if (d.vendor_id && d.vendor_id != dd->get_vendor_id()) {
             fulfilled = false;
           }
-          if (d.product_id && d.product_id != di->get_product_id()) {
+          if (d.product_id && d.product_id != dd->get_product_id()) {
             fulfilled = false;
           }
-          if (d.is_keyboard && d.is_keyboard != di->get_is_keyboard()) {
+          if (d.is_keyboard && d.is_keyboard != dd->get_is_keyboard()) {
             fulfilled = false;
           }
-          if (d.is_pointing_device && d.is_pointing_device != di->get_is_pointing_device()) {
+          if (d.is_pointing_device && d.is_pointing_device != dd->get_is_pointing_device()) {
             fulfilled = false;
           }
 
