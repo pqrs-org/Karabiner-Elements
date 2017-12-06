@@ -718,16 +718,7 @@ public:
   }
 
   device_detail make_device_detail(void) const {
-    return device_detail(find_vendor_id(),
-                         find_product_id(),
-                         find_location_id(),
-                         find_manufacturer(),
-                         find_product(),
-                         find_serial_number(),
-                         find_transport(),
-                         find_registry_entry_id(),
-                         is_keyboard(),
-                         is_pointing_device());
+    return device_detail(device_);
   }
 
 private:

@@ -31,6 +31,18 @@ public:
                                                             is_pointing_device_(is_pointing_device) {
   }
 
+  device_detail(IOHIDDeviceRef device) : device_detail(iokit_utility::find_vendor_id(device),
+                                                       iokit_utility::find_product_id(device),
+                                                       iokit_utility::find_location_id(device),
+                                                       iokit_utility::find_manufacturer(device),
+                                                       iokit_utility::find_product(device),
+                                                       iokit_utility::find_serial_number(device),
+                                                       iokit_utility::find_transport(device),
+                                                       iokit_utility::find_registry_entry_id(device),
+                                                       iokit_utility::is_keyboard(device),
+                                                       iokit_utility::is_pointing_device(device)) {
+  }
+
   device_detail(const nlohmann::json& json) {
     if (auto v = json_utility::find_optional<int>(json, "vendor_id")) {
       vendor_id_ = vendor_id(*v);
