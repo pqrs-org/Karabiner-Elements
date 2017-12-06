@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "iokit_utility.hpp"
 #include "json_utility.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
@@ -17,17 +18,50 @@ public:
                 boost::optional<std::string> serial_number,
                 boost::optional<std::string> transport,
                 boost::optional<uint64_t> registry_entry_id,
-                bool is_keyboard,
-                bool is_pointing_device) : vendor_id_(vendor_id),
-                                           product_id_(product_id),
-                                           location_id_(location_id),
-                                           manufacturer_(manufacturer),
-                                           product_(product),
-                                           serial_number_(serial_number),
-                                           transport_(transport),
-                                           registry_entry_id_(registry_entry_id),
-                                           is_keyboard_(is_keyboard),
-                                           is_pointing_device_(is_pointing_device) {
+                boost::optional<bool> is_keyboard,
+                boost::optional<bool> is_pointing_device) : vendor_id_(vendor_id),
+                                                            product_id_(product_id),
+                                                            location_id_(location_id),
+                                                            manufacturer_(manufacturer),
+                                                            product_(product),
+                                                            serial_number_(serial_number),
+                                                            transport_(transport),
+                                                            registry_entry_id_(registry_entry_id),
+                                                            is_keyboard_(is_keyboard),
+                                                            is_pointing_device_(is_pointing_device) {
+  }
+
+  device_detail(const nlohmann::json& json) {
+    if (auto v = json_utility::find_optional<int>(json, "vendor_id")) {
+      vendor_id_ = vendor_id(*v);
+    }
+    if (auto v = json_utility::find_optional<int>(json, "product_id")) {
+      product_id_ = product_id(*v);
+    }
+    if (auto v = json_utility::find_optional<int>(json, "location_id")) {
+      location_id_ = location_id(*v);
+    }
+    if (auto v = json_utility::find_optional<std::string>(json, "manufacturer")) {
+      manufacturer_ = *v;
+    }
+    if (auto v = json_utility::find_optional<std::string>(json, "product")) {
+      product_ = *v;
+    }
+    if (auto v = json_utility::find_optional<std::string>(json, "serial_number")) {
+      serial_number_ = *v;
+    }
+    if (auto v = json_utility::find_optional<std::string>(json, "transport")) {
+      transport_ = *v;
+    }
+    if (auto v = json_utility::find_optional<uint64_t>(json, "registry_entry_id")) {
+      registry_entry_id_ = *v;
+    }
+    if (auto v = json_utility::find_optional<bool>(json, "is_keyboard")) {
+      is_keyboard_ = *v;
+    }
+    if (auto v = json_utility::find_optional<bool>(json, "is_pointing_device")) {
+      is_pointing_device_ = *v;
+    }
   }
 
   nlohmann::json to_json(void) const {
@@ -57,8 +91,12 @@ public:
     if (registry_entry_id_) {
       json["registry_entry_id"] = *registry_entry_id_;
     }
-    json["is_keyboard"] = is_keyboard_;
-    json["is_pointing_device"] = is_pointing_device_;
+    if (is_keyboard_) {
+      json["is_keyboard"] = *is_keyboard_;
+    }
+    if (is_pointing_device_) {
+      json["is_pointing_device"] = *is_pointing_device_;
+    }
 
     return json;
   }
@@ -84,15 +122,19 @@ public:
 
     // is_keyboard
     {
-      if (is_keyboard_ != other.is_keyboard_) {
-        return is_keyboard_;
+      auto k1 = get_is_keyboard();
+      auto k2 = other.get_is_keyboard();
+      if (k1 != k2) {
+        return k1;
       }
     }
 
     // is_pointing_device
     {
-      if (is_pointing_device_ != other.is_pointing_device_) {
-        return is_pointing_device_;
+      auto p1 = get_is_pointing_device();
+      auto p2 = other.get_is_pointing_device();
+      if (p1 != p2) {
+        return p1;
       }
     }
 
@@ -123,6 +165,20 @@ private:
     return "";
   }
 
+  bool get_is_keyboard(void) const {
+    if (is_keyboard_) {
+      return *is_keyboard_;
+    }
+    return false;
+  }
+
+  bool get_is_pointing_device(void) const {
+    if (is_pointing_device_) {
+      return *is_pointing_device_;
+    }
+    return false;
+  }
+
   uint64_t get_registry_entry_id_number(void) const {
     if (registry_entry_id_) {
       return *registry_entry_id_;
@@ -138,8 +194,8 @@ private:
   boost::optional<std::string> serial_number_;
   boost::optional<std::string> transport_;
   boost::optional<uint64_t> registry_entry_id_;
-  bool is_keyboard_;
-  bool is_pointing_device_;
+  boost::optional<bool> is_keyboard_;
+  boost::optional<bool> is_pointing_device_;
 };
 
 inline void to_json(nlohmann::json& json, const device_detail& device_detail) {

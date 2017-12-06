@@ -57,6 +57,59 @@ TEST_CASE("to_json") {
   }
 }
 
+TEST_CASE("from_json") {
+  {
+    nlohmann::json json;
+    json["vendor_id"] = 123;
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["product_id"] = 123;
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["location_id"] = 123;
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["manufacturer"] = "m";
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["product"] = "p";
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["serial_number"] = "s";
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["transport"] = "t";
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["registry_entry_id"] = 123;
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["is_keyboard"] = true;
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+  {
+    nlohmann::json json;
+    json["is_pointing_device"] = true;
+    REQUIRE(krbn::device_detail(json).to_json() == json);
+  }
+}
+
 TEST_CASE("compare") {
   using namespace std::string_literals;
 
