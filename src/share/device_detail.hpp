@@ -6,7 +6,6 @@
 #include "json_utility.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
-#include <boost/algorithm/string.hpp>
 
 namespace krbn {
 class device_detail final {
@@ -152,13 +151,6 @@ public:
 
   boost::optional<bool> get_is_pointing_device(void) const {
     return is_pointing_device_;
-  }
-
-  bool is_apple(void) const {
-    if (manufacturer_) {
-      return boost::starts_with(*manufacturer_, "Apple ");
-    }
-    return false;
   }
 
   bool compare(const device_detail& other) {
