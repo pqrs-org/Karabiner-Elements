@@ -372,6 +372,34 @@ TEST_CASE("conditions.device") {
                                    })))),
                                    manipulator_environment) == false);
   }
+  {
+    nlohmann::json json;
+    json["type"] = "device_if";
+    json["identifiers"] = nlohmann::json::array();
+    json["identifiers"].push_back(nlohmann::json::object());
+    json["identifiers"].back()["vendor_id"] = 1000;
+    json["identifiers"].back()["product_id"] = 2000;
+    json["identifiers"].back()["location_id"] = 3000;
+    krbn::manipulator::details::conditions::device condition(json);
+
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+                                       {"vendor_id", 1000},
+                                       {"product_id", 2000},
+                                       {"location_id", 3000},
+                                   })))),
+                                   manipulator_environment) == true);
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+                                       {"vendor_id", 1000},
+                                       {"product_id", 2000},
+                                   })))),
+                                   manipulator_environment) == false);
+    REQUIRE(condition.is_fulfilled(QUEUED_EVENT(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
+                                       {"vendor_id", 1000},
+                                       {"product_id", 2000},
+                                       {"location_id", 4000},
+                                   })))),
+                                   manipulator_environment) == false);
+  }
 
 #undef QUEUED_EVENT
 }

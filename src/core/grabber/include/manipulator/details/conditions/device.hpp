@@ -65,6 +65,9 @@ public:
           if (d.product_id && d.product_id != dd->get_product_id()) {
             fulfilled = false;
           }
+          if (d.location_id && d.location_id != dd->get_location_id()) {
+            fulfilled = false;
+          }
           if (d.is_keyboard && d.is_keyboard != dd->get_is_keyboard()) {
             fulfilled = false;
           }
