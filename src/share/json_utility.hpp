@@ -11,15 +11,37 @@ public:
   template <typename T>
   static boost::optional<T> find_optional(const nlohmann::json& json,
                                           const std::string& key) {
-    try {
-      auto it = json.find(key);
-      if (it != std::end(json)) {
+    auto it = json.find(key);
+    if (it != std::end(json)) {
+      try {
         return it->get<T>();
+      } catch (std::exception&) {
       }
-    } catch (std::exception&) {
     }
 
     return boost::none;
+  }
+
+  static const nlohmann::json* find_array(const nlohmann::json& json,
+                                          const std::string& key) {
+    auto it = json.find(key);
+    if (it != std::end(json)) {
+      if (it->is_array()) {
+        return &(*it);
+      }
+    }
+    return nullptr;
+  }
+
+  static const nlohmann::json* find_object(const nlohmann::json& json,
+                                           const std::string& key) {
+    auto it = json.find(key);
+    if (it != std::end(json)) {
+      if (it->is_object()) {
+        return &(*it);
+      }
+    }
+    return nullptr;
   }
 };
 } // namespace krbn
