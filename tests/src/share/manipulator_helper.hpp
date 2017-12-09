@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event_queue.hpp"
+#include "json_utility.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
@@ -33,9 +34,8 @@ public:
           for (const auto& j : nlohmann::json::parse(ifs)) {
             auto m = manipulator::manipulator_factory::make_manipulator(j, parameters);
 
-            auto conditions_it = j.find("conditions");
-            if (conditions_it != std::end(j)) {
-              for (const auto& c : *conditions_it) {
+            if (auto conditions = json_utility::find_array(j, "conditions")) {
+              for (const auto& c : *conditions) {
                 m->push_back_condition(krbn::manipulator::manipulator_factory::make_condition(c));
               }
             }
@@ -57,7 +57,7 @@ public:
         }
       }
 
-      if (test.find("expected_post_event_to_virtual_devices_queue") != std::end(test)) {
+      if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>();
 
         manipulator_managers.push_back(std::make_unique<manipulator::manipulator_manager>());
@@ -79,48 +79,46 @@ public:
         std::ifstream ifs(test["input_event_queue"].get<std::string>());
         REQUIRE(ifs);
         for (const auto& j : nlohmann::json::parse(ifs)) {
-          auto action_it = j.find("action");
-          if (action_it == std::end(j)) {
-            auto e = event_queue::queued_event(j);
-            event_queues.front()->push_back_event(e);
-            connector.manipulate();
-          } else {
-            auto s = action_it->get<std::string>();
-            if (s == "invalidate_manipulators") {
+          if (auto s = json_utility::find_optional<std::string>(j, "action")) {
+            if (*s == "invalidate_manipulators") {
               connector.invalidate_manipulators();
-            } else if (s == "invoke_manipulator_timer") {
+            } else if (*s == "invoke_manipulator_timer") {
               uint64_t time_stamp = 0;
-              if (j.find("time_stamp") != std::end(j)) {
-                time_stamp = j["time_stamp"];
+              if (auto t = json_utility::find_optional<int>(j, "time_stamp")) {
+                time_stamp = *t;
               }
               krbn::manipulator::manipulator_timer::get_instance().signal(time_stamp);
             }
+          } else {
+            auto e = event_queue::queued_event(j);
+            event_queues.front()->push_back_event(e);
+            connector.manipulate();
           }
         }
       }
 
-      if (test.find("expected_event_queue") != std::end(test)) {
+      if (auto s = json_utility::find_optional<std::string>(test, "expected_event_queue")) {
         if (overwrite_expected_results) {
-          std::ofstream ofs(test["expected_event_queue"].get<std::string>());
+          std::ofstream ofs(*s);
           REQUIRE(ofs);
           ofs << nlohmann::json(event_queues.back()->get_events()).dump(4) << std::endl;
         }
 
-        std::ifstream ifs(test["expected_event_queue"].get<std::string>());
+        std::ifstream ifs(*s);
         REQUIRE(ifs);
         auto expected = nlohmann::json::parse(ifs);
 
         REQUIRE(event_queues.front()->get_events().empty());
         REQUIRE(nlohmann::json(event_queues.back()->get_events()).dump() == expected.dump());
 
-      } else if (test.find("expected_post_event_to_virtual_devices_queue") != std::end(test)) {
+      } else if (auto s = json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         if (overwrite_expected_results) {
-          std::ofstream ofs(test["expected_post_event_to_virtual_devices_queue"].get<std::string>());
+          std::ofstream ofs(*s);
           REQUIRE(ofs);
           ofs << nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events()).dump(4) << std::endl;
         }
 
-        std::ifstream ifs(test["expected_post_event_to_virtual_devices_queue"].get<std::string>());
+        std::ifstream ifs(*s);
         REQUIRE(ifs);
         auto expected = nlohmann::json::parse(ifs);
 
