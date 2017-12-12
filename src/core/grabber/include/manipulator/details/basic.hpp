@@ -201,7 +201,7 @@ public:
   basic(const nlohmann::json& json,
         const core_configuration::profile::complex_modifications::parameters& parameters) : base(),
                                                                                             parameters_(parameters),
-                                                                                            from_(json.find("from") != std::end(json) ? json["from"] : nlohmann::json()) {
+                                                                                            from_(json_utility::find_copy(json, "from", nlohmann::json())) {
     for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
       // it.key() is always std::string.
       const auto& key = it.key();

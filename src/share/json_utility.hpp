@@ -44,6 +44,15 @@ public:
     return nullptr;
   }
 
+  static const nlohmann::json* find_json(const nlohmann::json& json,
+                                         const std::string& key) {
+    auto it = json.find(key);
+    if (it != std::end(json)) {
+      return &(*it);
+    }
+    return nullptr;
+  }
+
   static nlohmann::json find_copy(const nlohmann::json& json,
                                   const std::string& key,
                                   const nlohmann::json& fallback_value) {

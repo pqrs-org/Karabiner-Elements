@@ -3,6 +3,7 @@
 #include "connected_devices.hpp"
 #include "constants.hpp"
 #include "filesystem.hpp"
+#include "json_utility.hpp"
 #include "logger.hpp"
 #include "session.hpp"
 #include "types.hpp"
@@ -29,34 +30,25 @@ public:
 
     profile(const nlohmann::json& json) : json_(json),
                                           selected_(false),
-                                          simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json::array()),
+                                          simple_modifications_(json_utility::find_copy(json, "simple_modifications", nlohmann::json::array())),
                                           fn_function_keys_(make_default_fn_function_keys_json()),
-                                          complex_modifications_(json.find("complex_modifications") != json.end() ? json["complex_modifications"] : nlohmann::json::object()),
-                                          virtual_hid_keyboard_(json.find("virtual_hid_keyboard") != json.end() ? json["virtual_hid_keyboard"] : nlohmann::json::object()) {
-      {
-        const std::string key = "name";
-        if (json.find(key) != json.end() && json[key].is_string()) {
-          name_ = json[key];
-        }
+                                          complex_modifications_(json_utility::find_copy(json, "complex_modifications", nlohmann::json::object())),
+                                          virtual_hid_keyboard_(json_utility::find_copy(json, "virtual_hid_keyboard", nlohmann::json::object())) {
+      if (auto v = json_utility::find_optional<std::string>(json, "name")) {
+        name_ = *v;
       }
-      {
-        const std::string key = "selected";
-        if (json.find(key) != json.end() && json[key].is_boolean()) {
-          selected_ = json[key];
-        }
+
+      if (auto v = json_utility::find_optional<bool>(json, "selected")) {
+        selected_ = *v;
       }
-      {
-        const std::string key = "fn_function_keys";
-        if (json.find(key) != json.end()) {
-          fn_function_keys_.update(json[key]);
-        }
+
+      if (auto v = json_utility::find_json(json, "fn_function_keys")) {
+        fn_function_keys_.update(*v);
       }
-      {
-        const std::string key = "devices";
-        if (json.find(key) != json.end() && json[key].is_array()) {
-          for (const auto& device_json : json[key]) {
-            devices_.emplace_back(device_json);
-          }
+
+      if (auto v = json_utility::find_array(json, "devices")) {
+        for (const auto& device_json : *v) {
+          devices_.emplace_back(device_json);
         }
       }
     }
@@ -330,18 +322,13 @@ public:
           try {
             json_ = nlohmann::json::parse(input);
 
-            {
-              const std::string key = "global";
-              if (json_.find(key) != json_.end()) {
-                global_configuration_ = global_configuration(json_[key]);
-              }
+            if (auto v = json_utility::find_object(json_, "global")) {
+              global_configuration_ = global_configuration(*v);
             }
-            {
-              const std::string key = "profiles";
-              if (json_.find(key) != json_.end() && json_[key].is_array()) {
-                for (const auto& profile_json : json_[key]) {
-                  profiles_.emplace_back(profile_json);
-                }
+
+            if (auto v = json_utility::find_array(json_, "profiles")) {
+              for (const auto& profile_json : *v) {
+                profiles_.emplace_back(profile_json);
               }
             }
 
