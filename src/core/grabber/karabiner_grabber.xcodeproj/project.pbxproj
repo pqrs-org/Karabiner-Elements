@@ -72,6 +72,7 @@
 		34BB0F0A1D22853700372174 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		34CFEC6D1D92D243004C61E1 /* event_tap_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = event_tap_manager.hpp; path = include/event_tap_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34D2FC841D9C120F00168D20 /* pointing_button_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pointing_button_manager.hpp; sourceTree = "<group>"; };
+		34D439961FDF9D9800F02DCD /* json_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = json_utility.hpp; sourceTree = "<group>"; };
 		34DA28A31D8FC8BE0029E37D /* service_observer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = service_observer.hpp; sourceTree = "<group>"; };
 		34DA9F311ED8810C00D75501 /* stream_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = stream_utility.hpp; sourceTree = "<group>"; };
 		34DA9F341ED8824200D75501 /* post_event_to_virtual_devices.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = post_event_to_virtual_devices.hpp; path = include/manipulator/details/post_event_to_virtual_devices.hpp; sourceTree = SOURCE_ROOT; };
@@ -156,6 +157,7 @@
 				34EED7111D6FA38C00399AD1 /* human_interface_device.hpp */,
 				341F59DC1D5778A000B441A8 /* iokit_utility.hpp */,
 				3431346C1DB3CD8A0008F284 /* iopm_client.hpp */,
+				34D439961FDF9D9800F02DCD /* json_utility.hpp */,
 				34A88A941D68446C00DD480B /* karabiner_version.h */,
 				3447719E1F80FEE7004CEFC3 /* keyboard_repeat_detector.hpp */,
 				3494274B1F9D736800A24707 /* krbn_notification_center.hpp */,
