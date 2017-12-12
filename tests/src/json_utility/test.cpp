@@ -52,9 +52,9 @@ TEST_CASE("find_optional") {
   REQUIRE(krbn::json_utility::find_object(json, "object"));
   REQUIRE(krbn::json_utility::find_object(json, "object")->dump() == json["object"].dump());
 
-  REQUIRE(krbn::json_utility::try_get_copy(json, "number", nlohmann::json("fallback_value")) == nlohmann::json(123));
-  REQUIRE(krbn::json_utility::try_get_copy(json, "string", nlohmann::json("fallback_value")) == nlohmann::json("abc"));
-  REQUIRE(krbn::json_utility::try_get_copy(json, "array", nlohmann::json("fallback_value")) == json["array"]);
-  REQUIRE(krbn::json_utility::try_get_copy(json, "object", nlohmann::json("fallback_value")) == json["object"]);
-  REQUIRE(krbn::json_utility::try_get_copy(json, "unknown", nlohmann::json("fallback_value")) == nlohmann::json("fallback_value"));
+  REQUIRE(krbn::json_utility::find_copy(json, "number", nlohmann::json("fallback_value")) == nlohmann::json(123));
+  REQUIRE(krbn::json_utility::find_copy(json, "string", nlohmann::json("fallback_value")) == nlohmann::json("abc"));
+  REQUIRE(krbn::json_utility::find_copy(json, "array", nlohmann::json("fallback_value")) == json["array"]);
+  REQUIRE(krbn::json_utility::find_copy(json, "object", nlohmann::json("fallback_value")) == json["object"]);
+  REQUIRE(krbn::json_utility::find_copy(json, "unknown", nlohmann::json("fallback_value")) == nlohmann::json("fallback_value"));
 }
