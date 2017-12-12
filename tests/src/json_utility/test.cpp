@@ -31,6 +31,7 @@ TEST_CASE("find_optional") {
   REQUIRE(krbn::json_utility::find_optional<int>(json, "string") == boost::none);
   REQUIRE(krbn::json_utility::find_optional<int>(json, "array") == boost::none);
   REQUIRE(krbn::json_utility::find_optional<int>(json, "object") == boost::none);
+  REQUIRE(krbn::json_utility::find_optional<int>(nlohmann::json(), "key") == boost::none);
 
   REQUIRE(krbn::json_utility::find_optional<std::string>(json, "number") == boost::none);
   REQUIRE(krbn::json_utility::find_optional<std::string>(json, "dummy") == boost::none);

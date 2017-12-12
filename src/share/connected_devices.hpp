@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filesystem.hpp"
+#include "json_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <algorithm>
@@ -52,17 +53,12 @@ public:
                                                  product_(product) {
       }
       descriptions(const nlohmann::json& json) {
-        {
-          const std::string key = "manufacturer";
-          if (json.find(key) != json.end() && json[key].is_string()) {
-            manufacturer_ = json[key];
-          }
+        if (auto v = json_utility::find_optional<std::string>(json, "manufacturer")) {
+          manufacturer_ = *v;
         }
-        {
-          const std::string key = "product";
-          if (json.find(key) != json.end() && json[key].is_string()) {
-            product_ = json[key];
-          }
+
+        if (auto v = json_utility::find_optional<std::string>(json, "product")) {
+          product_ = *v;
         }
       }
 
@@ -102,21 +98,16 @@ public:
                                         is_built_in_keyboard_(is_built_in_keyboard),
                                         is_built_in_trackpad_(is_built_in_trackpad) {
     }
-    device(const nlohmann::json& json) : descriptions_(json.find("descriptions") != json.end() ? json["descriptions"] : nlohmann::json()),
-                                         identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json()),
+    device(const nlohmann::json& json) : descriptions_(json_utility::find_copy(json, "descriptions", nlohmann::json())),
+                                         identifiers_(json_utility::find_copy(json, "identifiers", nlohmann::json())),
                                          is_built_in_keyboard_(false),
                                          is_built_in_trackpad_(false) {
-      {
-        const std::string key = "is_built_in_keyboard";
-        if (json.find(key) != json.end() && json[key].is_boolean()) {
-          is_built_in_keyboard_ = json[key];
-        }
+      if (auto v = json_utility::find_optional<bool>(json, "is_built_in_keyboard")) {
+        is_built_in_keyboard_ = *v;
       }
-      {
-        const std::string key = "is_built_in_trackpad";
-        if (json.find(key) != json.end() && json[key].is_boolean()) {
-          is_built_in_trackpad_ = json[key];
-        }
+
+      if (auto v = json_utility::find_optional<bool>(json, "is_built_in_trackpad")) {
+        is_built_in_trackpad_ = *v;
       }
     }
 

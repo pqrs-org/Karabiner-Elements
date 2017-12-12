@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "json_utility.hpp"
 #include "manipulator_environment.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
@@ -48,137 +49,106 @@ public:
 
       event(const nlohmann::json& json) : type_(type::none),
                                           value_(boost::blank()) {
-        if (json.is_object()) {
-          auto it_type = json.find("type");
-          if (it_type != std::end(json)) {
-            type_ = to_type(it_type->get<std::string>());
+        if (auto v = json_utility::find_optional<std::string>(json, "type")) {
+          type_ = to_type(*v);
+        }
 
-            switch (type_) {
-              case type::none:
-                break;
+        switch (type_) {
+          case type::none:
+            break;
 
-              case type::key_code: {
-                auto it = json.find("key_code");
-                if (it != std::end(json)) {
-                  if (auto v = types::make_key_code(it->get<std::string>())) {
-                    value_ = *v;
-                  }
-                }
-                break;
+          case type::key_code:
+            if (auto s = json_utility::find_optional<std::string>(json, "key_code")) {
+              if (auto v = types::make_key_code(*s)) {
+                value_ = *v;
               }
-
-              case type::consumer_key_code: {
-                auto it = json.find("consumer_key_code");
-                if (it != std::end(json)) {
-                  if (auto v = types::make_consumer_key_code(it->get<std::string>())) {
-                    value_ = *v;
-                  }
-                }
-                break;
-              }
-
-              case type::pointing_button: {
-                auto it = json.find("pointing_button");
-                if (it != std::end(json)) {
-                  if (auto v = types::make_pointing_button(it->get<std::string>())) {
-                    value_ = *v;
-                  }
-                }
-                break;
-              }
-
-              case type::pointing_x:
-              case type::pointing_y:
-              case type::pointing_vertical_wheel:
-              case type::pointing_horizontal_wheel:
-              case type::caps_lock_state_changed: {
-                auto it = json.find("integer_value");
-                if (it != std::end(json)) {
-                  value_ = it->get<int>();
-                }
-                break;
-              }
-
-              case type::shell_command: {
-                auto it = json.find("shell_command");
-                if (it != std::end(json)) {
-                  value_ = it->get<std::string>();
-                }
-                break;
-              }
-
-              case type::select_input_source: {
-                auto it = json.find("input_source_selectors");
-                if (it != std::end(json)) {
-                  std::vector<input_source_selector> input_source_selectors;
-                  for (const auto& j : *it) {
-                    input_source_selectors.emplace_back(j);
-                  }
-                  value_ = input_source_selectors;
-                }
-                break;
-              }
-
-              case type::set_variable: {
-                auto it = json.find("set_variable");
-                if (it != std::end(json)) {
-                  std::pair<std::string, int> pair;
-                  {
-                    auto i = it->find("name");
-                    if (i != std::end(*it)) {
-                      pair.first = *i;
-                    }
-                  }
-                  {
-                    auto i = it->find("value");
-                    if (i != std::end(*it)) {
-                      pair.second = *i;
-                    }
-                  }
-                  value_ = pair;
-                }
-                break;
-              }
-
-              case type::mouse_key: {
-                auto it = json.find("mouse_key");
-                if (it != std::end(json)) {
-                  value_ = mouse_key(*it);
-                }
-                break;
-              }
-
-              case type::frontmost_application_changed: {
-                auto it = json.find("frontmost_application");
-                if (it != std::end(json)) {
-                  value_ = manipulator_environment::frontmost_application(*it);
-                }
-                break;
-              }
-
-              case type::input_source_changed: {
-                auto it = json.find("input_source_identifiers");
-                if (it != std::end(json)) {
-                  value_ = input_source_identifiers(*it);
-                }
-                break;
-              }
-
-              case type::keyboard_type_changed: {
-                auto it = json.find("keyboard_type");
-                if (it != std::end(json)) {
-                  value_ = it->get<std::string>();
-                }
-                break;
-              }
-
-              case type::device_keys_and_pointing_buttons_are_released:
-              case type::device_ungrabbed:
-              case type::event_from_ignored_device:
-              case type::pointing_device_event_from_event_tap:
-                break;
             }
-          }
+            break;
+
+          case type::consumer_key_code:
+            if (auto s = json_utility::find_optional<std::string>(json, "consumer_key_code")) {
+              if (auto v = types::make_consumer_key_code(*s)) {
+                value_ = *v;
+              }
+            }
+            break;
+
+          case type::pointing_button:
+            if (auto s = json_utility::find_optional<std::string>(json, "pointing_button")) {
+              if (auto v = types::make_pointing_button(*s)) {
+                value_ = *v;
+              }
+            }
+            break;
+
+          case type::pointing_x:
+          case type::pointing_y:
+          case type::pointing_vertical_wheel:
+          case type::pointing_horizontal_wheel:
+          case type::caps_lock_state_changed:
+            if (auto v = json_utility::find_optional<int>(json, "integer_value")) {
+              value_ = *v;
+            }
+            break;
+
+          case type::shell_command:
+            if (auto v = json_utility::find_optional<std::string>(json, "shell_command")) {
+              value_ = *v;
+            }
+            break;
+
+          case type::select_input_source:
+            if (auto v = json_utility::find_array(json, "input_source_selectors")) {
+              std::vector<input_source_selector> input_source_selectors;
+              for (const auto& j : *v) {
+                input_source_selectors.emplace_back(j);
+              }
+              value_ = input_source_selectors;
+            }
+            break;
+
+          case type::set_variable:
+            if (auto o = json_utility::find_object(json, "set_variable")) {
+              std::pair<std::string, int> pair;
+              if (auto v = json_utility::find_optional<std::string>(*o, "name")) {
+                pair.first = *v;
+              }
+              if (auto v = json_utility::find_optional<int>(*o, "value")) {
+                pair.second = *v;
+              }
+              value_ = pair;
+            }
+            break;
+
+          case type::mouse_key:
+            if (auto v = json_utility::find_json(json, "mouse_key")) {
+              value_ = mouse_key(*v);
+            }
+            break;
+
+          case type::frontmost_application_changed:
+            if (auto v = json_utility::find_json(json, "frontmost_application")) {
+              value_ = manipulator_environment::frontmost_application(*v);
+            }
+            break;
+
+          case type::input_source_changed:
+            if (auto v = json_utility::find_json(json, "input_source_identifiers")) {
+              value_ = input_source_identifiers(*v);
+            }
+            break;
+
+          case type::keyboard_type_changed:
+            if (auto v = json_utility::find_optional<std::string>(json, "keyboard_type")) {
+              value_ = *v;
+            }
+            break;
+
+          case type::device_keys_and_pointing_buttons_are_released:
+          case type::device_ungrabbed:
+          case type::event_from_ignored_device:
+          case type::pointing_device_event_from_event_tap:
+            break;
         }
       }
 
