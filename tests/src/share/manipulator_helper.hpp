@@ -84,7 +84,7 @@ public:
               connector.invalidate_manipulators();
             } else if (*s == "invoke_manipulator_timer") {
               uint64_t time_stamp = 0;
-              if (auto t = json_utility::find_optional<int>(j, "time_stamp")) {
+              if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
                 time_stamp = *t;
               }
               krbn::manipulator::manipulator_timer::get_instance().signal(time_stamp);

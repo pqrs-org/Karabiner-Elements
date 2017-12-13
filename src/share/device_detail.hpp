@@ -44,13 +44,13 @@ public:
   }
 
   device_detail(const nlohmann::json& json) {
-    if (auto v = json_utility::find_optional<int>(json, "vendor_id")) {
+    if (auto v = json_utility::find_optional<uint32_t>(json, "vendor_id")) {
       vendor_id_ = vendor_id(*v);
     }
-    if (auto v = json_utility::find_optional<int>(json, "product_id")) {
+    if (auto v = json_utility::find_optional<uint32_t>(json, "product_id")) {
       product_id_ = product_id(*v);
     }
-    if (auto v = json_utility::find_optional<int>(json, "location_id")) {
+    if (auto v = json_utility::find_optional<uint32_t>(json, "location_id")) {
       location_id_ = location_id(*v);
     }
     if (auto v = json_utility::find_optional<std::string>(json, "manufacturer")) {

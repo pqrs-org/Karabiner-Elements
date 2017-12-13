@@ -530,17 +530,17 @@ public:
 
       type type_;
 
-      boost::variant<key_code, // For type::key_code
-                     consumer_key_code, // For type::consumer_key_code
-                     pointing_button, // For type::pointing_button
-                     int64_t, // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
-                     std::string, // For shell_command, keyboard_type_changed
-                     std::vector<input_source_selector>, // For select_input_source
-                     std::pair<std::string, int>, // For set_variable
-                     mouse_key, // For mouse_key
+      boost::variant<key_code,                                       // For type::key_code
+                     consumer_key_code,                              // For type::consumer_key_code
+                     pointing_button,                                // For type::pointing_button
+                     int64_t,                                        // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+                     std::string,                                    // For shell_command, keyboard_type_changed
+                     std::vector<input_source_selector>,             // For select_input_source
+                     std::pair<std::string, int>,                    // For set_variable
+                     mouse_key,                                      // For mouse_key
                      manipulator_environment::frontmost_application, // For frontmost_application_changed
-                     input_source_identifiers, // For input_source_changed
-                     boost::blank> // For virtual events
+                     input_source_identifiers,                       // For input_source_changed
+                     boost::blank>                                   // For virtual events
           value_;
     };
 
@@ -564,47 +564,32 @@ public:
                                                lazy_(false),
                                                event_type_(event_type::key_down) {
       if (json.is_object()) {
-        {
-          auto it = json.find("device_id");
-          if (it != std::end(json)) {
-            device_id_ = device_id(it->get<int>());
-          }
+        if (auto v = json_utility::find_optional<uint32_t>(json, "device_id")) {
+          device_id_ = device_id(*v);
         }
-        {
-          auto it = json.find("time_stamp");
-          if (it != std::end(json)) {
-            time_stamp_ = *it;
-          }
+
+        if (auto v = json_utility::find_optional<uint64_t>(json, "time_stamp")) {
+          time_stamp_ = *v;
         }
-        {
-          auto it = json.find("valid");
-          if (it != std::end(json)) {
-            valid_ = *it;
-          }
+
+        if (auto v = json_utility::find_optional<bool>(json, "valid")) {
+          valid_ = *v;
         }
-        {
-          auto it = json.find("lazy");
-          if (it != std::end(json)) {
-            lazy_ = *it;
-          }
+
+        if (auto v = json_utility::find_optional<bool>(json, "lazy")) {
+          lazy_ = *v;
         }
-        {
-          auto it = json.find("event");
-          if (it != std::end(json)) {
-            event_ = *it;
-          }
+
+        if (auto v = json_utility::find_json(json, "event")) {
+          event_ = *v;
         }
-        {
-          auto it = json.find("event_type");
-          if (it != std::end(json)) {
-            event_type_ = *it;
-          }
+
+        if (auto v = json_utility::find_json(json, "event_type")) {
+          event_type_ = *v;
         }
-        {
-          auto it = json.find("original_event");
-          if (it != std::end(json)) {
-            original_event_ = *it;
-          }
+
+        if (auto v = json_utility::find_json(json, "original_event")) {
+          original_event_ = *v;
         }
       }
     }
