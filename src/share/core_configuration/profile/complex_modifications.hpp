@@ -23,8 +23,8 @@ public:
 
     void update(const nlohmann::json& json) {
       for (const auto& pair : make_map()) {
-        if (json.find(pair.first) != json.end() && json[pair.first].is_number()) {
-          const_cast<int&>(pair.second) = json[pair.first];
+        if (auto v = json_utility::find_optional<int>(json, pair.first)) {
+          const_cast<int&>(pair.second) = *v;
         }
       }
     }
@@ -86,19 +86,14 @@ public:
 
       manipulator(const nlohmann::json& json, const parameters& parameters) : json_(json),
                                                                               parameters_(parameters) {
-        {
-          const std::string key = "conditions";
-          if (json.find(key) != json.end() && json[key].is_array()) {
-            for (const auto& j : json[key]) {
-              conditions_.emplace_back(j);
-            }
+        if (auto v = json_utility::find_array(json, "conditions")) {
+          for (const auto& j : *v) {
+            conditions_.emplace_back(j);
           }
         }
-        {
-          const std::string key = "parameters";
-          if (json.find(key) != json.end()) {
-            parameters_.update(json[key]);
-          }
+
+        if (auto v = json_utility::find_object(json, "parameters")) {
+          parameters_.update(*v);
         }
       }
 
@@ -121,12 +116,9 @@ public:
     };
 
     rule(const nlohmann::json& json, const parameters& parameters) : json_(json) {
-      {
-        const std::string key = "manipulators";
-        if (json.find(key) != json.end() && json[key].is_array()) {
-          for (const auto& j : json[key]) {
-            manipulators_.emplace_back(j, parameters);
-          }
+      if (auto v = json_utility::find_array(json, "manipulators")) {
+        for (const auto& j : *v) {
+          manipulators_.emplace_back(j, parameters);
         }
       }
 
@@ -149,15 +141,8 @@ public:
 
   private:
     boost::optional<std::string> find_description(const nlohmann::json& json) const {
-      {
-        const std::string key = "description";
-        if (json.find(key) != json.end()) {
-          if (json[key].is_string()) {
-            return json[key].get<std::string>();
-          } else {
-            return std::string("");
-          }
-        }
+      if (auto v = json_utility::find_optional<std::string>(json, "description")) {
+        return *v;
       }
 
       if (json.is_array() || json.is_object()) {
@@ -178,13 +163,10 @@ public:
   };
 
   complex_modifications(const nlohmann::json& json) : json_(json),
-                                                      parameters_(json.find("parameters") != std::end(json) ? json["parameters"] : nlohmann::json()) {
-    {
-      const std::string key = "rules";
-      if (json_.find(key) != json_.end() && json_[key].is_array()) {
-        for (const auto& j : json_[key]) {
-          rules_.emplace_back(j, parameters_);
-        }
+                                                      parameters_(json_utility::find_copy(json, "parameters", nlohmann::json())) {
+    if (auto v = json_utility::find_array(json, "rules")) {
+      for (const auto& j : *v) {
+        rules_.emplace_back(j, parameters_);
       }
     }
   }

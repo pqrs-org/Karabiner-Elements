@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "json_utility.hpp"
 #include "file_monitor.hpp"
 #include "filesystem.hpp"
 #include "gcd_utility.hpp"
@@ -37,10 +38,8 @@ public:
                                                          //     ]
                                                          // }
 
-                                                         const std::string key = "alerts";
-                                                         if (json.find(key) != std::end(json)) {
-                                                           auto alerts = json[key];
-                                                           if (alerts.is_array() && !alerts.empty()) {
+                                                         if (auto v = json_utility::find_array(json, "alerts")) {
+                                                           if (!v->empty()) {
                                                              auto s = json.dump();
                                                              if (json_string_ != s) {
                                                                json_string_ = s;

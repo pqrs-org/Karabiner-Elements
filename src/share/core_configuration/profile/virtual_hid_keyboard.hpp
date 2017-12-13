@@ -4,17 +4,12 @@ class virtual_hid_keyboard final {
 public:
   virtual_hid_keyboard(const nlohmann::json& json) : json_(json),
                                                      caps_lock_delay_milliseconds_(0) {
-    {
-      const std::string key = "keyboard_type";
-      if (json.find(key) != json.end() && json[key].is_string()) {
-        keyboard_type_ = json[key];
-      }
+    if (auto v = json_utility::find_optional<std::string>(json, "keyboard_type")) {
+      keyboard_type_ = *v;
     }
-    {
-      const std::string key = "caps_lock_delay_milliseconds";
-      if (json.find(key) != json.end() && json[key].is_number()) {
-        caps_lock_delay_milliseconds_ = json[key];
-      }
+
+    if (auto v = json_utility::find_optional<uint32_t>(json, "caps_lock_delay_milliseconds")) {
+      caps_lock_delay_milliseconds_ = *v;
     }
   }
 

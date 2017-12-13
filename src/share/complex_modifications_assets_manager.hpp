@@ -20,19 +20,14 @@ public:
       } else {
         auto json = nlohmann::json::parse(stream);
 
-        {
-          const std::string key = "title";
-          if (json.find(key) != json.end() && json[key].is_string()) {
-            title_ = json[key];
-          }
+        if (auto v = json_utility::find_optional<std::string>(json, "title")) {
+          title_ = *v;
         }
-        {
-          const std::string key = "rules";
-          if (json.find(key) != json.end() && json[key].is_array()) {
-            core_configuration::profile::complex_modifications::parameters parameters;
-            for (const auto& j : json[key]) {
-              rules_.emplace_back(j, parameters);
-            }
+
+        if (auto v = json_utility::find_array(json, "rules")) {
+          core_configuration::profile::complex_modifications::parameters parameters;
+          for (const auto& j : *v) {
+            rules_.emplace_back(j, parameters);
           }
         }
       }

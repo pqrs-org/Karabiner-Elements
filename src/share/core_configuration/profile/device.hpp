@@ -3,11 +3,11 @@
 class device final {
 public:
   device(const nlohmann::json& json) : json_(json),
-                                       identifiers_(json.find("identifiers") != json.end() ? json["identifiers"] : nlohmann::json()),
+                                       identifiers_(json_utility::find_copy(json, "identifiers", nlohmann::json())),
                                        ignore_(false),
                                        manipulate_caps_lock_led_(false),
                                        disable_built_in_keyboard_if_exists_(false),
-                                       simple_modifications_(json.find("simple_modifications") != json.end() ? json["simple_modifications"] : nlohmann::json::array()),
+                                       simple_modifications_(json_utility::find_copy(json, "simple_modifications", nlohmann::json::array())),
                                        fn_function_keys_(make_default_fn_function_keys_json()) {
     // ----------------------------------------
     // Set default value
@@ -35,29 +35,20 @@ public:
     // ----------------------------------------
     // Load from json
 
-    {
-      const std::string key = "ignore";
-      if (json.find(key) != json.end() && json[key].is_boolean()) {
-        ignore_ = json[key];
-      }
+    if (auto v = json_utility::find_optional<bool>(json, "ignore")) {
+      ignore_ = *v;
     }
-    {
-      const std::string key = "manipulate_caps_lock_led";
-      if (json.find(key) != json.end() && json[key].is_boolean()) {
-        manipulate_caps_lock_led_ = json[key];
-      }
+
+    if (auto v = json_utility::find_optional<bool>(json, "manipulate_caps_lock_led")) {
+      manipulate_caps_lock_led_ = *v;
     }
-    {
-      const std::string key = "disable_built_in_keyboard_if_exists";
-      if (json.find(key) != json.end() && json[key].is_boolean()) {
-        disable_built_in_keyboard_if_exists_ = json[key];
-      }
+
+    if (auto v = json_utility::find_optional<bool>(json, "disable_built_in_keyboard_if_exists")) {
+      disable_built_in_keyboard_if_exists_ = *v;
     }
-    {
-      const std::string key = "fn_function_keys";
-      if (json.find(key) != json.end()) {
-        fn_function_keys_.update(json[key]);
-      }
+
+    if (auto v = json_utility::find_json(json, "fn_function_keys")) {
+      fn_function_keys_.update(*v);
     }
   }
 

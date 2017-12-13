@@ -6,23 +6,16 @@ public:
                                                      check_for_updates_on_startup_(true),
                                                      show_in_menu_bar_(true),
                                                      show_profile_name_in_menu_bar_(false) {
-    {
-      const std::string key = "check_for_updates_on_startup";
-      if (json.find(key) != json.end() && json[key].is_boolean()) {
-        check_for_updates_on_startup_ = json[key];
-      }
+    if (auto v = json_utility::find_optional<bool>(json, "check_for_updates_on_startup")) {
+      check_for_updates_on_startup_ = *v;
     }
-    {
-      const std::string key = "show_in_menu_bar";
-      if (json.find(key) != json.end() && json[key].is_boolean()) {
-        show_in_menu_bar_ = json[key];
-      }
+
+    if (auto v = json_utility::find_optional<bool>(json, "show_in_menu_bar")) {
+      show_in_menu_bar_ = *v;
     }
-    {
-      const std::string key = "show_profile_name_in_menu_bar";
-      if (json.find(key) != json.end() && json[key].is_boolean()) {
-        show_profile_name_in_menu_bar_ = json[key];
-      }
+
+    if (auto v = json_utility::find_optional<bool>(json, "show_profile_name_in_menu_bar")) {
+      show_profile_name_in_menu_bar_ = *v;
     }
   }
 
