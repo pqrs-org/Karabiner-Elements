@@ -18,7 +18,17 @@ TEST_CASE("pointing_motion") {
     REQUIRE(pointing_motion.get_vertical_wheel() == 0);
     REQUIRE(pointing_motion.get_horizontal_wheel() == 0);
 
-    // setter, getter
+    nlohmann::json json;
+    json["x"] = 0;
+    json["y"] = 0;
+    json["vertical_wheel"] = 0;
+    json["horizontal_wheel"] = 0;
+    REQUIRE(pointing_motion.to_json() == json);
+  }
+
+  // setter, getter
+  {
+    krbn::pointing_motion pointing_motion;
 
     pointing_motion.set_x(1);
     pointing_motion.set_y(-1);
@@ -29,6 +39,28 @@ TEST_CASE("pointing_motion") {
     REQUIRE(pointing_motion.get_y() == -1);
     REQUIRE(pointing_motion.get_vertical_wheel() == 2);
     REQUIRE(pointing_motion.get_horizontal_wheel() == -2);
+
+    nlohmann::json json;
+    json["x"] = 1;
+    json["y"] = -1;
+    json["vertical_wheel"] = 2;
+    json["horizontal_wheel"] = -2;
+    REQUIRE(pointing_motion.to_json() == json);
+  }
+
+  // from_json
+  {
+    nlohmann::json json;
+    json["x"] = 10;
+    json["y"] = -10;
+    json["vertical_wheel"] = 20;
+    json["horizontal_wheel"] = -20;
+
+    krbn::pointing_motion pointing_motion(json);
+    REQUIRE(pointing_motion.get_x() == 10);
+    REQUIRE(pointing_motion.get_y() == -10);
+    REQUIRE(pointing_motion.get_vertical_wheel() == 20);
+    REQUIRE(pointing_motion.get_horizontal_wheel() == -20);
   }
 }
 

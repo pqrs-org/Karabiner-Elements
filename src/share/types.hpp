@@ -6,6 +6,7 @@
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
 #include "input_source_utility.hpp"
+#include "json_utility.hpp"
 #include "logger.hpp"
 #include "stream_utility.hpp"
 #include "system_preferences.hpp"
@@ -341,6 +342,30 @@ public:
                           y_(0),
                           vertical_wheel_(0),
                           horizontal_wheel_(0) {
+  }
+
+  pointing_motion(const nlohmann::json& json) : pointing_motion() {
+    if (auto v = json_utility::find_optional<int>(json, "x")) {
+      x_ = *v;
+    }
+    if (auto v = json_utility::find_optional<int>(json, "y")) {
+      y_ = *v;
+    }
+    if (auto v = json_utility::find_optional<int>(json, "vertical_wheel")) {
+      vertical_wheel_ = *v;
+    }
+    if (auto v = json_utility::find_optional<int>(json, "horizontal_wheel")) {
+      horizontal_wheel_ = *v;
+    }
+  }
+
+  nlohmann::json to_json(void) const {
+    nlohmann::json j;
+    j["x"] = x_;
+    j["y"] = y_;
+    j["vertical_wheel"] = vertical_wheel_;
+    j["horizontal_wheel"] = horizontal_wheel_;
+    return j;
   }
 
   int get_x(void) const {
