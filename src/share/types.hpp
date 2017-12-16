@@ -400,6 +400,13 @@ public:
     horizontal_wheel_ = value;
   }
 
+  bool operator==(const pointing_motion& other) const {
+    return x_ == other.x_ &&
+           y_ == other.y_ &&
+           vertical_wheel_ == other.vertical_wheel_ &&
+           horizontal_wheel_ == other.horizontal_wheel_;
+  }
+
 private:
   int x_;
   int y_;
