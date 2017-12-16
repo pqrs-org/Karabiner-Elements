@@ -10,6 +10,28 @@ TEST_CASE("initialize") {
   krbn::thread_utility::register_main_thread();
 }
 
+TEST_CASE("pointing_motion") {
+  {
+    krbn::pointing_motion pointing_motion;
+    REQUIRE(pointing_motion.get_x() == 0);
+    REQUIRE(pointing_motion.get_y() == 0);
+    REQUIRE(pointing_motion.get_vertical_wheel() == 0);
+    REQUIRE(pointing_motion.get_horizontal_wheel() == 0);
+
+    // setter, getter
+
+    pointing_motion.set_x(1);
+    pointing_motion.set_y(-1);
+    pointing_motion.set_vertical_wheel(2);
+    pointing_motion.set_horizontal_wheel(-2);
+
+    REQUIRE(pointing_motion.get_x() == 1);
+    REQUIRE(pointing_motion.get_y() == -1);
+    REQUIRE(pointing_motion.get_vertical_wheel() == 2);
+    REQUIRE(pointing_motion.get_horizontal_wheel() == -2);
+  }
+}
+
 TEST_CASE("device_identifiers") {
   {
     krbn::device_identifiers di(krbn::vendor_id(1234),

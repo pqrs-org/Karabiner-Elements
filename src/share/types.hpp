@@ -335,6 +335,53 @@ enum class product_id : uint32_t {
 enum class location_id : uint32_t {
 };
 
+class pointing_motion final {
+public:
+  pointing_motion(void) : x_(0),
+                          y_(0),
+                          vertical_wheel_(0),
+                          horizontal_wheel_(0) {
+  }
+
+  int get_x(void) const {
+    return x_;
+  }
+
+  void set_x(int value) {
+    x_ = value;
+  }
+
+  int get_y(void) const {
+    return y_;
+  }
+
+  void set_y(int value) {
+    y_ = value;
+  }
+
+  int get_vertical_wheel(void) const {
+    return vertical_wheel_;
+  }
+
+  void set_vertical_wheel(int value) {
+    vertical_wheel_ = value;
+  }
+
+  int get_horizontal_wheel(void) const {
+    return horizontal_wheel_;
+  }
+
+  void set_horizontal_wheel(int value) {
+    horizontal_wheel_ = value;
+  }
+
+private:
+  int x_;
+  int y_;
+  int vertical_wheel_;
+  int horizontal_wheel_;
+};
+
 class device_identifiers final {
 public:
   device_identifiers(void) : vendor_id_(vendor_id::zero),
