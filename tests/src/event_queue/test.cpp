@@ -85,6 +85,28 @@ TEST_CASE("json") {
   }
   {
     nlohmann::json expected;
+    expected["type"] = "pointing_motion";
+    expected["pointing_motion"] = nlohmann::json::object();
+    expected["pointing_motion"]["x"] = 1;
+    expected["pointing_motion"]["y"] = 2;
+    expected["pointing_motion"]["vertical_wheel"] = 3;
+    expected["pointing_motion"]["horizontal_wheel"] = 4;
+
+    krbn::pointing_motion pointing_motion;
+    pointing_motion.set_x(1);
+    pointing_motion.set_y(2);
+    pointing_motion.set_vertical_wheel(3);
+    pointing_motion.set_horizontal_wheel(4);
+
+    auto e = krbn::event_queue::queued_event::event(pointing_motion);
+
+    auto json = e.to_json();
+    REQUIRE(json == expected);
+    krbn::event_queue::queued_event::event event_from_json(json);
+    REQUIRE(json == event_from_json.to_json());
+  }
+  {
+    nlohmann::json expected;
     expected["type"] = "pointing_x";
     expected["integer_value"] = 10;
     auto json = pointing_x_10_event.to_json();

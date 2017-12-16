@@ -132,6 +132,9 @@ private:
           }
           break;
 
+        case krbn::event_queue::queued_event::event::type::pointing_motion:
+          break;
+
         case krbn::event_queue::queued_event::event::type::pointing_x:
         case krbn::event_queue::queued_event::event::type::pointing_y:
         case krbn::event_queue::queued_event::event::type::pointing_vertical_wheel:

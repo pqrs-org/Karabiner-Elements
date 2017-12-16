@@ -1866,6 +1866,10 @@ inline void from_json(const nlohmann::json& json, event_type& value) {
   }
 }
 
+inline void to_json(nlohmann::json& json, const pointing_motion& pointing_motion) {
+  json = pointing_motion.to_json();
+}
+
 inline void to_json(nlohmann::json& json, const device_identifiers& identifiers) {
   json = identifiers.to_json();
 }

@@ -85,6 +85,7 @@ public:
           case event_queue::queued_event::event::type::key_code:
           case event_queue::queued_event::event::type::consumer_key_code:
           case event_queue::queued_event::event::type::pointing_button:
+          case event_queue::queued_event::event::type::pointing_motion:
           case event_queue::queued_event::event::type::pointing_x:
           case event_queue::queued_event::event::type::pointing_y:
           case event_queue::queued_event::event::type::pointing_vertical_wheel:

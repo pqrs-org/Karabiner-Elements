@@ -757,7 +757,8 @@ public:
               dispatch_modifier_key_event_before = true;
             }
 
-          } else if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_x ||
+          } else if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_motion ||
+                     front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_x ||
                      front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_y ||
                      front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel ||
                      front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
@@ -836,11 +837,19 @@ public:
           break;
 
         case event_queue::queued_event::event::type::pointing_button:
+        case event_queue::queued_event::event::type::pointing_motion:
         case event_queue::queued_event::event::type::pointing_x:
         case event_queue::queued_event::event::type::pointing_y:
         case event_queue::queued_event::event::type::pointing_vertical_wheel:
         case event_queue::queued_event::event::type::pointing_horizontal_wheel: {
           auto report = output_event_queue->get_pointing_button_manager().make_pointing_input_report();
+
+          if (auto pointing_motion = front_input_event.get_event().get_pointing_motion()) {
+            report.x = pointing_motion->get_x();
+            report.y = pointing_motion->get_y();
+            report.vertical_wheel = pointing_motion->get_vertical_wheel();
+            report.horizontal_wheel = pointing_motion->get_horizontal_wheel();
+          }
 
           if (auto integer_value = front_input_event.get_event().get_integer_value()) {
             switch (front_input_event.get_event().get_type()) {
@@ -860,6 +869,7 @@ public:
               case event_queue::queued_event::event::type::key_code:
               case event_queue::queued_event::event::type::consumer_key_code:
               case event_queue::queued_event::event::type::pointing_button:
+              case event_queue::queued_event::event::type::pointing_motion:
               case event_queue::queued_event::event::type::shell_command:
               case event_queue::queued_event::event::type::select_input_source:
               case event_queue::queued_event::event::type::set_variable:

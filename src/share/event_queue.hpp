@@ -23,6 +23,7 @@ public:
         key_code,
         consumer_key_code,
         pointing_button,
+        pointing_motion,
         pointing_x,
         pointing_y,
         pointing_vertical_wheel,
@@ -78,6 +79,12 @@ public:
               if (auto v = types::make_pointing_button(*s)) {
                 value_ = *v;
               }
+            }
+            break;
+
+          case type::pointing_motion:
+            if (auto v = json_utility::find_object(json, "pointing_motion")) {
+              value_ = pointing_motion(*v);
             }
             break;
 
@@ -184,6 +191,12 @@ public:
             }
             break;
 
+          case type::pointing_motion:
+            if (auto v = get_pointing_motion()) {
+              json["pointing_motion"] = *v;
+            }
+            break;
+
           case type::pointing_x:
           case type::pointing_y:
           case type::pointing_vertical_wheel:
@@ -257,6 +270,10 @@ public:
 
       event(pointing_button pointing_button) : type_(type::pointing_button),
                                                value_(pointing_button) {
+      }
+
+      event(const pointing_motion& pointing_motion) : type_(type::pointing_motion),
+                                                      value_(pointing_motion) {
       }
 
       event(type type,
@@ -359,6 +376,16 @@ public:
         try {
           if (type_ == type::pointing_button) {
             return boost::get<pointing_button>(value_);
+          }
+        } catch (boost::bad_get&) {
+        }
+        return boost::none;
+      }
+
+      boost::optional<pointing_motion> get_pointing_motion(void) const {
+        try {
+          if (type_ == type::pointing_motion) {
+            return boost::get<pointing_motion>(value_);
           }
         } catch (boost::bad_get&) {
         }
@@ -472,6 +499,7 @@ public:
           TO_C_STRING(key_code);
           TO_C_STRING(consumer_key_code);
           TO_C_STRING(pointing_button);
+          TO_C_STRING(pointing_motion);
           TO_C_STRING(pointing_x);
           TO_C_STRING(pointing_y);
           TO_C_STRING(pointing_vertical_wheel);
@@ -506,6 +534,7 @@ public:
         TO_TYPE(key_code);
         TO_TYPE(consumer_key_code);
         TO_TYPE(pointing_button);
+        TO_TYPE(pointing_motion);
         TO_TYPE(pointing_x);
         TO_TYPE(pointing_y);
         TO_TYPE(pointing_vertical_wheel);
@@ -533,6 +562,7 @@ public:
       boost::variant<key_code,                                       // For type::key_code
                      consumer_key_code,                              // For type::consumer_key_code
                      pointing_button,                                // For type::pointing_button
+                     pointing_motion,                                // For type::pointing_motion
                      int64_t,                                        // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
                      std::string,                                    // For shell_command, keyboard_type_changed
                      std::vector<input_source_selector>,             // For select_input_source
