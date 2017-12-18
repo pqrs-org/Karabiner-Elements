@@ -374,6 +374,13 @@ public:
     return hid_usage_;
   }
 
+  bool operator==(const hid_value& other) const {
+    return time_stamp_ == other.time_stamp_ &&
+           integer_value_ == other.integer_value_ &&
+           hid_usage_page_ == other.hid_usage_page_ &&
+           hid_usage_ == other.hid_usage_;
+  }
+
 private:
   uint64_t time_stamp_;
   CFIndex integer_value_;
