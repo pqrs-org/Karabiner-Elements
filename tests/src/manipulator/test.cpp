@@ -28,30 +28,36 @@ TEST_CASE("manipulator.manipulator_factory") {
     nlohmann::json json({
         {"type", "basic"},
         {
-            "from", {
-                        {
-                            "key_code", "escape",
-                        },
-                        {
-                            "modifiers", {
-                                             {"mandatory", {
-                                                               "left_shift", "left_option",
-                                                           }},
-                                             {"optional", {
-                                                              "any",
-                                                          }},
-                                         },
-                        },
+            "from",
+            {
+                {
+                    "key_code",
+                    "escape",
+                },
+                {
+                    "modifiers",
+                    {
+                        {"mandatory", {
+                                          "left_shift",
+                                          "left_option",
+                                      }},
+                        {"optional", {
+                                         "any",
+                                     }},
                     },
+                },
+            },
         },
         {
-            "to", {
-                      {
-                          {
-                              "pointing_button", "button1",
-                          },
-                      },
-                  },
+            "to",
+            {
+                {
+                    {
+                        "pointing_button",
+                        "button1",
+                    },
+                },
+            },
         },
     });
     krbn::core_configuration::profile::complex_modifications::parameters parameters;

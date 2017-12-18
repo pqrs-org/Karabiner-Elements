@@ -38,9 +38,9 @@ public:
       return boost::none;
     }
 
-    std::string result_string(4 + 2 + 2 + // years,months,days
+    std::string result_string(4 + 2 + 2 +     // years,months,days
                                   2 + 2 + 2 + // hours,minutes,seconds
-                                  3, // milliseconds
+                                  3,          // milliseconds
                               '0');
     size_t line_pos = 1;
     size_t result_pos = 0;

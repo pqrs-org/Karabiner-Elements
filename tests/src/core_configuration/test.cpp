@@ -259,43 +259,54 @@ TEST_CASE("profile") {
         {"selected", true},
         {"simple_modifications", {
                                      {
-                                         "from 1", "to 1",
+                                         "from 1",
+                                         "to 1",
                                      },
                                      {
-                                         "from 3", "to 3",
+                                         "from 3",
+                                         "to 3",
                                      },
                                      {
-                                         "from 2", "to 2",
+                                         "from 2",
+                                         "to 2",
                                      },
                                      {
-                                         "from 10", "to 10",
+                                         "from 10",
+                                         "to 10",
                                      },
                                  }},
         {"fn_function_keys", {
                                  {
-                                     "f3", "to f3",
+                                     "f3",
+                                     "to f3",
                                  },
                                  {
-                                     "f4", "to f4",
+                                     "f4",
+                                     "to f4",
                                  },
                                  {
-                                     "f13", "to f13",
+                                     "f13",
+                                     "to f13",
                                  },
                              }},
         {"devices", {
                         {
                             {"identifiers", {
                                                 {
-                                                    "vendor_id", 1234,
+                                                    "vendor_id",
+                                                    1234,
                                                 },
                                                 {
-                                                    "product_id", 5678,
+                                                    "product_id",
+                                                    5678,
                                                 },
                                                 {
-                                                    "is_keyboard", true,
+                                                    "is_keyboard",
+                                                    true,
                                                 },
                                                 {
-                                                    "is_pointing_device", true,
+                                                    "is_pointing_device",
+                                                    true,
                                                 },
                                             }},
                             {"ignore", true},
@@ -306,16 +317,20 @@ TEST_CASE("profile") {
                         {
                             {"identifiers", {
                                                 {
-                                                    "vendor_id", 1234,
+                                                    "vendor_id",
+                                                    1234,
                                                 },
                                                 {
-                                                    "product_id", 5678,
+                                                    "product_id",
+                                                    5678,
                                                 },
                                                 {
-                                                    "is_keyboard", true,
+                                                    "is_keyboard",
+                                                    true,
                                                 },
                                                 {
-                                                    "is_pointing_device", true,
+                                                    "is_pointing_device",
+                                                    true,
                                                 },
                                             }},
                             {"ignore", true},
@@ -325,16 +340,20 @@ TEST_CASE("profile") {
                         {
                             {"identifiers", {
                                                 {
-                                                    "vendor_id", 4321,
+                                                    "vendor_id",
+                                                    4321,
                                                 },
                                                 {
-                                                    "product_id", 8765,
+                                                    "product_id",
+                                                    8765,
                                                 },
                                                 {
-                                                    "is_keyboard", true,
+                                                    "is_keyboard",
+                                                    true,
                                                 },
                                                 {
-                                                    "is_pointing_device", false,
+                                                    "is_pointing_device",
+                                                    false,
                                                 },
                                             }},
                             {"ignore", false},
@@ -383,16 +402,20 @@ TEST_CASE("profile") {
     {
       auto identifiers = krbn::device_identifiers(nlohmann::json({
           {
-              "vendor_id", 1234,
+              "vendor_id",
+              1234,
           },
           {
-              "product_id", 5678,
+              "product_id",
+              5678,
           },
           {
-              "is_keyboard", true,
+              "is_keyboard",
+              true,
           },
           {
-              "is_pointing_device", true,
+              "is_pointing_device",
+              true,
           },
       }));
       profile.set_device_ignore(identifiers, false);
@@ -434,16 +457,20 @@ TEST_CASE("profile") {
       {
         auto identifiers = krbn::device_identifiers(nlohmann::json({
             {
-                "vendor_id", 1111,
+                "vendor_id",
+                1111,
             },
             {
-                "product_id", 2222,
+                "product_id",
+                2222,
             },
             {
-                "is_keyboard", false,
+                "is_keyboard",
+                false,
             },
             {
-                "is_pointing_device", true,
+                "is_pointing_device",
+                true,
             },
         }));
         profile.set_device_ignore(identifiers, true);
@@ -492,16 +519,20 @@ TEST_CASE("profile") {
     nlohmann::json json({
         {"simple_modifications", {
                                      {
-                                         "number", 0,
+                                         "number",
+                                         0,
                                      },
                                      {
-                                         "object", nlohmann::json::object(),
+                                         "object",
+                                         nlohmann::json::object(),
                                      },
                                      {
-                                         "array", nlohmann::json::array(),
+                                         "array",
+                                         nlohmann::json::array(),
                                      },
                                      {
-                                         "key", "value",
+                                         "key",
+                                         "value",
                                      },
                                  }},
     });
@@ -543,16 +574,20 @@ TEST_CASE("profile.to_json") {
                         {
                             {"identifiers", {
                                                 {
-                                                    "vendor_id", 1234,
+                                                    "vendor_id",
+                                                    1234,
                                                 },
                                                 {
-                                                    "product_id", 5678,
+                                                    "product_id",
+                                                    5678,
                                                 },
                                                 {
-                                                    "is_keyboard", true,
+                                                    "is_keyboard",
+                                                    true,
                                                 },
                                                 {
-                                                    "is_pointing_device", true,
+                                                    "is_pointing_device",
+                                                    true,
                                                 },
                                             }},
                             {"ignore", true},
@@ -681,16 +716,20 @@ TEST_CASE("profile.to_json") {
                         {
                             {"identifiers", {
                                                 {
-                                                    "vendor_id", 1234,
+                                                    "vendor_id",
+                                                    1234,
                                                 },
                                                 {
-                                                    "product_id", 5678,
+                                                    "product_id",
+                                                    5678,
                                                 },
                                                 {
-                                                    "is_keyboard", true,
+                                                    "is_keyboard",
+                                                    true,
                                                 },
                                                 {
-                                                    "is_pointing_device", true,
+                                                    "is_pointing_device",
+                                                    true,
                                                 },
                                             }},
                             {"ignore", true},
@@ -880,17 +919,18 @@ TEST_CASE("complex_modifications") {
   {
     nlohmann::json json({
         {
-            "rules", {
-                         {
-                             {"description", "rule 1"},
-                         },
-                         {
-                             {"description", "rule 2"},
-                         },
-                         {
-                             {"description", "rule 3"},
-                         },
-                     },
+            "rules",
+            {
+                {
+                    {"description", "rule 1"},
+                },
+                {
+                    {"description", "rule 2"},
+                },
+                {
+                    {"description", "rule 3"},
+                },
+            },
         },
     });
     krbn::core_configuration::profile::complex_modifications complex_modifications(json);
@@ -902,7 +942,8 @@ TEST_CASE("complex_modifications") {
     {
       nlohmann::json json({
           {
-              "rules", "rule 1",
+              "rules",
+              "rule 1",
           },
       });
       krbn::core_configuration::profile::complex_modifications complex_modifications(json);
@@ -919,17 +960,18 @@ TEST_CASE("complex_modifications.push_back_rule") {
   {
     nlohmann::json json({
         {
-            "rules", {
-                         {
-                             {"description", "rule 1"},
-                         },
-                         {
-                             {"description", "rule 2"},
-                         },
-                         {
-                             {"description", "rule 3"},
-                         },
-                     },
+            "rules",
+            {
+                {
+                    {"description", "rule 1"},
+                },
+                {
+                    {"description", "rule 2"},
+                },
+                {
+                    {"description", "rule 3"},
+                },
+            },
         },
     });
     krbn::core_configuration::profile::complex_modifications complex_modifications(json);
@@ -957,17 +999,18 @@ TEST_CASE("complex_modifications.erase_rule") {
   {
     nlohmann::json json({
         {
-            "rules", {
-                         {
-                             {"description", "rule 1"},
-                         },
-                         {
-                             {"description", "rule 2"},
-                         },
-                         {
-                             {"description", "rule 3"},
-                         },
-                     },
+            "rules",
+            {
+                {
+                    {"description", "rule 1"},
+                },
+                {
+                    {"description", "rule 2"},
+                },
+                {
+                    {"description", "rule 3"},
+                },
+            },
         },
     });
     krbn::core_configuration::profile::complex_modifications complex_modifications(json);
@@ -995,17 +1038,18 @@ TEST_CASE("complex_modifications.swap_rules") {
   {
     nlohmann::json json({
         {
-            "rules", {
-                         {
-                             {"description", "rule 1"},
-                         },
-                         {
-                             {"description", "rule 2"},
-                         },
-                         {
-                             {"description", "rule 3"},
-                         },
-                     },
+            "rules",
+            {
+                {
+                    {"description", "rule 1"},
+                },
+                {
+                    {"description", "rule 2"},
+                },
+                {
+                    {"description", "rule 3"},
+                },
+            },
         },
     });
     krbn::core_configuration::profile::complex_modifications complex_modifications(json);
@@ -1214,16 +1258,20 @@ TEST_CASE("device") {
     nlohmann::json json({
         {"identifiers", {
                             {
-                                "vendor_id", 1234,
+                                "vendor_id",
+                                1234,
                             },
                             {
-                                "product_id", 5678,
+                                "product_id",
+                                5678,
                             },
                             {
-                                "is_keyboard", true,
+                                "is_keyboard",
+                                true,
                             },
                             {
-                                "is_pointing_device", true,
+                                "is_pointing_device",
+                                true,
                             },
                         }},
         {"disable_built_in_keyboard_if_exists", true},
@@ -1265,16 +1313,20 @@ TEST_CASE("device.to_json") {
         {"disable_built_in_keyboard_if_exists", false},
         {"identifiers", {
                             {
-                                "vendor_id", 0,
+                                "vendor_id",
+                                0,
                             },
                             {
-                                "product_id", 0,
+                                "product_id",
+                                0,
                             },
                             {
-                                "is_keyboard", false,
+                                "is_keyboard",
+                                false,
                             },
                             {
-                                "is_pointing_device", false,
+                                "is_pointing_device",
+                                false,
                             },
                         }},
         {"ignore", false},
@@ -1292,10 +1344,12 @@ TEST_CASE("device.to_json") {
         {"dummy", {{"keep_me", true}}},
         {"identifiers", {
                             {
-                                "is_keyboard", true,
+                                "is_keyboard",
+                                true,
                             },
                             {
-                                "dummy", {{"keep_me", true}},
+                                "dummy",
+                                {{"keep_me", true}},
                             },
                         }},
         {"ignore", true},
@@ -1308,19 +1362,24 @@ TEST_CASE("device.to_json") {
         {"fn_function_keys", nlohmann::json::array()},
         {"identifiers", {
                             {
-                                "dummy", {{"keep_me", true}},
+                                "dummy",
+                                {{"keep_me", true}},
                             },
                             {
-                                "vendor_id", 0,
+                                "vendor_id",
+                                0,
                             },
                             {
-                                "product_id", 0,
+                                "product_id",
+                                0,
                             },
                             {
-                                "is_keyboard", true,
+                                "is_keyboard",
+                                true,
                             },
                             {
-                                "is_pointing_device", false,
+                                "is_pointing_device",
+                                false,
                             },
                         }},
         {"ignore", true},

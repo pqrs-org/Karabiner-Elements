@@ -64,72 +64,92 @@ TEST_CASE("connected_devices::device") {
 
     REQUIRE(device.to_json() == nlohmann::json(
                                     {{
-                                         "descriptions", {
-                                                             {
-                                                                 "manufacturer", "manufacturer1",
-                                                             },
-                                                             {
-                                                                 "product", "product1",
-                                                             },
-                                                         },
+                                         "descriptions",
+                                         {
+                                             {
+                                                 "manufacturer",
+                                                 "manufacturer1",
+                                             },
+                                             {
+                                                 "product",
+                                                 "product1",
+                                             },
+                                         },
                                      },
                                      {
-                                         "identifiers", {
-                                                            {
-                                                                "vendor_id", 1234,
-                                                            },
-                                                            {
-                                                                "product_id", 5678,
-                                                            },
-                                                            {
-                                                                "is_keyboard", true,
-                                                            },
-                                                            {
-                                                                "is_pointing_device", false,
-                                                            },
-                                                        },
+                                         "identifiers",
+                                         {
+                                             {
+                                                 "vendor_id",
+                                                 1234,
+                                             },
+                                             {
+                                                 "product_id",
+                                                 5678,
+                                             },
+                                             {
+                                                 "is_keyboard",
+                                                 true,
+                                             },
+                                             {
+                                                 "is_pointing_device",
+                                                 false,
+                                             },
+                                         },
                                      },
                                      {
-                                         "is_built_in_keyboard", true,
+                                         "is_built_in_keyboard",
+                                         true,
                                      },
                                      {
-                                         "is_built_in_trackpad", true,
+                                         "is_built_in_trackpad",
+                                         true,
                                      }}));
   }
   {
     krbn::connected_devices::device device1(nlohmann::json(nullptr));
     krbn::connected_devices::device device2(nlohmann::json(
         {{
-             "descriptions", {
-                                 {
-                                     "manufacturer", "manufacturer2",
-                                 },
-                                 {
-                                     "product", "product2",
-                                 },
-                             },
+             "descriptions",
+             {
+                 {
+                     "manufacturer",
+                     "manufacturer2",
+                 },
+                 {
+                     "product",
+                     "product2",
+                 },
+             },
          },
          {
-             "identifiers", {
-                                {
-                                    "vendor_id", 1234,
-                                },
-                                {
-                                    "product_id", 5678,
-                                },
-                                {
-                                    "is_keyboard", true,
-                                },
-                                {
-                                    "is_pointing_device", false,
-                                },
-                            },
+             "identifiers",
+             {
+                 {
+                     "vendor_id",
+                     1234,
+                 },
+                 {
+                     "product_id",
+                     5678,
+                 },
+                 {
+                     "is_keyboard",
+                     true,
+                 },
+                 {
+                     "is_pointing_device",
+                     false,
+                 },
+             },
          },
          {
-             "is_built_in_keyboard", true,
+             "is_built_in_keyboard",
+             true,
          },
          {
-             "is_built_in_trackpad", true,
+             "is_built_in_trackpad",
+             true,
          }}));
 
     REQUIRE(device1.get_descriptions().get_manufacturer() == "");

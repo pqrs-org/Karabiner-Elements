@@ -360,11 +360,11 @@ protected:
   boost::variant<key_code,
                  consumer_key_code,
                  pointing_button,
-                 type, // For any
-                 std::string, // For shell_command
+                 type,                               // For any
+                 std::string,                        // For shell_command
                  std::vector<input_source_selector>, // For select_input_source
-                 std::pair<std::string, int>, // For set_variable
-                 mouse_key // For mouse_key
+                 std::pair<std::string, int>,        // For set_variable
+                 mouse_key                           // For mouse_key
                  >
       value_;
 }; // namespace details

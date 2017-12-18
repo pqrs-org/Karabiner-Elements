@@ -40,9 +40,11 @@ TEST_CASE("initialize") {
 TEST_CASE("file_monitor") {
   std::vector<std::pair<std::string, std::vector<std::string>>> targets({
       {
-          "target/sub", {
-                            "target/sub/file1", "target/sub/file2",
-                        },
+          "target/sub",
+          {
+              "target/sub/file1",
+              "target/sub/file2",
+          },
       },
   });
   krbn::file_monitor file_monitor(targets, [](const std::string& file_path) {

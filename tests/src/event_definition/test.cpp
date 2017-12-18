@@ -484,7 +484,8 @@ TEST_CASE("manipulator.details.from_event_definition") {
         {"key_code", "spacebar"},
         {"modifiers", {
                           {"mandatory", {
-                                            "shift", "left_command",
+                                            "shift",
+                                            "left_command",
                                         }},
                           {"optional", {
                                            "any",
@@ -509,9 +510,11 @@ TEST_CASE("manipulator.details.from_event_definition") {
         {"key_code", "right_option"},
         {"modifiers", {
                           {"mandatory", {
-                                            "shift", "left_command",
+                                            "shift",
+                                            "left_command",
                                             // duplicated
-                                            "shift", "left_command",
+                                            "shift",
+                                            "left_command",
                                         }},
                           {"optional", {
                                            "any",
@@ -563,7 +566,8 @@ TEST_CASE("manipulator.details.to_event_definition") {
     nlohmann::json json({
         {"key_code", "spacebar"},
         {"modifiers", {
-                          "shift", "left_command",
+                          "shift",
+                          "left_command",
                       }},
     });
     krbn::manipulator::details::to_event_definition event_definition(json);
@@ -580,9 +584,11 @@ TEST_CASE("manipulator.details.to_event_definition") {
     nlohmann::json json({
         {"key_code", "right_option"},
         {"modifiers", {
-                          "shift", "left_command",
+                          "shift",
+                          "left_command",
                           // duplicated
-                          "shift", "left_command",
+                          "shift",
+                          "left_command",
                       }},
     });
     krbn::manipulator::details::to_event_definition event_definition(json);
