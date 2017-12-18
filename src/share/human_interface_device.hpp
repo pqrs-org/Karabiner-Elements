@@ -733,69 +733,73 @@ private:
   }
 
   void queue_value_available_callback(void) {
-    while (true) {
-      if (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
-        auto element = IOHIDValueGetElement(value);
-        if (element) {
-          auto time_stamp = IOHIDValueGetTimeStamp(value);
-          auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(element));
-          auto usage = hid_usage(IOHIDElementGetUsage(element));
-          auto integer_value = IOHIDValueGetIntegerValue(value);
+    std::vector<krbn::hid_value> hid_values;
 
-          if (input_event_queue_.emplace_back_event(device_id_, time_stamp, usage_page, usage, integer_value)) {
-            // We need to check whether event is emplaced into `input_event_queue_` since
-            // `emplace_back_event` does not add an event in some usage_page and usage.
+    while (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
+      hid_values.emplace_back(value);
 
-            auto& element_event = input_event_queue_.get_events().back();
+      CFRelease(value);
+    }
 
-            if (element_event.get_event().get_key_code() ||
-                element_event.get_event().get_consumer_key_code()) {
+    for (const auto& pair : event_queue::make_queued_events(hid_values, device_id_)) {
+      auto& hid_value = pair.first;
+      auto& queued_event = pair.second;
+
+      input_event_queue_.push_back_event(queued_event);
+
+      if (hid_value) {
+        if (auto hid_usage_page = hid_value->get_hid_usage_page()) {
+          if (auto hid_usage = hid_value->get_hid_usage()) {
+            if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::key_code ||
+                queued_event.get_event().get_type() == event_queue::queued_event::event::type::consumer_key_code ||
+                queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
+
               // Update keyboard_repeat_detector_
 
-              keyboard_repeat_detector_.set(usage_page, usage, element_event.get_event_type());
+              if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::key_code ||
+                  queued_event.get_event().get_type() == event_queue::queued_event::event::type::consumer_key_code) {
+                keyboard_repeat_detector_.set(*hid_usage_page,
+                                              *hid_usage,
+                                              queued_event.get_event_type());
+              }
 
               // Update pressed_modifier_flags_
-              {
-                if (auto m = types::make_modifier_flag(usage_page, usage)) {
-                  if (integer_value) {
+
+              if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::key_code) {
+                if (auto m = types::make_modifier_flag(*hid_usage_page,
+                                                       *hid_usage)) {
+                  if (queued_event.get_event_type() == event_type::key_down) {
                     pressed_modifier_flags_.insert(*m);
-                  } else {
+                  } else if (queued_event.get_event_type() == event_type::key_up) {
                     pressed_modifier_flags_.erase(*m);
                   }
                 }
               }
 
-              // Send `device_keys_and_pointing_buttons_are_released` event if needed.
+              // Update pressed_pointing_buttons_
 
-              if (integer_value) {
-                pressed_keys_.insert(elements_key(usage_page, usage));
-              } else {
-                size_t size = pressed_keys_.size();
-                pressed_keys_.erase(elements_key(usage_page, usage));
-                if (size > 0) {
-                  post_device_keys_and_pointing_buttons_are_released_event_if_needed(time_stamp);
+              if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
+                if (queued_event.get_event_type() == event_type::key_down) {
+                  pressed_pointing_buttons_.insert(elements_key(*hid_usage_page, *hid_usage));
+                } else if (queued_event.get_event_type() == event_type::key_up) {
+                  pressed_pointing_buttons_.erase(elements_key(*hid_usage_page, *hid_usage));
                 }
               }
-            }
 
-            if (auto pointing_button = element_event.get_event().get_pointing_button()) {
-              if (integer_value) {
-                pressed_pointing_buttons_.insert(elements_key(usage_page, usage));
+              // Send `device_keys_and_pointing_buttons_are_released` event if needed.
+
+              if (queued_event.get_event_type() == event_type::key_down) {
+                pressed_keys_.insert(elements_key(*hid_usage_page, *hid_usage));
               } else {
-                size_t size = pressed_pointing_buttons_.size();
-                pressed_pointing_buttons_.erase(elements_key(usage_page, usage));
+                size_t size = pressed_keys_.size();
+                pressed_keys_.erase(elements_key(*hid_usage_page, *hid_usage));
                 if (size > 0) {
-                  post_device_keys_and_pointing_buttons_are_released_event_if_needed(time_stamp);
+                  post_device_keys_and_pointing_buttons_are_released_event_if_needed(hid_value->get_time_stamp());
                 }
               }
             }
           }
         }
-
-        CFRelease(value);
-
-      } else {
-        break;
       }
     }
 
@@ -808,8 +812,7 @@ private:
   }
 
   void post_device_keys_and_pointing_buttons_are_released_event_if_needed(uint64_t time_stamp) {
-    if (pressed_keys_.empty() &&
-        pressed_pointing_buttons_.empty()) {
+    if (pressed_keys_.empty()) {
       auto event = event_queue::queued_event::event::make_device_keys_and_pointing_buttons_are_released_event();
       input_event_queue_.emplace_back_event(device_id_,
                                             time_stamp,
