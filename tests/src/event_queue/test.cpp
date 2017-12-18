@@ -12,13 +12,6 @@
                            krbn::event_type::EVENT_TYPE,                               \
                            ORIGINAL_EVENT)
 
-#define ENQUEUE_USAGE(QUEUE, DEVICE_ID, TIME_STAMP, USAGE_PAGE, USAGE, VALUE) \
-  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                        \
-                           TIME_STAMP,                                        \
-                           krbn::hid_usage_page(USAGE_PAGE),                  \
-                           krbn::hid_usage(USAGE),                            \
-                           VALUE)
-
 #define PUSH_BACK_QUEUED_EVENT(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
   VECTOR.push_back(krbn::event_queue::queued_event(krbn::device_id(DEVICE_ID),                   \
                                                    TIME_STAMP,                                   \
@@ -405,37 +398,6 @@ TEST_CASE("needs_swap") {
   REQUIRE(krbn::event_queue::needs_swap(right_shift_down, spacebar_up) == false);
 }
 
-TEST_CASE("emplace_back_event.usage_page") {
-  krbn::event_queue event_queue;
-
-  REQUIRE(ENQUEUE_USAGE(event_queue, 1, 0, kHIDPage_KeyboardOrKeypad, kHIDUsage_KeyboardErrorRollOver, 1) == false);
-  REQUIRE(ENQUEUE_USAGE(event_queue, 1, 100, kHIDPage_KeyboardOrKeypad, kHIDUsage_KeyboardTab, 1) == true);
-  REQUIRE(ENQUEUE_USAGE(event_queue, 1, 200, kHIDPage_KeyboardOrKeypad, kHIDUsage_KeyboardTab, 0) == true);
-  REQUIRE(ENQUEUE_USAGE(event_queue, 1, 300, kHIDPage_Button, 2, 1) == true);
-  REQUIRE(ENQUEUE_USAGE(event_queue, 1, 400, kHIDPage_Button, 2, 0) == true);
-  REQUIRE(ENQUEUE_USAGE(event_queue, 1, 500, kHIDPage_GenericDesktop, kHIDUsage_GD_X, 10) == true);
-  REQUIRE(ENQUEUE_USAGE(event_queue, 1, 600, kHIDPage_GenericDesktop, kHIDUsage_GD_Y, -10) == true);
-
-  std::vector<krbn::event_queue::queued_event> expected;
-  PUSH_BACK_QUEUED_EVENT(expected, 1, 100, tab_event, key_down, tab_event);
-  PUSH_BACK_QUEUED_EVENT(expected, 1, 200, tab_event, key_up, tab_event);
-  PUSH_BACK_QUEUED_EVENT(expected, 1, 300, button2_event, key_down, button2_event);
-  PUSH_BACK_QUEUED_EVENT(expected, 1, 400, button2_event, key_up, button2_event);
-  {
-    krbn::pointing_motion pointing_motion;
-    pointing_motion.set_x(10);
-    krbn::event_queue::queued_event::event e(pointing_motion);
-    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, e, single, e);
-  }
-  {
-    krbn::pointing_motion pointing_motion;
-    pointing_motion.set_y(-10);
-    krbn::event_queue::queued_event::event e(pointing_motion);
-    PUSH_BACK_QUEUED_EVENT(expected, 1, 600, e, single, e);
-  }
-  REQUIRE(event_queue.get_events() == expected);
-}
-
 TEST_CASE("increase_time_stamp_delay") {
   {
     krbn::event_queue event_queue;
@@ -446,7 +408,7 @@ TEST_CASE("increase_time_stamp_delay") {
 
     ENQUEUE_EVENT(event_queue, 1, 200, tab_event, key_up, tab_event);
 
-    ENQUEUE_USAGE(event_queue, 1, 300, kHIDPage_KeyboardOrKeypad, kHIDUsage_KeyboardTab, 1);
+    ENQUEUE_EVENT(event_queue, 1, 300, tab_event, key_down, tab_event);
 
     ENQUEUE_EVENT(event_queue, 1, 400, tab_event, key_up, tab_event);
 
