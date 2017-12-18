@@ -344,6 +344,15 @@ public:
                           horizontal_wheel_(0) {
   }
 
+  pointing_motion(int x,
+                  int y,
+                  int vertical_wheel,
+                  int horizontal_wheel) : x_(x),
+                                          y_(y),
+                                          vertical_wheel_(vertical_wheel),
+                                          horizontal_wheel_(horizontal_wheel) {
+  }
+
   pointing_motion(const nlohmann::json& json) : pointing_motion() {
     if (auto v = json_utility::find_optional<int>(json, "x")) {
       x_ = *v;

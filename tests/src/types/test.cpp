@@ -26,6 +26,14 @@ TEST_CASE("pointing_motion") {
     REQUIRE(pointing_motion.to_json() == json);
   }
 
+  {
+    krbn::pointing_motion pointing_motion(1, 2, 3, 4);
+    REQUIRE(pointing_motion.get_x() == 1);
+    REQUIRE(pointing_motion.get_y() == 2);
+    REQUIRE(pointing_motion.get_vertical_wheel() == 3);
+    REQUIRE(pointing_motion.get_horizontal_wheel() == 4);
+  }
+
   // setter, getter
   {
     krbn::pointing_motion pointing_motion;
@@ -65,42 +73,41 @@ TEST_CASE("pointing_motion") {
 
   // is_zero
   {
-    {
-      krbn::pointing_motion pointing_motion;
-      REQUIRE(pointing_motion.is_zero());
-    }
-    {
-      krbn::pointing_motion pointing_motion;
-      pointing_motion.set_x(1);
-      REQUIRE(!pointing_motion.is_zero());
-    }
-    {
-      krbn::pointing_motion pointing_motion;
-      pointing_motion.set_y(1);
-      REQUIRE(!pointing_motion.is_zero());
-    }
-    {
-      krbn::pointing_motion pointing_motion;
-      pointing_motion.set_vertical_wheel(1);
-      REQUIRE(!pointing_motion.is_zero());
-    }
-    {
-      krbn::pointing_motion pointing_motion;
-      pointing_motion.set_horizontal_wheel(1);
-      REQUIRE(!pointing_motion.is_zero());
-    }
-  }
+      {krbn::pointing_motion pointing_motion;
+  REQUIRE(pointing_motion.is_zero());
+}
+{
+  krbn::pointing_motion pointing_motion;
+  pointing_motion.set_x(1);
+  REQUIRE(!pointing_motion.is_zero());
+}
+{
+  krbn::pointing_motion pointing_motion;
+  pointing_motion.set_y(1);
+  REQUIRE(!pointing_motion.is_zero());
+}
+{
+  krbn::pointing_motion pointing_motion;
+  pointing_motion.set_vertical_wheel(1);
+  REQUIRE(!pointing_motion.is_zero());
+}
+{
+  krbn::pointing_motion pointing_motion;
+  pointing_motion.set_horizontal_wheel(1);
+  REQUIRE(!pointing_motion.is_zero());
+}
+}
 
-  // clear
-  {
-    krbn::pointing_motion pointing_motion;
-    pointing_motion.set_x(1);
-    pointing_motion.set_y(1);
-    pointing_motion.set_vertical_wheel(1);
-    pointing_motion.set_horizontal_wheel(1);
-    pointing_motion.clear();
-    REQUIRE(pointing_motion.is_zero());
-  }
+// clear
+{
+  krbn::pointing_motion pointing_motion;
+  pointing_motion.set_x(1);
+  pointing_motion.set_y(1);
+  pointing_motion.set_vertical_wheel(1);
+  pointing_motion.set_horizontal_wheel(1);
+  pointing_motion.clear();
+  REQUIRE(pointing_motion.is_zero());
+}
 }
 
 TEST_CASE("device_identifiers") {
