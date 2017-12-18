@@ -42,9 +42,6 @@ krbn::event_queue::queued_event::event mute_event(krbn::consumer_key_code::mute)
 
 krbn::event_queue::queued_event::event button2_event(krbn::pointing_button::button2);
 
-krbn::event_queue::queued_event::event pointing_x_10_event(krbn::event_queue::queued_event::event::type::pointing_x, 10);
-krbn::event_queue::queued_event::event pointing_y_m10_event(krbn::event_queue::queued_event::event::type::pointing_y, -10);
-
 krbn::event_queue::queued_event::event caps_lock_state_changed_1_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 1);
 krbn::event_queue::queued_event::event caps_lock_state_changed_0_event(krbn::event_queue::queued_event::event::type::caps_lock_state_changed, 0);
 
@@ -101,15 +98,6 @@ TEST_CASE("json") {
     auto e = krbn::event_queue::queued_event::event(pointing_motion);
 
     auto json = e.to_json();
-    REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
-    REQUIRE(json == event_from_json.to_json());
-  }
-  {
-    nlohmann::json expected;
-    expected["type"] = "pointing_x";
-    expected["integer_value"] = 10;
-    auto json = pointing_x_10_event.to_json();
     REQUIRE(json == expected);
     krbn::event_queue::queued_event::event event_from_json(json);
     REQUIRE(json == event_from_json.to_json());
@@ -204,8 +192,6 @@ TEST_CASE("json") {
 TEST_CASE("get_key_code") {
   REQUIRE(spacebar_event.get_key_code() == krbn::key_code::spacebar);
   REQUIRE(button2_event.get_key_code() == boost::none);
-  REQUIRE(pointing_x_10_event.get_key_code() == boost::none);
-  REQUIRE(pointing_y_m10_event.get_key_code() == boost::none);
   REQUIRE(caps_lock_state_changed_1_event.get_key_code() == boost::none);
   REQUIRE(caps_lock_state_changed_0_event.get_key_code() == boost::none);
   REQUIRE(device_keys_and_pointing_buttons_are_released_event.get_key_code() == boost::none);
@@ -435,8 +421,18 @@ TEST_CASE("emplace_back_event.usage_page") {
   PUSH_BACK_QUEUED_EVENT(expected, 1, 200, tab_event, key_up, tab_event);
   PUSH_BACK_QUEUED_EVENT(expected, 1, 300, button2_event, key_down, button2_event);
   PUSH_BACK_QUEUED_EVENT(expected, 1, 400, button2_event, key_up, button2_event);
-  PUSH_BACK_QUEUED_EVENT(expected, 1, 500, pointing_x_10_event, single, pointing_x_10_event);
-  PUSH_BACK_QUEUED_EVENT(expected, 1, 600, pointing_y_m10_event, single, pointing_y_m10_event);
+  {
+    krbn::pointing_motion pointing_motion;
+    pointing_motion.set_x(10);
+    krbn::event_queue::queued_event::event e(pointing_motion);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 500, e, single, e);
+  }
+  {
+    krbn::pointing_motion pointing_motion;
+    pointing_motion.set_y(-10);
+    krbn::event_queue::queued_event::event e(pointing_motion);
+    PUSH_BACK_QUEUED_EVENT(expected, 1, 600, e, single, e);
+  }
   REQUIRE(event_queue.get_events() == expected);
 }
 

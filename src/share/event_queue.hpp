@@ -24,10 +24,6 @@ public:
         consumer_key_code,
         pointing_button,
         pointing_motion,
-        pointing_x,
-        pointing_y,
-        pointing_vertical_wheel,
-        pointing_horizontal_wheel,
         // virtual events
         shell_command,
         select_input_source,
@@ -88,10 +84,6 @@ public:
             }
             break;
 
-          case type::pointing_x:
-          case type::pointing_y:
-          case type::pointing_vertical_wheel:
-          case type::pointing_horizontal_wheel:
           case type::caps_lock_state_changed:
             if (auto v = json_utility::find_optional<int>(json, "integer_value")) {
               value_ = *v;
@@ -197,10 +189,6 @@ public:
             }
             break;
 
-          case type::pointing_x:
-          case type::pointing_y:
-          case type::pointing_vertical_wheel:
-          case type::pointing_horizontal_wheel:
           case type::caps_lock_state_changed:
             if (auto v = get_integer_value()) {
               json["integer_value"] = *v;
@@ -394,11 +382,7 @@ public:
 
       boost::optional<int64_t> get_integer_value(void) const {
         try {
-          if (type_ == type::pointing_x ||
-              type_ == type::pointing_y ||
-              type_ == type::pointing_vertical_wheel ||
-              type_ == type::pointing_horizontal_wheel ||
-              type_ == type::caps_lock_state_changed) {
+          if (type_ == type::caps_lock_state_changed) {
             return boost::get<int64_t>(value_);
           }
         } catch (boost::bad_get&) {
@@ -500,10 +484,6 @@ public:
           TO_C_STRING(consumer_key_code);
           TO_C_STRING(pointing_button);
           TO_C_STRING(pointing_motion);
-          TO_C_STRING(pointing_x);
-          TO_C_STRING(pointing_y);
-          TO_C_STRING(pointing_vertical_wheel);
-          TO_C_STRING(pointing_horizontal_wheel);
           TO_C_STRING(shell_command);
           TO_C_STRING(select_input_source);
           TO_C_STRING(set_variable);
@@ -535,10 +515,6 @@ public:
         TO_TYPE(consumer_key_code);
         TO_TYPE(pointing_button);
         TO_TYPE(pointing_motion);
-        TO_TYPE(pointing_x);
-        TO_TYPE(pointing_y);
-        TO_TYPE(pointing_vertical_wheel);
-        TO_TYPE(pointing_horizontal_wheel);
         TO_TYPE(shell_command);
         TO_TYPE(select_input_source);
         TO_TYPE(set_variable);
@@ -563,7 +539,7 @@ public:
                      consumer_key_code,                              // For type::consumer_key_code
                      pointing_button,                                // For type::pointing_button
                      pointing_motion,                                // For type::pointing_motion
-                     int64_t,                                        // For type::pointing_x, type::pointing_y, type::pointing_vertical_wheel, type::pointing_horizontal_wheel
+                     int64_t,                                        // For type::caps_lock_state_changed
                      std::string,                                    // For shell_command, keyboard_type_changed
                      std::vector<input_source_selector>,             // For select_input_source
                      std::pair<std::string, int>,                    // For set_variable
@@ -735,7 +711,9 @@ public:
       case hid_usage_page::generic_desktop:
         switch (usage) {
           case hid_usage::gd_x: {
-            queued_event::event event(queued_event::event::type::pointing_x, integer_value);
+            pointing_motion pointing_motion;
+            pointing_motion.set_x(static_cast<int>(integer_value));
+            queued_event::event event(pointing_motion);
             emplace_back_event(device_id,
                                time_stamp,
                                event,
@@ -745,7 +723,9 @@ public:
           }
 
           case hid_usage::gd_y: {
-            queued_event::event event(queued_event::event::type::pointing_y, integer_value);
+            pointing_motion pointing_motion;
+            pointing_motion.set_y(static_cast<int>(integer_value));
+            queued_event::event event(pointing_motion);
             emplace_back_event(device_id,
                                time_stamp,
                                event,
@@ -755,7 +735,9 @@ public:
           }
 
           case hid_usage::gd_wheel: {
-            queued_event::event event(queued_event::event::type::pointing_vertical_wheel, integer_value);
+            pointing_motion pointing_motion;
+            pointing_motion.set_vertical_wheel(static_cast<int>(integer_value));
+            queued_event::event event(pointing_motion);
             emplace_back_event(device_id,
                                time_stamp,
                                event,
@@ -772,7 +754,9 @@ public:
       case hid_usage_page::consumer:
         switch (usage) {
           case hid_usage::csmr_acpan: {
-            queued_event::event event(queued_event::event::type::pointing_horizontal_wheel, integer_value);
+            pointing_motion pointing_motion;
+            pointing_motion.set_horizontal_wheel(static_cast<int>(integer_value));
+            queued_event::event event(pointing_motion);
             emplace_back_event(device_id,
                                time_stamp,
                                event,
@@ -1057,8 +1041,8 @@ inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_
     stream << ",\"pointing_button\":" << *pointing_button;
   }
 
-  if (auto integer_value = event.get_integer_value()) {
-    stream << ",\"integer_value\":" << *integer_value;
+  if (auto pointing_motion = event.get_pointing_motion()) {
+    stream << ",\"pointing_motion\":" << pointing_motion->to_json();
   }
 
   stream << "}";

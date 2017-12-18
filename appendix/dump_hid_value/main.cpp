@@ -133,31 +133,8 @@ private:
           break;
 
         case krbn::event_queue::queued_event::event::type::pointing_motion:
-          break;
-
-        case krbn::event_queue::queued_event::event::type::pointing_x:
-        case krbn::event_queue::queued_event::event::type::pointing_y:
-        case krbn::event_queue::queued_event::event::type::pointing_vertical_wheel:
-        case krbn::event_queue::queued_event::event::type::pointing_horizontal_wheel:
-          if (auto integer_value = queued_event.get_event().get_integer_value()) {
-            switch (queued_event.get_event().get_type()) {
-              case krbn::event_queue::queued_event::event::type::pointing_x:
-                std::cout << "Pointing X: ";
-                break;
-              case krbn::event_queue::queued_event::event::type::pointing_y:
-                std::cout << "Pointing Y: ";
-                break;
-              case krbn::event_queue::queued_event::event::type::pointing_vertical_wheel:
-                std::cout << "Vertical Wheel: ";
-                break;
-              case krbn::event_queue::queued_event::event::type::pointing_horizontal_wheel:
-                std::cout << "Horizontal Wheel: ";
-                break;
-              default:
-                break;
-            }
-
-            std::cout << std::dec << *integer_value << std::endl;
+          if (auto pointing_motion = queued_event.get_event().get_pointing_motion()) {
+            std::cout << "pointing_motion: " << pointing_motion->to_json() << std::endl;
           }
           break;
 

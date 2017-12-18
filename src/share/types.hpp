@@ -400,6 +400,13 @@ public:
     horizontal_wheel_ = value;
   }
 
+  bool is_zero(void) const {
+    return x_ == 0 &&
+           y_ == 0 &&
+           vertical_wheel_ == 0 &&
+           horizontal_wheel_ == 0;
+  }
+
   bool operator==(const pointing_motion& other) const {
     return x_ == other.x_ &&
            y_ == other.y_ &&

@@ -671,12 +671,10 @@ private:
         goto run;
       }
     }
-    if (event.get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel ||
-        event.get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
-      if (auto integer_value = event.get_integer_value()) {
-        if (*integer_value != 0) {
-          goto run;
-        }
+    if (auto pointing_motion = event.get_pointing_motion()) {
+      if (pointing_motion->get_vertical_wheel() != 0 ||
+          pointing_motion->get_horizontal_wheel() != 0) {
+        goto run;
       }
     }
 

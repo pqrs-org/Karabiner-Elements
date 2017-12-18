@@ -562,13 +562,17 @@ private:
       case kCGEventRightMouseDragged:
       case kCGEventOtherMouseDragged:
         pseudo_event_type = event_type::single;
-        pseudo_event = event_queue::queued_event::event(event_queue::queued_event::event::type::pointing_x, 0);
+        pseudo_event = event_queue::queued_event::event(pointing_motion());
         break;
 
       case kCGEventScrollWheel:
         pseudo_event_type = event_type::single;
         // Set non-zero value for `manipulator::details::base::unset_alone_if_needed`.
-        pseudo_event = event_queue::queued_event::event(event_queue::queued_event::event::type::pointing_vertical_wheel, 1);
+        {
+          pointing_motion pointing_motion;
+          pointing_motion.set_vertical_wheel(1);
+          pseudo_event = event_queue::queued_event::event(pointing_motion);
+        }
         break;
 
       case kCGEventNull:

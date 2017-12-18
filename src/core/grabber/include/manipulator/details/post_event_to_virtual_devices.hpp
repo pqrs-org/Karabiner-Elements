@@ -199,8 +199,8 @@ public:
       type type_;
       boost::variant<pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event,
                      pqrs::karabiner_virtual_hid_device::hid_report::pointing_input,
-                     boost::blank, // For clear_keyboard_modifier_flags
-                     std::string, // For shell_command
+                     boost::blank,                      // For clear_keyboard_modifier_flags
+                     std::string,                       // For shell_command
                      std::vector<input_source_selector> // For select_input_source
                      >
           value_;
@@ -757,11 +757,7 @@ public:
               dispatch_modifier_key_event_before = true;
             }
 
-          } else if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_motion ||
-                     front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_x ||
-                     front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_y ||
-                     front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_vertical_wheel ||
-                     front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_horizontal_wheel) {
+          } else if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_motion) {
             if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
               dispatch_modifier_key_event = true;
               dispatch_modifier_key_event_before = true;
@@ -837,11 +833,7 @@ public:
           break;
 
         case event_queue::queued_event::event::type::pointing_button:
-        case event_queue::queued_event::event::type::pointing_motion:
-        case event_queue::queued_event::event::type::pointing_x:
-        case event_queue::queued_event::event::type::pointing_y:
-        case event_queue::queued_event::event::type::pointing_vertical_wheel:
-        case event_queue::queued_event::event::type::pointing_horizontal_wheel: {
+        case event_queue::queued_event::event::type::pointing_motion: {
           auto report = output_event_queue->get_pointing_button_manager().make_pointing_input_report();
 
           if (auto pointing_motion = front_input_event.get_event().get_pointing_motion()) {
@@ -849,42 +841,6 @@ public:
             report.y = pointing_motion->get_y();
             report.vertical_wheel = pointing_motion->get_vertical_wheel();
             report.horizontal_wheel = pointing_motion->get_horizontal_wheel();
-          }
-
-          if (auto integer_value = front_input_event.get_event().get_integer_value()) {
-            switch (front_input_event.get_event().get_type()) {
-              case event_queue::queued_event::event::type::pointing_x:
-                report.x = *integer_value;
-                break;
-              case event_queue::queued_event::event::type::pointing_y:
-                report.y = *integer_value;
-                break;
-              case event_queue::queued_event::event::type::pointing_vertical_wheel:
-                report.vertical_wheel = *integer_value;
-                break;
-              case event_queue::queued_event::event::type::pointing_horizontal_wheel:
-                report.horizontal_wheel = *integer_value;
-                break;
-              case event_queue::queued_event::event::type::none:
-              case event_queue::queued_event::event::type::key_code:
-              case event_queue::queued_event::event::type::consumer_key_code:
-              case event_queue::queued_event::event::type::pointing_button:
-              case event_queue::queued_event::event::type::pointing_motion:
-              case event_queue::queued_event::event::type::shell_command:
-              case event_queue::queued_event::event::type::select_input_source:
-              case event_queue::queued_event::event::type::set_variable:
-              case event_queue::queued_event::event::type::mouse_key:
-              case event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
-              case event_queue::queued_event::event::type::device_ungrabbed:
-              case event_queue::queued_event::event::type::caps_lock_state_changed:
-              case event_queue::queued_event::event::type::event_from_ignored_device:
-              case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
-              case event_queue::queued_event::event::type::frontmost_application_changed:
-              case event_queue::queued_event::event::type::input_source_changed:
-              case event_queue::queued_event::event::type::keyboard_type_changed:
-                // Do nothing
-                break;
-            }
           }
 
           queue_.emplace_back_pointing_input(report,

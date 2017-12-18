@@ -86,10 +86,6 @@ public:
           case event_queue::queued_event::event::type::consumer_key_code:
           case event_queue::queued_event::event::type::pointing_button:
           case event_queue::queued_event::event::type::pointing_motion:
-          case event_queue::queued_event::event::type::pointing_x:
-          case event_queue::queued_event::event::type::pointing_y:
-          case event_queue::queued_event::event::type::pointing_vertical_wheel:
-          case event_queue::queued_event::event::type::pointing_horizontal_wheel:
           case event_queue::queued_event::event::type::shell_command:
           case event_queue::queued_event::event::type::select_input_source:
           case event_queue::queued_event::event::type::mouse_key:

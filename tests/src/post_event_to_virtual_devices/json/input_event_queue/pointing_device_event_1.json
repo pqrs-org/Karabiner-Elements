@@ -47,14 +47,18 @@
     {
         "device_id": 1,
         "event": {
-            "integer_value": -10,
-            "type": "pointing_x"
+            "pointing_motion": {
+                    "x": -10
+            },
+            "type": "pointing_motion"
         },
         "event_type": "single",
         "lazy": false,
         "original_event": {
-            "integer_value": -10,
-            "type": "pointing_x"
+            "pointing_motion": {
+                    "x": -10
+            },
+            "type": "pointing_motion"
         },
         "time_stamp": 8000000,
         "valid": true
