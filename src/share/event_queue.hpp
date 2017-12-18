@@ -1001,6 +1001,115 @@ public:
     return false;
   }
 
+  static std::vector<std::pair<boost::optional<hid_value>, queued_event>> make_queued_events(const std::vector<hid_value>& hid_values,
+                                                                                             device_id device_id) {
+    std::vector<std::pair<boost::optional<hid_value>, queued_event>> result;
+
+    // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.
+    // We have to join them into one pointing_motion event to avoid VMware Remote Console problem that VMRC ignores frequently events.
+
+    boost::optional<uint64_t> pointing_motion_time_stamp;
+    boost::optional<int> pointing_motion_x;
+    boost::optional<int> pointing_motion_y;
+    boost::optional<int> pointing_motion_vertical_wheel;
+    boost::optional<int> pointing_motion_horizontal_wheel;
+
+    auto emplace_back_pointing_motion_event = [&](void) {
+      if (pointing_motion_time_stamp) {
+        pointing_motion pointing_motion(
+            pointing_motion_x ? *pointing_motion_x : 0,
+            pointing_motion_y ? *pointing_motion_y : 0,
+            pointing_motion_vertical_wheel ? *pointing_motion_vertical_wheel : 0,
+            pointing_motion_horizontal_wheel ? *pointing_motion_horizontal_wheel : 0);
+
+        event_queue::queued_event::event event(pointing_motion);
+
+        result.emplace_back(boost::none,
+                            queued_event(device_id,
+                                         *pointing_motion_time_stamp,
+                                         event,
+                                         event_type::single,
+                                         event));
+
+        pointing_motion_time_stamp = boost::none;
+        pointing_motion_x = boost::none;
+        pointing_motion_y = boost::none;
+        pointing_motion_vertical_wheel = boost::none;
+        pointing_motion_horizontal_wheel = boost::none;
+      }
+    };
+
+    for (const auto& v : hid_values) {
+      if (auto usage_page = v.get_hid_usage_page()) {
+        if (auto usage = v.get_hid_usage()) {
+          if (auto key_code = types::make_key_code(*usage_page, *usage)) {
+            event_queue::queued_event::event event(*key_code);
+            result.emplace_back(v,
+                                queued_event(device_id,
+                                             v.get_time_stamp(),
+                                             event,
+                                             v.get_integer_value() ? event_type::key_down : event_type::key_up,
+                                             event));
+
+          } else if (auto consumer_key_code = types::make_consumer_key_code(*usage_page, *usage)) {
+            event_queue::queued_event::event event(*consumer_key_code);
+            result.emplace_back(v,
+                                queued_event(device_id,
+                                             v.get_time_stamp(),
+                                             event,
+                                             v.get_integer_value() ? event_type::key_down : event_type::key_up,
+                                             event));
+
+          } else if (auto pointing_button = types::make_pointing_button(*usage_page, *usage)) {
+            event_queue::queued_event::event event(*pointing_button);
+            result.emplace_back(v,
+                                queued_event(device_id,
+                                             v.get_time_stamp(),
+                                             event,
+                                             v.get_integer_value() ? event_type::key_down : event_type::key_up,
+                                             event));
+
+          } else if (*usage_page == hid_usage_page::generic_desktop &&
+                     *usage == hid_usage::gd_x) {
+            if (pointing_motion_x) {
+              emplace_back_pointing_motion_event();
+            }
+            pointing_motion_time_stamp = v.get_time_stamp();
+            pointing_motion_x = static_cast<int>(v.get_integer_value());
+
+          } else if (*usage_page == hid_usage_page::generic_desktop &&
+                     *usage == hid_usage::gd_y) {
+            if (pointing_motion_y) {
+              emplace_back_pointing_motion_event();
+            }
+            pointing_motion_time_stamp = v.get_time_stamp();
+            pointing_motion_y = static_cast<int>(v.get_integer_value());
+
+          } else if (*usage_page == hid_usage_page::generic_desktop &&
+                     *usage == hid_usage::gd_wheel) {
+            if (pointing_motion_vertical_wheel) {
+              emplace_back_pointing_motion_event();
+            }
+            pointing_motion_time_stamp = v.get_time_stamp();
+            pointing_motion_vertical_wheel = static_cast<int>(v.get_integer_value());
+
+          } else if (*usage_page == hid_usage_page::consumer &&
+                     *usage == hid_usage::csmr_acpan) {
+            if (pointing_motion_horizontal_wheel) {
+              emplace_back_pointing_motion_event();
+            }
+            pointing_motion_time_stamp = v.get_time_stamp();
+            pointing_motion_horizontal_wheel = static_cast<int>(v.get_integer_value());
+          }
+        }
+      }
+    }
+
+    emplace_back_pointing_motion_event();
+
+    return result;
+  }
+
 private:
   void sort_events(void) {
     for (size_t i = 0; i < events_.size() - 1;) {

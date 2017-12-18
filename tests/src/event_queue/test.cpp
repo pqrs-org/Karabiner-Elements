@@ -492,3 +492,121 @@ TEST_CASE("caps_lock_state_changed") {
     REQUIRE(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
   }
 }
+
+TEST_CASE("make_queued_events") {
+  std::vector<krbn::hid_value> hid_values;
+
+  hid_values.emplace_back(krbn::hid_value(1000,
+                                          1,
+                                          *krbn::types::make_hid_usage_page(krbn::key_code::spacebar),
+                                          *krbn::types::make_hid_usage(krbn::key_code::spacebar)));
+  hid_values.emplace_back(krbn::hid_value(2000,
+                                          0,
+                                          *krbn::types::make_hid_usage_page(krbn::key_code::spacebar),
+                                          *krbn::types::make_hid_usage(krbn::key_code::spacebar)));
+
+  hid_values.emplace_back(krbn::hid_value(3000,
+                                          1,
+                                          *krbn::types::make_hid_usage_page(krbn::consumer_key_code::mute),
+                                          *krbn::types::make_hid_usage(krbn::consumer_key_code::mute)));
+  hid_values.emplace_back(krbn::hid_value(4000,
+                                          0,
+                                          *krbn::types::make_hid_usage_page(krbn::consumer_key_code::mute),
+                                          *krbn::types::make_hid_usage(krbn::consumer_key_code::mute)));
+
+  hid_values.emplace_back(krbn::hid_value(5000,
+                                          10,
+                                          krbn::hid_usage_page::generic_desktop,
+                                          krbn::hid_usage::gd_x));
+  hid_values.emplace_back(krbn::hid_value(5000,
+                                          20,
+                                          krbn::hid_usage_page::generic_desktop,
+                                          krbn::hid_usage::gd_y));
+  hid_values.emplace_back(krbn::hid_value(5000,
+                                          30,
+                                          krbn::hid_usage_page::generic_desktop,
+                                          krbn::hid_usage::gd_wheel));
+  hid_values.emplace_back(krbn::hid_value(5000,
+                                          40,
+                                          krbn::hid_usage_page::consumer,
+                                          krbn::hid_usage::csmr_acpan));
+
+  hid_values.emplace_back(krbn::hid_value(6000,
+                                          -10,
+                                          krbn::hid_usage_page::generic_desktop,
+                                          krbn::hid_usage::gd_x));
+  hid_values.emplace_back(krbn::hid_value(6000,
+                                          -20,
+                                          krbn::hid_usage_page::generic_desktop,
+                                          krbn::hid_usage::gd_y));
+  hid_values.emplace_back(krbn::hid_value(6000,
+                                          -30,
+                                          krbn::hid_usage_page::generic_desktop,
+                                          krbn::hid_usage::gd_wheel));
+  hid_values.emplace_back(krbn::hid_value(6000,
+                                          -40,
+                                          krbn::hid_usage_page::consumer,
+                                          krbn::hid_usage::csmr_acpan));
+
+  hid_values.emplace_back(krbn::hid_value(7000,
+                                          10,
+                                          krbn::hid_usage_page::generic_desktop,
+                                          krbn::hid_usage::gd_x));
+
+  hid_values.emplace_back(krbn::hid_value(8000,
+                                          0,
+                                          krbn::hid_usage_page::generic_desktop,
+                                          krbn::hid_usage::gd_x));
+
+  auto queued_events = krbn::event_queue::make_queued_events(hid_values,
+                                                             krbn::device_id(1));
+  REQUIRE(queued_events.size() == 8);
+  REQUIRE(*(queued_events[0].first) == hid_values[0]);
+  REQUIRE(*(queued_events[1].first) == hid_values[1]);
+  REQUIRE(*(queued_events[2].first) == hid_values[2]);
+  REQUIRE(*(queued_events[3].first) == hid_values[3]);
+  REQUIRE(!queued_events[4].first);
+  REQUIRE(!queued_events[5].first);
+  REQUIRE(!queued_events[6].first);
+  REQUIRE(!queued_events[7].first);
+
+  REQUIRE(queued_events[0].second.get_device_id() == krbn::device_id(1));
+  REQUIRE(queued_events[0].second.get_time_stamp() == 1000);
+  REQUIRE(queued_events[0].second.get_event().get_key_code() == krbn::key_code::spacebar);
+  REQUIRE(queued_events[0].second.get_event_type() == krbn::event_type::key_down);
+
+  REQUIRE(queued_events[1].second.get_device_id() == krbn::device_id(1));
+  REQUIRE(queued_events[1].second.get_time_stamp() == 2000);
+  REQUIRE(queued_events[1].second.get_event().get_key_code() == krbn::key_code::spacebar);
+  REQUIRE(queued_events[1].second.get_event_type() == krbn::event_type::key_up);
+
+  REQUIRE(queued_events[2].second.get_device_id() == krbn::device_id(1));
+  REQUIRE(queued_events[2].second.get_time_stamp() == 3000);
+  REQUIRE(queued_events[2].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
+  REQUIRE(queued_events[2].second.get_event_type() == krbn::event_type::key_down);
+
+  REQUIRE(queued_events[3].second.get_device_id() == krbn::device_id(1));
+  REQUIRE(queued_events[3].second.get_time_stamp() == 4000);
+  REQUIRE(queued_events[3].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
+  REQUIRE(queued_events[3].second.get_event_type() == krbn::event_type::key_up);
+
+  REQUIRE(queued_events[4].second.get_device_id() == krbn::device_id(1));
+  REQUIRE(queued_events[4].second.get_time_stamp() == 5000);
+  REQUIRE(queued_events[4].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 20, 30, 40));
+  REQUIRE(queued_events[4].second.get_event_type() == krbn::event_type::single);
+
+  REQUIRE(queued_events[5].second.get_device_id() == krbn::device_id(1));
+  REQUIRE(queued_events[5].second.get_time_stamp() == 6000);
+  REQUIRE(queued_events[5].second.get_event().get_pointing_motion() == krbn::pointing_motion(-10, -20, -30, -40));
+  REQUIRE(queued_events[5].second.get_event_type() == krbn::event_type::single);
+
+  REQUIRE(queued_events[6].second.get_device_id() == krbn::device_id(1));
+  REQUIRE(queued_events[6].second.get_time_stamp() == 7000);
+  REQUIRE(queued_events[6].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 0, 0, 0));
+  REQUIRE(queued_events[6].second.get_event_type() == krbn::event_type::single);
+
+  REQUIRE(queued_events[7].second.get_device_id() == krbn::device_id(1));
+  REQUIRE(queued_events[7].second.get_time_stamp() == 8000);
+  REQUIRE(queued_events[7].second.get_event().get_pointing_motion() == krbn::pointing_motion(0, 0, 0, 0));
+  REQUIRE(queued_events[7].second.get_event_type() == krbn::event_type::single);
+}
