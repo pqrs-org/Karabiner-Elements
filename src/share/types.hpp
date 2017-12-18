@@ -12,7 +12,9 @@
 #include "system_preferences.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
+#include <IOKit/hid/IOHIDElement.h>
 #include <IOKit/hid/IOHIDUsageTables.h>
+#include <IOKit/hid/IOHIDValue.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <boost/optional.hpp>
@@ -334,6 +336,49 @@ enum class product_id : uint32_t {
 };
 
 enum class location_id : uint32_t {
+};
+
+class hid_value final {
+public:
+  hid_value(uint64_t time_stamp,
+            CFIndex integer_value,
+            boost::optional<hid_usage_page> hid_usage_page,
+            boost::optional<hid_usage> hid_usage) : time_stamp_(time_stamp),
+                                                    integer_value_(integer_value),
+                                                    hid_usage_page_(hid_usage_page),
+                                                    hid_usage_(hid_usage) {
+  }
+
+  hid_value(IOHIDValueRef value) {
+    time_stamp_ = IOHIDValueGetTimeStamp(value);
+    integer_value_ = IOHIDValueGetIntegerValue(value);
+    if (auto element = IOHIDValueGetElement(value)) {
+      hid_usage_page_ = hid_usage_page(IOHIDElementGetUsagePage(element));
+      hid_usage_ = hid_usage(IOHIDElementGetUsage(element));
+    }
+  }
+
+  uint64_t get_time_stamp(void) const {
+    return time_stamp_;
+  }
+
+  CFIndex get_integer_value(void) const {
+    return integer_value_;
+  }
+
+  boost::optional<hid_usage_page> get_hid_usage_page(void) const {
+    return hid_usage_page_;
+  }
+
+  boost::optional<hid_usage> get_hid_usage(void) const {
+    return hid_usage_;
+  }
+
+private:
+  uint64_t time_stamp_;
+  CFIndex integer_value_;
+  boost::optional<hid_usage_page> hid_usage_page_;
+  boost::optional<hid_usage> hid_usage_;
 };
 
 class pointing_motion final {
