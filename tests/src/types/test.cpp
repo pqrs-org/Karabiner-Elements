@@ -62,6 +62,45 @@ TEST_CASE("pointing_motion") {
     REQUIRE(pointing_motion.get_vertical_wheel() == 20);
     REQUIRE(pointing_motion.get_horizontal_wheel() == -20);
   }
+
+  // is_zero
+  {
+    {
+      krbn::pointing_motion pointing_motion;
+      REQUIRE(pointing_motion.is_zero());
+    }
+    {
+      krbn::pointing_motion pointing_motion;
+      pointing_motion.set_x(1);
+      REQUIRE(!pointing_motion.is_zero());
+    }
+    {
+      krbn::pointing_motion pointing_motion;
+      pointing_motion.set_y(1);
+      REQUIRE(!pointing_motion.is_zero());
+    }
+    {
+      krbn::pointing_motion pointing_motion;
+      pointing_motion.set_vertical_wheel(1);
+      REQUIRE(!pointing_motion.is_zero());
+    }
+    {
+      krbn::pointing_motion pointing_motion;
+      pointing_motion.set_horizontal_wheel(1);
+      REQUIRE(!pointing_motion.is_zero());
+    }
+  }
+
+  // clear
+  {
+    krbn::pointing_motion pointing_motion;
+    pointing_motion.set_x(1);
+    pointing_motion.set_y(1);
+    pointing_motion.set_vertical_wheel(1);
+    pointing_motion.set_horizontal_wheel(1);
+    pointing_motion.clear();
+    REQUIRE(pointing_motion.is_zero());
+  }
 }
 
 TEST_CASE("device_identifiers") {
