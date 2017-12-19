@@ -1,3 +1,8 @@
+# Since version 11.4.0
+
+* Avoided a VMware Remote Console issue that mouse pointer does not work properly on VMRC when Karabiner-Elements grabs the pointing device.
+
+
 # version 11.4.0
 
 * Fixed an issue that the checkbox in `Preferences > Devices` is disabled for keyboards which do not have their own vendor id.
