@@ -297,12 +297,12 @@ public:
       }
 
       if (is_target) {
-        std::unordered_set<modifier_flag> from_mandatory_modifiers;
-        uint64_t key_down_time_stamp = 0;
-        bool alone = false;
+        std::shared_ptr<manipulated_original_event> current_manipulated_original_event;
 
         switch (front_input_event.get_event_type()) {
-          case event_type::key_down:
+          case event_type::key_down: {
+            std::unordered_set<modifier_flag> from_mandatory_modifiers;
+
             // ----------------------------------------
             // Check whether event is target.
 
@@ -328,12 +328,14 @@ public:
             // ----------------------------------------
 
             if (is_target) {
-              manipulated_original_events_.emplace_back(front_input_event.get_device_id(),
-                                                        front_input_event.get_original_event(),
-                                                        from_mandatory_modifiers,
-                                                        front_input_event.get_time_stamp());
+              current_manipulated_original_event = std::make_shared<manipulated_original_event>(front_input_event.get_device_id(),
+                                                                                                front_input_event.get_original_event(),
+                                                                                                from_mandatory_modifiers,
+                                                                                                front_input_event.get_time_stamp());
+              manipulated_original_events_.push_back(current_manipulated_original_event);
             }
             break;
+          }
 
           case event_type::key_up: {
             // event_type::key_up
@@ -343,16 +345,12 @@ public:
             auto it = std::find_if(std::begin(manipulated_original_events_),
                                    std::end(manipulated_original_events_),
                                    [&](const auto& manipulated_original_event) {
-                                     return manipulated_original_event.get_device_id() == front_input_event.get_device_id() &&
-                                            manipulated_original_event.get_original_event() == front_input_event.get_original_event();
+                                     return manipulated_original_event->get_device_id() == front_input_event.get_device_id() &&
+                                            manipulated_original_event->get_original_event() == front_input_event.get_original_event();
                                    });
             if (it != std::end(manipulated_original_events_)) {
-              from_mandatory_modifiers = it->get_from_mandatory_modifiers();
-              key_down_time_stamp = it->get_key_down_time_stamp();
-              alone = it->get_alone();
+              current_manipulated_original_event = *it;
               manipulated_original_events_.erase(it);
-            } else {
-              is_target = false;
             }
             break;
           }
@@ -361,7 +359,7 @@ public:
             break;
         }
 
-        if (is_target) {
+        if (current_manipulated_original_event) {
           front_input_event.set_valid(false);
 
           uint64_t time_stamp_delay = 0;
@@ -370,7 +368,7 @@ public:
 
           if (front_input_event.get_event_type() == event_type::key_down) {
             post_lazy_modifier_key_events(front_input_event,
-                                          from_mandatory_modifiers,
+                                          current_manipulated_original_event->get_from_mandatory_modifiers(),
                                           event_type::key_up,
                                           time_stamp_delay,
                                           *output_event_queue);
@@ -447,8 +445,8 @@ public:
                                          time_stamp_delay,
                                          *output_event_queue);
 
-                    uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - key_down_time_stamp);
-                    if (alone &&
+                    uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
+                    if (current_manipulated_original_event->get_alone() &&
                         nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
                       post_extra_to_events(front_input_event,
                                            to_if_alone_,
@@ -469,7 +467,7 @@ public:
           if ((front_input_event.get_event_type() == event_type::key_down && !preserve_from_mandatory_modifiers_up()) ||
               (front_input_event.get_event_type() == event_type::key_up && preserve_from_mandatory_modifiers_up())) {
             post_lazy_modifier_key_events(front_input_event,
-                                          from_mandatory_modifiers,
+                                          current_manipulated_original_event->get_from_mandatory_modifiers(),
                                           event_type::key_down,
                                           time_stamp_delay,
                                           *output_event_queue);
@@ -479,7 +477,7 @@ public:
 
           if (to_delayed_action_) {
             to_delayed_action_->setup(front_input_event,
-                                      from_mandatory_modifiers,
+                                      current_manipulated_original_event->get_from_mandatory_modifiers(),
                                       output_event_queue,
                                       parameters_.get_basic_to_delayed_action_delay_milliseconds());
           }
@@ -528,7 +526,7 @@ public:
     manipulated_original_events_.erase(std::remove_if(std::begin(manipulated_original_events_),
                                                       std::end(manipulated_original_events_),
                                                       [&](const auto& e) {
-                                                        return e.get_device_id() == device_id;
+                                                        return e->get_device_id() == device_id;
                                                       }),
                                        std::end(manipulated_original_events_));
   }
@@ -682,7 +680,7 @@ private:
 
   run:
     for (auto& e : manipulated_original_events_) {
-      e.unset_alone();
+      e->unset_alone();
     }
   }
 
@@ -694,7 +692,7 @@ private:
   std::vector<to_event_definition> to_if_alone_;
   std::unique_ptr<to_delayed_action> to_delayed_action_;
 
-  std::vector<manipulated_original_event> manipulated_original_events_;
+  std::vector<std::shared_ptr<manipulated_original_event>> manipulated_original_events_;
 };
 } // namespace details
 } // namespace manipulator
