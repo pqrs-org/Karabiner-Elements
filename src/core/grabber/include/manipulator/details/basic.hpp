@@ -384,12 +384,14 @@ public:
 
                   {
                     bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
-                    enqueue_to_modifiers(*it,
-                                         event_type::key_down,
-                                         front_input_event,
-                                         lazy,
-                                         time_stamp_delay,
-                                         *output_event_queue);
+                    for (const auto& e : it->make_modifier_events()) {
+                      output_event_queue->emplace_back_event(front_input_event.get_device_id(),
+                                                             front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                             e,
+                                                             event_type::key_down,
+                                                             front_input_event.get_original_event(),
+                                                             lazy);
+                    }
                   }
 
                   output_event_queue->emplace_back_event(front_input_event.get_device_id(),
@@ -412,12 +414,14 @@ public:
                     // Do nothing
                   } else {
                     bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
-                    enqueue_to_modifiers(*it,
-                                         event_type::key_up,
-                                         front_input_event,
-                                         lazy,
-                                         time_stamp_delay,
-                                         *output_event_queue);
+                    for (const auto& e : it->make_modifier_events()) {
+                      output_event_queue->emplace_back_event(front_input_event.get_device_id(),
+                                                             front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                             e,
+                                                             event_type::key_up,
+                                                             front_input_event.get_original_event(),
+                                                             lazy);
+                    }
                   }
                   break;
 
@@ -432,12 +436,14 @@ public:
 
                     if (preserve_to_modifiers_down()) {
                       bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
-                      enqueue_to_modifiers(*it,
-                                           event_type::key_up,
-                                           front_input_event,
-                                           lazy,
-                                           time_stamp_delay,
-                                           *output_event_queue);
+                      for (const auto& e : it->make_modifier_events()) {
+                        output_event_queue->emplace_back_event(front_input_event.get_device_id(),
+                                                               front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                               e,
+                                                               event_type::key_up,
+                                                               front_input_event.get_original_event(),
+                                                               lazy);
+                      }
                     }
 
                     post_extra_to_events(front_input_event,
@@ -557,32 +563,6 @@ public:
     return to_;
   }
 
-  void enqueue_to_modifiers(const to_event_definition& to,
-                            event_type event_type,
-                            const event_queue::queued_event& front_input_event,
-                            bool lazy,
-                            uint64_t& time_stamp_delay,
-                            event_queue& output_event_queue) {
-    for (const auto& modifier : to.get_modifiers()) {
-      // `event_definition::get_modifiers` might return two modifier_flags.
-      // (eg. `modifier_flag::left_shift` and `modifier_flag::right_shift` for `modifier::shift`.)
-      // We use the first modifier_flag.
-
-      auto modifier_flags = event_definition::get_modifier_flags(modifier);
-      if (!modifier_flags.empty()) {
-        auto modifier_flag = modifier_flags.front();
-        if (auto key_code = types::make_key_code(modifier_flag)) {
-          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
-                                                front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                event_queue::queued_event::event(*key_code),
-                                                event_type,
-                                                front_input_event.get_original_event(),
-                                                lazy);
-        }
-      }
-    }
-  }
-
 private:
   bool preserve_from_mandatory_modifiers_up(void) const {
     if (to_.empty()) {
@@ -629,12 +609,16 @@ private:
     for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
       auto& to = *it;
       if (auto event = to.to_event()) {
-        enqueue_to_modifiers(to,
-                             event_type::key_down,
-                             front_input_event,
-                             true,
-                             time_stamp_delay,
-                             output_event_queue);
+        auto to_modifier_events = to.make_modifier_events();
+
+        for (const auto& e : to_modifier_events) {
+          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                e,
+                                                event_type::key_down,
+                                                front_input_event.get_original_event(),
+                                                true);
+        }
 
         output_event_queue.emplace_back_event(front_input_event.get_device_id(),
                                               front_input_event.get_time_stamp() + time_stamp_delay++,
@@ -650,12 +634,14 @@ private:
                                               front_input_event.get_original_event(),
                                               it->get_lazy());
 
-        enqueue_to_modifiers(to,
-                             event_type::key_up,
-                             front_input_event,
-                             true,
-                             time_stamp_delay,
-                             output_event_queue);
+        for (const auto& e : to_modifier_events) {
+          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                e,
+                                                event_type::key_up,
+                                                front_input_event.get_original_event(),
+                                                true);
+        }
       }
     }
   }
