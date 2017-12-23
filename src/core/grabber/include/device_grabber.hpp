@@ -10,6 +10,7 @@
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
+#include "json_utility.hpp"
 #include "krbn_notification_center.hpp"
 #include "logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
@@ -715,15 +716,6 @@ private:
   }
 
   void output_device_details_json(void) const {
-    auto file_path = constants::get_device_details_json_file_path();
-
-    filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path), 0755);
-
-    std::ofstream output(file_path);
-    if (!output) {
-      return;
-    }
-
     // ----------------------------------------
     std::vector<device_detail> device_details;
     for (const auto& pair : hids_) {
@@ -736,7 +728,9 @@ private:
                 return a.compare(b);
               });
 
-    output << std::setw(4) << nlohmann::json(device_details) << std::endl;
+    auto file_path = constants::get_device_details_json_file_path();
+    filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path), 0755);
+    json_utility::save_to_file(nlohmann::json(device_details), file_path);
   }
 
   void set_profile(const core_configuration::profile& profile) {

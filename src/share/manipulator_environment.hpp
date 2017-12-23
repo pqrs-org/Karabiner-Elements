@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filesystem.hpp"
+#include "json_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <fstream>
@@ -141,13 +142,7 @@ private:
   void save_to_file(void) const {
     if (!output_json_file_path_.empty()) {
       filesystem::create_directory_with_intermediate_directories(filesystem::dirname(output_json_file_path_), 0755);
-
-      std::ofstream output(output_json_file_path_);
-      if (output) {
-        output << std::setw(4) << to_json() << std::endl;
-      } else {
-        logger::get_logger().warn("Failed to open {0}", output_json_file_path_);
-      }
+      json_utility::save_to_file(to_json(), output_json_file_path_);
     }
   }
 

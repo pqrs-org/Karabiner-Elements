@@ -2,6 +2,7 @@
 #include "application_launcher.hpp"
 #include "constants.hpp"
 #include "core_configuration.hpp"
+#include "json_utility.hpp"
 #include "launchctl_utility.hpp"
 #include "libkrbn_cpp.hpp"
 #include "process_utility.hpp"
@@ -60,12 +61,8 @@ void libkrbn_unlock_single_application(void) {
 bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string) {
   try {
     // nlohmann::json sorts dictionary keys.
-    std::ofstream stream(file_path);
-    if (stream) {
-      auto json = nlohmann::json::parse(json_string);
-      stream << std::setw(4) << json << std::endl;
-      return true;
-    }
+    auto json = nlohmann::json::parse(json_string);
+    return krbn::json_utility::save_to_file(json, file_path);
   } catch (std::exception& e) {
   }
   return false;
