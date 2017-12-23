@@ -1,6 +1,7 @@
 # Since version 11.4.0
 
 * Avoided a VMware Remote Console issue that mouse pointer does not work properly on VMRC when Karabiner-Elements grabs the pointing device.
+* Improved a way to save karabiner.json.
 
 
 # version 11.4.0
