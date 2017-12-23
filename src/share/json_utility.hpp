@@ -4,6 +4,7 @@
 
 #include "logger.hpp"
 #include <boost/optional.hpp>
+#include <fstream>
 #include <json/json.hpp>
 #include <unistd.h>
 
@@ -72,14 +73,17 @@ public:
 
       unlink(tmp_file_path.c_str());
 
-      std::ofstream output(file_path + ".tmp");
+      std::ofstream output(tmp_file_path);
       if (output) {
         output << std::setw(4) << json << std::endl;
 
         unlink(file_path.c_str());
         rename(tmp_file_path.c_str(), file_path.c_str());
         return true;
+      } else {
+        logger::get_logger().error("json_utility::save_to_file failed to open: {0}", file_path);
       }
+
     } catch (std::exception& e) {
       logger::get_logger().error("json_utility::save_to_file error: {0}", e.what());
     }
