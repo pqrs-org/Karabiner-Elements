@@ -2,8 +2,10 @@
 
 #include "boost_defs.hpp"
 
+#include "logger.hpp"
 #include <boost/optional.hpp>
 #include <json/json.hpp>
+#include <unistd.h>
 
 namespace krbn {
 class json_utility final {
@@ -61,6 +63,28 @@ public:
       return *it;
     }
     return fallback_value;
+  }
+
+  static bool save_to_file(const nlohmann::json& json,
+                           const std::string& file_path) {
+    try {
+      std::string tmp_file_path = file_path + ".tmp";
+
+      unlink(tmp_file_path.c_str());
+
+      std::ofstream output(file_path + ".tmp");
+      if (output) {
+        output << std::setw(4) << json << std::endl;
+
+        unlink(file_path.c_str());
+        rename(tmp_file_path.c_str(), file_path.c_str());
+        return true;
+      }
+    } catch (std::exception& e) {
+      logger::get_logger().error("json_utility::save_to_file error: {0}", e.what());
+    }
+
+    return false;
   }
 };
 } // namespace krbn
