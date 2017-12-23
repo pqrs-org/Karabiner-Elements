@@ -572,6 +572,26 @@ public:
     return false;
   }
 
+  std::vector<event_queue::queued_event::event> make_modifier_events(void) const {
+    std::vector<event_queue::queued_event::event> events;
+
+    for (const auto& modifier : modifiers_) {
+      // `event_definition::get_modifiers` might return two modifier_flags.
+      // (eg. `modifier_flag::left_shift` and `modifier_flag::right_shift` for `modifier::shift`.)
+      // We use the first modifier_flag.
+
+      auto modifier_flags = get_modifier_flags(modifier);
+      if (!modifier_flags.empty()) {
+        auto modifier_flag = modifier_flags.front();
+        if (auto key_code = types::make_key_code(modifier_flag)) {
+          events.emplace_back(*key_code);
+        }
+      }
+    }
+
+    return events;
+  }
+
 private:
   bool extra_json_handler(const std::string& key,
                           const nlohmann::json& value,
