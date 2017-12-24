@@ -494,33 +494,31 @@ public:
               }
               break;
 
-            case event_type::key_up:
-              {
-                for (const auto& e : current_manipulated_original_event->get_events_at_key_up().get_events()) {
-                  output_event_queue->emplace_back_event(front_input_event.get_device_id(),
-                                                         front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                         e.get_event(),
-                                                         e.get_event_type(),
-                                                         front_input_event.get_original_event(),
-                                                         e.get_lazy());
-                }
-                current_manipulated_original_event->get_events_at_key_up().clear_events();
+            case event_type::key_up: {
+              for (const auto& e : current_manipulated_original_event->get_events_at_key_up().get_events()) {
+                output_event_queue->emplace_back_event(front_input_event.get_device_id(),
+                                                       front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                       e.get_event(),
+                                                       e.get_event_type(),
+                                                       front_input_event.get_original_event(),
+                                                       e.get_lazy());
+              }
+              current_manipulated_original_event->get_events_at_key_up().clear_events();
 
+              post_extra_to_events(front_input_event,
+                                   to_after_key_up_,
+                                   time_stamp_delay,
+                                   *output_event_queue);
+
+              uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
+              if (current_manipulated_original_event->get_alone() &&
+                  nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
                 post_extra_to_events(front_input_event,
-                                     to_after_key_up_,
+                                     to_if_alone_,
                                      time_stamp_delay,
                                      *output_event_queue);
-
-                uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
-                if (current_manipulated_original_event->get_alone() &&
-                    nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
-                  post_extra_to_events(front_input_event,
-                                       to_if_alone_,
-                                       time_stamp_delay,
-                                       *output_event_queue);
-                }
               }
-              break;
+            } break;
 
             case event_type::single:
               break;
