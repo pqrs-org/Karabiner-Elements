@@ -60,7 +60,7 @@
             "key_code": "left_shift",
             "value": 0
         },
-        "time_stamp": 18000000,
+        "time_stamp": 30000000,
         "type": "keyboard_event"
     },
     {
@@ -72,7 +72,7 @@
             "key_code": "left_control",
             "value": 1
         },
-        "time_stamp": 30000000,
+        "time_stamp": 35000000,
         "type": "keyboard_event"
     },
     {
@@ -80,7 +80,7 @@
             "key_code": "a",
             "value": 1
         },
-        "time_stamp": 35000000,
+        "time_stamp": 40000000,
         "type": "keyboard_event"
     },
     {
@@ -88,7 +88,7 @@
             "key_code": "a",
             "value": 0
         },
-        "time_stamp": 40000000,
+        "time_stamp": 45000000,
         "type": "keyboard_event"
     },
     {
@@ -104,7 +104,7 @@
             "x": 0,
             "y": 0
         },
-        "time_stamp": 45000000,
+        "time_stamp": 50000000,
         "type": "pointing_input"
     },
     {
@@ -120,7 +120,7 @@
             "x": 0,
             "y": 0
         },
-        "time_stamp": 50000000,
+        "time_stamp": 55000000,
         "type": "pointing_input"
     },
     {
@@ -128,7 +128,7 @@
             "key_code": "left_control",
             "value": 0
         },
-        "time_stamp": 34000000,
+        "time_stamp": 60000000,
         "type": "keyboard_event"
     },
     {
@@ -140,28 +140,12 @@
             "key_code": "left_gui",
             "value": 1
         },
-        "time_stamp": 55000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "a",
-            "value": 1
-        },
-        "time_stamp": 60000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "a",
-            "value": 0
-        },
         "time_stamp": 65000000,
         "type": "keyboard_event"
     },
     {
         "keyboard_event": {
-            "consumer_key_code": "mute",
+            "key_code": "a",
             "value": 1
         },
         "time_stamp": 70000000,
@@ -169,7 +153,7 @@
     },
     {
         "keyboard_event": {
-            "consumer_key_code": "mute",
+            "key_code": "a",
             "value": 0
         },
         "time_stamp": 75000000,
@@ -177,10 +161,26 @@
     },
     {
         "keyboard_event": {
+            "consumer_key_code": "mute",
+            "value": 1
+        },
+        "time_stamp": 80000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "consumer_key_code": "mute",
+            "value": 0
+        },
+        "time_stamp": 85000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
             "key_code": "left_gui",
             "value": 0
         },
-        "time_stamp": 34000000,
+        "time_stamp": 90000000,
         "type": "keyboard_event"
     },
     {

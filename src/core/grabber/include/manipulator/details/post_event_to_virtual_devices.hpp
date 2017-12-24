@@ -228,7 +228,9 @@ public:
       keyboard_event.usage = static_cast<pqrs::karabiner_virtual_hid_device::usage>(hid_usage);
       keyboard_event.value = (event_type == event_type::key_down);
 
-      adjust_time_stamp(time_stamp, event_type);
+      adjust_time_stamp(time_stamp,
+                        event_type,
+                        types::make_modifier_flag(hid_usage_page, hid_usage) != boost::none);
 
       events_.emplace_back(keyboard_event,
                            time_stamp);
@@ -340,7 +342,8 @@ public:
 
   private:
     void adjust_time_stamp(uint64_t& time_stamp,
-                           event_type et) {
+                           event_type et,
+                           bool is_modifier_key_event = false) {
       // Wait is 5 milliseconds
       //
       // Note:
@@ -355,7 +358,7 @@ public:
           break;
 
         case event_type::key_up:
-          if (last_event_type_ == event_type::key_up) {
+          if (last_event_type_ == event_type::key_up && !is_modifier_key_event) {
             skip = true;
           }
           break;
@@ -417,6 +420,9 @@ public:
     //   "to": <%= to([["right_control"]]) %>,
     //   "to_if_alone": <%= to([["return_or_enter"]]) %>
     //
+    //
+    // We also should add a wait before `key_up of modifier key`.
+    // Without wait, control-space (Select the previous input source) does not work properly.
 
     event_type last_event_type_;
     uint64_t last_event_time_stamp_;

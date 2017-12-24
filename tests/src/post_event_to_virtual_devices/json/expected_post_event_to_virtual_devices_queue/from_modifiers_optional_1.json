@@ -80,7 +80,7 @@
             "key_code": "left_control",
             "value": 0
         },
-        "time_stamp": 16000000,
+        "time_stamp": 50000000,
         "type": "keyboard_event"
     },
     {
@@ -92,7 +92,7 @@
             "key_code": "p",
             "value": 1
         },
-        "time_stamp": 50000000,
+        "time_stamp": 55000000,
         "type": "keyboard_event"
     },
     {
@@ -100,7 +100,7 @@
             "key_code": "p",
             "value": 0
         },
-        "time_stamp": 55000000,
+        "time_stamp": 60000000,
         "type": "keyboard_event"
     }
 ]

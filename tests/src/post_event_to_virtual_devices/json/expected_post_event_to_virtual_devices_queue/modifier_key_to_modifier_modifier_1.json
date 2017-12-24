@@ -44,7 +44,7 @@
             "key_code": "right_gui",
             "value": 0
         },
-        "time_stamp": 6000001,
+        "time_stamp": 30000000,
         "type": "keyboard_event"
     },
     {
@@ -56,20 +56,12 @@
             "key_code": "right_gui",
             "value": 1
         },
-        "time_stamp": 30000000,
-        "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "right_control",
-            "value": 1
-        },
         "time_stamp": 35000000,
         "type": "keyboard_event"
     },
     {
         "keyboard_event": {
-            "key_code": "tab",
+            "key_code": "right_control",
             "value": 1
         },
         "time_stamp": 40000000,
@@ -78,9 +70,17 @@
     {
         "keyboard_event": {
             "key_code": "tab",
-            "value": 0
+            "value": 1
         },
         "time_stamp": 45000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "tab",
+            "value": 0
+        },
+        "time_stamp": 50000000,
         "type": "keyboard_event"
     },
     {
@@ -88,7 +88,7 @@
             "key_code": "right_control",
             "value": 0
         },
-        "time_stamp": 14000000,
+        "time_stamp": 55000000,
         "type": "keyboard_event"
     },
     {
@@ -96,7 +96,7 @@
             "key_code": "right_gui",
             "value": 0
         },
-        "time_stamp": 14000001,
+        "time_stamp": 60000000,
         "type": "keyboard_event"
     },
     {
@@ -108,7 +108,7 @@
             "key_code": "right_alt",
             "value": 1
         },
-        "time_stamp": 50000000,
+        "time_stamp": 65000000,
         "type": "keyboard_event"
     },
     {
@@ -116,7 +116,7 @@
             "key_code": "tab",
             "value": 1
         },
-        "time_stamp": 55000000,
+        "time_stamp": 70000000,
         "type": "keyboard_event"
     },
     {
@@ -124,7 +124,7 @@
             "key_code": "tab",
             "value": 0
         },
-        "time_stamp": 60000000,
+        "time_stamp": 75000000,
         "type": "keyboard_event"
     },
     {
@@ -132,7 +132,7 @@
             "key_code": "right_alt",
             "value": 0
         },
-        "time_stamp": 20000000,
+        "time_stamp": 80000000,
         "type": "keyboard_event"
     },
     {

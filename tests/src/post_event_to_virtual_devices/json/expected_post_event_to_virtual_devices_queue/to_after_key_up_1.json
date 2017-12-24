@@ -44,7 +44,7 @@
             "key_code": "left_gui",
             "value": 0
         },
-        "time_stamp": 10000000,
+        "time_stamp": 30000000,
         "type": "keyboard_event"
     },
     {
@@ -56,7 +56,7 @@
             "key_code": "escape",
             "value": 1
         },
-        "time_stamp": 30000000,
+        "time_stamp": 35000000,
         "type": "keyboard_event"
     },
     {
@@ -64,7 +64,7 @@
             "key_code": "escape",
             "value": 0
         },
-        "time_stamp": 35000000,
+        "time_stamp": 40000000,
         "type": "keyboard_event"
     }
 ]
