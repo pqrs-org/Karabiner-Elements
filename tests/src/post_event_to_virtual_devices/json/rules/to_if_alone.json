@@ -87,5 +87,23 @@
             }
         ],
         "type": "basic"
+    },
+    {
+        "description": "f2 -> f3 (empty `to`)",
+        "from": {
+            "key_code": "f2",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [],
+        "to_if_alone": [
+            {
+                "key_code": "f3"
+            }
+        ],
+        "type": "basic"
     }
 ]

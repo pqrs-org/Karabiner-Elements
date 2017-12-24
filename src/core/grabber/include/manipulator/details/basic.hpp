@@ -15,6 +15,55 @@ class basic final : public base {
 public:
   class manipulated_original_event final {
   public:
+    class events_at_key_up final {
+    public:
+      class entry {
+      public:
+        entry(const event_queue::queued_event::event event,
+              event_type event_type,
+              bool lazy) : event_(event),
+                           event_type_(event_type),
+                           lazy_(lazy) {
+        }
+
+        const event_queue::queued_event::event& get_event(void) const {
+          return event_;
+        }
+
+        event_type get_event_type(void) const {
+          return event_type_;
+        }
+
+        bool get_lazy(void) const {
+          return lazy_;
+        }
+
+      private:
+        event_queue::queued_event::event event_;
+        event_type event_type_;
+        bool lazy_;
+      };
+
+      const std::vector<entry>& get_events(void) const {
+        return events_;
+      }
+
+      void emplace_back_event(const event_queue::queued_event::event event,
+                              event_type event_type,
+                              bool lazy) {
+        events_.emplace_back(event,
+                             event_type,
+                             lazy);
+      }
+
+      void clear_events(void) {
+        events_.clear();
+      }
+
+    private:
+      std::vector<entry> events_;
+    };
+
     manipulated_original_event(device_id device_id,
                                const event_queue::queued_event::event& original_event,
                                const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
@@ -45,6 +94,13 @@ public:
       return alone_;
     }
 
+    const events_at_key_up& get_events_at_key_up(void) const {
+      return events_at_key_up_;
+    }
+    events_at_key_up& get_events_at_key_up(void) {
+      return const_cast<events_at_key_up&>(static_cast<const manipulated_original_event&>(*this).get_events_at_key_up());
+    }
+
     void unset_alone(void) {
       alone_ = false;
     }
@@ -61,6 +117,7 @@ public:
     std::unordered_set<modifier_flag> from_mandatory_modifiers_;
     uint64_t key_down_time_stamp_;
     bool alone_;
+    events_at_key_up events_at_key_up_;
   };
 
   class to_delayed_action final {
@@ -376,15 +433,17 @@ public:
 
           // Send events
 
-          for (auto it = std::begin(to_); it != std::end(to_); std::advance(it, 1)) {
-            if (auto event = it->to_event()) {
-              switch (front_input_event.get_event_type()) {
-                case event_type::key_down:
+          switch (front_input_event.get_event_type()) {
+            case event_type::key_down:
+              for (auto it = std::begin(to_); it != std::end(to_); std::advance(it, 1)) {
+                if (auto event = it->to_event()) {
                   // to_modifier down, to_key down, to_key up, to_modifier up
+
+                  auto to_modifier_events = it->make_modifier_events();
 
                   {
                     bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
-                    for (const auto& e : it->make_modifier_events()) {
+                    for (const auto& e : to_modifier_events) {
                       output_event_queue->emplace_back_event(front_input_event.get_device_id(),
                                                              front_input_event.get_time_stamp() + time_stamp_delay++,
                                                              e,
@@ -408,35 +467,20 @@ public:
                                                            event_type::key_up,
                                                            front_input_event.get_original_event(),
                                                            it->get_lazy());
-                  }
-
-                  if (it == std::end(to_) - 1 && preserve_to_modifiers_down()) {
-                    // Do nothing
                   } else {
-                    bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
-                    for (const auto& e : it->make_modifier_events()) {
-                      output_event_queue->emplace_back_event(front_input_event.get_device_id(),
-                                                             front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                             e,
-                                                             event_type::key_up,
-                                                             front_input_event.get_original_event(),
-                                                             lazy);
-                    }
+                    current_manipulated_original_event->get_events_at_key_up().emplace_back_event(*event,
+                                                                                                  event_type::key_up,
+                                                                                                  it->get_lazy());
                   }
-                  break;
 
-                case event_type::key_up:
-                  if (it == std::end(to_) - 1 && it->get_repeat()) {
-                    output_event_queue->emplace_back_event(front_input_event.get_device_id(),
-                                                           front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                           *event,
-                                                           event_type::key_up,
-                                                           front_input_event.get_original_event(),
-                                                           it->get_lazy());
-
-                    if (preserve_to_modifiers_down()) {
-                      bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
-                      for (const auto& e : it->make_modifier_events()) {
+                  {
+                    bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
+                    for (const auto& e : to_modifier_events) {
+                      if (it == std::end(to_) - 1 && preserve_to_modifiers_down()) {
+                        current_manipulated_original_event->get_events_at_key_up().emplace_back_event(e,
+                                                                                                      event_type::key_up,
+                                                                                                      lazy);
+                      } else {
                         output_event_queue->emplace_back_event(front_input_event.get_device_id(),
                                                                front_input_event.get_time_stamp() + time_stamp_delay++,
                                                                e,
@@ -445,27 +489,41 @@ public:
                                                                lazy);
                       }
                     }
-
-                    post_extra_to_events(front_input_event,
-                                         to_after_key_up_,
-                                         time_stamp_delay,
-                                         *output_event_queue);
-
-                    uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
-                    if (current_manipulated_original_event->get_alone() &&
-                        nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
-                      post_extra_to_events(front_input_event,
-                                           to_if_alone_,
-                                           time_stamp_delay,
-                                           *output_event_queue);
-                    }
                   }
-                  break;
-
-                case event_type::single:
-                  break;
+                }
               }
-            }
+              break;
+
+            case event_type::key_up:
+              {
+                for (const auto& e : current_manipulated_original_event->get_events_at_key_up().get_events()) {
+                  output_event_queue->emplace_back_event(front_input_event.get_device_id(),
+                                                         front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                         e.get_event(),
+                                                         e.get_event_type(),
+                                                         front_input_event.get_original_event(),
+                                                         e.get_lazy());
+                }
+                current_manipulated_original_event->get_events_at_key_up().clear_events();
+
+                post_extra_to_events(front_input_event,
+                                     to_after_key_up_,
+                                     time_stamp_delay,
+                                     *output_event_queue);
+
+                uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
+                if (current_manipulated_original_event->get_alone() &&
+                    nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                  post_extra_to_events(front_input_event,
+                                       to_if_alone_,
+                                       time_stamp_delay,
+                                       *output_event_queue);
+                }
+              }
+              break;
+
+            case event_type::single:
+              break;
           }
 
           // Restore from_mandatory_modifiers
