@@ -555,6 +555,7 @@ TEST_CASE("profile.to_json") {
                                       {"rules", nlohmann::json::array()},
                                       {"parameters", nlohmann::json::object({
                                                          {"basic.to_if_alone_timeout_milliseconds", 1000},
+                                                         {"basic.to_if_held_down_threshold_milliseconds", 500},
                                                          {"basic.to_delayed_action_delay_milliseconds", 500},
                                                      })},
                                   })},
@@ -709,6 +710,7 @@ TEST_CASE("profile.to_json") {
                                       {"rules", nlohmann::json::array()},
                                       {"parameters", nlohmann::json::object({
                                                          {"basic.to_if_alone_timeout_milliseconds", 1000},
+                                                         {"basic.to_if_held_down_threshold_milliseconds", 500},
                                                          {"basic.to_delayed_action_delay_milliseconds", 500},
                                                      })},
                                   })},

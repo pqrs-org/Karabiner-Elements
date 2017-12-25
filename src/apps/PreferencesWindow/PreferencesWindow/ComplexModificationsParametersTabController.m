@@ -5,6 +5,8 @@
 
 @property(weak) IBOutlet NSStepper* basicToIfAloneTimeoutMillisecondsStepper;
 @property(weak) IBOutlet NSTextField* basicToIfAloneTimeoutMillisecondsText;
+@property(weak) IBOutlet NSStepper* basicToIfHeldDownThresholdMillisecondsStepper;
+@property(weak) IBOutlet NSTextField* basicToIfHeldDownThresholdMillisecondsText;
 @property(weak) IBOutlet NSStepper* basicToDelayedActionDelayMillisecondsStepper;
 @property(weak) IBOutlet NSTextField* basicToDelayedActionDelayMillisecondsText;
 
@@ -32,6 +34,11 @@
     self.basicToIfAloneTimeoutMillisecondsText.integerValue = value;
   }
   {
+    int value = [coreConfigurationModel getSelectedProfileComplexModificationsParameter:@"basic.to_if_held_down_threshold_milliseconds"];
+    self.basicToIfHeldDownThresholdMillisecondsStepper.integerValue = value;
+    self.basicToIfHeldDownThresholdMillisecondsText.integerValue = value;
+  }
+  {
     int value = [coreConfigurationModel getSelectedProfileComplexModificationsParameter:@"basic.to_delayed_action_delay_milliseconds"];
     self.basicToDelayedActionDelayMillisecondsStepper.integerValue = value;
     self.basicToDelayedActionDelayMillisecondsText.integerValue = value;
@@ -42,6 +49,16 @@
   {
     NSStepper* stepper = self.basicToIfAloneTimeoutMillisecondsStepper;
     NSTextField* text = self.basicToIfAloneTimeoutMillisecondsText;
+    if (sender == stepper) {
+      text.integerValue = stepper.integerValue;
+    }
+    if (sender == text) {
+      stepper.integerValue = text.integerValue;
+    }
+  }
+  {
+    NSStepper* stepper = self.basicToIfHeldDownThresholdMillisecondsStepper;
+    NSTextField* text = self.basicToIfHeldDownThresholdMillisecondsText;
     if (sender == stepper) {
       text.integerValue = stepper.integerValue;
     }
@@ -63,6 +80,8 @@
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.to_if_alone_timeout_milliseconds"
                                                                     value:self.basicToIfAloneTimeoutMillisecondsText.intValue];
+  [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.to_if_held_down_threshold_milliseconds"
+                                                                    value:self.basicToIfHeldDownThresholdMillisecondsText.intValue];
   [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.to_delayed_action_delay_milliseconds"
                                                                     value:self.basicToDelayedActionDelayMillisecondsText.intValue];
   [coreConfigurationModel save];

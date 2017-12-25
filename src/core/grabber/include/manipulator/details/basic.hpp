@@ -120,6 +120,156 @@ public:
     events_at_key_up events_at_key_up_;
   };
 
+  class to_if_held_down final {
+  public:
+    to_if_held_down(basic& basic,
+                    const nlohmann::json& json) : basic_(basic) {
+      if (json.is_array()) {
+        for (const auto& j : json) {
+          to_.emplace_back(j);
+        }
+      } else {
+        logger::get_logger().error("complex_modifications json error: `to_if_held_down` should be object: {0}", json.dump());
+      }
+    }
+
+    void setup(const event_queue::queued_event& front_input_event,
+               const std::shared_ptr<manipulated_original_event>& current_manipulated_original_event,
+               const std::shared_ptr<event_queue>& output_event_queue,
+               int threshold_milliseconds) {
+      if (front_input_event.get_event_type() != event_type::key_down) {
+        manipulator_timer_id_ = boost::none;
+        return;
+      }
+
+      if (to_.empty()) {
+        return;
+      }
+
+      front_input_event_ = front_input_event;
+      current_manipulated_original_event_ = current_manipulated_original_event;
+      output_event_queue_ = output_event_queue;
+
+      auto when = front_input_event.get_time_stamp() + time_utility::nano_to_absolute(threshold_milliseconds * NSEC_PER_MSEC);
+      manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(when);
+    }
+
+    void cancel(const event_queue::queued_event& front_input_event) {
+      if (front_input_event.get_event_type() != event_type::key_down) {
+        return;
+      }
+
+      if (!manipulator_timer_id_) {
+        return;
+      }
+
+      manipulator_timer_id_ = boost::none;
+    }
+
+    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+      if (timer_id == manipulator_timer_id_) {
+        manipulator_timer_id_ = boost::none;
+
+        if (front_input_event_) {
+          if (auto oeq = output_event_queue_.lock()) {
+            if (auto cmoe = current_manipulated_original_event_.lock()) {
+              uint64_t time_stamp_delay = 0;
+
+              // ----------------------------------------
+              // Post events_at_key_up_
+
+              basic_.post_events_at_key_up(*front_input_event_,
+                                           *cmoe,
+                                           time_stamp_delay,
+                                           *oeq);
+
+              // ----------------------------------------
+              // Post to_
+
+              for (auto it = std::begin(to_); it != std::end(to_); std::advance(it, 1)) {
+                if (auto event = it->to_event()) {
+                  auto to_modifier_events = it->make_modifier_events();
+
+                  for (const auto& e : to_modifier_events) {
+                    oeq->emplace_back_event(front_input_event_->get_device_id(),
+                                            front_input_event_->get_time_stamp() + time_stamp_delay++,
+                                            e,
+                                            event_type::key_down,
+                                            front_input_event_->get_original_event(),
+                                            true);
+                  }
+
+                  oeq->emplace_back_event(front_input_event_->get_device_id(),
+                                          front_input_event_->get_time_stamp() + time_stamp_delay++,
+                                          *event,
+                                          event_type::key_down,
+                                          front_input_event_->get_original_event(),
+                                          it->get_lazy());
+
+                  if (it != std::end(to_) - 1 || !it->get_repeat()) {
+                    oeq->emplace_back_event(front_input_event_->get_device_id(),
+                                            front_input_event_->get_time_stamp() + time_stamp_delay++,
+                                            *event,
+                                            event_type::key_up,
+                                            front_input_event_->get_original_event(),
+                                            it->get_lazy());
+                  } else {
+                    cmoe->get_events_at_key_up().emplace_back_event(*event,
+                                                                    event_type::key_up,
+                                                                    it->get_lazy());
+                  }
+
+                  bool is_modifier_key_event = false;
+                  if (auto key_code = event->get_key_code()) {
+                    if (types::make_modifier_flag(*key_code) != boost::none) {
+                      is_modifier_key_event = true;
+                    }
+                  }
+
+                  bool lazy = !is_modifier_key_event || it->get_lazy();
+
+                  for (const auto& e : to_modifier_events) {
+                    if (it == std::end(to_) - 1 && is_modifier_key_event) {
+                      cmoe->get_events_at_key_up().emplace_back_event(e,
+                                                                      event_type::key_up,
+                                                                      lazy);
+                    } else {
+                      oeq->emplace_back_event(front_input_event_->get_device_id(),
+                                              front_input_event_->get_time_stamp() + time_stamp_delay++,
+                                              e,
+                                              event_type::key_up,
+                                              front_input_event_->get_original_event(),
+                                              true);
+                    }
+                  }
+                }
+              }
+
+              krbn_notification_center::get_instance().input_event_arrived();
+            }
+          }
+        }
+      }
+    }
+
+    bool needs_virtual_hid_pointing(void) const {
+      for (const auto& e : to_) {
+        if (e.needs_virtual_hid_pointing()) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+  private:
+    basic& basic_;
+    std::vector<to_event_definition> to_;
+    boost::optional<manipulator_timer::timer_id> manipulator_timer_id_;
+    boost::optional<event_queue::queued_event> front_input_event_;
+    std::weak_ptr<manipulated_original_event> current_manipulated_original_event_;
+    std::weak_ptr<event_queue> output_event_queue_;
+  };
+
   class to_delayed_action final {
   public:
     to_delayed_action(basic& basic,
@@ -294,6 +444,9 @@ public:
           to_if_alone_.emplace_back(j);
         }
 
+      } else if (key == "to_if_held_down") {
+        to_if_held_down_ = std::make_unique<to_if_held_down>(*this, value);
+
       } else if (key == "to_delayed_action") {
         to_delayed_action_ = std::make_unique<to_delayed_action>(*this, value);
 
@@ -324,9 +477,15 @@ public:
       unset_alone_if_needed(front_input_event.get_event(),
                             front_input_event.get_event_type());
 
+      if (to_if_held_down_) {
+        to_if_held_down_->cancel(front_input_event);
+      }
+
       if (to_delayed_action_) {
         to_delayed_action_->cancel(front_input_event);
       }
+
+      // ----------------------------------------
 
       bool is_target = false;
 
@@ -495,15 +654,10 @@ public:
               break;
 
             case event_type::key_up: {
-              for (const auto& e : current_manipulated_original_event->get_events_at_key_up().get_events()) {
-                output_event_queue->emplace_back_event(front_input_event.get_device_id(),
-                                                       front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                       e.get_event(),
-                                                       e.get_event_type(),
-                                                       front_input_event.get_original_event(),
-                                                       e.get_lazy());
-              }
-              current_manipulated_original_event->get_events_at_key_up().clear_events();
+              post_events_at_key_up(front_input_event,
+                                    *current_manipulated_original_event,
+                                    time_stamp_delay,
+                                    *output_event_queue);
 
               post_extra_to_events(front_input_event,
                                    to_after_key_up_,
@@ -533,6 +687,15 @@ public:
                                           event_type::key_down,
                                           time_stamp_delay,
                                           *output_event_queue);
+          }
+
+          // to_if_held_down_
+
+          if (to_if_held_down_) {
+            to_if_held_down_->setup(front_input_event,
+                                    current_manipulated_original_event,
+                                    output_event_queue,
+                                    parameters_.get_basic_to_if_held_down_threshold_milliseconds());
           }
 
           // to_delayed_action_
@@ -569,6 +732,12 @@ public:
       }
     }
 
+    if (to_if_held_down_) {
+      if (to_if_held_down_->needs_virtual_hid_pointing()) {
+        return true;
+      }
+    }
+
     if (to_delayed_action_) {
       if (to_delayed_action_->needs_virtual_hid_pointing()) {
         return true;
@@ -598,6 +767,10 @@ public:
     unset_alone_if_needed(front_input_event.get_original_event(),
                           front_input_event.get_event_type());
 
+    if (to_if_held_down_) {
+      to_if_held_down_->cancel(front_input_event);
+    }
+
     if (to_delayed_action_) {
       to_delayed_action_->cancel(front_input_event);
     }
@@ -610,6 +783,10 @@ public:
   }
 
   virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+    if (to_if_held_down_) {
+      to_if_held_down_->manipulator_timer_invoked(timer_id);
+    }
+
     if (to_delayed_action_) {
       to_delayed_action_->manipulator_timer_invoked(timer_id);
     }
@@ -621,6 +798,21 @@ public:
 
   const std::vector<to_event_definition>& get_to(void) const {
     return to_;
+  }
+
+  void post_events_at_key_up(const event_queue::queued_event& front_input_event,
+                             manipulated_original_event& current_manipulated_original_event,
+                             uint64_t& time_stamp_delay,
+                             event_queue& output_event_queue) const {
+    for (const auto& e : current_manipulated_original_event.get_events_at_key_up().get_events()) {
+      output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                            front_input_event.get_time_stamp() + time_stamp_delay++,
+                                            e.get_event(),
+                                            e.get_event_type(),
+                                            front_input_event.get_original_event(),
+                                            e.get_lazy());
+    }
+    current_manipulated_original_event.get_events_at_key_up().clear_events();
   }
 
 private:
@@ -736,6 +928,7 @@ private:
   std::vector<to_event_definition> to_;
   std::vector<to_event_definition> to_after_key_up_;
   std::vector<to_event_definition> to_if_alone_;
+  std::unique_ptr<to_if_held_down> to_if_held_down_;
   std::unique_ptr<to_delayed_action> to_delayed_action_;
 
   std::vector<std::shared_ptr<manipulated_original_event>> manipulated_original_events_;
