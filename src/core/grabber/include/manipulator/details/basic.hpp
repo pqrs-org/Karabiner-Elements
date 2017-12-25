@@ -597,6 +597,10 @@ public:
                                                 event_queue& output_event_queue) {
     unset_alone_if_needed(front_input_event.get_original_event(),
                           front_input_event.get_event_type());
+
+    if (to_delayed_action_) {
+      to_delayed_action_->cancel(front_input_event);
+    }
   }
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
