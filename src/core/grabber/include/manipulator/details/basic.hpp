@@ -594,63 +594,11 @@ public:
 
           switch (front_input_event.get_event_type()) {
             case event_type::key_down:
-              for (auto it = std::begin(to_); it != std::end(to_); std::advance(it, 1)) {
-                if (auto event = it->to_event()) {
-                  // to_modifier down, to_key down, to_key up, to_modifier up
-
-                  auto to_modifier_events = it->make_modifier_events();
-
-                  {
-                    bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
-                    for (const auto& e : to_modifier_events) {
-                      output_event_queue->emplace_back_event(front_input_event.get_device_id(),
-                                                             front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                             e,
-                                                             event_type::key_down,
-                                                             front_input_event.get_original_event(),
-                                                             lazy);
-                    }
-                  }
-
-                  output_event_queue->emplace_back_event(front_input_event.get_device_id(),
-                                                         front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                         *event,
-                                                         event_type::key_down,
-                                                         front_input_event.get_original_event(),
-                                                         it->get_lazy());
-
-                  if (it != std::end(to_) - 1 || !it->get_repeat()) {
-                    output_event_queue->emplace_back_event(front_input_event.get_device_id(),
-                                                           front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                           *event,
-                                                           event_type::key_up,
-                                                           front_input_event.get_original_event(),
-                                                           it->get_lazy());
-                  } else {
-                    current_manipulated_original_event->get_events_at_key_up().emplace_back_event(*event,
-                                                                                                  event_type::key_up,
-                                                                                                  it->get_lazy());
-                  }
-
-                  {
-                    bool lazy = !preserve_to_modifiers_down() || it->get_lazy();
-                    for (const auto& e : to_modifier_events) {
-                      if (it == std::end(to_) - 1 && preserve_to_modifiers_down()) {
-                        current_manipulated_original_event->get_events_at_key_up().emplace_back_event(e,
-                                                                                                      event_type::key_up,
-                                                                                                      lazy);
-                      } else {
-                        output_event_queue->emplace_back_event(front_input_event.get_device_id(),
-                                                               front_input_event.get_time_stamp() + time_stamp_delay++,
-                                                               e,
-                                                               event_type::key_up,
-                                                               front_input_event.get_original_event(),
-                                                               lazy);
-                      }
-                    }
-                  }
-                }
-              }
+              post_events_at_key_down(front_input_event,
+                                      to_,
+                                      *current_manipulated_original_event,
+                                      time_stamp_delay,
+                                      *output_event_queue);
               break;
 
             case event_type::key_up: {
@@ -800,6 +748,77 @@ public:
     return to_;
   }
 
+  void post_events_at_key_down(const event_queue::queued_event& front_input_event,
+                               std::vector<to_event_definition> to_events,
+                               manipulated_original_event& current_manipulated_original_event,
+                               uint64_t& time_stamp_delay,
+                               event_queue& output_event_queue) const {
+    for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
+      if (auto event = it->to_event()) {
+        // to_modifier down, to_key down, to_key up, to_modifier up
+
+        auto to_modifier_events = it->make_modifier_events();
+
+        bool is_modifier_key_event = false;
+        if (auto key_code = event->get_key_code()) {
+          if (types::make_modifier_flag(*key_code) != boost::none) {
+            is_modifier_key_event = true;
+          }
+        }
+
+        {
+          bool lazy = !is_modifier_key_event || it->get_lazy();
+          for (const auto& e : to_modifier_events) {
+            output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                  front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                  e,
+                                                  event_type::key_down,
+                                                  front_input_event.get_original_event(),
+                                                  lazy);
+          }
+        }
+
+        output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                              front_input_event.get_time_stamp() + time_stamp_delay++,
+                                              *event,
+                                              event_type::key_down,
+                                              front_input_event.get_original_event(),
+                                              it->get_lazy());
+
+        if (it != std::end(to_events) - 1 || !it->get_repeat()) {
+          output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                *event,
+                                                event_type::key_up,
+                                                front_input_event.get_original_event(),
+                                                it->get_lazy());
+        } else {
+          current_manipulated_original_event.get_events_at_key_up().emplace_back_event(*event,
+                                                                                       event_type::key_up,
+                                                                                       it->get_lazy());
+        }
+
+        {
+          bool lazy = !is_modifier_key_event || it->get_lazy();
+          for (const auto& e : to_modifier_events) {
+            if (it == std::end(to_events) - 1 && is_modifier_key_event) {
+              current_manipulated_original_event.get_events_at_key_up().emplace_back_event(e,
+                                                                                           event_type::key_up,
+                                                                                           lazy);
+            } else {
+              output_event_queue.emplace_back_event(front_input_event.get_device_id(),
+                                                    front_input_event.get_time_stamp() + time_stamp_delay++,
+                                                    e,
+                                                    event_type::key_up,
+                                                    front_input_event.get_original_event(),
+                                                    lazy);
+            }
+          }
+        }
+      }
+    }
+  }
+
   void post_events_at_key_up(const event_queue::queued_event& front_input_event,
                              manipulated_original_event& current_manipulated_original_event,
                              uint64_t& time_stamp_delay,
@@ -830,10 +849,6 @@ private:
     }
 
     return false;
-  }
-
-  bool preserve_to_modifiers_down(void) const {
-    return preserve_from_mandatory_modifiers_up();
   }
 
   void post_lazy_modifier_key_events(const event_queue::queued_event& front_input_event,
