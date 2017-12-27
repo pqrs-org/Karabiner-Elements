@@ -1,0 +1,102 @@
+[
+    {
+        "description": "*** f1 key_down, key_up ***",
+        "device_id": 1,
+        "event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "time_stamp": 2000000,
+        "valid": true
+    },
+    {
+        "action": "invoke_manipulator_timer",
+        "time_stamp": 10000000000
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "time_stamp": 10002000000,
+        "valid": true
+    },
+    {
+        "description": "*** tab key_down, f1 key_down, tab key_up, f1 key_up (f1 is not canceled by tab key_up) ***",
+        "device_id": 1,
+        "event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "time_stamp": 10004000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "time_stamp": 10006000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "time_stamp": 10008000000,
+        "valid": true
+    },
+    {
+        "action": "invoke_manipulator_timer",
+        "time_stamp": 20000000000
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "time_stamp": 20002000000,
+        "valid": true
+    }
+]

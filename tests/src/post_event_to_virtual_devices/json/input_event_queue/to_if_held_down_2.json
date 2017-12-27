@@ -15,6 +15,21 @@
         "valid": true
     },
     {
+        "device_id": 1,
+        "event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "tab",
+            "type": "key_code"
+        },
+        "time_stamp": 4000000,
+        "valid": true
+    },
+    {
         "action": "invoke_manipulator_timer",
         "time_stamp": 10000000000
     }
