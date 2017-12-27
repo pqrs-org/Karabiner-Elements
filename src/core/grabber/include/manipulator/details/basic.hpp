@@ -767,6 +767,7 @@ public:
         }
 
         {
+          // Unset lazy if event is modifier key event in order to keep modifier keys order.
           bool lazy = !is_modifier_key_event || it->get_lazy();
           for (const auto& e : to_modifier_events) {
             output_event_queue.emplace_back_event(front_input_event.get_device_id(),
@@ -799,19 +800,18 @@ public:
         }
 
         {
-          bool lazy = !is_modifier_key_event || it->get_lazy();
           for (const auto& e : to_modifier_events) {
             if (it == std::end(to_events) - 1 && is_modifier_key_event) {
               current_manipulated_original_event.get_events_at_key_up().emplace_back_event(e,
                                                                                            event_type::key_up,
-                                                                                           lazy);
+                                                                                           true);
             } else {
               output_event_queue.emplace_back_event(front_input_event.get_device_id(),
                                                     front_input_event.get_time_stamp() + time_stamp_delay++,
                                                     e,
                                                     event_type::key_up,
                                                     front_input_event.get_original_event(),
-                                                    lazy);
+                                                    true);
             }
           }
         }
