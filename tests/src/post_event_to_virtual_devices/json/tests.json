@@ -272,6 +272,30 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_3.json"
     },
     {
+        "description": "to_if_held_down_1 (canceled)",
+        "rules": [
+            "json/rules/to_if_held_down.json"
+        ],
+        "input_event_queue": "json/input_event_queue/to_if_held_down_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_1.json"
+    },
+    {
+        "description": "to_if_held_down_2 (invoked key_down)",
+        "rules": [
+            "json/rules/to_if_held_down.json"
+        ],
+        "input_event_queue": "json/input_event_queue/to_if_held_down_2.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_2.json"
+    },
+    {
+        "description": "to_if_held_down_3 (invoked key_down,key_up)",
+        "rules": [
+            "json/rules/to_if_held_down.json"
+        ],
+        "input_event_queue": "json/input_event_queue/to_if_held_down_3.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_3.json"
+    },
+    {
         "description": "to_delayed_action (no invoke, no cancel)",
         "rules": [
             "json/rules/to_delayed_action.json"

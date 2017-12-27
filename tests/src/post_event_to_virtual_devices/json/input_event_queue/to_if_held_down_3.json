@@ -1,0 +1,36 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "time_stamp": 2000000,
+        "valid": true
+    },
+    {
+        "action": "invoke_manipulator_timer",
+        "time_stamp": 10000000000
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f1",
+            "type": "key_code"
+        },
+        "time_stamp": 10002000000,
+        "valid": true
+    }
+]

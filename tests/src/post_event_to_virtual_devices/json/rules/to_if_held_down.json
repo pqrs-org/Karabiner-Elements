@@ -1,0 +1,41 @@
+[
+    {
+        "description": "f1 -> f2 (with empty `to_`)",
+        "from": {
+            "key_code": "f1",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to_if_held_down": [
+            {
+                "key_code": "f2"
+            }
+        ],
+        "type": "basic"
+    },
+    {
+        "description": "f2 -> f3,f4 (with `to_`)",
+        "from": {
+            "key_code": "f2",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f3"
+            }
+        ],
+        "to_if_held_down": [
+            {
+                "key_code": "f4"
+            }
+        ],
+        "type": "basic"
+    }
+]
