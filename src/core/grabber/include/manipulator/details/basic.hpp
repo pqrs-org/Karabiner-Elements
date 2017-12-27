@@ -186,64 +186,13 @@ public:
               // ----------------------------------------
               // Post to_
 
-              for (auto it = std::begin(to_); it != std::end(to_); std::advance(it, 1)) {
-                if (auto event = it->to_event()) {
-                  auto to_modifier_events = it->make_modifier_events();
+              basic_.post_events_at_key_down(*front_input_event_,
+                                             to_,
+                                             *cmoe,
+                                             time_stamp_delay,
+                                             *oeq);
 
-                  for (const auto& e : to_modifier_events) {
-                    oeq->emplace_back_event(front_input_event_->get_device_id(),
-                                            front_input_event_->get_time_stamp() + time_stamp_delay++,
-                                            e,
-                                            event_type::key_down,
-                                            front_input_event_->get_original_event(),
-                                            true);
-                  }
-
-                  oeq->emplace_back_event(front_input_event_->get_device_id(),
-                                          front_input_event_->get_time_stamp() + time_stamp_delay++,
-                                          *event,
-                                          event_type::key_down,
-                                          front_input_event_->get_original_event(),
-                                          it->get_lazy());
-
-                  if (it != std::end(to_) - 1 || !it->get_repeat()) {
-                    oeq->emplace_back_event(front_input_event_->get_device_id(),
-                                            front_input_event_->get_time_stamp() + time_stamp_delay++,
-                                            *event,
-                                            event_type::key_up,
-                                            front_input_event_->get_original_event(),
-                                            it->get_lazy());
-                  } else {
-                    cmoe->get_events_at_key_up().emplace_back_event(*event,
-                                                                    event_type::key_up,
-                                                                    it->get_lazy());
-                  }
-
-                  bool is_modifier_key_event = false;
-                  if (auto key_code = event->get_key_code()) {
-                    if (types::make_modifier_flag(*key_code) != boost::none) {
-                      is_modifier_key_event = true;
-                    }
-                  }
-
-                  bool lazy = !is_modifier_key_event || it->get_lazy();
-
-                  for (const auto& e : to_modifier_events) {
-                    if (it == std::end(to_) - 1 && is_modifier_key_event) {
-                      cmoe->get_events_at_key_up().emplace_back_event(e,
-                                                                      event_type::key_up,
-                                                                      lazy);
-                    } else {
-                      oeq->emplace_back_event(front_input_event_->get_device_id(),
-                                              front_input_event_->get_time_stamp() + time_stamp_delay++,
-                                              e,
-                                              event_type::key_up,
-                                              front_input_event_->get_original_event(),
-                                              true);
-                    }
-                  }
-                }
-              }
+              // ----------------------------------------
 
               krbn_notification_center::get_instance().input_event_arrived();
             }
