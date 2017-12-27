@@ -312,6 +312,14 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_5.json"
     },
     {
+        "description": "to_if_held_down_6 (from: modifier+key)",
+        "rules": [
+            "json/rules/to_if_held_down.json"
+        ],
+        "input_event_queue": "json/input_event_queue/to_if_held_down_6.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_6.json"
+    },
+    {
         "description": "to_delayed_action (no invoke, no cancel)",
         "rules": [
             "json/rules/to_delayed_action.json"
