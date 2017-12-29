@@ -29,26 +29,6 @@ https://github.com/tekezo/pqrs.org/tree/master/webroot/osx/karabiner/files
 
 https://pqrs.org/osx/karabiner/document.html
 
-## Features
-
-* Secure Keyboard Entry: Support [secure entry](https://security.stackexchange.com/questions/47749/how-secure-is-secure-keyboard-entry-in-mac-os-xs-terminal) in the Terminal, Password prompt etc.
-* Modifier Flag Sync: Synchronize modifier flags across all connected keyboards.
-* Simple Modifications: Map normal keys to arbitrary key functions.
-* Function Keys: Map function keys to arbitrary key functions.
-* Complex Modifications: Map keys by complex rules. eg key to modifiers, modifiers+key to key, send key event if pressed alone, etc.
-* Devices: Apply modifications to specified keyboards only.
-* Virtual Keyboard: Set the virtual keyboard's type (ANSI, ISO, JIS) and its Caps Lock Delay.
-* Profiles: Support the creation of multiple profiles that the user can switch between.
-* Inverted Function Keys: Invert the functionality of the function keys with regard to the <kbd>fn</kbd> modifier.
-* Log Keyboard Events: Render the keyboard events log.
-* Log Application Events: Render the Karabiner-Elements event log.
-* Misc: Enable automatic updates, delete Karabiner Elements etc.
-
-## Limitations
-
-* Karabiner-Elements cannot modify eject key due to the limitation of macOS API.
-* Karabiner-Elements ignores the `System Preferences > Keyboard > Modifier Keys...` configuration.
-
 ## How to build
 
 System requirements:
