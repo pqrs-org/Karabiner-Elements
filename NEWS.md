@@ -1,6 +1,11 @@
 # Since version 11.4.0
 
 * `to_if_held_down` has been added.
+  * Examples:
+    * Open Alfred 3 if escape is held down.
+      * https://pqrs.org/osx/karabiner/json.html#typical-complex_modifications-examples-open-alfred-when-escape-is-held-down
+    * Quit application by holding command-q.
+      * https://pqrs.org/osx/karabiner/complex_modifications/#command_q
 * Avoided a VMware Remote Console issue that mouse pointer does not work properly on VMRC when Karabiner-Elements grabs the pointing device.
 * Improved a way to save karabiner.json.
 * Improved modifier flags handling in `to events`.
