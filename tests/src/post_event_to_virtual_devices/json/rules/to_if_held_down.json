@@ -62,5 +62,30 @@
             }
         ],
         "type": "basic"
+    },
+    {
+        "description": "left_shift+f4 -> right_shift,right_control (from: modifier+key)",
+        "from": {
+            "key_code": "f4",
+            "modifiers": {
+                "mandatory": [
+                    "left_shift"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "right_shift"
+            }
+        ],
+        "to_if_held_down": [
+            {
+                "key_code": "right_control"
+            }
+        ],
+        "type": "basic"
     }
 ]
