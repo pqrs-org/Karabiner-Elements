@@ -1,4 +1,4 @@
-# Since version 11.4.0
+# Version 11.5.0
 
 * `to_if_held_down` has been added.
   * Examples:
@@ -12,7 +12,7 @@
 * Fixed an issue that `to_if_alone` does not work properly when `to` is empty.
 
 
-# version 11.4.0
+# Version 11.4.0
 
 * Fixed an issue that the checkbox in `Preferences > Devices` is disabled for keyboards which do not have their own vendor id.
 * `mouse_key` has been added.
