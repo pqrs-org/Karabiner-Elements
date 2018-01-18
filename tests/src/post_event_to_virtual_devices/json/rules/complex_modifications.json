@@ -98,5 +98,25 @@
                 "key_code": "vk_none"
             }
         ]
+    },
+    {
+        "description": "control+button1 to button3",
+        "type": "basic",
+        "from": {
+            "pointing_button": "button1",
+            "modifiers": {
+                "mandatory": [
+                    "control"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "pointing_button": "button3"
+            }
+        ]
     }
 ]

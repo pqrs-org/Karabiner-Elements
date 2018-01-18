@@ -432,6 +432,14 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_2.json"
     },
     {
+        "description": "pointing_device_event_from_event_tap and pointing_button",
+        "rules": [
+            "json/rules/complex_modifications.json"
+        ],
+        "input_event_queue": "json/input_event_queue/pointing_device_event_from_event_tap_3.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_3.json"
+    },
+    {
         "description": "control+p to up_arrow (from modifiers.optional) / control-p, tab",
         "rules": [
             "json/rules/complex_modifications.json"
