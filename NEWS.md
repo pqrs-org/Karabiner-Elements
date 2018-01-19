@@ -1,3 +1,8 @@
+# Since 11.5.0 (beta)
+
+* Improved modifier flags handling around pointing button manipulations.
+
+
 # Version 11.5.0
 
 * `to_if_held_down` has been added.
