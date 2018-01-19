@@ -804,6 +804,16 @@
         "not_from": true
     },
     {
+        "name": "vk_mousekey_scroll_up",
+        "label": "vk_mousekey_scroll_up (equal to `scroll_up`)",
+        "not_from": true
+    },
+    {
+        "name": "vk_mousekey_scroll_down",
+        "label": "vk_mousekey_scroll_down (equal to `scroll_down`)",
+        "not_from": true
+    },
+    {
         "name": "vk_consumer_play",
         "label": "vk_consumer_play (equal to `play`)",
         "not_from": true
