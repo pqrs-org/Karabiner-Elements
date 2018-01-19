@@ -60,6 +60,14 @@
         "type": "keyboard_event"
     },
     {
+        "keyboard_event": {
+            "key_code": "p",
+            "value": 0
+        },
+        "time_stamp": 25000000,
+        "type": "keyboard_event"
+    },
+    {
         "pointing_input": {
             "buttons": [
                 0,
@@ -72,7 +80,7 @@
             "x": 246,
             "y": 0
         },
-        "time_stamp": 12000000,
+        "time_stamp": 14000000,
         "type": "pointing_input"
     },
     {
@@ -88,15 +96,7 @@
             "x": 0,
             "y": 0
         },
-        "time_stamp": 25000000,
+        "time_stamp": 18000000,
         "type": "pointing_input"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "p",
-            "value": 0
-        },
-        "time_stamp": 20000000,
-        "type": "keyboard_event"
     }
 ]
