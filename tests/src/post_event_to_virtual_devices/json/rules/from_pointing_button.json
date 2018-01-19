@@ -1,0 +1,83 @@
+[
+    {
+        "description": "button10 -> button11 (button to button)",
+        "type": "basic",
+        "from": {
+            "pointing_button": "button10",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "pointing_button": "button11",
+                "modifiers": []
+            }
+        ]
+    },
+    {
+        "description": "button11 -> left_command+button12 (button to modifier+button)",
+        "type": "basic",
+        "from": {
+            "pointing_button": "button11",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "pointing_button": "button12",
+                "modifiers": [
+                    "left_command"
+                ]
+            }
+        ]
+    },
+    {
+        "description": "left_control+button12 -> button13 (modifier+button to button)",
+        "type": "basic",
+        "from": {
+            "pointing_button": "button12",
+            "modifiers": {
+                "mandatory": [
+                    "left_control"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "pointing_button": "button13"
+            }
+        ]
+    },
+    {
+        "description": "right_control+button13 -> left_option+button14 (modifier+button to modifier+button)",
+        "type": "basic",
+        "from": {
+            "pointing_button": "button13",
+            "modifiers": {
+                "mandatory": [
+                    "right_control"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "pointing_button": "button14",
+                "modifiers": [
+                    "left_command"
+                ]
+            }
+        ]
+    }
+]

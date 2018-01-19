@@ -1,0 +1,60 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "pointing_button": "button10",
+            "type": "pointing_button"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "pointing_button": "button10",
+            "type": "pointing_button"
+        },
+        "time_stamp": 2000000,
+        "valid": true
+    },
+    {
+        "device_id": 0,
+        "event": {
+            "type": "pointing_device_event_from_event_tap"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "pointing_button": "button3",
+            "type": "pointing_button"
+        },
+        "time_stamp": 4000000,
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "pointing_button": "button10",
+            "type": "pointing_button"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "pointing_button": "button10",
+            "type": "pointing_button"
+        },
+        "time_stamp": 2000000,
+        "valid": true
+    },
+    {
+        "device_id": 0,
+        "event": {
+            "type": "pointing_device_event_from_event_tap"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "pointing_button": "button3",
+            "type": "pointing_button"
+        },
+        "time_stamp": 4000000,
+        "valid": true
+    }
+]
