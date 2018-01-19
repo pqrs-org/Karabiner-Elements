@@ -753,7 +753,9 @@ public:
         } else {
           if (front_input_event.get_event_type() == event_type::key_down) {
             if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
-              if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
+              if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
+                  !pressed_buttons_ &&
+                  !mouse_key_handler_.active()) {
                 dispatch_modifier_key_event = true;
                 dispatch_modifier_key_event_before = true;
               }
@@ -764,7 +766,9 @@ public:
             }
 
           } else if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_motion) {
-            if (!queue_.get_keyboard_repeat_detector().is_repeating()) {
+            if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
+                !pressed_buttons_ &&
+                !mouse_key_handler_.active()) {
               dispatch_modifier_key_event = true;
               dispatch_modifier_key_event_before = true;
             }
