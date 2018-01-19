@@ -2,13 +2,13 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button10",
+            "pointing_button": "button11",
             "type": "pointing_button"
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button10",
+            "pointing_button": "button11",
             "type": "pointing_button"
         },
         "time_stamp": 2000000,
@@ -66,13 +66,13 @@
     {
         "device_id": 1,
         "event": {
-            "pointing_button": "button10",
+            "pointing_button": "button11",
             "type": "pointing_button"
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "pointing_button": "button10",
+            "pointing_button": "button11",
             "type": "pointing_button"
         },
         "time_stamp": 10000000,
