@@ -3,18 +3,6 @@
 @import Cocoa;
 #import "libkrbn.h"
 
-@interface KarabinerKitCoreConfigurationSimpleModificationsDefinition : NSObject
-
-- (instancetype)init;
-- (instancetype)initWithDefinition:(libkrbn_simple_modifications_definition*)definition;
-
-- (libkrbn_simple_modifications_definition)toLibkrbnDefinition;
-
-@property(copy) NSString* type;
-@property(copy) NSString* value;
-
-@end
-
 @interface KarabinerKitCoreConfigurationModel : NSObject
 
 - (instancetype)initWithInitializedCoreConfiguration:(libkrbn_core_configuration*)initializedCoreConfiguration;
@@ -35,24 +23,24 @@
 - (void)removeProfileAtIndex:(NSUInteger)index;
 
 - (NSUInteger)selectedProfileSimpleModificationsCount:(NSInteger)connectedDeviceIndex;
-- (KarabinerKitCoreConfigurationSimpleModificationsDefinition*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index
-                                                                                        connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
-- (KarabinerKitCoreConfigurationSimpleModificationsDefinition*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index
-                                                                                         connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
+- (NSString*)selectedProfileSimpleModificationFromJsonStringAtIndex:(NSUInteger)index
+                                               connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
+- (NSString*)selectedProfileSimpleModificationToJsonStringAtIndex:(NSUInteger)index
+                                             connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index
-                                               from:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)from
-                                                 to:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)to
+                                               from:(NSString*)from
+                                                 to:(NSString*)to
                                connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
 - (void)addSimpleModificationToSelectedProfile:(NSInteger)connectedDeviceIndex;
 - (void)removeSelectedProfileSimpleModificationAtIndex:(NSUInteger)index connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
 
 - (NSUInteger)selectedProfileFnFunctionKeysCount:(NSInteger)connectedDeviceIndex;
-- (KarabinerKitCoreConfigurationSimpleModificationsDefinition*)selectedProfileFnFunctionKeyFirstAtIndex:(NSUInteger)index
-                                                                                   connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
-- (KarabinerKitCoreConfigurationSimpleModificationsDefinition*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index
-                                                                                    connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
-- (void)setSelectedProfileFnFunctionKey:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)from
-                                     to:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)to
+- (NSString*)selectedProfileFnFunctionKeyFromJsonStringAtIndex:(NSUInteger)index
+                                          connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
+- (NSString*)selectedProfileFnFunctionKeyToJsonStringAtIndex:(NSUInteger)index
+                                        connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
+- (void)setSelectedProfileFnFunctionKey:(NSString*)from
+                                     to:(NSString*)to
                    connectedDeviceIndex:(NSInteger)connectedDeviceIndex;
 
 @property(readonly) NSUInteger selectedProfileComplexModificationsRulesCount;

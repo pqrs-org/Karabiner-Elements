@@ -6,7 +6,7 @@
 @interface SimpleModificationsTableViewController : NSObject
 
 + (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton
-                   definition:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)definition;
+                   definition:(NSString*)definition;
 
 - (void)setup;
 - (void)valueChanged:(id)sender;

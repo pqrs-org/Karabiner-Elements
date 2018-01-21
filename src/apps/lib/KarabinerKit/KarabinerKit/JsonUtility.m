@@ -3,27 +3,27 @@
 
 @implementation KarabinerKitJsonUtility
 
-+ (id)loadCString:(const char*)string {
++ (id)loadString:(NSString*)string {
   if (!string) {
-    NSLog(@"string is null @ [JsonUtility loadCString]");
+    NSLog(@"Error: string == nil @ [JsonUtility loadString]");
     return nil;
   }
 
-  // Do not include the last '\0' to data. (set length == strlen)
-  NSData* data = [NSData dataWithBytesNoCopy:(void*)(string)
-                         length:strlen(string)
-                                freeWhenDone:NO];
-
   NSError* error = nil;
-  NSDictionary* jsonObject = [NSJSONSerialization JSONObjectWithData:data
+  NSDictionary* jsonObject = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding]
                                                              options:0
                                                                error:&error];
+
   if (error) {
-    NSLog(@"JSONObjectWithData error @ [JsonUtility loadCString]: %@", error);
+    NSLog(@"JSONObjectWithData error @ [JsonUtility loadString]: %@", error);
     return nil;
   }
 
   return jsonObject;
+}
+
++ (id)loadCString:(const char*)string {
+  return [self loadString:[NSString stringWithUTF8String:string]];
 }
 
 + (id)loadFile:(NSString*)filePath {
@@ -43,29 +43,40 @@
   return jsonObject;
 }
 
-+ (void)saveJsonToFile:(id)json filePath:(NSString*)filePath {
-  NSOutputStream* stream = [NSOutputStream outputStreamToMemory];
-  [stream open];
++ (NSString*)createJsonString:(id)json {
   NSError* error = nil;
-  [NSJSONSerialization writeJSONObject:json
-                              toStream:stream
-                               options:NSJSONWritingPrettyPrinted
-                                 error:&error];
+  NSData* data = [NSJSONSerialization dataWithJSONObject:json
+                                                 options:NSJSONWritingPrettyPrinted
+                                                   error:&error];
   if (error) {
-    NSLog(@"writeJSONObject error @ [JsonUtility saveJsonToFile]: %@", error);
-    return;
+    NSLog(@"[JsonUtility createJsonString] error: %@", error);
+    return nil;
   }
 
-  NSData* data = [stream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
-  [stream close];
+  if (!data) {
+    NSLog(@"[JsonUtility createJsonString] error: data == nil");
+    return nil;
+  }
 
-  if (data.length > 0) {
-    NSString* string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    bool result = libkrbn_save_beautified_json_string([filePath UTF8String], [string UTF8String]);
+  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
++ (void)saveJsonToFile:(id)json filePath:(NSString*)filePath {
+  NSString* string = [self createJsonString:json];
+  if (string) {
+    bool result = libkrbn_save_beautified_json_string(filePath.UTF8String, string.UTF8String);
     if (!result) {
       NSLog(@"libkrbn_save_beautified_json_string @ [JsonUtility saveJsonToFile]");
     }
   }
+}
+
++ (NSString*)createPrettyPrintedString:(NSString*)string {
+  id jsonObject = [self loadString:string];
+  if (jsonObject) {
+    return [self createJsonString:jsonObject];
+  }
+  return nil;
 }
 
 @end

@@ -44,10 +44,10 @@
   SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
   SimpleModificationsTableCellView* toCellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
 
-  KarabinerKitCoreConfigurationSimpleModificationsDefinition* from = [KarabinerKitCoreConfigurationSimpleModificationsDefinition new];
-  from.type = @"key_code";
-  from.value = fromCellView.textField.stringValue;
-  KarabinerKitCoreConfigurationSimpleModificationsDefinition* to = toCellView.popUpButton.selectedItem.representedObject;
+  NSString* from = [KarabinerKitJsonUtility createJsonString:@{
+    @"key_code" : fromCellView.textField.stringValue,
+  }];
+  NSString* to = toCellView.popUpButton.selectedItem.representedObject;
 
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
 

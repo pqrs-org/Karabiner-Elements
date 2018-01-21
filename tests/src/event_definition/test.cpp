@@ -150,13 +150,13 @@ TEST_CASE("event_definition.test_modifiers") {
   // empty
 
   {
-    std::unordered_set<event_definition::modifier> mandatory_modifiers;
-    std::unordered_set<event_definition::modifier> optional_modifiers;
-    from_event_definition event_definition(krbn::key_code::spacebar, mandatory_modifiers, optional_modifiers);
+    from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "spacebar"},
+    }));
 
     REQUIRE(event_definition.get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == mandatory_modifiers);
-    REQUIRE(event_definition.get_optional_modifiers() == optional_modifiers);
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>{});
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<event_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -172,13 +172,13 @@ TEST_CASE("event_definition.test_modifiers") {
   // empty (modifier key)
 
   {
-    std::unordered_set<event_definition::modifier> mandatory_modifiers;
-    std::unordered_set<event_definition::modifier> optional_modifiers;
-    from_event_definition event_definition(krbn::key_code::left_shift, mandatory_modifiers, optional_modifiers);
+    from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "left_shift"},
+    }));
 
     REQUIRE(event_definition.get_key_code() == krbn::key_code::left_shift);
-    REQUIRE(event_definition.get_mandatory_modifiers() == mandatory_modifiers);
-    REQUIRE(event_definition.get_optional_modifiers() == optional_modifiers);
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>{});
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<event_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -194,15 +194,16 @@ TEST_CASE("event_definition.test_modifiers") {
   // mandatory_modifiers any
 
   {
-    std::unordered_set<event_definition::modifier> mandatory_modifiers({
-        event_definition::modifier::any,
-    });
-    std::unordered_set<event_definition::modifier> optional_modifiers;
-    from_event_definition event_definition(krbn::key_code::spacebar, mandatory_modifiers, optional_modifiers);
+    from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "spacebar"},
+        {"modifiers", nlohmann::json::object({
+                          {"mandatory", nlohmann::json::array({"any"})},
+                      })},
+    }));
 
     REQUIRE(event_definition.get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == mandatory_modifiers);
-    REQUIRE(event_definition.get_optional_modifiers() == optional_modifiers);
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::any});
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<event_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -229,15 +230,16 @@ TEST_CASE("event_definition.test_modifiers") {
   // optional_modifiers any
 
   {
-    std::unordered_set<event_definition::modifier> mandatory_modifiers;
-    std::unordered_set<event_definition::modifier> optional_modifiers({
-        event_definition::modifier::any,
-    });
-    from_event_definition event_definition(krbn::key_code::spacebar, mandatory_modifiers, optional_modifiers);
+    from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "spacebar"},
+        {"modifiers", nlohmann::json::object({
+                          {"optional", nlohmann::json::array({"any"})},
+                      })},
+    }));
 
     REQUIRE(event_definition.get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == mandatory_modifiers);
-    REQUIRE(event_definition.get_optional_modifiers() == optional_modifiers);
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>{});
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::any});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -259,17 +261,17 @@ TEST_CASE("event_definition.test_modifiers") {
   // mandatory_modifiers and optional_modifiers
 
   {
-    std::unordered_set<event_definition::modifier> mandatory_modifiers({
-        event_definition::modifier::control,
-    });
-    std::unordered_set<event_definition::modifier> optional_modifiers({
-        event_definition::modifier::shift,
-    });
-    from_event_definition event_definition(krbn::key_code::p, mandatory_modifiers, optional_modifiers);
+    from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "p"},
+        {"modifiers", nlohmann::json::object({
+                          {"mandatory", nlohmann::json::array({"control"})},
+                          {"optional", nlohmann::json::array({"shift"})},
+                      })},
+    }));
 
     REQUIRE(event_definition.get_key_code() == krbn::key_code::p);
-    REQUIRE(event_definition.get_mandatory_modifiers() == mandatory_modifiers);
-    REQUIRE(event_definition.get_optional_modifiers() == optional_modifiers);
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::control});
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::shift});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -301,17 +303,17 @@ TEST_CASE("event_definition.test_modifiers") {
   // optional_modifiers any with mandatory_modifiers
 
   {
-    std::unordered_set<event_definition::modifier> mandatory_modifiers({
-        event_definition::modifier::left_shift,
-    });
-    std::unordered_set<event_definition::modifier> optional_modifiers({
-        event_definition::modifier::any,
-    });
-    from_event_definition event_definition(krbn::key_code::spacebar, mandatory_modifiers, optional_modifiers);
+    from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "spacebar"},
+        {"modifiers", nlohmann::json::object({
+                          {"mandatory", nlohmann::json::array({"left_shift"})},
+                          {"optional", nlohmann::json::array({"any"})},
+                      })},
+    }));
 
     REQUIRE(event_definition.get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == mandatory_modifiers);
-    REQUIRE(event_definition.get_optional_modifiers() == optional_modifiers);
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::left_shift});
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::any});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -337,15 +339,16 @@ TEST_CASE("event_definition.test_modifiers") {
   // mandatory_modifiers strict matching
 
   {
-    std::unordered_set<event_definition::modifier> mandatory_modifiers({
-        event_definition::modifier::left_shift,
-    });
-    std::unordered_set<event_definition::modifier> optional_modifiers;
-    from_event_definition event_definition(krbn::key_code::spacebar, mandatory_modifiers, optional_modifiers);
+    from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "spacebar"},
+        {"modifiers", nlohmann::json::object({
+                          {"mandatory", nlohmann::json::array({"left_shift"})},
+                      })},
+    }));
 
     REQUIRE(event_definition.get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == mandatory_modifiers);
-    REQUIRE(event_definition.get_optional_modifiers() == optional_modifiers);
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::left_shift});
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<event_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -370,17 +373,17 @@ TEST_CASE("event_definition.test_modifiers") {
   // mandatory_modifiers (modifier::shift)
 
   {
-    std::unordered_set<event_definition::modifier> mandatory_modifiers({
-        event_definition::modifier::shift,
-    });
-    std::unordered_set<event_definition::modifier> optional_modifiers({
-        event_definition::modifier::any,
-    });
-    from_event_definition event_definition(krbn::key_code::spacebar, mandatory_modifiers, optional_modifiers);
+    from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "spacebar"},
+        {"modifiers", nlohmann::json::object({
+                          {"mandatory", nlohmann::json::array({"shift"})},
+                          {"optional", nlohmann::json::array({"any"})},
+                      })},
+    }));
 
     REQUIRE(event_definition.get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == mandatory_modifiers);
-    REQUIRE(event_definition.get_optional_modifiers() == optional_modifiers);
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::shift});
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::any});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;
@@ -423,15 +426,16 @@ TEST_CASE("event_definition.test_modifiers") {
   // mandatory_modifiers strict matching (modifier::shift)
 
   {
-    std::unordered_set<event_definition::modifier> mandatory_modifiers({
-        event_definition::modifier::shift,
-    });
-    std::unordered_set<event_definition::modifier> optional_modifiers;
-    from_event_definition event_definition(krbn::key_code::spacebar, mandatory_modifiers, optional_modifiers);
+    from_event_definition event_definition(nlohmann::json::object({
+        {"key_code", "spacebar"},
+        {"modifiers", nlohmann::json::object({
+                          {"mandatory", nlohmann::json::array({"shift"})},
+                      })},
+    }));
 
     REQUIRE(event_definition.get_key_code() == krbn::key_code::spacebar);
-    REQUIRE(event_definition.get_mandatory_modifiers() == mandatory_modifiers);
-    REQUIRE(event_definition.get_optional_modifiers() == optional_modifiers);
+    REQUIRE(event_definition.get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>{event_definition::modifier::shift});
+    REQUIRE(event_definition.get_optional_modifiers() == std::unordered_set<event_definition::modifier>{});
 
     {
       krbn::modifier_flag_manager modifier_flag_manager;

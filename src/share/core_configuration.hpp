@@ -16,6 +16,8 @@
 // Example: tests/src/core_configuration/json/example.json
 
 namespace krbn {
+using namespace std::string_literals;
+
 class core_configuration final {
 public:
 #include "core_configuration/global_configuration.hpp"
@@ -458,16 +460,5 @@ inline void to_json(nlohmann::json& json, const core_configuration::profile::vir
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile::device& device) {
   json = device.to_json();
-}
-
-inline std::ostream& operator<<(std::ostream& stream, const std::pair<core_configuration::profile::simple_modifications::definition,
-                                                                      core_configuration::profile::simple_modifications::definition>& value) {
-  stream << "{"
-         << value.first.get_type() << ":" << value.first.get_value()
-         << ", "
-         << value.second.get_type() << ":" << value.second.get_value()
-         << "}";
-
-  return stream;
 }
 } // namespace krbn

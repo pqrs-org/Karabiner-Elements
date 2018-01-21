@@ -1,43 +1,6 @@
 #import "CoreConfigurationModel.h"
 #import "KarabinerKit/KarabinerKit.h"
 
-@implementation KarabinerKitCoreConfigurationSimpleModificationsDefinition
-
-- (instancetype)init {
-  self = [super init];
-
-  if (self) {
-    _type = @"";
-    _value = @"";
-  }
-
-  return self;
-}
-
-- (instancetype)initWithDefinition:(libkrbn_simple_modifications_definition*)definition {
-  self = [self init];
-
-  if (self) {
-    if (definition && definition->type) {
-      _type = [NSString stringWithUTF8String:definition->type];
-    }
-    if (definition && definition->value) {
-      _value = [NSString stringWithUTF8String:definition->value];
-    }
-  }
-
-  return self;
-}
-
-- (libkrbn_simple_modifications_definition)toLibkrbnDefinition {
-  libkrbn_simple_modifications_definition d;
-  d.type = [self.type UTF8String];
-  d.value = [self.value UTF8String];
-  return d;
-}
-
-@end
-
 @interface KarabinerKitCoreConfigurationModel ()
 
 @property libkrbn_core_configuration* libkrbnCoreConfiguration;
@@ -152,40 +115,38 @@
                                                                                                 deviceIdentifiers:&deviceIdentifiers]);
 }
 
-- (KarabinerKitCoreConfigurationSimpleModificationsDefinition*)selectedProfileSimpleModificationFirstAtIndex:(NSUInteger)index
-                                                                                        connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
+- (NSString*)selectedProfileSimpleModificationFromJsonStringAtIndex:(NSUInteger)index
+                                               connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
   libkrbn_device_identifiers deviceIdentifiers;
-  libkrbn_simple_modifications_definition d = libkrbn_core_configuration_get_selected_profile_simple_modification_first(
+  const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(
       self.libkrbnCoreConfiguration,
       index,
       [self deviceIdentifiersByIndex:connectedDeviceIndex
                    deviceIdentifiers:&deviceIdentifiers]);
-  return [[KarabinerKitCoreConfigurationSimpleModificationsDefinition alloc] initWithDefinition:&d];
+  return p ? [NSString stringWithUTF8String:p] : @"";
 }
 
-- (KarabinerKitCoreConfigurationSimpleModificationsDefinition*)selectedProfileSimpleModificationSecondAtIndex:(NSUInteger)index
-                                                                                         connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
+- (NSString*)selectedProfileSimpleModificationToJsonStringAtIndex:(NSUInteger)index
+                                             connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
   libkrbn_device_identifiers deviceIdentifiers;
-  libkrbn_simple_modifications_definition d = libkrbn_core_configuration_get_selected_profile_simple_modification_second(
+  const char* p = libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(
       self.libkrbnCoreConfiguration,
       index,
       [self deviceIdentifiersByIndex:connectedDeviceIndex
                    deviceIdentifiers:&deviceIdentifiers]);
-  return [[KarabinerKitCoreConfigurationSimpleModificationsDefinition alloc] initWithDefinition:&d];
+  return p ? [NSString stringWithUTF8String:p] : @"";
 }
 
 - (void)setSelectedProfileSimpleModificationAtIndex:(NSUInteger)index
-                                               from:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)from
-                                                 to:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)to
+                                               from:(NSString*)fromJsonString
+                                                 to:(NSString*)toJsonString
                                connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
   libkrbn_device_identifiers deviceIdentifiers;
-  libkrbn_simple_modifications_definition f = [from toLibkrbnDefinition];
-  libkrbn_simple_modifications_definition t = [to toLibkrbnDefinition];
 
   libkrbn_core_configuration_replace_selected_profile_simple_modification(self.libkrbnCoreConfiguration,
                                                                           index,
-                                                                          &f,
-                                                                          &t,
+                                                                          fromJsonString.UTF8String,
+                                                                          toJsonString.UTF8String,
                                                                           [self deviceIdentifiersByIndex:connectedDeviceIndex
                                                                                        deviceIdentifiers:&deviceIdentifiers]);
 }
@@ -212,37 +173,35 @@
                                                                                             deviceIdentifiers:&deviceIdentifiers]);
 }
 
-- (KarabinerKitCoreConfigurationSimpleModificationsDefinition*)selectedProfileFnFunctionKeyFirstAtIndex:(NSUInteger)index
-                                                                                   connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
+- (NSString*)selectedProfileFnFunctionKeyFromJsonStringAtIndex:(NSUInteger)index
+                                          connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
   libkrbn_device_identifiers deviceIdentifiers;
-  libkrbn_simple_modifications_definition d = libkrbn_core_configuration_get_selected_profile_fn_function_key_first(
+  const char* p = libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(
       self.libkrbnCoreConfiguration,
       index,
       [self deviceIdentifiersByIndex:connectedDeviceIndex
                    deviceIdentifiers:&deviceIdentifiers]);
-  return [[KarabinerKitCoreConfigurationSimpleModificationsDefinition alloc] initWithDefinition:&d];
+  return p ? [NSString stringWithUTF8String:p] : @"";
 }
 
-- (KarabinerKitCoreConfigurationSimpleModificationsDefinition*)selectedProfileFnFunctionKeySecondAtIndex:(NSUInteger)index
-                                                                                    connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
+- (NSString*)selectedProfileFnFunctionKeyToJsonStringAtIndex:(NSUInteger)index
+                                        connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
   libkrbn_device_identifiers deviceIdentifiers;
-  libkrbn_simple_modifications_definition d = libkrbn_core_configuration_get_selected_profile_fn_function_key_second(
+  const char* p = libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(
       self.libkrbnCoreConfiguration,
       index,
       [self deviceIdentifiersByIndex:connectedDeviceIndex
                    deviceIdentifiers:&deviceIdentifiers]);
-  return [[KarabinerKitCoreConfigurationSimpleModificationsDefinition alloc] initWithDefinition:&d];
+  return p ? [NSString stringWithUTF8String:p] : @"";
 }
 
-- (void)setSelectedProfileFnFunctionKey:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)from
-                                     to:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)to
+- (void)setSelectedProfileFnFunctionKey:(NSString*)from
+                                     to:(NSString*)to
                    connectedDeviceIndex:(NSInteger)connectedDeviceIndex {
   libkrbn_device_identifiers deviceIdentifiers;
-  libkrbn_simple_modifications_definition f = [from toLibkrbnDefinition];
-  libkrbn_simple_modifications_definition t = [to toLibkrbnDefinition];
   libkrbn_core_configuration_replace_selected_profile_fn_function_key(self.libkrbnCoreConfiguration,
-                                                                      &f,
-                                                                      &t,
+                                                                      from.UTF8String,
+                                                                      to.UTF8String,
                                                                       [self deviceIdentifiersByIndex:connectedDeviceIndex
                                                                                    deviceIdentifiers:&deviceIdentifiers]);
 }

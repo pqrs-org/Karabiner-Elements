@@ -33,7 +33,7 @@
       NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"---------------------------------------- (use default key)"
                                                     action:NULL
                                              keyEquivalent:@""];
-      item.representedObject = [KarabinerKitCoreConfigurationSimpleModificationsDefinition new];
+      item.representedObject = [KarabinerKitJsonUtility createJsonString:@{}];
       [self.toMenuWithInherited addItem:item];
       item.enabled = YES;
       [self.toMenuWithInherited addItem:[NSMenuItem separatorItem]];
@@ -43,7 +43,8 @@
 
     for (NSDictionary* dict in jsonObject) {
       NSString* category = dict[@"category"];
-      NSString* name = dict[@"name"];
+      NSString* label = dict[@"label"];
+      NSDictionary* data = dict[@"data"];
 
       if (category) {
         [self.fromMenu addItem:[NSMenuItem separatorItem]];
@@ -65,36 +66,21 @@
           [self.toMenu addItem:item];
           [self.toMenuWithInherited addItem:[item copy]];
         }
-      } else if (name) {
-        NSString* label = dict[@"label"];
-        if (!label) {
-          label = name;
-        }
+      } else if (label && data) {
         label = [NSString stringWithFormat:@"  %@", label];
-
-        NSString* type = dict[@"type"];
-        if (!type) {
-          type = @"key_code";
-        }
 
         if (!dict[@"not_from"]) {
           NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                         action:NULL
                                                  keyEquivalent:@""];
-          KarabinerKitCoreConfigurationSimpleModificationsDefinition* d = [KarabinerKitCoreConfigurationSimpleModificationsDefinition new];
-          d.type = type;
-          d.value = name;
-          item.representedObject = d;
+          item.representedObject = [KarabinerKitJsonUtility createJsonString:data];
           [self.fromMenu addItem:item];
         }
         if (!dict[@"not_to"]) {
           NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
                                                         action:NULL
                                                  keyEquivalent:@""];
-          KarabinerKitCoreConfigurationSimpleModificationsDefinition* d = [KarabinerKitCoreConfigurationSimpleModificationsDefinition new];
-          d.type = type;
-          d.value = name;
-          item.representedObject = d;
+          item.representedObject = [KarabinerKitJsonUtility createJsonString:data];
           [self.toMenu addItem:item];
           [self.toMenuWithInherited addItem:[item copy]];
         }

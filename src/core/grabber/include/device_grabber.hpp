@@ -776,15 +776,19 @@ private:
     return std::make_shared<manipulator::details::conditions::device>(json);
   }
 
-  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<core_configuration::profile::simple_modifications::definition, core_configuration::profile::simple_modifications::definition>& pair) const {
-    if (pair.first.valid() && pair.second.valid()) {
-      auto from_json = pair.first.to_json();
-      from_json["modifiers"]["optional"] = "any";
+  std::shared_ptr<manipulator::details::base> make_simple_modifications_manipulator(const std::pair<std::string, std::string>& pair) const {
+    if (!pair.first.empty() && !pair.second.empty()) {
+      try {
+        auto from_json = nlohmann::json::parse(pair.first);
+        from_json["modifiers"]["optional"] = nlohmann::json::array();
+        from_json["modifiers"]["optional"].push_back("any");
 
-      auto to_json = pair.second.to_json();
+        auto to_json = nlohmann::json::parse(pair.second);
 
-      return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(from_json),
-                                                           manipulator::details::to_event_definition(to_json));
+        return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(from_json),
+                                                             manipulator::details::to_event_definition(to_json));
+      } catch (std::exception&) {
+      }
     }
     return nullptr;
   }
@@ -806,18 +810,19 @@ private:
   void update_fn_function_keys_manipulators(void) {
     fn_function_keys_manipulator_manager_.invalidate_manipulators();
 
-    std::unordered_set<manipulator::details::event_definition::modifier> from_mandatory_modifiers;
-    std::unordered_set<manipulator::details::event_definition::modifier> from_optional_modifiers({
-        manipulator::details::event_definition::modifier::any,
-    });
-    std::unordered_set<manipulator::details::event_definition::modifier> to_modifiers;
+    auto from_mandatory_modifiers = nlohmann::json::array();
+
+    auto from_optional_modifiers = nlohmann::json::array();
+    from_optional_modifiers.push_back("any");
+
+    auto to_modifiers = nlohmann::json::array();
 
     if (system_preferences_values_.get_keyboard_fn_state()) {
       // f1 -> f1
       // fn+f1 -> display_brightness_decrement
 
-      from_mandatory_modifiers.insert(manipulator::details::event_definition::modifier::fn);
-      to_modifiers.insert(manipulator::details::event_definition::modifier::fn);
+      from_mandatory_modifiers.push_back("fn");
+      to_modifiers.push_back("fn");
 
     } else {
       // f1 -> display_brightness_decrement
@@ -825,33 +830,22 @@ private:
 
       // fn+f1 ... fn+f12 -> f1 .. f12
 
-      for (const auto& key_code : std::vector<key_code>({
-               key_code::f1,
-               key_code::f2,
-               key_code::f3,
-               key_code::f4,
-               key_code::f5,
-               key_code::f6,
-               key_code::f7,
-               key_code::f8,
-               key_code::f9,
-               key_code::f10,
-               key_code::f11,
-               key_code::f12,
-           })) {
-        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
-                                                                             key_code,
-                                                                             {
-                                                                                 manipulator::details::event_definition::modifier::fn,
-                                                                             },
-                                                                             {
-                                                                                 manipulator::details::event_definition::modifier::any,
-                                                                             }),
-                                                                         manipulator::details::to_event_definition(
-                                                                             key_code,
-                                                                             {
-                                                                                 manipulator::details::event_definition::modifier::fn,
-                                                                             }));
+      for (int i = 1; i <= 12; ++i) {
+        auto from_json = nlohmann::json::object({
+            {"key_code", fmt::format("f{0}", i)},
+            {"modifiers", nlohmann::json::object({
+                              {"mandatory", nlohmann::json::array({"fn"})},
+                              {"optional", nlohmann::json::array({"any"})},
+                          })},
+        });
+
+        auto to_json = nlohmann::json::object({
+            {"key_code", fmt::format("f{0}", i)},
+            {"modifiers", nlohmann::json::array({"fn"})},
+        });
+
+        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(from_json),
+                                                                         manipulator::details::to_event_definition(to_json));
         fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
     }
@@ -881,49 +875,75 @@ private:
     }
 
     // fn+return_or_enter -> keypad_enter ...
+    {
+      nlohmann::json data = nlohmann::json::array();
 
-    auto pairs = std::vector<std::pair<key_code, key_code>>({
-        std::make_pair(key_code::return_or_enter, key_code::keypad_enter),
-        std::make_pair(key_code::delete_or_backspace, key_code::delete_forward),
-        std::make_pair(key_code::right_arrow, key_code::end),
-        std::make_pair(key_code::left_arrow, key_code::home),
-        std::make_pair(key_code::down_arrow, key_code::page_down),
-        std::make_pair(key_code::up_arrow, key_code::page_up),
-    });
-    for (const auto& p : pairs) {
-      auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
-                                                                           p.first,
-                                                                           {
-                                                                               manipulator::details::event_definition::modifier::fn,
-                                                                           },
-                                                                           {
-                                                                               manipulator::details::event_definition::modifier::any,
-                                                                           }),
-                                                                       manipulator::details::to_event_definition(
-                                                                           p.second,
-                                                                           {
-                                                                               manipulator::details::event_definition::modifier::fn,
-                                                                           }));
-      fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"key_code", "return_or_enter"}})},
+          {"to", nlohmann::json::object({{"key_code", "keypad_enter"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"key_code", "delete_or_backspace"}})},
+          {"to", nlohmann::json::object({{"key_code", "delete_forward"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"key_code", "right_arrow"}})},
+          {"to", nlohmann::json::object({{"key_code", "end"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"key_code", "left_arrow"}})},
+          {"to", nlohmann::json::object({{"key_code", "home"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"key_code", "down_arrow"}})},
+          {"to", nlohmann::json::object({{"key_code", "page_down"}})},
+      }));
+
+      data.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"key_code", "up_arrow"}})},
+          {"to", nlohmann::json::object({{"key_code", "page_up"}})},
+      }));
+
+      for (const auto& d : data) {
+        auto from_json = d["from"];
+        from_json["modifiers"]["mandatory"] = nlohmann::json::array({"fn"});
+        from_json["modifiers"]["optional"] = nlohmann::json::array({"any"});
+
+        auto to_json = d["to"];
+        to_json["modifiers"] = nlohmann::json::array({"fn"});
+
+        auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(from_json),
+                                                                         manipulator::details::to_event_definition(to_json));
+        fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+      }
     }
   }
 
-  std::shared_ptr<manipulator::details::base> make_fn_function_keys_manipulator(const std::pair<core_configuration::profile::simple_modifications::definition, core_configuration::profile::simple_modifications::definition>& pair,
-                                                                                const std::unordered_set<manipulator::details::event_definition::modifier>& from_mandatory_modifiers,
-                                                                                const std::unordered_set<manipulator::details::event_definition::modifier>& from_optional_modifiers,
-                                                                                const std::unordered_set<manipulator::details::event_definition::modifier>& to_modifiers) {
-    if (pair.first.valid() && pair.second.valid()) {
-      if (auto from_event = types::make_key_code(pair.first.get_value())) {
-        if (auto to_event = types::make_key_code(pair.second.get_value())) {
-          return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(
-                                                                   *from_event,
-                                                                   from_mandatory_modifiers,
-                                                                   from_optional_modifiers),
-                                                               manipulator::details::to_event_definition(
-                                                                   *to_event,
-                                                                   to_modifiers));
-        }
+  std::shared_ptr<manipulator::details::base> make_fn_function_keys_manipulator(const std::pair<std::string, std::string>& pair,
+                                                                                const nlohmann::json& from_mandatory_modifiers,
+                                                                                const nlohmann::json& from_optional_modifiers,
+                                                                                const nlohmann::json& to_modifiers) {
+    try {
+      auto from_json = nlohmann::json::parse(pair.first);
+      if (from_json.empty()) {
+        return nullptr;
       }
+      from_json["modifiers"]["mandatory"] = from_mandatory_modifiers;
+      from_json["modifiers"]["optional"] = from_optional_modifiers;
+
+      auto to_json = nlohmann::json::parse(pair.second);
+      if (to_json.empty()) {
+        return nullptr;
+      }
+      to_json["modifiers"] = to_modifiers;
+
+      return std::make_shared<manipulator::details::basic>(manipulator::details::from_event_definition(from_json),
+                                                           manipulator::details::to_event_definition(to_json));
+    } catch (std::exception&) {
     }
     return nullptr;
   }

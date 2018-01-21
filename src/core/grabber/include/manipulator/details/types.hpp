@@ -378,13 +378,6 @@ public:
                 });
   }
 
-  from_event_definition(key_code key_code,
-                        const std::unordered_set<modifier>& mandatory_modifiers,
-                        const std::unordered_set<modifier>& optional_modifiers) : event_definition(key_code),
-                                                                                  mandatory_modifiers_(mandatory_modifiers),
-                                                                                  optional_modifiers_(optional_modifiers) {
-  }
-
   virtual ~from_event_definition(void) {
   }
 
@@ -540,13 +533,6 @@ public:
                 [&](const std::string& key, const nlohmann::json& value, const nlohmann::json& json) {
                   return extra_json_handler(key, value, json);
                 });
-  }
-
-  to_event_definition(key_code key_code,
-                      const std::unordered_set<modifier>& modifiers) : event_definition(key_code),
-                                                                       modifiers_(modifiers),
-                                                                       lazy_(false),
-                                                                       repeat_(true) {
   }
 
   virtual ~to_event_definition(void) {

@@ -114,6 +114,14 @@
                             "to": {
                                 "key_code": "escape"
                             }
+                        },
+                        {
+                            "from": {
+                                "key_code": "f2"
+                            },
+                            "to": {
+                                "key_code": ""
+                            }
                         }
                     ],
                     "identifiers": {
@@ -157,6 +165,14 @@
                             },
                             "to": {
                                 "key_code": "escape"
+                            }
+                        },
+                        {
+                            "from": {
+                                "key_code": "f2"
+                            },
+                            "to": {
+                                "key_code": ""
                             }
                         }
                     ],

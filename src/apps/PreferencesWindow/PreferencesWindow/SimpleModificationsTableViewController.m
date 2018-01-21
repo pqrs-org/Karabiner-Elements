@@ -15,16 +15,17 @@
 @implementation SimpleModificationsTableViewController
 
 + (void)selectPopUpButtonMenu:(NSPopUpButton*)popUpButton
-                   definition:(KarabinerKitCoreConfigurationSimpleModificationsDefinition*)definition {
-  NSArray* items = popUpButton.itemArray;
-  if (items) {
-    for (NSMenuItem* item in items) {
-      KarabinerKitCoreConfigurationSimpleModificationsDefinition* representedObject = item.representedObject;
-      if ([representedObject isKindOfClass:KarabinerKitCoreConfigurationSimpleModificationsDefinition.class]) {
-        if ([representedObject.type isEqualToString:definition.type] &&
-            [representedObject.value isEqualToString:definition.value]) {
-          [popUpButton selectItem:item];
-          return;
+                   definition:(NSString*)definition {
+  if (definition) {
+    NSString* jsonString = [KarabinerKitJsonUtility createPrettyPrintedString:definition];
+    if (jsonString) {
+      NSArray* items = popUpButton.itemArray;
+      if (items) {
+        for (NSMenuItem* item in items) {
+          if ([item.representedObject isEqualToString:jsonString]) {
+            [popUpButton selectItem:item];
+            return;
+          }
         }
       }
     }
@@ -61,12 +62,12 @@
   SimpleModificationsTableCellView* fromCellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
   SimpleModificationsTableCellView* toCellView = [self.tableView viewAtColumn:1 row:row makeIfNecessary:NO];
 
-  KarabinerKitCoreConfigurationSimpleModificationsDefinition* from = fromCellView.popUpButton.selectedItem.representedObject;
-  if ([from isKindOfClass:KarabinerKitCoreConfigurationSimpleModificationsDefinition.class]) {
+  NSString* from = fromCellView.popUpButton.selectedItem.representedObject;
+  if ([from isKindOfClass:NSString.class]) {
     // If toCellView is not selected, set fromCellView value to toCellView.
-    KarabinerKitCoreConfigurationSimpleModificationsDefinition* to = toCellView.popUpButton.selectedItem.representedObject;
-    if (![to isKindOfClass:KarabinerKitCoreConfigurationSimpleModificationsDefinition.class] ||
-        [to.value length] == 0) {
+    NSString* to = toCellView.popUpButton.selectedItem.representedObject;
+    if (![to isKindOfClass:NSString.class] ||
+        [to length] == 0) {
       [SimpleModificationsTableViewController selectPopUpButtonMenu:toCellView.popUpButton
                                                          definition:from];
       to = toCellView.popUpButton.selectedItem.representedObject;

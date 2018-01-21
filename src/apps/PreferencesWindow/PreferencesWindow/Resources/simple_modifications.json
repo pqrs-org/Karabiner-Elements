@@ -3,859 +3,1474 @@
         "category": "Modifier keys"
     },
     {
-        "name": "caps_lock"
+        "label": "caps_lock",
+        "data": {
+            "key_code": "caps_lock"
+        }
     },
     {
-        "name": "left_control"
+        "label": "left_control",
+        "data": {
+            "key_code": "left_control"
+        }
     },
     {
-        "name": "left_shift"
+        "label": "left_shift",
+        "data": {
+            "key_code": "left_shift"
+        }
     },
     {
-        "name": "left_option"
+        "label": "left_option",
+        "data": {
+            "key_code": "left_option"
+        }
     },
     {
-        "name": "left_command"
+        "label": "left_command",
+        "data": {
+            "key_code": "left_command"
+        }
     },
     {
-        "name": "right_control"
+        "label": "right_control",
+        "data": {
+            "key_code": "right_control"
+        }
     },
     {
-        "name": "right_shift"
+        "label": "right_shift",
+        "data": {
+            "key_code": "right_shift"
+        }
     },
     {
-        "name": "right_option"
+        "label": "right_option",
+        "data": {
+            "key_code": "right_option"
+        }
     },
     {
-        "name": "right_command"
+        "label": "right_command",
+        "data": {
+            "key_code": "right_command"
+        }
     },
     {
-        "name": "fn"
+        "label": "fn",
+        "data": {
+            "key_code": "fn"
+        }
     },
     {
         "category": "Controls and symbols"
     },
     {
-        "name": "return_or_enter"
+        "label": "return_or_enter",
+        "data": {
+            "key_code": "return_or_enter"
+        }
     },
     {
-        "name": "escape"
+        "label": "escape",
+        "data": {
+            "key_code": "escape"
+        }
     },
     {
-        "name": "delete_or_backspace"
+        "label": "delete_or_backspace",
+        "data": {
+            "key_code": "delete_or_backspace"
+        }
     },
     {
-        "name": "delete_forward"
+        "label": "delete_forward",
+        "data": {
+            "key_code": "delete_forward"
+        }
     },
     {
-        "name": "tab"
+        "label": "tab",
+        "data": {
+            "key_code": "tab"
+        }
     },
     {
-        "name": "spacebar"
+        "label": "spacebar",
+        "data": {
+            "key_code": "spacebar"
+        }
     },
     {
-        "name": "hyphen",
-        "label": "hyphen (-)"
+        "label": "hyphen (-)",
+        "data": {
+            "key_code": "hyphen"
+        }
     },
     {
-        "name": "equal_sign",
-        "label": "equal_sign (=)"
+        "label": "equal_sign (=)",
+        "data": {
+            "key_code": "equal_sign"
+        }
     },
     {
-        "name": "open_bracket",
-        "label": "open_bracket ["
+        "label": "open_bracket [",
+        "data": {
+            "key_code": "open_bracket"
+        }
     },
     {
-        "name": "close_bracket",
-        "label": "close_bracket ]"
+        "label": "close_bracket ]",
+        "data": {
+            "key_code": "close_bracket"
+        }
     },
     {
-        "name": "backslash",
-        "label": "backslash (\\)"
+        "label": "backslash (\\)",
+        "data": {
+            "key_code": "backslash"
+        }
     },
     {
-        "name": "non_us_pound"
+        "label": "non_us_pound",
+        "data": {
+            "key_code": "non_us_pound"
+        }
     },
     {
-        "name": "semicolon",
-        "label": "semicolon (;)"
+        "label": "semicolon (;)",
+        "data": {
+            "key_code": "semicolon"
+        }
     },
     {
-        "name": "quote",
-        "label": "quote (')"
+        "label": "quote (')",
+        "data": {
+            "key_code": "quote"
+        }
     },
     {
-        "name": "grave_accent_and_tilde",
-        "label": "grave_accent_and_tilde (`)"
+        "label": "grave_accent_and_tilde (`)",
+        "data": {
+            "key_code": "grave_accent_and_tilde"
+        }
     },
     {
-        "name": "comma",
-        "label": "comma (,)"
+        "label": "comma (,)",
+        "data": {
+            "key_code": "comma"
+        }
     },
     {
-        "name": "period",
-        "label": "period (.)"
+        "label": "period (.)",
+        "data": {
+            "key_code": "period"
+        }
     },
     {
-        "name": "slash",
-        "label": "slash (/)"
+        "label": "slash (/)",
+        "data": {
+            "key_code": "slash"
+        }
     },
     {
-        "name": "non_us_backslash"
+        "label": "non_us_backslash",
+        "data": {
+            "key_code": "non_us_backslash"
+        }
     },
     {
         "category": "Arrow keys"
     },
     {
-        "name": "up_arrow"
+        "label": "up_arrow",
+        "data": {
+            "key_code": "up_arrow"
+        }
     },
     {
-        "name": "down_arrow"
+        "label": "down_arrow",
+        "data": {
+            "key_code": "down_arrow"
+        }
     },
     {
-        "name": "left_arrow"
+        "label": "left_arrow",
+        "data": {
+            "key_code": "left_arrow"
+        }
     },
     {
-        "name": "right_arrow"
+        "label": "right_arrow",
+        "data": {
+            "key_code": "right_arrow"
+        }
     },
     {
-        "name": "page_up"
+        "label": "page_up",
+        "data": {
+            "key_code": "page_up"
+        }
     },
     {
-        "name": "page_down"
+        "label": "page_down",
+        "data": {
+            "key_code": "page_down"
+        }
     },
     {
-        "name": "home"
+        "label": "home",
+        "data": {
+            "key_code": "home"
+        }
     },
     {
-        "name": "end"
+        "label": "end",
+        "data": {
+            "key_code": "end"
+        }
     },
     {
         "category": "Letter keys"
     },
     {
-        "name": "a"
+        "label": "a",
+        "data": {
+            "key_code": "a"
+        }
     },
     {
-        "name": "b"
+        "label": "b",
+        "data": {
+            "key_code": "b"
+        }
     },
     {
-        "name": "c"
+        "label": "c",
+        "data": {
+            "key_code": "c"
+        }
     },
     {
-        "name": "d"
+        "label": "d",
+        "data": {
+            "key_code": "d"
+        }
     },
     {
-        "name": "e"
+        "label": "e",
+        "data": {
+            "key_code": "e"
+        }
     },
     {
-        "name": "f"
+        "label": "f",
+        "data": {
+            "key_code": "f"
+        }
     },
     {
-        "name": "g"
+        "label": "g",
+        "data": {
+            "key_code": "g"
+        }
     },
     {
-        "name": "h"
+        "label": "h",
+        "data": {
+            "key_code": "h"
+        }
     },
     {
-        "name": "i"
+        "label": "i",
+        "data": {
+            "key_code": "i"
+        }
     },
     {
-        "name": "j"
+        "label": "j",
+        "data": {
+            "key_code": "j"
+        }
     },
     {
-        "name": "k"
+        "label": "k",
+        "data": {
+            "key_code": "k"
+        }
     },
     {
-        "name": "l"
+        "label": "l",
+        "data": {
+            "key_code": "l"
+        }
     },
     {
-        "name": "m"
+        "label": "m",
+        "data": {
+            "key_code": "m"
+        }
     },
     {
-        "name": "n"
+        "label": "n",
+        "data": {
+            "key_code": "n"
+        }
     },
     {
-        "name": "o"
+        "label": "o",
+        "data": {
+            "key_code": "o"
+        }
     },
     {
-        "name": "p"
+        "label": "p",
+        "data": {
+            "key_code": "p"
+        }
     },
     {
-        "name": "q"
+        "label": "q",
+        "data": {
+            "key_code": "q"
+        }
     },
     {
-        "name": "r"
+        "label": "r",
+        "data": {
+            "key_code": "r"
+        }
     },
     {
-        "name": "s"
+        "label": "s",
+        "data": {
+            "key_code": "s"
+        }
     },
     {
-        "name": "t"
+        "label": "t",
+        "data": {
+            "key_code": "t"
+        }
     },
     {
-        "name": "u"
+        "label": "u",
+        "data": {
+            "key_code": "u"
+        }
     },
     {
-        "name": "v"
+        "label": "v",
+        "data": {
+            "key_code": "v"
+        }
     },
     {
-        "name": "w"
+        "label": "w",
+        "data": {
+            "key_code": "w"
+        }
     },
     {
-        "name": "x"
+        "label": "x",
+        "data": {
+            "key_code": "x"
+        }
     },
     {
-        "name": "y"
+        "label": "y",
+        "data": {
+            "key_code": "y"
+        }
     },
     {
-        "name": "z"
+        "label": "z",
+        "data": {
+            "key_code": "z"
+        }
     },
     {
         "category": "Number keys"
     },
     {
-        "name": "1"
+        "label": "1",
+        "data": {
+            "key_code": "1"
+        }
     },
     {
-        "name": "2"
+        "label": "2",
+        "data": {
+            "key_code": "2"
+        }
     },
     {
-        "name": "3"
+        "label": "3",
+        "data": {
+            "key_code": "3"
+        }
     },
     {
-        "name": "4"
+        "label": "4",
+        "data": {
+            "key_code": "4"
+        }
     },
     {
-        "name": "5"
+        "label": "5",
+        "data": {
+            "key_code": "5"
+        }
     },
     {
-        "name": "6"
+        "label": "6",
+        "data": {
+            "key_code": "6"
+        }
     },
     {
-        "name": "7"
+        "label": "7",
+        "data": {
+            "key_code": "7"
+        }
     },
     {
-        "name": "8"
+        "label": "8",
+        "data": {
+            "key_code": "8"
+        }
     },
     {
-        "name": "9"
+        "label": "9",
+        "data": {
+            "key_code": "9"
+        }
     },
     {
-        "name": "0"
+        "label": "0",
+        "data": {
+            "key_code": "0"
+        }
     },
     {
         "category": "Function keys"
     },
     {
-        "name": "f1"
+        "label": "f1",
+        "data": {
+            "key_code": "f1"
+        }
     },
     {
-        "name": "f2"
+        "label": "f2",
+        "data": {
+            "key_code": "f2"
+        }
     },
     {
-        "name": "f3"
+        "label": "f3",
+        "data": {
+            "key_code": "f3"
+        }
     },
     {
-        "name": "f4"
+        "label": "f4",
+        "data": {
+            "key_code": "f4"
+        }
     },
     {
-        "name": "f5"
+        "label": "f5",
+        "data": {
+            "key_code": "f5"
+        }
     },
     {
-        "name": "f6"
+        "label": "f6",
+        "data": {
+            "key_code": "f6"
+        }
     },
     {
-        "name": "f7"
+        "label": "f7",
+        "data": {
+            "key_code": "f7"
+        }
     },
     {
-        "name": "f8"
+        "label": "f8",
+        "data": {
+            "key_code": "f8"
+        }
     },
     {
-        "name": "f9"
+        "label": "f9",
+        "data": {
+            "key_code": "f9"
+        }
     },
     {
-        "name": "f10"
+        "label": "f10",
+        "data": {
+            "key_code": "f10"
+        }
     },
     {
-        "name": "f11"
+        "label": "f11",
+        "data": {
+            "key_code": "f11"
+        }
     },
     {
-        "name": "f12"
+        "label": "f12",
+        "data": {
+            "key_code": "f12"
+        }
     },
     {
-        "name": "f13"
+        "label": "f13",
+        "data": {
+            "key_code": "f13"
+        }
     },
     {
-        "name": "f14"
+        "label": "f14",
+        "data": {
+            "key_code": "f14"
+        }
     },
     {
-        "name": "f15"
+        "label": "f15",
+        "data": {
+            "key_code": "f15"
+        }
     },
     {
-        "name": "f16"
+        "label": "f16",
+        "data": {
+            "key_code": "f16"
+        }
     },
     {
-        "name": "f17"
+        "label": "f17",
+        "data": {
+            "key_code": "f17"
+        }
     },
     {
-        "name": "f18"
+        "label": "f18",
+        "data": {
+            "key_code": "f18"
+        }
     },
     {
-        "name": "f19"
+        "label": "f19",
+        "data": {
+            "key_code": "f19"
+        }
     },
     {
-        "name": "f20"
+        "label": "f20",
+        "data": {
+            "key_code": "f20"
+        }
     },
     {
-        "name": "f21",
-        "not_to": true
+        "not_to": true,
+        "label": "f21",
+        "data": {
+            "key_code": "f21"
+        }
     },
     {
-        "name": "f22",
-        "not_to": true
+        "not_to": true,
+        "label": "f22",
+        "data": {
+            "key_code": "f22"
+        }
     },
     {
-        "name": "f23",
-        "not_to": true
+        "not_to": true,
+        "label": "f23",
+        "data": {
+            "key_code": "f23"
+        }
     },
     {
-        "name": "f24",
-        "not_to": true
+        "not_to": true,
+        "label": "f24",
+        "data": {
+            "key_code": "f24"
+        }
     },
     {
         "category": "Media controls"
     },
     {
-        "name": "display_brightness_decrement",
-        "type": "consumer_key_code",
-        "not_from": true
+        "not_from": true,
+        "label": "display_brightness_decrement",
+        "data": {
+            "consumer_key_code": "display_brightness_decrement"
+        }
     },
     {
-        "name": "display_brightness_increment",
-        "type": "consumer_key_code",
-        "not_from": true
+        "not_from": true,
+        "label": "display_brightness_increment",
+        "data": {
+            "consumer_key_code": "display_brightness_increment"
+        }
     },
     {
-        "name": "mission_control",
-        "not_from": true
+        "not_from": true,
+        "label": "mission_control",
+        "data": {
+            "key_code": "mission_control"
+        }
     },
     {
-        "name": "launchpad",
-        "not_from": true
+        "not_from": true,
+        "label": "launchpad",
+        "data": {
+            "key_code": "launchpad"
+        }
     },
     {
-        "name": "dashboard",
-        "not_from": true
+        "not_from": true,
+        "label": "dashboard",
+        "data": {
+            "key_code": "dashboard"
+        }
     },
     {
-        "name": "illumination_decrement",
-        "not_from": true
+        "not_from": true,
+        "label": "illumination_decrement",
+        "data": {
+            "key_code": "illumination_decrement"
+        }
     },
     {
-        "name": "illumination_increment",
-        "not_from": true
+        "not_from": true,
+        "label": "illumination_increment",
+        "data": {
+            "key_code": "illumination_increment"
+        }
     },
     {
-        "name": "rewind",
-        "type": "consumer_key_code"
+        "label": "rewind",
+        "data": {
+            "consumer_key_code": "rewind"
+        }
     },
     {
-        "name": "play_or_pause",
-        "type": "consumer_key_code"
+        "label": "play_or_pause",
+        "data": {
+            "consumer_key_code": "play_or_pause"
+        }
     },
     {
-        "name": "fastforward",
-        "type": "consumer_key_code"
+        "label": "fastforward",
+        "data": {
+            "consumer_key_code": "fastforward"
+        }
     },
     {
-        "name": "mute",
-        "type": "consumer_key_code"
+        "label": "mute",
+        "data": {
+            "consumer_key_code": "mute"
+        }
     },
     {
-        "name": "volume_decrement",
-        "type": "consumer_key_code"
+        "label": "volume_decrement",
+        "data": {
+            "consumer_key_code": "volume_decrement"
+        }
     },
     {
-        "name": "volume_increment",
-        "type": "consumer_key_code"
+        "label": "volume_increment",
+        "data": {
+            "consumer_key_code": "volume_increment"
+        }
     },
     {
-        "name": "eject",
-        "not_from": true
+        "not_from": true,
+        "label": "eject",
+        "data": {
+            "key_code": "eject"
+        }
     },
     {
-        "name": "apple_display_brightness_decrement",
-        "not_from": true
+        "not_from": true,
+        "label": "apple_display_brightness_decrement",
+        "data": {
+            "key_code": "apple_display_brightness_decrement"
+        }
     },
     {
-        "name": "apple_display_brightness_increment",
-        "not_from": true
+        "not_from": true,
+        "label": "apple_display_brightness_increment",
+        "data": {
+            "key_code": "apple_display_brightness_increment"
+        }
     },
     {
-        "name": "apple_top_case_display_brightness_decrement",
-        "not_from": true
+        "not_from": true,
+        "label": "apple_top_case_display_brightness_decrement",
+        "data": {
+            "key_code": "apple_top_case_display_brightness_decrement"
+        }
     },
     {
-        "name": "apple_top_case_display_brightness_increment",
-        "not_from": true
+        "not_from": true,
+        "label": "apple_top_case_display_brightness_increment",
+        "data": {
+            "key_code": "apple_top_case_display_brightness_increment"
+        }
     },
     {
         "label": "consumer_key_code::scan_previous_track",
-        "name": "scan_previous_track",
-        "type": "consumer_key_code"
+        "data": {
+            "consumer_key_code": "scan_previous_track"
+        }
     },
     {
         "label": "consumer_key_code::scan_next_track",
-        "name": "scan_next_track",
-        "type": "consumer_key_code"
+        "data": {
+            "consumer_key_code": "scan_next_track"
+        }
     },
     {
         "category": "Keypad keys"
     },
     {
-        "name": "keypad_num_lock"
+        "label": "keypad_num_lock",
+        "data": {
+            "key_code": "keypad_num_lock"
+        }
     },
     {
-        "name": "keypad_slash"
+        "label": "keypad_slash",
+        "data": {
+            "key_code": "keypad_slash"
+        }
     },
     {
-        "name": "keypad_asterisk"
+        "label": "keypad_asterisk",
+        "data": {
+            "key_code": "keypad_asterisk"
+        }
     },
     {
-        "name": "keypad_hyphen"
+        "label": "keypad_hyphen",
+        "data": {
+            "key_code": "keypad_hyphen"
+        }
     },
     {
-        "name": "keypad_plus"
+        "label": "keypad_plus",
+        "data": {
+            "key_code": "keypad_plus"
+        }
     },
     {
-        "name": "keypad_enter"
+        "label": "keypad_enter",
+        "data": {
+            "key_code": "keypad_enter"
+        }
     },
     {
-        "name": "keypad_1"
+        "label": "keypad_1",
+        "data": {
+            "key_code": "keypad_1"
+        }
     },
     {
-        "name": "keypad_2"
+        "label": "keypad_2",
+        "data": {
+            "key_code": "keypad_2"
+        }
     },
     {
-        "name": "keypad_3"
+        "label": "keypad_3",
+        "data": {
+            "key_code": "keypad_3"
+        }
     },
     {
-        "name": "keypad_4"
+        "label": "keypad_4",
+        "data": {
+            "key_code": "keypad_4"
+        }
     },
     {
-        "name": "keypad_5"
+        "label": "keypad_5",
+        "data": {
+            "key_code": "keypad_5"
+        }
     },
     {
-        "name": "keypad_6"
+        "label": "keypad_6",
+        "data": {
+            "key_code": "keypad_6"
+        }
     },
     {
-        "name": "keypad_7"
+        "label": "keypad_7",
+        "data": {
+            "key_code": "keypad_7"
+        }
     },
     {
-        "name": "keypad_8"
+        "label": "keypad_8",
+        "data": {
+            "key_code": "keypad_8"
+        }
     },
     {
-        "name": "keypad_9"
+        "label": "keypad_9",
+        "data": {
+            "key_code": "keypad_9"
+        }
     },
     {
-        "name": "keypad_0"
+        "label": "keypad_0",
+        "data": {
+            "key_code": "keypad_0"
+        }
     },
     {
-        "name": "keypad_period"
+        "label": "keypad_period",
+        "data": {
+            "key_code": "keypad_period"
+        }
     },
     {
-        "name": "keypad_equal_sign"
+        "label": "keypad_equal_sign",
+        "data": {
+            "key_code": "keypad_equal_sign"
+        }
     },
     {
-        "name": "keypad_comma"
+        "label": "keypad_comma",
+        "data": {
+            "key_code": "keypad_comma"
+        }
     },
     {
         "category": "Virtual Keys"
     },
     {
-        "name": "vk_none",
         "label": "vk_none (disable this key)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_none"
+        }
     },
     {
         "category": "Keys in pc keyboards"
     },
     {
-        "name": "print_screen"
+        "label": "print_screen",
+        "data": {
+            "key_code": "print_screen"
+        }
     },
     {
-        "name": "scroll_lock"
+        "label": "scroll_lock",
+        "data": {
+            "key_code": "scroll_lock"
+        }
     },
     {
-        "name": "pause"
+        "label": "pause",
+        "data": {
+            "key_code": "pause"
+        }
     },
     {
-        "name": "insert"
+        "label": "insert",
+        "data": {
+            "key_code": "insert"
+        }
     },
     {
-        "name": "application"
+        "label": "application",
+        "data": {
+            "key_code": "application"
+        }
     },
     {
-        "name": "help"
+        "label": "help",
+        "data": {
+            "key_code": "help"
+        }
     },
     {
-        "name": "power"
+        "label": "power",
+        "data": {
+            "key_code": "power"
+        }
     },
     {
-        "name": "execute",
-        "not_to": true
+        "not_to": true,
+        "label": "execute",
+        "data": {
+            "key_code": "execute"
+        }
     },
     {
-        "name": "menu",
-        "not_to": true
+        "not_to": true,
+        "label": "menu",
+        "data": {
+            "key_code": "menu"
+        }
     },
     {
-        "name": "select",
-        "not_to": true
+        "not_to": true,
+        "label": "select",
+        "data": {
+            "key_code": "select"
+        }
     },
     {
-        "name": "stop",
-        "not_to": true
+        "not_to": true,
+        "label": "stop",
+        "data": {
+            "key_code": "stop"
+        }
     },
     {
-        "name": "again",
-        "not_to": true
+        "not_to": true,
+        "label": "again",
+        "data": {
+            "key_code": "again"
+        }
     },
     {
-        "name": "undo",
-        "not_to": true
+        "not_to": true,
+        "label": "undo",
+        "data": {
+            "key_code": "undo"
+        }
     },
     {
-        "name": "cut",
-        "not_to": true
+        "not_to": true,
+        "label": "cut",
+        "data": {
+            "key_code": "cut"
+        }
     },
     {
-        "name": "copy",
-        "not_to": true
+        "not_to": true,
+        "label": "copy",
+        "data": {
+            "key_code": "copy"
+        }
     },
     {
-        "name": "paste",
-        "not_to": true
+        "not_to": true,
+        "label": "paste",
+        "data": {
+            "key_code": "paste"
+        }
     },
     {
-        "name": "find",
-        "not_to": true
+        "not_to": true,
+        "label": "find",
+        "data": {
+            "key_code": "find"
+        }
     },
     {
         "category": "International keys"
     },
     {
-        "name": "international1"
+        "label": "international1",
+        "data": {
+            "key_code": "international1"
+        }
     },
     {
-        "name": "international2",
-        "not_to": true
+        "not_to": true,
+        "label": "international2",
+        "data": {
+            "key_code": "international2"
+        }
     },
     {
-        "name": "international3"
+        "label": "international3",
+        "data": {
+            "key_code": "international3"
+        }
     },
     {
-        "name": "international4",
-        "not_to": true
+        "not_to": true,
+        "label": "international4",
+        "data": {
+            "key_code": "international4"
+        }
     },
     {
-        "name": "international5",
-        "not_to": true
+        "not_to": true,
+        "label": "international5",
+        "data": {
+            "key_code": "international5"
+        }
     },
     {
-        "name": "international6",
-        "not_to": true
+        "not_to": true,
+        "label": "international6",
+        "data": {
+            "key_code": "international6"
+        }
     },
     {
-        "name": "international7",
-        "not_to": true
+        "not_to": true,
+        "label": "international7",
+        "data": {
+            "key_code": "international7"
+        }
     },
     {
-        "name": "international8",
-        "not_to": true
+        "not_to": true,
+        "label": "international8",
+        "data": {
+            "key_code": "international8"
+        }
     },
     {
-        "name": "international9",
-        "not_to": true
+        "not_to": true,
+        "label": "international9",
+        "data": {
+            "key_code": "international9"
+        }
     },
     {
-        "name": "lang1"
+        "label": "lang1",
+        "data": {
+            "key_code": "lang1"
+        }
     },
     {
-        "name": "lang2"
+        "label": "lang2",
+        "data": {
+            "key_code": "lang2"
+        }
     },
     {
-        "name": "lang3",
-        "not_to": true
+        "not_to": true,
+        "label": "lang3",
+        "data": {
+            "key_code": "lang3"
+        }
     },
     {
-        "name": "lang4",
-        "not_to": true
+        "not_to": true,
+        "label": "lang4",
+        "data": {
+            "key_code": "lang4"
+        }
     },
     {
-        "name": "lang5",
-        "not_to": true
+        "not_to": true,
+        "label": "lang5",
+        "data": {
+            "key_code": "lang5"
+        }
     },
     {
-        "name": "lang6",
-        "not_to": true
+        "not_to": true,
+        "label": "lang6",
+        "data": {
+            "key_code": "lang6"
+        }
     },
     {
-        "name": "lang7",
-        "not_to": true
+        "not_to": true,
+        "label": "lang7",
+        "data": {
+            "key_code": "lang7"
+        }
     },
     {
-        "name": "lang8",
-        "not_to": true
+        "not_to": true,
+        "label": "lang8",
+        "data": {
+            "key_code": "lang8"
+        }
     },
     {
-        "name": "lang9",
-        "not_to": true
+        "not_to": true,
+        "label": "lang9",
+        "data": {
+            "key_code": "lang9"
+        }
     },
     {
         "category": "Japanese"
     },
     {
-        "name": "japanese_eisuu",
-        "label": "英数キー"
+        "label": "英数キー",
+        "data": {
+            "key_code": "japanese_eisuu"
+        }
     },
     {
-        "name": "japanese_kana",
-        "label": "かなキー"
+        "label": "かなキー",
+        "data": {
+            "key_code": "japanese_kana"
+        }
     },
     {
-        "name": "japanese_pc_nfer",
         "label": "PCキーボードの無変換キー",
-        "not_to": true
+        "not_to": true,
+        "data": {
+            "key_code": "japanese_pc_nfer"
+        }
     },
     {
-        "name": "japanese_pc_xfer",
         "label": "PCキーボードの変換キー",
-        "not_to": true
+        "not_to": true,
+        "data": {
+            "key_code": "japanese_pc_xfer"
+        }
     },
     {
-        "name": "japanese_pc_katakana",
         "label": "PCキーボードのかなキー",
-        "not_to": true
+        "not_to": true,
+        "data": {
+            "key_code": "japanese_pc_katakana"
+        }
     },
     {
         "category": "Mouse buttons"
     },
     {
-        "name": "button1",
-        "type": "pointing_button",
-        "not_from": true
+        "not_from": true,
+        "label": "button1",
+        "data": {
+            "pointing_button": "button1"
+        }
     },
     {
-        "name": "button2",
-        "type": "pointing_button"
+        "label": "button2",
+        "data": {
+            "pointing_button": "button2"
+        }
     },
     {
-        "name": "button3",
-        "type": "pointing_button"
+        "label": "button3",
+        "data": {
+            "pointing_button": "button3"
+        }
     },
     {
-        "name": "button4",
-        "type": "pointing_button"
+        "label": "button4",
+        "data": {
+            "pointing_button": "button4"
+        }
     },
     {
-        "name": "button5",
-        "type": "pointing_button"
+        "label": "button5",
+        "data": {
+            "pointing_button": "button5"
+        }
     },
     {
-        "name": "button6",
-        "type": "pointing_button"
+        "label": "button6",
+        "data": {
+            "pointing_button": "button6"
+        }
     },
     {
-        "name": "button7",
-        "type": "pointing_button"
+        "label": "button7",
+        "data": {
+            "pointing_button": "button7"
+        }
     },
     {
-        "name": "button8",
-        "type": "pointing_button"
+        "label": "button8",
+        "data": {
+            "pointing_button": "button8"
+        }
     },
     {
-        "name": "button9",
-        "type": "pointing_button"
+        "label": "button9",
+        "data": {
+            "pointing_button": "button9"
+        }
     },
     {
         "category": "Others"
     },
     {
-        "name": "keypad_equal_sign_as400",
-        "not_to": true
+        "not_to": true,
+        "label": "keypad_equal_sign_as400",
+        "data": {
+            "key_code": "keypad_equal_sign_as400"
+        }
     },
     {
-        "name": "locking_caps_lock",
-        "not_to": true
+        "not_to": true,
+        "label": "locking_caps_lock",
+        "data": {
+            "key_code": "locking_caps_lock"
+        }
     },
     {
-        "name": "locking_num_lock",
-        "not_to": true
+        "not_to": true,
+        "label": "locking_num_lock",
+        "data": {
+            "key_code": "locking_num_lock"
+        }
     },
     {
-        "name": "locking_scroll_lock",
-        "not_to": true
+        "not_to": true,
+        "label": "locking_scroll_lock",
+        "data": {
+            "key_code": "locking_scroll_lock"
+        }
     },
     {
-        "name": "alternate_erase",
-        "not_to": true
+        "not_to": true,
+        "label": "alternate_erase",
+        "data": {
+            "key_code": "alternate_erase"
+        }
     },
     {
-        "name": "sys_req_or_attention",
-        "not_to": true
+        "not_to": true,
+        "label": "sys_req_or_attention",
+        "data": {
+            "key_code": "sys_req_or_attention"
+        }
     },
     {
-        "name": "cancel",
-        "not_to": true
+        "not_to": true,
+        "label": "cancel",
+        "data": {
+            "key_code": "cancel"
+        }
     },
     {
-        "name": "clear",
-        "not_to": true
+        "not_to": true,
+        "label": "clear",
+        "data": {
+            "key_code": "clear"
+        }
     },
     {
-        "name": "prior",
-        "not_to": true
+        "not_to": true,
+        "label": "prior",
+        "data": {
+            "key_code": "prior"
+        }
     },
     {
-        "name": "return",
         "label": "rarely used return (HID usage 0x9e)",
-        "not_to": true
+        "not_to": true,
+        "data": {
+            "key_code": "return"
+        }
     },
     {
-        "name": "separator",
-        "not_to": true
+        "not_to": true,
+        "label": "separator",
+        "data": {
+            "key_code": "separator"
+        }
     },
     {
-        "name": "out",
-        "not_to": true
+        "not_to": true,
+        "label": "out",
+        "data": {
+            "key_code": "out"
+        }
     },
     {
-        "name": "oper",
-        "not_to": true
+        "not_to": true,
+        "label": "oper",
+        "data": {
+            "key_code": "oper"
+        }
     },
     {
-        "name": "clear_or_again",
-        "not_to": true
+        "not_to": true,
+        "label": "clear_or_again",
+        "data": {
+            "key_code": "clear_or_again"
+        }
     },
     {
-        "name": "cr_sel_or_props",
-        "not_to": true
+        "not_to": true,
+        "label": "cr_sel_or_props",
+        "data": {
+            "key_code": "cr_sel_or_props"
+        }
     },
     {
-        "name": "ex_sel",
-        "not_to": true
+        "not_to": true,
+        "label": "ex_sel",
+        "data": {
+            "key_code": "ex_sel"
+        }
     },
     {
-        "name": "left_alt",
-        "label": "left_alt (equal to `left_option`)"
+        "label": "left_alt (equal to `left_option`)",
+        "data": {
+            "key_code": "left_alt"
+        }
     },
     {
-        "name": "left_gui",
-        "label": "left_gui (equal to `left_command`)"
+        "label": "left_gui (equal to `left_command`)",
+        "data": {
+            "key_code": "left_gui"
+        }
     },
     {
-        "name": "right_alt",
-        "label": "right_alt (equal to `right_option`)"
+        "label": "right_alt (equal to `right_option`)",
+        "data": {
+            "key_code": "right_alt"
+        }
     },
     {
-        "name": "right_gui",
-        "label": "right_gui (equal to `right_command`)"
+        "label": "right_gui (equal to `right_command`)",
+        "data": {
+            "key_code": "right_gui"
+        }
     },
     {
-        "name": "vk_consumer_brightness_down",
         "label": "vk_consumer_brightness_down (equal to `display_brightness_decrement`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_consumer_brightness_down"
+        }
     },
     {
-        "name": "vk_consumer_brightness_up",
         "label": "vk_consumer_brightness_up (equal to `display_brightness_increment`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_consumer_brightness_up"
+        }
     },
     {
-        "name": "vk_mission_control",
         "label": "vk_mission_control (equal to `mission_control`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_mission_control"
+        }
     },
     {
-        "name": "vk_launchpad",
         "label": "vk_launchpad (equal to `launchpad`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_launchpad"
+        }
     },
     {
-        "name": "vk_dashboard",
         "label": "vk_dashboard (equal to `dashboard`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_dashboard"
+        }
     },
     {
-        "name": "vk_consumer_illumination_down",
         "label": "vk_consumer_illumination_down (equal to `illumination_decrement`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_consumer_illumination_down"
+        }
     },
     {
-        "name": "vk_consumer_illumination_up",
         "label": "vk_consumer_illumination_up (equal to `illumination_increment`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_consumer_illumination_up"
+        }
     },
     {
-        "name": "vk_consumer_previous",
         "label": "vk_consumer_previous (equal to `rewind`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_consumer_previous"
+        }
     },
     {
-        "name": "vk_consumer_play",
         "label": "vk_consumer_play (equal to `play`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_consumer_play"
+        }
     },
     {
-        "name": "vk_consumer_next",
         "label": "vk_consumer_next (equal to `fastforward`)",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "vk_consumer_next"
+        }
     },
     {
-        "name": "volume_down",
-        "label": "volume_down (equal to `volume_decrement`)"
+        "label": "volume_down (equal to `volume_decrement`)",
+        "data": {
+            "key_code": "volume_down"
+        }
     },
     {
-        "name": "volume_up",
-        "label": "volume_up (equal to `volume_increment`)"
+        "label": "volume_up (equal to `volume_increment`)",
+        "data": {
+            "key_code": "volume_up"
+        }
     },
     {
-        "name": "display_brightness_decrement",
         "label": "key_code::display_brightness_decrement",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "display_brightness_decrement"
+        }
     },
     {
-        "name": "display_brightness_increment",
         "label": "key_code::display_brightness_increment",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "display_brightness_increment"
+        }
     },
     {
-        "name": "rewind",
         "label": "key_code::rewind",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "rewind"
+        }
     },
     {
-        "name": "play_or_pause",
         "label": "key_code::play_or_pause",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "play_or_pause"
+        }
     },
     {
-        "name": "fastforward",
         "label": "key_code::fastforward",
-        "not_from": true
+        "not_from": true,
+        "data": {
+            "key_code": "fastforward"
+        }
     },
     {
-        "name": "mute",
-        "label": "key_code::mute"
+        "label": "key_code::mute",
+        "data": {
+            "key_code": "mute"
+        }
     },
     {
-        "name": "volume_decrement",
-        "label": "key_code::volume_decrement"
+        "label": "key_code::volume_decrement",
+        "data": {
+            "key_code": "volume_decrement"
+        }
     },
     {
-        "name": "volume_increment",
-        "label": "key_code::volume_increment"
+        "label": "key_code::volume_increment",
+        "data": {
+            "key_code": "volume_increment"
+        }
     }
 ]

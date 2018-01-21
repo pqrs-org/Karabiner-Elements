@@ -55,53 +55,12 @@ public:
   static nlohmann::json make_default_fn_function_keys_json(void) {
     auto json = nlohmann::json::array();
 
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f1";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f2";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f3";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f4";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f5";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f6";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f7";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f8";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f9";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f10";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f11";
-    json.back()["to"][""] = "";
-
-    json.push_back(nlohmann::json::object());
-    json.back()["from"]["key_code"] = "f12";
-    json.back()["to"][""] = "";
+    for (int i = 1; i <= 12; ++i) {
+      json.push_back(nlohmann::json::object({
+          {"from", nlohmann::json::object({{"key_code", fmt::format("f{0}", i)}})},
+          {"to", nlohmann::json::object()},
+      }));
+    }
 
     return json;
   }

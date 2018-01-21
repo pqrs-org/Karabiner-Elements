@@ -18,11 +18,19 @@
   if ([tableColumn.identifier isEqualToString:@"FnFunctionKeysFromColumn"]) {
     NSTableCellView* result = [tableView makeViewWithIdentifier:@"FnFunctionKeysFromCellView" owner:self];
 
+    result.textField.stringValue = @"";
+
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     NSInteger connectedDeviceIndex = self.fnFunctionKeysTableViewController.selectedConnectedDeviceIndex;
-    result.textField.stringValue = [coreConfigurationModel selectedProfileFnFunctionKeyFirstAtIndex:row
-                                                                               connectedDeviceIndex:connectedDeviceIndex]
-                                       .value;
+    NSString* jsonString = [coreConfigurationModel selectedProfileFnFunctionKeyFromJsonStringAtIndex:row
+                                                                                connectedDeviceIndex:connectedDeviceIndex];
+    NSDictionary* json = [KarabinerKitJsonUtility loadCString:jsonString.UTF8String];
+    if ([json isKindOfClass:NSDictionary.class]) {
+      NSString* s = json[@"key_code"];
+      if (s) {
+        result.textField.stringValue = s;
+      }
+    }
 
     return result;
   }
@@ -40,8 +48,8 @@
 
     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
     NSInteger connectedDeviceIndex = self.fnFunctionKeysTableViewController.selectedConnectedDeviceIndex;
-    KarabinerKitCoreConfigurationSimpleModificationsDefinition* to = [coreConfigurationModel selectedProfileFnFunctionKeySecondAtIndex:row
-                                                                                                                  connectedDeviceIndex:connectedDeviceIndex];
+    NSString* to = [coreConfigurationModel selectedProfileFnFunctionKeyToJsonStringAtIndex:row
+                                                                      connectedDeviceIndex:connectedDeviceIndex];
     [SimpleModificationsTableViewController selectPopUpButtonMenu:result.popUpButton definition:to];
 
     return result;
