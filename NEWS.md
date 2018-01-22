@@ -1,6 +1,7 @@
 # Since 11.5.0 (beta)
 
 * Improved modifier flags handling around pointing button manipulations.
+* Mouse keys have been added into Simple Modifications.
 
 
 # Version 11.5.0
