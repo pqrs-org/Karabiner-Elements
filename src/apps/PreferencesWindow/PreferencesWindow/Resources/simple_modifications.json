@@ -1311,6 +1311,114 @@
         }
     },
     {
+        "not_from": true,
+        "label": "scroll up",
+        "data": {
+            "mouse_key": {
+                "vertical_wheel": -32
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll up (fast)",
+        "data": {
+            "mouse_key": {
+                "vertical_wheel": -64
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll up (slow)",
+        "data": {
+            "mouse_key": {
+                "vertical_wheel": -16
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll down",
+        "data": {
+            "mouse_key": {
+                "vertical_wheel": 32
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll down (fast)",
+        "data": {
+            "mouse_key": {
+                "vertical_wheel": 64
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll down (slow)",
+        "data": {
+            "mouse_key": {
+                "vertical_wheel": 16
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll left",
+        "data": {
+            "mouse_key": {
+                "horizontal_wheel": 32
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll left (fast)",
+        "data": {
+            "mouse_key": {
+                "horizontal_wheel": 64
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll left (slow)",
+        "data": {
+            "mouse_key": {
+                "horizontal_wheel": 16
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll right",
+        "data": {
+            "mouse_key": {
+                "horizontal_wheel": -32
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll right (fast)",
+        "data": {
+            "mouse_key": {
+                "horizontal_wheel": -64
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "scroll right (slow)",
+        "data": {
+            "mouse_key": {
+                "horizontal_wheel": -16
+            }
+        }
+    },
+    {
         "category": "Others"
     },
     {
