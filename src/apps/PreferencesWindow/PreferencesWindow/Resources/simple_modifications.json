@@ -1200,6 +1200,117 @@
         }
     },
     {
+        "category": "Mouse keys"
+    },
+    {
+        "not_from": true,
+        "label": "mouse up",
+        "data": {
+            "mouse_key": {
+                "y": -1536
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse up (fast)",
+        "data": {
+            "mouse_key": {
+                "y": -3072
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse up (slow)",
+        "data": {
+            "mouse_key": {
+                "y": -768
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse down",
+        "data": {
+            "mouse_key": {
+                "y": 1536
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse down (fast)",
+        "data": {
+            "mouse_key": {
+                "y": 3072
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse down (slow)",
+        "data": {
+            "mouse_key": {
+                "y": 768
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse left",
+        "data": {
+            "mouse_key": {
+                "x": -1536
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse left (fast)",
+        "data": {
+            "mouse_key": {
+                "x": -3072
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse left (slow)",
+        "data": {
+            "mouse_key": {
+                "x": -768
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse right",
+        "data": {
+            "mouse_key": {
+                "x": 1536
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse right (fast)",
+        "data": {
+            "mouse_key": {
+                "x": 3072
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "mouse right (slow)",
+        "data": {
+            "mouse_key": {
+                "x": 768
+            }
+        }
+    },
+    {
         "category": "Others"
     },
     {
