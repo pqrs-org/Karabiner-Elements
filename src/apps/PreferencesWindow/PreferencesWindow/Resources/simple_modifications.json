@@ -1419,6 +1419,24 @@
         }
     },
     {
+        "not_from": true,
+        "label": "speed multiplier (2.0)",
+        "data": {
+            "mouse_key": {
+                "speed_multiplier": 2.0
+            }
+        }
+    },
+    {
+        "not_from": true,
+        "label": "speed multiplier (0.5)",
+        "data": {
+            "mouse_key": {
+                "speed_multiplier": 0.5
+            }
+        }
+    },
+    {
         "category": "Others"
     },
     {
