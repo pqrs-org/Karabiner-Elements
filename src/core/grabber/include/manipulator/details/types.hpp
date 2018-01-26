@@ -28,25 +28,6 @@ public:
     mouse_key,
   };
 
-  enum class modifier {
-    any,
-    caps_lock,
-    command,
-    control,
-    fn,
-    left_command,
-    left_control,
-    left_option,
-    left_shift,
-    option,
-    right_command,
-    right_control,
-    right_option,
-    right_shift,
-    shift,
-    end_,
-  };
-
   virtual ~event_definition(void) {
   }
 
@@ -132,6 +113,125 @@ public:
         return event_queue::queued_event::event::make_mouse_key_event(boost::get<mouse_key>(value_));
     }
   }
+
+protected:
+  event_definition(void) : type_(type::none) {
+  }
+
+  event_definition(key_code key_code) : type_(type::key_code),
+                                        value_(key_code) {
+  }
+
+  event_definition(consumer_key_code consumer_key_code) : type_(type::consumer_key_code),
+                                                          value_(consumer_key_code) {
+  }
+
+  event_definition(pointing_button pointing_button) : type_(type::pointing_button),
+                                                      value_(pointing_button) {
+  }
+
+  void handle_json(const nlohmann::json& json,
+                   std::function<bool(const std::string&, const nlohmann::json&, const nlohmann::json&)> extra_json_handler) {
+    if (!json.is_object()) {
+      logger::get_logger().error("complex_modifications json error: Invalid form of event_definition: {0}", json.dump());
+      return;
+    }
+
+    for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+      // it.key() is always std::string.
+      const auto& key = it.key();
+      const auto& value = it.value();
+
+      // Set type_ and values.
+      if (key == "key_code") {
+        if (type_ != type::none) {
+          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+          continue;
+        }
+        if (!value.is_string()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of key_code: {0}", json.dump());
+          continue;
+        }
+
+        if (auto key_code = types::make_key_code(value.get<std::string>())) {
+          type_ = type::key_code;
+          value_ = *key_code;
+        }
+
+      } else if (key == "consumer_key_code") {
+        if (type_ != type::none) {
+          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+          continue;
+        }
+        if (!value.is_string()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of consumer_key_code: {0}", json.dump());
+          continue;
+        }
+
+        if (auto consumer_key_code = types::make_consumer_key_code(value.get<std::string>())) {
+          type_ = type::consumer_key_code;
+          value_ = *consumer_key_code;
+        }
+
+      } else if (key == "pointing_button") {
+        if (type_ != type::none) {
+          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
+          continue;
+        }
+        if (!value.is_string()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of pointing_button: {0}", json.dump());
+          continue;
+        }
+
+        if (auto pointing_button = types::make_pointing_button(value.get<std::string>())) {
+          type_ = type::pointing_button;
+          value_ = *pointing_button;
+        }
+
+      } else if (key == "description") {
+        // Do nothing
+
+      } else {
+        if (!extra_json_handler(key, value, json)) {
+          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+        }
+      }
+    }
+  }
+
+  type type_;
+  boost::variant<key_code,
+                 consumer_key_code,
+                 pointing_button,
+                 type,                               // For any
+                 std::string,                        // For shell_command
+                 std::vector<input_source_selector>, // For select_input_source
+                 std::pair<std::string, int>,        // For set_variable
+                 mouse_key                           // For mouse_key
+                 >
+      value_;
+};
+
+class modifier_definition final {
+public:
+  enum class modifier {
+    any,
+    caps_lock,
+    command,
+    control,
+    fn,
+    left_command,
+    left_control,
+    left_option,
+    left_shift,
+    option,
+    right_command,
+    right_control,
+    right_option,
+    right_shift,
+    shift,
+    end_,
+  };
 
   static std::unordered_set<modifier> make_modifiers(const nlohmann::json& json) {
     std::unordered_set<modifier> modifiers;
@@ -270,104 +370,7 @@ public:
         return modifier::end_;
     }
   }
-
-protected:
-  event_definition(void) : type_(type::none) {
-  }
-
-  event_definition(key_code key_code) : type_(type::key_code),
-                                        value_(key_code) {
-  }
-
-  event_definition(consumer_key_code consumer_key_code) : type_(type::consumer_key_code),
-                                                          value_(consumer_key_code) {
-  }
-
-  event_definition(pointing_button pointing_button) : type_(type::pointing_button),
-                                                      value_(pointing_button) {
-  }
-
-  void handle_json(const nlohmann::json& json,
-                   std::function<bool(const std::string&, const nlohmann::json&, const nlohmann::json&)> extra_json_handler) {
-    if (!json.is_object()) {
-      logger::get_logger().error("complex_modifications json error: Invalid form of event_definition: {0}", json.dump());
-      return;
-    }
-
-    for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-      // it.key() is always std::string.
-      const auto& key = it.key();
-      const auto& value = it.value();
-
-      // Set type_ and values.
-      if (key == "key_code") {
-        if (type_ != type::none) {
-          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-          continue;
-        }
-        if (!value.is_string()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of key_code: {0}", json.dump());
-          continue;
-        }
-
-        if (auto key_code = types::make_key_code(value.get<std::string>())) {
-          type_ = type::key_code;
-          value_ = *key_code;
-        }
-
-      } else if (key == "consumer_key_code") {
-        if (type_ != type::none) {
-          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-          continue;
-        }
-        if (!value.is_string()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of consumer_key_code: {0}", json.dump());
-          continue;
-        }
-
-        if (auto consumer_key_code = types::make_consumer_key_code(value.get<std::string>())) {
-          type_ = type::consumer_key_code;
-          value_ = *consumer_key_code;
-        }
-
-      } else if (key == "pointing_button") {
-        if (type_ != type::none) {
-          logger::get_logger().error("complex_modifications json error: Duplicated type definition: {0}", json.dump());
-          continue;
-        }
-        if (!value.is_string()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of pointing_button: {0}", json.dump());
-          continue;
-        }
-
-        if (auto pointing_button = types::make_pointing_button(value.get<std::string>())) {
-          type_ = type::pointing_button;
-          value_ = *pointing_button;
-        }
-
-      } else if (key == "description") {
-        // Do nothing
-
-      } else {
-        if (!extra_json_handler(key, value, json)) {
-          logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
-        }
-      }
-    }
-  }
-
-  type type_;
-  boost::variant<key_code,
-                 consumer_key_code,
-                 pointing_button,
-                 type,                               // For any
-                 std::string,                        // For shell_command
-                 std::vector<input_source_selector>, // For select_input_source
-                 std::pair<std::string, int>,        // For set_variable
-                 mouse_key                           // For mouse_key
-                 >
-      value_;
-}; // namespace details
+};
 
 class from_event_definition final : public event_definition {
 public:
@@ -381,11 +384,11 @@ public:
   virtual ~from_event_definition(void) {
   }
 
-  const std::unordered_set<modifier>& get_mandatory_modifiers(void) const {
+  const std::unordered_set<modifier_definition::modifier>& get_mandatory_modifiers(void) const {
     return mandatory_modifiers_;
   }
 
-  const std::unordered_set<modifier>& get_optional_modifiers(void) const {
+  const std::unordered_set<modifier_definition::modifier>& get_optional_modifiers(void) const {
     return optional_modifiers_;
   }
 
@@ -394,7 +397,7 @@ public:
 
     // If mandatory_modifiers_ contains modifier::any, return all active modifier_flags.
 
-    if (mandatory_modifiers_.find(modifier::any) != std::end(mandatory_modifiers_)) {
+    if (mandatory_modifiers_.find(modifier_definition::modifier::any) != std::end(mandatory_modifiers_)) {
       for (auto i = static_cast<uint32_t>(modifier_flag::zero) + 1; i != static_cast<uint32_t>(modifier_flag::end_); ++i) {
         auto flag = modifier_flag(i);
         if (modifier_flag_manager.is_pressed(flag)) {
@@ -406,8 +409,8 @@ public:
 
     // Check modifier_flag state.
 
-    for (int i = 0; i < static_cast<int>(modifier::end_); ++i) {
-      auto m = modifier(i);
+    for (int i = 0; i < static_cast<int>(modifier_definition::modifier::end_); ++i) {
+      auto m = modifier_definition::modifier(i);
 
       if (mandatory_modifiers_.find(m) != std::end(mandatory_modifiers_)) {
         auto pair = test_modifier(modifier_flag_manager, m);
@@ -422,18 +425,18 @@ public:
 
     // If optional_modifiers_ does not contain modifier::any, we have to check modifier flags strictly.
 
-    if (optional_modifiers_.find(modifier::any) == std::end(optional_modifiers_)) {
+    if (optional_modifiers_.find(modifier_definition::modifier::any) == std::end(optional_modifiers_)) {
       std::unordered_set<modifier_flag> extra_modifier_flags;
       for (auto m = static_cast<uint32_t>(modifier_flag::zero) + 1; m != static_cast<uint32_t>(modifier_flag::end_); ++m) {
         extra_modifier_flags.insert(modifier_flag(m));
       }
 
-      for (int i = 0; i < static_cast<int>(modifier::end_); ++i) {
-        auto m = modifier(i);
+      for (int i = 0; i < static_cast<int>(modifier_definition::modifier::end_); ++i) {
+        auto m = modifier_definition::modifier(i);
 
         if (mandatory_modifiers_.find(m) != std::end(mandatory_modifiers_) ||
             optional_modifiers_.find(m) != std::end(optional_modifiers_)) {
-          for (const auto& flag : get_modifier_flags(m)) {
+          for (const auto& flag : modifier_definition::get_modifier_flags(m)) {
             extra_modifier_flags.erase(flag);
           }
         }
@@ -450,12 +453,12 @@ public:
   }
 
   static std::pair<bool, modifier_flag> test_modifier(const modifier_flag_manager& modifier_flag_manager,
-                                                      modifier modifier) {
-    if (modifier == modifier::any) {
+                                                      modifier_definition::modifier modifier) {
+    if (modifier == modifier_definition::modifier::any) {
       return std::make_pair(true, modifier_flag::zero);
     }
 
-    auto modifier_flags = get_modifier_flags(modifier);
+    auto modifier_flags = modifier_definition::get_modifier_flags(modifier);
     if (!modifier_flags.empty()) {
       for (const auto& m : modifier_flags) {
         if (modifier_flag_manager.is_pressed(m)) {
@@ -483,9 +486,9 @@ private:
         const auto& v = it.value();
 
         if (k == "mandatory") {
-          mandatory_modifiers_ = make_modifiers(v);
+          mandatory_modifiers_ = modifier_definition::make_modifiers(v);
         } else if (k == "optional") {
-          optional_modifiers_ = make_modifiers(v);
+          optional_modifiers_ = modifier_definition::make_modifiers(v);
         } else {
           logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", k, value.dump());
         }
@@ -521,8 +524,8 @@ private:
     return false;
   }
 
-  std::unordered_set<modifier> mandatory_modifiers_;
-  std::unordered_set<modifier> optional_modifiers_;
+  std::unordered_set<modifier_definition::modifier> mandatory_modifiers_;
+  std::unordered_set<modifier_definition::modifier> optional_modifiers_;
 };
 
 class to_event_definition final : public event_definition {
@@ -538,7 +541,7 @@ public:
   virtual ~to_event_definition(void) {
   }
 
-  const std::unordered_set<modifier>& get_modifiers(void) const {
+  const std::unordered_set<modifier_definition::modifier>& get_modifiers(void) const {
     return modifiers_;
   }
 
@@ -566,7 +569,7 @@ public:
       // (eg. `modifier_flag::left_shift` and `modifier_flag::right_shift` for `modifier::shift`.)
       // We use the first modifier_flag.
 
-      auto modifier_flags = get_modifier_flags(modifier);
+      auto modifier_flags = modifier_definition::get_modifier_flags(modifier);
       if (!modifier_flags.empty()) {
         auto modifier_flag = modifier_flags.front();
         if (auto key_code = types::make_key_code(modifier_flag)) {
@@ -583,7 +586,7 @@ private:
                           const nlohmann::json& value,
                           const nlohmann::json& json) {
     if (key == "modifiers") {
-      modifiers_ = make_modifiers(value);
+      modifiers_ = modifier_definition::make_modifiers(value);
       return true;
 
     } else if (key == "shell_command") {
@@ -687,14 +690,14 @@ private:
     return false;
   }
 
-  std::unordered_set<modifier> modifiers_;
+  std::unordered_set<modifier_definition::modifier> modifiers_;
   bool lazy_;
   bool repeat_;
 };
 
-inline std::ostream& operator<<(std::ostream& stream, const event_definition::modifier& value) {
+inline std::ostream& operator<<(std::ostream& stream, const modifier_definition::modifier& value) {
 #define KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(MODIFIER) \
-  case event_definition::modifier::MODIFIER:               \
+  case modifier_definition::modifier::MODIFIER:            \
     stream << #MODIFIER;                                   \
     break;
 
@@ -723,16 +726,16 @@ inline std::ostream& operator<<(std::ostream& stream, const event_definition::mo
 }
 
 template <template <class T, class A> class container>
-inline std::ostream& operator<<(std::ostream& stream, const container<event_definition::modifier, std::allocator<event_definition::modifier>>& values) {
+inline std::ostream& operator<<(std::ostream& stream, const container<modifier_definition::modifier, std::allocator<modifier_definition::modifier>>& values) {
   return stream_utility::output_enums(stream, values);
 }
 
 template <template <class T, class H, class K, class A> class container>
 inline std::ostream& operator<<(std::ostream& stream,
-                                const container<event_definition::modifier,
-                                                std::hash<event_definition::modifier>,
-                                                std::equal_to<event_definition::modifier>,
-                                                std::allocator<event_definition::modifier>>& values) {
+                                const container<modifier_definition::modifier,
+                                                std::hash<modifier_definition::modifier>,
+                                                std::equal_to<modifier_definition::modifier>,
+                                                std::allocator<modifier_definition::modifier>>& values) {
   return stream_utility::output_enums(stream, values);
 }
 } // namespace details

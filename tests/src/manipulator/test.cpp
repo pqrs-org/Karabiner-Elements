@@ -8,6 +8,7 @@
 
 using krbn::manipulator::details::event_definition;
 using krbn::manipulator::details::from_event_definition;
+using krbn::manipulator::details::modifier_definition;
 using krbn::manipulator::details::to_event_definition;
 
 TEST_CASE("initialize") {
@@ -71,18 +72,18 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(basic->get_from().get_type() == event_definition::type::key_code);
     REQUIRE(basic->get_from().get_key_code() == krbn::key_code::escape);
     REQUIRE(basic->get_from().get_pointing_button() == boost::none);
-    REQUIRE(basic->get_from().get_mandatory_modifiers() == std::unordered_set<event_definition::modifier>({
-                                                               event_definition::modifier::left_shift,
-                                                               event_definition::modifier::left_option,
+    REQUIRE(basic->get_from().get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>({
+                                                               modifier_definition::modifier::left_shift,
+                                                               modifier_definition::modifier::left_option,
                                                            }));
-    REQUIRE(basic->get_from().get_optional_modifiers() == std::unordered_set<event_definition::modifier>({
-                                                              event_definition::modifier::any,
+    REQUIRE(basic->get_from().get_optional_modifiers() == std::unordered_set<modifier_definition::modifier>({
+                                                              modifier_definition::modifier::any,
                                                           }));
     REQUIRE(basic->get_to().size() == 1);
     REQUIRE(basic->get_to()[0].get_type() == event_definition::type::pointing_button);
     REQUIRE(basic->get_to()[0].get_key_code() == boost::none);
     REQUIRE(basic->get_to()[0].get_pointing_button() == krbn::pointing_button::button1);
-    REQUIRE(basic->get_to()[0].get_modifiers() == std::unordered_set<event_definition::modifier>());
+    REQUIRE(basic->get_to()[0].get_modifiers() == std::unordered_set<modifier_definition::modifier>());
   }
 }
 
