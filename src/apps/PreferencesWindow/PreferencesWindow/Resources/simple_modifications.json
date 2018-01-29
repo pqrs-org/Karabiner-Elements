@@ -692,10 +692,9 @@
         }
     },
     {
-        "type": "consumer_key_code",
         "label": "eject",
         "data": {
-            "key_code": "eject"
+            "type": "consumer_key_code"
         }
     },
     {
