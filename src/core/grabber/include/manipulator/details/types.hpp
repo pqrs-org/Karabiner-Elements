@@ -118,18 +118,6 @@ protected:
   event_definition(void) : type_(type::none) {
   }
 
-  event_definition(key_code key_code) : type_(type::key_code),
-                                        value_(key_code) {
-  }
-
-  event_definition(consumer_key_code consumer_key_code) : type_(type::consumer_key_code),
-                                                          value_(consumer_key_code) {
-  }
-
-  event_definition(pointing_button pointing_button) : type_(type::pointing_button),
-                                                      value_(pointing_button) {
-  }
-
   void handle_json(const nlohmann::json& json,
                    std::function<bool(const std::string&, const nlohmann::json&, const nlohmann::json&)> extra_json_handler) {
     if (!json.is_object()) {
