@@ -692,7 +692,6 @@
         }
     },
     {
-        "not_from": true,
         "label": "eject",
         "data": {
             "consumer_key_code": "eject"
