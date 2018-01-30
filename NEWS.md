@@ -2,6 +2,7 @@
 
 * Improved modifier flags handling around pointing button manipulations.
 * Mouse keys have been added into Simple Modifications.
+* The eject key has been added into the from key of Simple Modifications.
 
 
 # Version 11.5.0
