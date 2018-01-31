@@ -1061,7 +1061,7 @@ TEST_CASE("simple_modifications.to_json") {
     }
     {
       krbn::manipulator::details::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[0].second));
-      REQUIRE(to_event_definition.get_pointing_button() == krbn::pointing_button::button3);
+      REQUIRE(to_event_definition.get_event_definition().get_pointing_button() == krbn::pointing_button::button3);
     }
     {
       krbn::manipulator::details::from_event_definition from_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[1].first));
@@ -1069,7 +1069,7 @@ TEST_CASE("simple_modifications.to_json") {
     }
     {
       krbn::manipulator::details::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[1].second));
-      REQUIRE(to_event_definition.get_key_code() == krbn::key_code::f1);
+      REQUIRE(to_event_definition.get_event_definition().get_key_code() == krbn::key_code::f1);
     }
   }
 }

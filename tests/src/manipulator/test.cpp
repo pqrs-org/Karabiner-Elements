@@ -80,9 +80,9 @@ TEST_CASE("manipulator.manipulator_factory") {
                                                               modifier_definition::modifier::any,
                                                           }));
     REQUIRE(basic->get_to().size() == 1);
-    REQUIRE(basic->get_to()[0].get_type() == event_definition::type::pointing_button);
-    REQUIRE(basic->get_to()[0].get_key_code() == boost::none);
-    REQUIRE(basic->get_to()[0].get_pointing_button() == krbn::pointing_button::button1);
+    REQUIRE(basic->get_to()[0].get_event_definition().get_type() == event_definition::type::pointing_button);
+    REQUIRE(basic->get_to()[0].get_event_definition().get_key_code() == boost::none);
+    REQUIRE(basic->get_to()[0].get_event_definition().get_pointing_button() == krbn::pointing_button::button1);
     REQUIRE(basic->get_to()[0].get_modifiers() == std::unordered_set<modifier_definition::modifier>());
   }
 }

@@ -761,7 +761,7 @@ public:
                                uint64_t& time_stamp_delay,
                                event_queue& output_event_queue) const {
     for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
-      if (auto event = it->to_event()) {
+      if (auto event = it->get_event_definition().to_event()) {
         // to_modifier down, to_key down, to_key up, to_modifier up
 
         auto to_modifier_events = it->make_modifier_events();
@@ -847,7 +847,7 @@ private:
       return false;
     }
 
-    if (auto event = to_events.back().to_event()) {
+    if (auto event = to_events.back().get_event_definition().to_event()) {
       if (auto key_code = event->get_key_code()) {
         if (types::make_modifier_flag(*key_code) != boost::none) {
           return true;
@@ -882,7 +882,7 @@ private:
                             event_queue& output_event_queue) {
     for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
       auto& to = *it;
-      if (auto event = to.to_event()) {
+      if (auto event = to.get_event_definition().to_event()) {
         auto to_modifier_events = to.make_modifier_events();
 
         for (const auto& e : to_modifier_events) {

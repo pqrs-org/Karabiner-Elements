@@ -646,7 +646,7 @@ private:
   std::unordered_set<modifier_definition::modifier> optional_modifiers_;
 };
 
-class to_event_definition final : public event_definition {
+class to_event_definition final {
 public:
   to_event_definition(const nlohmann::json& json) : lazy_(false),
                                                     repeat_(true) {
@@ -660,7 +660,7 @@ public:
       const auto& key = it.key();
       const auto& value = it.value();
 
-      if (handle_json(key, value, json)) {
+      if (event_definition_.handle_json(key, value, json)) {
         continue;
       }
 
@@ -696,24 +696,28 @@ public:
 
     // ----------------------------------------
 
-    switch (type_) {
-      case type::key_code:
-      case type::consumer_key_code:
-      case type::pointing_button:
-      case type::shell_command:
-      case type::select_input_source:
-      case type::set_variable:
-      case type::mouse_key:
+    switch (event_definition_.get_type()) {
+      case event_definition::type::key_code:
+      case event_definition::type::consumer_key_code:
+      case event_definition::type::pointing_button:
+      case event_definition::type::shell_command:
+      case event_definition::type::select_input_source:
+      case event_definition::type::set_variable:
+      case event_definition::type::mouse_key:
         break;
 
-      case type::none:
-      case type::any:
+      case event_definition::type::none:
+      case event_definition::type::any:
         logger::get_logger().error("complex_modifications json error: Invalid type in to_event_definition: {0}", json.dump());
         break;
     }
   }
 
   virtual ~to_event_definition(void) {
+  }
+
+  const event_definition& get_event_definition(void) const {
+    return event_definition_;
   }
 
   const std::unordered_set<modifier_definition::modifier>& get_modifiers(void) const {
@@ -729,8 +733,8 @@ public:
   }
 
   bool needs_virtual_hid_pointing(void) const {
-    if (type_ == type::pointing_button ||
-        type_ == type::mouse_key) {
+    if (event_definition_.get_type() == event_definition::type::pointing_button ||
+        event_definition_.get_type() == event_definition::type::mouse_key) {
       return true;
     }
     return false;
@@ -757,6 +761,7 @@ public:
   }
 
 private:
+  event_definition event_definition_;
   std::unordered_set<modifier_definition::modifier> modifiers_;
   bool lazy_;
   bool repeat_;
