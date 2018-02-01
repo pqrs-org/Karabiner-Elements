@@ -1057,7 +1057,8 @@ TEST_CASE("simple_modifications.to_json") {
     krbn::core_configuration::profile::simple_modifications simple_modifications(json);
     {
       krbn::manipulator::details::from_event_definition from_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[0].first));
-      REQUIRE(from_event_definition.get_consumer_key_code() == krbn::consumer_key_code::mute);
+      REQUIRE(from_event_definition.get_event_definitions().size() == 1);
+      REQUIRE(from_event_definition.get_event_definitions().front().get_consumer_key_code() == krbn::consumer_key_code::mute);
     }
     {
       krbn::manipulator::details::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[0].second));
@@ -1065,7 +1066,8 @@ TEST_CASE("simple_modifications.to_json") {
     }
     {
       krbn::manipulator::details::from_event_definition from_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[1].first));
-      REQUIRE(from_event_definition.get_key_code() == krbn::key_code::a);
+      REQUIRE(from_event_definition.get_event_definitions().size() == 1);
+      REQUIRE(from_event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::a);
     }
     {
       krbn::manipulator::details::to_event_definition to_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[1].second));

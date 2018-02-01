@@ -69,9 +69,10 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(manipulator->active() == false);
 
     auto basic = dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get());
-    REQUIRE(basic->get_from().get_type() == event_definition::type::key_code);
-    REQUIRE(basic->get_from().get_key_code() == krbn::key_code::escape);
-    REQUIRE(basic->get_from().get_pointing_button() == boost::none);
+    REQUIRE(basic->get_from().get_event_definitions().size() == 1);
+    REQUIRE(basic->get_from().get_event_definitions().front().get_type() == event_definition::type::key_code);
+    REQUIRE(basic->get_from().get_event_definitions().front().get_key_code() == krbn::key_code::escape);
+    REQUIRE(basic->get_from().get_event_definitions().front().get_pointing_button() == boost::none);
     REQUIRE(basic->get_from().get_mandatory_modifiers() == std::unordered_set<modifier_definition::modifier>({
                                                                modifier_definition::modifier::left_shift,
                                                                modifier_definition::modifier::left_option,

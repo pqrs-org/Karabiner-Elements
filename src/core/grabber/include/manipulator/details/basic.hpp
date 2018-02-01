@@ -465,22 +465,24 @@ public:
 
       bool is_target = false;
 
-      if (auto key_code = front_input_event.get_event().get_key_code()) {
-        if (from_.get_key_code() == key_code ||
-            from_.get_any_type() == event_definition::type::key_code) {
-          is_target = true;
+      for (const auto& d : from_.get_event_definitions()) {
+        if (auto key_code = front_input_event.get_event().get_key_code()) {
+          if (d.get_key_code() == key_code ||
+              d.get_any_type() == event_definition::type::key_code) {
+            is_target = true;
+          }
         }
-      }
-      if (auto consumer_key_code = front_input_event.get_event().get_consumer_key_code()) {
-        if (from_.get_consumer_key_code() == consumer_key_code ||
-            from_.get_any_type() == event_definition::type::consumer_key_code) {
-          is_target = true;
+        if (auto consumer_key_code = front_input_event.get_event().get_consumer_key_code()) {
+          if (d.get_consumer_key_code() == consumer_key_code ||
+              d.get_any_type() == event_definition::type::consumer_key_code) {
+            is_target = true;
+          }
         }
-      }
-      if (auto pointing_button = front_input_event.get_event().get_pointing_button()) {
-        if (from_.get_pointing_button() == pointing_button ||
-            from_.get_any_type() == event_definition::type::pointing_button) {
-          is_target = true;
+        if (auto pointing_button = front_input_event.get_event().get_pointing_button()) {
+          if (d.get_pointing_button() == pointing_button ||
+              d.get_any_type() == event_definition::type::pointing_button) {
+            is_target = true;
+          }
         }
       }
 

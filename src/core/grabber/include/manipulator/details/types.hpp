@@ -490,7 +490,7 @@ public:
   }
 };
 
-class from_event_definition final : public event_definition {
+class from_event_definition final {
 public:
   from_event_definition(const nlohmann::json& json) {
     if (!json.is_object()) {
@@ -498,12 +498,14 @@ public:
       return;
     }
 
+    event_definition default_event_definition;
+
     for (auto it1 = std::begin(json); it1 != std::end(json); std::advance(it1, 1)) {
       // it1.key() is always std::string.
       const auto& key = it1.key();
       const auto& value = it1.value();
 
-      if (handle_json(key, value, json)) {
+      if (default_event_definition.handle_json(key, value, json)) {
         continue;
       }
 
@@ -533,26 +535,37 @@ public:
       logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
     }
 
+    if (event_definitions_.empty() &&
+        default_event_definition.get_type() != event_definition::type::none) {
+      event_definitions_.push_back(default_event_definition);
+    }
+
     // ----------------------------------------
 
-    switch (type_) {
-      case type::key_code:
-      case type::consumer_key_code:
-      case type::pointing_button:
-      case type::any:
-        break;
+    for (const auto& d : event_definitions_) {
+      switch (d.get_type()) {
+        case event_definition::type::key_code:
+        case event_definition::type::consumer_key_code:
+        case event_definition::type::pointing_button:
+        case event_definition::type::any:
+          break;
 
-      case type::none:
-      case type::shell_command:
-      case type::select_input_source:
-      case type::set_variable:
-      case type::mouse_key:
-        logger::get_logger().error("complex_modifications json error: Invalid type in from_event_definition: {0}", json.dump());
-        break;
+        case event_definition::type::none:
+        case event_definition::type::shell_command:
+        case event_definition::type::select_input_source:
+        case event_definition::type::set_variable:
+        case event_definition::type::mouse_key:
+          logger::get_logger().error("complex_modifications json error: Invalid type in from_event_definition: {0}", json.dump());
+          break;
+      }
     }
   }
 
   virtual ~from_event_definition(void) {
+  }
+
+  const std::vector<event_definition>& get_event_definitions(void) const {
+    return event_definitions_;
   }
 
   const std::unordered_set<modifier_definition::modifier>& get_mandatory_modifiers(void) const {
@@ -642,6 +655,7 @@ public:
   }
 
 private:
+  std::vector<event_definition> event_definitions_;
   std::unordered_set<modifier_definition::modifier> mandatory_modifiers_;
   std::unordered_set<modifier_definition::modifier> optional_modifiers_;
 };

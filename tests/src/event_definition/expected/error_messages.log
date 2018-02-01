@@ -1,18 +1,12 @@
 [error] complex_modifications json error: Unknown modifier: unknown_modifier
 [error] complex_modifications json error: Invalid form of from_event_definition: "not_object"
 [error] complex_modifications json error: Invalid form of key_code: {"description":"key_code is not string","key_code":1234}
-[error] complex_modifications json error: Invalid type in from_event_definition: {"description":"key_code is not string","key_code":1234}
 [error] complex_modifications json error: Invalid form of pointing_button: {"description":"pointing_button is not string","pointing_button":1234}
-[error] complex_modifications json error: Invalid type in from_event_definition: {"description":"pointing_button is not string","pointing_button":1234}
 [error] complex_modifications json error: Invalid form of any: {"any":1234,"description":"any is not string"}
-[error] complex_modifications json error: Invalid type in from_event_definition: {"any":1234,"description":"any is not string"}
 [error] complex_modifications json error: Unknown value of any: {"any":"unknown_any","description":"any value is not known"}
-[error] complex_modifications json error: Invalid type in from_event_definition: {"any":"unknown_any","description":"any value is not known"}
 [error] complex_modifications json error: Duplicated type definition: {"description":"Duplicated type description","key_code":"spacebar","pointing_button":"button1"}
 [error] complex_modifications json error: Unknown key: unknown_key in {"description":"Unknown key","unknown_key":"dummy"}
-[error] complex_modifications json error: Invalid type in from_event_definition: {"description":"Unknown key","unknown_key":"dummy"}
 [error] complex_modifications json error: Unknown key: unknown_modifiers in {"unknown_modifiers":"dummy"}
-[error] complex_modifications json error: Invalid type in from_event_definition: {"description":"unknown modifiers","modifiers":{"unknown_modifiers":"dummy"}}
 [error] complex_modifications json error: modifier should be string form: ["shift"]
 [error] complex_modifications json error: Invalid type in to_event_definition: {"description":"Invalid modifiers","modifiers":{"mandatory":["shift"]}}
 [error] complex_modifications json error: Invalid form of shell_command: {"description":"shell_command is not string","shell_command":1234}
