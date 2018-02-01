@@ -509,6 +509,29 @@ public:
         continue;
       }
 
+      if (key == "simultaneous") {
+        if (!value.is_array()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of simultaneous: {0}", value.dump());
+          continue;
+        }
+
+        for (const auto& j : value) {
+          event_definition d;
+
+          for (auto it2 = std::begin(j); it2 != std::end(j); std::advance(it2, 1)) {
+            // it.key() is always std::string.
+            const auto& k = it2.key();
+            const auto& v = it2.value();
+
+            d.handle_json(k, v, j);
+          }
+
+          if (d.get_type() != event_definition::type::none) {
+            event_definitions_.push_back(d);
+          }
+        }
+      }
+
       if (key == "modifiers") {
         if (!value.is_object()) {
           logger::get_logger().error("complex_modifications json error: Invalid form of modifiers: {0}", value.dump());

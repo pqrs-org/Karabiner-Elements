@@ -554,6 +554,25 @@ TEST_CASE("manipulator.details.from_event_definition") {
   }
   {
     nlohmann::json json({
+        // The top level event_definition is ignored if `simultaneous` exists.
+        {"key_code", "spacebar"},
+
+        {"simultaneous", nlohmann::json::array({
+                             nlohmann::json::object({
+                                 {"key_code", "left_shift"},
+                             }),
+                             nlohmann::json::object({
+                                 {"key_code", "right_shift"},
+                             }),
+                         })},
+    });
+    krbn::manipulator::details::from_event_definition event_definition(json);
+    REQUIRE(event_definition.get_event_definitions().size() == 2);
+    REQUIRE(event_definition.get_event_definitions()[0].get_key_code() == krbn::key_code::left_shift);
+    REQUIRE(event_definition.get_event_definitions()[1].get_key_code() == krbn::key_code::right_shift);
+  }
+  {
+    nlohmann::json json({
         {"key_code", nlohmann::json::array()},
         {"modifiers", {
                           {"mandatory", {
