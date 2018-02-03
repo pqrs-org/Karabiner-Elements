@@ -19,28 +19,31 @@ public:
     public:
       class entry {
       public:
-        entry(const event_queue::queued_event::event event,
+        entry(device_id device_id,
+              const event_queue::queued_event::event& event,
               event_type event_type,
-              bool lazy) : event_(event),
+              const event_queue::queued_event::event& original_event,
+              bool lazy) : device_id_(device_id),
+                           event_(event),
                            event_type_(event_type),
+                           original_event_(original_event),
                            lazy_(lazy) {
         }
 
-        const event_queue::queued_event::event& get_event(void) const {
-          return event_;
-        }
-
-        event_type get_event_type(void) const {
-          return event_type_;
-        }
-
-        bool get_lazy(void) const {
-          return lazy_;
+        event_queue::queued_event make_queued_event(uint64_t time_stamp) const {
+          return event_queue::queued_event(device_id_,
+                                           time_stamp,
+                                           event_,
+                                           event_type_,
+                                           original_event_,
+                                           lazy_);
         }
 
       private:
+        device_id device_id_;
         event_queue::queued_event::event event_;
         event_type event_type_;
+        event_queue::queued_event::event original_event_;
         bool lazy_;
       };
 
@@ -48,11 +51,15 @@ public:
         return events_;
       }
 
-      void emplace_back_event(const event_queue::queued_event::event event,
+      void emplace_back_event(device_id device_id,
+                              const event_queue::queued_event::event& event,
                               event_type event_type,
+                              const event_queue::queued_event::event& original_event,
                               bool lazy) {
-        events_.emplace_back(event,
+        events_.emplace_back(device_id,
+                             event,
                              event_type,
+                             original_event,
                              lazy);
       }
 
@@ -803,16 +810,20 @@ public:
                                                 front_input_event.get_original_event(),
                                                 it->get_lazy());
         } else {
-          current_manipulated_original_event.get_events_at_key_up().emplace_back_event(*event,
+          current_manipulated_original_event.get_events_at_key_up().emplace_back_event(front_input_event.get_device_id(),
+                                                                                       *event,
                                                                                        event_type::key_up,
+                                                                                       front_input_event.get_original_event(),
                                                                                        it->get_lazy());
         }
 
         {
           for (const auto& e : to_modifier_events) {
             if (it == std::end(to_events) - 1 && is_modifier_key_event) {
-              current_manipulated_original_event.get_events_at_key_up().emplace_back_event(e,
+              current_manipulated_original_event.get_events_at_key_up().emplace_back_event(front_input_event.get_device_id(),
+                                                                                           e,
                                                                                            event_type::key_up,
+                                                                                           front_input_event.get_original_event(),
                                                                                            true);
             } else {
               output_event_queue.emplace_back_event(front_input_event.get_device_id(),
@@ -833,12 +844,7 @@ public:
                              uint64_t& time_stamp_delay,
                              event_queue& output_event_queue) const {
     for (const auto& e : current_manipulated_original_event.get_events_at_key_up().get_events()) {
-      output_event_queue.emplace_back_event(front_input_event.get_device_id(),
-                                            front_input_event.get_time_stamp() + time_stamp_delay++,
-                                            e.get_event(),
-                                            e.get_event_type(),
-                                            front_input_event.get_original_event(),
-                                            e.get_lazy());
+      output_event_queue.push_back_event(e.make_queued_event(front_input_event.get_time_stamp() + time_stamp_delay++));
     }
     current_manipulated_original_event.get_events_at_key_up().clear_events();
   }
