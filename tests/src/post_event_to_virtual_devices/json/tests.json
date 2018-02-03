@@ -622,5 +622,13 @@
         ],
         "input_event_queue": "json/input_event_queue/mouse_key_3.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_3.json"
+    },
+    {
+        "description": "simultaneous_1",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_1.json"
     }
 ]

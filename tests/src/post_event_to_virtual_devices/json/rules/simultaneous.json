@@ -1,0 +1,56 @@
+[
+    {
+        "description": "a+s -> d",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "a"
+                },
+                {
+                    "key_code": "s"
+                }
+            ],
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "d",
+                "modifiers": []
+            }
+        ]
+    },
+    {
+        "description": "left_shift + q+w -> e",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "q"
+                },
+                {
+                    "key_code": "w"
+                }
+            ],
+            "modifiers": {
+                "mandatory": [
+                    "left_shift"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "e",
+                "modifiers": []
+            }
+        ]
+    }
+]
