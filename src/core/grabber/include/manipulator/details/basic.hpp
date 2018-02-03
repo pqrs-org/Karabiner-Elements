@@ -15,6 +15,34 @@ class basic final : public base {
 public:
   class manipulated_original_event final {
   public:
+    class from_event final {
+    public:
+      from_event(void) : device_id_(device_id::zero) {
+      }
+
+      from_event(device_id device_id,
+                 const event_queue::queued_event::event& original_event) : device_id_(device_id),
+                                                                           original_event_(original_event) {
+      }
+
+      device_id get_device_id(void) const {
+        return device_id_;
+      }
+
+      const event_queue::queued_event::event& get_original_event(void) const {
+        return original_event_;
+      }
+
+      bool operator==(const from_event& other) const {
+        return device_id_ == other.device_id_ &&
+               original_event_ == other.original_event_;
+      }
+
+    private:
+      device_id device_id_;
+      event_queue::queued_event::event original_event_;
+    };
+
     class events_at_key_up final {
     public:
       class entry {
@@ -71,23 +99,17 @@ public:
       std::vector<entry> events_;
     };
 
-    manipulated_original_event(device_id device_id,
-                               const event_queue::queued_event::event& original_event,
+    manipulated_original_event(const from_event& from_event,
                                const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
-                               uint64_t key_down_time_stamp) : device_id_(device_id),
-                                                               original_event_(original_event),
+                               uint64_t key_down_time_stamp) : from_event_(from_event),
                                                                from_mandatory_modifiers_(from_mandatory_modifiers),
                                                                from_mandatory_modifiers_restored_(false),
                                                                key_down_time_stamp_(key_down_time_stamp),
                                                                alone_(true) {
     }
 
-    device_id get_device_id(void) const {
-      return device_id_;
-    }
-
-    const event_queue::queued_event::event& get_original_event(void) const {
-      return original_event_;
+    const from_event& get_from_event(void) const {
+      return from_event_;
     }
 
     const std::unordered_set<modifier_flag>& get_from_mandatory_modifiers(void) const {
@@ -123,13 +145,11 @@ public:
 
     bool operator==(const manipulated_original_event& other) const {
       // Do not compare `from_mandatory_modifiers_`.
-      return get_device_id() == other.get_device_id() &&
-             get_original_event() == other.get_original_event();
+      return from_event_ == other.from_event_;
     }
 
   private:
-    device_id device_id_;
-    event_queue::queued_event::event original_event_;
+    from_event from_event_;
     std::unordered_set<modifier_flag> from_mandatory_modifiers_;
     bool from_mandatory_modifiers_restored_;
     uint64_t key_down_time_stamp_;
@@ -529,8 +549,9 @@ public:
             // ----------------------------------------
 
             if (is_target) {
-              current_manipulated_original_event = std::make_shared<manipulated_original_event>(front_input_event.get_device_id(),
-                                                                                                front_input_event.get_original_event(),
+              manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
+                                                                front_input_event.get_original_event());
+              current_manipulated_original_event = std::make_shared<manipulated_original_event>(from_event,
                                                                                                 from_mandatory_modifiers,
                                                                                                 front_input_event.get_time_stamp());
               manipulated_original_events_.push_back(current_manipulated_original_event);
@@ -543,11 +564,13 @@ public:
 
             // Check original_event in order to determine the correspond key_down is manipulated.
 
+            manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
+                                                              front_input_event.get_original_event());
+
             auto it = std::find_if(std::begin(manipulated_original_events_),
                                    std::end(manipulated_original_events_),
                                    [&](const auto& manipulated_original_event) {
-                                     return manipulated_original_event->get_device_id() == front_input_event.get_device_id() &&
-                                            manipulated_original_event->get_original_event() == front_input_event.get_original_event();
+                                     return manipulated_original_event->get_from_event() == from_event;
                                    });
             if (it != std::end(manipulated_original_events_)) {
               current_manipulated_original_event = *it;
@@ -693,7 +716,7 @@ public:
     manipulated_original_events_.erase(std::remove_if(std::begin(manipulated_original_events_),
                                                       std::end(manipulated_original_events_),
                                                       [&](const auto& e) {
-                                                        return e->get_device_id() == device_id;
+                                                        return e->get_from_event().get_device_id() == device_id;
                                                       }),
                                        std::end(manipulated_original_events_));
   }
