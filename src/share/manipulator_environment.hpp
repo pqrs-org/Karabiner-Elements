@@ -68,16 +68,16 @@ public:
       return file_path_;
     }
 
+    bool operator==(const frontmost_application& other) const {
+      return bundle_identifier_ == other.bundle_identifier_ &&
+             file_path_ == other.file_path_;
+    }
+
     size_t hash_value(void) const {
       size_t h = 0;
       boost::hash_combine(h, bundle_identifier_);
       boost::hash_combine(h, file_path_);
       return h;
-    }
-
-    bool operator==(const frontmost_application& other) const {
-      return bundle_identifier_ == other.bundle_identifier_ &&
-             file_path_ == other.file_path_;
     }
 
   private:
