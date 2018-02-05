@@ -17,6 +17,7 @@
 #include <IOKit/hid/IOHIDValue.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/hidsystem/ev_keymap.h>
+#include <boost/functional/hash.hpp>
 #include <boost/optional.hpp>
 #include <cstring>
 #include <iostream>
@@ -802,6 +803,23 @@ public:
     }
 
     return true;
+  }
+
+  size_t hash_value(void) const {
+    size_t h = 0;
+    if (language_string_) {
+      boost::hash_combine(h, *language_string_);
+    }
+    if (input_source_id_string_) {
+      boost::hash_combine(h, *input_source_id_string_);
+    }
+    if (input_mode_id_string_) {
+      boost::hash_combine(h, *input_mode_id_string_);
+    }
+
+    // We can skip *_regex_ since *_regex_ is synchronized with *_string_.
+
+    return h;
   }
 
   bool operator==(const input_source_selector& other) const {
@@ -1953,3 +1971,12 @@ inline void to_json(nlohmann::json& json, const input_source_selector& input_sou
   json = input_source_selector.to_json();
 }
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::input_source_selector> {
+  std::size_t operator()(const krbn::input_source_selector& v) const {
+    return v.hash_value();
+  }
+};
+} // namespace std
