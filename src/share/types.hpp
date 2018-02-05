@@ -483,6 +483,15 @@ public:
            horizontal_wheel_ == other.horizontal_wheel_;
   }
 
+  size_t hash_value(void) const {
+    size_t h = 0;
+    boost::hash_combine(h, x_);
+    boost::hash_combine(h, y_);
+    boost::hash_combine(h, vertical_wheel_);
+    boost::hash_combine(h, horizontal_wheel_);
+    return h;
+  }
+
 private:
   int x_;
   int y_;
@@ -1997,6 +2006,13 @@ inline void to_json(nlohmann::json& json, const input_source_selector& input_sou
 } // namespace krbn
 
 namespace std {
+template <>
+struct hash<krbn::pointing_motion> {
+  std::size_t operator()(const krbn::pointing_motion& v) const {
+    return v.hash_value();
+  }
+};
+
 template <>
 struct hash<krbn::input_source_identifiers> {
   std::size_t operator()(const krbn::input_source_identifiers& v) const {
