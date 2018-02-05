@@ -805,6 +805,12 @@ public:
     return true;
   }
 
+  bool operator==(const input_source_selector& other) const {
+    return language_string_ == other.language_string_ &&
+           input_source_id_string_ == other.input_source_id_string_ &&
+           input_mode_id_string_ == other.input_mode_id_string_;
+  }
+
   size_t hash_value(void) const {
     size_t h = 0;
     if (language_string_) {
@@ -820,12 +826,6 @@ public:
     // We can skip *_regex_ since *_regex_ is synchronized with *_string_.
 
     return h;
-  }
-
-  bool operator==(const input_source_selector& other) const {
-    return language_string_ == other.language_string_ &&
-           input_source_id_string_ == other.input_source_id_string_ &&
-           input_mode_id_string_ == other.input_mode_id_string_;
   }
 
 private:
@@ -988,6 +988,16 @@ public:
            vertical_wheel_ == other.vertical_wheel_ &&
            horizontal_wheel_ == other.horizontal_wheel_ &&
            speed_multiplier_ == other.speed_multiplier_;
+  }
+
+  size_t hash_value(void) const {
+    size_t h = 0;
+    boost::hash_combine(h, x_);
+    boost::hash_combine(h, y_);
+    boost::hash_combine(h, vertical_wheel_);
+    boost::hash_combine(h, horizontal_wheel_);
+    boost::hash_combine(h, speed_multiplier_);
+    return h;
   }
 
 private:
@@ -1976,6 +1986,13 @@ namespace std {
 template <>
 struct hash<krbn::input_source_selector> {
   std::size_t operator()(const krbn::input_source_selector& v) const {
+    return v.hash_value();
+  }
+};
+
+template <>
+struct hash<krbn::mouse_key> {
+  std::size_t operator()(const krbn::mouse_key& v) const {
     return v.hash_value();
   }
 };
