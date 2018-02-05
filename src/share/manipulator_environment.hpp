@@ -1,9 +1,12 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include "filesystem.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
+#include <boost/functional/hash.hpp>
 #include <fstream>
 #include <iostream>
 #include <json/json.hpp>
@@ -63,6 +66,13 @@ public:
 
     const std::string& get_file_path(void) const {
       return file_path_;
+    }
+
+    size_t hash_value(void) const {
+      size_t h = 0;
+      boost::hash_combine(h, bundle_identifier_);
+      boost::hash_combine(h, file_path_);
+      return h;
     }
 
     bool operator==(const frontmost_application& other) const {
@@ -158,3 +168,12 @@ inline std::ostream& operator<<(std::ostream& stream, const manipulator_environm
   return stream;
 }
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::manipulator_environment::frontmost_application> {
+  std::size_t operator()(const krbn::manipulator_environment::frontmost_application& v) const {
+    return v.hash_value();
+  }
+};
+} // namespace std
