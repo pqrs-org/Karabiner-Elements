@@ -683,6 +683,20 @@ public:
            input_mode_id_ == other.input_mode_id_;
   }
 
+  size_t hash_value(void) const {
+    size_t h = 0;
+    if (language_) {
+      boost::hash_combine(h, *language_);
+    }
+    if (input_source_id_) {
+      boost::hash_combine(h, *input_source_id_);
+    }
+    if (input_mode_id_) {
+      boost::hash_combine(h, *input_mode_id_);
+    }
+    return h;
+  }
+
 private:
   boost::optional<std::string> language_;
   boost::optional<std::string> input_source_id_;
@@ -1983,6 +1997,13 @@ inline void to_json(nlohmann::json& json, const input_source_selector& input_sou
 } // namespace krbn
 
 namespace std {
+template <>
+struct hash<krbn::input_source_identifiers> {
+  std::size_t operator()(const krbn::input_source_identifiers& v) const {
+    return v.hash_value();
+  }
+};
+
 template <>
 struct hash<krbn::input_source_selector> {
   std::size_t operator()(const krbn::input_source_selector& v) const {
