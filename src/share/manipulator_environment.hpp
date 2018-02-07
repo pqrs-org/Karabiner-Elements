@@ -73,10 +73,10 @@ public:
              file_path_ == other.file_path_;
     }
 
-    size_t hash_value(void) const {
+    friend size_t hash_value(const frontmost_application& value) {
       size_t h = 0;
-      boost::hash_combine(h, bundle_identifier_);
-      boost::hash_combine(h, file_path_);
+      boost::hash_combine(h, value.bundle_identifier_);
+      boost::hash_combine(h, value.file_path_);
       return h;
     }
 
@@ -173,7 +173,7 @@ namespace std {
 template <>
 struct hash<krbn::manipulator_environment::frontmost_application> {
   std::size_t operator()(const krbn::manipulator_environment::frontmost_application& v) const {
-    return v.hash_value();
+    return hash_value(v);
   }
 };
 } // namespace std

@@ -483,12 +483,12 @@ public:
            horizontal_wheel_ == other.horizontal_wheel_;
   }
 
-  size_t hash_value(void) const {
+  friend size_t hash_value(const pointing_motion& value) {
     size_t h = 0;
-    boost::hash_combine(h, x_);
-    boost::hash_combine(h, y_);
-    boost::hash_combine(h, vertical_wheel_);
-    boost::hash_combine(h, horizontal_wheel_);
+    boost::hash_combine(h, value.x_);
+    boost::hash_combine(h, value.y_);
+    boost::hash_combine(h, value.vertical_wheel_);
+    boost::hash_combine(h, value.horizontal_wheel_);
     return h;
   }
 
@@ -692,16 +692,16 @@ public:
            input_mode_id_ == other.input_mode_id_;
   }
 
-  size_t hash_value(void) const {
+  friend size_t hash_value(const input_source_identifiers& value) {
     size_t h = 0;
-    if (language_) {
-      boost::hash_combine(h, *language_);
+    if (value.language_) {
+      boost::hash_combine(h, *(value.language_));
     }
-    if (input_source_id_) {
-      boost::hash_combine(h, *input_source_id_);
+    if (value.input_source_id_) {
+      boost::hash_combine(h, *(value.input_source_id_));
     }
-    if (input_mode_id_) {
-      boost::hash_combine(h, *input_mode_id_);
+    if (value.input_mode_id_) {
+      boost::hash_combine(h, *(value.input_mode_id_));
     }
     return h;
   }
@@ -834,16 +834,16 @@ public:
            input_mode_id_string_ == other.input_mode_id_string_;
   }
 
-  size_t hash_value(void) const {
+  friend size_t hash_value(const input_source_selector& value) {
     size_t h = 0;
-    if (language_string_) {
-      boost::hash_combine(h, *language_string_);
+    if (value.language_string_) {
+      boost::hash_combine(h, *(value.language_string_));
     }
-    if (input_source_id_string_) {
-      boost::hash_combine(h, *input_source_id_string_);
+    if (value.input_source_id_string_) {
+      boost::hash_combine(h, *(value.input_source_id_string_));
     }
-    if (input_mode_id_string_) {
-      boost::hash_combine(h, *input_mode_id_string_);
+    if (value.input_mode_id_string_) {
+      boost::hash_combine(h, *(value.input_mode_id_string_));
     }
 
     // We can skip *_regex_ since *_regex_ is synchronized with *_string_.
@@ -1013,13 +1013,13 @@ public:
            speed_multiplier_ == other.speed_multiplier_;
   }
 
-  size_t hash_value(void) const {
+  friend size_t hash_value(const mouse_key& value) {
     size_t h = 0;
-    boost::hash_combine(h, x_);
-    boost::hash_combine(h, y_);
-    boost::hash_combine(h, vertical_wheel_);
-    boost::hash_combine(h, horizontal_wheel_);
-    boost::hash_combine(h, speed_multiplier_);
+    boost::hash_combine(h, value.x_);
+    boost::hash_combine(h, value.y_);
+    boost::hash_combine(h, value.vertical_wheel_);
+    boost::hash_combine(h, value.horizontal_wheel_);
+    boost::hash_combine(h, value.speed_multiplier_);
     return h;
   }
 
@@ -2009,28 +2009,28 @@ namespace std {
 template <>
 struct hash<krbn::pointing_motion> {
   std::size_t operator()(const krbn::pointing_motion& v) const {
-    return v.hash_value();
+    return hash_value(v);
   }
 };
 
 template <>
 struct hash<krbn::input_source_identifiers> {
   std::size_t operator()(const krbn::input_source_identifiers& v) const {
-    return v.hash_value();
+    return hash_value(v);
   }
 };
 
 template <>
 struct hash<krbn::input_source_selector> {
   std::size_t operator()(const krbn::input_source_selector& v) const {
-    return v.hash_value();
+    return hash_value(v);
   }
 };
 
 template <>
 struct hash<krbn::mouse_key> {
   std::size_t operator()(const krbn::mouse_key& v) const {
-    return v.hash_value();
+    return hash_value(v);
   }
 };
 } // namespace std
