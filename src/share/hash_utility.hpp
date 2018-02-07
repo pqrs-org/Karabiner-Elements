@@ -16,28 +16,28 @@ std::size_t hash_value(const boost::blank& v) {
 
 namespace std {
 template <typename T, typename A>
-struct hash<std::vector<T, A>> {
+struct hash<std::vector<T, A>> final {
   std::size_t operator()(const std::vector<T, A>& v) const {
     return boost::hash<std::vector<T, A>>(v.begin(), v.end());
   }
 };
 
 template <typename A, typename B>
-struct hash<std::pair<A, B>> {
+struct hash<std::pair<A, B>> final {
   std::size_t operator()(const std::pair<A, B>& v) const {
     return boost::hash<std::pair<A, B>>(v);
   }
 };
 
 template <BOOST_VARIANT_ENUM_PARAMS(typename T)>
-struct hash<boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>> {
+struct hash<boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>> final {
   std::size_t hash_value(const boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>& v) {
     return boost::hash<boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>>(v);
   }
 };
 
 template <>
-struct hash<boost::blank> {
+struct hash<boost::blank> final {
   std::size_t operator()(const boost::blank& v) const {
     return hash_value(v);
   }

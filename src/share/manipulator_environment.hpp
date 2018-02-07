@@ -171,7 +171,7 @@ inline std::ostream& operator<<(std::ostream& stream, const manipulator_environm
 
 namespace std {
 template <>
-struct hash<krbn::manipulator_environment::frontmost_application> {
+struct hash<krbn::manipulator_environment::frontmost_application> final {
   std::size_t operator()(const krbn::manipulator_environment::frontmost_application& v) const {
     return hash_value(v);
   }

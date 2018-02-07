@@ -2007,28 +2007,28 @@ inline void to_json(nlohmann::json& json, const input_source_selector& input_sou
 
 namespace std {
 template <>
-struct hash<krbn::pointing_motion> {
+struct hash<krbn::pointing_motion> final {
   std::size_t operator()(const krbn::pointing_motion& v) const {
     return hash_value(v);
   }
 };
 
 template <>
-struct hash<krbn::input_source_identifiers> {
+struct hash<krbn::input_source_identifiers> final {
   std::size_t operator()(const krbn::input_source_identifiers& v) const {
     return hash_value(v);
   }
 };
 
 template <>
-struct hash<krbn::input_source_selector> {
+struct hash<krbn::input_source_selector> final {
   std::size_t operator()(const krbn::input_source_selector& v) const {
     return hash_value(v);
   }
 };
 
 template <>
-struct hash<krbn::mouse_key> {
+struct hash<krbn::mouse_key> final {
   std::size_t operator()(const krbn::mouse_key& v) const {
     return hash_value(v);
   }

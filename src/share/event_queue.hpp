@@ -1087,7 +1087,7 @@ inline void to_json(nlohmann::json& json, const event_queue::queued_event& value
 
 namespace std {
 template <>
-struct hash<krbn::event_queue::queued_event::event> {
+struct hash<krbn::event_queue::queued_event::event> final {
   std::size_t operator()(const krbn::event_queue::queued_event::event& v) const {
     return hash_value(v);
   }
