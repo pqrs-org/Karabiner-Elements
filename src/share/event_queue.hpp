@@ -2,12 +2,14 @@
 
 #include "boost_defs.hpp"
 
+#include "hash_utility.hpp"
 #include "json_utility.hpp"
 #include "manipulator_environment.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
 #include "stream_utility.hpp"
 #include "types.hpp"
+#include <boost/functional/hash.hpp>
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
@@ -463,6 +465,13 @@ public:
       bool operator==(const event& other) const {
         return get_type() == other.get_type() &&
                value_ == other.value_;
+      }
+
+      friend size_t hash_value(const event& value) {
+        size_t h = 0;
+        boost::hash_combine(h, value.type_);
+        boost::hash_combine(h, value.value_);
+        return h;
       }
 
     private:
@@ -1075,3 +1084,12 @@ inline void to_json(nlohmann::json& json, const event_queue::queued_event& value
   json = value.to_json();
 }
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::event_queue::queued_event::event> {
+  std::size_t operator()(const krbn::event_queue::queued_event::event& v) const {
+    return hash_value(v);
+  }
+};
+} // namespace std

@@ -572,3 +572,8 @@ TEST_CASE("make_queued_events") {
   REQUIRE(queued_events[7].second.get_event().get_pointing_motion() == krbn::pointing_motion(0, 0, 0, 0));
   REQUIRE(queued_events[7].second.get_event_type() == krbn::event_type::single);
 }
+
+TEST_CASE("hash") {
+  REQUIRE(hash_value(krbn::event_queue::queued_event::event(krbn::key_code::a)) !=
+          hash_value(krbn::event_queue::queued_event::event(krbn::key_code::b)));
+}
