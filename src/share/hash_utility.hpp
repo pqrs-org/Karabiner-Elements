@@ -39,7 +39,7 @@ struct hash<boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>> {
 template <>
 struct hash<boost::blank> {
   std::size_t operator()(const boost::blank& v) const {
-    return 0;
+    return hash_value(v);
   }
 };
 } // namespace std
