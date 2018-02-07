@@ -38,9 +38,22 @@ public:
                original_event_ == other.original_event_;
       }
 
+      friend size_t hash_value(const from_event& value) {
+        size_t h = 0;
+        boost::hash_combine(h, value.device_id_);
+        boost::hash_combine(h, value.original_event_);
+        return h;
+      }
+
     private:
       device_id device_id_;
       event_queue::queued_event::event original_event_;
+    };
+
+    struct from_event_hash final {
+      std::size_t operator()(const from_event& v) const noexcept {
+        return hash_value(v);
+      }
     };
 
     class events_at_key_up final {
@@ -99,17 +112,17 @@ public:
       std::vector<entry> events_;
     };
 
-    manipulated_original_event(const from_event& from_event,
+    manipulated_original_event(const std::unordered_set<from_event, from_event_hash>& from_events,
                                const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
-                               uint64_t key_down_time_stamp) : from_event_(from_event),
+                               uint64_t key_down_time_stamp) : from_events_(from_events),
                                                                from_mandatory_modifiers_(from_mandatory_modifiers),
                                                                from_mandatory_modifiers_restored_(false),
                                                                key_down_time_stamp_(key_down_time_stamp),
                                                                alone_(true) {
     }
 
-    const from_event& get_from_event(void) const {
-      return from_event_;
+    const std::unordered_set<from_event, from_event_hash>& get_from_events(void) const {
+      return from_events_;
     }
 
     const std::unordered_set<modifier_flag>& get_from_mandatory_modifiers(void) const {
@@ -143,13 +156,23 @@ public:
       alone_ = false;
     }
 
+    void erase_from_events_by_device_id(device_id device_id) {
+      for (auto it = std::begin(from_events_); it != std::end(from_events_);) {
+        if (it->get_device_id() == device_id) {
+          it = from_events_.erase(it);
+        } else {
+          std::advance(it, 1);
+        }
+      }
+    }
+
     bool operator==(const manipulated_original_event& other) const {
       // Do not compare `from_mandatory_modifiers_`.
-      return from_event_ == other.from_event_;
+      return from_events_ == other.from_events_;
     }
 
   private:
-    from_event from_event_;
+    std::unordered_set<from_event, from_event_hash> from_events_;
     std::unordered_set<modifier_flag> from_mandatory_modifiers_;
     bool from_mandatory_modifiers_restored_;
     uint64_t key_down_time_stamp_;
@@ -549,9 +572,11 @@ public:
             // ----------------------------------------
 
             if (is_target) {
-              manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
-                                                                front_input_event.get_original_event());
-              current_manipulated_original_event = std::make_shared<manipulated_original_event>(from_event,
+              std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events({
+                  manipulated_original_event::from_event(front_input_event.get_device_id(),
+                                                         front_input_event.get_original_event()),
+              });
+              current_manipulated_original_event = std::make_shared<manipulated_original_event>(from_events,
                                                                                                 from_mandatory_modifiers,
                                                                                                 front_input_event.get_time_stamp());
               manipulated_original_events_.push_back(current_manipulated_original_event);
@@ -570,7 +595,8 @@ public:
             auto it = std::find_if(std::begin(manipulated_original_events_),
                                    std::end(manipulated_original_events_),
                                    [&](const auto& manipulated_original_event) {
-                                     return manipulated_original_event->get_from_event() == from_event;
+                                     auto& from_events = manipulated_original_event->get_from_events();
+                                     return from_events.find(from_event) != std::end(from_events);
                                    });
             if (it != std::end(manipulated_original_events_)) {
               current_manipulated_original_event = *it;
@@ -713,10 +739,14 @@ public:
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
                                              uint64_t time_stamp) {
+    for (auto&& e : manipulated_original_events_) {
+      e->erase_from_events_by_device_id(device_id);
+    }
+
     manipulated_original_events_.erase(std::remove_if(std::begin(manipulated_original_events_),
                                                       std::end(manipulated_original_events_),
                                                       [&](const auto& e) {
-                                                        return e->get_from_event().get_device_id() == device_id;
+                                                        return e->get_from_events().empty();
                                                       }),
                                        std::end(manipulated_original_events_));
   }
