@@ -63,6 +63,22 @@
         "valid": true
     },
     {
+        "description": "C-x C-f",
+        "device_id": 1,
+        "event": {
+            "key_code": "f",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f",
+            "type": "key_code"
+        },
+        "time_stamp": 10000000,
+        "valid": true
+    },
+    {
         "description": "C-f (Post C-f)",
         "device_id": 1,
         "event": {
@@ -75,7 +91,23 @@
             "key_code": "f",
             "type": "key_code"
         },
-        "time_stamp": 10000000,
+        "time_stamp": 12000000,
+        "valid": true
+    },
+    {
+        "description": "C-f (Post C-f)",
+        "device_id": 1,
+        "event": {
+            "key_code": "f",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f",
+            "type": "key_code"
+        },
+        "time_stamp": 14000000,
         "valid": true
     },
     {
@@ -91,7 +123,7 @@
             "key_code": "x",
             "type": "key_code"
         },
-        "time_stamp": 12000000,
+        "time_stamp": 16000000,
         "valid": true
     },
     {
@@ -107,7 +139,7 @@
             "key_code": "x",
             "type": "key_code"
         },
-        "time_stamp": 14000000,
+        "time_stamp": 18000000,
         "valid": true
     },
     {
@@ -123,7 +155,7 @@
             "key_code": "f12",
             "type": "key_code"
         },
-        "time_stamp": 16000000,
+        "time_stamp": 20000000,
         "valid": true
     }
 ]
