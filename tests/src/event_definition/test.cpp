@@ -743,3 +743,43 @@ TEST_CASE("event_definition.error_messages") {
 
   set_null_logger();
 }
+
+TEST_CASE("from_event_definition.test_event") {
+  using krbn::manipulator::details::from_event_definition;
+
+  {
+    from_event_definition d(nlohmann::json::object({
+        {"key_code", "spacebar"},
+    }));
+
+    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::spacebar), d.get_event_definitions().front()));
+
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d.get_event_definitions().front()));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d.get_event_definitions().front()));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d.get_event_definitions().front()));
+  }
+
+  {
+    from_event_definition d(nlohmann::json::object({
+        {"consumer_key_code", "rewind"},
+    }));
+
+    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::rewind), d.get_event_definitions().front()));
+
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d.get_event_definitions().front()));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d.get_event_definitions().front()));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d.get_event_definitions().front()));
+  }
+
+  {
+    from_event_definition d(nlohmann::json::object({
+        {"pointing_button", "button2"},
+    }));
+
+    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button2), d.get_event_definitions().front()));
+
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d.get_event_definitions().front()));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d.get_event_definitions().front()));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d.get_event_definitions().front()));
+  }
+}
