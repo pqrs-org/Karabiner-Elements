@@ -748,15 +748,23 @@ TEST_CASE("from_event_definition.test_event") {
   using krbn::manipulator::details::from_event_definition;
 
   {
+    from_event_definition d(nlohmann::json::object({}));
+
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+  }
+
+  {
     from_event_definition d(nlohmann::json::object({
         {"key_code", "spacebar"},
     }));
 
-    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::spacebar), d.get_event_definitions().front()));
+    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::spacebar), d));
 
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d.get_event_definitions().front()));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d.get_event_definitions().front()));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d.get_event_definitions().front()));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 
   {
@@ -764,11 +772,11 @@ TEST_CASE("from_event_definition.test_event") {
         {"consumer_key_code", "rewind"},
     }));
 
-    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::rewind), d.get_event_definitions().front()));
+    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::rewind), d));
 
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d.get_event_definitions().front()));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d.get_event_definitions().front()));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d.get_event_definitions().front()));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 
   {
@@ -776,10 +784,40 @@ TEST_CASE("from_event_definition.test_event") {
         {"pointing_button", "button2"},
     }));
 
-    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button2), d.get_event_definitions().front()));
+    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button2), d));
 
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d.get_event_definitions().front()));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d.get_event_definitions().front()));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d.get_event_definitions().front()));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+  }
+
+  {
+    from_event_definition d(nlohmann::json::object({
+        {"any", "key_code"},
+    }));
+
+    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+  }
+
+  {
+    from_event_definition d(nlohmann::json::object({
+        {"any", "consumer_key_code"},
+    }));
+
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+  }
+
+  {
+    from_event_definition d(nlohmann::json::object({
+        {"any", "pointing_button"},
+    }));
+
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 }

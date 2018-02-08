@@ -703,6 +703,17 @@ public:
     return false;
   }
 
+  static bool test_event(const event_queue::queued_event::event& event,
+                         const from_event_definition& from_event_definitions) {
+    for (const auto& d : from_event_definitions.get_event_definitions()) {
+      if (test_event(event, d)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
 private:
   std::vector<event_definition> event_definitions_;
   std::unordered_set<modifier_definition::modifier> mandatory_modifiers_;
