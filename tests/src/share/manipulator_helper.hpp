@@ -76,6 +76,8 @@ public:
       });
 
       {
+        bool pause_manipulation = false;
+
         std::ifstream ifs(test["input_event_queue"].get<std::string>());
         REQUIRE(ifs);
         for (const auto& j : nlohmann::json::parse(ifs)) {
@@ -89,10 +91,19 @@ public:
               }
               krbn::manipulator::manipulator_timer::get_instance().signal(time_stamp);
             }
+
+          } else if (auto v = json_utility::find_optional<bool>(j, "pause_manipulation")) {
+            pause_manipulation = *v;
+            if (!pause_manipulation) {
+              connector.manipulate();
+            }
+
           } else {
             auto e = event_queue::queued_event(j);
             event_queues.front()->push_back_event(e);
-            connector.manipulate();
+            if (!pause_manipulation) {
+              connector.manipulate();
+            }
           }
         }
       }

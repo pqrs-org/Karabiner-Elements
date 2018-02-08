@@ -623,22 +623,23 @@ public:
 
                   bool found = true;
                   for (const auto& d : from_.get_event_definitions()) {
-                    for (const auto& e : ordered_from_events) {
-                      if (!from_event_definition::test_event(e.get_event(), d)) {
-                        found = false;
-                      }
+                    if (std::none_of(std::begin(ordered_from_events),
+                                     std::end(ordered_from_events),
+                                     [&](auto& e) {
+                                       return from_event_definition::test_event(e.get_event(), d);
+                                     })) {
+                      found = false;
                     }
                   }
 
                   if (found) {
                     // Remove same events from other devices
                     for (const auto& ofe : ordered_from_events) {
-                      auto it = std::find_if(std::begin(from_events),
-                                             std::end(from_events),
-                                             [&](auto& e) {
-                                               return e.get_event() == ofe.get_event();
-                                             });
-                      if (it == std::end(from_events)) {
+                      if (std::none_of(std::begin(from_events),
+                                       std::end(from_events),
+                                       [&](auto& e) {
+                                         return e.get_event() == ofe.get_event();
+                                       })) {
                         from_events.insert(ofe);
                       }
                     }

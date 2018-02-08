@@ -35,13 +35,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "a",
+            "key_code": "s",
             "type": "key_code"
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "key_code": "a",
+            "key_code": "s",
             "type": "key_code"
         },
         "time_stamp": 6000000,
@@ -65,13 +65,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "s",
+            "key_code": "a",
             "type": "key_code"
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "key_code": "s",
+            "key_code": "a",
             "type": "key_code"
         },
         "time_stamp": 10000000,

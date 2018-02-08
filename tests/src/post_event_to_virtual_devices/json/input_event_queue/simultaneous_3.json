@@ -33,7 +33,37 @@
         "valid": true
     },
     {
+        "device_id": 2,
+        "event": {
+            "key_code": "a",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "a",
+            "type": "key_code"
+        },
+        "time_stamp": 6000000,
+        "valid": true
+    },
+    {
         "device_id": 1,
+        "event": {
+            "key_code": "s",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "s",
+            "type": "key_code"
+        },
+        "time_stamp": 8000000,
+        "valid": true
+    },
+    {
+        "device_id": 2,
         "event": {
             "key_code": "a",
             "type": "key_code"
@@ -44,7 +74,7 @@
             "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 6000000,
+        "time_stamp": 10000000,
         "valid": true
     },
     {
@@ -59,22 +89,22 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 8000000,
+        "time_stamp": 12000000,
         "valid": true
     },
     {
         "device_id": 1,
         "event": {
-            "key_code": "s",
+            "key_code": "a",
             "type": "key_code"
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "key_code": "s",
+            "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 10000000,
+        "time_stamp": 14000000,
         "valid": true
     },
     {
