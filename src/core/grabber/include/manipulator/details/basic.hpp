@@ -21,12 +21,18 @@ public:
       }
 
       from_event(device_id device_id,
+                 const event_queue::queued_event::event& event,
                  const event_queue::queued_event::event& original_event) : device_id_(device_id),
+                                                                           event_(event),
                                                                            original_event_(original_event) {
       }
 
       device_id get_device_id(void) const {
         return device_id_;
+      }
+
+      const event_queue::queued_event::event& get_event(void) const {
+        return event_;
       }
 
       const event_queue::queued_event::event& get_original_event(void) const {
@@ -35,18 +41,21 @@ public:
 
       bool operator==(const from_event& other) const {
         return device_id_ == other.device_id_ &&
+               event_ == other.event_ &&
                original_event_ == other.original_event_;
       }
 
       friend size_t hash_value(const from_event& value) {
         size_t h = 0;
         boost::hash_combine(h, value.device_id_);
+        boost::hash_combine(h, value.event_);
         boost::hash_combine(h, value.original_event_);
         return h;
       }
 
     private:
       device_id device_id_;
+      event_queue::queued_event::event event_;
       event_queue::queued_event::event original_event_;
     };
 
@@ -156,6 +165,14 @@ public:
       alone_ = false;
     }
 
+    bool from_event_exists(const from_event& from_event) const {
+      return from_events_.find(from_event) != std::end(from_events_);
+    }
+
+    void erase_from_event(const from_event& from_event) {
+      from_events_.erase(from_event);
+    }
+
     void erase_from_events_by_device_id(device_id device_id) {
       for (auto it = std::begin(from_events_); it != std::end(from_events_);) {
         if (it->get_device_id() == device_id) {
@@ -166,9 +183,14 @@ public:
       }
     }
 
-    bool operator==(const manipulated_original_event& other) const {
-      // Do not compare `from_mandatory_modifiers_`.
-      return from_events_ == other.from_events_;
+    void erase_from_events_by_event(const event_queue::queued_event::event& event) {
+      for (auto it = std::begin(from_events_); it != std::end(from_events_);) {
+        if (it->get_event() == event) {
+          it = from_events_.erase(it);
+        } else {
+          std::advance(it, 1);
+        }
+      }
     }
 
   private:
@@ -513,35 +535,20 @@ public:
 
       // ----------------------------------------
 
-      bool is_target = false;
-
-      for (const auto& d : from_.get_event_definitions()) {
-        if (auto key_code = front_input_event.get_event().get_key_code()) {
-          if (d.get_key_code() == key_code ||
-              d.get_any_type() == event_definition::type::key_code) {
-            is_target = true;
-          }
-        }
-        if (auto consumer_key_code = front_input_event.get_event().get_consumer_key_code()) {
-          if (d.get_consumer_key_code() == consumer_key_code ||
-              d.get_any_type() == event_definition::type::consumer_key_code) {
-            is_target = true;
-          }
-        }
-        if (auto pointing_button = front_input_event.get_event().get_pointing_button()) {
-          if (d.get_pointing_button() == pointing_button ||
-              d.get_any_type() == event_definition::type::pointing_button) {
-            is_target = true;
-          }
-        }
-      }
-
       if (!front_input_event.get_valid()) {
         return;
       }
 
+      // ----------------------------------------
+
+      bool is_target = from_event_definition::test_event(front_input_event.get_event(), from_);
+
       if (is_target) {
         std::shared_ptr<manipulated_original_event> current_manipulated_original_event;
+        bool suppress_output = false;
+        manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
+                                                          front_input_event.get_event(),
+                                                          front_input_event.get_original_event());
 
         switch (front_input_event.get_event_type()) {
           case event_type::key_down: {
@@ -555,31 +562,107 @@ public:
             }
 
             if (is_target) {
-              if (auto modifiers = from_.test_modifiers(output_event_queue->get_modifier_flag_manager())) {
-                from_mandatory_modifiers = *modifiers;
-              } else {
-                is_target = false;
+              bool already_manipulated = false;
+
+              for (const auto& e : manipulated_original_events_) {
+                if (e->from_event_exists(from_event)) {
+                  already_manipulated = true;
+                  current_manipulated_original_event = e;
+                  suppress_output = true;
+                  break;
+                }
               }
-            }
 
-            if (is_target) {
-              if (!condition_manager_.is_fulfilled(front_input_event,
-                                                   output_event_queue->get_manipulator_environment())) {
-                is_target = false;
+              if (!already_manipulated) {
+                // Check mandatory_modifiers and conditions
+
+                if (is_target) {
+                  if (auto modifiers = from_.test_modifiers(output_event_queue->get_modifier_flag_manager())) {
+                    from_mandatory_modifiers = *modifiers;
+                  } else {
+                    is_target = false;
+                  }
+                }
+
+                if (is_target) {
+                  if (!condition_manager_.is_fulfilled(front_input_event,
+                                                       output_event_queue->get_manipulator_environment())) {
+                    is_target = false;
+                  }
+                }
+
+                // Check all from_events_ are pressed
+
+                std::vector<manipulated_original_event::from_event> ordered_from_events;
+                std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events;
+
+                for (const auto& queued_event : input_event_queue.get_events()) {
+                  if (!from_event_definition::test_event(front_input_event.get_event(), from_)) {
+                    continue;
+                  }
+
+                  manipulated_original_event::from_event fe(queued_event.get_device_id(),
+                                                            queued_event.get_event(),
+                                                            queued_event.get_original_event());
+
+                  switch (queued_event.get_event_type()) {
+                    case event_type::key_down:
+                      ordered_from_events.push_back(fe);
+                      break;
+
+                    case event_type::key_up:
+                      ordered_from_events.erase(std::remove(std::begin(ordered_from_events),
+                                                            std::end(ordered_from_events),
+                                                            fe),
+                                                std::end(ordered_from_events));
+                      break;
+
+                    case event_type::single:
+                      break;
+                  }
+
+                  bool found = true;
+                  for (const auto& d : from_.get_event_definitions()) {
+                    for (const auto& e : ordered_from_events) {
+                      if (!from_event_definition::test_event(e.get_event(), d)) {
+                        found = false;
+                      }
+                    }
+                  }
+
+                  if (found) {
+                    // Remove same events from other devices
+                    for (const auto& ofe : ordered_from_events) {
+                      auto it = std::find_if(std::begin(from_events),
+                                             std::end(from_events),
+                                             [&](auto& e) {
+                                               return e.get_event() == ofe.get_event();
+                                             });
+                      if (it == std::end(from_events)) {
+                        from_events.insert(ofe);
+                      }
+                    }
+
+                    break;
+                  }
+                }
+                if (from_events.empty()) {
+                  is_target = false;
+                }
+
+                // ----------------------------------------
+
+                if (is_target) {
+                  // Add manipulated_original_event if not manipulated.
+
+                  if (!current_manipulated_original_event) {
+                    current_manipulated_original_event = std::make_shared<manipulated_original_event>(from_events,
+                                                                                                      from_mandatory_modifiers,
+                                                                                                      front_input_event.get_time_stamp());
+                    manipulated_original_events_.push_back(current_manipulated_original_event);
+                  }
+                }
               }
-            }
-
-            // ----------------------------------------
-
-            if (is_target) {
-              std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events({
-                  manipulated_original_event::from_event(front_input_event.get_device_id(),
-                                                         front_input_event.get_original_event()),
-              });
-              current_manipulated_original_event = std::make_shared<manipulated_original_event>(from_events,
-                                                                                                from_mandatory_modifiers,
-                                                                                                front_input_event.get_time_stamp());
-              manipulated_original_events_.push_back(current_manipulated_original_event);
             }
             break;
           }
@@ -589,18 +672,19 @@ public:
 
             // Check original_event in order to determine the correspond key_down is manipulated.
 
-            manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
-                                                              front_input_event.get_original_event());
-
             auto it = std::find_if(std::begin(manipulated_original_events_),
                                    std::end(manipulated_original_events_),
                                    [&](const auto& manipulated_original_event) {
-                                     auto& from_events = manipulated_original_event->get_from_events();
-                                     return from_events.find(from_event) != std::end(from_events);
+                                     return manipulated_original_event->from_event_exists(from_event);
                                    });
             if (it != std::end(manipulated_original_events_)) {
               current_manipulated_original_event = *it;
-              manipulated_original_events_.erase(it);
+              current_manipulated_original_event->erase_from_event(from_event);
+              if (current_manipulated_original_event->get_from_events().empty()) {
+                manipulated_original_events_.erase(it);
+              } else {
+                suppress_output = true;
+              }
             }
             break;
           }
@@ -612,90 +696,92 @@ public:
         if (current_manipulated_original_event) {
           front_input_event.set_valid(false);
 
-          uint64_t time_stamp_delay = 0;
+          if (!suppress_output) {
+            uint64_t time_stamp_delay = 0;
 
-          // Release from_mandatory_modifiers
+            // Release from_mandatory_modifiers
 
-          if (front_input_event.get_event_type() == event_type::key_down) {
-            post_from_mandatory_modifiers_key_up(front_input_event,
-                                                 *current_manipulated_original_event,
-                                                 time_stamp_delay,
-                                                 *output_event_queue);
-          }
+            if (front_input_event.get_event_type() == event_type::key_down) {
+              post_from_mandatory_modifiers_key_up(front_input_event,
+                                                   *current_manipulated_original_event,
+                                                   time_stamp_delay,
+                                                   *output_event_queue);
+            }
 
-          // Send events
+            // Send events
 
-          switch (front_input_event.get_event_type()) {
-            case event_type::key_down:
-              post_events_at_key_down(front_input_event,
-                                      to_,
+            switch (front_input_event.get_event_type()) {
+              case event_type::key_down:
+                post_events_at_key_down(front_input_event,
+                                        to_,
+                                        *current_manipulated_original_event,
+                                        time_stamp_delay,
+                                        *output_event_queue);
+
+                if (!is_last_to_event_modifier_key_event(to_)) {
+                  post_from_mandatory_modifiers_key_down(front_input_event,
+                                                         *current_manipulated_original_event,
+                                                         time_stamp_delay,
+                                                         *output_event_queue);
+                }
+
+                break;
+
+              case event_type::key_up:
+                post_events_at_key_up(front_input_event,
                                       *current_manipulated_original_event,
                                       time_stamp_delay,
                                       *output_event_queue);
 
-              if (!is_last_to_event_modifier_key_event(to_)) {
+                post_extra_to_events(front_input_event,
+                                     to_after_key_up_,
+                                     time_stamp_delay,
+                                     *output_event_queue);
+
+                {
+                  uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
+                  if (current_manipulated_original_event->get_alone() &&
+                      nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                    post_extra_to_events(front_input_event,
+                                         to_if_alone_,
+                                         time_stamp_delay,
+                                         *output_event_queue);
+                  }
+                }
+
                 post_from_mandatory_modifiers_key_down(front_input_event,
                                                        *current_manipulated_original_event,
                                                        time_stamp_delay,
                                                        *output_event_queue);
-              }
+                break;
 
-              break;
+              case event_type::single:
+                break;
+            }
 
-            case event_type::key_up:
-              post_events_at_key_up(front_input_event,
-                                    *current_manipulated_original_event,
-                                    time_stamp_delay,
-                                    *output_event_queue);
+            // to_if_held_down_
 
-              post_extra_to_events(front_input_event,
-                                   to_after_key_up_,
-                                   time_stamp_delay,
-                                   *output_event_queue);
-
-              {
-                uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
-                if (current_manipulated_original_event->get_alone() &&
-                    nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
-                  post_extra_to_events(front_input_event,
-                                       to_if_alone_,
-                                       time_stamp_delay,
-                                       *output_event_queue);
-                }
-              }
-
-              post_from_mandatory_modifiers_key_down(front_input_event,
-                                                     *current_manipulated_original_event,
-                                                     time_stamp_delay,
-                                                     *output_event_queue);
-              break;
-
-            case event_type::single:
-              break;
-          }
-
-          // to_if_held_down_
-
-          if (to_if_held_down_) {
-            to_if_held_down_->setup(front_input_event,
-                                    current_manipulated_original_event,
-                                    output_event_queue,
-                                    parameters_.get_basic_to_if_held_down_threshold_milliseconds());
-          }
-
-          // to_delayed_action_
-
-          if (to_delayed_action_) {
-            to_delayed_action_->setup(front_input_event,
-                                      current_manipulated_original_event->get_from_mandatory_modifiers(),
+            if (to_if_held_down_) {
+              to_if_held_down_->setup(front_input_event,
+                                      current_manipulated_original_event,
                                       output_event_queue,
-                                      parameters_.get_basic_to_delayed_action_delay_milliseconds());
-          }
+                                      parameters_.get_basic_to_if_held_down_threshold_milliseconds());
+            }
 
-          // increase_time_stamp_delay
+            // to_delayed_action_
 
-          if (time_stamp_delay > 0) {
-            output_event_queue->increase_time_stamp_delay(time_stamp_delay - 1);
+            if (to_delayed_action_) {
+              to_delayed_action_->setup(front_input_event,
+                                        current_manipulated_original_event->get_from_mandatory_modifiers(),
+                                        output_event_queue,
+                                        parameters_.get_basic_to_delayed_action_delay_milliseconds());
+            }
+
+            // increase_time_stamp_delay
+
+            if (time_stamp_delay > 0) {
+              output_event_queue->increase_time_stamp_delay(time_stamp_delay - 1);
+            }
           }
         }
       }

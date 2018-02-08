@@ -1,7 +1,7 @@
 [
     {
         "keyboard_event": {
-            "key_code": "d",
+            "key_code": "a",
             "value": 1
         },
         "time_stamp": 5000000,
@@ -9,10 +9,18 @@
     },
     {
         "keyboard_event": {
-            "key_code": "d",
-            "value": 0
+            "key_code": "s",
+            "value": 1
         },
         "time_stamp": 10000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "a",
+            "value": 0
+        },
+        "time_stamp": 15000000,
         "type": "keyboard_event"
     },
     {
@@ -20,7 +28,15 @@
             "key_code": "spacebar",
             "value": 1
         },
-        "time_stamp": 15000000,
+        "time_stamp": 20000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "s",
+            "value": 0
+        },
+        "time_stamp": 25000000,
         "type": "keyboard_event"
     }
 ]

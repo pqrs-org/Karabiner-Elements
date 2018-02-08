@@ -20,8 +20,10 @@
         },
         "to": [
             {
-                "key_code": "d",
-                "modifiers": []
+                "key_code": "d"
+            },
+            {
+                "key_code": "f"
             }
         ]
     },
@@ -48,8 +50,10 @@
         },
         "to": [
             {
-                "key_code": "e",
-                "modifiers": []
+                "key_code": "e"
+            },
+            {
+                "key_code": "r"
             }
         ]
     }
