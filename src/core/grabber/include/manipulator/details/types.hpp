@@ -677,6 +677,32 @@ public:
     return std::make_pair(false, modifier_flag::zero);
   }
 
+  static bool test_event(const event_queue::queued_event::event& event,
+                         const event_definition& event_definition) {
+    if (auto key_code = event.get_key_code()) {
+      if (event_definition.get_key_code() == key_code ||
+          event_definition.get_any_type() == event_definition::type::key_code) {
+        return true;
+      }
+    }
+
+    if (auto consumer_key_code = event.get_consumer_key_code()) {
+      if (event_definition.get_consumer_key_code() == consumer_key_code ||
+          event_definition.get_any_type() == event_definition::type::consumer_key_code) {
+        return true;
+      }
+    }
+
+    if (auto pointing_button = event.get_pointing_button()) {
+      if (event_definition.get_pointing_button() == pointing_button ||
+          event_definition.get_any_type() == event_definition::type::pointing_button) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
 private:
   std::vector<event_definition> event_definitions_;
   std::unordered_set<modifier_definition::modifier> mandatory_modifiers_;
