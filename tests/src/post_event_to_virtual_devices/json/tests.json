@@ -670,5 +670,21 @@
         ],
         "input_event_queue": "json/input_event_queue/simultaneous_6.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_6.json"
+    },
+    {
+        "description": "simultaneous_7 (with modifier)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_7.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_7.json"
+    },
+    {
+        "description": "simultaneous_8 (modifier is released)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_8.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_8.json"
     }
 ]
