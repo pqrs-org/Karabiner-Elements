@@ -36,6 +36,11 @@ public:
       while (!input_event_queue->empty()) {
         auto& front_input_event = input_event_queue->get_front_event();
 
+        uint64_t now = mach_absolute_time();
+        if (now < front_input_event.get_time_stamp()) {
+          break;
+        }
+
         switch (front_input_event.get_event().get_type()) {
           case event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
             output_event_queue->erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());

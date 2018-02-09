@@ -69,8 +69,15 @@ public:
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
                                                             posted_event_queue_);
 
-    input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
+    input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
       manipulate();
+    });
+
+    manipulator_timer_invoked_connection_ = manipulator::manipulator_timer::get_instance().timer_invoked.connect([&](auto timer_id) {
+      if (manipulator_timer_id_ == timer_id) {
+        manipulator_timer_id_ = boost::none;
+        manipulate();
+      }
     });
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
@@ -115,7 +122,8 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       stop_grabbing();
 
-      input_event_arrived_connection.disconnect();
+      input_event_arrived_connection_.disconnect();
+      manipulator_timer_invoked_connection_.disconnect();
 
       if (manager_) {
         IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
@@ -399,10 +407,21 @@ private:
   }
 
   void manipulate(void) {
-    manipulator_managers_connector_.manipulate();
+    {
+      std::unique_lock<std::mutex> lock(manipulate_mutex_, std::try_to_lock);
 
-    posted_event_queue_->clear_events();
-    post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
+      if (lock.owns_lock()) {
+        manipulator_managers_connector_.manipulate();
+
+        posted_event_queue_->clear_events();
+        post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
+      }
+    }
+
+    if (!merged_input_event_queue_->empty()) {
+      auto when = merged_input_event_queue_->get_front_event().get_time_stamp();
+      manipulator_timer_id_ = manipulator::manipulator_timer::get_instance().add_entry(when);
+    }
   }
 
   void value_callback(human_interface_device& device,
@@ -412,10 +431,33 @@ private:
     } else {
       for (const auto& queued_event : event_queue.get_events()) {
         if (device.is_grabbed()) {
-          merged_input_event_queue_->push_back_event(queued_event);
+          auto time_stamp = queued_event.get_time_stamp();
+          switch (queued_event.get_event_type()) {
+            case event_type::key_down:
+            case event_type::key_up:
+              if (manipulator_managers_connector_.needs_input_event_delay()) {
+                if (core_configuration_) {
+                  auto delay = core_configuration_->get_selected_profile().get_complex_modifications().get_parameters().get_basic_simultaneous_threshold_milliseconds();
+                  time_stamp += time_utility::nano_to_absolute(std::min(delay, 1000) * NSEC_PER_MSEC);
+                }
+              }
+              break;
+
+            case event_type::single:
+              // Do nothing
+              break;
+          }
+
+          merged_input_event_queue_->emplace_back_event(queued_event.get_device_id(),
+                                                        time_stamp,
+                                                        queued_event.get_event(),
+                                                        queued_event.get_event_type(),
+                                                        queued_event.get_original_event());
+
         } else {
           // device is ignored
           auto event = event_queue::queued_event::event::make_event_from_ignored_device_event();
+
           merged_input_event_queue_->emplace_back_event(queued_event.get_device_id(),
                                                         queued_event.get_time_stamp(),
                                                         event,
@@ -964,7 +1006,11 @@ private:
   system_preferences::values system_preferences_values_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
-  boost::signals2::connection input_event_arrived_connection;
+  boost::signals2::connection input_event_arrived_connection_;
+  boost::signals2::connection manipulator_timer_invoked_connection_;
+
+  std::mutex manipulate_mutex_;
+  boost::optional<manipulator::manipulator_timer::timer_id> manipulator_timer_id_;
 
   std::shared_ptr<event_queue> merged_input_event_queue_;
 
