@@ -8,6 +8,7 @@ public:
     }
 
     parameters(const nlohmann::json& json) : json_(json),
+                                             basic_simultaneous_threshold_milliseconds_(50),
                                              basic_to_if_alone_timeout_milliseconds_(1000),
                                              basic_to_if_held_down_threshold_milliseconds_(500),
                                              basic_to_delayed_action_delay_milliseconds_(500) {
@@ -20,6 +21,22 @@ public:
         j[pair.first] = pair.second;
       }
       return j;
+    }
+
+    int get_basic_simultaneous_threshold_milliseconds(void) const {
+      return basic_simultaneous_threshold_milliseconds_;
+    }
+
+    int get_basic_to_if_alone_timeout_milliseconds(void) const {
+      return basic_to_if_alone_timeout_milliseconds_;
+    }
+
+    int get_basic_to_if_held_down_threshold_milliseconds(void) const {
+      return basic_to_if_held_down_threshold_milliseconds_;
+    }
+
+    int get_basic_to_delayed_action_delay_milliseconds(void) const {
+      return basic_to_delayed_action_delay_milliseconds_;
     }
 
     void update(const nlohmann::json& json) {
@@ -47,21 +64,10 @@ public:
       }
     }
 
-    int get_basic_to_if_alone_timeout_milliseconds(void) const {
-      return basic_to_if_alone_timeout_milliseconds_;
-    }
-
-    int get_basic_to_if_held_down_threshold_milliseconds(void) const {
-      return basic_to_if_held_down_threshold_milliseconds_;
-    }
-
-    int get_basic_to_delayed_action_delay_milliseconds(void) const {
-      return basic_to_delayed_action_delay_milliseconds_;
-    }
-
   private:
     std::unordered_map<std::string, const int&> make_map(void) const {
       return {
+          {"basic.simultaneous_threshold_milliseconds", basic_simultaneous_threshold_milliseconds_},
           {"basic.to_if_alone_timeout_milliseconds", basic_to_if_alone_timeout_milliseconds_},
           {"basic.to_if_held_down_threshold_milliseconds", basic_to_if_held_down_threshold_milliseconds_},
           {"basic.to_delayed_action_delay_milliseconds", basic_to_delayed_action_delay_milliseconds_},
@@ -69,6 +75,7 @@ public:
     }
 
     nlohmann::json json_;
+    int basic_simultaneous_threshold_milliseconds_;
     int basic_to_if_alone_timeout_milliseconds_;
     int basic_to_if_held_down_threshold_milliseconds_;
     int basic_to_delayed_action_delay_milliseconds_;
