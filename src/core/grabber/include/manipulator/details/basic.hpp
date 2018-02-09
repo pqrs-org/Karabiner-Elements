@@ -301,12 +301,11 @@ public:
     }
 
     bool needs_virtual_hid_pointing(void) const {
-      for (const auto& e : to_) {
-        if (e.needs_virtual_hid_pointing()) {
-          return true;
-        }
-      }
-      return false;
+      return std::any_of(std::begin(to_),
+                         std::end(to_),
+                         [](auto& e) {
+                           return e.needs_virtual_hid_pointing();
+                         });
     }
 
   private:
@@ -403,10 +402,12 @@ public:
     bool needs_virtual_hid_pointing(void) const {
       for (const auto& events : {to_if_invoked_,
                                  to_if_canceled_}) {
-        for (const auto& e : events) {
-          if (e.needs_virtual_hid_pointing()) {
-            return true;
-          }
+        if (std::any_of(std::begin(events),
+                        std::end(events),
+                        [](auto& e) {
+                          return e.needs_virtual_hid_pointing();
+                        })) {
+          return true;
         }
       }
       return false;
@@ -793,14 +794,20 @@ public:
     return !manipulated_original_events_.empty();
   }
 
+  virtual bool needs_input_event_delay(void) const {
+    return (from_.get_event_definitions().size() > 1);
+  }
+
   virtual bool needs_virtual_hid_pointing(void) const {
     for (const auto& events : {to_,
                                to_after_key_up_,
                                to_if_alone_}) {
-      for (const auto& e : events) {
-        if (e.needs_virtual_hid_pointing()) {
-          return true;
-        }
+      if (std::any_of(std::begin(events),
+                      std::end(events),
+                      [](auto& e) {
+                        return e.needs_virtual_hid_pointing();
+                      })) {
+        return true;
       }
     }
 

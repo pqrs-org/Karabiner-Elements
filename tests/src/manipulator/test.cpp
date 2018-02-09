@@ -118,6 +118,29 @@ TEST_CASE("manipulator_timer") {
   REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[5].get_timer_id() == timer_ids[3]);
 }
 
+TEST_CASE("needs_input_event_delay") {
+  for (const auto& file_name : {
+           std::string("json/needs_input_event_delay_test1.json"),
+           std::string("json/needs_input_event_delay_test2.json"),
+       }) {
+    std::ifstream json_file(file_name);
+    auto json = nlohmann::json::parse(json_file);
+    krbn::manipulator::manipulator_manager manager;
+    for (const auto& j : json) {
+      krbn::core_configuration::profile::complex_modifications::parameters parameters;
+      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j, parameters);
+      manager.push_back_manipulator(m);
+    }
+
+    if (file_name == "json/needs_input_event_delay_test1.json") {
+      REQUIRE(!manager.needs_input_event_delay());
+    }
+    if (file_name == "json/needs_input_event_delay_test2.json") {
+      REQUIRE(manager.needs_input_event_delay());
+    }
+  }
+}
+
 TEST_CASE("needs_virtual_hid_pointing") {
   for (const auto& file_name : {
            std::string("json/needs_virtual_hid_pointing_test1.json"),

@@ -26,6 +26,10 @@ public:
       manipulator_manager_.invalidate_manipulators();
     }
 
+    bool needs_input_event_delay(void) const {
+      return manipulator_manager_.needs_input_event_delay();
+    }
+
     bool needs_virtual_hid_pointing(void) const {
       return manipulator_manager_.needs_virtual_hid_pointing();
     }
@@ -82,13 +86,20 @@ public:
     }
   }
 
+  bool needs_input_event_delay(void) const {
+    return std::any_of(std::begin(connections_),
+                       std::end(connections_),
+                       [](auto& c) {
+                         return c.needs_input_event_delay();
+                       });
+  }
+
   bool needs_virtual_hid_pointing(void) const {
-    for (auto&& c : connections_) {
-      if (c.needs_virtual_hid_pointing()) {
-        return true;
-      }
-    }
-    return false;
+    return std::any_of(std::begin(connections_),
+                       std::end(connections_),
+                       [](auto& c) {
+                         return c.needs_virtual_hid_pointing();
+                       });
   }
 
   void log_events_sizes(void) const {

@@ -120,13 +120,20 @@ public:
     return manipulators_.size();
   }
 
+  bool needs_input_event_delay(void) const {
+    return std::any_of(std::begin(manipulators_),
+                       std::end(manipulators_),
+                       [](auto& m) {
+                         return m->needs_input_event_delay();
+                       });
+  }
+
   bool needs_virtual_hid_pointing(void) const {
-    for (auto&& m : manipulators_) {
-      if (m->needs_virtual_hid_pointing()) {
-        return true;
-      }
-    }
-    return false;
+    return std::any_of(std::begin(manipulators_),
+                       std::end(manipulators_),
+                       [](auto& m) {
+                         return m->needs_virtual_hid_pointing();
+                       });
   }
 
 private:

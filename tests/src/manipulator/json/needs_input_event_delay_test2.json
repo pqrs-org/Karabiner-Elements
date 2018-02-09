@@ -1,0 +1,41 @@
+[
+    {
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "left_command"
+                },
+                {
+                    "key_code": "right_command"
+                }
+            ],
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_control"
+            }
+        ],
+        "type": "basic"
+    },
+    {
+        "from": {
+            "key_code": "right_shift",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "right_control"
+            }
+        ],
+        "type": "basic"
+    }
+]
