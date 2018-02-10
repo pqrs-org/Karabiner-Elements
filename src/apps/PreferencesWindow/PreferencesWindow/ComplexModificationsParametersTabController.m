@@ -9,6 +9,8 @@
 @property(weak) IBOutlet NSTextField* basicToIfHeldDownThresholdMillisecondsText;
 @property(weak) IBOutlet NSStepper* basicToDelayedActionDelayMillisecondsStepper;
 @property(weak) IBOutlet NSTextField* basicToDelayedActionDelayMillisecondsText;
+@property(weak) IBOutlet NSStepper* basicSimultaneousThresholdMillisecondsStepper;
+@property(weak) IBOutlet NSTextField* basicSimultaneousThresholdMillisecondsText;
 
 @end
 
@@ -43,6 +45,11 @@
     self.basicToDelayedActionDelayMillisecondsStepper.integerValue = value;
     self.basicToDelayedActionDelayMillisecondsText.integerValue = value;
   }
+  {
+    int value = [coreConfigurationModel getSelectedProfileComplexModificationsParameter:@"basic.simultaneous_threshold_milliseconds"];
+    self.basicSimultaneousThresholdMillisecondsStepper.integerValue = value;
+    self.basicSimultaneousThresholdMillisecondsText.integerValue = value;
+  }
 }
 
 - (IBAction)valueChanged:(id)sender {
@@ -76,6 +83,16 @@
       stepper.integerValue = text.integerValue;
     }
   }
+  {
+    NSStepper* stepper = self.basicSimultaneousThresholdMillisecondsStepper;
+    NSTextField* text = self.basicSimultaneousThresholdMillisecondsText;
+    if (sender == stepper) {
+      text.integerValue = stepper.integerValue;
+    }
+    if (sender == text) {
+      stepper.integerValue = text.integerValue;
+    }
+  }
 
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.to_if_alone_timeout_milliseconds"
@@ -84,6 +101,8 @@
                                                                     value:self.basicToIfHeldDownThresholdMillisecondsText.intValue];
   [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.to_delayed_action_delay_milliseconds"
                                                                     value:self.basicToDelayedActionDelayMillisecondsText.intValue];
+  [coreConfigurationModel setSelectedProfileComplexModificationsParameter:@"basic.simultaneous_threshold_milliseconds"
+                                                                    value:self.basicSimultaneousThresholdMillisecondsText.intValue];
   [coreConfigurationModel save];
 }
 
