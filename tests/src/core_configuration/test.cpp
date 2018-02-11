@@ -1315,6 +1315,32 @@ TEST_CASE("complex_modifications.parameters") {
   }
 }
 
+TEST_CASE("complex_modifications.minmax_parameter_value") {
+  {
+    krbn::core_configuration configuration("json/minmax_parameter_value_test1.json");
+    auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
+    REQUIRE(actual->first == 101);
+    REQUIRE(actual->second == 401);
+  }
+  {
+    krbn::core_configuration configuration("json/minmax_parameter_value_test2.json");
+    auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
+    REQUIRE(actual->first == 102);
+    REQUIRE(actual->second == 402);
+  }
+  {
+    krbn::core_configuration configuration("json/minmax_parameter_value_test3.json");
+    auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
+    REQUIRE(actual->first == 103);
+    REQUIRE(actual->second == 403);
+  }
+
+  {
+    krbn::core_configuration configuration("json/minmax_parameter_value_test1.json");
+    REQUIRE(!configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("unknown"));
+  }
+}
+
 TEST_CASE("virtual_hid_keyboard") {
   // empty json
   {

@@ -248,6 +248,36 @@ public:
     }
   }
 
+  boost::optional<std::pair<int, int>> minmax_parameter_value(const std::string& name) const {
+    boost::optional<std::pair<int, int>> result;
+
+    if (auto value = parameters_.get_value(name)) {
+      if (!result) {
+        result = std::make_pair(*value, *value);
+      } else if (*value < result->first) {
+        result->first = *value;
+      } else if (*value > result->second) {
+        result->second = *value;
+      }
+    }
+
+    for (const auto& r : rules_) {
+      for (const auto& m : r.get_manipulators()) {
+        if (auto value = m.get_parameters().get_value(name)) {
+          if (!result) {
+            result = std::make_pair(*value, *value);
+          } else if (*value < result->first) {
+            result->first = *value;
+          } else if (*value > result->second) {
+            result->second = *value;
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
 private:
   nlohmann::json json_;
   parameters parameters_;

@@ -1,0 +1,41 @@
+{
+    "profiles": [
+        {
+            "name": "Default profile",
+            "selected": true,
+            "complex_modifications": {
+                "rules": [
+                    {
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "parameters": {
+                                    "basic.simultaneous_threshold_milliseconds": 402
+                                }
+                            },
+                            {
+                                "type": "basic",
+                                "parameters": {
+                                    "basic.simultaneous_threshold_milliseconds": 202
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "parameters": {
+                                    "basic.simultaneous_threshold_milliseconds": 302
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "parameters": {
+                    "basic.simultaneous_threshold_milliseconds": 102
+                }
+            }
+        }
+    ]
+}
