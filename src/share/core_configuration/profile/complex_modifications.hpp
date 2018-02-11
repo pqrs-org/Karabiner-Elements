@@ -45,6 +45,8 @@ public:
           const_cast<int&>(pair.second) = *v;
         }
       }
+
+      normalize();
     }
 
     int get_value(const std::string& name) const {
@@ -62,9 +64,34 @@ public:
       if (it != std::end(map)) {
         const_cast<int&>(it->second) = value;
       }
+
+      normalize();
     }
 
   private:
+    void normalize(void) {
+      normalize(basic_simultaneous_threshold_milliseconds_, 0, 1000, "basic.simultaneous_threshold_milliseconds");
+      normalize(basic_to_if_alone_timeout_milliseconds_, 0, boost::none, "basic.to_if_alone_timeout_milliseconds");
+      normalize(basic_to_if_held_down_threshold_milliseconds_, 0, boost::none, "basic.to_if_held_down_threshold_milliseconds");
+      normalize(basic_to_delayed_action_delay_milliseconds_, 0, boost::none, "basic.to_delayed_action_delay_milliseconds");
+    }
+
+    void normalize(int& value, boost::optional<int> min, boost::optional<int> max, const std::string& name) {
+      if (min) {
+        if (value < *min) {
+          logger::get_logger().warn("{0} should be >= {1}.", name, *min);
+        }
+        value = std::max(value, *min);
+      }
+
+      if (max) {
+        if (value > *max) {
+          logger::get_logger().warn("{0} should be <= {1}.", name, *max);
+        }
+        value = std::min(value, *max);
+      }
+    }
+
     std::unordered_map<std::string, const int&> make_map(void) const {
       return {
           {"basic.simultaneous_threshold_milliseconds", basic_simultaneous_threshold_milliseconds_},

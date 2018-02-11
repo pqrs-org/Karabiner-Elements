@@ -1262,6 +1262,57 @@ TEST_CASE("complex_modifications.parameters") {
     krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
     REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1000);
   }
+
+  // normalize
+  {
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(nlohmann::json::object({
+        {"basic.simultaneous_threshold_milliseconds", -1000},
+        {"basic.to_if_alone_timeout_milliseconds", -1000},
+        {"basic.to_if_held_down_threshold_milliseconds", -1000},
+        {"basic.to_delayed_action_delay_milliseconds", -1000},
+    }));
+
+    REQUIRE(parameters.get_basic_simultaneous_threshold_milliseconds() == 0);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 0);
+    REQUIRE(parameters.get_basic_to_if_held_down_threshold_milliseconds() == 0);
+    REQUIRE(parameters.get_basic_to_delayed_action_delay_milliseconds() == 0);
+  }
+  {
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(nlohmann::json::object({
+        {"basic.simultaneous_threshold_milliseconds", 100000},
+        {"basic.to_if_alone_timeout_milliseconds", 100000},
+        {"basic.to_if_held_down_threshold_milliseconds", 100000},
+        {"basic.to_delayed_action_delay_milliseconds", 100000},
+    }));
+
+    REQUIRE(parameters.get_basic_simultaneous_threshold_milliseconds() == 1000);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 100000);
+    REQUIRE(parameters.get_basic_to_if_held_down_threshold_milliseconds() == 100000);
+    REQUIRE(parameters.get_basic_to_delayed_action_delay_milliseconds() == 100000);
+  }
+  {
+    krbn::core_configuration::profile::complex_modifications::parameters parameters(nlohmann::json::object({}));
+
+    parameters.set_value("basic.simultaneous_threshold_milliseconds", -1000);
+    parameters.set_value("basic.to_if_alone_timeout_milliseconds", -1000);
+    parameters.set_value("basic.to_if_held_down_threshold_milliseconds", -1000);
+    parameters.set_value("basic.to_delayed_action_delay_milliseconds", -1000);
+
+    REQUIRE(parameters.get_basic_simultaneous_threshold_milliseconds() == 0);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 0);
+    REQUIRE(parameters.get_basic_to_if_held_down_threshold_milliseconds() == 0);
+    REQUIRE(parameters.get_basic_to_delayed_action_delay_milliseconds() == 0);
+
+    parameters.set_value("basic.simultaneous_threshold_milliseconds", 100000);
+    parameters.set_value("basic.to_if_alone_timeout_milliseconds", 100000);
+    parameters.set_value("basic.to_if_held_down_threshold_milliseconds", 100000);
+    parameters.set_value("basic.to_delayed_action_delay_milliseconds", 100000);
+
+    REQUIRE(parameters.get_basic_simultaneous_threshold_milliseconds() == 1000);
+    REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 100000);
+    REQUIRE(parameters.get_basic_to_if_held_down_threshold_milliseconds() == 100000);
+    REQUIRE(parameters.get_basic_to_delayed_action_delay_milliseconds() == 100000);
+  }
 }
 
 TEST_CASE("virtual_hid_keyboard") {

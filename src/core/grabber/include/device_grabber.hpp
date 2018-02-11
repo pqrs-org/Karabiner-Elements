@@ -438,7 +438,7 @@ private:
               if (manipulator_managers_connector_.needs_input_event_delay()) {
                 if (core_configuration_) {
                   auto delay = core_configuration_->get_selected_profile().get_complex_modifications().get_parameters().get_basic_simultaneous_threshold_milliseconds();
-                  time_stamp += time_utility::nano_to_absolute(std::min(delay, 1000) * NSEC_PER_MSEC);
+                  time_stamp += time_utility::nano_to_absolute(delay * NSEC_PER_MSEC);
                 }
               }
               break;
