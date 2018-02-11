@@ -321,7 +321,9 @@ int libkrbn_core_configuration_get_selected_profile_complex_modifications_parame
                                                                                     const char* name) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
     if (name) {
-      return c->get_core_configuration().get_selected_profile().get_complex_modifications().get_parameters().get_value(name);
+      if (auto value = c->get_core_configuration().get_selected_profile().get_complex_modifications().get_parameters().get_value(name)) {
+        return *value;
+      }
     }
   }
   return 0;

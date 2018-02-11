@@ -49,13 +49,13 @@ public:
       normalize();
     }
 
-    int get_value(const std::string& name) const {
+    boost::optional<int> get_value(const std::string& name) const {
       auto map = make_map();
       auto it = map.find(name);
       if (it != std::end(map)) {
         return it->second;
       }
-      return 0;
+      return boost::none;
     }
 
     void set_value(const std::string& name, int value) {
