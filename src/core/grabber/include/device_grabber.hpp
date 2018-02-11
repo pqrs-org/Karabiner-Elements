@@ -32,6 +32,7 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(void) : profile_(nlohmann::json()),
+                         input_event_delay_milliseconds_(0),
                          merged_input_event_queue_(std::make_shared<event_queue>()),
                          simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                          complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
@@ -155,6 +156,10 @@ public:
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path,
                                                                        [this](std::shared_ptr<core_configuration> core_configuration) {
                                                                          core_configuration_ = core_configuration;
+
+                                                                         if (auto minmax = core_configuration_->get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds")) {
+                                                                           input_event_delay_milliseconds_ = minmax->second;
+                                                                         }
 
                                                                          is_grabbable_callback_log_reducer_.reset();
                                                                          set_profile(core_configuration_->get_selected_profile());
@@ -437,8 +442,7 @@ private:
             case event_type::key_up:
               if (manipulator_managers_connector_.needs_input_event_delay()) {
                 if (core_configuration_) {
-                  auto delay = core_configuration_->get_selected_profile().get_complex_modifications().get_parameters().get_basic_simultaneous_threshold_milliseconds();
-                  time_stamp += time_utility::nano_to_absolute(delay * NSEC_PER_MSEC);
+                  time_stamp += time_utility::nano_to_absolute(input_event_delay_milliseconds_ * NSEC_PER_MSEC);
                 }
               }
               break;
@@ -1011,6 +1015,7 @@ private:
 
   std::mutex manipulate_mutex_;
   boost::optional<manipulator::manipulator_timer::timer_id> manipulator_timer_id_;
+  int input_event_delay_milliseconds_;
 
   std::shared_ptr<event_queue> merged_input_event_queue_;
 
