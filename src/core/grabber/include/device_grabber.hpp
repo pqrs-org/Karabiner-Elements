@@ -413,6 +413,7 @@ private:
 
   void manipulate(void) {
     {
+      // Avoid recursive call
       std::unique_lock<std::mutex> lock(manipulate_mutex_, std::try_to_lock);
 
       if (lock.owns_lock()) {
