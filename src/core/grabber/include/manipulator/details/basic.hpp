@@ -594,60 +594,70 @@ public:
 
                 // Check all from_events_ are pressed
 
-                std::vector<manipulated_original_event::from_event> ordered_from_events;
                 std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events;
 
-                for (const auto& queued_event : input_event_queue.get_events()) {
-                  if (!from_event_definition::test_event(front_input_event.get_event(), from_)) {
-                    continue;
-                  }
+                {
+                  std::vector<manipulated_original_event::from_event> ordered_from_events;
+                  uint64_t simultaneous_threshold_milliseconds = parameters_.get_basic_simultaneous_threshold_milliseconds();
+                  uint64_t end_time_stamp = front_input_event.get_time_stamp() + time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC);
 
-                  manipulated_original_event::from_event fe(queued_event.get_device_id(),
-                                                            queued_event.get_event(),
-                                                            queued_event.get_original_event());
-
-                  switch (queued_event.get_event_type()) {
-                    case event_type::key_down:
-                      ordered_from_events.push_back(fe);
-                      break;
-
-                    case event_type::key_up:
-                      ordered_from_events.erase(std::remove(std::begin(ordered_from_events),
-                                                            std::end(ordered_from_events),
-                                                            fe),
-                                                std::end(ordered_from_events));
-                      break;
-
-                    case event_type::single:
-                      break;
-                  }
-
-                  bool found = true;
-                  for (const auto& d : from_.get_event_definitions()) {
-                    if (std::none_of(std::begin(ordered_from_events),
-                                     std::end(ordered_from_events),
-                                     [&](auto& e) {
-                                       return from_event_definition::test_event(e.get_event(), d);
-                                     })) {
-                      found = false;
+                  for (const auto& queued_event : input_event_queue.get_events()) {
+                    if (end_time_stamp < queued_event.get_time_stamp()) {
+                      continue;
                     }
-                  }
 
-                  if (found) {
-                    // Remove same events from other devices
-                    for (const auto& ofe : ordered_from_events) {
-                      if (std::none_of(std::begin(from_events),
-                                       std::end(from_events),
+                    if (!from_event_definition::test_event(front_input_event.get_event(), from_)) {
+                      continue;
+                    }
+
+                    manipulated_original_event::from_event fe(queued_event.get_device_id(),
+                                                              queued_event.get_event(),
+                                                              queued_event.get_original_event());
+
+                    switch (queued_event.get_event_type()) {
+                      case event_type::key_down:
+                        ordered_from_events.push_back(fe);
+                        break;
+
+                      case event_type::key_up:
+                        ordered_from_events.erase(std::remove(std::begin(ordered_from_events),
+                                                              std::end(ordered_from_events),
+                                                              fe),
+                                                  std::end(ordered_from_events));
+                        break;
+
+                      case event_type::single:
+                        break;
+                    }
+
+                    bool found = true;
+                    for (const auto& d : from_.get_event_definitions()) {
+                      if (std::none_of(std::begin(ordered_from_events),
+                                       std::end(ordered_from_events),
                                        [&](auto& e) {
-                                         return e.get_event() == ofe.get_event();
+                                         return from_event_definition::test_event(e.get_event(), d);
                                        })) {
-                        from_events.insert(ofe);
+                        found = false;
                       }
                     }
 
-                    break;
+                    if (found) {
+                      // Remove same events from other devices
+                      for (const auto& ofe : ordered_from_events) {
+                        if (std::none_of(std::begin(from_events),
+                                         std::end(from_events),
+                                         [&](auto& e) {
+                                           return e.get_event() == ofe.get_event();
+                                         })) {
+                          from_events.insert(ofe);
+                        }
+                      }
+
+                      break;
+                    }
                   }
                 }
+
                 if (from_events.empty()) {
                   is_target = false;
                 }

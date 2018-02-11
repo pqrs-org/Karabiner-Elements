@@ -686,5 +686,13 @@
         ],
         "input_event_queue": "json/input_event_queue/simultaneous_8.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_8.json"
+    },
+    {
+        "description": "simultaneous_9 (simultaneous_threshold_milliseconds)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_9.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_9.json"
     }
 ]
