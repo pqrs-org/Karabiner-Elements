@@ -530,6 +530,8 @@ public:
             event_definitions_.push_back(d);
           }
         }
+
+        continue;
       }
 
       if (key == "modifiers") {
