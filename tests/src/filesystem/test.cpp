@@ -169,6 +169,6 @@ TEST_CASE("realpath") {
   actual = krbn::filesystem::realpath("/var/log/not_found");
   REQUIRE(actual == boost::none);
 
-  actual = krbn::filesystem::realpath("/var/log/system.log");
-  REQUIRE(*actual == "/private/var/log/system.log");
+  actual = krbn::filesystem::realpath("/etc/hosts");
+  REQUIRE(*actual == "/private/etc/hosts");
 }
