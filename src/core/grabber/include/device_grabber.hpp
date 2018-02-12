@@ -424,9 +424,8 @@ private:
       }
     }
 
-    if (!merged_input_event_queue_->empty()) {
-      auto when = merged_input_event_queue_->get_front_event().get_time_stamp();
-      manipulator_timer_id_ = manipulator::manipulator_timer::get_instance().add_entry(when);
+    if (auto min = manipulator_managers_connector_.min_input_event_time_stamp()) {
+      manipulator_timer_id_ = manipulator::manipulator_timer::get_instance().add_entry(*min);
     }
   }
 
