@@ -34,6 +34,13 @@ public:
       return manipulator_manager_.needs_virtual_hid_pointing();
     }
 
+    boost::optional<uint64_t> min_input_event_time_stamp(void) const {
+      if (auto ieq = input_event_queue_.lock()) {
+        return ieq->min_event_time_stamp();
+      }
+      return boost::none;
+    }
+
     void log_events_sizes(void) const {
       if (auto ieq = input_event_queue_.lock()) {
         if (auto oeq = output_event_queue_.lock()) {
@@ -100,6 +107,20 @@ public:
                        [](auto& c) {
                          return c.needs_virtual_hid_pointing();
                        });
+  }
+
+  boost::optional<uint64_t> min_input_event_time_stamp(void) const {
+    boost::optional<uint64_t> result;
+
+    for (const auto& c : connections_) {
+      if (auto min = c.min_input_event_time_stamp()) {
+        if (!result || *min < *result) {
+          result = min;
+        }
+      }
+    }
+
+    return result;
   }
 
   void log_events_sizes(void) const {

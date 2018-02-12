@@ -92,6 +92,45 @@ TEST_CASE("manipulator.manipulator_manager") {
   krbn::unit_testing::manipulator_helper::run_tests(nlohmann::json::parse(std::ifstream("json/manipulator_manager/tests.json")));
 }
 
+TEST_CASE("min_input_event_time_stamp") {
+  std::vector<std::shared_ptr<krbn::event_queue>> event_queues;
+  event_queues.push_back(std::make_shared<krbn::event_queue>());
+  event_queues.push_back(std::make_shared<krbn::event_queue>());
+  event_queues.push_back(std::make_shared<krbn::event_queue>());
+  event_queues.push_back(std::make_shared<krbn::event_queue>());
+
+  krbn::manipulator::manipulator_managers_connector connector;
+
+  std::vector<krbn::manipulator::manipulator_manager> manipulator_managers(event_queues.size() - 1);
+
+  for (size_t i = 0; i < manipulator_managers.size(); ++i) {
+    connector.emplace_back_connection(manipulator_managers[i],
+                                      event_queues[i],
+                                      event_queues[i + 1]);
+  }
+
+  REQUIRE(!connector.min_input_event_time_stamp());
+
+  // ----------------------------------------
+
+  event_queues[2]->emplace_back_event(krbn::device_id(1), 5000, krbn::key_code::a, krbn::event_type::key_down, krbn::key_code::a);
+
+  REQUIRE(connector.min_input_event_time_stamp() == 5000ull);
+
+  // ----------------------------------------
+
+  event_queues[0]->emplace_back_event(krbn::device_id(1), 4000, krbn::key_code::a, krbn::event_type::key_down, krbn::key_code::a);
+
+  REQUIRE(connector.min_input_event_time_stamp() == 4000ull);
+
+  // ----------------------------------------
+
+  event_queues[3]->emplace_back_event(krbn::device_id(1), 3000, krbn::key_code::a, krbn::event_type::key_down, krbn::key_code::a);
+  event_queues[0]->emplace_back_event(krbn::device_id(1), 2000, krbn::key_code::a, krbn::event_type::key_down, krbn::key_code::a);
+
+  REQUIRE(connector.min_input_event_time_stamp() == 2000ull);
+}
+
 TEST_CASE("manipulator_timer") {
   REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries().empty());
 
