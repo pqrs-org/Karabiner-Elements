@@ -594,12 +594,14 @@ public:
       int count_;
     };
 
-    mouse_key_handler(queue& queue) : queue_(queue),
-                                      last_time_stamp_(0),
-                                      x_count_converter_(128),
-                                      y_count_converter_(128),
-                                      vertical_wheel_count_converter_(128),
-                                      horizontal_wheel_count_converter_(128) {
+    mouse_key_handler(queue& queue,
+                      const system_preferences::values& system_preferences_values) : queue_(queue),
+                                                                                     system_preferences_values_(system_preferences_values),
+                                                                                     last_time_stamp_(0),
+                                                                                     x_count_converter_(128),
+                                                                                     y_count_converter_(128),
+                                                                                     vertical_wheel_count_converter_(128),
+                                                                                     horizontal_wheel_count_converter_(128) {
     }
 
     void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
@@ -672,6 +674,10 @@ public:
           total += pair.second;
         }
 
+        if (!system_preferences_values_.get_swipe_scroll_direction()) {
+          total.invert_wheel();
+        }
+
         if (total.is_zero()) {
           manipulator_timer_id_ = boost::none;
           last_mouse_key_total_ = boost::none;
@@ -706,6 +712,7 @@ public:
     }
 
     queue& queue_;
+    const system_preferences::values& system_preferences_values_;
     std::vector<std::pair<device_id, mouse_key>> entries_;
     std::weak_ptr<event_queue> output_event_queue_;
     boost::optional<manipulator_timer::timer_id> manipulator_timer_id_;
@@ -717,10 +724,11 @@ public:
     count_converter horizontal_wheel_count_converter_;
   };
 
-  post_event_to_virtual_devices(void) : base(),
-                                        queue_(),
-                                        mouse_key_handler_(queue_),
-                                        pressed_buttons_(0) {
+  post_event_to_virtual_devices(const system_preferences::values& system_preferences_values) : base(),
+                                                                                               queue_(),
+                                                                                               mouse_key_handler_(queue_,
+                                                                                                                  system_preferences_values),
+                                                                                               pressed_buttons_(0) {
   }
 
   virtual ~post_event_to_virtual_devices(void) {

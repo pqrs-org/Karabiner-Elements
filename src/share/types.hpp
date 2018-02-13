@@ -987,6 +987,11 @@ public:
            horizontal_wheel_ == 0;
   }
 
+  void invert_wheel(void) {
+    vertical_wheel_ = -vertical_wheel_;
+    horizontal_wheel_ = -horizontal_wheel_;
+  }
+
   mouse_key& operator+=(const mouse_key& other) {
     x_ += other.x_;
     y_ += other.y_;

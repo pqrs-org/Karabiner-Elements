@@ -5,6 +5,8 @@ CXXFLAGS += \
 	-I../../../src/vendor \
 	-I../../../src/core/grabber/include
 
+LDFLAGS += -framework CoreFoundation
+
 include ../Makefile.rules
 
 a.out: test.cpp
