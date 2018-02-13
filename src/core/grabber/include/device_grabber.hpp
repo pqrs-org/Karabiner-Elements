@@ -35,6 +35,7 @@ public:
                          input_event_delay_milliseconds_(0),
                          merged_input_event_queue_(std::make_shared<event_queue>()),
                          simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
+                         complex_modifications_manipulator_manager_(true),
                          complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                          fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
                          posted_event_queue_(std::make_shared<event_queue>()),
@@ -159,6 +160,8 @@ public:
 
                                                                          if (auto minmax = core_configuration_->get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds")) {
                                                                            input_event_delay_milliseconds_ = minmax->second;
+                                                                         } else {
+                                                                           input_event_delay_milliseconds_ = 0;
                                                                          }
 
                                                                          is_grabbable_callback_log_reducer_.reset();

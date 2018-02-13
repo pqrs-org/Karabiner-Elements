@@ -8,7 +8,7 @@ class manipulator_manager final {
 public:
   manipulator_manager(const manipulator_manager&) = delete;
 
-  manipulator_manager(void) {
+  manipulator_manager(bool wait_until_time_stamp = false) : wait_until_time_stamp_(wait_until_time_stamp) {
     manipulator_timer_connection_ = manipulator_timer::get_instance().timer_invoked.connect([&](auto timer_id) {
       for (auto&& m : manipulators_) {
         m->manipulator_timer_invoked(timer_id);
@@ -33,12 +33,15 @@ public:
                   const std::shared_ptr<event_queue>& output_event_queue) {
     if (input_event_queue &&
         output_event_queue) {
+      uint64_t now = mach_absolute_time();
+
       while (!input_event_queue->empty()) {
         auto& front_input_event = input_event_queue->get_front_event();
 
-        uint64_t now = mach_absolute_time();
-        if (now < front_input_event.get_time_stamp()) {
-          break;
+        if (wait_until_time_stamp_) {
+          if (now < front_input_event.get_time_stamp()) {
+            break;
+          }
         }
 
         switch (front_input_event.get_event().get_type()) {
@@ -151,6 +154,8 @@ private:
                                        }),
                         std::end(manipulators_));
   }
+
+  bool wait_until_time_stamp_;
 
   std::vector<std::shared_ptr<details::base>> manipulators_;
   boost::signals2::connection manipulator_timer_connection_;

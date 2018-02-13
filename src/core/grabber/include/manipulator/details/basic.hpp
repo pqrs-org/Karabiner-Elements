@@ -610,6 +610,8 @@ public:
                       continue;
                     }
 
+                    // Update ordered_from_events.
+
                     manipulated_original_event::from_event fe(queued_event.get_device_id(),
                                                               queued_event.get_event(),
                                                               queued_event.get_original_event());
@@ -630,6 +632,12 @@ public:
                         break;
                     }
 
+                    if (ordered_from_events.empty()) {
+                      continue;
+                    }
+
+                    // Check all from_ events exist in ordered_from_events.
+
                     bool found = true;
                     for (const auto& d : from_.get_event_definitions()) {
                       if (std::none_of(std::begin(ordered_from_events),
@@ -643,6 +651,7 @@ public:
 
                     if (found) {
                       // Remove same events from other devices
+
                       for (const auto& ofe : ordered_from_events) {
                         if (std::none_of(std::begin(from_events),
                                          std::end(from_events),
