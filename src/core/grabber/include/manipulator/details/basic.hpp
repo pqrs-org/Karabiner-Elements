@@ -602,6 +602,10 @@ public:
                   uint64_t end_time_stamp = front_input_event.get_time_stamp() + time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC);
 
                   for (const auto& queued_event : input_event_queue.get_events()) {
+                    if (!queued_event.get_valid()) {
+                      continue;
+                    }
+
                     if (end_time_stamp < queued_event.get_time_stamp()) {
                       continue;
                     }

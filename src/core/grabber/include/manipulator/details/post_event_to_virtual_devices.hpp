@@ -730,6 +730,10 @@ public:
                           const event_queue& input_event_queue,
                           const std::shared_ptr<event_queue>& output_event_queue) {
     if (output_event_queue) {
+      if (!front_input_event.get_valid()) {
+        return;
+      }
+
       output_event_queue->push_back_event(front_input_event);
       front_input_event.set_valid(false);
 
