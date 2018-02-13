@@ -2,8 +2,10 @@
 
 * Simultaneous key presses has been supported in complex modifications.
   * Example: https://pqrs.org/osx/karabiner/json.html#typical-complex_modifications-examples-simultaneous-equal-delete-to-forward-delete
+* Improved Mouse key scroll wheel direction referring `System Preferences > Mouse > Scroll direction`.
 * Improved modifier flags handling around pointing button manipulations.
 * Mouse keys have been added into Simple Modifications.
+  ![mouse keys in Simple Modifications](https://pqrs.org/osx/karabiner/img/news/v11.6.0_0.png)
 * The eject key has been added into the from key of Simple Modifications.
 
 
