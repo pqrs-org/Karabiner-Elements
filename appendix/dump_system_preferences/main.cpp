@@ -6,6 +6,7 @@ namespace {
 void system_preferences_values_updated_callback(const krbn::system_preferences::values& values) {
   std::cout << "system_preferences_values_updated_callback:" << std::endl;
   std::cout << "  com.apple.keyboard.fnState: " << values.get_keyboard_fn_state() << std::endl;
+  std::cout << "  com.apple.swipescrolldirection: " << values.get_swipe_scroll_direction() << std::endl;
 }
 } // namespace
 

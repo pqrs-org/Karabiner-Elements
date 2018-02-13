@@ -11,18 +11,28 @@ class system_preferences final {
 public:
   class values {
   public:
-    values(void) : keyboard_fn_state_(system_preferences::get_keyboard_fn_state()) {
+    values(void) : keyboard_fn_state_(system_preferences::get_keyboard_fn_state()),
+                   swipe_scroll_direction_(system_preferences::get_swipe_scroll_direction()) {
     }
 
-    bool get_keyboard_fn_state(void) const { return keyboard_fn_state_; }
+    bool get_keyboard_fn_state(void) const {
+      return keyboard_fn_state_;
+    }
+
+    bool get_swipe_scroll_direction(void) const {
+      return swipe_scroll_direction_;
+    }
 
     bool operator==(const system_preferences::values& other) const {
-      return keyboard_fn_state_ == other.keyboard_fn_state_;
+      return keyboard_fn_state_ == other.keyboard_fn_state_ &&
+             swipe_scroll_direction_ == other.swipe_scroll_direction_;
     }
+
     bool operator!=(const system_preferences::values& other) const { return !(*this == other); }
 
   private:
     bool keyboard_fn_state_;
+    bool swipe_scroll_direction_;
   };
 
   static boost::optional<bool> get_bool_property(CFStringRef _Nonnull key, CFStringRef _Nonnull application_id) {
@@ -57,6 +67,15 @@ public:
     }
     // default value
     return false;
+  }
+
+  // Scroll direction (Natural == 1)
+  static bool get_swipe_scroll_direction(void) {
+    if (auto value = system_preferences::get_bool_property(CFSTR("com.apple.swipescrolldirection"), CFSTR("Apple Global Domain"))) {
+      return *value;
+    }
+    // default value
+    return true;
   }
 };
 } // namespace krbn
