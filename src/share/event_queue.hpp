@@ -759,6 +759,7 @@ public:
                        queued_event.get_event_type(),
                        queued_event.get_original_event(),
                        queued_event.get_lazy());
+    events_.back().set_valid(queued_event.get_valid());
   }
 
   void clear_events(void) {
