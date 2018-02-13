@@ -652,7 +652,7 @@ public:
     }
 
     bool active(void) const {
-      return manipulator_timer_id_ != boost::none;
+      return !entries_.empty();
     }
 
   private:
