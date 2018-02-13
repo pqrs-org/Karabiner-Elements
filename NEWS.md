@@ -1,5 +1,7 @@
 # Since 11.5.0 (beta)
 
+* Simultaneous key presses has been supported in complex modifications.
+  * Example: https://pqrs.org/osx/karabiner/json.html#typical-complex_modifications-examples-simultaneous-equal-delete-to-forward-delete
 * Improved modifier flags handling around pointing button manipulations.
 * Mouse keys have been added into Simple Modifications.
 * The eject key has been added into the from key of Simple Modifications.
