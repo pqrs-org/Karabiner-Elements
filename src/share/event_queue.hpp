@@ -628,6 +628,9 @@ public:
     uint64_t get_time_stamp(void) const {
       return time_stamp_;
     }
+    void set_time_stamp(uint64_t value) {
+      time_stamp_ = value;
+    }
 
     bool get_valid(void) const {
       return valid_;

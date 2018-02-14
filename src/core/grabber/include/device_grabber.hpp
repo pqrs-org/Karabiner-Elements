@@ -262,11 +262,14 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       auto event = event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
                                                                                               file_path);
-      merged_input_event_queue_->emplace_back_event(device_id(0),
-                                                    mach_absolute_time(),
-                                                    event,
-                                                    event_type::single,
-                                                    event);
+      event_queue::queued_event queued_event(device_id(0),
+                                             mach_absolute_time(),
+                                             event,
+                                             event_type::single,
+                                             event);
+      add_input_event_delay_to_time_stamp(queued_event);
+
+      merged_input_event_queue_->push_back_event(queued_event);
 
       krbn_notification_center::get_instance().input_event_arrived();
     });
@@ -275,11 +278,14 @@ public:
   void post_input_source_changed_event(const input_source_identifiers& input_source_identifiers) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       auto event = event_queue::queued_event::event::make_input_source_changed_event(input_source_identifiers);
-      merged_input_event_queue_->emplace_back_event(device_id(0),
-                                                    mach_absolute_time(),
-                                                    event,
-                                                    event_type::single,
-                                                    event);
+      event_queue::queued_event queued_event(device_id(0),
+                                             mach_absolute_time(),
+                                             event,
+                                             event_type::single,
+                                             event);
+      add_input_event_delay_to_time_stamp(queued_event);
+
+      merged_input_event_queue_->push_back_event(queued_event);
 
       krbn_notification_center::get_instance().input_event_arrived();
     });
@@ -290,11 +296,14 @@ public:
       if (core_configuration_) {
         auto keyboard_type = core_configuration_->get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type();
         auto event = event_queue::queued_event::event::make_keyboard_type_changed_event(keyboard_type);
-        merged_input_event_queue_->emplace_back_event(device_id(0),
-                                                      mach_absolute_time(),
-                                                      event,
-                                                      event_type::single,
-                                                      event);
+        event_queue::queued_event queued_event(device_id(0),
+                                               mach_absolute_time(),
+                                               event,
+                                               event_type::single,
+                                               event);
+        add_input_event_delay_to_time_stamp(queued_event);
+
+        merged_input_event_queue_->push_back_event(queued_event);
 
         krbn_notification_center::get_instance().input_event_arrived();
       }
@@ -439,37 +448,26 @@ private:
     } else {
       for (const auto& queued_event : event_queue.get_events()) {
         if (device.is_grabbed()) {
-          auto time_stamp = queued_event.get_time_stamp();
-          switch (queued_event.get_event_type()) {
-            case event_type::key_down:
-            case event_type::key_up:
-              if (manipulator_managers_connector_.needs_input_event_delay()) {
-                if (core_configuration_) {
-                  time_stamp += time_utility::nano_to_absolute(input_event_delay_milliseconds_ * NSEC_PER_MSEC);
-                }
-              }
-              break;
+          event_queue::queued_event qe(queued_event.get_device_id(),
+                                       queued_event.get_time_stamp(),
+                                       queued_event.get_event(),
+                                       queued_event.get_event_type(),
+                                       queued_event.get_original_event());
+          add_input_event_delay_to_time_stamp(qe);
 
-            case event_type::single:
-              // Do nothing
-              break;
-          }
-
-          merged_input_event_queue_->emplace_back_event(queued_event.get_device_id(),
-                                                        time_stamp,
-                                                        queued_event.get_event(),
-                                                        queued_event.get_event_type(),
-                                                        queued_event.get_original_event());
+          merged_input_event_queue_->push_back_event(qe);
 
         } else {
           // device is ignored
           auto event = event_queue::queued_event::event::make_event_from_ignored_device_event();
+          event_queue::queued_event qe(queued_event.get_device_id(),
+                                       queued_event.get_time_stamp(),
+                                       event,
+                                       queued_event.get_event_type(),
+                                       queued_event.get_event());
+          add_input_event_delay_to_time_stamp(qe);
 
-          merged_input_event_queue_->emplace_back_event(queued_event.get_device_id(),
-                                                        queued_event.get_time_stamp(),
-                                                        event,
-                                                        queued_event.get_event_type(),
-                                                        queued_event.get_event());
+          merged_input_event_queue_->push_back_event(qe);
         }
       }
     }
@@ -480,22 +478,28 @@ private:
 
   void post_device_ungrabbed_event(device_id device_id) {
     auto event = event_queue::queued_event::event::make_device_ungrabbed_event();
-    merged_input_event_queue_->emplace_back_event(device_id,
-                                                  mach_absolute_time(),
-                                                  event,
-                                                  event_type::single,
-                                                  event);
+    event_queue::queued_event queued_event(device_id,
+                                           mach_absolute_time(),
+                                           event,
+                                           event_type::single,
+                                           event);
+    add_input_event_delay_to_time_stamp(queued_event);
+
+    merged_input_event_queue_->push_back_event(queued_event);
 
     krbn_notification_center::get_instance().input_event_arrived();
   }
 
   void post_caps_lock_state_changed_callback(bool caps_lock_state) {
     event_queue::queued_event::event event(event_queue::queued_event::event::type::caps_lock_state_changed, caps_lock_state);
-    merged_input_event_queue_->emplace_back_event(device_id(0),
-                                                  mach_absolute_time(),
-                                                  event,
-                                                  event_type::single,
-                                                  event);
+    event_queue::queued_event queued_event(device_id(0),
+                                           mach_absolute_time(),
+                                           event,
+                                           event_type::single,
+                                           event);
+    add_input_event_delay_to_time_stamp(queued_event);
+
+    merged_input_event_queue_->push_back_event(queued_event);
 
     krbn_notification_center::get_instance().input_event_arrived();
   }
@@ -638,13 +642,35 @@ private:
 
     if (pseudo_event_type && pseudo_event) {
       auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
-      merged_input_event_queue_->emplace_back_event(device_id(0),
-                                                    mach_absolute_time(),
-                                                    e,
-                                                    *pseudo_event_type,
-                                                    *pseudo_event);
+      event_queue::queued_event queued_event(device_id(0),
+                                             mach_absolute_time(),
+                                             e,
+                                             *pseudo_event_type,
+                                             *pseudo_event);
+      add_input_event_delay_to_time_stamp(queued_event);
+
+      merged_input_event_queue_->push_back_event(queued_event);
 
       krbn_notification_center::get_instance().input_event_arrived();
+    }
+  }
+
+  void add_input_event_delay_to_time_stamp(event_queue::queued_event& queued_event) {
+    switch (queued_event.get_event_type()) {
+      case event_type::key_down:
+      case event_type::key_up:
+        if (manipulator_managers_connector_.needs_input_event_delay()) {
+          if (core_configuration_) {
+            auto time_stamp = queued_event.get_time_stamp();
+            time_stamp += time_utility::nano_to_absolute(input_event_delay_milliseconds_ * NSEC_PER_MSEC);
+            queued_event.set_time_stamp(time_stamp);
+          }
+        }
+        break;
+
+      case event_type::single:
+        // Do nothing
+        break;
     }
   }
 
