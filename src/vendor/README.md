@@ -10,8 +10,8 @@
   * version: v3.1.1
   * url: https://github.com/nlohmann/json/releases
 * natural_sort:
-  * version: bcded9397d86c3c52244f03463a007139161b709
+  * version: 12f74beb58d9b18a41b25339d994da0e222fe80f
   * url: https://github.com/scopeInfinity/NaturalSort
 * cxxopts:
-  * version: v1.4.4
+  * version: v2.0.0
   * url: https://github.com/jarro2783/cxxopts/releases
