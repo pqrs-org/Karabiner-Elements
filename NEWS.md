@@ -7,6 +7,7 @@
 * Mouse keys have been added into Simple Modifications.
   ![mouse keys in Simple Modifications](https://pqrs.org/osx/karabiner/img/news/v11.6.0_0.png)
 * The eject key has been added into the from key of Simple Modifications.
+* The Vendor ID and Product ID of virtual devices has been changed. (0x0,0x0 -> 0x16c0,0x27db and 0x16c0,0x27da)
 
 
 # Version 11.5.0
