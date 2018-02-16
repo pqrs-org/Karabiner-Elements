@@ -7,7 +7,7 @@
   * version: v0.16.3
   * url: https://github.com/gabime/spdlog/releases
 * json:
-  * version: v2.1.1
+  * version: v3.1.1
   * url: https://github.com/nlohmann/json/releases
 * natural_sort:
   * version: bcded9397d86c3c52244f03463a007139161b709
