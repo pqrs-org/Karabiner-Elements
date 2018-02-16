@@ -1,3 +1,8 @@
+# Version 5.0.0
+
+* The Vendor ID and Product ID of virtual devices has been changed. (0x0,0x0 -> 0x16c0,0x27db and 0x16c0,0x27da)
+
+
 # Version 4.11.0
 
 * Uninstaller removes `/Library/Application Support/org.pqrs` directory if it is empty.

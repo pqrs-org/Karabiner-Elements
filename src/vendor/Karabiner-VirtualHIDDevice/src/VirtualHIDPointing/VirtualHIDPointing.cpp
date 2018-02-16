@@ -94,11 +94,11 @@ OSString* VIRTUAL_HID_POINTING_CLASS::newProductString() const {
 }
 
 OSNumber* VIRTUAL_HID_POINTING_CLASS::newVendorIDNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
+  return OSNumber::withNumber(static_cast<uint32_t>(0x16c0), 32);
 }
 
 OSNumber* VIRTUAL_HID_POINTING_CLASS::newProductIDNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
+  return OSNumber::withNumber(static_cast<uint32_t>(0x27da), 32);
 }
 
 OSNumber* VIRTUAL_HID_POINTING_CLASS::newPrimaryUsageNumber() const {

@@ -22,9 +22,9 @@ install:
 	sudo kextload '$(KEXT)'
 
 tmpinstall:
-	sudo rm -rf /tmp/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext
-	sudo cp -R dist/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext /tmp
-	sudo kextload /tmp/org.pqrs.driver.Karabiner.VirtualHIDDevice.kext
+	sudo rm -rf /tmp/org.pqrs.driver.Karabiner.VirtualHIDDevice.$(VERSIONSIGNATURE).kext
+	sudo cp -R dist/org.pqrs.driver.Karabiner.VirtualHIDDevice.$(VERSIONSIGNATURE).kext /tmp
+	sudo kextload /tmp/org.pqrs.driver.Karabiner.VirtualHIDDevice.$(VERSIONSIGNATURE).kext
 
 uninstall:
 	sudo sh dist/uninstall.sh

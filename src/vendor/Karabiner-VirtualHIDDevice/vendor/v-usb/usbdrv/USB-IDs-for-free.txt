@@ -1,0 +1,154 @@
+Version 2009-08-22
+
+===========================
+FREE USB-IDs FOR SHARED USE
+===========================
+
+Objective Development has reserved a set of USB Product-IDs for use according
+to the guidelines outlined below. For more information about the concept of
+USB IDs please see the file USB-ID-FAQ.txt. Objective Development guarantees
+that the IDs listed below are not used by any USB compliant devices.
+
+
+====================
+MECHANISM OF SHARING
+====================
+
+From a technical point of view, two different devices can share the same USB
+Vendor- and Product-ID if they require the same driver on operating system
+level. We make use of this fact by assigning separate IDs for various device
+classes. On application layer, devices must be distinguished by their textual
+name or serial number. We offer separate sets of IDs for discrimination by
+textual name and for serial number.
+
+Examples for shared use of USB IDs are included with V-USB in the "examples"
+subdirectory.
+
+
+======================================
+IDs FOR DISCRIMINATION BY TEXTUAL NAME
+======================================
+
+If you use one of the IDs listed below, your device and host-side software
+must conform to these rules:
+
+(1) The USB device MUST provide a textual representation of the manufacturer
+and product identification. The manufacturer identification MUST be available
+at least in USB language 0x0409 (English/US).
+
+(2) The textual manufacturer identification MUST contain either an Internet
+domain name (e.g. "mycompany.com") registered and owned by you, or an e-mail
+address under your control (e.g. "myname@gmx.net"). You can embed the domain
+name or e-mail address in any string you like, e.g.  "Objective Development
+http://www.obdev.at/vusb/".
+
+(3) You are responsible for retaining ownership of the domain or e-mail
+address for as long as any of your products are in use.
+
+(4) You may choose any string for the textual product identification, as long
+as this string is unique within the scope of your textual manufacturer
+identification.
+
+(5) Application side device look-up MUST be based on the textual manufacturer
+and product identification in addition to VID/PID matching. The driver
+matching MUST be a comparison of the entire strings, NOT a sub-string match.
+
+(6) For devices which implement a particular USB device class (e.g. HID), the
+operating system's default class driver MUST be used. If an operating system
+driver for Vendor Class devices is needed, this driver must be libusb or
+libusb-win32 (see http://libusb.org/ and
+http://libusb-win32.sourceforge.net/).
+
+Table if IDs for discrimination by textual name:
+
+PID dec (hex) | VID dec (hex) | Description of use
+==============+===============+============================================
+1500 (0x05dc) | 5824 (0x16c0) | For Vendor Class devices with libusb
+--------------+---------------+--------------------------------------------
+1503 (0x05df) | 5824 (0x16c0) | For generic HID class devices (which are
+              |               | NOT mice, keyboards or joysticks)
+--------------+---------------+--------------------------------------------
+1505 (0x05e1) | 5824 (0x16c0) | For CDC-ACM class devices (modems)
+--------------+---------------+--------------------------------------------
+1508 (0x05e4) | 5824 (0x16c0) | For MIDI class devices
+--------------+---------------+--------------------------------------------
+
+Note that Windows caches the textual product- and vendor-description for
+mice, keyboards and joysticks. Name-bsed discrimination is therefore not
+recommended for these device classes.
+
+
+=======================================
+IDs FOR DISCRIMINATION BY SERIAL NUMBER
+=======================================
+
+If you use one of the IDs listed below, your device and host-side software
+must conform to these rules:
+
+(1) The USB device MUST provide a textual representation of the serial
+number, unless ONLY the operating system's default class driver is used.
+The serial number string MUST be available at least in USB language 0x0409
+(English/US).
+
+(2) The serial number MUST start with either an Internet domain name (e.g.
+"mycompany.com") registered and owned by you, or an e-mail address under your
+control (e.g. "myname@gmx.net"), both terminated with a colon (":") character.
+You MAY append any string you like for further discrimination of your devices.
+
+(3) You are responsible for retaining ownership of the domain or e-mail
+address for as long as any of your products are in use.
+
+(5) Application side device look-up MUST be based on the serial number string
+in addition to VID/PID matching. The matching must start at the first
+character of the serial number string and include the colon character
+terminating your domain or e-mail address. It MAY stop anywhere after that.
+
+(6) For devices which implement a particular USB device class (e.g. HID), the
+operating system's default class driver MUST be used. If an operating system
+driver for Vendor Class devices is needed, this driver must be libusb or
+libusb-win32 (see http://libusb.org/ and
+http://libusb-win32.sourceforge.net/).
+
+(7) If ONLY the operating system's default class driver is used, e.g. for
+mice, keyboards, joysticks, CDC or MIDI devices and no discrimination by an
+application is needed, the serial number may be omitted.
+
+
+Table if IDs for discrimination by serial number string:
+
+PID dec (hex)  | VID dec (hex) | Description of use
+===============+===============+===========================================
+10200 (0x27d8) | 5824 (0x16c0) | For Vendor Class devices with libusb
+---------------+---------------+-------------------------------------------
+10201 (0x27d9) | 5824 (0x16c0) | For generic HID class devices (which are
+               |               | NOT mice, keyboards or joysticks)
+---------------+---------------+-------------------------------------------
+10202 (0x27da) | 5824 (0x16c0) | For USB Mice
+---------------+---------------+-------------------------------------------
+10203 (0x27db) | 5824 (0x16c0) | For USB Keyboards
+---------------+---------------+-------------------------------------------
+10204 (0x27dc) | 5824 (0x16c0) | For USB Joysticks
+---------------+---------------+-------------------------------------------
+10205 (0x27dd) | 5824 (0x16c0) | For CDC-ACM class devices (modems)
+---------------+---------------+-------------------------------------------
+10206 (0x27de) | 5824 (0x16c0) | For MIDI class devices
+---------------+---------------+-------------------------------------------
+
+
+=================
+ORIGIN OF USB-IDs
+=================
+
+OBJECTIVE DEVELOPMENT Software GmbH has obtained all VID/PID pairs listed
+here from Wouter van Ooijen (see www.voti.nl) for exclusive disposition.
+Wouter van Ooijen has obtained the VID from the USB Implementers Forum, Inc.
+(see www.usb.org). The VID is registered for the company name "Van Ooijen
+Technische Informatica".
+
+
+==========
+DISCLAIMER
+==========
+
+OBJECTIVE DEVELOPMENT Software GmbH disclaims all liability for any
+problems which are caused by the shared use of these VID/PID pairs.

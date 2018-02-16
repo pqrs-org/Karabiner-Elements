@@ -181,11 +181,11 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v041100";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v050000";
   }
 
   static const char* get_kernel_extension_name(void) {
-    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v041100.kext";
+    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v050000.kext";
   }
 };
 } // namespace pqrs

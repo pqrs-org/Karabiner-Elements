@@ -24,6 +24,6 @@ public:
   virtual OSNumber* newLocationIDNumber() const override;
 
   static const char* serialNumberCString(void) {
-    return VIRTUAL_HID_POINTING_CLASS_STRING;
+    return VIRTUAL_HID_POINTING_SERIAL_NUMBER_STRING;
   }
 };

@@ -101,11 +101,11 @@ OSString* VIRTUAL_HID_KEYBOARD_CLASS::newProductString() const {
 }
 
 OSNumber* VIRTUAL_HID_KEYBOARD_CLASS::newVendorIDNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
+  return OSNumber::withNumber(static_cast<uint32_t>(0x16c0), 32);
 }
 
 OSNumber* VIRTUAL_HID_KEYBOARD_CLASS::newProductIDNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
+  return OSNumber::withNumber(static_cast<uint32_t>(0x27db), 32);
 }
 
 OSNumber* VIRTUAL_HID_KEYBOARD_CLASS::newPrimaryUsageNumber() const {

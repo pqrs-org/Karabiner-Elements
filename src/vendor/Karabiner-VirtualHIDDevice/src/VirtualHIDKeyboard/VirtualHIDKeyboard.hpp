@@ -24,6 +24,6 @@ public:
   virtual OSNumber* newLocationIDNumber() const override;
 
   static const char* serialNumberCString(void) {
-    return VIRTUAL_HID_KEYBOARD_CLASS_STRING;
+    return VIRTUAL_HID_KEYBOARD_SERIAL_NUMBER_STRING;
   }
 };
