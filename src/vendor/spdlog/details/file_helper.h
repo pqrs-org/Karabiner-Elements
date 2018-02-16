@@ -9,13 +9,14 @@
 // When failing to open a file, retry several times(5) with small delay between the tries(10 ms)
 // Throw spdlog_ex exception on errors
 
-#include "spdlog/details/os.h"
-#include "spdlog/details/log_msg.h"
+#include "../details/os.h"
+#include "../details/log_msg.h"
 
 #include <chrono>
 #include <cstdio>
 #include <string>
 #include <thread>
+#include <tuple>
 #include <cerrno>
 
 namespace spdlog
@@ -54,7 +55,7 @@ public:
             if (!os::fopen_s(&_fd, fname, mode))
                 return;
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(open_interval));
+            details::os::sleep_for_millis(open_interval);
         }
 
         throw spdlog_ex("Failed opening file " + os::filename_to_str(_filename) + " for writing", errno);
@@ -84,14 +85,13 @@ public:
 
     void write(const log_msg& msg)
     {
-
         size_t msg_size = msg.formatted.size();
         auto data = msg.formatted.data();
         if (std::fwrite(data, 1, msg_size, _fd) != msg_size)
             throw spdlog_ex("Failed writing to file " + os::filename_to_str(_filename), errno);
     }
 
-    size_t size()
+    size_t size() const
     {
         if (!_fd)
             throw spdlog_ex("Cannot use size() on closed file " + os::filename_to_str(_filename));
@@ -103,12 +103,40 @@ public:
         return _filename;
     }
 
-    static bool file_exists(const filename_t& name)
+    static bool file_exists(const filename_t& fname)
     {
-
-        return os::file_exists(name);
+        return os::file_exists(fname);
     }
 
+    //
+    // return file path and its extension:
+    //
+    // "mylog.txt" => ("mylog", ".txt")
+    // "mylog" => ("mylog", "")
+    // "mylog." => ("mylog.", "")
+    // "/dir1/dir2/mylog.txt" => ("/dir1/dir2/mylog", ".txt")
+    //
+    // the starting dot in filenames is ignored (hidden files):
+    //
+    // ".mylog" => (".mylog". "")
+    // "my_folder/.mylog" => ("my_folder/.mylog", "")
+    // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
+    static std::tuple<filename_t, filename_t> split_by_extenstion(const spdlog::filename_t& fname)
+    {
+        auto ext_index = fname.rfind('.');
+
+        // no valid extension found - return whole path and empty string as extension
+        if (ext_index == filename_t::npos || ext_index == 0 || ext_index == fname.size() - 1)
+            return std::make_tuple(fname, spdlog::filename_t());
+
+        // treat casese like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
+        auto folder_index = fname.rfind(details::os::folder_sep);
+        if (folder_index != fname.npos && folder_index >= ext_index - 1)
+            return std::make_tuple(fname, spdlog::filename_t());
+
+        // finally - return a valid base and extension tuple
+        return std::make_tuple(fname.substr(0, ext_index), fname.substr(ext_index));
+    }
 private:
     FILE* _fd;
     filename_t _filename;

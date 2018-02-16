@@ -8,8 +8,8 @@
 // Async Logger implementation
 // Use an async_sink (queue per logger) to perform the logging in a worker thread
 
-#include "spdlog/details/async_log_helper.h"
-#include "spdlog/async_logger.h"
+#include "../details/async_log_helper.h"
+#include "../async_logger.h"
 
 #include <string>
 #include <functional>
@@ -88,7 +88,7 @@ inline void spdlog::async_logger::_sink_it(details::log_msg& msg)
     try
     {
 #if defined(SPDLOG_ENABLE_MESSAGE_COUNTER)
-        msg.msg_id = _msg_counter.fetch_add(1, std::memory_order_relaxed);
+        _incr_msg_counter(msg);
 #endif
         _async_log_helper->log(msg);
         if (_should_flush_on(msg))
@@ -98,8 +98,10 @@ inline void spdlog::async_logger::_sink_it(details::log_msg& msg)
     {
         _err_handler(ex.what());
     }
-    catch (...)
+    catch(...)
     {
-        _err_handler("Unknown exception");
+        _err_handler("Unknown exception in logger " + _name);
+        throw;
     }
+
 }

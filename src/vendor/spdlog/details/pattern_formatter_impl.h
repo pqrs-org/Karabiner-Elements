@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "spdlog/formatter.h"
-#include "spdlog/details/log_msg.h"
-#include "spdlog/details/os.h"
-#include "spdlog/fmt/fmt.h"
+#include "../formatter.h"
+#include "../details/log_msg.h"
+#include "../details/os.h"
+#include "../fmt/fmt.h"
 
 #include <chrono>
 #include <ctime>
@@ -99,7 +99,7 @@ class A_formatter:public flag_formatter
 };
 
 //Abbreviated month
-static const std::string  months[] { "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec" };
+static const std::string  months[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec" };
 class b_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
@@ -119,14 +119,14 @@ class B_formatter:public flag_formatter
 };
 
 
-//write 2 ints seperated by sep with padding of 2
+//write 2 ints separated by sep with padding of 2
 static fmt::MemoryWriter& pad_n_join(fmt::MemoryWriter& w, int v1, int v2, char sep)
 {
     w << fmt::pad(v1, 2, '0') << sep << fmt::pad(v2, 2, '0');
     return w;
 }
 
-//write 3 ints seperated by sep with padding of 2
+//write 3 ints separated by sep with padding of 2
 static fmt::MemoryWriter& pad_n_join(fmt::MemoryWriter& w, int v1, int v2, int v3, char sep)
 {
     w << fmt::pad(v1, 2, '0') << sep << fmt::pad(v2, 2, '0') << sep << fmt::pad(v3, 2, '0');
@@ -262,6 +262,16 @@ class F_formatter SPDLOG_FINAL:public flag_formatter
     }
 };
 
+class E_formatter SPDLOG_FINAL:public flag_formatter
+{
+    void format(details::log_msg& msg, const std::tm&) override
+    {
+        auto duration = msg.time.time_since_epoch();
+        auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+        msg.formatted << seconds;
+    }
+};
+
 // AM/PM
 class p_formatter SPDLOG_FINAL:public flag_formatter
 {
@@ -374,6 +384,14 @@ class pid_formatter SPDLOG_FINAL:public flag_formatter
     }
 };
 
+// message counter formatter
+class i_formatter SPDLOG_FINAL :public flag_formatter
+{
+    void format(details::log_msg& msg, const std::tm&) override
+    {
+        msg.formatted << fmt::pad(msg.msg_id, 6, '0');
+    }
+};
 
 class v_formatter SPDLOG_FINAL:public flag_formatter
 {
@@ -598,6 +616,10 @@ inline void spdlog::pattern_formatter::handle_flag(char flag)
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::F_formatter()));
         break;
 
+    case('E'):
+        _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::E_formatter()));
+        break;
+
     case('p'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::p_formatter()));
         break;
@@ -627,11 +649,10 @@ inline void spdlog::pattern_formatter::handle_flag(char flag)
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::pid_formatter()));
         break;
 
-#if defined(SPDLOG_ENABLE_MESSAGE_COUNTER)
+
     case ('i'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::i_formatter()));
         break;
-#endif
 
     default: //Unknown flag appears as is
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::ch_formatter('%')));

@@ -4,7 +4,7 @@
   * version: v5.0.0
   * url: https://github.com/tekezo/Karabiner-VirtualHIDDevice/releases
 * spdlog:
-  * version: v0.14.0
+  * version: v0.16.3
   * url: https://github.com/gabime/spdlog/releases
 * json:
   * version: v2.1.1

@@ -4,7 +4,7 @@
 //
 #pragma once
 
-#include "spdlog/common.h"
+#include "../common.h"
 
 #include <cstdio>
 #include <ctime>
@@ -143,6 +143,16 @@ inline bool operator!=(const std::tm& tm1, const std::tm& tm2)
 SPDLOG_CONSTEXPR static const char* eol = SPDLOG_EOL;
 SPDLOG_CONSTEXPR static int eol_size = sizeof(SPDLOG_EOL) - 1;
 
+
+
+// folder separator
+#ifdef _WIN32
+SPDLOG_CONSTEXPR static const char folder_sep = '\\';
+#else
+SPDLOG_CONSTEXPR static const char folder_sep = '/';
+#endif
+
+
 inline void prevent_child_fd(FILE *f)
 {
 #ifdef _WIN32
@@ -221,7 +231,7 @@ inline size_t filesize(FILE *f)
 {
     if (f == nullptr)
         throw spdlog_ex("Failed getting file size. fd is null");
-#ifdef _WIN32
+#if defined ( _WIN32) && !defined(__CYGWIN__)
     int fd = _fileno(f);
 #if _WIN64 //64 bits
     struct _stat64 st;
@@ -236,12 +246,12 @@ inline size_t filesize(FILE *f)
 
 #else // unix
     int fd = fileno(f);
-    //64 bits(but not in osx, where fstat64 is deprecated)
-#if !defined(__FreeBSD__) && !defined(__APPLE__) && (defined(__x86_64__) || defined(__ppc64__))
+    //64 bits(but not in osx or cygwin, where fstat64 is deprecated)
+#if !defined(__FreeBSD__) && !defined(__APPLE__) && (defined(__x86_64__) || defined(__ppc64__)) && !defined(__CYGWIN__)
     struct stat64 st;
     if (fstat64(fd, &st) == 0)
         return static_cast<size_t>(st.st_size);
-#else // unix 32 bits or osx
+#else // unix 32 bits or cygwin
     struct stat st;
     if (fstat(fd, &st) == 0)
         return static_cast<size_t>(st.st_size);
@@ -316,7 +326,7 @@ inline int utc_minutes_offset(const std::tm& tm = details::os::localtime())
 }
 
 //Return current thread id as size_t
-//It exists because the std::this_thread::get_id() is much slower(espcially under VS 2013)
+//It exists because the std::this_thread::get_id() is much slower(especially under VS 2013)
 inline size_t _thread_id()
 {
 #ifdef _WIN32
@@ -342,16 +352,27 @@ inline size_t _thread_id()
 //Return current thread id as size_t (from thread local storage)
 inline size_t thread_id()
 {
-#if defined(_MSC_VER) && (_MSC_VER < 1900) || defined(__clang__) && !__has_feature(cxx_thread_local)
+#if defined(SPDLOG_DISABLE_TID_CACHING) || (defined(_MSC_VER) && (_MSC_VER < 1900)) || (defined(__clang__) && !__has_feature(cxx_thread_local))
     return _thread_id();
-#else
+#else // cache thread id in tls
     static thread_local const size_t tid = _thread_id();
     return tid;
 #endif
+
+
 }
 
 
-
+// This is avoid msvc issue in sleep_for that happens if the clock changes.
+// See https://github.com/gabime/spdlog/issues/609
+inline void sleep_for_millis(int milliseconds)
+{
+#if defined(_WIN32)
+    Sleep(milliseconds);
+#else
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+#endif
+}
 
 // wchar support for windows file names (SPDLOG_WCHAR_FILENAMES must be defined)
 #if defined(_WIN32) && defined(SPDLOG_WCHAR_FILENAMES)
@@ -424,7 +445,7 @@ inline int pid()
 }
 
 
-// Detrmine if the terminal supports colors
+// Determine if the terminal supports colors
 // Source: https://github.com/agauniyal/rang/
 inline bool is_color_terminal()
 {

@@ -7,11 +7,11 @@
 
 #pragma once
 
-#define SPDLOG_VERSION "0.14.0"
+#define SPDLOG_VERSION "0.16.3"
 
-#include "spdlog/tweakme.h"
-#include "spdlog/common.h"
-#include "spdlog/logger.h"
+#include "tweakme.h"
+#include "common.h"
+#include "logger.h"
 
 #include <memory>
 #include <functional>
@@ -36,9 +36,14 @@ void set_pattern(const std::string& format_string);
 void set_formatter(formatter_ptr f);
 
 //
-// Set global logging level for
+// Set global logging level
 //
 void set_level(level::level_enum log_level);
+
+//
+// Set global flush level
+//
+void flush_on(level::level_enum log_level);
 
 //
 // Set global error handler
@@ -106,7 +111,7 @@ std::shared_ptr<logger> stderr_color_st(const std::string& logger_name);
 // Create and register a syslog logger
 //
 #ifdef SPDLOG_ENABLE_SYSLOG
-std::shared_ptr<logger> syslog_logger(const std::string& logger_name, const std::string& ident = "", int syslog_option = 0);
+std::shared_ptr<logger> syslog_logger(const std::string& logger_name, const std::string& ident = "", int syslog_option = 0, int syslog_facilty = (1<<3));
 #endif
 
 #if defined(__ANDROID__)
@@ -154,7 +159,7 @@ void drop_all();
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Trace & Debug can be switched on/off at compile time for zero cost debug statements.
-// Uncomment SPDLOG_DEBUG_ON/SPDLOG_TRACE_ON in teakme.h to enable.
+// Uncomment SPDLOG_DEBUG_ON/SPDLOG_TRACE_ON in tweakme.h to enable.
 // SPDLOG_TRACE(..) will also print current file and line.
 //
 // Example:
@@ -162,28 +167,26 @@ void drop_all();
 // SPDLOG_TRACE(my_logger, "some trace message");
 // SPDLOG_TRACE(my_logger, "another trace message {} {}", 1, 2);
 // SPDLOG_DEBUG(my_logger, "some debug message {} {}", 3, 4);
-// SPDLOG_DEBUG_IF(my_logger, true, "some debug message {} {}", 3, 4);
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef SPDLOG_TRACE_ON
-#define SPDLOG_STR_H(x) #x
-#define SPDLOG_STR_HELPER(x) SPDLOG_STR_H(x)
-#define SPDLOG_TRACE(logger, ...) logger->trace("[" __FILE__ " line #" SPDLOG_STR_HELPER(__LINE__) "] " __VA_ARGS__)
-#define SPDLOG_TRACE_IF(logger, flag, ...) logger->trace_if(flag, "[" __FILE__ " line #" SPDLOG_STR_HELPER(__LINE__) "] " __VA_ARGS__)
+#  define SPDLOG_STR_H(x) #x
+#  define SPDLOG_STR_HELPER(x) SPDLOG_STR_H(x)
+#  ifdef _MSC_VER
+#    define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ "(" SPDLOG_STR_HELPER(__LINE__) ") ] " __VA_ARGS__)
+#  else
+#    define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ ":" SPDLOG_STR_HELPER(__LINE__) " ] " __VA_ARGS__)
+#  endif
 #else
-#define SPDLOG_TRACE(logger, ...)
-#define SPDLOG_TRACE_IF(logger, flag, ...)
+#  define SPDLOG_TRACE(logger, ...) (void)0
 #endif
 
 #ifdef SPDLOG_DEBUG_ON
-#define SPDLOG_DEBUG(logger, ...) logger->debug(__VA_ARGS__)
-#define SPDLOG_DEBUG_IF(logger, flag, ...) logger->debug_if(flag, __VA_ARGS__)
+#  define SPDLOG_DEBUG(logger, ...) logger->debug(__VA_ARGS__)
 #else
-#define SPDLOG_DEBUG(logger, ...)
-#define SPDLOG_DEBUG_IF(logger, flag, ...)
+#  define SPDLOG_DEBUG(logger, ...) (void)0
 #endif
 
 }
 
-
-#include "spdlog/details/spdlog_impl.h"
+#include "details/spdlog_impl.h"

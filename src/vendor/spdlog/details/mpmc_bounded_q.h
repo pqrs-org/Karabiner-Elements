@@ -43,7 +43,7 @@ Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
 #pragma once
 
-#include "spdlog/common.h"
+#include "../common.h"
 
 #include <atomic>
 #include <utility>
@@ -61,11 +61,11 @@ public:
     using item_type = T;
     mpmc_bounded_queue(size_t buffer_size)
         :max_size_(buffer_size),
-         buffer_(new cell_t [buffer_size]),
+         buffer_(new cell_t[buffer_size]),
          buffer_mask_(buffer_size - 1)
     {
         //queue size must be power of two
-        if(!((buffer_size >= 2) && ((buffer_size & (buffer_size - 1)) == 0)))
+        if (!((buffer_size >= 2) && ((buffer_size & (buffer_size - 1)) == 0)))
             throw spdlog_ex("async logger queue size must be power of two");
 
         for (size_t i = 0; i != buffer_size; i += 1)
@@ -76,7 +76,7 @@ public:
 
     ~mpmc_bounded_queue()
     {
-        delete [] buffer_;
+        delete[] buffer_;
     }
 
 
@@ -88,7 +88,7 @@ public:
         {
             cell = &buffer_[pos & buffer_mask_];
             size_t seq = cell->sequence_.load(std::memory_order_acquire);
-            intptr_t dif = (intptr_t)seq - (intptr_t)pos;
+            intptr_t dif = static_cast<intptr_t>(seq) - static_cast<intptr_t>(pos);
             if (dif == 0)
             {
                 if (enqueue_pos_.compare_exchange_weak(pos, pos + 1, std::memory_order_relaxed))
@@ -117,7 +117,7 @@ public:
             cell = &buffer_[pos & buffer_mask_];
             size_t seq =
                 cell->sequence_.load(std::memory_order_acquire);
-            intptr_t dif = (intptr_t)seq - (intptr_t)(pos + 1);
+            intptr_t dif = static_cast<intptr_t>(seq) - static_cast<intptr_t>(pos + 1);
             if (dif == 0)
             {
                 if (dequeue_pos_.compare_exchange_weak(pos, pos + 1, std::memory_order_relaxed))
@@ -133,14 +133,18 @@ public:
         return true;
     }
 
-    size_t approx_size()
+    bool is_empty()
     {
-        size_t first_pos = dequeue_pos_.load(std::memory_order_relaxed);
-        size_t last_pos = enqueue_pos_.load(std::memory_order_relaxed);
-        if (last_pos <= first_pos)
-            return 0;
-        auto size = last_pos - first_pos;
-        return size < max_size_ ? size : max_size_;
+        size_t front, front1, back;
+        // try to take a consistent snapshot of front/tail.
+        do
+        {
+            front = enqueue_pos_.load(std::memory_order_acquire);
+            back = dequeue_pos_.load(std::memory_order_acquire);
+            front1 = enqueue_pos_.load(std::memory_order_relaxed);
+        }
+        while (front != front1);
+        return back == front;
     }
 
 private:
@@ -153,7 +157,7 @@ private:
     size_t const max_size_;
 
     static size_t const     cacheline_size = 64;
-    typedef char            cacheline_pad_t [cacheline_size];
+    typedef char            cacheline_pad_t[cacheline_size];
 
     cacheline_pad_t         pad0_;
     cell_t* const           buffer_;

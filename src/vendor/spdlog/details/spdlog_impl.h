@@ -8,23 +8,23 @@
 //
 // Global registry functions
 //
-#include "spdlog/spdlog.h"
-#include "spdlog/details/registry.h"
-#include "spdlog/sinks/file_sinks.h"
-#include "spdlog/sinks/stdout_sinks.h"
+#include "../spdlog.h"
+#include "../details/registry.h"
+#include "../sinks/file_sinks.h"
+#include "../sinks/stdout_sinks.h"
 #ifdef SPDLOG_ENABLE_SYSLOG
-#include "spdlog/sinks/syslog_sink.h"
+#include "../sinks/syslog_sink.h"
 #endif
 
 #ifdef _WIN32
-#include "spdlog/sinks/wincolor_sink.h"
+#include "../sinks/wincolor_sink.h"
 #else
-#include "spdlog/sinks/ansicolor_sink.h"
+#include "../sinks/ansicolor_sink.h"
 #endif
 
 
 #ifdef __ANDROID__
-#include "spdlog/sinks/android_sink.h"
+#include "../sinks/android_sink.h"
 #endif
 
 #include <chrono>
@@ -162,9 +162,9 @@ inline std::shared_ptr<spdlog::logger> spdlog::stderr_color_st(const std::string
 
 #ifdef SPDLOG_ENABLE_SYSLOG
 // Create syslog logger
-inline std::shared_ptr<spdlog::logger> spdlog::syslog_logger(const std::string& logger_name, const std::string& syslog_ident, int syslog_option)
+inline std::shared_ptr<spdlog::logger> spdlog::syslog_logger(const std::string& logger_name, const std::string& syslog_ident, int syslog_option, int syslog_facility)
 {
-    return create<spdlog::sinks::syslog_sink>(logger_name, syslog_ident, syslog_option);
+    return create<spdlog::sinks::syslog_sink>(logger_name, syslog_ident, syslog_option, syslog_facility);
 }
 #endif
 
@@ -234,6 +234,11 @@ inline void spdlog::set_pattern(const std::string& format_string)
 inline void spdlog::set_level(level::level_enum log_level)
 {
     return details::registry::instance().set_level(log_level);
+}
+
+inline void spdlog::flush_on(level::level_enum log_level)
+{
+    return details::registry::instance().flush_on(log_level);
 }
 
 inline void spdlog::set_error_handler(log_err_handler handler)

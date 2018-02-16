@@ -12,8 +12,8 @@
 // 2. Format the message using the formatter function
 // 3. Pass the formatted message to its sinks to performa the actual logging
 
-#include "spdlog/sinks/base_sink.h"
-#include "spdlog/common.h"
+#include "sinks/base_sink.h"
+#include "common.h"
 
 #include <vector>
 #include <memory>
@@ -44,14 +44,6 @@ public:
     template <typename Arg1, typename... Args> void error(const char* fmt, const Arg1&, const Args&... args);
     template <typename Arg1, typename... Args> void critical(const char* fmt, const Arg1&, const Args&... args);
 
-    template <typename... Args> void log_if(const bool flag, level::level_enum lvl, const char* fmt, const Args&... args);
-    template <typename... Args> void log_if(const bool flag, level::level_enum lvl, const char* msg);
-    template <typename Arg1, typename... Args> void trace_if(const bool flag, const char* fmt, const Arg1&, const Args&... args);
-    template <typename Arg1, typename... Args> void debug_if(const bool flag, const char* fmt, const Arg1&, const Args&... args);
-    template <typename Arg1, typename... Args> void info_if(const bool flag, const char* fmt, const Arg1&, const Args&... args);
-    template <typename Arg1, typename... Args> void warn_if(const bool flag, const char* fmt, const Arg1&, const Args&... args);
-    template <typename Arg1, typename... Args> void error_if(const bool flag, const char* fmt, const Arg1&, const Args&... args);
-    template <typename Arg1, typename... Args> void critical_if(const bool flag, const char* fmt, const Arg1&, const Args&... args);
 
 #ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
     template <typename... Args> void log(level::level_enum lvl, const wchar_t* msg);
@@ -62,15 +54,6 @@ public:
     template <typename... Args> void warn(const wchar_t* fmt, const Args&... args);
     template <typename... Args> void error(const wchar_t* fmt, const Args&... args);
     template <typename... Args> void critical(const wchar_t* fmt, const Args&... args);
-
-    template <typename... Args> void log_if(const bool flag, level::level_enum lvl, const wchar_t* msg);
-    template <typename... Args> void log_if(const bool flag, level::level_enum lvl, const wchar_t* fmt, const Args&... args);
-    template <typename... Args> void trace_if(const bool flag, const wchar_t* fmt, const Args&... args);
-    template <typename... Args> void debug_if(const bool flag, const wchar_t* fmt, const Args&... args);
-    template <typename... Args> void info_if(const bool flag, const wchar_t* fmt, const Args&... args);
-    template <typename... Args> void warn_if(const bool flag, const wchar_t* fmt, const Args&... args);
-    template <typename... Args> void error_if(const bool flag, const wchar_t* fmt, const Args&... args);
-    template <typename... Args> void critical_if(const bool flag, const wchar_t* fmt, const Args&... args);
 #endif // SPDLOG_WCHAR_TO_UTF8_SUPPORT
 
     template <typename T> void log(level::level_enum lvl, const T&);
@@ -80,14 +63,6 @@ public:
     template <typename T> void warn(const T&);
     template <typename T> void error(const T&);
     template <typename T> void critical(const T&);
-
-    template <typename T> void log_if(const bool flag, level::level_enum lvl, const T&);
-    template <typename T> void trace_if(const bool flag, const T&);
-    template <typename T> void debug_if(const bool flag, const T&);
-    template <typename T> void info_if(const bool flag, const T&);
-    template <typename T> void warn_if(const bool flag, const T&);
-    template <typename T> void error_if(const bool flag, const T&);
-    template <typename T> void critical_if(const bool flag, const T&);
 
     bool should_log(level::level_enum) const;
     void set_level(level::level_enum);
@@ -118,6 +93,9 @@ protected:
     // return true if the given message level should trigger a flush
     bool _should_flush_on(const details::log_msg&);
 
+    // increment the message count (only if defined(SPDLOG_ENABLE_MESSAGE_COUNTER))
+    void _incr_msg_counter(details::log_msg &msg);
+
     const std::string _name;
     std::vector<sink_ptr> _sinks;
     formatter_ptr _formatter;
@@ -129,4 +107,4 @@ protected:
 };
 }
 
-#include "spdlog/details/logger_impl.h"
+#include "details/logger_impl.h"

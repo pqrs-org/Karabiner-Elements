@@ -12,12 +12,12 @@
 
 #pragma once
 
-#include "spdlog/common.h"
-#include "spdlog/sinks/sink.h"
-#include "spdlog/details/mpmc_bounded_q.h"
-#include "spdlog/details/log_msg.h"
-#include "spdlog/details/os.h"
-#include "spdlog/formatter.h"
+#include "../common.h"
+#include "../sinks/sink.h"
+#include "../details/mpmc_bounded_q.h"
+#include "../details/log_msg.h"
+#include "../details/os.h"
+#include "../formatter.h"
 
 #include <chrono>
 #include <exception>
@@ -261,7 +261,7 @@ inline void spdlog::details::async_log_helper::flush(bool wait_for_q)
 {
     push_msg(async_msg(async_msg_type::flush));
     if (wait_for_q)
-        wait_empty_q(); //return only make after the above flush message was processed
+        wait_empty_q(); //return when queue is empty
 }
 
 inline void spdlog::details::async_log_helper::worker_loop()
@@ -280,9 +280,9 @@ inline void spdlog::details::async_log_helper::worker_loop()
         {
             _err_handler(ex.what());
         }
-        catch (...)
+        catch(...)
         {
-            _err_handler("Unknown exception");
+            _err_handler("Unknown exeption in async logger worker loop.");
         }
     }
     if (_worker_teardown_cb) _worker_teardown_cb();
@@ -358,7 +358,6 @@ inline void spdlog::details::async_log_helper::set_formatter(formatter_ptr msg_f
 // spin, yield or sleep. use the time passed since last message as a hint
 inline void spdlog::details::async_log_helper::sleep_or_yield(const spdlog::log_clock::time_point& now, const spdlog::log_clock::time_point& last_op_time)
 {
-    using namespace std::this_thread;
     using std::chrono::milliseconds;
     using std::chrono::microseconds;
 
@@ -374,17 +373,17 @@ inline void spdlog::details::async_log_helper::sleep_or_yield(const spdlog::log_
 
     // sleep for 20 ms upto 200 ms
     if (time_since_op <= milliseconds(200))
-        return sleep_for(milliseconds(20));
+        return details::os::sleep_for_millis(20);
 
-    // sleep for 200 ms
-    return sleep_for(milliseconds(200));
+    // sleep for 500 ms
+    return details::os::sleep_for_millis(500);
 }
 
 // wait for the queue to be empty
 inline void spdlog::details::async_log_helper::wait_empty_q()
 {
     auto last_op = details::os::now();
-    while (_q.approx_size() > 0)
+    while (!_q.is_empty())
     {
         sleep_or_yield(details::os::now(), last_op);
     }
