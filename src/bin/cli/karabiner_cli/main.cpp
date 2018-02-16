@@ -1,6 +1,10 @@
+_Pragma("clang diagnostic push")
+_Pragma("clang diagnostic ignored \"-Wshorten-64-to-32\"")
+#include "cxxopts/cxxopts.hpp"
+_Pragma("clang diagnostic pop")
+
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
-#include "cxxopts/cxxopts.hpp"
 #include "logger.hpp"
 #include <iostream>
 
@@ -67,19 +71,19 @@ int main(int argc, char* argv[]) {
   options.add_options()("help", "Print help.");
 
   try {
-    options.parse(argc, argv);
+    auto parse_result = options.parse(argc, argv);
 
     {
       std::string key = "select-profile";
-      if (options.count(key)) {
-        select_profile(options[key].as<std::string>());
+      if (parse_result.count(key)) {
+        select_profile(parse_result[key].as<std::string>());
         return 0;
       }
     }
 
     {
       std::string key = "copy-current-profile-to-system-default-profile";
-      if (options.count(key)) {
+      if (parse_result.count(key)) {
         if (getuid() != 0) {
           krbn::logger::get_logger().error("--{0} requires root privilege.", key);
           return 1;
@@ -90,7 +94,7 @@ int main(int argc, char* argv[]) {
 
     {
       std::string key = "remove-system-default-profile";
-      if (options.count(key)) {
+      if (parse_result.count(key)) {
         if (getuid() != 0) {
           krbn::logger::get_logger().error("--{0} requires root privilege.", key);
           return 1;
