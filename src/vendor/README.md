@@ -15,3 +15,6 @@
 * cxxopts:
   * version: v2.0.0
   * url: https://github.com/jarro2783/cxxopts/releases
+* bitmask:
+  * version v1.1
+  * url: https://github.com/oliora/bitmask/releases
