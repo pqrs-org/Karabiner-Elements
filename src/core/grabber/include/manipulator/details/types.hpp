@@ -843,7 +843,7 @@ private:
   bool repeat_;
 };
 
-enum class manipulate_result : uint32_t {
+enum class manipulate_result {
   passed,
   manipulated,
   needs_wait_until_time_stamp,

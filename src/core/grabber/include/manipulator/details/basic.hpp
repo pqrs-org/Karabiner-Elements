@@ -519,9 +519,11 @@ public:
   virtual ~basic(void) {
   }
 
-  virtual void manipulate(event_queue::queued_event& front_input_event,
-                          const event_queue& input_event_queue,
-                          const std::shared_ptr<event_queue>& output_event_queue) {
+  virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
+                                       const event_queue& input_event_queue,
+                                       const std::shared_ptr<event_queue>& output_event_queue) {
+    manipulate_result result = manipulate_result::passed;
+
     if (output_event_queue) {
       unset_alone_if_needed(front_input_event.get_event(),
                             front_input_event.get_event_type());
@@ -537,7 +539,7 @@ public:
       // ----------------------------------------
 
       if (!front_input_event.get_valid()) {
-        return;
+        return result;
       }
 
       // ----------------------------------------
@@ -667,8 +669,11 @@ public:
                     }
                   }
 
-                  if (!all_from_events_found) {
-                    is_target = false;
+                  if (is_target) {
+                    if (!all_from_events_found) {
+                      result = manipulate_result::needs_wait_until_time_stamp;
+                      is_target = false;
+                    }
                   }
                 }
 
@@ -805,9 +810,13 @@ public:
               output_event_queue->increase_time_stamp_delay(time_stamp_delay - 1);
             }
           }
+
+          result = manipulate_result::manipulated;
         }
       }
     }
+
+    return result;
   }
 
   virtual bool active(void) const {

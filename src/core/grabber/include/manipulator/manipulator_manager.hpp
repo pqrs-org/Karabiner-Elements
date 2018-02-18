@@ -8,7 +8,7 @@ class manipulator_manager final {
 public:
   manipulator_manager(const manipulator_manager&) = delete;
 
-  manipulator_manager(bool wait_until_time_stamp = false) : wait_until_time_stamp_(wait_until_time_stamp) {
+  manipulator_manager(void) {
     manipulator_timer_connection_ = manipulator_timer::get_instance().timer_invoked.connect([&](auto timer_id) {
       for (auto&& m : manipulators_) {
         m->manipulator_timer_invoked(timer_id);
@@ -36,12 +36,6 @@ public:
         output_event_queue) {
       while (!input_event_queue->empty()) {
         auto& front_input_event = input_event_queue->get_front_event();
-
-        if (wait_until_time_stamp_) {
-          if (now < front_input_event.get_time_stamp()) {
-            break;
-          }
-        }
 
         switch (front_input_event.get_event().get_type()) {
           case event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
@@ -97,9 +91,22 @@ public:
           case event_queue::queued_event::event::type::select_input_source:
           case event_queue::queued_event::event::type::mouse_key:
             for (auto&& m : manipulators_) {
-              m->manipulate(front_input_event,
-                            *input_event_queue,
-                            output_event_queue);
+              auto r = m->manipulate(front_input_event,
+                                     *input_event_queue,
+                                     output_event_queue);
+
+              switch (r) {
+                case details::manipulate_result::passed:
+                case details::manipulate_result::manipulated:
+                  // Do nothing
+                  break;
+
+                case details::manipulate_result::needs_wait_until_time_stamp:
+                  if (now < front_input_event.get_time_stamp()) {
+                    goto finish;
+                  }
+                  break;
+              }
             }
             break;
         }
@@ -111,6 +118,7 @@ public:
         input_event_queue->erase_front_event();
       }
 
+    finish:
       remove_invalid_manipulators();
     }
   }
@@ -153,8 +161,6 @@ private:
                                        }),
                         std::end(manipulators_));
   }
-
-  bool wait_until_time_stamp_;
 
   std::vector<std::shared_ptr<details::base>> manipulators_;
   boost::signals2::connection manipulator_timer_connection_;

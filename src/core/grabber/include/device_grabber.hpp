@@ -35,7 +35,6 @@ public:
                          input_event_delay_milliseconds_(0),
                          merged_input_event_queue_(std::make_shared<event_queue>()),
                          simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
-                         complex_modifications_manipulator_manager_(true),
                          complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                          fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
                          posted_event_queue_(std::make_shared<event_queue>()),

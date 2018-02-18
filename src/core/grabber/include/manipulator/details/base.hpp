@@ -2,6 +2,7 @@
 
 #include "event_queue.hpp"
 #include "manipulator/condition_manager.hpp"
+#include "manipulator/details/types.hpp"
 #include "manipulator/manipulator_timer.hpp"
 #include "modifier_flag_manager.hpp"
 
@@ -17,9 +18,9 @@ public:
   virtual ~base(void) {
   }
 
-  virtual void manipulate(event_queue::queued_event& front_input_event,
-                          const event_queue& input_event_queue,
-                          const std::shared_ptr<event_queue>& output_event_queue) = 0;
+  virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
+                                       const event_queue& input_event_queue,
+                                       const std::shared_ptr<event_queue>& output_event_queue) = 0;
 
   virtual bool active(void) const = 0;
 

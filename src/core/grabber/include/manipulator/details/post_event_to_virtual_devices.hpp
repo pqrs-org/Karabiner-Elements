@@ -734,12 +734,12 @@ public:
   virtual ~post_event_to_virtual_devices(void) {
   }
 
-  virtual void manipulate(event_queue::queued_event& front_input_event,
-                          const event_queue& input_event_queue,
-                          const std::shared_ptr<event_queue>& output_event_queue) {
+  virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
+                                       const event_queue& input_event_queue,
+                                       const std::shared_ptr<event_queue>& output_event_queue) {
     if (output_event_queue) {
       if (!front_input_event.get_valid()) {
-        return;
+        return manipulate_result::passed;
       }
 
       output_event_queue->push_back_event(front_input_event);
@@ -930,6 +930,8 @@ public:
                                                           front_input_event.get_time_stamp());
       }
     }
+
+    return manipulate_result::passed;
   }
 
   virtual bool active(void) const {
