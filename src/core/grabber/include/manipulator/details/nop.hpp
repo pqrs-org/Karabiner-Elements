@@ -24,10 +24,6 @@ public:
     return false;
   }
 
-  virtual bool needs_input_event_delay(void) const {
-    return false;
-  }
-
   virtual bool needs_virtual_hid_pointing(void) const {
     return false;
   }

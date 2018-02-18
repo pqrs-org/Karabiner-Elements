@@ -900,21 +900,6 @@ public:
     time_stamp_delay_ += value;
   }
 
-  boost::optional<uint64_t> min_event_time_stamp_with_input_delay(void) const {
-    auto it = std::min_element(std::begin(events_),
-                               std::end(events_),
-                               [](auto& a, auto& b) {
-                                 auto t1 = a.get_event_time_stamp().make_time_stamp_with_input_delay();
-                                 auto t2 = b.get_event_time_stamp().make_time_stamp_with_input_delay();
-                                 return t1 < t2;
-                               });
-    if (it == std::end(events_)) {
-      return boost::none;
-    }
-
-    return it->get_event_time_stamp().make_time_stamp_with_input_delay();
-  }
-
   static bool needs_swap(const queued_event& v1, const queued_event& v2) {
     // Some devices are send modifier flag and key at the same HID report.
     // For example, a key sends control+up-arrow by this reports.

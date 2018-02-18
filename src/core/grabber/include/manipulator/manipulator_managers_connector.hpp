@@ -27,17 +27,15 @@ public:
       manipulator_manager_.invalidate_manipulators();
     }
 
-    bool needs_input_event_delay(void) const {
-      return manipulator_manager_.needs_input_event_delay();
-    }
-
     bool needs_virtual_hid_pointing(void) const {
       return manipulator_manager_.needs_virtual_hid_pointing();
     }
 
-    boost::optional<uint64_t> min_input_event_time_stamp(void) const {
+    boost::optional<uint64_t> make_input_event_time_stamp_with_input_delay(void) const {
       if (auto ieq = input_event_queue_.lock()) {
-        return ieq->min_event_time_stamp_with_input_delay();
+        if (!ieq->get_events().empty()) {
+          return ieq->get_events().front().get_event_time_stamp().make_time_stamp_with_input_delay();
+        }
       }
       return boost::none;
     }
@@ -94,14 +92,6 @@ public:
     }
   }
 
-  bool needs_input_event_delay(void) const {
-    return std::any_of(std::begin(connections_),
-                       std::end(connections_),
-                       [](auto& c) {
-                         return c.needs_input_event_delay();
-                       });
-  }
-
   bool needs_virtual_hid_pointing(void) const {
     return std::any_of(std::begin(connections_),
                        std::end(connections_),
@@ -114,9 +104,9 @@ public:
     boost::optional<uint64_t> result;
 
     for (const auto& c : connections_) {
-      if (auto min = c.min_input_event_time_stamp()) {
-        if (!result || *min < *result) {
-          result = min;
+      if (auto t = c.make_input_event_time_stamp_with_input_delay()) {
+        if (!result || *t < *result) {
+          result = t;
         }
       }
     }

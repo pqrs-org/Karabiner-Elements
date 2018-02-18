@@ -577,14 +577,3 @@ TEST_CASE("hash") {
   REQUIRE(hash_value(krbn::event_queue::queued_event::event(krbn::key_code::a)) !=
           hash_value(krbn::event_queue::queued_event::event(krbn::key_code::b)));
 }
-
-TEST_CASE("min_event_time_stamp_with_input_delay") {
-  {
-    krbn::event_queue event_queue;
-    ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
-    ENQUEUE_EVENT(event_queue, 1, 200, a_event, key_down, a_event);
-    ENQUEUE_EVENT(event_queue, 1, 80, a_event, key_down, a_event);
-    ENQUEUE_EVENT(event_queue, 1, 300, a_event, key_down, a_event);
-    REQUIRE(event_queue.min_event_time_stamp_with_input_delay() == 80ull);
-  }
-}

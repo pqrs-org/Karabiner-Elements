@@ -24,8 +24,6 @@ public:
 
   virtual bool active(void) const = 0;
 
-  virtual bool needs_input_event_delay(void) const = 0;
-
   virtual bool needs_virtual_hid_pointing(void) const = 0;
 
   virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::queued_event& front_input_event,

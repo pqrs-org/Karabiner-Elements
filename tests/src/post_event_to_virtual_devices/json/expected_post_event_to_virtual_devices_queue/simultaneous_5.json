@@ -54,13 +54,5 @@
         },
         "time_stamp": 14000002,
         "type": "keyboard_event"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "s",
-            "value": 1
-        },
-        "time_stamp": 35000000,
-        "type": "keyboard_event"
     }
 ]

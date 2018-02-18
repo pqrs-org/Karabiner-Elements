@@ -604,6 +604,10 @@ public:
                   uint64_t end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() + time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC);
 
                   for (const auto& queued_event : input_event_queue.get_events()) {
+                    if (!is_target) {
+                      break;
+                    }
+
                     if (!queued_event.get_valid()) {
                       continue;
                     }
@@ -643,6 +647,7 @@ public:
                         break;
 
                       case event_type::single:
+                        // Do nothing
                         break;
                     }
 
@@ -669,10 +674,22 @@ public:
                     }
                   }
 
+                  // from_events will be empty if front_input_event's time_stamp > end_time_stamp.
+
+                  if (from_events.empty()) {
+                    is_target = false;
+                  }
+
+                  // Update input_delay_time_stamp
+
                   if (is_target) {
                     if (!all_from_events_found) {
                       result = manipulate_result::needs_wait_until_time_stamp;
                       is_target = false;
+
+                      auto t = std::max(front_input_event.get_event_time_stamp().get_input_delay_time_stamp(),
+                                        time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC));
+                      front_input_event.get_event_time_stamp().set_input_delay_time_stamp(t);
                     }
                   }
                 }
@@ -821,10 +838,6 @@ public:
 
   virtual bool active(void) const {
     return !manipulated_original_events_.empty();
-  }
-
-  virtual bool needs_input_event_delay(void) const {
-    return (from_.get_event_definitions().size() > 1);
   }
 
   virtual bool needs_virtual_hid_pointing(void) const {

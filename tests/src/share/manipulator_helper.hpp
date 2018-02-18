@@ -138,7 +138,6 @@ public:
         auto expected = nlohmann::json::parse(ifs);
 
         REQUIRE(post_event_to_virtual_devices_manipulator);
-        REQUIRE(event_queues.front()->get_events().empty());
         REQUIRE(nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events()).dump() == expected.dump());
 
       } else {

@@ -98,6 +98,7 @@ TEST_CASE("min_input_event_time_stamp") {
   event_queues.push_back(std::make_shared<krbn::event_queue>());
   event_queues.push_back(std::make_shared<krbn::event_queue>());
   event_queues.push_back(std::make_shared<krbn::event_queue>());
+  event_queues.push_back(std::make_shared<krbn::event_queue>());
 
   krbn::manipulator::manipulator_managers_connector connector;
 
@@ -132,6 +133,7 @@ TEST_CASE("min_input_event_time_stamp") {
   REQUIRE(connector.min_input_event_time_stamp() == 4000ull);
 
   // ----------------------------------------
+  // min_input_event_time_stamp uses only the front entry.
 
   event_queues[3]->emplace_back_event(krbn::device_id(1),
                                       krbn::event_queue::queued_event::event_time_stamp(3000),
@@ -144,7 +146,7 @@ TEST_CASE("min_input_event_time_stamp") {
                                       krbn::event_type::key_down,
                                       krbn::event_queue::queued_event::event(krbn::key_code::a));
 
-  REQUIRE(connector.min_input_event_time_stamp() == 2000ull);
+  REQUIRE(connector.min_input_event_time_stamp() == 3000ull);
 }
 
 TEST_CASE("manipulator_timer") {
@@ -171,29 +173,6 @@ TEST_CASE("manipulator_timer") {
   REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[3].get_timer_id() == timer_ids[5]);
   REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[4].get_timer_id() == timer_ids[2]);
   REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[5].get_timer_id() == timer_ids[3]);
-}
-
-TEST_CASE("needs_input_event_delay") {
-  for (const auto& file_name : {
-           std::string("json/needs_input_event_delay_test1.json"),
-           std::string("json/needs_input_event_delay_test2.json"),
-       }) {
-    std::ifstream json_file(file_name);
-    auto json = nlohmann::json::parse(json_file);
-    krbn::manipulator::manipulator_manager manager;
-    for (const auto& j : json) {
-      krbn::core_configuration::profile::complex_modifications::parameters parameters;
-      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j, parameters);
-      manager.push_back_manipulator(m);
-    }
-
-    if (file_name == "json/needs_input_event_delay_test1.json") {
-      REQUIRE(!manager.needs_input_event_delay());
-    }
-    if (file_name == "json/needs_input_event_delay_test2.json") {
-      REQUIRE(manager.needs_input_event_delay());
-    }
-  }
 }
 
 TEST_CASE("needs_virtual_hid_pointing") {

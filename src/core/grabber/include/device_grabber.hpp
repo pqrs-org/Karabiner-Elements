@@ -32,7 +32,6 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(void) : profile_(nlohmann::json()),
-                         input_event_delay_milliseconds_(0),
                          merged_input_event_queue_(std::make_shared<event_queue>()),
                          simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                          complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
@@ -157,12 +156,6 @@ public:
                                                                        [this](std::shared_ptr<core_configuration> core_configuration) {
                                                                          core_configuration_ = core_configuration;
 
-                                                                         if (auto minmax = core_configuration_->get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds")) {
-                                                                           input_event_delay_milliseconds_ = minmax->second;
-                                                                         } else {
-                                                                           input_event_delay_milliseconds_ = 0;
-                                                                         }
-
                                                                          is_grabbable_callback_log_reducer_.reset();
                                                                          set_profile(core_configuration_->get_selected_profile());
                                                                          grab_devices();
@@ -266,7 +259,6 @@ public:
                                              event,
                                              event_type::single,
                                              event);
-      add_input_event_delay_to_time_stamp(queued_event);
 
       merged_input_event_queue_->push_back_event(queued_event);
 
@@ -282,7 +274,6 @@ public:
                                              event,
                                              event_type::single,
                                              event);
-      add_input_event_delay_to_time_stamp(queued_event);
 
       merged_input_event_queue_->push_back_event(queued_event);
 
@@ -300,7 +291,6 @@ public:
                                                event,
                                                event_type::single,
                                                event);
-        add_input_event_delay_to_time_stamp(queued_event);
 
         merged_input_event_queue_->push_back_event(queued_event);
 
@@ -453,7 +443,6 @@ private:
                                        queued_event.get_event(),
                                        queued_event.get_event_type(),
                                        queued_event.get_original_event());
-          add_input_event_delay_to_time_stamp(qe);
 
           merged_input_event_queue_->push_back_event(qe);
 
@@ -465,7 +454,6 @@ private:
                                        event,
                                        queued_event.get_event_type(),
                                        queued_event.get_event());
-          add_input_event_delay_to_time_stamp(qe);
 
           merged_input_event_queue_->push_back_event(qe);
         }
@@ -483,7 +471,6 @@ private:
                                            event,
                                            event_type::single,
                                            event);
-    add_input_event_delay_to_time_stamp(queued_event);
 
     merged_input_event_queue_->push_back_event(queued_event);
 
@@ -497,7 +484,6 @@ private:
                                            event,
                                            event_type::single,
                                            event);
-    add_input_event_delay_to_time_stamp(queued_event);
 
     merged_input_event_queue_->push_back_event(queued_event);
 
@@ -647,29 +633,10 @@ private:
                                              e,
                                              *pseudo_event_type,
                                              *pseudo_event);
-      add_input_event_delay_to_time_stamp(queued_event);
 
       merged_input_event_queue_->push_back_event(queued_event);
 
       krbn_notification_center::get_instance().input_event_arrived();
-    }
-  }
-
-  void add_input_event_delay_to_time_stamp(event_queue::queued_event& queued_event) {
-    switch (queued_event.get_event_type()) {
-      case event_type::key_down:
-      case event_type::key_up:
-        if (manipulator_managers_connector_.needs_input_event_delay()) {
-          if (core_configuration_) {
-            auto t = time_utility::nano_to_absolute(input_event_delay_milliseconds_ * NSEC_PER_MSEC);
-            queued_event.get_event_time_stamp().set_input_delay_time_stamp(t);
-          }
-        }
-        break;
-
-      case event_type::single:
-        // Do nothing
-        break;
     }
   }
 
@@ -1043,7 +1010,6 @@ private:
 
   std::mutex manipulate_mutex_;
   boost::optional<manipulator::manipulator_timer::timer_id> manipulator_timer_id_;
-  int input_event_delay_milliseconds_;
 
   std::shared_ptr<event_queue> merged_input_event_queue_;
 
