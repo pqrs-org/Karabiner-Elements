@@ -597,7 +597,7 @@ public:
                 std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events;
 
                 {
-                  std::vector<manipulated_original_event::from_event> ordered_from_events;
+                  bool all_from_events_found = false;
                   uint64_t simultaneous_threshold_milliseconds = parameters_.get_basic_simultaneous_threshold_milliseconds();
                   uint64_t end_time_stamp = front_input_event.get_time_stamp() + time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC);
 
@@ -610,42 +610,50 @@ public:
                       continue;
                     }
 
-                    if (!from_event_definition::test_event(front_input_event.get_event(), from_)) {
-                      continue;
-                    }
-
-                    // Update ordered_from_events.
-
                     manipulated_original_event::from_event fe(queued_event.get_device_id(),
                                                               queued_event.get_event(),
                                                               queued_event.get_original_event());
 
                     switch (queued_event.get_event_type()) {
                       case event_type::key_down:
-                        ordered_from_events.push_back(fe);
+                        // Do not manipulate if another event arrived.
+
+                        if (!from_event_definition::test_event(queued_event.get_event(), from_)) {
+                          is_target = false;
+                        }
+
+                        // Do not manipulate if same key is already pressed.
+
+                        if (from_events.find(fe) != std::end(from_events)) {
+                          is_target = false;
+                        }
+
+                        from_events.insert(fe);
                         break;
 
                       case event_type::key_up:
-                        ordered_from_events.erase(std::remove(std::begin(ordered_from_events),
-                                                              std::end(ordered_from_events),
-                                                              fe),
-                                                  std::end(ordered_from_events));
+                        // Do not manipulate if pressed key is released.
+
+                        if (from_events.find(fe) != std::end(from_events)) {
+                          is_target = false;
+                        }
+
                         break;
 
                       case event_type::single:
                         break;
                     }
 
-                    if (ordered_from_events.empty()) {
+                    if (from_events.empty()) {
                       continue;
                     }
 
-                    // Check all from_ events exist in ordered_from_events.
+                    // Check all from_ events exist in from_events.
 
                     bool found = true;
                     for (const auto& d : from_.get_event_definitions()) {
-                      if (std::none_of(std::begin(ordered_from_events),
-                                       std::end(ordered_from_events),
+                      if (std::none_of(std::begin(from_events),
+                                       std::end(from_events),
                                        [&](auto& e) {
                                          return from_event_definition::test_event(e.get_event(), d);
                                        })) {
@@ -654,25 +662,14 @@ public:
                     }
 
                     if (found) {
-                      // Remove same events from other devices
-
-                      for (const auto& ofe : ordered_from_events) {
-                        if (std::none_of(std::begin(from_events),
-                                         std::end(from_events),
-                                         [&](auto& e) {
-                                           return e.get_event() == ofe.get_event();
-                                         })) {
-                          from_events.insert(ofe);
-                        }
-                      }
-
+                      all_from_events_found = true;
                       break;
                     }
                   }
-                }
 
-                if (from_events.empty()) {
-                  is_target = false;
+                  if (!all_from_events_found) {
+                    is_target = false;
+                  }
                 }
 
                 // ----------------------------------------
