@@ -30,11 +30,10 @@ public:
   }
 
   void manipulate(const std::shared_ptr<event_queue>& input_event_queue,
-                  const std::shared_ptr<event_queue>& output_event_queue) {
+                  const std::shared_ptr<event_queue>& output_event_queue,
+                  uint64_t now) {
     if (input_event_queue &&
         output_event_queue) {
-      uint64_t now = mach_absolute_time();
-
       while (!input_event_queue->empty()) {
         auto& front_input_event = input_event_queue->get_front_event();
 

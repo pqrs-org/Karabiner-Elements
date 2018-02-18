@@ -72,8 +72,10 @@ public:
       REQUIRE(!manipulator_managers.empty());
       REQUIRE(!event_queues.empty());
 
+      uint64_t now = 0;
+
       auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
-        connector.manipulate();
+        connector.manipulate(now);
       });
 
       {
@@ -96,14 +98,15 @@ public:
           } else if (auto v = json_utility::find_optional<bool>(j, "pause_manipulation")) {
             pause_manipulation = *v;
             if (!pause_manipulation) {
-              connector.manipulate();
+              connector.manipulate(now);
             }
 
           } else {
             auto e = event_queue::queued_event(j);
+            now = e.get_time_stamp();
             event_queues.front()->push_back_event(e);
             if (!pause_manipulation) {
-              connector.manipulate();
+              connector.manipulate(now);
             }
           }
         }

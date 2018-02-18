@@ -17,9 +17,10 @@ public:
                                                                          output_event_queue_(output_event_queue) {
     }
 
-    void manipulate(void) {
+    void manipulate(uint64_t now) {
       manipulator_manager_.manipulate(input_event_queue_.lock(),
-                                      output_event_queue_.lock());
+                                      output_event_queue_.lock(),
+                                      now);
     }
 
     void invalidate_manipulators(void) {
@@ -81,9 +82,9 @@ public:
     }
   }
 
-  void manipulate(void) {
+  void manipulate(uint64_t now) {
     for (auto&& c : connections_) {
-      c.manipulate();
+      c.manipulate(now);
     }
   }
 

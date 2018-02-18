@@ -429,7 +429,8 @@ private:
       std::unique_lock<std::mutex> lock(manipulate_mutex_, std::try_to_lock);
 
       if (lock.owns_lock()) {
-        manipulator_managers_connector_.manipulate();
+        uint64_t now = mach_absolute_time();
+        manipulator_managers_connector_.manipulate(now);
 
         posted_event_queue_->clear_events();
         post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
