@@ -559,6 +559,33 @@ public:
           value_;
     };
 
+    class event_time_stamp final {
+    public:
+      event_time_stamp(uint64_t time_stamp) : time_stamp_(time_stamp),
+                                              input_delay_time_stamp_(0) {
+      }
+
+      uint64_t get_time_stamp(void) const {
+        return time_stamp_;
+      }
+
+      void set_time_stamp(uint64_t value) {
+        time_stamp_ = value;
+      }
+
+      uint64_t get_input_delay_time_stamp(void) const {
+        return input_delay_time_stamp_;
+      }
+
+      void set_input_delay_time_stamp(uint64_t value) {
+        input_delay_time_stamp_ = value;
+      }
+
+    private:
+      uint64_t time_stamp_;
+      uint64_t input_delay_time_stamp_;
+    };
+
     queued_event(device_id device_id,
                  uint64_t time_stamp,
                  const class event& event,
