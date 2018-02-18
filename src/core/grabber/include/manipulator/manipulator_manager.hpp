@@ -56,7 +56,7 @@ public:
             for (auto&& m : manipulators_) {
               m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
                                                *output_event_queue,
-                                               front_input_event.get_time_stamp());
+                                               front_input_event.get_event_time_stamp().get_time_stamp());
             }
             break;
 
@@ -102,7 +102,7 @@ public:
                   break;
 
                 case details::manipulate_result::needs_wait_until_time_stamp:
-                  if (now < front_input_event.get_time_stamp()) {
+                  if (now < front_input_event.get_event_time_stamp().make_time_stamp_with_input_delay()) {
                     goto finish;
                   }
                   break;

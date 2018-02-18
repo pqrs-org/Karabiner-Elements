@@ -11,7 +11,9 @@
             "key_code": "left_shift",
             "type": "key_code"
         },
-        "time_stamp": 2000000,
+        "event_time_stamp": {
+            "time_stamp": 2000000
+        },
         "valid": true
     },
     {
@@ -26,7 +28,9 @@
             "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 4000000,
+        "event_time_stamp": {
+            "time_stamp": 4000000
+        },
         "valid": true
     },
     {
@@ -41,7 +45,9 @@
             "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 8000000,
+        "event_time_stamp": {
+            "time_stamp": 8000000
+        },
         "valid": true
     },
     {
@@ -56,7 +62,9 @@
             "consumer_key_code": "mute",
             "type": "key_code"
         },
-        "time_stamp": 10000000,
+        "event_time_stamp": {
+            "time_stamp": 10000000
+        },
         "valid": true
     },
     {
@@ -71,7 +79,9 @@
             "consumer_key_code": "mute",
             "type": "key_code"
         },
-        "time_stamp": 12000000,
+        "event_time_stamp": {
+            "time_stamp": 12000000
+        },
         "valid": true
     },
     {
@@ -86,7 +96,9 @@
             "pointing_button": "button1",
             "type": "pointing_button"
         },
-        "time_stamp": 14000000,
+        "event_time_stamp": {
+            "time_stamp": 14000000
+        },
         "valid": true
     },
     {
@@ -101,7 +113,9 @@
             "pointing_button": "button1",
             "type": "pointing_button"
         },
-        "time_stamp": 16000000,
+        "event_time_stamp": {
+            "time_stamp": 16000000
+        },
         "valid": true
     },
     {
@@ -116,7 +130,9 @@
             "key_code": "left_shift",
             "type": "key_code"
         },
-        "time_stamp": 18000000,
+        "event_time_stamp": {
+            "time_stamp": 18000000
+        },
         "valid": true
     },
     {
@@ -131,7 +147,9 @@
             "key_code": "left_control",
             "type": "key_code"
         },
-        "time_stamp": 20000000,
+        "event_time_stamp": {
+            "time_stamp": 20000000
+        },
         "valid": true
     },
     {
@@ -146,7 +164,9 @@
             "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 22000000,
+        "event_time_stamp": {
+            "time_stamp": 22000000
+        },
         "valid": true
     },
     {
@@ -161,7 +181,9 @@
             "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 24000000,
+        "event_time_stamp": {
+            "time_stamp": 24000000
+        },
         "valid": true
     },
     {
@@ -176,7 +198,9 @@
             "consumer_key_code": "mute",
             "type": "key_code"
         },
-        "time_stamp": 26000000,
+        "event_time_stamp": {
+            "time_stamp": 26000000
+        },
         "valid": true
     },
     {
@@ -191,7 +215,9 @@
             "consumer_key_code": "mute",
             "type": "key_code"
         },
-        "time_stamp": 28000000,
+        "event_time_stamp": {
+            "time_stamp": 28000000
+        },
         "valid": true
     },
     {
@@ -206,7 +232,9 @@
             "pointing_button": "button1",
             "type": "pointing_button"
         },
-        "time_stamp": 30000000,
+        "event_time_stamp": {
+            "time_stamp": 30000000
+        },
         "valid": true
     },
     {
@@ -221,7 +249,9 @@
             "pointing_button": "button1",
             "type": "pointing_button"
         },
-        "time_stamp": 32000000,
+        "event_time_stamp": {
+            "time_stamp": 32000000
+        },
         "valid": true
     },
     {
@@ -236,7 +266,9 @@
             "key_code": "left_control",
             "type": "key_code"
         },
-        "time_stamp": 34000000,
+        "event_time_stamp": {
+            "time_stamp": 34000000
+        },
         "valid": true
     },
     {
@@ -251,7 +283,9 @@
             "key_code": "left_command",
             "type": "key_code"
         },
-        "time_stamp": 20000000,
+        "event_time_stamp": {
+            "time_stamp": 20000000
+        },
         "valid": true
     },
     {
@@ -266,7 +300,9 @@
             "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 22000000,
+        "event_time_stamp": {
+            "time_stamp": 22000000
+        },
         "valid": true
     },
     {
@@ -281,7 +317,9 @@
             "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 24000000,
+        "event_time_stamp": {
+            "time_stamp": 24000000
+        },
         "valid": true
     },
     {
@@ -296,7 +334,9 @@
             "consumer_key_code": "mute",
             "type": "key_code"
         },
-        "time_stamp": 26000000,
+        "event_time_stamp": {
+            "time_stamp": 26000000
+        },
         "valid": true
     },
     {
@@ -311,7 +351,9 @@
             "consumer_key_code": "mute",
             "type": "key_code"
         },
-        "time_stamp": 28000000,
+        "event_time_stamp": {
+            "time_stamp": 28000000
+        },
         "valid": true
     },
     {
@@ -326,7 +368,9 @@
             "pointing_button": "button1",
             "type": "pointing_button"
         },
-        "time_stamp": 30000000,
+        "event_time_stamp": {
+            "time_stamp": 30000000
+        },
         "valid": true
     },
     {
@@ -341,7 +385,9 @@
             "pointing_button": "button1",
             "type": "pointing_button"
         },
-        "time_stamp": 32000000,
+        "event_time_stamp": {
+            "time_stamp": 32000000
+        },
         "valid": true
     },
     {
@@ -356,7 +402,9 @@
             "key_code": "left_command",
             "type": "key_code"
         },
-        "time_stamp": 34000000,
+        "event_time_stamp": {
+            "time_stamp": 34000000
+        },
         "valid": true
     }
 ]

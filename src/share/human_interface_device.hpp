@@ -815,7 +815,7 @@ private:
     if (pressed_keys_.empty()) {
       auto event = event_queue::queued_event::event::make_device_keys_and_pointing_buttons_are_released_event();
       input_event_queue_.emplace_back_event(device_id_,
-                                            time_stamp,
+                                            event_queue::queued_event::event_time_stamp(time_stamp),
                                             event,
                                             event_type::single,
                                             event);

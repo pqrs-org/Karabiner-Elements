@@ -11,7 +11,10 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 100,
+        "event_time_stamp": {
+            "time_stamp": 100,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     },
     {
@@ -26,7 +29,10 @@
             "key_code": "escape",
             "type": "key_code"
         },
-        "time_stamp": 200,
+        "event_time_stamp": {
+            "time_stamp": 200,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     },
     {
@@ -41,7 +47,10 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 300,
+        "event_time_stamp": {
+            "time_stamp": 300,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     },
     {
@@ -56,7 +65,10 @@
             "key_code": "escape",
             "type": "key_code"
         },
-        "time_stamp": 400,
+        "event_time_stamp": {
+            "time_stamp": 400,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     },
     {
@@ -71,7 +83,10 @@
             "key_code": "left_shift",
             "type": "key_code"
         },
-        "time_stamp": 500,
+        "event_time_stamp": {
+            "time_stamp": 500,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     },
     {
@@ -86,7 +101,10 @@
             "key_code": "left_shift",
             "type": "key_code"
         },
-        "time_stamp": 600,
+        "event_time_stamp": {
+            "time_stamp": 600,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     },
     {
@@ -101,7 +119,10 @@
             "key_code": "right_shift",
             "type": "key_code"
         },
-        "time_stamp": 700,
+        "event_time_stamp": {
+            "time_stamp": 700,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     },
     {
@@ -116,7 +137,10 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 800,
+        "event_time_stamp": {
+            "time_stamp": 800,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     },
     {
@@ -131,7 +155,10 @@
             "key_code": "tab",
             "type": "key_code"
         },
-        "time_stamp": 900,
+        "event_time_stamp": {
+            "time_stamp": 900,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     },
     {
@@ -146,7 +173,10 @@
             "key_code": "tab",
             "type": "key_code"
         },
-        "time_stamp": 1200,
+        "event_time_stamp": {
+            "time_stamp": 1200,
+            "input_delay_time_stamp": 0
+        },
         "valid": true
     }
 ]

@@ -12,7 +12,9 @@
             "key_code": "f1",
             "type": "key_code"
         },
-        "time_stamp": 2000000,
+        "event_time_stamp": {
+            "time_stamp": 2000000
+        },
         "valid": true
     },
     {
@@ -31,7 +33,9 @@
             "key_code": "f1",
             "type": "key_code"
         },
-        "time_stamp": 10002000000,
+        "event_time_stamp": {
+            "time_stamp": 10002000000
+        },
         "valid": true
     },
     {
@@ -47,7 +51,9 @@
             "key_code": "tab",
             "type": "key_code"
         },
-        "time_stamp": 10004000000,
+        "event_time_stamp": {
+            "time_stamp": 10004000000
+        },
         "valid": true
     },
     {
@@ -62,7 +68,9 @@
             "key_code": "f1",
             "type": "key_code"
         },
-        "time_stamp": 10006000000,
+        "event_time_stamp": {
+            "time_stamp": 10006000000
+        },
         "valid": true
     },
     {
@@ -77,7 +85,9 @@
             "key_code": "tab",
             "type": "key_code"
         },
-        "time_stamp": 10008000000,
+        "event_time_stamp": {
+            "time_stamp": 10008000000
+        },
         "valid": true
     },
     {
@@ -96,7 +106,9 @@
             "key_code": "f1",
             "type": "key_code"
         },
-        "time_stamp": 20002000000,
+        "event_time_stamp": {
+            "time_stamp": 20002000000
+        },
         "valid": true
     }
 ]

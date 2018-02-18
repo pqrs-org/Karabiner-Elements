@@ -11,7 +11,9 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 2000000,
+        "event_time_stamp": {
+            "time_stamp": 2000000
+        },
         "valid": true
     },
     {
@@ -26,7 +28,9 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 4000000,
+        "event_time_stamp": {
+            "time_stamp": 4000000
+        },
         "valid": true
     }
 ]

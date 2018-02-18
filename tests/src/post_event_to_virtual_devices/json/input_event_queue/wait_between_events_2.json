@@ -11,7 +11,9 @@
             "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 1000000000,
+        "event_time_stamp": {
+            "time_stamp": 1000000000
+        },
         "valid": true
     },
     {
@@ -26,7 +28,9 @@
             "key_code": "b",
             "type": "key_code"
         },
-        "time_stamp": 1000000001,
+        "event_time_stamp": {
+            "time_stamp": 1000000001
+        },
         "valid": true
     },
     {
@@ -41,7 +45,9 @@
             "key_code": "c",
             "type": "key_code"
         },
-        "time_stamp": 1000000002,
+        "event_time_stamp": {
+            "time_stamp": 1000000002
+        },
         "valid": true
     },
     {
@@ -56,7 +62,9 @@
             "key_code": "a",
             "type": "key_code"
         },
-        "time_stamp": 1000000003,
+        "event_time_stamp": {
+            "time_stamp": 1000000003
+        },
         "valid": true
     },
     {
@@ -71,7 +79,9 @@
             "key_code": "b",
             "type": "key_code"
         },
-        "time_stamp": 1000000004,
+        "event_time_stamp": {
+            "time_stamp": 1000000004
+        },
         "valid": true
     },
     {
@@ -90,7 +100,9 @@
             },
             "type": "pointing_motion"
         },
-        "time_stamp": 1000000005,
+        "event_time_stamp": {
+            "time_stamp": 1000000005
+        },
         "valid": true
     },
     {
@@ -105,7 +117,9 @@
             "key_code": "c",
             "type": "key_code"
         },
-        "time_stamp": 1000000006,
+        "event_time_stamp": {
+            "time_stamp": 1000000006
+        },
         "valid": true
     },
     {
@@ -124,7 +138,9 @@
             },
             "type": "pointing_motion"
         },
-        "time_stamp": 1000000007,
+        "event_time_stamp": {
+            "time_stamp": 1000000007
+        },
         "valid": true
     }
 ]

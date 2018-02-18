@@ -792,7 +792,7 @@ public:
           dispatch_modifier_key_event_before) {
         key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
                                                           queue_,
-                                                          front_input_event.get_time_stamp());
+                                                          front_input_event.get_event_time_stamp().get_time_stamp());
       }
 
       switch (front_input_event.get_event().get_type()) {
@@ -807,14 +807,14 @@ public:
                                                                     *hid_usage_page,
                                                                     *hid_usage,
                                                                     queue_,
-                                                                    front_input_event.get_time_stamp());
+                                                                    front_input_event.get_event_time_stamp().get_time_stamp());
                       break;
 
                     case event_type::key_up:
                       key_event_dispatcher_.dispatch_key_up_event(*hid_usage_page,
                                                                   *hid_usage,
                                                                   queue_,
-                                                                  front_input_event.get_time_stamp());
+                                                                  front_input_event.get_event_time_stamp().get_time_stamp());
                       break;
 
                     case event_type::single:
@@ -836,14 +836,14 @@ public:
                                                                   *hid_usage_page,
                                                                   *hid_usage,
                                                                   queue_,
-                                                                  front_input_event.get_time_stamp());
+                                                                  front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
 
                   case event_type::key_up:
                     key_event_dispatcher_.dispatch_key_up_event(*hid_usage_page,
                                                                 *hid_usage,
                                                                 queue_,
-                                                                front_input_event.get_time_stamp());
+                                                                front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
 
                   case event_type::single:
@@ -867,7 +867,7 @@ public:
 
           queue_.emplace_back_pointing_input(report,
                                              front_input_event.get_event_type(),
-                                             front_input_event.get_time_stamp());
+                                             front_input_event.get_event_time_stamp().get_time_stamp());
 
           // Save bits for `handle_device_ungrabbed_event`.
           pressed_buttons_ = output_event_queue->get_pointing_button_manager().get_hid_report_bits();
@@ -879,7 +879,7 @@ public:
           if (auto shell_command = front_input_event.get_event().get_shell_command()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
               queue_.push_back_shell_command_event(*shell_command,
-                                                   front_input_event.get_time_stamp());
+                                                   front_input_event.get_event_time_stamp().get_time_stamp());
             }
           }
           break;
@@ -888,7 +888,7 @@ public:
           if (auto input_source_selectors = front_input_event.get_event().get_input_source_selectors()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
               queue_.push_back_select_input_source_event(*input_source_selectors,
-                                                         front_input_event.get_time_stamp());
+                                                         front_input_event.get_event_time_stamp().get_time_stamp());
             }
           }
           break;
@@ -899,12 +899,12 @@ public:
               mouse_key_handler_.push_back_mouse_key(front_input_event.get_device_id(),
                                                      *mouse_key,
                                                      output_event_queue,
-                                                     front_input_event.get_time_stamp());
+                                                     front_input_event.get_event_time_stamp().get_time_stamp());
             } else {
               mouse_key_handler_.erase_mouse_key(front_input_event.get_device_id(),
                                                  *mouse_key,
                                                  output_event_queue,
-                                                 front_input_event.get_time_stamp());
+                                                 front_input_event.get_event_time_stamp().get_time_stamp());
             }
           }
           break;
@@ -927,7 +927,7 @@ public:
           !dispatch_modifier_key_event_before) {
         key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
                                                           queue_,
-                                                          front_input_event.get_time_stamp());
+                                                          front_input_event.get_event_time_stamp().get_time_stamp());
       }
     }
 
@@ -952,7 +952,7 @@ public:
 
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                       queue_,
-                                                      front_input_event.get_time_stamp());
+                                                      front_input_event.get_event_time_stamp().get_time_stamp());
 
     // pointing buttons
 
@@ -962,7 +962,7 @@ public:
         auto report = output_event_queue.get_pointing_button_manager().make_pointing_input_report();
         queue_.emplace_back_pointing_input(report,
                                            event_type::key_up,
-                                           front_input_event.get_time_stamp());
+                                           front_input_event.get_event_time_stamp().get_time_stamp());
 
         // Save bits for `handle_device_ungrabbed_event`.
         pressed_buttons_ = bits;
@@ -972,7 +972,7 @@ public:
     // mouse keys
 
     mouse_key_handler_.erase_mouse_keys_by_device_id(front_input_event.get_device_id(),
-                                                     front_input_event.get_time_stamp());
+                                                     front_input_event.get_event_time_stamp().get_time_stamp());
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
@@ -1034,7 +1034,7 @@ public:
             !mouse_key_handler_.active()) {
           key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                             queue_,
-                                                            front_input_event.get_time_stamp());
+                                                            front_input_event.get_event_time_stamp().get_time_stamp());
         }
         break;
 

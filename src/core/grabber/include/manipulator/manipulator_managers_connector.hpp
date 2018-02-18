@@ -37,7 +37,7 @@ public:
 
     boost::optional<uint64_t> min_input_event_time_stamp(void) const {
       if (auto ieq = input_event_queue_.lock()) {
-        return ieq->min_event_time_stamp();
+        return ieq->min_event_time_stamp_with_input_delay();
       }
       return boost::none;
     }

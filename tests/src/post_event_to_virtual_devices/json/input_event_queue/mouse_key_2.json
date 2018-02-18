@@ -11,7 +11,9 @@
             "key_code": "right_shift",
             "type": "key_code"
         },
-        "time_stamp": 2000000,
+        "event_time_stamp": {
+            "time_stamp": 2000000
+        },
         "valid": true
     },
     {
@@ -26,7 +28,9 @@
             "key_code": "d",
             "type": "key_code"
         },
-        "time_stamp": 4000000,
+        "event_time_stamp": {
+            "time_stamp": 4000000
+        },
         "valid": true
     },
     {
@@ -40,7 +44,9 @@
             "pointing_button": "button1",
             "type": "pointing_button"
         },
-        "time_stamp": 6000000,
+        "event_time_stamp": {
+            "time_stamp": 6000000
+        },
         "valid": true
     },
     {
@@ -55,7 +61,9 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 8000000,
+        "event_time_stamp": {
+            "time_stamp": 8000000
+        },
         "valid": true
     }
 ]

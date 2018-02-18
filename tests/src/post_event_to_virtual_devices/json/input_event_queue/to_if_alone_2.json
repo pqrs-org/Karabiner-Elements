@@ -11,7 +11,9 @@
             "key_code": "right_control",
             "type": "key_code"
         },
-        "time_stamp": 2000000,
+        "event_time_stamp": {
+            "time_stamp": 2000000
+        },
         "valid": true
     },
     {
@@ -25,7 +27,9 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 4000000,
+        "event_time_stamp": {
+            "time_stamp": 4000000
+        },
         "valid": true
     },
     {
@@ -40,7 +44,9 @@
             "key_code": "right_control",
             "type": "key_code"
         },
-        "time_stamp": 6000000,
+        "event_time_stamp": {
+            "time_stamp": 6000000
+        },
         "valid": true
     },
     {
@@ -55,7 +61,9 @@
             "key_code": "right_control",
             "type": "key_code"
         },
-        "time_stamp": 8000000,
+        "event_time_stamp": {
+            "time_stamp": 8000000
+        },
         "valid": true
     },
     {
@@ -71,7 +79,9 @@
             },
             "type": "pointing_motion"
         },
-        "time_stamp": 10000000,
+        "event_time_stamp": {
+            "time_stamp": 10000000
+        },
         "valid": true
     },
     {
@@ -86,7 +96,9 @@
             "key_code": "right_control",
             "type": "key_code"
         },
-        "time_stamp": 12000000,
+        "event_time_stamp": {
+            "time_stamp": 12000000
+        },
         "valid": true
     },
     {
@@ -101,7 +113,9 @@
             "key_code": "right_control",
             "type": "key_code"
         },
-        "time_stamp": 14000000,
+        "event_time_stamp": {
+            "time_stamp": 14000000
+        },
         "valid": true
     },
     {
@@ -115,7 +129,9 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 16000000,
+        "event_time_stamp": {
+            "time_stamp": 16000000
+        },
         "valid": true
     },
     {
@@ -131,7 +147,9 @@
             },
             "type": "pointing_motion"
         },
-        "time_stamp": 18000000,
+        "event_time_stamp": {
+            "time_stamp": 18000000
+        },
         "valid": true
     },
     {
@@ -147,7 +165,9 @@
             },
             "type": "pointing_motion"
         },
-        "time_stamp": 20000000,
+        "event_time_stamp": {
+            "time_stamp": 20000000
+        },
         "valid": true
     },
     {
@@ -162,7 +182,9 @@
             "key_code": "right_control",
             "type": "key_code"
         },
-        "time_stamp": 22000000,
+        "event_time_stamp": {
+            "time_stamp": 22000000
+        },
         "valid": true
     }
 ]

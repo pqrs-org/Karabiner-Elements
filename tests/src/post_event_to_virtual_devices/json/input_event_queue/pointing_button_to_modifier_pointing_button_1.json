@@ -11,7 +11,9 @@
             "pointing_button": "button11",
             "type": "pointing_button"
         },
-        "time_stamp": 2000000,
+        "event_time_stamp": {
+            "time_stamp": 2000000
+        },
         "valid": true
     },
     {
@@ -25,7 +27,9 @@
             "pointing_button": "button3",
             "type": "pointing_button"
         },
-        "time_stamp": 4000000,
+        "event_time_stamp": {
+            "time_stamp": 4000000
+        },
         "valid": true
     },
     {
@@ -44,7 +48,9 @@
             },
             "type": "pointing_motion"
         },
-        "time_stamp": 6000000,
+        "event_time_stamp": {
+            "time_stamp": 6000000
+        },
         "valid": true
     },
     {
@@ -60,7 +66,9 @@
             },
             "type": "pointing_motion"
         },
-        "time_stamp": 8000000,
+        "event_time_stamp": {
+            "time_stamp": 8000000
+        },
         "valid": true
     },
     {
@@ -75,7 +83,9 @@
             "pointing_button": "button11",
             "type": "pointing_button"
         },
-        "time_stamp": 10000000,
+        "event_time_stamp": {
+            "time_stamp": 10000000
+        },
         "valid": true
     },
     {
@@ -89,7 +99,9 @@
             "pointing_button": "button3",
             "type": "pointing_button"
         },
-        "time_stamp": 12000000,
+        "event_time_stamp": {
+            "time_stamp": 12000000
+        },
         "valid": true
     }
 ]

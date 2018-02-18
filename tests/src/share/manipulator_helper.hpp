@@ -103,7 +103,7 @@ public:
 
           } else {
             auto e = event_queue::queued_event(j);
-            now = e.get_time_stamp();
+            now = e.get_event_time_stamp().get_time_stamp();
             event_queues.front()->push_back_event(e);
             if (!pause_manipulation) {
               connector.manipulate(now);

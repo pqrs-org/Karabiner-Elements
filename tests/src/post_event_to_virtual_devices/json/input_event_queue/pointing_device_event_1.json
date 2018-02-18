@@ -11,7 +11,9 @@
             "key_code": "left_control",
             "type": "key_code"
         },
-        "time_stamp": 2000000,
+        "event_time_stamp": {
+            "time_stamp": 2000000
+        },
         "valid": true
     },
     {
@@ -26,7 +28,9 @@
             "key_code": "p",
             "type": "key_code"
         },
-        "time_stamp": 4000000,
+        "event_time_stamp": {
+            "time_stamp": 4000000
+        },
         "valid": true
     },
     {
@@ -41,14 +45,16 @@
             "key_code": "p",
             "type": "key_code"
         },
-        "time_stamp": 6000000,
+        "event_time_stamp": {
+            "time_stamp": 6000000
+        },
         "valid": true
     },
     {
         "device_id": 1,
         "event": {
             "pointing_motion": {
-                    "x": -10
+                "x": -10
             },
             "type": "pointing_motion"
         },
@@ -56,11 +62,13 @@
         "lazy": false,
         "original_event": {
             "pointing_motion": {
-                    "x": -10
+                "x": -10
             },
             "type": "pointing_motion"
         },
-        "time_stamp": 8000000,
+        "event_time_stamp": {
+            "time_stamp": 8000000
+        },
         "valid": true
     }
 ]

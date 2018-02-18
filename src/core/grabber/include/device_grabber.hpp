@@ -262,7 +262,7 @@ public:
       auto event = event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
                                                                                               file_path);
       event_queue::queued_event queued_event(device_id(0),
-                                             mach_absolute_time(),
+                                             event_queue::queued_event::event_time_stamp(mach_absolute_time()),
                                              event,
                                              event_type::single,
                                              event);
@@ -278,7 +278,7 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       auto event = event_queue::queued_event::event::make_input_source_changed_event(input_source_identifiers);
       event_queue::queued_event queued_event(device_id(0),
-                                             mach_absolute_time(),
+                                             event_queue::queued_event::event_time_stamp(mach_absolute_time()),
                                              event,
                                              event_type::single,
                                              event);
@@ -296,7 +296,7 @@ public:
         auto keyboard_type = core_configuration_->get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type();
         auto event = event_queue::queued_event::event::make_keyboard_type_changed_event(keyboard_type);
         event_queue::queued_event queued_event(device_id(0),
-                                               mach_absolute_time(),
+                                               event_queue::queued_event::event_time_stamp(mach_absolute_time()),
                                                event,
                                                event_type::single,
                                                event);
@@ -449,7 +449,7 @@ private:
       for (const auto& queued_event : event_queue.get_events()) {
         if (device.is_grabbed()) {
           event_queue::queued_event qe(queued_event.get_device_id(),
-                                       queued_event.get_time_stamp(),
+                                       queued_event.get_event_time_stamp(),
                                        queued_event.get_event(),
                                        queued_event.get_event_type(),
                                        queued_event.get_original_event());
@@ -461,7 +461,7 @@ private:
           // device is ignored
           auto event = event_queue::queued_event::event::make_event_from_ignored_device_event();
           event_queue::queued_event qe(queued_event.get_device_id(),
-                                       queued_event.get_time_stamp(),
+                                       queued_event.get_event_time_stamp(),
                                        event,
                                        queued_event.get_event_type(),
                                        queued_event.get_event());
@@ -479,7 +479,7 @@ private:
   void post_device_ungrabbed_event(device_id device_id) {
     auto event = event_queue::queued_event::event::make_device_ungrabbed_event();
     event_queue::queued_event queued_event(device_id,
-                                           mach_absolute_time(),
+                                           event_queue::queued_event::event_time_stamp(mach_absolute_time()),
                                            event,
                                            event_type::single,
                                            event);
@@ -493,7 +493,7 @@ private:
   void post_caps_lock_state_changed_callback(bool caps_lock_state) {
     event_queue::queued_event::event event(event_queue::queued_event::event::type::caps_lock_state_changed, caps_lock_state);
     event_queue::queued_event queued_event(device_id(0),
-                                           mach_absolute_time(),
+                                           event_queue::queued_event::event_time_stamp(mach_absolute_time()),
                                            event,
                                            event_type::single,
                                            event);
@@ -643,7 +643,7 @@ private:
     if (pseudo_event_type && pseudo_event) {
       auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
       event_queue::queued_event queued_event(device_id(0),
-                                             mach_absolute_time(),
+                                             event_queue::queued_event::event_time_stamp(mach_absolute_time()),
                                              e,
                                              *pseudo_event_type,
                                              *pseudo_event);
@@ -661,9 +661,8 @@ private:
       case event_type::key_up:
         if (manipulator_managers_connector_.needs_input_event_delay()) {
           if (core_configuration_) {
-            auto time_stamp = queued_event.get_time_stamp();
-            time_stamp += time_utility::nano_to_absolute(input_event_delay_milliseconds_ * NSEC_PER_MSEC);
-            queued_event.set_time_stamp(time_stamp);
+            auto t = time_utility::nano_to_absolute(input_event_delay_milliseconds_ * NSEC_PER_MSEC);
+            queued_event.get_event_time_stamp().set_input_delay_time_stamp(t);
           }
         }
         break;

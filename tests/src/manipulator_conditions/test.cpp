@@ -165,7 +165,7 @@ TEST_CASE("conditions.frontmost_application") {
   actual_examples_helper helper("frontmost_application.json");
   krbn::manipulator_environment manipulator_environment;
   krbn::event_queue::queued_event queued_event(krbn::device_id(1),
-                                               0,
+                                               krbn::event_queue::queued_event::event_time_stamp(0),
                                                krbn::event_queue::queued_event::event(krbn::key_code::a),
                                                krbn::event_type::key_down,
                                                krbn::event_queue::queued_event::event(krbn::key_code::a));
@@ -209,7 +209,7 @@ TEST_CASE("conditions.input_source") {
   actual_examples_helper helper("input_source.json");
   krbn::manipulator_environment manipulator_environment;
   krbn::event_queue::queued_event queued_event(krbn::device_id(1),
-                                               0,
+                                               krbn::event_queue::queued_event::event_time_stamp(0),
                                                krbn::event_queue::queued_event::event(krbn::key_code::a),
                                                krbn::event_type::key_down,
                                                krbn::event_queue::queued_event::event(krbn::key_code::a));
@@ -297,7 +297,7 @@ TEST_CASE("conditions.device") {
 
 #define QUEUED_EVENT(DEVICE_ID)                                                              \
   krbn::event_queue::queued_event(DEVICE_ID,                                                 \
-                                  0,                                                         \
+                                  krbn::event_queue::queued_event::event_time_stamp(0),      \
                                   krbn::event_queue::queued_event::event(krbn::key_code::a), \
                                   krbn::event_type::key_down,                                \
                                   krbn::event_queue::queued_event::event(krbn::key_code::a))
@@ -412,7 +412,7 @@ TEST_CASE("conditions.device") {
 TEST_CASE("conditions.keyboard_type") {
   krbn::manipulator_environment manipulator_environment;
   krbn::event_queue::queued_event queued_event(krbn::device_id(1),
-                                               0,
+                                               krbn::event_queue::queued_event::event_time_stamp(0),
                                                krbn::event_queue::queued_event::event(krbn::key_code::a),
                                                krbn::event_type::key_down,
                                                krbn::event_queue::queued_event::event(krbn::key_code::a));

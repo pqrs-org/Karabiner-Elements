@@ -1899,6 +1899,11 @@ inline std::ostream& operator<<(std::ostream& stream, const container<modifier_f
   return stream_utility::output_enums(stream, values);
 }
 
+inline std::ostream& operator<<(std::ostream& stream, const pointing_motion& value) {
+  stream << "pointing_motion:" << value.to_json();
+  return stream;
+}
+
 inline std::ostream& operator<<(std::ostream& stream, const input_source_identifiers& value) {
   stream << "language:";
 

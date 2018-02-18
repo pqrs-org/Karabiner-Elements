@@ -46,8 +46,8 @@ public:
                     value_(boost::blank()) {
       }
 
-      event(const nlohmann::json& json) : type_(type::none),
-                                          value_(boost::blank()) {
+      explicit event(const nlohmann::json& json) : type_(type::none),
+                                                   value_(boost::blank()) {
         if (auto v = json_utility::find_optional<std::string>(json, "type")) {
           type_ = to_type(*v);
         }
@@ -250,25 +250,25 @@ public:
         return json;
       }
 
-      event(key_code key_code) : type_(type::key_code),
-                                 value_(key_code) {
+      explicit event(key_code key_code) : type_(type::key_code),
+                                          value_(key_code) {
       }
 
-      event(consumer_key_code consumer_key_code) : type_(type::consumer_key_code),
-                                                   value_(consumer_key_code) {
+      explicit event(consumer_key_code consumer_key_code) : type_(type::consumer_key_code),
+                                                            value_(consumer_key_code) {
       }
 
-      event(pointing_button pointing_button) : type_(type::pointing_button),
-                                               value_(pointing_button) {
+      explicit event(pointing_button pointing_button) : type_(type::pointing_button),
+                                                        value_(pointing_button) {
       }
 
-      event(const pointing_motion& pointing_motion) : type_(type::pointing_motion),
-                                                      value_(pointing_motion) {
+      explicit event(const pointing_motion& pointing_motion) : type_(type::pointing_motion),
+                                                               value_(pointing_motion) {
       }
 
-      event(type type,
-            int64_t integer_value) : type_(type),
-                                     value_(integer_value) {
+      explicit event(type type,
+                     int64_t integer_value) : type_(type),
+                                              value_(integer_value) {
       }
 
       static event make_shell_command_event(const std::string& shell_command) {
@@ -561,8 +561,31 @@ public:
 
     class event_time_stamp final {
     public:
-      event_time_stamp(uint64_t time_stamp) : time_stamp_(time_stamp),
-                                              input_delay_time_stamp_(0) {
+      explicit event_time_stamp(uint64_t time_stamp) : time_stamp_(time_stamp),
+                                                       input_delay_time_stamp_(0) {
+      }
+
+      explicit event_time_stamp(uint64_t time_stamp,
+                                uint64_t input_delay_time_stamp) : time_stamp_(time_stamp),
+                                                                   input_delay_time_stamp_(input_delay_time_stamp) {
+      }
+
+      explicit event_time_stamp(const nlohmann::json& json) : time_stamp_(0),
+                                                              input_delay_time_stamp_(0) {
+        if (auto v = json_utility::find_optional<uint64_t>(json, "time_stamp")) {
+          time_stamp_ = *v;
+        }
+
+        if (auto v = json_utility::find_optional<uint64_t>(json, "input_delay_time_stamp")) {
+          input_delay_time_stamp_ = *v;
+        }
+      }
+
+      nlohmann::json to_json(void) const {
+        return nlohmann::json::object({
+            {"time_stamp", time_stamp_},
+            {"input_delay_time_stamp", input_delay_time_stamp_},
+        });
       }
 
       uint64_t get_time_stamp(void) const {
@@ -581,37 +604,53 @@ public:
         input_delay_time_stamp_ = value;
       }
 
+      uint64_t make_time_stamp_with_input_delay(void) const {
+        return time_stamp_ + input_delay_time_stamp_;
+      }
+
+      bool operator==(const event_time_stamp& other) const {
+        return time_stamp_ == other.time_stamp_ &&
+               input_delay_time_stamp_ == other.input_delay_time_stamp_;
+      }
+
+      friend size_t hash_value(const event_time_stamp& value) {
+        size_t h = 0;
+        boost::hash_combine(h, value.time_stamp_);
+        boost::hash_combine(h, value.input_delay_time_stamp_);
+        return h;
+      }
+
     private:
       uint64_t time_stamp_;
       uint64_t input_delay_time_stamp_;
     };
 
-    queued_event(device_id device_id,
-                 uint64_t time_stamp,
-                 const class event& event,
-                 event_type event_type,
-                 const class event& original_event,
-                 bool lazy = false) : device_id_(device_id),
-                                      time_stamp_(time_stamp),
-                                      valid_(true),
-                                      lazy_(lazy),
-                                      event_(event),
-                                      event_type_(event_type),
-                                      original_event_(original_event) {
+    explicit queued_event(device_id device_id,
+                          const event_time_stamp& event_time_stamp,
+                          const class event& event,
+                          event_type event_type,
+                          const class event& original_event,
+                          bool lazy = false) : device_id_(device_id),
+                                               event_time_stamp_(event_time_stamp),
+                                               valid_(true),
+                                               lazy_(lazy),
+                                               event_(event),
+                                               event_type_(event_type),
+                                               original_event_(original_event) {
     }
 
-    queued_event(const nlohmann::json& json) : device_id_(device_id::zero),
-                                               time_stamp_(0),
-                                               valid_(true),
-                                               lazy_(false),
-                                               event_type_(event_type::key_down) {
+    explicit queued_event(const nlohmann::json& json) : device_id_(device_id::zero),
+                                                        event_time_stamp_(0),
+                                                        valid_(true),
+                                                        lazy_(false),
+                                                        event_type_(event_type::key_down) {
       if (json.is_object()) {
         if (auto v = json_utility::find_optional<uint32_t>(json, "device_id")) {
           device_id_ = device_id(*v);
         }
 
-        if (auto v = json_utility::find_optional<uint64_t>(json, "time_stamp")) {
-          time_stamp_ = *v;
+        if (auto v = json_utility::find_json(json, "event_time_stamp")) {
+          event_time_stamp_ = event_time_stamp(*v);
         }
 
         if (auto v = json_utility::find_optional<bool>(json, "valid")) {
@@ -623,7 +662,7 @@ public:
         }
 
         if (auto v = json_utility::find_json(json, "event")) {
-          event_ = *v;
+          event_ = event(*v);
         }
 
         if (auto v = json_utility::find_json(json, "event_type")) {
@@ -631,7 +670,7 @@ public:
         }
 
         if (auto v = json_utility::find_json(json, "original_event")) {
-          original_event_ = *v;
+          original_event_ = event(*v);
         }
       }
     }
@@ -639,7 +678,7 @@ public:
     nlohmann::json to_json(void) const {
       return nlohmann::json({
           {"device_id", static_cast<uint32_t>(device_id_)},
-          {"time_stamp", time_stamp_},
+          {"event_time_stamp", event_time_stamp_},
           {"valid", valid_},
           {"lazy", lazy_},
           {"event", event_},
@@ -652,11 +691,11 @@ public:
       return device_id_;
     }
 
-    uint64_t get_time_stamp(void) const {
-      return time_stamp_;
+    const event_time_stamp& get_event_time_stamp(void) const {
+      return event_time_stamp_;
     }
-    void set_time_stamp(uint64_t value) {
-      time_stamp_ = value;
+    event_time_stamp& get_event_time_stamp(void) {
+      return event_time_stamp_;
     }
 
     bool get_valid(void) const {
@@ -687,7 +726,7 @@ public:
 
     bool operator==(const queued_event& other) const {
       return get_device_id() == other.get_device_id() &&
-             get_time_stamp() == other.get_time_stamp() &&
+             get_event_time_stamp() == other.get_event_time_stamp() &&
              get_valid() == other.get_valid() &&
              get_lazy() == other.get_lazy() &&
              get_event() == other.get_event() &&
@@ -697,7 +736,7 @@ public:
 
   private:
     device_id device_id_;
-    uint64_t time_stamp_;
+    event_time_stamp event_time_stamp_;
     bool valid_;
     bool lazy_;
     event event_;
@@ -711,15 +750,16 @@ public:
   }
 
   void emplace_back_event(device_id device_id,
-                          uint64_t time_stamp,
+                          const queued_event::event_time_stamp& event_time_stamp,
                           const queued_event::event& event,
                           event_type event_type,
                           const queued_event::event& original_event,
                           bool lazy = false) {
-    time_stamp += time_stamp_delay_;
+    auto t = event_time_stamp;
+    t.set_time_stamp(t.get_time_stamp() + time_stamp_delay_);
 
     events_.emplace_back(device_id,
-                         time_stamp,
+                         t,
                          event,
                          event_type,
                          original_event,
@@ -784,7 +824,7 @@ public:
 
   void push_back_event(const queued_event& queued_event) {
     emplace_back_event(queued_event.get_device_id(),
-                       queued_event.get_time_stamp(),
+                       queued_event.get_event_time_stamp(),
                        queued_event.get_event(),
                        queued_event.get_event_type(),
                        queued_event.get_original_event(),
@@ -860,17 +900,19 @@ public:
     time_stamp_delay_ += value;
   }
 
-  boost::optional<uint64_t> min_event_time_stamp(void) const {
+  boost::optional<uint64_t> min_event_time_stamp_with_input_delay(void) const {
     auto it = std::min_element(std::begin(events_),
                                std::end(events_),
                                [](auto& a, auto& b) {
-                                 return a.get_time_stamp() < b.get_time_stamp();
+                                 auto t1 = a.get_event_time_stamp().make_time_stamp_with_input_delay();
+                                 auto t2 = b.get_event_time_stamp().make_time_stamp_with_input_delay();
+                                 return t1 < t2;
                                });
     if (it == std::end(events_)) {
       return boost::none;
     }
 
-    return it->get_time_stamp();
+    return it->get_event_time_stamp().make_time_stamp_with_input_delay();
   }
 
   static bool needs_swap(const queued_event& v1, const queued_event& v2) {
@@ -913,7 +955,7 @@ public:
     // These events will not be interpreted as intended in this order.
     // Thus, we have to reorder the events.
 
-    if (v1.get_time_stamp() == v2.get_time_stamp()) {
+    if (v1.get_event_time_stamp().get_time_stamp() == v2.get_event_time_stamp().get_time_stamp()) {
       auto key_code1 = v1.get_event().get_key_code();
       auto key_code2 = v2.get_event().get_key_code();
 
@@ -973,7 +1015,7 @@ public:
 
         result.emplace_back(boost::none,
                             queued_event(device_id,
-                                         *pointing_motion_time_stamp,
+                                         queued_event::event_time_stamp(*pointing_motion_time_stamp),
                                          event,
                                          event_type::single,
                                          event));
@@ -993,7 +1035,7 @@ public:
             event_queue::queued_event::event event(*key_code);
             result.emplace_back(v,
                                 queued_event(device_id,
-                                             v.get_time_stamp(),
+                                             queued_event::event_time_stamp(v.get_time_stamp()),
                                              event,
                                              v.get_integer_value() ? event_type::key_down : event_type::key_up,
                                              event));
@@ -1002,7 +1044,7 @@ public:
             event_queue::queued_event::event event(*consumer_key_code);
             result.emplace_back(v,
                                 queued_event(device_id,
-                                             v.get_time_stamp(),
+                                             queued_event::event_time_stamp(v.get_time_stamp()),
                                              event,
                                              v.get_integer_value() ? event_type::key_down : event_type::key_up,
                                              event));
@@ -1011,7 +1053,7 @@ public:
             event_queue::queued_event::event event(*pointing_button);
             result.emplace_back(v,
                                 queued_event(device_id,
-                                             v.get_time_stamp(),
+                                             queued_event::event_time_stamp(v.get_time_stamp()),
                                              event,
                                              v.get_integer_value() ? event_type::key_down : event_type::key_up,
                                              event));
@@ -1106,11 +1148,20 @@ inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_
   return stream;
 }
 
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event_time_stamp& value) {
+  stream << std::endl
+         << "{"
+         << "\"time_stamp\":" << value.get_time_stamp()
+         << ",\"input_delay_time_stamp\":" << value.get_input_delay_time_stamp()
+         << "}";
+  return stream;
+}
+
 inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event& value) {
   stream << std::endl
          << "{"
          << "\"device_id\":" << value.get_device_id()
-         << ",\"time_stamp\":" << value.get_time_stamp()
+         << ",\"event_time_stamp\":" << value.get_event_time_stamp()
          << ",\"valid\":" << value.get_valid()
          << ",\"lazy\":" << value.get_lazy()
          << ",\"event\":" << value.get_event()
@@ -1124,6 +1175,10 @@ inline void to_json(nlohmann::json& json, const event_queue::queued_event::event
   json = value.to_json();
 }
 
+inline void to_json(nlohmann::json& json, const event_queue::queued_event::event_time_stamp& value) {
+  json = value.to_json();
+}
+
 inline void to_json(nlohmann::json& json, const event_queue::queued_event& value) {
   json = value.to_json();
 }
@@ -1133,6 +1188,13 @@ namespace std {
 template <>
 struct hash<krbn::event_queue::queued_event::event> final {
   std::size_t operator()(const krbn::event_queue::queued_event::event& v) const {
+    return hash_value(v);
+  }
+};
+
+template <>
+struct hash<krbn::event_queue::queued_event::event_time_stamp> final {
+  std::size_t operator()(const krbn::event_queue::queued_event::event_time_stamp& v) const {
     return hash_value(v);
   }
 };

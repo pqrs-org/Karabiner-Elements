@@ -11,7 +11,9 @@
             "pointing_button": "button1",
             "type": "pointing_button"
         },
-        "time_stamp": 2000000,
+        "event_time_stamp": {
+            "time_stamp": 2000000
+        },
         "valid": true
     },
     {
@@ -24,7 +26,9 @@
         "original_event": {
             "type": "device_keys_and_pointing_buttons_are_released"
         },
-        "time_stamp": 4000000,
+        "event_time_stamp": {
+            "time_stamp": 4000000
+        },
         "valid": true
     }
 ]

@@ -5,18 +5,18 @@
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
-#define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
-  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                 \
-                           TIME_STAMP,                                                 \
-                           EVENT,                                                      \
-                           krbn::event_type::EVENT_TYPE,                               \
+#define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)    \
+  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                    \
+                           krbn::event_queue::queued_event::event_time_stamp(TIME_STAMP), \
+                           EVENT,                                                         \
+                           krbn::event_type::EVENT_TYPE,                                  \
                            ORIGINAL_EVENT)
 
-#define PUSH_BACK_QUEUED_EVENT(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT) \
-  VECTOR.push_back(krbn::event_queue::queued_event(krbn::device_id(DEVICE_ID),                   \
-                                                   TIME_STAMP,                                   \
-                                                   EVENT,                                        \
-                                                   krbn::event_type::EVENT_TYPE,                 \
+#define PUSH_BACK_QUEUED_EVENT(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)                  \
+  VECTOR.push_back(krbn::event_queue::queued_event(krbn::device_id(DEVICE_ID),                                    \
+                                                   krbn::event_queue::queued_event::event_time_stamp(TIME_STAMP), \
+                                                   EVENT,                                                         \
+                                                   krbn::event_type::EVENT_TYPE,                                  \
                                                    ORIGINAL_EVENT))
 
 namespace {
@@ -356,27 +356,27 @@ TEST_CASE("emplace_back_event") {
 
 TEST_CASE("needs_swap") {
   krbn::event_queue::queued_event spacebar_down(krbn::device_id(1),
-                                                100,
+                                                krbn::event_queue::queued_event::event_time_stamp(100),
                                                 spacebar_event,
                                                 krbn::event_type::key_down,
                                                 spacebar_event);
   krbn::event_queue::queued_event right_shift_down(krbn::device_id(1),
-                                                   100,
+                                                   krbn::event_queue::queued_event::event_time_stamp(100),
                                                    right_shift_event,
                                                    krbn::event_type::key_down,
                                                    right_shift_event);
   krbn::event_queue::queued_event escape_down(krbn::device_id(1),
-                                              200,
+                                              krbn::event_queue::queued_event::event_time_stamp(200),
                                               escape_event,
                                               krbn::event_type::key_down,
                                               escape_event);
   krbn::event_queue::queued_event spacebar_up(krbn::device_id(1),
-                                              300,
+                                              krbn::event_queue::queued_event::event_time_stamp(300),
                                               spacebar_event,
                                               krbn::event_type::key_up,
                                               spacebar_event);
   krbn::event_queue::queued_event right_shift_up(krbn::device_id(1),
-                                                 300,
+                                                 krbn::event_queue::queued_event::event_time_stamp(300),
                                                  right_shift_event,
                                                  krbn::event_type::key_up,
                                                  right_shift_event);
@@ -533,42 +533,42 @@ TEST_CASE("make_queued_events") {
   REQUIRE(!queued_events[7].first);
 
   REQUIRE(queued_events[0].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[0].second.get_time_stamp() == 1000);
+  REQUIRE(queued_events[0].second.get_event_time_stamp().get_time_stamp() == 1000);
   REQUIRE(queued_events[0].second.get_event().get_key_code() == krbn::key_code::spacebar);
   REQUIRE(queued_events[0].second.get_event_type() == krbn::event_type::key_down);
 
   REQUIRE(queued_events[1].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[1].second.get_time_stamp() == 2000);
+  REQUIRE(queued_events[1].second.get_event_time_stamp().get_time_stamp() == 2000);
   REQUIRE(queued_events[1].second.get_event().get_key_code() == krbn::key_code::spacebar);
   REQUIRE(queued_events[1].second.get_event_type() == krbn::event_type::key_up);
 
   REQUIRE(queued_events[2].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[2].second.get_time_stamp() == 3000);
+  REQUIRE(queued_events[2].second.get_event_time_stamp().get_time_stamp() == 3000);
   REQUIRE(queued_events[2].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
   REQUIRE(queued_events[2].second.get_event_type() == krbn::event_type::key_down);
 
   REQUIRE(queued_events[3].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[3].second.get_time_stamp() == 4000);
+  REQUIRE(queued_events[3].second.get_event_time_stamp().get_time_stamp() == 4000);
   REQUIRE(queued_events[3].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
   REQUIRE(queued_events[3].second.get_event_type() == krbn::event_type::key_up);
 
   REQUIRE(queued_events[4].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[4].second.get_time_stamp() == 5000);
+  REQUIRE(queued_events[4].second.get_event_time_stamp().get_time_stamp() == 5000);
   REQUIRE(queued_events[4].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 20, 30, 40));
   REQUIRE(queued_events[4].second.get_event_type() == krbn::event_type::single);
 
   REQUIRE(queued_events[5].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[5].second.get_time_stamp() == 6000);
+  REQUIRE(queued_events[5].second.get_event_time_stamp().get_time_stamp() == 6000);
   REQUIRE(queued_events[5].second.get_event().get_pointing_motion() == krbn::pointing_motion(-10, -20, -30, -40));
   REQUIRE(queued_events[5].second.get_event_type() == krbn::event_type::single);
 
   REQUIRE(queued_events[6].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[6].second.get_time_stamp() == 7000);
+  REQUIRE(queued_events[6].second.get_event_time_stamp().get_time_stamp() == 7000);
   REQUIRE(queued_events[6].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 0, 0, 0));
   REQUIRE(queued_events[6].second.get_event_type() == krbn::event_type::single);
 
   REQUIRE(queued_events[7].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[7].second.get_time_stamp() == 8000);
+  REQUIRE(queued_events[7].second.get_event_time_stamp().get_time_stamp() == 8000);
   REQUIRE(queued_events[7].second.get_event().get_pointing_motion() == krbn::pointing_motion(0, 0, 0, 0));
   REQUIRE(queued_events[7].second.get_event_type() == krbn::event_type::single);
 }
@@ -578,13 +578,13 @@ TEST_CASE("hash") {
           hash_value(krbn::event_queue::queued_event::event(krbn::key_code::b)));
 }
 
-TEST_CASE("min_event_time_stamp") {
+TEST_CASE("min_event_time_stamp_with_input_delay") {
   {
     krbn::event_queue event_queue;
     ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
     ENQUEUE_EVENT(event_queue, 1, 200, a_event, key_down, a_event);
     ENQUEUE_EVENT(event_queue, 1, 80, a_event, key_down, a_event);
     ENQUEUE_EVENT(event_queue, 1, 300, a_event, key_down, a_event);
-    REQUIRE(event_queue.min_event_time_stamp() == 80ull);
+    REQUIRE(event_queue.min_event_time_stamp_with_input_delay() == 80ull);
   }
 }

@@ -11,7 +11,10 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 100,
+        "event_time_stamp": {
+            "input_delay_time_stamp": 0,
+            "time_stamp": 100
+        },
         "valid": true
     },
     {
@@ -26,7 +29,10 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 200,
+        "event_time_stamp": {
+            "input_delay_time_stamp": 0,
+            "time_stamp": 200
+        },
         "valid": true
     },
     {
@@ -41,7 +47,10 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
-        "time_stamp": 300,
+        "event_time_stamp": {
+            "input_delay_time_stamp": 0,
+            "time_stamp": 300
+        },
         "valid": true
     },
     {
@@ -54,7 +63,10 @@
         "original_event": {
             "type": "device_ungrabbed"
         },
-        "time_stamp": 400,
+        "event_time_stamp": {
+            "input_delay_time_stamp": 0,
+            "time_stamp": 400
+        },
         "valid": true
     }
 ]
