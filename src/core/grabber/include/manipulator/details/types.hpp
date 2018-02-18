@@ -843,6 +843,12 @@ private:
   bool repeat_;
 };
 
+enum class manipulate_result : uint32_t {
+  passed,
+  manipulated,
+  needs_wait_until_time_stamp,
+};
+
 inline std::ostream& operator<<(std::ostream& stream, const modifier_definition::modifier& value) {
 #define KRBN_MANIPULATOR_DETAILS_MODIFIER_OUTPUT(MODIFIER) \
   case modifier_definition::modifier::MODIFIER:            \
