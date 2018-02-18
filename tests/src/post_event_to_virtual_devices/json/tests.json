@@ -702,5 +702,13 @@
         ],
         "input_event_queue": "json/input_event_queue/simultaneous_10.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_10.json"
+    },
+    {
+        "description": "simultaneous_11 (not continued events)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_11.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_11.json"
     }
 ]
