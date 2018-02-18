@@ -1,7 +1,7 @@
-_Pragma("clang diagnostic push")
-_Pragma("clang diagnostic ignored \"-Wshorten-64-to-32\"")
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #include "cxxopts/cxxopts.hpp"
-_Pragma("clang diagnostic pop")
+#pragma clang diagnostic pop
 
 #include "configuration_monitor.hpp"
 #include "constants.hpp"
