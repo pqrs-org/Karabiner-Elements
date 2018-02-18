@@ -710,5 +710,13 @@
         ],
         "input_event_queue": "json/input_event_queue/simultaneous_11.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_11.json"
+    },
+    {
+        "description": "simultaneous_12 (key_up in continued events)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_12.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_12.json"
     }
 ]
