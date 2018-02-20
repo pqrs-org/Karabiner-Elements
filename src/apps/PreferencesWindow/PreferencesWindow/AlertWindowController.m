@@ -58,7 +58,7 @@ static void staticCallback(void* context) {
 }
 
 - (IBAction)openSystemPreferencesSecurity:(id)sender {
-  [[NSWorkspace sharedWorkspace] openFile:@"/System/Library/PreferencePanes/Security.prefPane"];
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.security?General"]];
 }
 
 - (IBAction)closePreferences:(id)sender {
