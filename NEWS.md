@@ -1,4 +1,4 @@
-# Since 11.5.0 (beta)
+# Version 11.6.0
 
 * Simultaneous key presses has been supported in complex modifications.
   * Example: https://pqrs.org/osx/karabiner/json.html#typical-complex_modifications-examples-simultaneous-equal-delete-to-forward-delete
