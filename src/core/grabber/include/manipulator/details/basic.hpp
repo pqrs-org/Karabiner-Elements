@@ -674,7 +674,7 @@ public:
                     }
                   }
 
-                  // from_events will be empty if front_input_event's time_stamp > end_time_stamp.
+                  // from_events will be empty if all input events's time_stamp > end_time_stamp.
 
                   if (from_events.empty()) {
                     is_target = false;
