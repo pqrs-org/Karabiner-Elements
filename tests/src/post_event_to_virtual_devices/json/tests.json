@@ -718,5 +718,29 @@
         ],
         "input_event_queue": "json/input_event_queue/simultaneous_12.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_12.json"
+    },
+    {
+        "description": "simultaneous_13 (multiple from events)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_13.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_13.json"
+    },
+    {
+        "description": "simultaneous_14 (multiple from events is released)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_14.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_14.json"
+    },
+    {
+        "description": "simultaneous_15 (pointing_motion)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_15.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_15.json"
     }
 ]

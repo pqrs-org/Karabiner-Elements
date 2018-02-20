@@ -56,5 +56,39 @@
                 "key_code": "r"
             }
         ]
+    },
+    {
+        "description": "button1+button2+button3 -> button4",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "pointing_button": "button1"
+                },
+                {
+                    "pointing_button": "button2"
+                },
+                {
+                    "pointing_button": "button3"
+                }
+            ]
+        },
+        "to": [
+            {
+                "pointing_button": "button4"
+            }
+        ]
+    },
+    {
+        "description": "button1 -> button5",
+        "type": "basic",
+        "from": {
+            "pointing_button": "button1"
+        },
+        "to": [
+            {
+                "pointing_button": "button5"
+            }
+        ]
     }
 ]
