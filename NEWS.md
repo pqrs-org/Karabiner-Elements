@@ -1,3 +1,8 @@
+# Since 11.6.0 (beta)
+
+* Fixed an issue that `to_if_alone`, `to_if_held_down` and `to_delayed_action` does not work properly with `simultaneous`.
+
+
 # Version 11.6.0
 
 * Simultaneous key presses has been supported in complex modifications.

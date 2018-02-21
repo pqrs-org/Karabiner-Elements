@@ -742,5 +742,21 @@
         ],
         "input_event_queue": "json/input_event_queue/simultaneous_15.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_15.json"
+    },
+    {
+        "description": "simultaneous_16 (to_if_held_down)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_16.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_16.json"
+    },
+    {
+        "description": "simultaneous_17 (to_if_alone)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_17.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_17.json"
     }
 ]

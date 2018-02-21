@@ -90,5 +90,60 @@
                 "pointing_button": "button5"
             }
         ]
+    },
+    {
+        "description": "z+x -> 1 (to_if_held_down)",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "z"
+                },
+                {
+                    "key_code": "x"
+                }
+            ],
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to_if_held_down": [
+            {
+                "key_code": "1"
+            }
+        ]
+    },
+    {
+        "description": "z+c -> 2/3 (to_if_alone)",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "z"
+                },
+                {
+                    "key_code": "c"
+                }
+            ],
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "2"
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "3"
+            }
+        ]
     }
 ]
