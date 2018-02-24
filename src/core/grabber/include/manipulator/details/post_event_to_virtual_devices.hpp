@@ -736,7 +736,8 @@ public:
 
   virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
                                        const event_queue& input_event_queue,
-                                       const std::shared_ptr<event_queue>& output_event_queue) {
+                                       const std::shared_ptr<event_queue>& output_event_queue,
+                                       uint64_t now) {
     if (output_event_queue) {
       if (!front_input_event.get_valid()) {
         return manipulate_result::passed;

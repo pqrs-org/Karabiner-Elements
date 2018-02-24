@@ -20,7 +20,8 @@ public:
 
   virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
                                        const event_queue& input_event_queue,
-                                       const std::shared_ptr<event_queue>& output_event_queue) = 0;
+                                       const std::shared_ptr<event_queue>& output_event_queue,
+                                       uint64_t now) = 0;
 
   virtual bool active(void) const = 0;
 

@@ -93,7 +93,8 @@ public:
             for (auto&& m : manipulators_) {
               auto r = m->manipulate(front_input_event,
                                      *input_event_queue,
-                                     output_event_queue);
+                                     output_event_queue,
+                                     now);
 
               switch (r) {
                 case details::manipulate_result::passed:
