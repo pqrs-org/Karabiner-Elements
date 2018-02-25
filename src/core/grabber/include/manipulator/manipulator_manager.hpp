@@ -103,10 +103,7 @@ public:
                   break;
 
                 case details::manipulate_result::needs_wait_until_time_stamp:
-                  if (now < front_input_event.get_event_time_stamp().make_time_stamp_with_input_delay()) {
-                    goto finish;
-                  }
-                  break;
+                  goto finish;
               }
             }
             break;

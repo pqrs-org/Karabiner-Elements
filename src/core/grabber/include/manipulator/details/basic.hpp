@@ -698,7 +698,11 @@ public:
                                       time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC));
                     front_input_event.get_event_time_stamp().set_input_delay_time_stamp(t);
 
-                    return manipulate_result::needs_wait_until_time_stamp;
+                    if (now < front_input_event.get_event_time_stamp().make_time_stamp_with_input_delay()) {
+                      return manipulate_result::needs_wait_until_time_stamp;
+                    } else {
+                      is_target = false;
+                    }
                   }
                 }
               }
