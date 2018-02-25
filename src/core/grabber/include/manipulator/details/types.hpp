@@ -492,6 +492,53 @@ public:
 
 class from_event_definition final {
 public:
+  class simultaneous_options final {
+  public:
+    enum class key_order {
+      insensitive,
+      strict,
+      strict_inverse,
+    };
+
+    simultaneous_options(void) : key_down_order_(key_order::insensitive),
+                                 key_up_order_(key_order::insensitive) {
+    }
+
+    void handle_json(const nlohmann::json& json) {
+      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
+        // it.key() is always std::string.
+        const auto& key = it.key();
+        const auto& value = it.value();
+
+        if (value.is_string()) {
+          if (key == "key_down_order") {
+            key_down_order_ = value;
+            continue;
+          }
+
+          if (key == "key_up_order") {
+            key_up_order_ = value;
+            continue;
+          }
+        }
+
+        logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
+      }
+    }
+
+    key_order get_key_down_order(void) const {
+      return key_down_order_;
+    }
+
+    key_order get_key_up_order(void) const {
+      return key_up_order_;
+    }
+
+  private:
+    key_order key_down_order_;
+    key_order key_up_order_;
+  };
+
   from_event_definition(const nlohmann::json& json) {
     if (!json.is_object()) {
       logger::get_logger().error("complex_modifications json error: Invalid form of from_event_definition: {0}", json.dump());
@@ -530,6 +577,17 @@ public:
             event_definitions_.push_back(d);
           }
         }
+
+        continue;
+      }
+
+      if (key == "simultaneous_options") {
+        if (!value.is_object()) {
+          logger::get_logger().error("complex_modifications json error: Invalid form of simultaneous_options: {0}", value.dump());
+          continue;
+        }
+
+        simultaneous_options_.handle_json(value);
 
         continue;
       }
@@ -599,6 +657,10 @@ public:
 
   const std::unordered_set<modifier_definition::modifier>& get_optional_modifiers(void) const {
     return optional_modifiers_;
+  }
+
+  const simultaneous_options& get_simultaneous_options(void) const {
+    return simultaneous_options_;
   }
 
   boost::optional<std::unordered_set<modifier_flag>> test_modifiers(const modifier_flag_manager& modifier_flag_manager) const {
@@ -720,6 +782,7 @@ private:
   std::vector<event_definition> event_definitions_;
   std::unordered_set<modifier_definition::modifier> mandatory_modifiers_;
   std::unordered_set<modifier_definition::modifier> optional_modifiers_;
+  simultaneous_options simultaneous_options_;
 };
 
 class to_event_definition final {
@@ -891,6 +954,21 @@ inline std::ostream& operator<<(std::ostream& stream,
                                                 std::equal_to<modifier_definition::modifier>,
                                                 std::allocator<modifier_definition::modifier>>& values) {
   return stream_utility::output_enums(stream, values);
+}
+
+inline void from_json(const nlohmann::json& json, from_event_definition::simultaneous_options::key_order& value) {
+  auto s = json.get<std::string>();
+
+  if (s == "insensitive") {
+    value = from_event_definition::simultaneous_options::key_order::insensitive;
+  } else if (s == "strict") {
+    value = from_event_definition::simultaneous_options::key_order::strict;
+  } else if (s == "strict_inverse") {
+    value = from_event_definition::simultaneous_options::key_order::strict_inverse;
+  } else {
+    logger::get_logger().error("complex_modifications json error: Unknown simultaneous_options::key_order: {0}", json.dump());
+    value = from_event_definition::simultaneous_options::key_order::insensitive;
+  }
 }
 } // namespace details
 } // namespace manipulator
