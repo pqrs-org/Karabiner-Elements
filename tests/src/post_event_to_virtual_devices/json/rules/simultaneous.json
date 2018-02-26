@@ -145,5 +145,77 @@
                 "key_code": "3"
             }
         ]
+    },
+    {
+        "description": "j+k -> 1 (key_down_order)",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "j"
+                },
+                {
+                    "key_code": "k"
+                }
+            ],
+            "simultaneous_options": {
+                "key_down_order": "strict"
+            }
+        },
+        "to": [
+            {
+                "key_code": "1"
+            }
+        ]
+    },
+    {
+        "description": "k+j -> 2 (key_down_order)",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "k"
+                },
+                {
+                    "key_code": "j"
+                }
+            ],
+            "simultaneous_options": {
+                "key_down_order": "strict"
+            }
+        },
+        "to": [
+            {
+                "key_code": "2"
+            }
+        ]
+    },
+    {
+        "description": "u+i -> 1 (key_down_order, key_up_order)",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "u"
+                },
+                {
+                    "key_code": "i"
+                }
+            ],
+            "simultaneous_options": {
+                "key_down_order": "strict",
+                "key_up_order": "strict_inverse"
+            }
+        },
+        "to": [
+            {
+                "key_code": "1"
+            }
+        ],
+        "to_after_key_up": [
+            {
+                "key_code": "2"
+            }
+        ]
     }
 ]

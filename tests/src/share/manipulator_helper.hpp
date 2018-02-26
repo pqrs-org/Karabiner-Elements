@@ -93,6 +93,12 @@ public:
                 time_stamp = *t;
               }
               krbn::manipulator::manipulator_timer::get_instance().signal(time_stamp);
+            } else if (*s == "manipulate") {
+              uint64_t time_stamp = 0;
+              if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
+                time_stamp = *t;
+              }
+              connector.manipulate(time_stamp);
             }
 
           } else if (auto v = json_utility::find_optional<bool>(j, "pause_manipulation")) {

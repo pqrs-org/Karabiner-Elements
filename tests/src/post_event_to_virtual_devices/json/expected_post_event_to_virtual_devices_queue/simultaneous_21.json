@@ -1,0 +1,42 @@
+[
+    {
+        "keyboard_event": {
+            "key_code": "u",
+            "value": 1
+        },
+        "time_stamp": 5000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "i",
+            "value": 1
+        },
+        "time_stamp": 10000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "u",
+            "value": 0
+        },
+        "time_stamp": 15000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "spacebar",
+            "value": 1
+        },
+        "time_stamp": 20000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "i",
+            "value": 0
+        },
+        "time_stamp": 25000000,
+        "type": "keyboard_event"
+    }
+]

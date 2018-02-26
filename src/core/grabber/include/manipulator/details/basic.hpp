@@ -608,6 +608,8 @@ public:
               std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events;
 
               {
+                std::vector<event_queue::queued_event::event> ordered_key_down_events;
+                std::vector<event_queue::queued_event::event> ordered_key_up_events;
                 uint64_t simultaneous_threshold_milliseconds = parameters_.get_basic_simultaneous_threshold_milliseconds();
                 uint64_t end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() + time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC);
 
@@ -621,7 +623,7 @@ public:
                   }
 
                   if (end_time_stamp < queued_event.get_event_time_stamp().get_time_stamp()) {
-                    continue;
+                    break;
                   }
 
                   manipulated_original_event::from_event fe(queued_event.get_device_id(),
@@ -630,26 +632,45 @@ public:
 
                   switch (queued_event.get_event_type()) {
                     case event_type::key_down:
-                      // Do not manipulate if another event arrived.
+                      if (from_event_definition::test_event(queued_event.get_event(), from_)) {
+                        // Insert the first event if the same events are arrived from different device.
 
-                      if (!from_event_definition::test_event(queued_event.get_event(), from_)) {
-                        is_target = false;
+                        if (std::none_of(std::begin(from_events),
+                                         std::end(from_events),
+                                         [&](auto& e) {
+                                           return fe.get_event() == e.get_event();
+                                         })) {
+                          from_events.insert(fe);
+                          ordered_key_down_events.push_back(queued_event.get_event());
+                        }
+
+                      } else {
+                        // Do not manipulate if another event arrived.
+
+                        if (!all_from_events_found(from_events)) {
+                          is_target = false;
+                        }
                       }
 
-                      // Do not manipulate if same key is already pressed.
-
-                      if (from_events.find(fe) != std::end(from_events)) {
-                        is_target = false;
-                      }
-
-                      from_events.insert(fe);
                       break;
 
                     case event_type::key_up:
-                      // Do not manipulate if pressed key is released.
+                      // Do not manipulate if pressed key is released before all from events are pressed.
 
                       if (from_events.find(fe) != std::end(from_events)) {
-                        is_target = false;
+                        if (!all_from_events_found(from_events)) {
+                          is_target = false;
+                        }
+
+                        if (is_target) {
+                          if (std::none_of(std::begin(ordered_key_up_events),
+                                           std::end(ordered_key_up_events),
+                                           [&](auto& e) {
+                                             return e == queued_event.get_event();
+                                           })) {
+                            ordered_key_up_events.push_back(queued_event.get_event());
+                          }
+                        }
                       }
 
                       break;
@@ -658,23 +679,55 @@ public:
                       // Do nothing
                       break;
                   }
-
-                  if (all_from_events_found(from_events)) {
-                    break;
-                  }
                 }
 
                 // from_events will be empty if all input events's time_stamp > end_time_stamp.
 
-                if (from_events.empty()) {
-                  is_target = false;
+                if (is_target) {
+                  if (from_events.empty()) {
+                    is_target = false;
+                  }
+                }
+
+                // Test key_order
+
+                if (is_target) {
+                  if (!from_event_definition::test_key_order(ordered_key_down_events,
+                                                             from_.get_simultaneous_options().get_key_down_order(),
+                                                             from_.get_event_definitions())) {
+                    is_target = false;
+                  }
+                }
+
+                bool needs_wait_key_up = false;
+
+                if (is_target) {
+                  switch (from_.get_simultaneous_options().get_key_up_order()) {
+                    case from_event_definition::simultaneous_options::key_order::insensitive:
+                      // Do nothing
+                      break;
+
+                    case from_event_definition::simultaneous_options::key_order::strict:
+                    case from_event_definition::simultaneous_options::key_order::strict_inverse:
+                      if (!from_event_definition::test_key_order(ordered_key_up_events,
+                                                                 from_.get_simultaneous_options().get_key_up_order(),
+                                                                 from_.get_event_definitions())) {
+                        is_target = false;
+                      } else {
+                        if (ordered_key_up_events.size() < from_.get_event_definitions().size() - 1) {
+                          needs_wait_key_up = true;
+                        }
+                      }
+                      break;
+                  }
                 }
 
                 // Wait if the front_input_event is `simultaneous` target and `simultaneous` is not canceled.
                 // Update input_delay_time_stamp
 
                 if (is_target) {
-                  if (!all_from_events_found(from_events)) {
+                  auto found = all_from_events_found(from_events);
+                  if (needs_wait_key_up || !found) {
                     auto t = std::max(front_input_event.get_event_time_stamp().get_input_delay_time_stamp(),
                                       time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC));
                     front_input_event.get_event_time_stamp().set_input_delay_time_stamp(t);
@@ -682,7 +735,9 @@ public:
                     if (now < front_input_event.get_event_time_stamp().make_time_stamp_with_input_delay()) {
                       return manipulate_result::needs_wait_until_time_stamp;
                     } else {
-                      is_target = false;
+                      if (!found) {
+                        is_target = false;
+                      }
                     }
                   }
                 }

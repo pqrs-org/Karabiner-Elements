@@ -768,14 +768,48 @@ public:
   }
 
   static bool test_event(const event_queue::queued_event::event& event,
-                         const from_event_definition& from_event_definitions) {
-    for (const auto& d : from_event_definitions.get_event_definitions()) {
+                         const from_event_definition& from_event_definition) {
+    for (const auto& d : from_event_definition.get_event_definitions()) {
       if (test_event(event, d)) {
         return true;
       }
     }
 
     return false;
+  }
+
+  static bool test_key_order(const std::vector<event_queue::queued_event::event>& events,
+                             simultaneous_options::key_order key_order,
+                             const std::vector<event_definition>& event_definitions) {
+    switch (key_order) {
+      case simultaneous_options::key_order::insensitive:
+        // Do nothing
+        break;
+
+      case simultaneous_options::key_order::strict:
+        for (auto events_it = std::begin(events); events_it != std::end(events); std::advance(events_it, 1)) {
+          auto event_definitions_index = static_cast<size_t>(std::distance(std::begin(events), events_it));
+          if (event_definitions_index < event_definitions.size()) {
+            if (!test_event(*events_it, event_definitions[event_definitions_index])) {
+              return false;
+            }
+          }
+        }
+        break;
+
+      case simultaneous_options::key_order::strict_inverse:
+        for (auto events_it = std::begin(events); events_it != std::end(events); std::advance(events_it, 1)) {
+          auto event_definitions_index = static_cast<size_t>(std::distance(std::begin(events), events_it));
+          if (event_definitions_index < event_definitions.size()) {
+            if (!test_event(*events_it, event_definitions[event_definitions.size() - 1 - event_definitions_index])) {
+              return false;
+            }
+          }
+        }
+        break;
+    }
+
+    return true;
   }
 
 private:
