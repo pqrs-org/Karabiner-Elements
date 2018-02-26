@@ -89,24 +89,39 @@ public:
           case event_queue::queued_event::event::type::pointing_motion:
           case event_queue::queued_event::event::type::shell_command:
           case event_queue::queued_event::event::type::select_input_source:
-          case event_queue::queued_event::event::type::mouse_key:
-            for (auto&& m : manipulators_) {
-              auto r = m->manipulate(front_input_event,
-                                     *input_event_queue,
-                                     output_event_queue,
-                                     now);
+          case event_queue::queued_event::event::type::mouse_key: {
+            bool skip = false;
 
-              switch (r) {
-                case details::manipulate_result::passed:
-                case details::manipulate_result::manipulated:
-                  // Do nothing
+            if (front_input_event.get_valid()) {
+              for (auto&& m : manipulators_) {
+                if (m->already_manipulated(front_input_event)) {
+                  front_input_event.set_valid(false);
+                  skip = true;
                   break;
+                }
+              }
+            }
 
-                case details::manipulate_result::needs_wait_until_time_stamp:
-                  goto finish;
+            if (!skip) {
+              for (auto&& m : manipulators_) {
+                auto r = m->manipulate(front_input_event,
+                                       *input_event_queue,
+                                       output_event_queue,
+                                       now);
+
+                switch (r) {
+                  case details::manipulate_result::passed:
+                  case details::manipulate_result::manipulated:
+                    // Do nothing
+                    break;
+
+                  case details::manipulate_result::needs_wait_until_time_stamp:
+                    goto finish;
+                }
               }
             }
             break;
+          }
         }
 
         if (input_event_queue->get_front_event().get_valid()) {

@@ -14,6 +14,10 @@ public:
   virtual ~nop(void) {
   }
 
+  virtual bool already_manipulated(const event_queue::queued_event& front_input_event) {
+    return false;
+  }
+
   virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
                                        const event_queue& input_event_queue,
                                        const std::shared_ptr<event_queue>& output_event_queue,

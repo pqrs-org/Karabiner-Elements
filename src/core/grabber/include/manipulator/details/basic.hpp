@@ -519,37 +519,36 @@ public:
   virtual ~basic(void) {
   }
 
+  virtual bool already_manipulated(const event_queue::queued_event& front_input_event) {
+    // Skip if the key_down event is already manipulated by `simultaneous`.
+
+    manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
+                                                      front_input_event.get_event(),
+                                                      front_input_event.get_original_event());
+
+    switch (front_input_event.get_event_type()) {
+      case event_type::key_down:
+        for (const auto& e : manipulated_original_events_) {
+          if (e->from_event_exists(from_event)) {
+            return true;
+          }
+        }
+        break;
+
+      case event_type::key_up:
+      case event_type::single:
+        // Do nothing
+        break;
+    }
+
+    return false;
+  }
+
   virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
                                        const event_queue& input_event_queue,
                                        const std::shared_ptr<event_queue>& output_event_queue,
                                        uint64_t now) {
     if (output_event_queue) {
-      // Skip if the key_down event is already manipulated by `simultaneous`.
-
-      manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
-                                                        front_input_event.get_event(),
-                                                        front_input_event.get_original_event());
-
-      if (front_input_event.get_valid()) {
-        switch (front_input_event.get_event_type()) {
-          case event_type::key_down:
-            for (const auto& e : manipulated_original_events_) {
-              if (e->from_event_exists(from_event)) {
-                front_input_event.set_valid(false);
-                return manipulate_result::manipulated;
-              }
-            }
-            break;
-
-          case event_type::key_up:
-          case event_type::single:
-            // Do nothing
-            break;
-        }
-      }
-
-      // ----------------------------------------
-
       unset_alone_if_needed(front_input_event.get_event(),
                             front_input_event.get_event_type());
 
@@ -573,6 +572,10 @@ public:
 
       if (is_target) {
         std::shared_ptr<manipulated_original_event> current_manipulated_original_event;
+
+        manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
+                                                          front_input_event.get_event(),
+                                                          front_input_event.get_original_event());
 
         switch (front_input_event.get_event_type()) {
           case event_type::key_down: {

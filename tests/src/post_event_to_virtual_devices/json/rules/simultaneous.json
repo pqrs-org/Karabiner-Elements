@@ -217,5 +217,59 @@
                 "key_code": "2"
             }
         ]
+    },
+    {
+        "conditions": [
+            {
+                "name": "simple_vi_mode",
+                "type": "variable_if",
+                "value": 1
+            }
+        ],
+        "from": {
+            "key_code": "j"
+        },
+        "to": [
+            {
+                "key_code": "down_arrow"
+            }
+        ],
+        "type": "basic"
+    },
+    {
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "s"
+                },
+                {
+                    "key_code": "j"
+                }
+            ],
+            "simultaneous_options": {
+                "key_down_order": "strict",
+                "key_up_order": "strict_inverse"
+            }
+        },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "simple_vi_mode",
+                    "value": 1
+                }
+            },
+            {
+                "key_code": "down_arrow"
+            }
+        ],
+        "to_after_key_up": [
+            {
+                "set_variable": {
+                    "name": "simple_vi_mode",
+                    "value": 0
+                }
+            }
+        ],
+        "type": "basic"
     }
 ]
