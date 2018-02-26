@@ -608,7 +608,6 @@ public:
               std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events;
 
               {
-                bool all_from_events_found = false;
                 uint64_t simultaneous_threshold_milliseconds = parameters_.get_basic_simultaneous_threshold_milliseconds();
                 uint64_t end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() + time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC);
 
@@ -660,25 +659,7 @@ public:
                       break;
                   }
 
-                  if (from_events.empty()) {
-                    continue;
-                  }
-
-                  // Check all from_ events exist in from_events.
-
-                  bool found = true;
-                  for (const auto& d : from_.get_event_definitions()) {
-                    if (std::none_of(std::begin(from_events),
-                                     std::end(from_events),
-                                     [&](auto& e) {
-                                       return from_event_definition::test_event(e.get_event(), d);
-                                     })) {
-                      found = false;
-                    }
-                  }
-
-                  if (found) {
-                    all_from_events_found = true;
+                  if (all_from_events_found(from_events)) {
                     break;
                   }
                 }
@@ -693,7 +674,7 @@ public:
                 // Update input_delay_time_stamp
 
                 if (is_target) {
-                  if (!all_from_events_found) {
+                  if (!all_from_events_found(from_events)) {
                     auto t = std::max(front_input_event.get_event_time_stamp().get_input_delay_time_stamp(),
                                       time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC));
                     front_input_event.get_event_time_stamp().set_input_delay_time_stamp(t);
@@ -1071,6 +1052,20 @@ public:
   }
 
 private:
+  bool all_from_events_found(const std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash>& from_events) const {
+    for (const auto& d : from_.get_event_definitions()) {
+      if (std::none_of(std::begin(from_events),
+                       std::end(from_events),
+                       [&](auto& e) {
+                         return from_event_definition::test_event(e.get_event(), d);
+                       })) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   bool is_last_to_event_modifier_key_event(const std::vector<to_event_definition>& to_events) const {
     if (to_events.empty()) {
       return false;
