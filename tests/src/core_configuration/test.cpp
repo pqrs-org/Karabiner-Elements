@@ -2,6 +2,7 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "core_configuration.hpp"
+#include "manipulator/details/basic.hpp"
 #include "manipulator/details/types.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
