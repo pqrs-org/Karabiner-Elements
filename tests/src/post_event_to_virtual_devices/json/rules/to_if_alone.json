@@ -89,6 +89,31 @@
         "type": "basic"
     },
     {
+        "description": "shift+tab -> return_or_enter (spacebar)",
+        "from": {
+            "key_code": "tab",
+            "modifiers": {
+                "mandatory": [
+                    "shift"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "return_or_enter"
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "spacebar"
+            }
+        ],
+        "type": "basic"
+    },
+    {
         "description": "f2 -> f3 (empty `to`)",
         "from": {
             "key_code": "f2",

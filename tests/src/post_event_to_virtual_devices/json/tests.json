@@ -296,6 +296,22 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_4.json"
     },
     {
+        "description": "to_if_alone_5 (command+escape -> left_control (spacebar))",
+        "rules": [
+            "json/rules/to_if_alone.json"
+        ],
+        "input_event_queue": "json/input_event_queue/to_if_alone_5.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_5.json"
+    },
+    {
+        "description": "to_if_alone_6 (shift+tab -> return_or_enter (spacebar))",
+        "rules": [
+            "json/rules/to_if_alone.json"
+        ],
+        "input_event_queue": "json/input_event_queue/to_if_alone_6.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_6.json"
+    },
+    {
         "description": "to_after_key_up_1",
         "rules": [
             "json/rules/to_after_key_up.json"

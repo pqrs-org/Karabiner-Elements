@@ -191,7 +191,7 @@
         ]
     },
     {
-        "description": "u+i -> 1 (key_down_order, key_up_order)",
+        "description": "left_shift + u+i -> 1 (key_down_order, key_up_order)",
         "type": "basic",
         "from": {
             "simultaneous": [
@@ -204,7 +204,20 @@
             ],
             "simultaneous_options": {
                 "key_down_order": "strict",
-                "key_up_order": "strict_inverse"
+                "key_up_order": "strict_inverse",
+                "to_after_key_up": [
+                    {
+                        "key_code": "3"
+                    }
+                ]
+            },
+            "modifiers": {
+                "mandatory": [
+                    "left_shift"
+                ],
+                "optional": [
+                    "any"
+                ]
             }
         },
         "to": [
@@ -248,7 +261,15 @@
             ],
             "simultaneous_options": {
                 "key_down_order": "strict",
-                "key_up_order": "strict_inverse"
+                "key_up_order": "strict_inverse",
+                "to_after_key_up": [
+                    {
+                        "set_variable": {
+                            "name": "simple_vi_mode",
+                            "value": 0
+                        }
+                    }
+                ]
             }
         },
         "to": [
@@ -260,14 +281,6 @@
             },
             {
                 "key_code": "down_arrow"
-            }
-        ],
-        "to_after_key_up": [
-            {
-                "set_variable": {
-                    "name": "simple_vi_mode",
-                    "value": 0
-                }
             }
         ],
         "type": "basic"

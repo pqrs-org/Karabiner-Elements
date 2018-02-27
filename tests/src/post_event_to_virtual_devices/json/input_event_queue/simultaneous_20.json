@@ -5,13 +5,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "u",
+            "key_code": "left_shift",
             "type": "key_code"
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "key_code": "u",
+            "key_code": "left_shift",
             "type": "key_code"
         },
         "event_time_stamp": {
@@ -22,13 +22,13 @@
     {
         "device_id": 1,
         "event": {
-            "key_code": "i",
+            "key_code": "u",
             "type": "key_code"
         },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
-            "key_code": "i",
+            "key_code": "u",
             "type": "key_code"
         },
         "event_time_stamp": {
@@ -42,7 +42,7 @@
             "key_code": "i",
             "type": "key_code"
         },
-        "event_type": "key_up",
+        "event_type": "key_down",
         "lazy": false,
         "original_event": {
             "key_code": "i",
@@ -50,6 +50,23 @@
         },
         "event_time_stamp": {
             "time_stamp": 6000000
+        },
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "i",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "i",
+            "type": "key_code"
+        },
+        "event_time_stamp": {
+            "time_stamp": 8000000
         },
         "valid": true
     },
@@ -66,7 +83,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 8000000
+            "time_stamp": 10000000
         },
         "valid": true
     },
@@ -83,7 +100,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10000000
+            "time_stamp": 12000000
         },
         "valid": true
     },

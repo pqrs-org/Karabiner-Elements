@@ -17,7 +17,7 @@
     },
     {
         "keyboard_event": {
-            "key_code": "j",
+            "key_code": "down_arrow",
             "value": 1
         },
         "time_stamp": 15000000,
@@ -25,10 +25,26 @@
     },
     {
         "keyboard_event": {
-            "key_code": "j",
+            "key_code": "down_arrow",
             "value": 0
         },
         "time_stamp": 20000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "j",
+            "value": 1
+        },
+        "time_stamp": 25000000,
+        "type": "keyboard_event"
+    },
+    {
+        "keyboard_event": {
+            "key_code": "j",
+            "value": 0
+        },
+        "time_stamp": 30000000,
         "type": "keyboard_event"
     }
 ]

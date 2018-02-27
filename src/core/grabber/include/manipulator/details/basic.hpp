@@ -34,16 +34,37 @@ public:
           const auto& key = it.key();
           const auto& value = it.value();
 
-          if (value.is_string()) {
-            if (key == "key_down_order") {
-              key_down_order_ = value;
+          if (key == "key_down_order") {
+            if (!value.is_string()) {
+              logger::get_logger().error("complex_modifications json error: `key_down_order` should be string: {0}", json.dump());
+            }
+
+            key_down_order_ = value;
+
+            continue;
+          }
+
+          if (key == "key_up_order") {
+            if (!value.is_string()) {
+              logger::get_logger().error("complex_modifications json error: `key_up_order` should be string: {0}", json.dump());
+            }
+
+            key_up_order_ = value;
+
+            continue;
+          }
+
+          if (key == "to_after_key_up") {
+            if (!value.is_array()) {
+              logger::get_logger().error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
               continue;
             }
 
-            if (key == "key_up_order") {
-              key_up_order_ = value;
-              continue;
+            for (const auto& j : value) {
+              to_after_key_up_.emplace_back(j);
             }
+
+            continue;
           }
 
           logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
@@ -58,9 +79,14 @@ public:
         return key_up_order_;
       }
 
+      const std::vector<to_event_definition>& get_to_after_key_up(void) const {
+        return to_after_key_up_;
+      }
+
     private:
       key_order key_down_order_;
       key_order key_up_order_;
+      std::vector<to_event_definition> to_after_key_up_;
     };
 
     from_event_definition(const nlohmann::json& json) {
@@ -1161,32 +1187,76 @@ public:
               if (!current_manipulated_original_event->get_key_up_posted()) {
                 current_manipulated_original_event->set_key_up_posted(true);
 
+                // to_
+
                 post_events_at_key_up(front_input_event,
                                       *current_manipulated_original_event,
                                       time_stamp_delay,
                                       *output_event_queue);
+
+                post_from_mandatory_modifiers_key_down(front_input_event,
+                                                       *current_manipulated_original_event,
+                                                       time_stamp_delay,
+                                                       *output_event_queue);
+
+                // to_after_key_up_
+
+                post_from_mandatory_modifiers_key_up(front_input_event,
+                                                     *current_manipulated_original_event,
+                                                     time_stamp_delay,
+                                                     *output_event_queue);
 
                 post_extra_to_events(front_input_event,
                                      to_after_key_up_,
                                      time_stamp_delay,
                                      *output_event_queue);
 
+                post_from_mandatory_modifiers_key_down(front_input_event,
+                                                       *current_manipulated_original_event,
+                                                       time_stamp_delay,
+                                                       *output_event_queue);
+
+                // to_if_alone_
+
                 {
                   uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                   if (current_manipulated_original_event->get_alone() &&
                       nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                    post_from_mandatory_modifiers_key_up(front_input_event,
+                                                         *current_manipulated_original_event,
+                                                         time_stamp_delay,
+                                                         *output_event_queue);
+
                     post_extra_to_events(front_input_event,
                                          to_if_alone_,
                                          time_stamp_delay,
                                          *output_event_queue);
+
+                    post_from_mandatory_modifiers_key_down(front_input_event,
+                                                           *current_manipulated_original_event,
+                                                           time_stamp_delay,
+                                                           *output_event_queue);
                   }
                 }
+              }
+
+              if (current_manipulated_original_event->get_from_events().empty()) {
+                post_from_mandatory_modifiers_key_up(front_input_event,
+                                                     *current_manipulated_original_event,
+                                                     time_stamp_delay,
+                                                     *output_event_queue);
+
+                post_extra_to_events(front_input_event,
+                                     from_.get_simultaneous_options().get_to_after_key_up(),
+                                     time_stamp_delay,
+                                     *output_event_queue);
 
                 post_from_mandatory_modifiers_key_down(front_input_event,
                                                        *current_manipulated_original_event,
                                                        time_stamp_delay,
                                                        *output_event_queue);
               }
+
               break;
 
             case event_type::single:

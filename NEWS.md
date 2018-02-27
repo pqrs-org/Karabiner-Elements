@@ -2,6 +2,8 @@
 
 * Fixed an issue that `to_if_alone`, `to_if_held_down` and `to_delayed_action` does not work properly with `simultaneous`.
 * Changed `simultaneous` behaviour to post key_up events when any key is released.
+* Changed `to_after_key_up` and `to_if_alone` behaviour as mandatory modifiers are removed from these events.
+* Added `simultaneous_options.key_down_order`, `simultaneous_options.key_up_order` and `simultaneous_options.to_after_key_up`.
 
 
 # Version 11.6.0
