@@ -127,7 +127,8 @@ public:
                                                                from_mandatory_modifiers_(from_mandatory_modifiers),
                                                                from_mandatory_modifiers_restored_(false),
                                                                key_down_time_stamp_(key_down_time_stamp),
-                                                               alone_(true) {
+                                                               alone_(true),
+                                                               key_up_posted_(false) {
     }
 
     const std::unordered_set<from_event, from_event_hash>& get_from_events(void) const {
@@ -159,6 +160,14 @@ public:
     }
     events_at_key_up& get_events_at_key_up(void) {
       return const_cast<events_at_key_up&>(static_cast<const manipulated_original_event&>(*this).get_events_at_key_up());
+    }
+
+    bool get_key_up_posted(void) const {
+      return key_up_posted_;
+    }
+
+    void set_key_up_posted(bool value) {
+      key_up_posted_ = true;
     }
 
     void unset_alone(void) {
@@ -200,6 +209,7 @@ public:
     uint64_t key_down_time_stamp_;
     bool alone_;
     events_at_key_up events_at_key_up_;
+    bool key_up_posted_;
   };
 
   class to_if_held_down final {
@@ -777,9 +787,6 @@ public:
               current_manipulated_original_event->erase_from_event(from_event);
               if (current_manipulated_original_event->get_from_events().empty()) {
                 manipulated_original_events_.erase(it);
-              } else {
-                front_input_event.set_valid(false);
-                return manipulate_result::manipulated;
               }
             }
             break;
@@ -794,19 +801,17 @@ public:
 
           uint64_t time_stamp_delay = 0;
 
-          // Release from_mandatory_modifiers
-
-          if (front_input_event.get_event_type() == event_type::key_down) {
-            post_from_mandatory_modifiers_key_up(front_input_event,
-                                                 *current_manipulated_original_event,
-                                                 time_stamp_delay,
-                                                 *output_event_queue);
-          }
-
           // Send events
 
           switch (front_input_event.get_event_type()) {
             case event_type::key_down:
+              // Release from_mandatory_modifiers
+
+              post_from_mandatory_modifiers_key_up(front_input_event,
+                                                   *current_manipulated_original_event,
+                                                   time_stamp_delay,
+                                                   *output_event_queue);
+
               post_events_at_key_down(front_input_event,
                                       to_,
                                       *current_manipulated_original_event,
@@ -823,31 +828,35 @@ public:
               break;
 
             case event_type::key_up:
-              post_events_at_key_up(front_input_event,
-                                    *current_manipulated_original_event,
-                                    time_stamp_delay,
-                                    *output_event_queue);
+              if (!current_manipulated_original_event->get_key_up_posted()) {
+                current_manipulated_original_event->set_key_up_posted(true);
 
-              post_extra_to_events(front_input_event,
-                                   to_after_key_up_,
-                                   time_stamp_delay,
-                                   *output_event_queue);
+                post_events_at_key_up(front_input_event,
+                                      *current_manipulated_original_event,
+                                      time_stamp_delay,
+                                      *output_event_queue);
 
-              {
-                uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
-                if (current_manipulated_original_event->get_alone() &&
-                    nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
-                  post_extra_to_events(front_input_event,
-                                       to_if_alone_,
-                                       time_stamp_delay,
-                                       *output_event_queue);
+                post_extra_to_events(front_input_event,
+                                     to_after_key_up_,
+                                     time_stamp_delay,
+                                     *output_event_queue);
+
+                {
+                  uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
+                  if (current_manipulated_original_event->get_alone() &&
+                      nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                    post_extra_to_events(front_input_event,
+                                         to_if_alone_,
+                                         time_stamp_delay,
+                                         *output_event_queue);
+                  }
                 }
-              }
 
-              post_from_mandatory_modifiers_key_down(front_input_event,
-                                                     *current_manipulated_original_event,
-                                                     time_stamp_delay,
-                                                     *output_event_queue);
+                post_from_mandatory_modifiers_key_down(front_input_event,
+                                                       *current_manipulated_original_event,
+                                                       time_stamp_delay,
+                                                       *output_event_queue);
+              }
               break;
 
             case event_type::single:

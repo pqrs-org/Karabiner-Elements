@@ -1,6 +1,7 @@
 # Since 11.6.0 (beta)
 
 * Fixed an issue that `to_if_alone`, `to_if_held_down` and `to_delayed_action` does not work properly with `simultaneous`.
+* Changed `simultaneous` behaviour to post key_up events when any key is released.
 
 
 # Version 11.6.0

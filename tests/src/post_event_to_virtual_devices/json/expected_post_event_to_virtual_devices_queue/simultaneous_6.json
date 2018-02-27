@@ -45,15 +45,15 @@
     },
     {
         "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 1
+            "key_code": "r",
+            "value": 0
         },
         "time_stamp": 30000000,
         "type": "keyboard_event"
     },
     {
         "keyboard_event": {
-            "key_code": "spacebar",
+            "key_code": "left_shift",
             "value": 1
         },
         "time_stamp": 35000000,
@@ -61,8 +61,8 @@
     },
     {
         "keyboard_event": {
-            "key_code": "r",
-            "value": 0
+            "key_code": "spacebar",
+            "value": 1
         },
         "time_stamp": 40000000,
         "type": "keyboard_event"
