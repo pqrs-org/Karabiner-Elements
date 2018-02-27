@@ -37,6 +37,7 @@ public:
           if (key == "key_down_order") {
             if (!value.is_string()) {
               logger::get_logger().error("complex_modifications json error: `key_down_order` should be string: {0}", json.dump());
+              continue;
             }
 
             key_down_order_ = value;
@@ -47,6 +48,7 @@ public:
           if (key == "key_up_order") {
             if (!value.is_string()) {
               logger::get_logger().error("complex_modifications json error: `key_up_order` should be string: {0}", json.dump());
+              continue;
             }
 
             key_up_order_ = value;
