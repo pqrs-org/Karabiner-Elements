@@ -1201,24 +1201,26 @@ public:
 
                 // to_after_key_up_
 
-                post_from_mandatory_modifiers_key_up(front_input_event,
-                                                     *current_manipulated_original_event,
-                                                     time_stamp_delay,
-                                                     *output_event_queue);
-
-                post_extra_to_events(front_input_event,
-                                     to_after_key_up_,
-                                     time_stamp_delay,
-                                     *output_event_queue);
-
-                post_from_mandatory_modifiers_key_down(front_input_event,
+                if (!to_after_key_up_.empty()) {
+                  post_from_mandatory_modifiers_key_up(front_input_event,
                                                        *current_manipulated_original_event,
                                                        time_stamp_delay,
                                                        *output_event_queue);
 
+                  post_extra_to_events(front_input_event,
+                                       to_after_key_up_,
+                                       time_stamp_delay,
+                                       *output_event_queue);
+
+                  post_from_mandatory_modifiers_key_down(front_input_event,
+                                                         *current_manipulated_original_event,
+                                                         time_stamp_delay,
+                                                         *output_event_queue);
+                }
+
                 // to_if_alone_
 
-                {
+                if (!to_if_alone_.empty()) {
                   uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                   if (current_manipulated_original_event->get_alone() &&
                       nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
@@ -1240,21 +1242,25 @@ public:
                 }
               }
 
-              if (current_manipulated_original_event->get_from_events().empty()) {
-                post_from_mandatory_modifiers_key_up(front_input_event,
-                                                     *current_manipulated_original_event,
-                                                     time_stamp_delay,
-                                                     *output_event_queue);
+              // simultaneous_options.to_after_key_up_
 
-                post_extra_to_events(front_input_event,
-                                     from_.get_simultaneous_options().get_to_after_key_up(),
-                                     time_stamp_delay,
-                                     *output_event_queue);
-
-                post_from_mandatory_modifiers_key_down(front_input_event,
+              if (!from_.get_simultaneous_options().get_to_after_key_up().empty()) {
+                if (current_manipulated_original_event->get_from_events().empty()) {
+                  post_from_mandatory_modifiers_key_up(front_input_event,
                                                        *current_manipulated_original_event,
                                                        time_stamp_delay,
                                                        *output_event_queue);
+
+                  post_extra_to_events(front_input_event,
+                                       from_.get_simultaneous_options().get_to_after_key_up(),
+                                       time_stamp_delay,
+                                       *output_event_queue);
+
+                  post_from_mandatory_modifiers_key_down(front_input_event,
+                                                         *current_manipulated_original_event,
+                                                         time_stamp_delay,
+                                                         *output_event_queue);
+                }
               }
 
               break;
@@ -1573,7 +1579,7 @@ private:
   void post_extra_to_events(const event_queue::queued_event& front_input_event,
                             const std::vector<to_event_definition>& to_events,
                             uint64_t& time_stamp_delay,
-                            event_queue& output_event_queue) {
+                            event_queue& output_event_queue) const {
     for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
       auto& to = *it;
       if (auto event = to.get_event_definition().to_event()) {
