@@ -656,6 +656,7 @@ TEST_CASE("simultaneous_options") {
         {"simultaneous_options", nlohmann::json::object({
                                      {"key_down_order", "unknown"},
                                      {"key_up_order", nlohmann::json::array()},
+                                     {"to_after_key_up", "unknown"},
                                  })},
     }));
 
