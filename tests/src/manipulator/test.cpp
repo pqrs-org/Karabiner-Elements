@@ -7,7 +7,6 @@
 #include <boost/optional/optional_io.hpp>
 
 using krbn::manipulator::details::event_definition;
-using krbn::manipulator::details::from_event_definition;
 using krbn::manipulator::details::modifier_definition;
 using krbn::manipulator::details::to_event_definition;
 

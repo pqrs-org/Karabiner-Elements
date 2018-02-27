@@ -5,15 +5,15 @@
             "key_code": "escape",
             "type": "key_code"
         },
+        "event_time_stamp": {
+            "input_delay_time_stamp": 0,
+            "time_stamp": 100
+        },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
             "key_code": "spacebar",
             "type": "key_code"
-        },
-        "event_time_stamp": {
-            "input_delay_time_stamp": 0,
-            "time_stamp": 100
         },
         "valid": true
     },
@@ -23,15 +23,15 @@
             "key_code": "escape",
             "type": "key_code"
         },
+        "event_time_stamp": {
+            "input_delay_time_stamp": 0,
+            "time_stamp": 200
+        },
         "event_type": "key_down",
         "lazy": false,
         "original_event": {
             "key_code": "spacebar",
             "type": "key_code"
-        },
-        "event_time_stamp": {
-            "input_delay_time_stamp": 0,
-            "time_stamp": 200
         },
         "valid": true
     },
@@ -41,15 +41,15 @@
             "key_code": "escape",
             "type": "key_code"
         },
+        "event_time_stamp": {
+            "input_delay_time_stamp": 0,
+            "time_stamp": 300
+        },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
             "key_code": "spacebar",
             "type": "key_code"
-        },
-        "event_time_stamp": {
-            "input_delay_time_stamp": 0,
-            "time_stamp": 300
         },
         "valid": true
     },
@@ -58,14 +58,14 @@
         "event": {
             "type": "device_ungrabbed"
         },
+        "event_time_stamp": {
+            "input_delay_time_stamp": 0,
+            "time_stamp": 400
+        },
         "event_type": "single",
         "lazy": false,
         "original_event": {
             "type": "device_ungrabbed"
-        },
-        "event_time_stamp": {
-            "input_delay_time_stamp": 0,
-            "time_stamp": 400
         },
         "valid": true
     }

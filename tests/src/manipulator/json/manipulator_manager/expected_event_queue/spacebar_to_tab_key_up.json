@@ -5,15 +5,15 @@
             "key_code": "spacebar",
             "type": "key_code"
         },
+        "event_time_stamp": {
+            "input_delay_time_stamp": 0,
+            "time_stamp": 100
+        },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
             "key_code": "spacebar",
             "type": "key_code"
-        },
-        "event_time_stamp": {
-            "input_delay_time_stamp": 0,
-            "time_stamp": 100
         },
         "valid": true
     }
