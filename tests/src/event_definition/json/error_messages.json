@@ -1,48 +1,4 @@
 {
-    "from_event_definition": [
-        {
-            "description": "Unknown modifier",
-            "key_code": "spacebar",
-            "modifiers": {
-                "mandatory": [
-                    "shift",
-                    "unknown_modifier"
-                ]
-            }
-        },
-        "not_object",
-        {
-            "description": "key_code is not string",
-            "key_code": 1234
-        },
-        {
-            "description": "pointing_button is not string",
-            "pointing_button": 1234
-        },
-        {
-            "description": "any is not string",
-            "any": 1234
-        },
-        {
-            "description": "any value is not known",
-            "any": "unknown_any"
-        },
-        {
-            "description": "Duplicated type description",
-            "key_code": "spacebar",
-            "pointing_button": "button1"
-        },
-        {
-            "description": "Unknown key",
-            "unknown_key": "dummy"
-        },
-        {
-            "description": "unknown modifiers",
-            "modifiers": {
-                "unknown_modifiers": "dummy"
-            }
-        }
-    ],
     "to_event_definition": [
         {
             "description": "Invalid modifiers",

@@ -43,8 +43,8 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("modifier_definition.test_modifier") {
+  using krbn::manipulator::details::basic;
   using krbn::manipulator::details::event_definition;
-  using krbn::manipulator::details::from_event_definition;
   using krbn::manipulator::details::modifier_definition;
 
   {
@@ -52,27 +52,27 @@ TEST_CASE("modifier_definition.test_modifier") {
     modifier_flag_manager.push_back_active_modifier_flag(left_command_1);
 
     {
-      auto actual = from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::left_shift);
+      auto actual = basic::from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::left_shift);
       auto expected = std::make_pair(false, krbn::modifier_flag::zero);
       REQUIRE(actual == expected);
     }
     {
-      auto actual = from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::left_command);
+      auto actual = basic::from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::left_command);
       auto expected = std::make_pair(true, krbn::modifier_flag::left_command);
       REQUIRE(actual == expected);
     }
     {
-      auto actual = from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::right_command);
+      auto actual = basic::from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::right_command);
       auto expected = std::make_pair(false, krbn::modifier_flag::zero);
       REQUIRE(actual == expected);
     }
     {
-      auto actual = from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::command);
+      auto actual = basic::from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::command);
       auto expected = std::make_pair(true, krbn::modifier_flag::left_command);
       REQUIRE(actual == expected);
     }
     {
-      auto actual = from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::shift);
+      auto actual = basic::from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::shift);
       auto expected = std::make_pair(false, krbn::modifier_flag::zero);
       REQUIRE(actual == expected);
     }
@@ -82,17 +82,17 @@ TEST_CASE("modifier_definition.test_modifier") {
     modifier_flag_manager.push_back_active_modifier_flag(right_shift_1);
 
     {
-      auto actual = from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::left_shift);
+      auto actual = basic::from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::left_shift);
       auto expected = std::make_pair(false, krbn::modifier_flag::zero);
       REQUIRE(actual == expected);
     }
     {
-      auto actual = from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::right_shift);
+      auto actual = basic::from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::right_shift);
       auto expected = std::make_pair(true, krbn::modifier_flag::right_shift);
       REQUIRE(actual == expected);
     }
     {
-      auto actual = from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::shift);
+      auto actual = basic::from_event_definition::test_modifier(modifier_flag_manager, modifier_definition::modifier::shift);
       auto expected = std::make_pair(true, krbn::modifier_flag::right_shift);
       REQUIRE(actual == expected);
     }
@@ -100,14 +100,14 @@ TEST_CASE("modifier_definition.test_modifier") {
 }
 
 TEST_CASE("from_event_definition.test_modifiers") {
+  using krbn::manipulator::details::basic;
   using krbn::manipulator::details::event_definition;
-  using krbn::manipulator::details::from_event_definition;
   using krbn::manipulator::details::modifier_definition;
 
   // empty
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"key_code", "spacebar"},
     }));
 
@@ -130,7 +130,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
   // empty (modifier key)
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"key_code", "left_shift"},
     }));
 
@@ -153,7 +153,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
   // mandatory_modifiers any
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"key_code", "spacebar"},
         {"modifiers", nlohmann::json::object({
                           {"mandatory", nlohmann::json::array({"any"})},
@@ -190,7 +190,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
   // optional_modifiers any
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"key_code", "spacebar"},
         {"modifiers", nlohmann::json::object({
                           {"optional", nlohmann::json::array({"any"})},
@@ -222,7 +222,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
   // mandatory_modifiers and optional_modifiers
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"key_code", "p"},
         {"modifiers", nlohmann::json::object({
                           {"mandatory", nlohmann::json::array({"control"})},
@@ -265,7 +265,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
   // optional_modifiers any with mandatory_modifiers
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"key_code", "spacebar"},
         {"modifiers", nlohmann::json::object({
                           {"mandatory", nlohmann::json::array({"left_shift"})},
@@ -302,7 +302,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
   // mandatory_modifiers strict matching
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"key_code", "spacebar"},
         {"modifiers", nlohmann::json::object({
                           {"mandatory", nlohmann::json::array({"left_shift"})},
@@ -337,7 +337,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
   // mandatory_modifiers (modifier::shift)
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"key_code", "spacebar"},
         {"modifiers", nlohmann::json::object({
                           {"mandatory", nlohmann::json::array({"shift"})},
@@ -391,7 +391,7 @@ TEST_CASE("from_event_definition.test_modifiers") {
   // mandatory_modifiers strict matching (modifier::shift)
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"key_code", "spacebar"},
         {"modifiers", nlohmann::json::object({
                           {"mandatory", nlohmann::json::array({"shift"})},
@@ -440,10 +440,12 @@ TEST_CASE("from_event_definition.test_modifiers") {
   }
 }
 
-TEST_CASE("manipulator.details.from_event_definition") {
+TEST_CASE("manipulator.details.basic::from_event_definition") {
+  using krbn::manipulator::details::basic;
+
   {
     nlohmann::json json;
-    krbn::manipulator::details::from_event_definition event_definition(json);
+    basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 0);
     REQUIRE(event_definition.get_mandatory_modifiers().size() == 0);
     REQUIRE(event_definition.get_optional_modifiers().size() == 0);
@@ -461,7 +463,7 @@ TEST_CASE("manipulator.details.from_event_definition") {
                                        }},
                       }},
     });
-    krbn::manipulator::details::from_event_definition event_definition(json);
+    basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::details::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::spacebar);
@@ -493,7 +495,7 @@ TEST_CASE("manipulator.details.from_event_definition") {
                                        }},
                       }},
     });
-    krbn::manipulator::details::from_event_definition event_definition(json);
+    basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 1);
     REQUIRE(event_definition.get_event_definitions().front().get_type() == krbn::manipulator::details::event_definition::type::key_code);
     REQUIRE(event_definition.get_event_definitions().front().get_key_code() == krbn::key_code::right_option);
@@ -520,7 +522,7 @@ TEST_CASE("manipulator.details.from_event_definition") {
                              }),
                          })},
     });
-    krbn::manipulator::details::from_event_definition event_definition(json);
+    basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 2);
     REQUIRE(event_definition.get_event_definitions()[0].get_key_code() == krbn::key_code::left_shift);
     REQUIRE(event_definition.get_event_definitions()[1].get_key_code() == krbn::key_code::right_shift);
@@ -534,137 +536,139 @@ TEST_CASE("manipulator.details.from_event_definition") {
                                         }},
                       }},
     });
-    krbn::manipulator::details::from_event_definition event_definition(json);
+    basic::from_event_definition event_definition(json);
     REQUIRE(event_definition.get_event_definitions().size() == 0);
     REQUIRE(event_definition.get_mandatory_modifiers().size() == 0);
   }
 }
 
 TEST_CASE("event_definition.error_messages") {
+  using krbn::manipulator::details::basic;
+
   set_file_logger("tmp/error_messages.log");
 
   {
     std::ifstream json_file("json/error_messages.json");
     auto json = nlohmann::json::parse(json_file);
     for (const auto& j : json["from_event_definition"]) {
-      krbn::manipulator::details::from_event_definition from_event_definition(j);
+      basic::from_event_definition from_event_definition(j);
     }
   }
 
   set_null_logger();
 }
 
-TEST_CASE("from_event_definition.test_event") {
-  using krbn::manipulator::details::from_event_definition;
+TEST_CASE("basic::from_event_definition.test_event") {
+  using krbn::manipulator::details::basic;
 
   {
-    from_event_definition d(nlohmann::json::object({}));
+    basic::from_event_definition d(nlohmann::json::object({}));
 
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 
   {
-    from_event_definition d(nlohmann::json::object({
+    basic::from_event_definition d(nlohmann::json::object({
         {"key_code", "spacebar"},
     }));
 
-    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::spacebar), d));
+    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::spacebar), d));
 
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 
   {
-    from_event_definition d(nlohmann::json::object({
+    basic::from_event_definition d(nlohmann::json::object({
         {"consumer_key_code", "rewind"},
     }));
 
-    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::rewind), d));
+    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::rewind), d));
 
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 
   {
-    from_event_definition d(nlohmann::json::object({
+    basic::from_event_definition d(nlohmann::json::object({
         {"pointing_button", "button2"},
     }));
 
-    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button2), d));
+    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button2), d));
 
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 
   {
-    from_event_definition d(nlohmann::json::object({
+    basic::from_event_definition d(nlohmann::json::object({
         {"any", "key_code"},
     }));
 
-    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 
   {
-    from_event_definition d(nlohmann::json::object({
+    basic::from_event_definition d(nlohmann::json::object({
         {"any", "consumer_key_code"},
     }));
 
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
-    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 
   {
-    from_event_definition d(nlohmann::json::object({
+    basic::from_event_definition d(nlohmann::json::object({
         {"any", "pointing_button"},
     }));
 
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
-    REQUIRE(!from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
-    REQUIRE(from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::key_code::a), d));
+    REQUIRE(!basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::consumer_key_code::mute), d));
+    REQUIRE(basic::from_event_definition::test_event(krbn::event_queue::queued_event::event(krbn::pointing_button::button1), d));
   }
 }
 
 TEST_CASE("simultaneous_options") {
-  using krbn::manipulator::details::from_event_definition;
+  using krbn::manipulator::details::basic;
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"simultaneous_options", nlohmann::json::object({
                                      {"key_down_order", "strict"},
                                      {"key_up_order", "strict_inverse"},
                                  })},
     }));
 
-    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == from_event_definition::simultaneous_options::key_order::strict);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == from_event_definition::simultaneous_options::key_order::strict_inverse);
+    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == basic::from_event_definition::simultaneous_options::key_order::strict);
+    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == basic::from_event_definition::simultaneous_options::key_order::strict_inverse);
   }
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"simultaneous_options", nlohmann::json::object({
                                      {"key_down_order", "unknown"},
                                      {"key_up_order", nlohmann::json::array()},
                                  })},
     }));
 
-    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == from_event_definition::simultaneous_options::key_order::insensitive);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == from_event_definition::simultaneous_options::key_order::insensitive);
+    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == basic::from_event_definition::simultaneous_options::key_order::insensitive);
+    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == basic::from_event_definition::simultaneous_options::key_order::insensitive);
   }
 
   {
-    from_event_definition event_definition(nlohmann::json::object({
+    basic::from_event_definition event_definition(nlohmann::json::object({
         {"simultaneous_options", "unknown"},
     }));
 
-    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == from_event_definition::simultaneous_options::key_order::insensitive);
-    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == from_event_definition::simultaneous_options::key_order::insensitive);
+    REQUIRE(event_definition.get_simultaneous_options().get_key_down_order() == basic::from_event_definition::simultaneous_options::key_order::insensitive);
+    REQUIRE(event_definition.get_simultaneous_options().get_key_up_order() == basic::from_event_definition::simultaneous_options::key_order::insensitive);
   }
 }

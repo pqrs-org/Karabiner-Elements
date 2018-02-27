@@ -42,57 +42,5 @@
                 "unknown_modifiers": "dummy"
             }
         }
-    ],
-    "to_event_definition": [
-        {
-            "description": "Invalid modifiers",
-            "modifiers": {
-                "mandatory": [
-                    "shift"
-                ]
-            }
-        },
-        {
-            "description": "shell_command is not string",
-            "shell_command": 1234
-        },
-        {
-            "description": "set_variable is not object",
-            "set_variable": 1234
-        },
-        {
-            "description": "set_variable.name is not found",
-            "set_variable": {
-                "value": 1234
-            }
-        },
-        {
-            "description": "set_variable.name is not string",
-            "set_variable": {
-                "name": 1234,
-                "value": 1234
-            }
-        },
-        {
-            "description": "set_variable.value is not found",
-            "set_variable": {
-                "name": "variable_name"
-            }
-        },
-        {
-            "description": "set_variable.name is not number",
-            "set_variable": {
-                "name": "variable_name",
-                "value": "1234"
-            }
-        },
-        {
-            "description": "lazy is not boolean",
-            "lazy": []
-        },
-        {
-            "description": "repeat is not boolean",
-            "repeat": []
-        }
     ]
 }
