@@ -49,7 +49,7 @@ public:
 
   class core final {
   public:
-    boost::signals2::signal<void(timer_id)> timer_invoked;
+    boost::signals2::signal<void(timer_id, uint64_t)> timer_invoked;
 
     core(void) : enabled_(false) {
     }
@@ -102,7 +102,7 @@ public:
         }
 
         if (id) {
-          timer_invoked(*id);
+          timer_invoked(*id, now);
         } else {
           break;
         }

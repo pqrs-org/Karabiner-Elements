@@ -42,7 +42,7 @@ public:
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
                                                            event_queue& output_event_queue) = 0;
 
-  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) = 0;
+  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) = 0;
 
   bool get_valid(void) const {
     return valid_;

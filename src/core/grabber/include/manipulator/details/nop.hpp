@@ -50,7 +50,7 @@ public:
                                                            event_queue& output_event_queue) {
   }
 
-  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
   }
 };
 } // namespace details

@@ -616,7 +616,7 @@ public:
       manipulator_timer_id_ = boost::none;
     }
 
-    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
       if (timer_id == manipulator_timer_id_) {
         manipulator_timer_id_ = boost::none;
 
@@ -759,7 +759,7 @@ public:
       post_events(to_if_canceled_);
     }
 
-    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
       if (timer_id == manipulator_timer_id_) {
         manipulator_timer_id_ = boost::none;
         post_events(to_if_invoked_);
@@ -1374,13 +1374,13 @@ public:
                           front_input_event.get_event_type());
   }
 
-  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
     if (to_if_held_down_) {
-      to_if_held_down_->manipulator_timer_invoked(timer_id);
+      to_if_held_down_->manipulator_timer_invoked(timer_id, now);
     }
 
     if (to_delayed_action_) {
-      to_delayed_action_->manipulator_timer_invoked(timer_id);
+      to_delayed_action_->manipulator_timer_invoked(timer_id, now);
     }
   }
 

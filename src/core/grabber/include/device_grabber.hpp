@@ -70,13 +70,13 @@ public:
                                                             posted_event_queue_);
 
     input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
-      manipulate();
+      manipulate(mach_absolute_time());
     });
 
-    manipulator_timer_invoked_connection_ = manipulator::manipulator_timer::get_instance().timer_invoked.connect([&](auto timer_id) {
+    manipulator_timer_invoked_connection_ = manipulator::manipulator_timer::get_instance().timer_invoked.connect([&](auto timer_id, auto now) {
       if (manipulator_timer_id_ == timer_id) {
         manipulator_timer_id_ = boost::none;
-        manipulate();
+        manipulate(now);
       }
     });
 
@@ -412,13 +412,12 @@ private:
     }
   }
 
-  void manipulate(void) {
+  void manipulate(uint64_t now) {
     {
       // Avoid recursive call
       std::unique_lock<std::mutex> lock(manipulate_mutex_, std::try_to_lock);
 
       if (lock.owns_lock()) {
-        uint64_t now = mach_absolute_time();
         manipulator_managers_connector_.manipulate(now);
 
         posted_event_queue_->clear_events();

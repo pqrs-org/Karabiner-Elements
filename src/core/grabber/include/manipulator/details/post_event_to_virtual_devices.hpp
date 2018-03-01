@@ -597,17 +597,16 @@ public:
     mouse_key_handler(queue& queue,
                       const system_preferences::values& system_preferences_values) : queue_(queue),
                                                                                      system_preferences_values_(system_preferences_values),
-                                                                                     last_time_stamp_(0),
                                                                                      x_count_converter_(128),
                                                                                      y_count_converter_(128),
                                                                                      vertical_wheel_count_converter_(128),
                                                                                      horizontal_wheel_count_converter_(128) {
     }
 
-    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
+    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
       if (timer_id == manipulator_timer_id_) {
         manipulator_timer_id_ = boost::none;
-        post_event();
+        post_event(now);
         krbn_notification_center::get_instance().input_event_arrived();
       }
     }
@@ -620,9 +619,8 @@ public:
       entries_.emplace_back(device_id, mouse_key);
 
       output_event_queue_ = output_event_queue;
-      last_time_stamp_ = time_stamp;
 
-      post_event();
+      post_event(time_stamp);
     }
 
     void erase_mouse_key(device_id device_id,
@@ -632,9 +630,8 @@ public:
       erase_entry(device_id, mouse_key);
 
       output_event_queue_ = output_event_queue;
-      last_time_stamp_ = time_stamp;
 
-      post_event();
+      post_event(time_stamp);
     }
 
     void erase_mouse_keys_by_device_id(device_id device_id,
@@ -646,9 +643,7 @@ public:
                                     }),
                      std::end(entries_));
 
-      last_time_stamp_ = time_stamp;
-
-      post_event();
+      post_event(time_stamp);
     }
 
     bool active(void) const {
@@ -667,7 +662,7 @@ public:
                      std::end(entries_));
     }
 
-    void post_event(void) {
+    void post_event(uint64_t time_stamp) {
       if (auto oeq = output_event_queue_.lock()) {
         mouse_key total;
         for (const auto& pair : entries_) {
@@ -700,13 +695,11 @@ public:
 
           queue_.emplace_back_pointing_input(report,
                                              event_type::single,
-                                             last_time_stamp_);
+                                             time_stamp);
 
           uint64_t delay_milliseconds = 20;
-          auto when = last_time_stamp_ + time_utility::nano_to_absolute(delay_milliseconds * NSEC_PER_MSEC);
+          auto when = time_stamp + time_utility::nano_to_absolute(delay_milliseconds * NSEC_PER_MSEC);
           manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(when);
-
-          last_time_stamp_ = when;
         }
       }
     }
@@ -716,7 +709,6 @@ public:
     std::vector<std::pair<device_id, mouse_key>> entries_;
     std::weak_ptr<event_queue> output_event_queue_;
     boost::optional<manipulator_timer::timer_id> manipulator_timer_id_;
-    uint64_t last_time_stamp_;
     boost::optional<mouse_key> last_mouse_key_total_;
     count_converter x_count_converter_;
     count_converter y_count_converter_;
@@ -1050,8 +1042,8 @@ public:
                                      output_event_queue);
   }
 
-  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id) {
-    mouse_key_handler_.manipulator_timer_invoked(timer_id);
+  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
+    mouse_key_handler_.manipulator_timer_invoked(timer_id, now);
   }
 
   virtual void set_valid(bool value) {
