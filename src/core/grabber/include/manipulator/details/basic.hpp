@@ -1104,7 +1104,30 @@ public:
                     front_input_event.get_event_time_stamp().set_input_delay_time_stamp(t);
 
                     if (now < front_input_event.get_event_time_stamp().make_time_stamp_with_input_delay()) {
+
+                      // We need to stop keyboard repeat when needs_wait_until_time_stamp.
+                      //
+                      // Example:
+                      //   With "Change s+j to down_arrow".
+                      //
+                      //     (1) o key_down
+                      //     (2) s key_down
+                      //     (3) o key_up
+                      //
+                      //  The (2) returns needs_wait_until_time_stamp and stop until simultaneous_threshold_milliseconds.
+                      //  If simultaneous_threshold_milliseconds is greater than keyboard repeat delay,
+                      //  the o key is repeated even if the s key is pressed.
+                      //  To avoid this issue, we post stop_keyboard_repeat here.
+
+                      output_event_queue->emplace_back_event(front_input_event.get_device_id(),
+                                                             front_input_event.get_event_time_stamp(),
+                                                             event_queue::queued_event::event::make_stop_keyboard_repeat_event(),
+                                                             event_type::single,
+                                                             front_input_event.get_original_event(),
+                                                             true);
+
                       return manipulate_result::needs_wait_until_time_stamp;
+
                     } else {
                       if (!found) {
                         is_target = false;
