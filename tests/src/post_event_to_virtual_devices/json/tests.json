@@ -24,6 +24,30 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/same_modifier_twice_from_different_devices_2.json"
     },
     {
+        "description": "stop_keyboard_repeat_1",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/stop_keyboard_repeat_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_1.json"
+    },
+    {
+        "description": "stop_keyboard_repeat_2",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/stop_keyboard_repeat_2.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_2.json"
+    },
+    {
+        "description": "stop_keyboard_repeat_3",
+        "rules": [
+            "json/rules/empty.json"
+        ],
+        "input_event_queue": "json/input_event_queue/stop_keyboard_repeat_3.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_3.json"
+    },
+    {
         "description": "device_ungrabbed_event_1",
         "rules": [
             "json/rules/empty.json"

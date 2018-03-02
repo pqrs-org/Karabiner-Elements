@@ -89,7 +89,8 @@ public:
           case event_queue::queued_event::event::type::pointing_motion:
           case event_queue::queued_event::event::type::shell_command:
           case event_queue::queued_event::event::type::select_input_source:
-          case event_queue::queued_event::event::type::mouse_key: {
+          case event_queue::queued_event::event::type::mouse_key:
+          case event_queue::queued_event::event::type::stop_keyboard_repeat: {
             bool skip = false;
 
             if (front_input_event.get_valid()) {

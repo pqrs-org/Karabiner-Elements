@@ -9,6 +9,10 @@
 namespace krbn {
 class keyboard_repeat_detector final {
 public:
+  boost::optional<std::pair<hid_usage_page, hid_usage>> get_repeating_key(void) const {
+    return repeating_key_;
+  }
+
   void set(hid_usage_page hid_usage_page,
            hid_usage hid_usage,
            event_type event_type) {

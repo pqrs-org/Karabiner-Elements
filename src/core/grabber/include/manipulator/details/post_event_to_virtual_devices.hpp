@@ -906,6 +906,15 @@ public:
           }
           break;
 
+        case event_queue::queued_event::event::type::stop_keyboard_repeat:
+          if (auto key = queue_.get_keyboard_repeat_detector().get_repeating_key()) {
+            key_event_dispatcher_.dispatch_key_up_event(key->first,
+                                                        key->second,
+                                                        queue_,
+                                                        front_input_event.get_event_time_stamp().get_time_stamp());
+          }
+          break;
+
         case event_queue::queued_event::event::type::none:
         case event_queue::queued_event::event::type::set_variable:
         case event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:

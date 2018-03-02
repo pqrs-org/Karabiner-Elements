@@ -31,6 +31,7 @@ public:
         select_input_source,
         set_variable,
         mouse_key,
+        stop_keyboard_repeat,
         // virtual events (passive)
         device_keys_and_pointing_buttons_are_released,
         device_ungrabbed,
@@ -145,6 +146,7 @@ public:
             }
             break;
 
+          case type::stop_keyboard_repeat:
           case type::device_keys_and_pointing_buttons_are_released:
           case type::device_ungrabbed:
           case type::event_from_ignored_device:
@@ -240,6 +242,7 @@ public:
             }
             break;
 
+          case type::stop_keyboard_repeat:
           case type::device_keys_and_pointing_buttons_are_released:
           case type::device_ungrabbed:
           case type::event_from_ignored_device:
@@ -297,6 +300,10 @@ public:
         e.type_ = type::mouse_key;
         e.value_ = mouse_key;
         return e;
+      }
+
+      static event make_stop_keyboard_repeat_event(void) {
+        return make_virtual_event(type::stop_keyboard_repeat);
       }
 
       static event make_device_keys_and_pointing_buttons_are_released_event(void) {
@@ -497,6 +504,7 @@ public:
           TO_C_STRING(select_input_source);
           TO_C_STRING(set_variable);
           TO_C_STRING(mouse_key);
+          TO_C_STRING(stop_keyboard_repeat);
           TO_C_STRING(device_keys_and_pointing_buttons_are_released);
           TO_C_STRING(device_ungrabbed);
           TO_C_STRING(caps_lock_state_changed);
@@ -528,6 +536,7 @@ public:
         TO_TYPE(select_input_source);
         TO_TYPE(set_variable);
         TO_TYPE(mouse_key);
+        TO_TYPE(stop_keyboard_repeat);
         TO_TYPE(device_keys_and_pointing_buttons_are_released);
         TO_TYPE(device_ungrabbed);
         TO_TYPE(caps_lock_state_changed);
