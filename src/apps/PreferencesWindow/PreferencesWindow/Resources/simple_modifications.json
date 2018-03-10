@@ -1199,6 +1199,144 @@
         }
     },
     {
+        "label": "button10",
+        "data": {
+            "pointing_button": "button10"
+        }
+    },
+    {
+        "label": "button11",
+        "data": {
+            "pointing_button": "button11"
+        }
+    },
+    {
+        "label": "button12",
+        "data": {
+            "pointing_button": "button12"
+        }
+    },
+    {
+        "label": "button13",
+        "data": {
+            "pointing_button": "button13"
+        }
+    },
+    {
+        "label": "button14",
+        "data": {
+            "pointing_button": "button14"
+        }
+    },
+    {
+        "label": "button15",
+        "data": {
+            "pointing_button": "button15"
+        }
+    },
+    {
+        "label": "button16",
+        "data": {
+            "pointing_button": "button16"
+        }
+    },
+    {
+        "label": "button17",
+        "data": {
+            "pointing_button": "button17"
+        }
+    },
+    {
+        "label": "button18",
+        "data": {
+            "pointing_button": "button18"
+        }
+    },
+    {
+        "label": "button19",
+        "data": {
+            "pointing_button": "button19"
+        }
+    },
+    {
+        "label": "button20",
+        "data": {
+            "pointing_button": "button20"
+        }
+    },
+    {
+        "label": "button21",
+        "data": {
+            "pointing_button": "button21"
+        }
+    },
+    {
+        "label": "button22",
+        "data": {
+            "pointing_button": "button22"
+        }
+    },
+    {
+        "label": "button23",
+        "data": {
+            "pointing_button": "button23"
+        }
+    },
+    {
+        "label": "button24",
+        "data": {
+            "pointing_button": "button24"
+        }
+    },
+    {
+        "label": "button25",
+        "data": {
+            "pointing_button": "button25"
+        }
+    },
+    {
+        "label": "button26",
+        "data": {
+            "pointing_button": "button26"
+        }
+    },
+    {
+        "label": "button27",
+        "data": {
+            "pointing_button": "button27"
+        }
+    },
+    {
+        "label": "button28",
+        "data": {
+            "pointing_button": "button28"
+        }
+    },
+    {
+        "label": "button29",
+        "data": {
+            "pointing_button": "button29"
+        }
+    },
+    {
+        "label": "button30",
+        "data": {
+            "pointing_button": "button30"
+        }
+    },
+    {
+        "label": "button31",
+        "data": {
+            "pointing_button": "button31"
+        }
+    },
+    {
+        "label": "button32",
+        "data": {
+            "pointing_button": "button32"
+        }
+    },
+    {
         "category": "Mouse keys"
     },
     {
