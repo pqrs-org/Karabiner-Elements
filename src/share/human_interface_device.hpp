@@ -309,10 +309,6 @@ public:
         return;
       }
 
-      if (is_pqrs_device()) {
-        return;
-      }
-
       if (observed_) {
         return;
       }
@@ -333,10 +329,6 @@ public:
   // High-level utility method.
   void unobserve(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (is_pqrs_device()) {
-        return;
-      }
-
       if (!observed_) {
         return;
       }
@@ -353,10 +345,6 @@ public:
   void grab(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       if (removed_) {
-        return;
-      }
-
-      if (is_pqrs_device()) {
         return;
       }
 
@@ -418,10 +406,6 @@ public:
   // High-level utility method.
   void ungrab(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (is_pqrs_device()) {
-        return;
-      }
-
       if (!grabbed_) {
         return;
       }
@@ -448,10 +432,6 @@ public:
 
   void disable(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (is_pqrs_device()) {
-        return;
-      }
-
       if (disabled_) {
         return;
       }
@@ -468,10 +448,6 @@ public:
 
   void enable(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (is_pqrs_device()) {
-        return;
-      }
-
       if (!disabled_) {
         return;
       }
@@ -689,29 +665,6 @@ public:
 
   bool is_built_in_trackpad(void) const {
     return connected_device_->get_is_built_in_trackpad();
-  }
-
-  bool is_pqrs_device(void) const {
-    if (auto manufacturer = find_manufacturer()) {
-      if (*manufacturer == "pqrs.org") {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  bool is_pqrs_virtual_hid_keyboard(void) const {
-    if (auto manufacturer = find_manufacturer()) {
-      if (auto product = find_product()) {
-        if (*manufacturer == "pqrs.org" &&
-            *product == "Karabiner VirtualHIDKeyboard") {
-          return true;
-        }
-      }
-    }
-
-    return false;
   }
 
   device_detail make_device_detail(void) const {

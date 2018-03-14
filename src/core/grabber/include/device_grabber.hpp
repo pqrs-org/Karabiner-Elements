@@ -323,6 +323,10 @@ private:
       return;
     }
 
+    if (iokit_utility::is_karabiner_virtual_hid_device(device)) {
+      return;
+    }
+
     // Skip if same device is already matched.
     // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
     if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
@@ -390,13 +394,6 @@ private:
         logger::get_logger().info("{0} is removed.", dev->get_name_for_log());
         dev->set_removed();
         dev->ungrab();
-        if (dev->is_pqrs_virtual_hid_keyboard()) {
-          virtual_hid_device_client_.close();
-          ungrab_devices();
-
-          virtual_hid_device_client_.connect();
-          grab_devices();
-        }
         hids_.erase(it);
       }
     }
@@ -404,9 +401,21 @@ private:
     output_devices_json();
     output_device_details_json();
 
+    // ----------------------------------------
+
+    if (iokit_utility::is_keyboard(device) &&
+        iokit_utility::is_karabiner_virtual_hid_device(device)) {
+      virtual_hid_device_client_.close();
+      ungrab_devices();
+
+      virtual_hid_device_client_.connect();
+      grab_devices();
+    }
+
     update_virtual_hid_pointing();
 
     // ----------------------------------------
+
     if (mode_ == mode::grabbing) {
       grab_devices();
     }
@@ -513,20 +522,6 @@ private:
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);
       return human_interface_device::grabbable_state::ungrabbable_temporarily;
-    }
-
-    {
-      bool found = false;
-      for (const auto& it : hids_) {
-        if ((it.second)->is_pqrs_virtual_hid_keyboard()) {
-          found = true;
-        }
-      }
-      if (!found) {
-        std::string message = "virtual_hid_keyboard is not detected. Please wait for a while.";
-        is_grabbable_callback_log_reducer_.warn(message);
-        return human_interface_device::grabbable_state::ungrabbable_temporarily;
-      }
     }
 
     // ----------------------------------------
@@ -652,15 +647,6 @@ private:
     }
   }
 
-  bool is_keyboard_connected(void) const {
-    for (const auto& it : hids_) {
-      if ((it.second)->is_keyboard()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   bool is_pointing_device_grabbed(void) const {
     for (const auto& it : hids_) {
       if ((it.second)->is_pointing_device() &&
@@ -742,10 +728,6 @@ private:
   void output_devices_json(void) const {
     connected_devices connected_devices;
     for (const auto& it : hids_) {
-      if ((it.second)->is_pqrs_device()) {
-        continue;
-      }
-
       connected_devices.push_back_device(it.second->get_connected_device());
     }
 
