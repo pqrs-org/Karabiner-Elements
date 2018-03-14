@@ -253,6 +253,16 @@ public:
            IOHIDDeviceConformsTo(device, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
   }
 
+  static bool is_karabiner_virtual_hid_device(IOHIDDeviceRef _Nonnull device) {
+    if (auto manufacturer = find_manufacturer(device)) {
+      if (*manufacturer == "pqrs.org") {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   static void log_matching_device(IOHIDDeviceRef _Nonnull device) {
     logger::get_logger().info("matching device:");
     if (auto manufacturer = find_manufacturer(device)) {
