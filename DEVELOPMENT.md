@@ -72,6 +72,8 @@ There is another problem with `CGEventTapCreate`.<br />
 It requires posting HID usage page and usage.
 `karabiner_grabber` uses this method by using `Karabiner-VirtualHIDDevice`.
 
+Caution: IOHIDValue observers cannot receive events that are posted via `dispatchKeyboardEvent`.
+
 ## IOKit device report in kext
 
 It requires posting HID events.<br />
