@@ -263,6 +263,28 @@ bool libkrbn_file_monitor_initialize(libkrbn_file_monitor* _Nullable* _Nonnull o
                                      void* _Nullable refcon);
 void libkrbn_file_monitor_terminate(libkrbn_file_monitor* _Nullable* _Nonnull p);
 
+// ----------------------------------------
+// libkrbn_hid_value_observer
+
+enum libkrbn_hid_value_type {
+  libkrbn_hid_value_type_key_code,
+  libkrbn_hid_value_type_consumer_key_code,
+};
+
+enum libkrbn_hid_value_event_type {
+  libkrbn_hid_value_event_type_key_down,
+  libkrbn_hid_value_event_type_key_up,
+  libkrbn_hid_value_event_type_single,
+};
+
+typedef void libkrbn_hid_value_observer;
+typedef void (*libkrbn_hid_value_observer_callback)(libkrbn_hid_value_type type,
+                                                    uint32_t value,
+                                                    libkrbn_hid_value_event_type event_type);
+bool libkrbn_hid_value_observer_initialize(libkrbn_hid_value_observer* _Nullable* _Nonnull out,
+                                           libkrbn_hid_value_observer_callback _Nullable callback);
+void libkrbn_hid_value_observer_terminate(libkrbn_hid_value_observer* _Nullable* _Nonnull p);
+
 #ifdef __cplusplus
 }
 #endif

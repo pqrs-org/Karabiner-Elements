@@ -1,6 +1,19 @@
 #include "../../src/lib/libkrbn/libkrbn.h"
 #include "thread_utility.hpp"
+#include <CoreFoundation/CoreFoundation.h>
 #include <iostream>
+
+namespace {
+void hid_value_observer_callback(libkrbn_hid_value_type type,
+                                 uint32_t value,
+                                 libkrbn_hid_value_event_type event_type) {
+  std::cout << "hid_value_observer_callback"
+            << " type:" << type
+            << " value:" << value
+            << " event_type:" << event_type
+            << std::endl;
+}
+} // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
@@ -29,6 +42,13 @@ int main(int argc, const char* argv[]) {
       libkrbn_complex_modifications_assets_manager_terminate(&manager);
     }
   }
+
+  libkrbn_hid_value_observer* observer = nullptr;
+  libkrbn_hid_value_observer_initialize(&observer, hid_value_observer_callback);
+
+  CFRunLoopRun();
+
+  libkrbn_hid_value_observer_terminate(&observer);
 
   std::cout << std::endl;
 
