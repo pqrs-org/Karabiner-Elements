@@ -278,9 +278,9 @@ enum libkrbn_hid_value_event_type {
 };
 
 typedef void libkrbn_hid_value_observer;
-typedef void (*libkrbn_hid_value_observer_callback)(libkrbn_hid_value_type type,
+typedef void (*libkrbn_hid_value_observer_callback)(enum libkrbn_hid_value_type type,
                                                     uint32_t value,
-                                                    libkrbn_hid_value_event_type event_type);
+                                                    enum libkrbn_hid_value_event_type event_type);
 bool libkrbn_hid_value_observer_initialize(libkrbn_hid_value_observer* _Nullable* _Nonnull out,
                                            libkrbn_hid_value_observer_callback _Nullable callback);
 void libkrbn_hid_value_observer_terminate(libkrbn_hid_value_observer* _Nullable* _Nonnull p);
