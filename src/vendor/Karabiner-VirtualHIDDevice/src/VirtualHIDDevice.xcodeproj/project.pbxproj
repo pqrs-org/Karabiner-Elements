@@ -11,10 +11,6 @@
 		343D6FC41DE194550030311D /* UserClient.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 343D6FC21DE194550030311D /* UserClient.hpp */; };
 		3446DBFE1DDE03CF006E6769 /* VersionSignature.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3446DBFD1DDE03CF006E6769 /* VersionSignature.hpp */; };
 		3446DC001DDE12BA006E6769 /* karabiner_virtual_hid_device.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3446DBFF1DDE12BA006E6769 /* karabiner_virtual_hid_device.hpp */; };
-		347180A21DF3E851003766F4 /* ServiceDetector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 347180A11DF3E851003766F4 /* ServiceDetector.hpp */; };
-		347180AA1DF851F5003766F4 /* VirtualHIDEventService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 347180A81DF851F5003766F4 /* VirtualHIDEventService.cpp */; };
-		347180AB1DF851F5003766F4 /* VirtualHIDEventService.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 347180A91DF851F5003766F4 /* VirtualHIDEventService.hpp */; };
-		34769F861DE56E580070ED03 /* KernelVersion.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34769F851DE56E580070ED03 /* KernelVersion.hpp */; };
 		34A565A11DE18F860018C24D /* VirtualHIDRoot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34A5659F1DE18F860018C24D /* VirtualHIDRoot.cpp */; };
 		34A565A21DE18F860018C24D /* VirtualHIDRoot.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 34A565A01DE18F860018C24D /* VirtualHIDRoot.hpp */; };
 		34F58AE21DCF74D50020D6FB /* VirtualHIDKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34F58AE01DCF74D50020D6FB /* VirtualHIDKeyboard.cpp */; };
@@ -33,10 +29,6 @@
 		3446DBFF1DDE12BA006E6769 /* karabiner_virtual_hid_device.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = karabiner_virtual_hid_device.hpp; path = include/karabiner_virtual_hid_device.hpp; sourceTree = SOURCE_ROOT; };
 		345437011D41204200CE355E /* VirtualHIDDevice.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualHIDDevice.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		345437071D41204200CE355E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		347180A11DF3E851003766F4 /* ServiceDetector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ServiceDetector.hpp; path = VirtualHIDRoot/include/ServiceDetector.hpp; sourceTree = "<group>"; };
-		347180A81DF851F5003766F4 /* VirtualHIDEventService.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VirtualHIDEventService.cpp; path = VirtualHIDEventService/VirtualHIDEventService.cpp; sourceTree = "<group>"; };
-		347180A91DF851F5003766F4 /* VirtualHIDEventService.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VirtualHIDEventService.hpp; path = VirtualHIDEventService/VirtualHIDEventService.hpp; sourceTree = "<group>"; };
-		34769F851DE56E580070ED03 /* KernelVersion.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = KernelVersion.hpp; path = VirtualHIDRoot/include/KernelVersion.hpp; sourceTree = "<group>"; };
 		3495C6921D3D8CBE007CB9E7 /* DiagnosticMacros.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = DiagnosticMacros.hpp; path = share/DiagnosticMacros.hpp; sourceTree = "<group>"; };
 		34A5659F1DE18F860018C24D /* VirtualHIDRoot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VirtualHIDRoot.cpp; path = VirtualHIDRoot/VirtualHIDRoot.cpp; sourceTree = "<group>"; };
 		34A565A01DE18F860018C24D /* VirtualHIDRoot.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VirtualHIDRoot.hpp; path = VirtualHIDRoot/VirtualHIDRoot.hpp; sourceTree = "<group>"; };
@@ -73,28 +65,9 @@
 			path = VirtualHIDPointing;
 			sourceTree = "<group>";
 		};
-		3457E2DE1DE1FA3800104102 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				34769F851DE56E580070ED03 /* KernelVersion.hpp */,
-				347180A11DF3E851003766F4 /* ServiceDetector.hpp */,
-			);
-			name = include;
-			sourceTree = "<group>";
-		};
-		347180A31DF3F33F003766F4 /* VirtualHIDEventService */ = {
-			isa = PBXGroup;
-			children = (
-				347180A81DF851F5003766F4 /* VirtualHIDEventService.cpp */,
-				347180A91DF851F5003766F4 /* VirtualHIDEventService.hpp */,
-			);
-			name = VirtualHIDEventService;
-			sourceTree = "<group>";
-		};
 		34A5659E1DE18F790018C24D /* VirtualHIDRoot */ = {
 			isa = PBXGroup;
 			children = (
-				3457E2DE1DE1FA3800104102 /* include */,
 				343D6FC11DE194550030311D /* UserClient.cpp */,
 				343D6FC21DE194550030311D /* UserClient.hpp */,
 				34A5659F1DE18F860018C24D /* VirtualHIDRoot.cpp */,
@@ -110,7 +83,6 @@
 				345437071D41204200CE355E /* Info.plist */,
 				34D210D71D1637AB005AF893 /* Products */,
 				34E4502D1D2F41C300C5AC13 /* share */,
-				347180A31DF3F33F003766F4 /* VirtualHIDEventService */,
 				34F58ADF1DCF74C40020D6FB /* VirtualHIDKeyboard */,
 				3446AA981D4B0AEC00337B36 /* VirtualHIDPointing */,
 				34A5659E1DE18F790018C24D /* VirtualHIDRoot */,
@@ -152,11 +124,8 @@
 			files = (
 				34A565A21DE18F860018C24D /* VirtualHIDRoot.hpp in Headers */,
 				34F79B931DA117CF008A084E /* DiagnosticMacros.hpp in Headers */,
-				34769F861DE56E580070ED03 /* KernelVersion.hpp in Headers */,
-				347180AB1DF851F5003766F4 /* VirtualHIDEventService.hpp in Headers */,
 				343D6FC41DE194550030311D /* UserClient.hpp in Headers */,
 				3446DC001DDE12BA006E6769 /* karabiner_virtual_hid_device.hpp in Headers */,
-				347180A21DF3E851003766F4 /* ServiceDetector.hpp in Headers */,
 				3446DBFE1DDE03CF006E6769 /* VersionSignature.hpp in Headers */,
 				34F79B911DA117BE008A084E /* VirtualHIDPointing.hpp in Headers */,
 				34F58AE31DCF74D50020D6FB /* VirtualHIDKeyboard.hpp in Headers */,
@@ -233,7 +202,6 @@
 				34F58AE21DCF74D50020D6FB /* VirtualHIDKeyboard.cpp in Sources */,
 				34F79B921DA117C1008A084E /* VirtualHIDPointing.cpp in Sources */,
 				34A565A11DE18F860018C24D /* VirtualHIDRoot.cpp in Sources */,
-				347180AA1DF851F5003766F4 /* VirtualHIDEventService.cpp in Sources */,
 				343D6FC31DE194550030311D /* UserClient.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -247,9 +215,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1.0.0d1;
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
-				MODULE_NAME = org.pqrs.driver.Karabiner.VirtualHIDDevice.v050000;
+				MODULE_NAME = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060000;
 				MODULE_VERSION = 1.0.0d1;
-				PRODUCT_BUNDLE_IDENTIFIER = org.pqrs.driver.Karabiner.VirtualHIDDevice.v050000;
+				PRODUCT_BUNDLE_IDENTIFIER = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = kext;
 			};

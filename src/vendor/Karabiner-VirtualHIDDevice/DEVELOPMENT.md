@@ -3,9 +3,6 @@
 * VirtualHIDRoot
   * VirtualHIDRoot_UserClient
     * VirtualHIDKeyboard
-      * IOHIDInterface
-        * IOHIDEventDriver
-        * VirtualHIDEventService
     * VirtualHIDPointing
 
 # Restrictions

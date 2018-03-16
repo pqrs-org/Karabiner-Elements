@@ -4,7 +4,7 @@
 OSDefineMetaClassAndStructors(VIRTUAL_HID_POINTING_CLASS, super);
 
 namespace {
-uint8_t reportDescriptor_[] = {
+const uint8_t reportDescriptor_[] = {
     0x05, 0x01,        // USAGE_PAGE (Generic Desktop)
     0x09, 0x02,        // USAGE (Mouse)
     0xa1, 0x01,        // COLLECTION (Application)
@@ -79,45 +79,12 @@ bool VIRTUAL_HID_POINTING_CLASS::handleStart(IOService* provider) {
     return false;
   }
 
-  setProperty(kIOHIDVirtualHIDevice, kOSBooleanTrue);
   setProperty("HIDDefaultBehavior", kOSBooleanTrue);
 
   return true;
 }
 
-OSString* VIRTUAL_HID_POINTING_CLASS::newManufacturerString() const {
-  return OSString::withCString("pqrs.org");
-}
-
-OSString* VIRTUAL_HID_POINTING_CLASS::newProductString() const {
-  return OSString::withCString("Karabiner VirtualHIDPointing");
-}
-
-OSNumber* VIRTUAL_HID_POINTING_CLASS::newVendorIDNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(0x16c0), 32);
-}
-
-OSNumber* VIRTUAL_HID_POINTING_CLASS::newProductIDNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(0x27da), 32);
-}
-
-OSNumber* VIRTUAL_HID_POINTING_CLASS::newPrimaryUsageNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(kHIDUsage_GD_Mouse), 32);
-}
-
-OSNumber* VIRTUAL_HID_POINTING_CLASS::newPrimaryUsagePageNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(kHIDPage_GenericDesktop), 32);
-}
-
 IOReturn VIRTUAL_HID_POINTING_CLASS::newReportDescriptor(IOMemoryDescriptor** descriptor) const {
   *descriptor = IOBufferMemoryDescriptor::withBytes(reportDescriptor_, sizeof(reportDescriptor_), kIODirectionNone);
   return kIOReturnSuccess;
-}
-
-OSString* VIRTUAL_HID_POINTING_CLASS::newSerialNumberString() const {
-  return OSString::withCString(serialNumberCString());
-}
-
-OSNumber* VIRTUAL_HID_POINTING_CLASS::newLocationIDNumber() const {
-  return OSNumber::withNumber(static_cast<uint32_t>(0), 32);
 }

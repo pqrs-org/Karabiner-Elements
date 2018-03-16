@@ -32,14 +32,6 @@ public:
     right_option = kHIDUsage_KeyboardRightAlt,
     right_command = kHIDUsage_KeyboardRightGUI,
 
-    av_top_case_keyboard_fn = 0x03,
-    av_top_case_brightness_up = 0x04,
-    av_top_case_brightness_down = 0x05,
-    av_top_case_video_mirror = 0x06,
-    av_top_case_illumination_toggle = 0x07,
-    av_top_case_illumination_up = 0x08,
-    av_top_case_illumination_down = 0x09,
-
     csmr_power = 0x30,
     csmr_display_brightness_increment = 0x6f,
     csmr_display_brightness_decrement = 0x70,
@@ -54,6 +46,14 @@ public:
     csmr_volume_decrement = 0xea,
 
     // from AppleHIDUsageTables.h
+    apple_vendor_top_case_keyboard_fn = 0x03,
+    apple_vendor_top_case_brightness_up = 0x04,
+    apple_vendor_top_case_brightness_down = 0x05,
+    apple_vendor_top_case_video_mirror = 0x06,
+    apple_vendor_top_case_illumination_toggle = 0x07,
+    apple_vendor_top_case_illumination_up = 0x08,
+    apple_vendor_top_case_illumination_down = 0x09,
+
     apple_vendor_keyboard_spotlight = 0x01,
     apple_vendor_keyboard_dashboard = 0x02,
     apple_vendor_keyboard_launchpad = 0x04,
@@ -77,25 +77,74 @@ public:
   public:
     class __attribute__((packed)) keyboard_input final {
     public:
-      keyboard_input(void) : report_id(1), modifiers(0), reserved(0), keys{}, apple_vendor_fn(0) {}
+      class modifier {
+      public:
+        enum value {
+          left_control = 0x1 << 0,
+          left_shift = 0x1 << 1,
+          left_option = 0x1 << 2,
+          left_command = 0x1 << 3,
+          right_control = 0x1 << 4,
+          right_shift = 0x1 << 5,
+          right_option = 0x1 << 6,
+          right_command = 0x1 << 7,
+        };
+      };
+
+      keyboard_input(void) : report_id_(1), modifiers(0), reserved(0), keys{} {}
       bool operator==(const keyboard_input& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
       bool operator!=(const keyboard_input& other) const { return !(*this == other); }
 
-      uint8_t report_id;
-      uint8_t modifiers;
-      uint8_t reserved;
-      uint8_t keys[6];
-      uint8_t apple_vendor_fn;
+    private:
+      uint8_t report_id_ __attribute__((unused));
 
-      // modifiers:
-      //   0x1 << 0 : left control
-      //   0x1 << 1 : left shift
-      //   0x1 << 2 : left option
-      //   0x1 << 3 : left command
-      //   0x1 << 4 : right control
-      //   0x1 << 5 : right shift
-      //   0x1 << 6 : right option
-      //   0x1 << 7 : right command
+    public:
+      uint8_t modifiers;
+
+    private:
+      uint8_t reserved __attribute__((unused));
+
+    public:
+      uint8_t keys[6];
+    };
+
+    class __attribute__((packed)) consumer_input final {
+    public:
+      consumer_input(void) : report_id_(2), keys{} {}
+      bool operator==(const consumer_input& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
+      bool operator!=(const consumer_input& other) const { return !(*this == other); }
+
+    private:
+      uint8_t report_id_ __attribute__((unused));
+
+    public:
+      uint8_t keys[6];
+    };
+
+    class __attribute__((packed)) apple_vendor_top_case_input final {
+    public:
+      apple_vendor_top_case_input(void) : report_id_(3), keys{} {}
+      bool operator==(const apple_vendor_top_case_input& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
+      bool operator!=(const apple_vendor_top_case_input& other) const { return !(*this == other); }
+
+    private:
+      uint8_t report_id_ __attribute__((unused));
+
+    public:
+      uint8_t keys[6];
+    };
+
+    class __attribute__((packed)) apple_vendor_keyboard_input final {
+    public:
+      apple_vendor_keyboard_input(void) : report_id_(4), keys{} {}
+      bool operator==(const apple_vendor_keyboard_input& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
+      bool operator!=(const apple_vendor_keyboard_input& other) const { return !(*this == other); }
+
+    private:
+      uint8_t report_id_ __attribute__((unused));
+
+    public:
+      uint8_t keys[6];
     };
 
     class __attribute__((packed)) pointing_input final {
@@ -122,41 +171,20 @@ public:
     };
   };
 
-  class hid_event_service final {
-  public:
-    class __attribute__((packed)) keyboard_event final {
-    public:
-      keyboard_event(void) : usage_page(usage_page::keyboard_or_keypad) {}
-      bool operator==(const keyboard_event& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
-      bool operator!=(const keyboard_event& other) const { return !(*this == other); }
-
-      usage_page usage_page;
-      usage usage;
-      uint32_t value;
-    };
-  };
-
   class properties final {
   public:
-    enum class keyboard_type : uint32_t {
-      none = 0,
-      ansi = 40,
-      iso = 41,
-      jis = 42,
-    };
-
     class __attribute__((packed)) keyboard_initialization final {
     public:
-      keyboard_initialization(void) : keyboard_type(keyboard_type::none),
+      keyboard_initialization(void) : country_code(0),
                                       caps_lock_delay_milliseconds(milliseconds(0)) {}
 
       bool operator==(const keyboard_initialization& other) const {
-        return keyboard_type == other.keyboard_type &&
+        return country_code == other.country_code &&
                caps_lock_delay_milliseconds == other.caps_lock_delay_milliseconds;
       }
       bool operator!=(const keyboard_initialization& other) const { return !(*this == other); }
 
-      keyboard_type keyboard_type;
+      uint8_t country_code;
       milliseconds caps_lock_delay_milliseconds;
     };
   };
@@ -166,9 +194,10 @@ public:
     initialize_virtual_hid_keyboard,
     terminate_virtual_hid_keyboard,
     is_virtual_hid_keyboard_ready,
-    dispatch_keyboard_event,
     post_keyboard_input_report,
-    clear_keyboard_modifier_flags,
+    post_consumer_input_report,
+    post_apple_vendor_top_case_input_report,
+    post_apple_vendor_keyboard_input_report,
     reset_virtual_hid_keyboard,
 
     // VirtualHIDPointing
@@ -181,11 +210,11 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v050000";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060000";
   }
 
   static const char* get_kernel_extension_name(void) {
-    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v050000.kext";
+    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v060000.kext";
   }
 };
 } // namespace pqrs

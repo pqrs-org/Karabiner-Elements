@@ -11,7 +11,6 @@ BEGIN_IOKIT_INCLUDE;
 END_IOKIT_INCLUDE;
 
 #include "VersionSignature.hpp"
-#include "VirtualHIDEventService.hpp"
 #include "VirtualHIDKeyboard.hpp"
 #include "VirtualHIDPointing.hpp"
 #include "VirtualHIDRoot.hpp"
@@ -35,81 +34,228 @@ public:
                                   void* reference = 0) override;
 
 private:
-#include "KernelVersion.hpp"
-#include "ServiceDetector.hpp"
-
   // ----------------------------------------
-  // VirtualHIDKeyboard
+  // VirtualHIDKeyboard callbacks
+
   static IOReturn staticInitializeVirtualHIDKeyboardCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                              void* reference,
-                                                             IOExternalMethodArguments* arguments);
-  IOReturn initializeVirtualHIDKeyboardCallback(const pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization& properties);
+                                                             IOExternalMethodArguments* arguments) {
+    if (!target) {
+      return kIOReturnBadArgument;
+    }
+    if (!arguments) {
+      return kIOReturnBadArgument;
+    }
+
+    if (auto properties = static_cast<const pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization*>(arguments->structureInput)) {
+      return target->initializeVirtualHIDKeyboard(*properties);
+    }
+
+    return kIOReturnBadArgument;
+  }
 
   static IOReturn staticTerminateVirtualHIDKeyboardCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                             void* reference,
-                                                            IOExternalMethodArguments* arguments);
-  IOReturn terminateVirtualHIDKeyboardCallback(void);
+                                                            IOExternalMethodArguments* arguments) {
+    if (!target) {
+      return kIOReturnBadArgument;
+    }
+
+    return target->terminateVirtualHIDKeyboard();
+  }
 
   static IOReturn staticIsVirtualHIDKeyboardReady(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                   void* reference,
-                                                  IOExternalMethodArguments* arguments);
-  IOReturn isVirtualHIDKeyboardReady(bool& ready);
+                                                  IOExternalMethodArguments* arguments) {
+    if (!target) {
+      return kIOReturnBadArgument;
+    }
 
-  static IOReturn staticDispatchKeyboardEventCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
-                                                      void* reference,
-                                                      IOExternalMethodArguments* arguments);
-  IOReturn dispatchKeyboardEventCallback(const pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event& keyboard_event);
+    if (!arguments) {
+      return kIOReturnBadArgument;
+    }
+
+    if (auto ready = static_cast<bool*>(arguments->structureOutput)) {
+      *ready = true;
+      if (!target->virtualHIDKeyboard_) {
+        *ready = false;
+      }
+      return kIOReturnSuccess;
+    }
+
+    return kIOReturnBadArgument;
+  }
 
   static IOReturn staticPostKeyboardInputReportCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                         void* reference,
-                                                        IOExternalMethodArguments* arguments);
-  IOReturn postKeyboardInputReportCallback(const pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& input);
+                                                        IOExternalMethodArguments* arguments) {
+    if (!target) {
+      return kIOReturnBadArgument;
+    }
+    if (!arguments) {
+      return kIOReturnBadArgument;
+    }
 
-  static IOReturn staticClearKeyboardModifierFlagsCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
-                                                           void* reference,
-                                                           IOExternalMethodArguments* arguments);
-  IOReturn clearKeyboardModifierFlagsCallback(void);
+    return target->postKeyboardInputReport(arguments->structureInput, arguments->structureInputSize);
+  }
 
   static IOReturn staticResetVirtualHIDKeyboardCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                         void* reference,
-                                                        IOExternalMethodArguments* arguments);
-  IOReturn resetVirtualHIDKeyboardCallback(void);
+                                                        IOExternalMethodArguments* arguments) {
+    if (!target) {
+      return kIOReturnBadArgument;
+    }
+
+    return target->resetVirtualHIDKeyboard();
+  }
 
   // ----------------------------------------
-  // VirtualHIDPointing
+  // VirtualHIDKeyboard methods
+
+  IOReturn initializeVirtualHIDKeyboard(const pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization& properties);
+  IOReturn terminateVirtualHIDKeyboard(void);
+
+  IOReturn postKeyboardInputReport(const void* report, uint32_t reportSize) const {
+    IOReturn result = kIOReturnError;
+
+    if (!report || reportSize == 0) {
+      return kIOReturnBadArgument;
+    }
+
+    if (virtualHIDKeyboard_) {
+      if (auto buffer = IOBufferMemoryDescriptor::withBytes(report, reportSize, kIODirectionNone)) {
+        result = virtualHIDKeyboard_->handleReport(buffer, kIOHIDReportTypeInput, kIOHIDOptionsTypeNone);
+        buffer->release();
+      }
+    }
+
+    return result;
+  }
+
+  IOReturn resetVirtualHIDKeyboard(void) const {
+    bool result = kIOReturnSuccess;
+
+    if (virtualHIDKeyboard_) {
+      {
+        pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
+        auto kr = postKeyboardInputReport(&report, sizeof(report));
+        if (kr != kIOReturnSuccess) {
+          result = kIOReturnError;
+        }
+      }
+      {
+        pqrs::karabiner_virtual_hid_device::hid_report::consumer_input report;
+        auto kr = postKeyboardInputReport(&report, sizeof(report));
+        if (kr != kIOReturnSuccess) {
+          result = kIOReturnError;
+        }
+      }
+      {
+        pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input report;
+        auto kr = postKeyboardInputReport(&report, sizeof(report));
+        if (kr != kIOReturnSuccess) {
+          result = kIOReturnError;
+        }
+      }
+      {
+        pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input report;
+        auto kr = postKeyboardInputReport(&report, sizeof(report));
+        if (kr != kIOReturnSuccess) {
+          result = kIOReturnError;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  // ----------------------------------------
+  // VirtualHIDPointing callbacks
+
   static IOReturn staticInitializeVirtualHIDPointingCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                              void* reference,
-                                                             IOExternalMethodArguments* arguments);
-  IOReturn initializeVirtualHIDPointingCallback(void);
+                                                             IOExternalMethodArguments* arguments) {
+    if (!target) {
+      return kIOReturnBadArgument;
+    }
+
+    return target->initializeVirtualHIDPointing();
+  }
 
   static IOReturn staticTerminateVirtualHIDPointingCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                             void* reference,
-                                                            IOExternalMethodArguments* arguments);
-  IOReturn terminateVirtualHIDPointingCallback(void);
+                                                            IOExternalMethodArguments* arguments) {
+    if (!target) {
+      return kIOReturnBadArgument;
+    }
+
+    return target->terminateVirtualHIDPointing();
+  }
 
   static IOReturn staticPostPointingInputReportCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                         void* reference,
-                                                        IOExternalMethodArguments* arguments);
-  IOReturn postPointingInputReportCallback(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& input);
+                                                        IOExternalMethodArguments* arguments) {
+    if (!target) {
+      return kIOReturnBadArgument;
+    }
+    if (!arguments) {
+      return kIOReturnBadArgument;
+    }
+
+    if (auto input = static_cast<const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input*>(arguments->structureInput)) {
+      return target->postPointingInputReport(*input);
+    }
+
+    return kIOReturnBadArgument;
+  }
 
   static IOReturn staticResetVirtualHIDPointingCallback(VIRTUAL_HID_ROOT_USERCLIENT_CLASS* target,
                                                         void* reference,
-                                                        IOExternalMethodArguments* arguments);
-  IOReturn resetVirtualHIDPointingCallback(void);
+                                                        IOExternalMethodArguments* arguments) {
+    if (!target) {
+      return kIOReturnBadArgument;
+    }
+
+    return target->resetVirtualHIDPointing();
+  }
 
   // ----------------------------------------
-  static bool isTargetHIDInterface(IOService* newService, IOService* refCon);
+  // VirtualHIDPointing methods
 
-  bool initializeVirtualHIDEventService(IOHIDInterface* hidInterface);
-  void terminateVirtualHIDEventService(void);
+  IOReturn initializeVirtualHIDPointing(void);
+  IOReturn terminateVirtualHIDPointing(void);
+
+  IOReturn postPointingInputReport(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& input) const {
+    IOReturn result = kIOReturnError;
+
+    if (virtualHIDPointing_) {
+      if (auto report = IOBufferMemoryDescriptor::withBytes(&input, sizeof(input), kIODirectionNone)) {
+        result = virtualHIDPointing_->handleReport(report, kIOHIDReportTypeInput, kIOHIDOptionsTypeNone);
+        report->release();
+      }
+    }
+
+    return result;
+  }
+
+  IOReturn resetVirtualHIDPointing(void) const {
+    bool result = kIOReturnSuccess;
+
+    if (virtualHIDPointing_) {
+      {
+        pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
+        auto kr = postPointingInputReport(report);
+        if (kr != kIOReturnSuccess) {
+          result = kIOReturnError;
+        }
+      }
+    }
+
+    return result;
+  }
 
   // ----------------------------------------
-  ServiceDetector hidInterfaceDetector_;
   static IOExternalMethodDispatch methods_[static_cast<size_t>(pqrs::karabiner_virtual_hid_device::user_client_method::end_)];
-  int kernelMajorReleaseVersion_;
   VIRTUAL_HID_KEYBOARD_CLASS* virtualHIDKeyboard_;
   VIRTUAL_HID_POINTING_CLASS* virtualHIDPointing_;
-  VIRTUAL_HID_EVENT_SERVICE_CLASS* virtualHIDEventService_;
-  pqrs::karabiner_virtual_hid_device::properties::keyboard_type virtualHIDKeyboardType_;
-  pqrs::karabiner_virtual_hid_device::milliseconds capsLockDelayMilliseconds_;
 };

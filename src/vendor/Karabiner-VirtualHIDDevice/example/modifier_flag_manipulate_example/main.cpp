@@ -35,40 +35,12 @@ int main(int argc, const char* argv[]) {
 
   {
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-    properties.keyboard_type = pqrs::karabiner_virtual_hid_device::properties::keyboard_type::ansi;
     kr = pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect, properties);
     if (kr != KERN_SUCCESS) {
       std::cerr << "initialize_virtual_hid_keyboard error" << std::endl;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
-
-#if 1
-  {
-    std::cout << "left control by dispatch_keyboard_event (3 seconds)" << std::endl;
-
-    pqrs::karabiner_virtual_hid_device::hid_event_service::keyboard_event keyboard_event;
-    keyboard_event.usage = pqrs::karabiner_virtual_hid_device::usage(kHIDUsage_KeyboardLeftControl);
-    keyboard_event.value = 1;
-
-    kr = pqrs::karabiner_virtual_hid_device_methods::dispatch_keyboard_event(connect, keyboard_event);
-    if (kr != KERN_SUCCESS) {
-      std::cerr << "dispatch_keyboard_event error" << std::endl;
-    }
-
-    for (int i = 0; i < 3; ++i) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-      std::cout << (i + 1) << std::endl;
-    }
-
-    keyboard_event.value = 0;
-
-    kr = pqrs::karabiner_virtual_hid_device_methods::dispatch_keyboard_event(connect, keyboard_event);
-    if (kr != KERN_SUCCESS) {
-      std::cerr << "dispatch_keyboard_event error" << std::endl;
-    }
-  }
-#endif
 
 #if 1
   {
@@ -92,6 +64,32 @@ int main(int argc, const char* argv[]) {
     kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect, report);
     if (kr != KERN_SUCCESS) {
       std::cerr << "post_keyboard_input_report error" << std::endl;
+    }
+  }
+  {
+    std::cout << "fn (3 seconds)" << std::endl;
+
+    {
+      pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input report;
+      report.keys[0] = static_cast<uint8_t>(pqrs::karabiner_virtual_hid_device::usage::apple_vendor_top_case_keyboard_fn);
+
+      kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect, report);
+      if (kr != KERN_SUCCESS) {
+        std::cerr << "post_keyboard_input_report error" << std::endl;
+      }
+    }
+
+    for (int i = 0; i < 3; ++i) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+      std::cout << (i + 1) << std::endl;
+    }
+
+    {
+      pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input report;
+      kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect, report);
+      if (kr != KERN_SUCCESS) {
+        std::cerr << "post_keyboard_input_report error" << std::endl;
+      }
     }
   }
 #endif
