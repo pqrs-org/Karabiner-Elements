@@ -1100,6 +1100,29 @@ public:
     return boost::none;
   }
 
+  static boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::modifier> make_hid_report_modifier(modifier_flag modifier_flag) {
+    switch (modifier_flag) {
+      case modifier_flag::left_control:
+        return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_control;
+      case modifier_flag::left_shift:
+        return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_shift;
+      case modifier_flag::left_option:
+        return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_option;
+      case modifier_flag::left_command:
+        return pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_command;
+      case modifier_flag::right_control:
+        return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_control;
+      case modifier_flag::right_shift:
+        return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_shift;
+      case modifier_flag::right_option:
+        return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_option;
+      case modifier_flag::right_command:
+        return pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_command;
+      default:
+        return boost::none;
+    }
+  }
+
   static boost::optional<key_code> make_key_code(modifier_flag modifier_flag) {
     switch (modifier_flag) {
       case modifier_flag::zero:
@@ -1722,27 +1745,6 @@ public:
       return pointing_button(usage);
     }
     return boost::none;
-  }
-
-  static const std::unordered_map<std::string, pqrs::karabiner_virtual_hid_device::properties::keyboard_type>& get_keyboard_type_map(void) {
-    static std::unordered_map<std::string, pqrs::karabiner_virtual_hid_device::properties::keyboard_type> map({
-        {"none", pqrs::karabiner_virtual_hid_device::properties::keyboard_type::none},
-        {"ansi", pqrs::karabiner_virtual_hid_device::properties::keyboard_type::ansi},
-        {"iso", pqrs::karabiner_virtual_hid_device::properties::keyboard_type::iso},
-        {"jis", pqrs::karabiner_virtual_hid_device::properties::keyboard_type::jis},
-    });
-
-    return map;
-  }
-
-  static boost::optional<pqrs::karabiner_virtual_hid_device::properties::keyboard_type> make_keyboard_type(const std::string& name) {
-    auto& map = get_keyboard_type_map();
-    auto it = map.find(name);
-    if (it == map.end()) {
-      logger::get_logger().error("unknown keyboard_type: \"{0}\"", name);
-      return boost::none;
-    }
-    return it->second;
   }
 
 private:
