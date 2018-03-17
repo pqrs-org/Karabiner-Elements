@@ -131,14 +131,6 @@ public:
     return buttons;
   }
 
-  pqrs::karabiner_virtual_hid_device::hid_report::pointing_input make_pointing_input_report(void) const {
-    pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
-
-    report.buttons = make_hid_report_buttons();
-
-    return report;
-  }
-
 private:
   std::vector<active_pointing_button> active_pointing_buttons_;
 };
