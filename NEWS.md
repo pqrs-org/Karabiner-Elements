@@ -1,5 +1,7 @@
 # Since 11.6.0 (beta)
 
+* macOS 10.11 support has been dropped.
+* The virtual keyboard compatibility has been improved.
 * Added `simultaneous_options.key_down_order`, `simultaneous_options.key_up_order` and `simultaneous_options.to_after_key_up`.
 * Fixed an issue that `to_if_alone`, `to_if_held_down` and `to_delayed_action` does not work properly with `simultaneous`.
 * Improved keyboard repeat handling with `simultaneous`.
