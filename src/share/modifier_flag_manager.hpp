@@ -136,6 +136,37 @@ public:
     return count > 0;
   }
 
+  pqrs::karabiner_virtual_hid_device::hid_report::modifiers make_hid_report_modifiers(void) const {
+    pqrs::karabiner_virtual_hid_device::hid_report::modifiers modifiers;
+
+    if (is_pressed(modifier_flag::left_control)) {
+      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_control);
+    }
+    if (is_pressed(modifier_flag::left_shift)) {
+      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_shift);
+    }
+    if (is_pressed(modifier_flag::left_option)) {
+      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_option);
+    }
+    if (is_pressed(modifier_flag::left_command)) {
+      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_command);
+    }
+    if (is_pressed(modifier_flag::right_control)) {
+      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_control);
+    }
+    if (is_pressed(modifier_flag::right_shift)) {
+      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_shift);
+    }
+    if (is_pressed(modifier_flag::right_option)) {
+      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_option);
+    }
+    if (is_pressed(modifier_flag::right_command)) {
+      modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::right_command);
+    }
+
+    return modifiers;
+  }
+
 private:
   void erase_pairs(void) {
     for (size_t i1 = 0; i1 < active_modifier_flags_.size(); ++i1) {
