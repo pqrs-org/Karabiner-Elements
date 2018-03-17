@@ -215,9 +215,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1.0.0d1;
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
-				MODULE_NAME = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060000;
+				MODULE_NAME = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060200;
 				MODULE_VERSION = 1.0.0d1;
-				PRODUCT_BUNDLE_IDENTIFIER = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060000;
+				PRODUCT_BUNDLE_IDENTIFIER = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060200;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = kext;
 			};
@@ -266,7 +266,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = sdk;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;

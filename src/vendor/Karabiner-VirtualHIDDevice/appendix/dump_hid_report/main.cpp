@@ -45,7 +45,7 @@ void device_matching_callback(void* _Nullable context,
   IOHIDDeviceRegisterInputReportCallback(device, buffer, sizeof(buffer), input_report_callback, nullptr);
   IOHIDDeviceScheduleWithRunLoop(device, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
 }
-}
+} // namespace
 
 int main(int argc, const char* argv[]) {
   uint32_t usage_page = kHIDPage_GenericDesktop;

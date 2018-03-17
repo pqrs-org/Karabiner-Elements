@@ -47,7 +47,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "left control by post_keyboard_input_report (3 seconds)" << std::endl;
 
     pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input report;
-    report.modifiers = 0x01;
+    report.modifiers.insert(pqrs::karabiner_virtual_hid_device::hid_report::modifier::left_control);
 
     kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect, report);
     if (kr != KERN_SUCCESS) {
@@ -59,7 +59,7 @@ int main(int argc, const char* argv[]) {
       std::cout << (i + 1) << std::endl;
     }
 
-    report.modifiers = 0;
+    report.modifiers.clear();
 
     kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect, report);
     if (kr != KERN_SUCCESS) {
@@ -71,7 +71,7 @@ int main(int argc, const char* argv[]) {
 
     {
       pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input report;
-      report.keys[0] = static_cast<uint8_t>(pqrs::karabiner_virtual_hid_device::usage::apple_vendor_top_case_keyboard_fn);
+      report.keys.insert(static_cast<uint8_t>(pqrs::karabiner_virtual_hid_device::usage::apple_vendor_top_case_keyboard_fn));
 
       kr = pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect, report);
       if (kr != KERN_SUCCESS) {

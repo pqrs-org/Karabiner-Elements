@@ -1,4 +1,6 @@
 .DS_Store
+a.out
+*.o
 
 # Created by https://www.gitignore.io/api/xcode
 

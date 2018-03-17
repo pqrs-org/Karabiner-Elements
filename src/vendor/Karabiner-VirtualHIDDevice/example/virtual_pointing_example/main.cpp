@@ -36,6 +36,29 @@ int main(int argc, const char* argv[]) {
     std::cerr << "initialize_virtual_hid_pointing error" << std::endl;
   }
 
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
+    report.buttons.insert(2);
+
+    kr = pqrs::karabiner_virtual_hid_device_methods::post_pointing_input_report(connect, report);
+    if (kr != KERN_SUCCESS) {
+      std::cerr << "post_pointing_input_report error" << std::endl;
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    report.buttons.clear();
+
+    kr = pqrs::karabiner_virtual_hid_device_methods::post_pointing_input_report(connect, report);
+    if (kr != KERN_SUCCESS) {
+      std::cerr << "post_pointing_input_report error" << std::endl;
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+
   for (int i = 0; i < 400; ++i) {
     pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
     report.x = static_cast<uint8_t>(cos(0.1 * i) * 20);

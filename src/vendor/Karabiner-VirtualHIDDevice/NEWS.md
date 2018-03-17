@@ -1,3 +1,24 @@
+# Version 6.2.0
+
+* `pqrs::karabiner_virtual_hid_device::hid_report::modifiers::get_raw_value` has been added.
+* `pqrs::karabiner_virtual_hid_device::hid_report::keys::get_raw_value` has been added.
+
+
+# Version 6.1.0
+
+* `pqrs::karabiner_virtual_hid_device::hid_report` interfaces have been improved.
+
+
+# Version 6.0.0
+
+* macOS 10.11 support has been dropped.
+* `kHIDUsage_AppleVendor_TopCase` and `kHIDUsage_AppleVendor_Keyboard` have been supported in `post_keyboard_input_report`.
+* `pqrs::karabiner_virtual_hid_device::properties::country_code` has been added.
+* `pqrs::karabiner_virtual_hid_device::properties::keyboard_type` has been removed.
+* `pqrs::karabiner_virtual_hid_device_methods::dispatch_keyboard_event` has been removed.
+* `pqrs::karabiner_virtual_hid_device_methods::clear_keyboard_modifier_flags` has been removed.
+
+
 # Version 5.0.0
 
 * The Vendor ID and Product ID of virtual devices has been changed. (0x0,0x0 -> 0x16c0,0x27db and 0x16c0,0x27da)
