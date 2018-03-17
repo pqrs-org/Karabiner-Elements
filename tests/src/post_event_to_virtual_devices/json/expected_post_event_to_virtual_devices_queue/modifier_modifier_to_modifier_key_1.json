@@ -1,118 +1,154 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "right_control",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_control"
+            ]
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift",
+                "right_control"
+            ]
         },
         "time_stamp": 10000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "right_control",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 15000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f7",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f7"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 20000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f7",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 25000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f7",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f7"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 30000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 0
+        "keyboard_input": {
+            "keys": [
+                "f7"
+            ],
+            "modifiers": []
         },
         "time_stamp": 35000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "right_control",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f7"
+            ],
+            "modifiers": [
+                "right_control"
+            ]
         },
         "time_stamp": 40000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f7",
+                "tab"
+            ],
+            "modifiers": [
+                "right_control"
+            ]
         },
         "time_stamp": 45000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 0
+        "keyboard_input": {
+            "keys": [
+                "f7"
+            ],
+            "modifiers": [
+                "right_control"
+            ]
         },
         "time_stamp": 50000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f7",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_control"
+            ]
         },
         "time_stamp": 14000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "tab"
+            ],
+            "modifiers": [
+                "right_control"
+            ]
         },
         "time_stamp": 55000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_control"
+            ]
         },
         "time_stamp": 60000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "right_control",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 65000000,
-        "type": "keyboard_event"
-    },
-    {
-        "time_stamp": 20000000,
-        "type": "clear_keyboard_modifier_flags"
+        "type": "keyboard_input"
     }
 ]
