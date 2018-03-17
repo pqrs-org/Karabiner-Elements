@@ -1,130 +1,132 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_command"
+            ]
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "tab"
+            ],
+            "modifiers": [
+                "left_command"
+            ]
         },
         "time_stamp": 10000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_command"
+            ]
         },
         "time_stamp": 15000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 20000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "time_stamp": 8000000,
-        "type": "clear_keyboard_modifier_flags"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_command"
+            ]
         },
         "time_stamp": 25000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 30000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "time_stamp": 12000000,
-        "type": "clear_keyboard_modifier_flags"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "escape",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "escape"
+            ],
+            "modifiers": []
         },
         "time_stamp": 35000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "escape",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 40000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_command"
+            ]
         },
         "time_stamp": 45000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 1013000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "time_stamp": 1013000000,
-        "type": "clear_keyboard_modifier_flags"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "escape",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "escape"
+            ],
+            "modifiers": []
         },
         "time_stamp": 1018000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "escape",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 1023000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_command"
+            ]
         },
         "time_stamp": 1028000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 2016000000,
-        "type": "keyboard_event"
-    },
-    {
-        "time_stamp": 2016000000,
-        "type": "clear_keyboard_modifier_flags"
+        "type": "keyboard_input"
     }
 ]
