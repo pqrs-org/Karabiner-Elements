@@ -1,10 +1,12 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 1000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]
