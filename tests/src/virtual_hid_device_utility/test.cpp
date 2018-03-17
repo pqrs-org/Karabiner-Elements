@@ -76,3 +76,17 @@ TEST_CASE("karabiner_virtual_hid_device::hid_report::keys") {
     REQUIRE(krbn::virtual_hid_device_utility::to_json(keys, krbn::hid_usage_page::apple_vendor_keyboard).dump() == expected.dump());
   }
 }
+
+TEST_CASE("karabiner_virtual_hid_device::hid_report::buttons") {
+  {
+    pqrs::karabiner_virtual_hid_device::hid_report::buttons buttons;
+    buttons.insert(1);
+    buttons.insert(32);
+
+    nlohmann::json expected = nlohmann::json::array();
+    expected.push_back("button1");
+    expected.push_back("button32");
+
+    REQUIRE(nlohmann::json(buttons).dump() == expected.dump());
+  }
+}

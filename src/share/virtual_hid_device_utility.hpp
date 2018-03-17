@@ -65,11 +65,29 @@ public:
 
     return json;
   }
+
+  static nlohmann::json to_json(const pqrs::karabiner_virtual_hid_device::hid_report::buttons& v) {
+    auto json = nlohmann::json::array();
+
+    for (int i = 1; i <= static_cast<int>(pointing_button::end_); ++i) {
+      if (v.exists(i)) {
+        if (auto pointing_button_name = types::make_pointing_button_name(pointing_button(i))) {
+          json.push_back(*pointing_button_name);
+        }
+      }
+    }
+
+    return json;
+  }
 };
 } // namespace krbn
 
 namespace pqrs {
 inline void to_json(nlohmann::json& json, const karabiner_virtual_hid_device::hid_report::modifiers& v) {
+  json = krbn::virtual_hid_device_utility::to_json(v);
+}
+
+inline void to_json(nlohmann::json& json, const karabiner_virtual_hid_device::hid_report::buttons& v) {
   json = krbn::virtual_hid_device_utility::to_json(v);
 }
 } // namespace pqrs
