@@ -1,54 +1,54 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "fn",
-            "value": 1
+        "apple_vendor_top_case_input": {
+            "keys": [
+                "fn"
+            ]
         },
         "time_stamp": 5000000000,
-        "type": "keyboard_event"
+        "type": "apple_vendor_top_case_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "spacebar"
+            ],
+            "modifiers": []
         },
         "time_stamp": 6000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 8000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "spacebar"
+            ],
+            "modifiers": []
         },
         "time_stamp": 10000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "fn",
-            "value": 0
+        "apple_vendor_top_case_input": {
+            "keys": []
         },
         "time_stamp": 11000000000,
-        "type": "keyboard_event"
+        "type": "apple_vendor_top_case_input"
     },
     {
-        "time_stamp": 11000000000,
-        "type": "clear_keyboard_modifier_flags"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 12000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]

@@ -1,71 +1,72 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 1000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 2000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "time_stamp": 2000000000,
-        "type": "clear_keyboard_modifier_flags"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "spacebar"
+            ],
+            "modifiers": []
         },
         "time_stamp": 3000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 4000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "escape",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "escape"
+            ],
+            "modifiers": []
         },
         "time_stamp": 5000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "escape",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 6000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "tab"
+            ],
+            "modifiers": []
         },
         "time_stamp": 7000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
         "pointing_input": {
             "buttons": [
-                1,
-                0,
-                0,
-                0
+                "button1"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -78,10 +79,7 @@
     {
         "pointing_input": {
             "buttons": [
-                1,
-                0,
-                0,
-                0
+                "button1"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -93,12 +91,7 @@
     },
     {
         "pointing_input": {
-            "buttons": [
-                0,
-                0,
-                0,
-                0
-            ],
+            "buttons": [],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
             "x": 0,
@@ -109,12 +102,7 @@
     },
     {
         "pointing_input": {
-            "buttons": [
-                0,
-                0,
-                0,
-                0
-            ],
+            "buttons": [],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
             "x": 0,

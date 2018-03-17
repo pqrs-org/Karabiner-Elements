@@ -1,58 +1,88 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "tab"
+            ],
+            "modifiers": []
         },
         "time_stamp": 1000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "escape",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "tab",
+                "escape"
+            ],
+            "modifiers": []
         },
         "time_stamp": 2000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "tab",
+                "escape",
+                "spacebar"
+            ],
+            "modifiers": []
         },
         "time_stamp": 3000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 0
+        "keyboard_input": {
+            "keys": [
+                "escape",
+                "spacebar"
+            ],
+            "modifiers": []
         },
         "time_stamp": 4000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "escape",
+                "spacebar"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 5000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "return_or_enter",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "return_or_enter",
+                "escape",
+                "spacebar"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 6000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "a",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "return_or_enter",
+                "escape",
+                "spacebar",
+                "a"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 7000000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]

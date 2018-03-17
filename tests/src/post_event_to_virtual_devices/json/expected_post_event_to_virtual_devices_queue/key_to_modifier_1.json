@@ -1,38 +1,42 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "tab"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 10000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 0
+        "keyboard_input": {
+            "keys": [
+                "tab"
+            ],
+            "modifiers": []
         },
         "time_stamp": 15000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "time_stamp": 6000000,
-        "type": "clear_keyboard_modifier_flags"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 8000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]
