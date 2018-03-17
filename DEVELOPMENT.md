@@ -67,17 +67,20 @@ There is another problem with `CGEventTapCreate`.<br />
 
 # The difference of event posting methods
 
-## IOKit call IOHIKeyboard::dispatchKeyboardEvent in kext
-
-It requires posting HID usage page and usage.
-`karabiner_grabber` uses this method by using `Karabiner-VirtualHIDDevice`.
-
-Caution: IOHIDValue observers cannot receive events that are posted via `dispatchKeyboardEvent`.
-
 ## IOKit device report in kext
 
 It requires posting HID events.<br />
 The IOHIKeyboard processes the reports by passing reports to `handleReport`.
+
+`karabiner_grabber` uses this method by using `Karabiner-VirtualHIDDevice`.
+
+Note: `handleReport` fails to treat events which usage page are `kHIDPage_AppleVendorKeyboard` or `kHIDPage_AppleVendorTopCase` on macOS 10.11 or earlier.
+
+## IOKit call IOHIKeyboard::dispatchKeyboardEvent in kext
+
+It requires posting HID usage page and usage.
+
+Caution: IOHIDValue observers cannot receive events that are posted via `dispatchKeyboardEvent`.
 
 ## IOHIDPostEvent
 
