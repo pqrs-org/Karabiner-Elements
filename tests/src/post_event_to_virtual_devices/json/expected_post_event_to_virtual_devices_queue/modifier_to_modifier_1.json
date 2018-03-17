@@ -1,38 +1,36 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "fn",
-            "value": 1
+        "apple_vendor_top_case_input": {
+            "keys": [
+                "fn"
+            ]
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "apple_vendor_top_case_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "tab"
+            ],
+            "modifiers": []
         },
         "time_stamp": 10000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 15000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "fn",
-            "value": 0
+        "apple_vendor_top_case_input": {
+            "keys": []
         },
         "time_stamp": 20000000,
-        "type": "keyboard_event"
-    },
-    {
-        "time_stamp": 8000000,
-        "type": "clear_keyboard_modifier_flags"
+        "type": "apple_vendor_top_case_input"
     }
 ]

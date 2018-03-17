@@ -2,10 +2,7 @@
     {
         "pointing_input": {
             "buttons": [
-                0,
-                4,
-                0,
-                0
+                "button11"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -18,10 +15,7 @@
     {
         "pointing_input": {
             "buttons": [
-                0,
-                4,
-                0,
-                0
+                "button11"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -33,12 +27,7 @@
     },
     {
         "pointing_input": {
-            "buttons": [
-                0,
-                0,
-                0,
-                0
-            ],
+            "buttons": [],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
             "x": 0,

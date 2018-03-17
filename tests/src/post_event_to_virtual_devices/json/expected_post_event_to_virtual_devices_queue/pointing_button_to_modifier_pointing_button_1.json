@@ -1,19 +1,18 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_command"
+            ]
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
         "pointing_input": {
             "buttons": [
-                0,
-                8,
-                0,
-                0
+                "button12"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -26,10 +25,7 @@
     {
         "pointing_input": {
             "buttons": [
-                0,
-                8,
-                0,
-                0
+                "button12"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -41,12 +37,7 @@
     },
     {
         "pointing_input": {
-            "buttons": [
-                0,
-                0,
-                0,
-                0
-            ],
+            "buttons": [],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
             "x": 0,

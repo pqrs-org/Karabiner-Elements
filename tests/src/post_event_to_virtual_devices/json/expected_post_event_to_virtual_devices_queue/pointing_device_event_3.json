@@ -1,31 +1,26 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "left_control",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_control"
+            ]
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_control",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 10000000,
-        "type": "keyboard_event"
-    },
-    {
-        "time_stamp": 4000001,
-        "type": "clear_keyboard_modifier_flags"
+        "type": "keyboard_input"
     },
     {
         "pointing_input": {
             "buttons": [
-                4,
-                0,
-                0,
-                0
+                "button3"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -38,10 +33,7 @@
     {
         "pointing_input": {
             "buttons": [
-                4,
-                0,
-                0,
-                0
+                "button3"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,

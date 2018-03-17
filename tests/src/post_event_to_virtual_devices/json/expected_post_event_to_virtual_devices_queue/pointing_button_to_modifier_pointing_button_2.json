@@ -1,19 +1,18 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 1
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_command"
+            ]
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
         "pointing_input": {
             "buttons": [
-                0,
-                8,
-                0,
-                0
+                "button12"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -26,10 +25,7 @@
     {
         "pointing_input": {
             "buttons": [
-                0,
-                8,
-                0,
-                0
+                "button12"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -40,40 +36,35 @@
         "type": "pointing_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_gui",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 15000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "time_stamp": 10000000,
-        "type": "clear_keyboard_modifier_flags"
-    },
-    {
-        "keyboard_event": {
-            "key_code": "p",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "p"
+            ],
+            "modifiers": []
         },
         "time_stamp": 20000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "p",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 25000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
         "pointing_input": {
             "buttons": [
-                0,
-                8,
-                0,
-                0
+                "button12"
             ],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
@@ -85,12 +76,7 @@
     },
     {
         "pointing_input": {
-            "buttons": [
-                0,
-                0,
-                0,
-                0
-            ],
+            "buttons": [],
             "horizontal_wheel": 0,
             "vertical_wheel": 0,
             "x": 0,
