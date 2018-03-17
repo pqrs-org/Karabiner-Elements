@@ -61,6 +61,7 @@
 		3494274B1F9D736800A24707 /* krbn_notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = krbn_notification_center.hpp; sourceTree = "<group>"; };
 		349863321E784DC800DF3644 /* connected_devices.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = connected_devices.hpp; sourceTree = "<group>"; };
 		349950691D89A2EF004FE466 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = system_preferences.hpp; sourceTree = "<group>"; };
+		34A7D676205D769300031E7E /* virtual_hid_device_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_device_utility.hpp; sourceTree = "<group>"; };
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A891D6840C200DD480B /* receiver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = receiver.hpp; path = include/receiver.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A8F1D6840C200DD480B /* session.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = session.hpp; sourceTree = "<group>"; };
@@ -179,6 +180,7 @@
 				34A88AA61D6DF89900DD480B /* types.hpp */,
 				3463EABD1E2E866000427A81 /* version_monitor.hpp */,
 				348FC00A1D9B76830083F98F /* virtual_hid_device_client.hpp */,
+				34A7D676205D769300031E7E /* virtual_hid_device_utility.hpp */,
 			);
 			name = share;
 			path = ../../share;
