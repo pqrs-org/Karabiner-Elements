@@ -37,88 +37,69 @@ TEST_CASE("initialize") {
 TEST_CASE("pointing_button_manager") {
   {
     krbn::pointing_button_manager pointing_button_manager;
+    pqrs::karabiner_virtual_hid_device::hid_report::buttons expected;
 
     pointing_button_manager.push_back_active_pointing_button(button1_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x1);
-
-    {
-      auto report = pointing_button_manager.make_pointing_input_report();
-      REQUIRE(report.buttons[0] == 0x1);
-      REQUIRE(report.buttons[1] == 0x0);
-      REQUIRE(report.buttons[2] == 0x0);
-      REQUIRE(report.buttons[3] == 0x0);
-    }
+    expected.insert(1);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
 
     pointing_button_manager.push_back_active_pointing_button(button2_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x3);
-
-    {
-      auto report = pointing_button_manager.make_pointing_input_report();
-      REQUIRE(report.buttons[0] == 0x3);
-      REQUIRE(report.buttons[1] == 0x0);
-      REQUIRE(report.buttons[2] == 0x0);
-      REQUIRE(report.buttons[3] == 0x0);
-    }
+    expected.insert(2);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
 
     pointing_button_manager.push_back_active_pointing_button(button3_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x7);
-
-    {
-      auto report = pointing_button_manager.make_pointing_input_report();
-      REQUIRE(report.buttons[0] == 0x7);
-      REQUIRE(report.buttons[1] == 0x0);
-      REQUIRE(report.buttons[2] == 0x0);
-      REQUIRE(report.buttons[3] == 0x0);
-    }
+    expected.insert(3);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
 
     pointing_button_manager.push_back_active_pointing_button(button20_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x80007);
-
-    {
-      auto report = pointing_button_manager.make_pointing_input_report();
-      REQUIRE(report.buttons[0] == 0x7);
-      REQUIRE(report.buttons[1] == 0x0);
-      REQUIRE(report.buttons[2] == 0x8);
-      REQUIRE(report.buttons[3] == 0x0);
-    }
+    expected.insert(20);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
   }
 
   // decrease first
   {
     krbn::pointing_button_manager pointing_button_manager;
+    pqrs::karabiner_virtual_hid_device::hid_report::buttons expected;
 
     pointing_button_manager.push_back_active_pointing_button(button1_decrease_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x0);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
 
     pointing_button_manager.push_back_active_pointing_button(button1_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x1);
+    expected.insert(1);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
   }
 
   // push twice
   {
     krbn::pointing_button_manager pointing_button_manager;
+    pqrs::karabiner_virtual_hid_device::hid_report::buttons expected;
 
     pointing_button_manager.push_back_active_pointing_button(button1_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x1);
+    expected.insert(1);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
 
     pointing_button_manager.push_back_active_pointing_button(button1_decrease_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x0);
+    expected.erase(1);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
 
     pointing_button_manager.push_back_active_pointing_button(button1_1);
     pointing_button_manager.push_back_active_pointing_button(button1_1);
     pointing_button_manager.push_back_active_pointing_button(button1_decrease_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x0);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
   }
 
   // multiple devices
   {
     krbn::pointing_button_manager pointing_button_manager;
+    pqrs::karabiner_virtual_hid_device::hid_report::buttons expected;
 
     pointing_button_manager.push_back_active_pointing_button(button1_1);
     pointing_button_manager.push_back_active_pointing_button(button1_2);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x1);
+    expected.insert(1);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
 
     pointing_button_manager.push_back_active_pointing_button(button1_decrease_1);
-    REQUIRE(pointing_button_manager.get_hid_report_bits() == 0x0);
+    expected.erase(1);
+    REQUIRE(pointing_button_manager.make_hid_report_buttons() == expected);
   }
 }

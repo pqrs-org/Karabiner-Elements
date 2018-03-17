@@ -116,30 +116,25 @@ public:
     return count > 0;
   }
 
-  uint32_t get_hid_report_bits(void) const {
-    uint32_t bits = 0;
+  pqrs::karabiner_virtual_hid_device::hid_report::buttons make_hid_report_buttons(void) const {
+    pqrs::karabiner_virtual_hid_device::hid_report::buttons buttons;
 
     auto button1 = static_cast<uint32_t>(pointing_button::button1);
     auto button32 = static_cast<uint32_t>(pointing_button::button32);
 
     for (size_t i = button1; i < button32; ++i) {
       if (is_pressed(pointing_button(i))) {
-        bits |= static_cast<uint32_t>(1 << (i - button1));
+        buttons.insert(i - button1 + 1);
       }
     }
 
-    return bits;
+    return buttons;
   }
 
   pqrs::karabiner_virtual_hid_device::hid_report::pointing_input make_pointing_input_report(void) const {
     pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
 
-    auto bits = get_hid_report_bits();
-
-    report.buttons[0] = (bits >> 0) & 0xff;
-    report.buttons[1] = (bits >> 8) & 0xff;
-    report.buttons[2] = (bits >> 16) & 0xff;
-    report.buttons[3] = (bits >> 24) & 0xff;
+    report.buttons = make_hid_report_buttons();
 
     return report;
   }
