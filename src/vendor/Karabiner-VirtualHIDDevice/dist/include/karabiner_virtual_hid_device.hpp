@@ -110,6 +110,9 @@ public:
         return modifiers_ & static_cast<uint8_t>(value);
       }
 
+      bool operator==(const modifiers& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
+      bool operator!=(const modifiers& other) const { return !(*this == other); }
+
     private:
       uint8_t modifiers_;
     };
@@ -204,8 +207,8 @@ public:
         return false;
       }
 
-      bool operator==(const keys& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
-      bool operator!=(const keys& other) const { return !(*this == other); }
+      bool operator==(const buttons& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
+      bool operator!=(const buttons& other) const { return !(*this == other); }
 
     private:
       uint32_t buttons_; // 32 bits for each button (32 buttons)
@@ -332,11 +335,11 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060200";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060300";
   }
 
   static const char* get_kernel_extension_name(void) {
-    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v060200.kext";
+    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v060300.kext";
   }
 };
 } // namespace pqrs

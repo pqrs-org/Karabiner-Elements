@@ -1,3 +1,9 @@
+# Version 6.3.0
+
+* `pqrs::karabiner_virtual_hid_device::hid_report::modifiers::operator==` has been added.
+* `pqrs::karabiner_virtual_hid_device::hid_report::buttons::operator==` has been added.
+
+
 # Version 6.2.0
 
 * `pqrs::karabiner_virtual_hid_device::hid_report::modifiers::get_raw_value` has been added.

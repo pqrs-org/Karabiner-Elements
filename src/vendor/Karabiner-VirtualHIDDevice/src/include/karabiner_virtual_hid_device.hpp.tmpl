@@ -110,6 +110,9 @@ public:
         return modifiers_ & static_cast<uint8_t>(value);
       }
 
+      bool operator==(const modifiers& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
+      bool operator!=(const modifiers& other) const { return !(*this == other); }
+
     private:
       uint8_t modifiers_;
     };
@@ -204,8 +207,8 @@ public:
         return false;
       }
 
-      bool operator==(const keys& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
-      bool operator!=(const keys& other) const { return !(*this == other); }
+      bool operator==(const buttons& other) const { return (memcmp(this, &other, sizeof(*this)) == 0); }
+      bool operator!=(const buttons& other) const { return !(*this == other); }
 
     private:
       uint32_t buttons_; // 32 bits for each button (32 buttons)
