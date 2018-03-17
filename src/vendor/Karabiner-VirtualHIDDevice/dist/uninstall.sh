@@ -14,7 +14,7 @@ PATH='/bin:/sbin:/usr/bin:/usr/sbin'; export PATH
 # (kext will exist until system reboot.)
 
 # Delete files
-rm -rf '/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.v060300.kext/'
+rm -rf '/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions/org.pqrs.driver.Karabiner.VirtualHIDDevice.v060400.kext/'
 2>/dev/null rmdir '/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions'
 2>/dev/null rmdir '/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice'
 2>/dev/null rmdir '/Library/Application Support/org.pqrs'

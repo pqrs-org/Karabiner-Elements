@@ -106,7 +106,7 @@ public:
         modifiers_ &= ~(static_cast<uint8_t>(value));
       }
 
-      bool exists(modifier value) {
+      bool exists(modifier value) const {
         return modifiers_ & static_cast<uint8_t>(value);
       }
 
@@ -148,7 +148,7 @@ public:
         }
       }
 
-      bool exists(uint8_t key) {
+      bool exists(uint8_t key) const {
         for (const auto& k : keys_) {
           if (k == key) {
             return true;
@@ -199,7 +199,7 @@ public:
         }
       }
 
-      bool exists(uint8_t button) {
+      bool exists(uint8_t button) const {
         if (1 <= button && button <= 32) {
           return buttons_ & (0x1 << (button - 1));
         }
@@ -335,11 +335,11 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060300";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060400";
   }
 
   static const char* get_kernel_extension_name(void) {
-    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v060300.kext";
+    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v060400.kext";
   }
 };
 } // namespace pqrs

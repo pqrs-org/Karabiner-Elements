@@ -1,3 +1,8 @@
+# Version 6.4.0
+
+* Add const qualifier to `pqrs::karabiner_virtual_hid_device::hid_report::*::exists`.
+
+
 # Version 6.3.0
 
 * `pqrs::karabiner_virtual_hid_device::hid_report::modifiers::operator==` has been added.
