@@ -94,6 +94,10 @@ public:
         return modifiers_;
       }
 
+      bool empty(void) const {
+        return modifiers_ == 0;
+      }
+
       void clear(void) {
         modifiers_ = 0;
       }
@@ -123,6 +127,15 @@ public:
 
       const uint8_t (&get_raw_value(void) const)[6] {
         return keys_;
+      }
+
+      bool empty(void) const {
+        for (const auto& k : keys_) {
+          if (k != 0) {
+            return false;
+          }
+        }
+        return true;
       }
 
       void clear(void) {
@@ -181,6 +194,10 @@ public:
 
       uint32_t get_raw_value(void) const {
         return buttons_;
+      }
+
+      bool empty(void) const {
+        return buttons_ == 0;
       }
 
       void clear(void) {
@@ -335,11 +352,11 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060400";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060500";
   }
 
   static const char* get_kernel_extension_name(void) {
-    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v060400.kext";
+    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v060500.kext";
   }
 };
 } // namespace pqrs
