@@ -193,14 +193,14 @@ enum {
 
 - (NSString*)modifierFlagsToString:(NSUInteger)flags {
   return [NSString stringWithFormat:@"%s%s%s%s%s%s%s%s",
-                                    ((flags & NSAlphaShiftKeyMask) ? "Caps " : ""),
-                                    ((flags & NSShiftKeyMask) ? "Shift " : ""),
-                                    ((flags & NSControlKeyMask) ? "Ctrl " : ""),
-                                    ((flags & NSAlternateKeyMask) ? "Opt " : ""),
-                                    ((flags & NSCommandKeyMask) ? "Cmd " : ""),
-                                    ((flags & NSNumericPadKeyMask) ? "NumPad " : ""),
-                                    ((flags & NSHelpKeyMask) ? "Help " : ""),
-                                    ((flags & NSFunctionKeyMask) ? "Fn " : "")];
+                                    ((flags & NSEventModifierFlagCapsLock) ? "Caps " : ""),
+                                    ((flags & NSEventModifierFlagShift) ? "Shift " : ""),
+                                    ((flags & NSEventModifierFlagControl) ? "Ctrl " : ""),
+                                    ((flags & NSEventModifierFlagOption) ? "Opt " : ""),
+                                    ((flags & NSEventModifierFlagCommand) ? "Cmd " : ""),
+                                    ((flags & NSEventModifierFlagNumericPad) ? "NumPad " : ""),
+                                    ((flags & NSEventModifierFlagHelp) ? "Help " : ""),
+                                    ((flags & NSEventModifierFlagFunction) ? "Fn " : "")];
 }
 
 - (NSString*)specialKeycodeToString:(NSEvent*)event {
@@ -357,19 +357,19 @@ enum {
 
 - (void)pushFromNSApplication:(NSEvent*)event {
   switch ([event type]) {
-    case NSKeyDown:
+      case NSEventTypeKeyDown:
       [self pushKeyEvent:event eventType:@"KeyDown"];
       break;
 
-    case NSKeyUp:
+      case NSEventTypeKeyUp:
       [self pushKeyEvent:event eventType:@"KeyUp"];
       break;
 
-    case NSFlagsChanged:
+      case NSEventTypeFlagsChanged:
       [self pushKeyEvent:event eventType:@"FlagsChanged"];
       break;
 
-    case NSSystemDefined:
+      case NSEventTypeSystemDefined:
       [self pushSystemDefinedEvent:event];
       break;
 
@@ -381,25 +381,25 @@ enum {
 
 - (void)pushMouseEvent:(NSEvent*)event {
   switch ([event type]) {
-    case NSLeftMouseDown:
-    case NSRightMouseDown:
-    case NSOtherMouseDown:
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeOtherMouseDown:
       [self pushMouseEvent:event eventType:@"MouseDown"];
       break;
 
-    case NSLeftMouseUp:
-    case NSRightMouseUp:
-    case NSOtherMouseUp:
+    case NSEventTypeLeftMouseUp:
+    case NSEventTypeRightMouseUp:
+    case NSEventTypeOtherMouseUp:
       [self pushMouseEvent:event eventType:@"MouseUp"];
       break;
 
-    case NSLeftMouseDragged:
-    case NSRightMouseDragged:
-    case NSOtherMouseDragged:
+    case NSEventTypeLeftMouseDragged:
+    case NSEventTypeRightMouseDragged:
+    case NSEventTypeOtherMouseDragged:
       [self pushMouseEvent:event eventType:@"MouseDragged"];
       break;
 
-    case NSScrollWheel:
+    case NSEventTypeScrollWheel:
       [self pushScrollWheelEvent:event eventType:@"ScrollWheel"];
       break;
 
