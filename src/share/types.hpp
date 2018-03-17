@@ -1437,14 +1437,38 @@ public:
         break;
 
       case hid_usage_page::apple_vendor_top_case:
-        if (usage == hid_usage::av_top_case_keyboard_fn) {
-          return key_code::fn;
+        switch (usage) {
+          case hid_usage::av_top_case_keyboard_fn:
+            return key_code::fn;
+          case hid_usage::av_top_case_brightness_up:
+            return key_code::apple_top_case_display_brightness_increment;
+          case hid_usage::av_top_case_brightness_down:
+            return key_code::apple_top_case_display_brightness_decrement;
+          case hid_usage::av_top_case_illumination_up:
+            return key_code::illumination_increment;
+          case hid_usage::av_top_case_illumination_down:
+            return key_code::illumination_decrement;
+          default:
+            break;
         }
         break;
 
       case hid_usage_page::apple_vendor_keyboard:
-        if (usage == hid_usage::apple_vendor_keyboard_function) {
-          return key_code::fn;
+        switch (usage) {
+          case hid_usage::apple_vendor_keyboard_dashboard:
+            return key_code::dashboard;
+          case hid_usage::apple_vendor_keyboard_function:
+            return key_code::fn;
+          case hid_usage::apple_vendor_keyboard_launchpad:
+            return key_code::launchpad;
+          case hid_usage::apple_vendor_keyboard_expose_all:
+            return key_code::mission_control;
+          case hid_usage::apple_vendor_keyboard_brightness_up:
+            return key_code::apple_display_brightness_increment;
+          case hid_usage::apple_vendor_keyboard_brightness_down:
+            return key_code::apple_display_brightness_decrement;
+          default:
+            break;
         }
         break;
 
