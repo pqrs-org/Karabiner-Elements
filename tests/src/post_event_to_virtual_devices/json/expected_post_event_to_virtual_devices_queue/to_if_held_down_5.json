@@ -1,26 +1,30 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "f3",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f3"
+            ],
+            "modifiers": []
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f3",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 10000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f4",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f4"
+            ],
+            "modifiers": []
         },
         "time_stamp": 15000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]
