@@ -1,50 +1,56 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "f2",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f2"
+            ],
+            "modifiers": []
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f2",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 10002000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "tab"
+            ],
+            "modifiers": []
         },
         "time_stamp": 10007000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "tab",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 10012000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f2",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f2"
+            ],
+            "modifiers": []
         },
         "time_stamp": 10017000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f2",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 20002000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]

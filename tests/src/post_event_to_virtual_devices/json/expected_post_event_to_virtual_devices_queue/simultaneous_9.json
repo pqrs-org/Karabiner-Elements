@@ -1,42 +1,54 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "a",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "a"
+            ],
+            "modifiers": []
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "s",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "a",
+                "s"
+            ],
+            "modifiers": []
         },
         "time_stamp": 1002000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "a",
-            "value": 0
+        "keyboard_input": {
+            "keys": [
+                "s"
+            ],
+            "modifiers": []
         },
         "time_stamp": 1007000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "spacebar",
+                "s"
+            ],
+            "modifiers": []
         },
         "time_stamp": 1012000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "s",
-            "value": 0
+        "keyboard_input": {
+            "keys": [
+                "spacebar"
+            ],
+            "modifiers": []
         },
         "time_stamp": 1017000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]

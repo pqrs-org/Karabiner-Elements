@@ -1,50 +1,56 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "down_arrow",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "down_arrow"
+            ],
+            "modifiers": []
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "down_arrow",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 10000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "down_arrow",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "down_arrow"
+            ],
+            "modifiers": []
         },
         "time_stamp": 15000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "down_arrow",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 20000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "j",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "j"
+            ],
+            "modifiers": []
         },
         "time_stamp": 25000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "j",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 30000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]

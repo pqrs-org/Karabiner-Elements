@@ -1,50 +1,74 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "q",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "q"
+            ],
+            "modifiers": []
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "left_shift",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "q"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 10000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "w",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "q",
+                "w"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 15000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "q",
-            "value": 0
+        "keyboard_input": {
+            "keys": [
+                "w"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 20000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "spacebar",
+                "w"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 25000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "w",
-            "value": 0
+        "keyboard_input": {
+            "keys": [
+                "spacebar"
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 30000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]

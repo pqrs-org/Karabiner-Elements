@@ -1,58 +1,69 @@
 [
     {
-        "keyboard_event": {
-            "key_code": "d",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "d"
+            ],
+            "modifiers": []
         },
         "time_stamp": 5000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "d",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 10000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f"
+            ],
+            "modifiers": []
         },
         "time_stamp": 15000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "a",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "f",
+                "a"
+            ],
+            "modifiers": []
         },
         "time_stamp": 20000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "f",
-            "value": 0
+        "keyboard_input": {
+            "keys": [
+                "a"
+            ],
+            "modifiers": []
         },
         "time_stamp": 25000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "a",
-            "value": 0
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
         },
         "time_stamp": 10000002,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     },
     {
-        "keyboard_event": {
-            "key_code": "spacebar",
-            "value": 1
+        "keyboard_input": {
+            "keys": [
+                "spacebar"
+            ],
+            "modifiers": []
         },
         "time_stamp": 30000000,
-        "type": "keyboard_event"
+        "type": "keyboard_input"
     }
 ]
