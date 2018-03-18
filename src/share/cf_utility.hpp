@@ -47,6 +47,25 @@ public:
     return string;
   }
 
+  static boost::optional<int64_t> to_int64_t(CFTypeRef _Nullable value) {
+    if (!value) {
+      return boost::none;
+    }
+
+    if (CFNumberGetTypeID() != CFGetTypeID(value)) {
+      return boost::none;
+    }
+
+    auto cfnumber = static_cast<CFNumberRef>(value);
+
+    int64_t result;
+    if (CFNumberGetValue(cfnumber, kCFNumberSInt64Type, &result)) {
+      return result;
+    }
+
+    return boost::none;
+  }
+
   static CFArrayRef _Nonnull create_empty_cfarray(void) {
     return CFArrayCreate(nullptr, nullptr, 0, &kCFTypeArrayCallBacks);
   }
