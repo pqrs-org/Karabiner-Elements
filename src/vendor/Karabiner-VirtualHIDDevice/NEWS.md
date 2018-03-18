@@ -1,3 +1,8 @@
+# Version 6.6.0
+
+* `pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization::caps_lock_delay_milliseconds` has been removed.
+
+
 # Version 6.5.0
 
 * `pqrs::karabiner_virtual_hid_device::hid_report::*::empty` has been added.

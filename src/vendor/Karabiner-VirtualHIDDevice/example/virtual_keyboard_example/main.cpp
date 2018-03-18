@@ -35,9 +35,6 @@ int main(int argc, const char* argv[]) {
 
   {
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-#if 0
-    properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(300);
-#endif
     kr = pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect, properties);
     if (kr != KERN_SUCCESS) {
       std::cerr << "initialize_virtual_hid_keyboard error" << std::endl;

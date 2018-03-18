@@ -75,7 +75,6 @@ const uint8_t reportDescriptor_[] = {
     0xc0,             // End Collection
 };
 
-pqrs::karabiner_virtual_hid_device::milliseconds capsLockDelayMilliseconds_ = pqrs::karabiner_virtual_hid_device::milliseconds(0);
 int countryCode_;
 } // namespace
 
@@ -87,11 +86,6 @@ bool VIRTUAL_HID_KEYBOARD_CLASS::handleStart(IOService* provider) {
   setProperty("HIDDefaultBehavior", kOSBooleanTrue);
   setProperty("AppleVendorSupported", kOSBooleanTrue);
 
-  if (auto number = OSNumber::withNumber(static_cast<uint64_t>(capsLockDelayMilliseconds_), 64)) {
-    setProperty(kIOHIDKeyboardCapsLockDelay, number);
-    number->release();
-  }
-
   return true;
 }
 
@@ -102,10 +96,6 @@ OSNumber* VIRTUAL_HID_KEYBOARD_CLASS::newCountryCodeNumber() const {
 IOReturn VIRTUAL_HID_KEYBOARD_CLASS::newReportDescriptor(IOMemoryDescriptor** descriptor) const {
   *descriptor = IOBufferMemoryDescriptor::withBytes(reportDescriptor_, sizeof(reportDescriptor_), kIODirectionNone);
   return kIOReturnSuccess;
-}
-
-void VIRTUAL_HID_KEYBOARD_CLASS::setCapsLockDelayMilliseconds(pqrs::karabiner_virtual_hid_device::milliseconds value) {
-  capsLockDelayMilliseconds_ = value;
 }
 
 void VIRTUAL_HID_KEYBOARD_CLASS::setCountryCode(uint8_t value) {

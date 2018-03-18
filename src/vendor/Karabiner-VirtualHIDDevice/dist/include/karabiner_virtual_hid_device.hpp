@@ -63,16 +63,6 @@ public:
     apple_vendor_keyboard_brightness_down = 0x21,
   };
 
-  enum class milliseconds : uint64_t {
-  };
-
-  enum class nanoseconds : uint64_t {
-  };
-
-  static nanoseconds to_nanoseconds(milliseconds value) {
-    return nanoseconds(static_cast<uint64_t>(value) * 1000 * 1000);
-  }
-
   class hid_report final {
   public:
     enum class modifier : uint8_t {
@@ -317,17 +307,14 @@ public:
   public:
     class __attribute__((packed)) keyboard_initialization final {
     public:
-      keyboard_initialization(void) : country_code(0),
-                                      caps_lock_delay_milliseconds(milliseconds(0)) {}
+      keyboard_initialization(void) : country_code(0) {}
 
       bool operator==(const keyboard_initialization& other) const {
-        return country_code == other.country_code &&
-               caps_lock_delay_milliseconds == other.caps_lock_delay_milliseconds;
+        return country_code == other.country_code;
       }
       bool operator!=(const keyboard_initialization& other) const { return !(*this == other); }
 
       uint8_t country_code;
-      milliseconds caps_lock_delay_milliseconds;
     };
   };
 
@@ -352,11 +339,11 @@ public:
   };
 
   static const char* get_virtual_hid_root_name(void) {
-    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060500";
+    return "org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060600";
   }
 
   static const char* get_kernel_extension_name(void) {
-    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v060500.kext";
+    return "org.pqrs.driver.Karabiner.VirtualHIDDevice.v060600.kext";
   }
 };
 } // namespace pqrs

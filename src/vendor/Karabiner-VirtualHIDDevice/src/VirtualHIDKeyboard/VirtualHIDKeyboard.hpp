@@ -60,6 +60,5 @@ public:
 
   // ----------------------------------------
 
-  static void setCapsLockDelayMilliseconds(pqrs::karabiner_virtual_hid_device::milliseconds value);
   static void setCountryCode(uint8_t value);
 };

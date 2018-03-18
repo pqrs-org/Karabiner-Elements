@@ -219,7 +219,6 @@ IOReturn VIRTUAL_HID_ROOT_USERCLIENT_CLASS::initializeVirtualHIDKeyboard(const p
   terminateVirtualHIDKeyboard();
 
   VIRTUAL_HID_KEYBOARD_CLASS::setCountryCode(properties.country_code);
-  VIRTUAL_HID_KEYBOARD_CLASS::setCapsLockDelayMilliseconds(properties.caps_lock_delay_milliseconds);
 
   CREATE_VIRTUAL_DEVICE(VIRTUAL_HID_KEYBOARD_CLASS, virtualHIDKeyboard_);
 
