@@ -28,15 +28,8 @@
 @property(weak) IBOutlet NSTableView* simpleModificationsTableView;
 @property(weak) IBOutlet NSTextField* versionLabel;
 @property(weak) IBOutlet NSTabViewItem* virtualHIDKeyboardTabViewItem;
-@property(weak) IBOutlet VirtualHIDKeyboardTypeBackgroundView* virtualHIDKeyboardTypeBackground;
-@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeANSIImageButton;
-@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeANSIRadioButton;
-@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeISOImageButton;
-@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeISORadioButton;
-@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeJISImageButton;
-@property(weak) IBOutlet NSButton* virtualHIDKeyboardTypeJISRadioButton;
-@property(weak) IBOutlet NSTextField* virtualHIDKeyboardCapsLockDelayMillisecondsText;
-@property(weak) IBOutlet NSStepper* virtualHIDKeyboardCapsLockDelayMillisecondsStepper;
+@property(weak) IBOutlet NSTextField* virtualHIDKeyboardCountryCodeText;
+@property(weak) IBOutlet NSStepper* virtualHIDKeyboardCountryCodeStepper;
 @property(weak) IBOutlet NSButton* checkForUpdateOnStartupButton;
 @property(weak) IBOutlet NSButton* systemDefaultProfileCopyButton;
 @property(weak) IBOutlet NSTextField* systemDefaultProfileStateLabel;
@@ -62,8 +55,7 @@
   [self.complexModificationsRulesTableViewController setup];
   [self.complexModificationsParametersTabController setup];
   [self.devicesTableViewController setup];
-  [self setupVirtualHIDKeyboardTypeButtons];
-  [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
+  [self setupVirtualHIDKeyboardCountryCode:nil];
   [self.profilesTableViewController setup];
   [self setupMiscTabControls];
   [self.logFileTextViewController monitor];
@@ -76,8 +68,7 @@
                                                   @strongify(self);
                                                   if (!self) return;
 
-                                                  [self setupVirtualHIDKeyboardTypeButtons];
-                                                  [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:nil];
+                                                  [self setupVirtualHIDKeyboardCountryCode:nil];
                                                   [self setupMiscTabControls];
                                                 }];
   [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
@@ -119,77 +110,29 @@
   [self.logFileTextViewController updateTabLabel];
 }
 
-- (void)setupVirtualHIDKeyboardTypeButtons {
+- (void)setupVirtualHIDKeyboardCountryCode:(id)sender {
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  NSString* keyboardType = coreConfigurationModel.selectedProfileVirtualHIDKeyboardKeyboardType;
+  NSInteger countryCode = coreConfigurationModel.selectedProfileVirtualHIDKeyboardCountryCode;
 
-  self.virtualHIDKeyboardTypeANSIRadioButton.state = NSControlStateValueOff;
-  self.virtualHIDKeyboardTypeISORadioButton.state = NSControlStateValueOff;
-  self.virtualHIDKeyboardTypeJISRadioButton.state = NSControlStateValueOff;
-
-  if ([keyboardType isEqualToString:@"ansi"]) {
-    self.virtualHIDKeyboardTypeANSIRadioButton.state = NSControlStateValueOn;
-  } else if ([keyboardType isEqualToString:@"iso"]) {
-    self.virtualHIDKeyboardTypeISORadioButton.state = NSControlStateValueOn;
-  } else if ([keyboardType isEqualToString:@"jis"]) {
-    self.virtualHIDKeyboardTypeJISRadioButton.state = NSControlStateValueOn;
+  if (sender != self.virtualHIDKeyboardCountryCodeText) {
+    self.virtualHIDKeyboardCountryCodeText.stringValue = @(countryCode).stringValue;
   }
-
-  if ([keyboardType length] > 0) {
-    self.virtualHIDKeyboardTypeBackground.hidden = YES;
-  } else {
-    self.virtualHIDKeyboardTypeBackground.hidden = NO;
-    if (self.virtualHIDKeyboardTabViewItem.tabState != NSSelectedTab) {
-      [self.virtualHIDKeyboardTabViewItem.tabView selectTabViewItem:self.virtualHIDKeyboardTabViewItem];
-    }
+  if (sender != self.virtualHIDKeyboardCountryCodeStepper) {
+    self.virtualHIDKeyboardCountryCodeStepper.integerValue = countryCode;
   }
 }
 
-- (void)setupVirtualHIDKeyboardCapsLockDelayMilliseconds:(id)sender {
-  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  NSInteger milliseconds = coreConfigurationModel.selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds;
-
-  if (sender != self.virtualHIDKeyboardCapsLockDelayMillisecondsText) {
-    self.virtualHIDKeyboardCapsLockDelayMillisecondsText.stringValue = @(milliseconds).stringValue;
-  }
-  if (sender != self.virtualHIDKeyboardCapsLockDelayMillisecondsStepper) {
-    self.virtualHIDKeyboardCapsLockDelayMillisecondsStepper.integerValue = milliseconds;
-  }
-}
-
-- (IBAction)changeVirtualHIDKeyboardType:(id)sender {
-  NSString* keyboardType = nil;
-  if (sender == self.virtualHIDKeyboardTypeANSIImageButton ||
-      sender == self.virtualHIDKeyboardTypeANSIRadioButton) {
-    keyboardType = @"ansi";
-  } else if (sender == self.virtualHIDKeyboardTypeISOImageButton ||
-             sender == self.virtualHIDKeyboardTypeISORadioButton) {
-    keyboardType = @"iso";
-  } else if (sender == self.virtualHIDKeyboardTypeJISImageButton ||
-             sender == self.virtualHIDKeyboardTypeJISRadioButton) {
-    keyboardType = @"jis";
-  }
-
-  if (keyboardType) {
-    KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-    coreConfigurationModel.selectedProfileVirtualHIDKeyboardKeyboardType = keyboardType;
-    [coreConfigurationModel save];
-
-    [self setupVirtualHIDKeyboardTypeButtons];
-  }
-}
-
-- (IBAction)changeVirtualHIDKeyboardCapsLockDelayMilliseconds:(NSControl*)sender {
+- (IBAction)changeVirtualHIDKeyboardCountryCode:(NSControl*)sender {
   // If sender.stringValue is empty, set "0"
   if (sender.integerValue == 0) {
     sender.integerValue = 0;
   }
 
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-  coreConfigurationModel.selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds = sender.integerValue;
+  coreConfigurationModel.selectedProfileVirtualHIDKeyboardCountryCode = sender.integerValue;
   [coreConfigurationModel save];
 
-  [self setupVirtualHIDKeyboardCapsLockDelayMilliseconds:sender];
+  [self setupVirtualHIDKeyboardCountryCode:sender];
 }
 
 - (void)updateSystemPreferencesUIValues {

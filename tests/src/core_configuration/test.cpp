@@ -85,8 +85,7 @@ TEST_CASE("valid") {
     REQUIRE(rules[2].get_description() == "");
   }
   {
-    REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type() == "iso");
-    REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds() == 100);
+    REQUIRE(configuration.get_selected_profile().get_virtual_hid_keyboard().get_country_code() == 99);
   }
   {
     auto& actual = configuration.get_selected_profile().get_devices();
@@ -241,8 +240,7 @@ nlohmann::json get_default_fn_function_keys_json(void) {
 
 nlohmann::json get_default_virtual_hid_keyboard_json(void) {
   return nlohmann::json{
-      {"caps_lock_delay_milliseconds", 0},
-      {"keyboard_type", ""},
+      {"country_code", 0},
   };
 }
 
@@ -786,12 +784,12 @@ TEST_CASE("profile.to_json") {
     profile.get_fn_function_keys().replace_second(nlohmann::json{{"key_code", "not found"}}.dump(),
                                                   nlohmann::json{{"key_code", "do nothing"}}.dump());
 
-    profile.get_virtual_hid_keyboard().set_keyboard_type("iso");
+    profile.get_virtual_hid_keyboard().set_country_code(20);
 
     auto expected_fn_function_keys = get_default_fn_function_keys_json();
     expected_fn_function_keys[2]["to"]["key_code"] = "to f3";
     auto expected_virtual_hid_keyboard = get_default_virtual_hid_keyboard_json();
-    expected_virtual_hid_keyboard["keyboard_type"] = "iso";
+    expected_virtual_hid_keyboard["country_code"] = 20;
     nlohmann::json expected({
         {"complex_modifications", nlohmann::json::object({
                                       {"rules", nlohmann::json::array()},
@@ -1347,30 +1345,25 @@ TEST_CASE("virtual_hid_keyboard") {
   {
     nlohmann::json json;
     krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string(""));
-    REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 0);
+    REQUIRE(virtual_hid_keyboard.get_country_code() == 0);
   }
 
   // load values from json
   {
     nlohmann::json json({
-        {"keyboard_type", "iso"},
-        {"caps_lock_delay_milliseconds", 300},
+        {"country_code", 10},
     });
     krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string("iso"));
-    REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 300);
+    REQUIRE(virtual_hid_keyboard.get_country_code() == 10);
   }
 
   // invalid values in json
   {
     nlohmann::json json({
-        {"keyboard_type", nlohmann::json::array()},
-        {"caps_lock_delay_milliseconds", nlohmann::json::object()},
+        {"country_code", nlohmann::json::object()},
     });
     krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
-    REQUIRE(virtual_hid_keyboard.get_keyboard_type() == std::string(""));
-    REQUIRE(virtual_hid_keyboard.get_caps_lock_delay_milliseconds() == 0);
+    REQUIRE(virtual_hid_keyboard.get_country_code() == 0);
   }
 }
 
@@ -1388,13 +1381,11 @@ TEST_CASE("virtual_hid_keyboard.to_json") {
         {"dummy", {{"keep_me", true}}},
     });
     krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
-    virtual_hid_keyboard.set_caps_lock_delay_milliseconds(200);
-    virtual_hid_keyboard.set_keyboard_type("iso");
+    virtual_hid_keyboard.set_country_code(10);
 
     nlohmann::json expected({
-        {"caps_lock_delay_milliseconds", 200},
+        {"country_code", 10},
         {"dummy", {{"keep_me", true}}},
-        {"keyboard_type", "iso"},
     });
     REQUIRE(virtual_hid_keyboard.to_json() == expected);
   }

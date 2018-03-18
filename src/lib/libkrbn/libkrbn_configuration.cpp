@@ -339,31 +339,16 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_param
   }
 }
 
-const char* libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* p) {
+uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type().c_str();
-  }
-  return nullptr;
-}
-
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type(libkrbn_core_configuration* p, const char* value) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    if (value) {
-      c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().set_keyboard_type(value);
-    }
-  }
-}
-
-int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(libkrbn_core_configuration* p) {
-  if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
+    return c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().get_country_code();
   }
   return 0;
 }
 
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(libkrbn_core_configuration* p, uint32_t value) {
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(libkrbn_core_configuration* p, uint8_t value) {
   if (auto c = reinterpret_cast<libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().set_caps_lock_delay_milliseconds(value);
+    c->get_core_configuration().get_selected_profile().get_virtual_hid_keyboard().set_country_code(value);
   }
 }
 

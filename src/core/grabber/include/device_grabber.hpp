@@ -282,6 +282,7 @@ public:
   }
 
   void post_keyboard_type_changed_event(void) {
+#if 0
     gcd_utility::dispatch_sync_in_main_queue(^{
       if (core_configuration_) {
         auto keyboard_type = core_configuration_->get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type();
@@ -297,6 +298,7 @@ public:
         krbn_notification_center::get_instance().input_event_arrived();
       }
     });
+#endif
   }
 
 private:
@@ -661,8 +663,7 @@ private:
     if (virtual_hid_device_client_.is_connected()) {
       if (mode_ == mode::grabbing) {
         pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-        auto caps_lock_delay_milliseconds = profile_.get_virtual_hid_keyboard().get_caps_lock_delay_milliseconds();
-        properties.caps_lock_delay_milliseconds = pqrs::karabiner_virtual_hid_device::milliseconds(caps_lock_delay_milliseconds);
+        properties.country_code = profile_.get_virtual_hid_keyboard().get_country_code();
 
         virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
         return;

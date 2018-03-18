@@ -60,7 +60,6 @@
 - (void)setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:(const libkrbn_device_identifiers*)deviceIdentifiers
                                                          value:(BOOL)value;
 
-@property(copy) NSString* selectedProfileVirtualHIDKeyboardKeyboardType;
-@property NSInteger selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds;
+@property NSInteger selectedProfileVirtualHIDKeyboardCountryCode;
 
 @end

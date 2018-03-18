@@ -58,7 +58,6 @@ public:
     call_method([this](void) {
       logger::get_logger().info("initialize_virtual_hid_keyboard");
       logger::get_logger().info("  country_code:{0}", static_cast<uint32_t>(virtual_hid_keyboard_properties_.country_code));
-      logger::get_logger().info("  caps_lock_delay_milliseconds:{0}", static_cast<uint64_t>(virtual_hid_keyboard_properties_.caps_lock_delay_milliseconds));
 
       bool result = pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_keyboard(connect_, virtual_hid_keyboard_properties_);
 

@@ -128,8 +128,7 @@
                 }
             },
             "virtual_hid_keyboard": {
-                "keyboard_type": "iso",
-                "caps_lock_delay_milliseconds": 100
+                "country_code": 99
             },
             "devices": [
                 {

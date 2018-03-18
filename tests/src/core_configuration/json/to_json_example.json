@@ -316,8 +316,7 @@
                 }
             ],
             "virtual_hid_keyboard": {
-                "caps_lock_delay_milliseconds": 100,
-                "keyboard_type": "iso"
+                "country_code": 99
             }
         },
         {
@@ -433,8 +432,7 @@
             "selected": false,
             "simple_modifications": [],
             "virtual_hid_keyboard": {
-                "caps_lock_delay_milliseconds": 0,
-                "keyboard_type": ""
+                "country_code": 0
             }
         },
         {
@@ -550,8 +548,7 @@
             "selected": false,
             "simple_modifications": [],
             "virtual_hid_keyboard": {
-                "caps_lock_delay_milliseconds": 0,
-                "keyboard_type": ""
+                "country_code": 0
             }
         }
     ]

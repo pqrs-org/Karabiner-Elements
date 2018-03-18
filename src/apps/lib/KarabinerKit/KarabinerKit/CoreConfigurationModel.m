@@ -270,24 +270,12 @@
                                                                                              value);
 }
 
-- (NSString*)selectedProfileVirtualHIDKeyboardKeyboardType {
-  const char* p = libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type(self.libkrbnCoreConfiguration);
-  if (p) {
-    return [NSString stringWithUTF8String:p];
-  }
-  return @"";
+- (NSInteger)selectedProfileVirtualHIDKeyboardCountryCode {
+  return libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(self.libkrbnCoreConfiguration);
 }
 
-- (void)setSelectedProfileVirtualHIDKeyboardKeyboardType:(NSString*)value {
-  libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type(self.libkrbnCoreConfiguration, [value UTF8String]);
-}
-
-- (NSInteger)selectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds {
-  return libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(self.libkrbnCoreConfiguration);
-}
-
-- (void)setSelectedProfileVirtualHIDKeyboardCapsLockDelayMilliseconds:(NSInteger)value {
-  libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_caps_lock_delay_milliseconds(self.libkrbnCoreConfiguration, (uint32_t)(value));
+- (void)setSelectedProfileVirtualHIDKeyboardCountryCode:(NSInteger)value {
+  libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(self.libkrbnCoreConfiguration, (uint8_t)(value));
 }
 
 @end
