@@ -1,6 +1,7 @@
 # Since 11.6.0 (beta)
 
-* macOS 10.11 support has been dropped.
+* macOS 10.11 support has been dropped.<br />
+  Karabiner-Elements works on macOS 10.12 (Sierra) or later.
 * The virtual keyboard compatibility has been improved.
 * `Keyboard type` in the virtual keyboard preferences has been removed. (Adverse effect of virtual keyboard improvement.)<br />
   Please change the keyboard type from `System Preferences &gt; Keyboard &gt; Change Keyboard Type...`.
