@@ -2,6 +2,10 @@
 
 * macOS 10.11 support has been dropped.
 * The virtual keyboard compatibility has been improved.
+* `Keyboard type` in the virtual keyboard preferences has been removed. (Adverse effect of virtual keyboard improvement.)<br />
+  Please change the keyboard type from `System Preferences &gt; Keyboard &gt; Change Keyboard Type...`.
+  ![Keyboard Preferences](https://pqrs.org/osx/karabiner/img/news/v12.0.0_0.png)
+* `Caps Lock Delay` in the virtual keyboard preferences has been removed. (Adverse effect of virtual keyboard improvement.)
 * Added `simultaneous_options.key_down_order`, `simultaneous_options.key_up_order` and `simultaneous_options.to_after_key_up`.
 * Fixed an issue that `to_if_alone`, `to_if_held_down` and `to_delayed_action` does not work properly with `simultaneous`.
 * Improved keyboard repeat handling with `simultaneous`.
