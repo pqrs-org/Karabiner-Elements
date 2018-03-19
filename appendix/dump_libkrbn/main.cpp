@@ -7,11 +7,25 @@ namespace {
 void hid_value_observer_callback(libkrbn_hid_value_type type,
                                  uint32_t value,
                                  libkrbn_hid_value_event_type event_type) {
-  std::cout << "hid_value_observer_callback"
-            << " type:" << type
-            << " value:" << value
-            << " event_type:" << event_type
-            << std::endl;
+  char buffer[256];
+
+  switch (type) {
+    case libkrbn_hid_value_type_key_code:
+      libkrbn_get_key_code_name(buffer, sizeof(buffer), value);
+      std::cout << "hid_value_observer_callback"
+                << " " << buffer
+                << " event_type:" << event_type
+                << std::endl;
+      break;
+
+    case libkrbn_hid_value_type_consumer_key_code:
+      libkrbn_get_consumer_key_code_name(buffer, sizeof(buffer), value);
+      std::cout << "hid_value_observer_callback"
+                << " " << buffer
+                << " event_type:" << event_type
+                << std::endl;
+      break;
+  }
 }
 } // namespace
 

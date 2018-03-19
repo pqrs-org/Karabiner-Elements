@@ -45,6 +45,11 @@ void libkrbn_launch_preferences(void);
 
 bool libkrbn_system_core_configuration_file_path_exists(void);
 
+// types
+
+void libkrbn_get_key_code_name(char* _Nonnull buffer, size_t length, uint32_t key_code);
+void libkrbn_get_consumer_key_code_name(char* _Nonnull buffer, size_t length, uint32_t consumer_key_code);
+
 // device_identifiers
 
 bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* _Nonnull p);

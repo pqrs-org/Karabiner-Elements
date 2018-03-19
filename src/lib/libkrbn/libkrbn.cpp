@@ -108,6 +108,20 @@ bool libkrbn_system_core_configuration_file_path_exists(void) {
   return krbn::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
 }
 
+void libkrbn_get_key_code_name(char* buffer, size_t length, uint32_t key_code) {
+  buffer[0] = '\0';
+  if (auto name = krbn::types::make_key_code_name(krbn::key_code(key_code))) {
+    strlcpy(buffer, name->c_str(), length);
+  }
+}
+
+void libkrbn_get_consumer_key_code_name(char* buffer, size_t length, uint32_t consumer_key_code) {
+  buffer[0] = '\0';
+  if (auto name = krbn::types::make_consumer_key_code_name(krbn::consumer_key_code(consumer_key_code))) {
+    strlcpy(buffer, name->c_str(), length);
+  }
+}
+
 bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
   if (p) {
     return libkrbn_cpp::make_device_identifiers(*p).is_apple();
