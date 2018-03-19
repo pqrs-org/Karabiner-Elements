@@ -2,11 +2,11 @@
 
 @implementation SystemPreferencesModel
 
-- (instancetype)initWithValues:(const struct libkrbn_system_preferences_values* _Nonnull)values {
+- (instancetype)initWithValues:(const struct libkrbn_system_preferences* _Nonnull)system_preferences {
   self = [super init];
 
   if (self) {
-    _keyboardFnState = values->keyboard_fn_state;
+    _keyboardFnState = system_preferences->keyboard_fn_state;
   }
 
   return self;

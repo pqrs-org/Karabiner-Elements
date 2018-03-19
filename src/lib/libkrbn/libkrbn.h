@@ -190,16 +190,17 @@ void libkrbn_configuration_monitor_terminate(libkrbn_configuration_monitor* _Nul
 // ----------------------------------------
 // libkrbn_system_preferences_monitor
 
-struct libkrbn_system_preferences_values {
+struct libkrbn_system_preferences {
   bool keyboard_fn_state;
 };
 
 typedef void libkrbn_system_preferences_monitor;
-typedef void (*libkrbn_system_preferences_monitor_callback)(const struct libkrbn_system_preferences_values* _Nonnull system_preferences_values,
+typedef void (*libkrbn_system_preferences_monitor_callback)(const struct libkrbn_system_preferences* _Nonnull system_preferences,
                                                             void* _Nullable refcon);
 bool libkrbn_system_preferences_monitor_initialize(libkrbn_system_preferences_monitor* _Nullable* _Nonnull out,
                                                    libkrbn_system_preferences_monitor_callback _Nullable callback,
-                                                   void* _Nullable refcon);
+                                                   void* _Nullable refcon,
+                                                   libkrbn_configuration_monitor* _Nonnull libkrbn_configuration_monitor);
 void libkrbn_system_preferences_monitor_terminate(libkrbn_system_preferences_monitor* _Nullable* _Nonnull p);
 
 // ----------------------------------------

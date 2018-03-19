@@ -42,7 +42,6 @@
 		34492B891DB12F430084F167 /* spdlog_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = spdlog_utility.hpp; sourceTree = "<group>"; };
 		345A9DE31D7DD6E600578F84 /* configuration_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = configuration_manager.hpp; path = include/configuration_manager.hpp; sourceTree = SOURCE_ROOT; };
 		345A9DE41D7DD7A200578F84 /* core_configuration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = core_configuration.hpp; sourceTree = "<group>"; };
-		345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = system_preferences.hpp; sourceTree = "<group>"; };
 		345AC0031D620E28009D1FB4 /* apple_notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = apple_notification_center.hpp; sourceTree = "<group>"; };
 		345AC0051D621651009D1FB4 /* boost_defs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = boost_defs.hpp; sourceTree = "<group>"; };
 		345EF8DA1F09FA0B003E7A67 /* frontmost_application_observer_objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frontmost_application_observer_objc.h; sourceTree = "<group>"; };
@@ -150,7 +149,6 @@
 				345EF8EB1F17C176003E7A67 /* shell_utility.hpp */,
 				34492B891DB12F430084F167 /* spdlog_utility.hpp */,
 				349950651D898530004FE466 /* system_preferences_monitor.hpp */,
-				345ABFFE1D60AD6D009D1FB4 /* system_preferences.hpp */,
 				343134711DB71C2C0008F284 /* thread_utility.hpp */,
 				34A88AA71D6DF8E300DD480B /* types.hpp */,
 				3404CB761E3E3B3100629451 /* update_utility.hpp */,

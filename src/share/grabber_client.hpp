@@ -38,9 +38,9 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
-  void system_preferences_values_updated(const system_preferences::values& values) {
-    operation_type_system_preferences_values_updated_struct s;
-    s.values = values;
+  void system_preferences_updated(const system_preferences& system_preferences) {
+    operation_type_system_preferences_updated_struct s;
+    s.system_preferences = system_preferences;
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 

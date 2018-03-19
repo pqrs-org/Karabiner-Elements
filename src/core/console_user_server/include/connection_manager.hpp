@@ -46,13 +46,14 @@ public:
                   logger::get_logger().info("grabber_client_ is connected");
                 }
 
-                if (!system_preferences_monitor_) {
-                  system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
-                      std::bind(&connection_manager::system_preferences_values_updated_callback, this, std::placeholders::_1));
-                }
-
                 if (!configuration_manager_) {
                   configuration_manager_ = std::make_unique<configuration_manager>();
+                }
+
+                if (!system_preferences_monitor_) {
+                  system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
+                      std::bind(&connection_manager::system_preferences_updated_callback, this, std::placeholders::_1),
+                      configuration_manager_->get_configuration_monitor());
                 }
 
                 if (!frontmost_application_observer_) {
@@ -92,8 +93,8 @@ private:
   void release(void) {
     input_source_observer_ = nullptr;
     frontmost_application_observer_ = nullptr;
-    configuration_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
+    configuration_manager_ = nullptr;
     grabber_client_ = nullptr;
     receiver_ = nullptr;
   }
@@ -114,9 +115,9 @@ private:
     });
   }
 
-  void system_preferences_values_updated_callback(const system_preferences::values& values) {
+  void system_preferences_updated_callback(const system_preferences& system_preferences) {
     if (grabber_client_) {
-      grabber_client_->system_preferences_values_updated(values);
+      grabber_client_->system_preferences_updated(system_preferences);
     }
   }
 

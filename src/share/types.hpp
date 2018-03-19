@@ -9,7 +9,6 @@
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "stream_utility.hpp"
-#include "system_preferences.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDElement.h>
@@ -36,7 +35,7 @@ enum class operation_type : uint8_t {
   none,
   // console_user_server -> grabber
   connect,
-  system_preferences_values_updated,
+  system_preferences_updated,
   frontmost_application_changed,
   input_source_changed,
   // grabber -> console_user_server
@@ -1036,6 +1035,51 @@ private:
   double speed_multiplier_;
 };
 
+class system_preferences final {
+public:
+  system_preferences(void) : keyboard_fn_state_(false),
+                             swipe_scroll_direction_(true),
+                             keyboard_type_(40) {
+  }
+
+  bool get_keyboard_fn_state(void) const {
+    return keyboard_fn_state_;
+  }
+
+  void set_keyboard_fn_state(bool value) {
+    keyboard_fn_state_ = value;
+  }
+
+  bool get_swipe_scroll_direction(void) const {
+    return swipe_scroll_direction_;
+  }
+
+  void set_swipe_scroll_direction(bool value) {
+    swipe_scroll_direction_ = value;
+  }
+
+  uint8_t get_keyboard_type(void) const {
+    return keyboard_type_;
+  }
+
+  void set_keyboard_type(uint8_t value) {
+    keyboard_type_ = value;
+  }
+
+  bool operator==(const system_preferences& other) const {
+    return keyboard_fn_state_ == other.keyboard_fn_state_ &&
+           swipe_scroll_direction_ == other.swipe_scroll_direction_ &&
+           keyboard_type_ == other.keyboard_type_;
+  }
+
+  bool operator!=(const system_preferences& other) const { return !(*this == other); }
+
+private:
+  bool keyboard_fn_state_;
+  bool swipe_scroll_direction_;
+  uint8_t keyboard_type_;
+};
+
 class types final {
 public:
   static device_id make_new_device_id(const std::shared_ptr<device_detail>& device_detail) {
@@ -1790,11 +1834,11 @@ struct operation_type_connect_struct {
   char user_core_configuration_file_path[_POSIX_PATH_MAX];
 };
 
-struct operation_type_system_preferences_values_updated_struct {
-  operation_type_system_preferences_values_updated_struct(void) : operation_type(operation_type::system_preferences_values_updated) {}
+struct operation_type_system_preferences_updated_struct {
+  operation_type_system_preferences_updated_struct(void) : operation_type(operation_type::system_preferences_updated) {}
 
   const operation_type operation_type;
-  system_preferences::values values;
+  system_preferences system_preferences;
 };
 
 struct operation_type_frontmost_application_changed_struct {

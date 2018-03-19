@@ -4,28 +4,42 @@
 
 @interface SystemPreferencesManager ()
 
+@property libkrbn_configuration_monitor* libkrbn_configuration_monitor;
 @property libkrbn_system_preferences_monitor* libkrbn_system_preferences_monitor;
 @property(readwrite) SystemPreferencesModel* systemPreferencesModel;
 
-- (void)updateSystemPreferencesModel:(const struct libkrbn_system_preferences_values* _Nonnull)system_preferences_values;
+- (void)updateSystemPreferencesModel:(const struct libkrbn_system_preferences* _Nonnull)system_preferences;
 
 @end
 
-static void system_preferences_updated_callback(const struct libkrbn_system_preferences_values* _Nonnull system_preferences_values,
+static void configuration_file_updated_callback(libkrbn_core_configuration* initializedCoreConfiguration,
+                                                void* refcon) {
+}
+
+static void system_preferences_updated_callback(const struct libkrbn_system_preferences* _Nonnull system_preferences,
                                                 void* _Nullable refcon) {
   SystemPreferencesManager* manager = (__bridge SystemPreferencesManager*)(refcon);
-  [manager updateSystemPreferencesModel:system_preferences_values];
+  [manager updateSystemPreferencesModel:system_preferences];
   [[NSNotificationCenter defaultCenter] postNotificationName:kSystemPreferencesValuesAreUpdated object:nil];
 }
 
 @implementation SystemPreferencesManager
 
 - (void)setup {
-  libkrbn_system_preferences_monitor* p = NULL;
-  if (libkrbn_system_preferences_monitor_initialize(&p, system_preferences_updated_callback, (__bridge void*)(self))) {
-    return;
+  libkrbn_configuration_monitor* configuration_monitor = NULL;
+  if (libkrbn_configuration_monitor_initialize(&configuration_monitor,
+                                               configuration_file_updated_callback,
+                                               (__bridge void*)(self))) {
+    self.libkrbn_configuration_monitor = configuration_monitor;
   }
-  self.libkrbn_system_preferences_monitor = p;
+
+  libkrbn_system_preferences_monitor* system_preferences_monitor = NULL;
+  if (libkrbn_system_preferences_monitor_initialize(&system_preferences_monitor,
+                                                    system_preferences_updated_callback,
+                                                    (__bridge void*)(self),
+                                                    configuration_monitor)) {
+    self.libkrbn_system_preferences_monitor = system_preferences_monitor;
+  }
 }
 
 - (void)dealloc {
@@ -33,10 +47,14 @@ static void system_preferences_updated_callback(const struct libkrbn_system_pref
     libkrbn_system_preferences_monitor* p = self.libkrbn_system_preferences_monitor;
     libkrbn_system_preferences_monitor_terminate(&p);
   }
+  if (self.libkrbn_configuration_monitor) {
+    libkrbn_configuration_monitor* p = self.libkrbn_configuration_monitor;
+    libkrbn_configuration_monitor_terminate(&p);
+  }
 }
 
-- (void)updateSystemPreferencesModel:(const struct libkrbn_system_preferences_values* _Nonnull)system_preferences_values {
-  self.systemPreferencesModel = [[SystemPreferencesModel alloc] initWithValues:system_preferences_values];
+- (void)updateSystemPreferencesModel:(const struct libkrbn_system_preferences* _Nonnull)system_preferences {
+  self.systemPreferencesModel = [[SystemPreferencesModel alloc] initWithValues:system_preferences];
 }
 
 - (void)updateSystemPreferencesValues:(SystemPreferencesModel*)model {

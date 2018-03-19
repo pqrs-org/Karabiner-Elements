@@ -60,7 +60,6 @@
 		348FC00A1D9B76830083F98F /* virtual_hid_device_client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_device_client.hpp; sourceTree = "<group>"; };
 		3494274B1F9D736800A24707 /* krbn_notification_center.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = krbn_notification_center.hpp; sourceTree = "<group>"; };
 		349863321E784DC800DF3644 /* connected_devices.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = connected_devices.hpp; sourceTree = "<group>"; };
-		349950691D89A2EF004FE466 /* system_preferences.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = system_preferences.hpp; sourceTree = "<group>"; };
 		34A7D676205D769300031E7E /* virtual_hid_device_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = virtual_hid_device_utility.hpp; sourceTree = "<group>"; };
 		34A88A881D6840C200DD480B /* device_grabber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = device_grabber.hpp; path = include/device_grabber.hpp; sourceTree = SOURCE_ROOT; };
 		34A88A891D6840C200DD480B /* receiver.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = receiver.hpp; path = include/receiver.hpp; sourceTree = SOURCE_ROOT; };
@@ -80,6 +79,7 @@
 		34DA9F371ED8827800D75501 /* manipulator_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = manipulator_manager.hpp; path = include/manipulator/manipulator_manager.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F381ED8827800D75501 /* manipulator_managers_connector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = manipulator_managers_connector.hpp; path = include/manipulator/manipulator_managers_connector.hpp; sourceTree = SOURCE_ROOT; };
 		34DA9F391EDB1E2A00D75501 /* time_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = time_utility.hpp; sourceTree = "<group>"; };
+		34E069C2205FB4E3006BAF05 /* system_preferences_utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = system_preferences_utility.hpp; sourceTree = "<group>"; };
 		34E420601D5042240022F821 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		34E9F62E1D2134770007AE90 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		34EED7101D6FA38400399AD1 /* apple_hid_usage_tables.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = apple_hid_usage_tables.hpp; sourceTree = "<group>"; };
@@ -174,7 +174,7 @@
 				34A88A8F1D6840C200DD480B /* session.hpp */,
 				34492B881DB12C9A0084F167 /* spdlog_utility.hpp */,
 				34DA9F311ED8810C00D75501 /* stream_utility.hpp */,
-				349950691D89A2EF004FE466 /* system_preferences.hpp */,
+				34E069C2205FB4E3006BAF05 /* system_preferences_utility.hpp */,
 				343134701DB71BEC0008F284 /* thread_utility.hpp */,
 				34DA9F391EDB1E2A00D75501 /* time_utility.hpp */,
 				34A88AA61D6DF89900DD480B /* types.hpp */,

@@ -19,7 +19,7 @@ public:
     for (const auto& test : json) {
       logger::get_logger().info("{0}", test["description"].get<std::string>());
 
-      system_preferences::values system_preferences_values;
+      system_preferences system_preferences;
       manipulator::manipulator_managers_connector connector;
       std::vector<std::unique_ptr<manipulator::manipulator_manager>> manipulator_managers;
       std::vector<std::shared_ptr<event_queue>> event_queues;
@@ -59,7 +59,7 @@ public:
       }
 
       if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
-        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(system_preferences_values);
+        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(system_preferences);
 
         manipulator_managers.push_back(std::make_unique<manipulator::manipulator_manager>());
         manipulator_managers.back()->push_back_manipulator(post_event_to_virtual_devices_manipulator);

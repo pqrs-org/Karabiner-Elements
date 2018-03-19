@@ -79,13 +79,13 @@ private:
             }
             break;
 
-          case operation_type::system_preferences_values_updated:
-            if (n < sizeof(operation_type_system_preferences_values_updated_struct)) {
-              logger::get_logger().error("invalid size for operation_type::system_preferences_values_updated ({0})", n);
+          case operation_type::system_preferences_updated:
+            if (n < sizeof(operation_type_system_preferences_updated_struct)) {
+              logger::get_logger().error("invalid size for operation_type::system_preferences_updated ({0})", n);
             } else {
-              auto p = reinterpret_cast<operation_type_system_preferences_values_updated_struct*>(&(buffer_[0]));
-              device_grabber_.set_system_preferences_values(p->values);
-              logger::get_logger().info("system_preferences_values_updated");
+              auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(&(buffer_[0]));
+              device_grabber_.set_system_preferences(p->system_preferences);
+              logger::get_logger().info("system_preferences_updated");
             }
             break;
 

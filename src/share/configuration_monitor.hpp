@@ -39,7 +39,7 @@ public:
     });
   }
 
-  std::shared_ptr<core_configuration> get_core_configuration(void) {
+  std::shared_ptr<core_configuration> get_core_configuration(void) const {
     return core_configuration_;
   }
 

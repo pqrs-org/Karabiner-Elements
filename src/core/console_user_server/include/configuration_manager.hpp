@@ -20,8 +20,12 @@ public:
 
     application_launcher::kill_menu();
 
-    configuration_monitor_ = std::make_unique<configuration_monitor>(constants::get_user_core_configuration_file_path(),
+    configuration_monitor_ = std::make_shared<configuration_monitor>(constants::get_user_core_configuration_file_path(),
                                                                      std::bind(&configuration_manager::core_configuration_updated_callback, this, std::placeholders::_1));
+  }
+
+  std::weak_ptr<configuration_monitor> get_configuration_monitor(void) {
+    return configuration_monitor_;
   }
 
 private:
@@ -38,6 +42,6 @@ private:
     }
   }
 
-  std::unique_ptr<configuration_monitor> configuration_monitor_;
+  std::shared_ptr<configuration_monitor> configuration_monitor_;
 };
 } // namespace krbn

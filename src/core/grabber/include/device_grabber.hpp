@@ -16,7 +16,7 @@
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "spdlog_utility.hpp"
-#include "system_preferences.hpp"
+#include "system_preferences_utility.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <IOKit/hid/IOHIDManager.h>
@@ -52,7 +52,7 @@ public:
       stop_grabbing();
     });
 
-    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_values_);
+    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_);
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
 
     complex_modifications_applied_event_queue_->enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
@@ -159,8 +159,6 @@ public:
                                                                          is_grabbable_callback_log_reducer_.reset();
                                                                          set_profile(core_configuration_->get_selected_profile());
                                                                          grab_devices();
-
-                                                                         post_keyboard_type_changed_event();
                                                                        });
 
       virtual_hid_device_client_.connect();
@@ -241,11 +239,12 @@ public:
     });
   }
 
-  void set_system_preferences_values(const system_preferences::values& values) {
+  void set_system_preferences(const system_preferences& value) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      system_preferences_values_ = values;
+      system_preferences_ = value;
 
       update_fn_function_keys_manipulators();
+      post_keyboard_type_changed_event();
     });
   }
 
@@ -282,23 +281,19 @@ public:
   }
 
   void post_keyboard_type_changed_event(void) {
-#if 0
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (core_configuration_) {
-        auto keyboard_type = core_configuration_->get_selected_profile().get_virtual_hid_keyboard().get_keyboard_type();
-        auto event = event_queue::queued_event::event::make_keyboard_type_changed_event(keyboard_type);
-        event_queue::queued_event queued_event(device_id(0),
-                                               event_queue::queued_event::event_time_stamp(mach_absolute_time()),
-                                               event,
-                                               event_type::single,
-                                               event);
+      auto keyboard_type_string = system_preferences_utility::get_keyboard_type_string(system_preferences_.get_keyboard_type());
+      auto event = event_queue::queued_event::event::make_keyboard_type_changed_event(keyboard_type_string);
+      event_queue::queued_event queued_event(device_id(0),
+                                             event_queue::queued_event::event_time_stamp(mach_absolute_time()),
+                                             event,
+                                             event_type::single,
+                                             event);
 
-        merged_input_event_queue_->push_back_event(queued_event);
+      merged_input_event_queue_->push_back_event(queued_event);
 
-        krbn_notification_center::get_instance().input_event_arrived();
-      }
+      krbn_notification_center::get_instance().input_event_arrived();
     });
-#endif
   }
 
 private:
@@ -835,7 +830,7 @@ private:
 
     auto to_modifiers = nlohmann::json::array();
 
-    if (system_preferences_values_.get_keyboard_fn_state()) {
+    if (system_preferences_.get_keyboard_fn_state()) {
       // f1 -> f1
       // fn+f1 -> display_brightness_decrement
 
@@ -979,7 +974,7 @@ private:
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
 
   core_configuration::profile profile_;
-  system_preferences::values system_preferences_values_;
+  system_preferences system_preferences_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
   boost::signals2::connection input_event_arrived_connection_;
