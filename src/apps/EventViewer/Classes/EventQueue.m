@@ -230,6 +230,14 @@ enum {
   }
 }
 
+- (NSInteger)observedDeviceCount {
+  if (self.libkrbn_hid_value_observer) {
+    libkrbn_hid_value_observer* p = self.libkrbn_hid_value_observer;
+    return libkrbn_hid_value_observer_calculate_observed_device_count(p);
+  }
+  return 0;
+}
+
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
   return [self.queue count];
 }

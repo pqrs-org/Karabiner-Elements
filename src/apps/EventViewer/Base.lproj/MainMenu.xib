@@ -253,7 +253,7 @@
                                             <rect key="frame" x="17" y="17" width="800" height="389"/>
                                             <clipView key="contentView" id="Oc9-TS-hYQ">
                                                 <rect key="frame" x="1" y="1" width="783" height="387"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="KEZ-Np-coZ">
                                                         <rect key="frame" x="0.0" y="0.0" width="783" height="387"/>
@@ -538,6 +538,7 @@
         <customObject id="494" userLabel="App Delegate" customClass="AppDelegate">
             <connections>
                 <outlet property="devicesController" destination="ggU-FE-hiD" id="UKi-IL-yhy"/>
+                <outlet property="eventQueue" destination="571" id="hYY-uI-Yex"/>
                 <outlet property="frontmostApplicationController" destination="5Ro-l9-Pmw" id="kJT-Hv-RJh"/>
                 <outlet property="keyResponder" destination="925" id="evx-2k-LwC"/>
                 <outlet property="variablesController" destination="Hua-x6-m2N" id="bcq-GU-wQo"/>
