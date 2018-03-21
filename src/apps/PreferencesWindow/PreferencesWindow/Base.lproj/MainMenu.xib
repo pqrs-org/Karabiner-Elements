@@ -1661,7 +1661,7 @@
                                                             <constraint firstAttribute="width" constant="32" id="LyZ-xy-hRA"/>
                                                             <constraint firstAttribute="height" constant="32" id="M4r-h4-F7J"/>
                                                         </constraints>
-                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="ic_warning_18pt" id="f24-UD-uRU"/>
+                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyUpOrDown" image="ic_warning_18pt" id="f24-UD-uRU"/>
                                                     </imageView>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="MMW-NV-Mwq">
                                                         <rect key="frame" x="77" y="10" width="830" height="136"/>
