@@ -230,6 +230,10 @@ public:
     return device_id_;
   }
 
+  bool get_observed(void) const {
+    return observed_;
+  }
+
   IOReturn open(IOOptionBits options = kIOHIDOptionsTypeNone) {
     IOReturn __block r;
     gcd_utility::dispatch_sync_in_main_queue(^{
