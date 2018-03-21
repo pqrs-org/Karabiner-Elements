@@ -183,14 +183,37 @@
                                                 <outlet property="eventQueue" destination="571" id="Poj-Mm-4Ev"/>
                                             </connections>
                                         </customView>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ITd-Nj-Y8H">
+                                            <rect key="frame" x="15" y="140" width="96" height="17"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Input test field:" id="Rse-px-eu0">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ukh-cm-ynB">
+                                            <rect key="frame" x="17" y="30" width="610" height="110"/>
+                                            <textFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="Mwr-vY-27i">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="614" firstAttribute="leading" secondItem="659" secondAttribute="leading" constant="17" id="9dT-Rx-CIg"/>
                                         <constraint firstItem="925" firstAttribute="top" secondItem="614" secondAttribute="bottom" constant="12" id="Kez-Oq-wHb"/>
+                                        <constraint firstItem="ITd-Nj-Y8H" firstAttribute="leading" secondItem="614" secondAttribute="leading" id="Q3f-Dt-LPY"/>
                                         <constraint firstAttribute="trailing" secondItem="614" secondAttribute="trailing" constant="17" id="RAr-Te-Fri"/>
+                                        <constraint firstItem="ukh-cm-ynB" firstAttribute="top" secondItem="ITd-Nj-Y8H" secondAttribute="bottom" id="T6m-lg-2ry"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ITd-Nj-Y8H" secondAttribute="trailing" constant="20" symbolic="YES" id="ZC1-6U-lRc"/>
+                                        <constraint firstAttribute="bottom" secondItem="ITd-Nj-Y8H" secondAttribute="bottom" constant="140" id="ZMp-qs-XsO"/>
+                                        <constraint firstAttribute="bottom" secondItem="ukh-cm-ynB" secondAttribute="bottom" constant="30" id="oiW-jc-i34"/>
+                                        <constraint firstItem="ukh-cm-ynB" firstAttribute="leading" secondItem="ITd-Nj-Y8H" secondAttribute="leading" id="ox8-oy-15K"/>
                                         <constraint firstItem="614" firstAttribute="top" secondItem="659" secondAttribute="top" constant="10" id="pWc-bN-8xF"/>
                                         <constraint firstAttribute="bottom" secondItem="925" secondAttribute="bottom" constant="10" id="wNJ-Ef-ULr"/>
                                         <constraint firstAttribute="trailing" secondItem="925" secondAttribute="trailing" constant="17" id="wou-Vb-dDp"/>
+                                        <constraint firstItem="925" firstAttribute="leading" secondItem="ukh-cm-ynB" secondAttribute="trailing" constant="30" id="yYu-k7-hwe"/>
                                     </constraints>
                                 </view>
                                 <connections>
