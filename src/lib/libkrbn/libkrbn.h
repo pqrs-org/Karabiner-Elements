@@ -284,10 +284,13 @@ enum libkrbn_hid_value_event_type {
 typedef void libkrbn_hid_value_observer;
 typedef void (*libkrbn_hid_value_observer_callback)(enum libkrbn_hid_value_type type,
                                                     uint32_t value,
-                                                    enum libkrbn_hid_value_event_type event_type);
+                                                    enum libkrbn_hid_value_event_type event_type,
+                                                    void* _Nullable refcon);
 bool libkrbn_hid_value_observer_initialize(libkrbn_hid_value_observer* _Nullable* _Nonnull out,
-                                           libkrbn_hid_value_observer_callback _Nullable callback);
+                                           libkrbn_hid_value_observer_callback _Nullable callback,
+                                           void* _Nullable refcon);
 void libkrbn_hid_value_observer_terminate(libkrbn_hid_value_observer* _Nullable* _Nonnull p);
+size_t libkrbn_hid_value_observer_calculate_observed_device_count(libkrbn_hid_value_observer* _Nonnull p);
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,5 @@
 #include "../../src/lib/libkrbn/libkrbn.h"
+#include "gcd_utility.hpp"
 #include "thread_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <iostream>
@@ -6,7 +7,8 @@
 namespace {
 void hid_value_observer_callback(libkrbn_hid_value_type type,
                                  uint32_t value,
-                                 libkrbn_hid_value_event_type event_type) {
+                                 libkrbn_hid_value_event_type event_type,
+                                 void* refcon) {
   char buffer[256];
 
   switch (type) {
@@ -58,7 +60,15 @@ int main(int argc, const char* argv[]) {
   }
 
   libkrbn_hid_value_observer* observer = nullptr;
-  libkrbn_hid_value_observer_initialize(&observer, hid_value_observer_callback);
+  libkrbn_hid_value_observer_initialize(&observer, hid_value_observer_callback, nullptr);
+
+  krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC),
+                                                  false,
+                                                  ^{
+                                                    std::cout << "observed_device_count: "
+                                                              << libkrbn_hid_value_observer_calculate_observed_device_count(observer)
+                                                              << std::endl;
+                                                  });
 
   CFRunLoopRun();
 

@@ -17,7 +17,9 @@ class libkrbn_hid_value_observer_class final {
 public:
   libkrbn_hid_value_observer_class(const libkrbn_hid_value_observer_class&) = delete;
 
-  libkrbn_hid_value_observer_class(libkrbn_hid_value_observer_callback callback) : callback_(callback) {
+  libkrbn_hid_value_observer_class(libkrbn_hid_value_observer_callback callback,
+                                   void* refcon) : callback_(callback),
+                                                   refcon_(refcon) {
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
       return;
@@ -45,6 +47,16 @@ public:
       CFRelease(manager_);
       manager_ = nullptr;
     }
+  }
+
+  size_t calculate_observed_device_count(void) const {
+    size_t result = 0;
+    for (const auto& h : hids_) {
+      if (h.second->get_observed()) {
+        ++result;
+      }
+    }
+    return result;
   }
 
 private:
@@ -124,7 +136,8 @@ private:
           if (auto key_code = queued_event.get_event().get_key_code()) {
             callback_(libkrbn_hid_value_type_key_code,
                       static_cast<uint32_t>(*key_code),
-                      event_type);
+                      event_type,
+                      refcon_);
           }
           break;
 
@@ -132,7 +145,8 @@ private:
           if (auto consumer_key_code = queued_event.get_event().get_consumer_key_code()) {
             callback_(libkrbn_hid_value_type_consumer_key_code,
                       static_cast<uint32_t>(*consumer_key_code),
-                      event_type);
+                      event_type,
+                      refcon_);
           }
           break;
 
@@ -160,18 +174,19 @@ private:
   }
 
   libkrbn_hid_value_observer_callback callback_;
+  void* refcon_;
 
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, std::unique_ptr<krbn::human_interface_device>> hids_;
 };
 } // namespace
 
-bool libkrbn_hid_value_observer_initialize(libkrbn_hid_value_observer** out, libkrbn_hid_value_observer_callback callback) {
+bool libkrbn_hid_value_observer_initialize(libkrbn_hid_value_observer** out, libkrbn_hid_value_observer_callback callback, void* refcon) {
   if (!out) return false;
   // return if already initialized.
   if (*out) return false;
 
-  *out = reinterpret_cast<libkrbn_hid_value_observer*>(new libkrbn_hid_value_observer_class(callback));
+  *out = reinterpret_cast<libkrbn_hid_value_observer*>(new libkrbn_hid_value_observer_class(callback, refcon));
   return true;
 }
 
@@ -180,4 +195,13 @@ void libkrbn_hid_value_observer_terminate(libkrbn_hid_value_observer** p) {
     delete reinterpret_cast<libkrbn_hid_value_observer_class*>(*p);
     *p = nullptr;
   }
+}
+
+size_t libkrbn_hid_value_observer_calculate_observed_device_count(libkrbn_hid_value_observer* p) {
+  if (p) {
+    if (auto o = reinterpret_cast<libkrbn_hid_value_observer_class*>(p)) {
+      return o->calculate_observed_device_count();
+    }
+  }
+  return 0;
 }
