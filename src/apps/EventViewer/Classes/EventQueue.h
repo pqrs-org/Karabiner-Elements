@@ -4,7 +4,6 @@
 
 @interface EventQueue : NSObject
 
-- (void)pushFromNSApplication:(NSEvent*)event;
 - (void)pushMouseEvent:(NSEvent*)event;
 
 @end

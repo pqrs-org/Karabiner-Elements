@@ -4,12 +4,53 @@
 
 @interface EventQueue ()
 
+@property libkrbn_hid_value_observer* libkrbn_hid_value_observer;
 @property NSMutableArray* queue;
 @property NSDictionary* hidSystemKeyNames;
 @property NSDictionary* hidSystemAuxControlButtonNames;
 @property(weak) IBOutlet NSTableView* view;
 
+- (void)pushKeyEvent:(NSString*)code name:(NSString*)name eventType:(NSString*)eventType;
+
 @end
+
+static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
+                                        uint32_t value,
+                                        enum libkrbn_hid_value_event_type event_type,
+                                        void* refcon) {
+  EventQueue* queue = (__bridge EventQueue*)(refcon);
+  if (queue) {
+    NSString* code = [NSString stringWithFormat:@"0x%x", value];
+
+    char buffer[256];
+    buffer[0] = '\0';
+    switch (type) {
+      case libkrbn_hid_value_type_key_code:
+        libkrbn_get_key_code_name(buffer, sizeof(buffer), value);
+        break;
+
+      case libkrbn_hid_value_type_consumer_key_code:
+        libkrbn_get_consumer_key_code_name(buffer, sizeof(buffer), value);
+        break;
+    }
+    NSString* name = [NSString stringWithUTF8String:buffer];
+
+    NSString* eventType = @"";
+    switch (event_type) {
+      case libkrbn_hid_value_event_type_key_down:
+        eventType = @"key_down";
+        break;
+      case libkrbn_hid_value_event_type_key_up:
+        eventType = @"key_up";
+        break;
+      case libkrbn_hid_value_event_type_single:
+        eventType = @"";
+        break;
+    }
+
+    [queue pushKeyEvent:code name:name eventType:eventType];
+  }
+}
 
 @implementation EventQueue
 
@@ -21,6 +62,13 @@ enum {
   self = [super init];
 
   if (self) {
+    libkrbn_hid_value_observer* p = NULL;
+    if (libkrbn_hid_value_observer_initialize(&p,
+                                              hid_value_observer_callback,
+                                              (__bridge void*)(self))) {
+      self.libkrbn_hid_value_observer = p;
+    }
+
     _queue = [NSMutableArray new];
 
     _hidSystemKeyNames = @{
@@ -175,6 +223,13 @@ enum {
   return self;
 }
 
+- (void)dealloc {
+  if (self.libkrbn_hid_value_observer) {
+    libkrbn_hid_value_observer* p = self.libkrbn_hid_value_observer;
+    libkrbn_hid_value_observer_terminate(&p);
+  }
+}
+
 - (NSInteger)numberOfRowsInTableView:(NSTableView*)aTableView {
   return [self.queue count];
 }
@@ -192,70 +247,33 @@ enum {
 }
 
 - (NSString*)modifierFlagsToString:(NSUInteger)flags {
-  return [NSString stringWithFormat:@"%s%s%s%s%s%s%s%s",
-                                    ((flags & NSEventModifierFlagCapsLock) ? "Caps " : ""),
-                                    ((flags & NSEventModifierFlagShift) ? "Shift " : ""),
-                                    ((flags & NSEventModifierFlagControl) ? "Ctrl " : ""),
-                                    ((flags & NSEventModifierFlagOption) ? "Opt " : ""),
-                                    ((flags & NSEventModifierFlagCommand) ? "Cmd " : ""),
-                                    ((flags & NSEventModifierFlagNumericPad) ? "NumPad " : ""),
-                                    ((flags & NSEventModifierFlagHelp) ? "Help " : ""),
-                                    ((flags & NSEventModifierFlagFunction) ? "Fn " : "")];
-}
-
-- (NSString*)specialKeycodeToString:(NSEvent*)event {
-  unsigned short keycode = [event keyCode];
-
-  NSString* name = self.hidSystemKeyNames[@(keycode)];
-  if (name) {
-    return name;
+  NSMutableArray* names = [NSMutableArray new];
+  if (flags & NSEventModifierFlagCapsLock) {
+    [names addObject:@"caps"];
+  }
+  if (flags & NSEventModifierFlagShift) {
+    [names addObject:@"shift"];
+  }
+  if (flags & NSEventModifierFlagControl) {
+    [names addObject:@"ctrl"];
+  }
+  if (flags & NSEventModifierFlagOption) {
+    [names addObject:@"opt"];
+  }
+  if (flags & NSEventModifierFlagCommand) {
+    [names addObject:@"cmd"];
+  }
+  if (flags & NSEventModifierFlagNumericPad) {
+    [names addObject:@"numpad"];
+  }
+  if (flags & NSEventModifierFlagHelp) {
+    [names addObject:@"help"];
+  }
+  if (flags & NSEventModifierFlagFunction) {
+    [names addObject:@"fn"];
   }
 
-  return nil;
-}
-
-- (NSString*)keycodeToString:(NSEvent*)event {
-  NSString* string = [self specialKeycodeToString:event];
-  if (string) return string;
-
-  // --------------------
-  // Difference of "characters" and "charactersIgnoringModifiers".
-  //
-  // [NSEvent characters]
-  //   Option+z => Ω
-  //
-  // [NSEvent charactersIgnoringModifiers]
-  //   Option+z => z
-  //
-  // We prefer "Shift+Option+z" style than "Shift+Ω".
-  // Therefore we use charactersIgnoringModifiers here.
-  //
-  // --------------------
-  // However, there is a problem.
-  // When we use "Dvorak - Qwerty ⌘" as Input Source,
-  // charactersIgnoringModifiers returns ';'.
-  // It's wrong. Input Source does not change Command+z.
-  // So, we need to use 'characters' in this case.
-  //
-  // [NSEvent characters]
-  //    Command+z => z
-  // [NSEvent charactersIgnoringModifierss]
-  //    Command+z => ;
-  //
-  //
-  // --------------------
-  // But, we cannot use these properly without information about current Input Source.
-  // And this information cannot get by program.
-  //
-  // So, we use charactersIgnoringModifierss here and
-  // display the result of 'characters' in the 'misc' field.
-
-  @try {
-    return [event charactersIgnoringModifiers];
-  }
-  @catch (NSException* exception) {
-  }
-  return @"";
+  return [names componentsJoinedByString:@","];
 }
 
 - (NSString*)buttonToString:(NSEvent*)event {
@@ -277,106 +295,29 @@ enum {
   }
 }
 
-- (void)pushKeyEvent:(NSEvent*)event eventType:(NSString*)eventType {
-  // An invalid event will be sent when we press command-tab and switch the current app to EventViewer.
-  // (keyMod and keyCode == 0).
-  // So, we ignore it.
-  if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIgnorableEvents]) {
-    if ([eventType isEqualToString:@"FlagsChanged"]) {
-      unsigned short keyCode = [event keyCode];
-      if (keyCode == 0 || keyCode == 0xff) {
-        return;
-      }
-    }
-  }
-
+- (void)pushKeyEvent:(NSString*)code name:(NSString*)name eventType:(NSString*)eventType {
   [self push:eventType
-        code:[NSString stringWithFormat:@"0x%x", (int)([event keyCode])]
-        name:[self keycodeToString:event]
-       flags:[self modifierFlagsToString:[event modifierFlags]]
+        code:code
+        name:name
         misc:@""];
 }
 
-- (void)pushSystemDefinedEvent:(NSEvent*)event {
-  if ([event subtype] == NX_SUBTYPE_AUX_CONTROL_BUTTONS) {
-    int keyCode = (([event data1] & 0xFFFF0000) >> 16);
-    int keyFlags = ([event data1] & 0x0000FFFF);
-    int keyState = ((keyFlags & 0xFF00) >> 8);
-
-    NSString* eventType = nil;
-    switch (keyState) {
-      case NX_KEYDOWN:
-        eventType = @"SysKeyDown";
-        break;
-      case NX_KEYUP:
-        eventType = @"SysKeyUp";
-        break;
-    }
-    if (!eventType) {
-      return;
-    }
-
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIgnorableEvents]) {
-      if (keyCode == NX_KEYTYPE_CAPS_LOCK ||
-          keyCode == NX_KEYTYPE_HELP ||
-          keyCode == NX_KEYTYPE_NUM_LOCK) {
-        return;
-      }
-    }
-
-    NSString* name = self.hidSystemAuxControlButtonNames[@(keyCode)];
-    if (!name) {
-      name = @"";
-    }
-
-    [self push:eventType
-          code:[NSString stringWithFormat:@"0x%x", keyCode]
-          name:name
-         flags:[self modifierFlagsToString:[event modifierFlags]]
-          misc:@""];
-  }
-}
-
 - (void)pushMouseEvent:(NSEvent*)event eventType:(NSString*)eventType {
+  NSString* flags = [self modifierFlagsToString:[event modifierFlags]];
   [self push:eventType
         code:[NSString stringWithFormat:@"0x%x", (int)([event buttonNumber])]
         name:[self buttonToString:event]
-       flags:[self modifierFlagsToString:[event modifierFlags]]
-        misc:[NSString stringWithFormat:@"{%d,%d} %d",
+        misc:[NSString stringWithFormat:@"{x:%d,y:%d} click_count:%d %@",
                                         (int)([event locationInWindow].x), (int)([event locationInWindow].y),
-                                        (int)([event clickCount])]];
+                                        (int)([event clickCount]),
+                                        [flags length] > 0 ? [NSString stringWithFormat:@"flags:%@", flags] : @""]];
 }
 
 - (void)pushScrollWheelEvent:(NSEvent*)event eventType:(NSString*)eventType {
   [self push:eventType
         code:@""
         name:@""
-       flags:[self modifierFlagsToString:[event modifierFlags]]
         misc:[NSString stringWithFormat:@"dx:%.03f dy:%.03f dz:%.03f", [event deltaX], [event deltaY], [event deltaZ]]];
-}
-
-- (void)pushFromNSApplication:(NSEvent*)event {
-  switch ([event type]) {
-      case NSEventTypeKeyDown:
-      [self pushKeyEvent:event eventType:@"KeyDown"];
-      break;
-
-      case NSEventTypeKeyUp:
-      [self pushKeyEvent:event eventType:@"KeyUp"];
-      break;
-
-      case NSEventTypeFlagsChanged:
-      [self pushKeyEvent:event eventType:@"FlagsChanged"];
-      break;
-
-      case NSEventTypeSystemDefined:
-      [self pushSystemDefinedEvent:event];
-      break;
-
-    default:
-      // Do nothing
-      break;
-  }
 }
 
 - (void)pushMouseEvent:(NSEvent*)event {
@@ -409,11 +350,10 @@ enum {
   }
 }
 
-- (void)push:(NSString*)eventType code:(NSString*)code name:(NSString*)name flags:(NSString*)flags misc:(NSString*)misc {
+- (void)push:(NSString*)eventType code:(NSString*)code name:(NSString*)name misc:(NSString*)misc {
   NSDictionary* dict = @{@"eventType" : eventType,
                          @"code" : code,
                          @"name" : name,
-                         @"flags" : flags,
                          @"misc" : misc};
 
   [self.queue insertObject:dict atIndex:0];
@@ -438,10 +378,9 @@ enum {
     NSString* eventType = [NSString stringWithFormat:@"eventType:%@", dict[@"eventType"]];
     NSString* code = [NSString stringWithFormat:@"code:%@", dict[@"code"]];
     NSString* name = [NSString stringWithFormat:@"name:%@", dict[@"name"]];
-    NSString* flags = [NSString stringWithFormat:@"flags:%@", dict[@"flags"]];
     NSString* misc = [NSString stringWithFormat:@"misc:%@", dict[@"misc"]];
 
-    [string appendFormat:@"%@ %@ %@ %@ %@\n",
+    [string appendFormat:@"%@ %@ %@ %@\n",
                          [eventType stringByPaddingToLength:25
                                                  withString:@" "
                                             startingAtIndex:0],
@@ -451,9 +390,6 @@ enum {
                          [name stringByPaddingToLength:20
                                             withString:@" "
                                        startingAtIndex:0],
-                         [flags stringByPaddingToLength:40
-                                             withString:@" "
-                                        startingAtIndex:0],
                          misc];
   }
 

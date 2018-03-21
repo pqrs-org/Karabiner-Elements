@@ -15,7 +15,6 @@
 		344F41331F2110920073B85A /* VariablesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F41321F2110920073B85A /* VariablesController.m */; };
 		345EF8E31F100413003E7A67 /* FrontmostApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345EF8E21F100413003E7A67 /* FrontmostApplicationController.m */; };
 		345EF8E61F100484003E7A67 /* frontmost_application_observer_objc.m in Sources */ = {isa = PBXBuildFile; fileRef = 345EF8E51F100484003E7A67 /* frontmost_application_observer_objc.m */; };
-		346FDD281BA6E58500B1072E /* EventViewerApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 346FDD271BA6E58500B1072E /* EventViewerApplication.m */; };
 		3481A9BA1BC524280092E8EC /* PreferencesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3481A9B91BC524280092E8EC /* PreferencesManager.m */; };
 		3488F176174FB64C00178158 /* app.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3488F175174FB64C00178158 /* app.icns */; };
 		34B97B171DBB26E400EB3583 /* simple_modifications.json in Resources */ = {isa = PBXBuildFile; fileRef = 34B97B161DBB26E400EB3583 /* simple_modifications.json */; };
@@ -52,8 +51,6 @@
 		345EF8E41F100484003E7A67 /* frontmost_application_observer_objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frontmost_application_observer_objc.h; sourceTree = "<group>"; };
 		345EF8E51F100484003E7A67 /* frontmost_application_observer_objc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = frontmost_application_observer_objc.m; sourceTree = "<group>"; };
 		346971B01CE47C5D004034E1 /* weakify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = weakify.h; path = ../apps/share/weakify.h; sourceTree = "<group>"; };
-		346FDD261BA6E58500B1072E /* EventViewerApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EventViewerApplication.h; path = Classes/EventViewerApplication.h; sourceTree = "<group>"; };
-		346FDD271BA6E58500B1072E /* EventViewerApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EventViewerApplication.m; path = Classes/EventViewerApplication.m; sourceTree = "<group>"; };
 		3481A9B81BC524280092E8EC /* PreferencesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesManager.h; path = Classes/PreferencesManager.h; sourceTree = "<group>"; };
 		3481A9B91BC524280092E8EC /* PreferencesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesManager.m; path = Classes/PreferencesManager.m; sourceTree = "<group>"; };
 		348323671934E0FD0038CA78 /* PreferencesKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesKeys.h; path = Classes/PreferencesKeys.h; sourceTree = "<group>"; };
@@ -96,8 +93,6 @@
 				342A1DE81FD44CD2002A07D6 /* DevicesController.m */,
 				34CA6977174FB72900EC8EFB /* EventQueue.h */,
 				34CA6978174FB72900EC8EFB /* EventQueue.m */,
-				346FDD261BA6E58500B1072E /* EventViewerApplication.h */,
-				346FDD271BA6E58500B1072E /* EventViewerApplication.m */,
 				345EF8E11F100413003E7A67 /* FrontmostApplicationController.h */,
 				345EF8E21F100413003E7A67 /* FrontmostApplicationController.m */,
 				34CA6979174FB72900EC8EFB /* KeyResponder.h */,
@@ -268,7 +263,6 @@
 			files = (
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* AppDelegate.m in Sources */,
-				346FDD281BA6E58500B1072E /* EventViewerApplication.m in Sources */,
 				343EEA0E19C5E1D1001A969F /* TabView.m in Sources */,
 				34CA697F174FB72900EC8EFB /* EventQueue.m in Sources */,
 				344F41331F2110920073B85A /* VariablesController.m in Sources */,
