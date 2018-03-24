@@ -410,29 +410,47 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ukh-cm-ynB">
+                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ko0-IW-1A7">
                                             <rect key="frame" x="17" y="30" width="610" height="110"/>
-                                            <textFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="Mwr-vY-27i">
-                                                <font key="font" metaFont="system"/>
-                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
+                                            <clipView key="contentView" id="Hx6-3h-z4E">
+                                                <rect key="frame" x="1" y="1" width="593" height="108"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textView importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="A4A-YB-ifF">
+                                                        <rect key="frame" x="0.0" y="0.0" width="593" height="108"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <size key="minSize" width="593" height="108"/>
+                                                        <size key="maxSize" width="593" height="10000000"/>
+                                                        <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </textView>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </clipView>
+                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="52f-3v-VlJ">
+                                                <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="fRi-UI-8x2">
+                                                <rect key="frame" x="594" y="1" width="15" height="108"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                        </scrollView>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="925" firstAttribute="leading" secondItem="Ko0-IW-1A7" secondAttribute="trailing" constant="30" id="5ru-Nt-UL6"/>
                                         <constraint firstItem="614" firstAttribute="leading" secondItem="659" secondAttribute="leading" constant="17" id="9dT-Rx-CIg"/>
                                         <constraint firstItem="925" firstAttribute="top" secondItem="614" secondAttribute="bottom" constant="12" id="Kez-Oq-wHb"/>
                                         <constraint firstItem="ITd-Nj-Y8H" firstAttribute="leading" secondItem="614" secondAttribute="leading" id="Q3f-Dt-LPY"/>
+                                        <constraint firstAttribute="bottom" secondItem="Ko0-IW-1A7" secondAttribute="bottom" constant="30" id="QAP-wd-HaX"/>
                                         <constraint firstAttribute="trailing" secondItem="614" secondAttribute="trailing" constant="17" id="RAr-Te-Fri"/>
-                                        <constraint firstItem="ukh-cm-ynB" firstAttribute="top" secondItem="ITd-Nj-Y8H" secondAttribute="bottom" id="T6m-lg-2ry"/>
+                                        <constraint firstItem="Ko0-IW-1A7" firstAttribute="leading" secondItem="ITd-Nj-Y8H" secondAttribute="leading" id="W73-eG-PuK"/>
                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ITd-Nj-Y8H" secondAttribute="trailing" constant="20" symbolic="YES" id="ZC1-6U-lRc"/>
                                         <constraint firstAttribute="bottom" secondItem="ITd-Nj-Y8H" secondAttribute="bottom" constant="140" id="ZMp-qs-XsO"/>
-                                        <constraint firstAttribute="bottom" secondItem="ukh-cm-ynB" secondAttribute="bottom" constant="30" id="oiW-jc-i34"/>
-                                        <constraint firstItem="ukh-cm-ynB" firstAttribute="leading" secondItem="ITd-Nj-Y8H" secondAttribute="leading" id="ox8-oy-15K"/>
                                         <constraint firstItem="614" firstAttribute="top" secondItem="659" secondAttribute="top" constant="10" id="pWc-bN-8xF"/>
+                                        <constraint firstItem="Ko0-IW-1A7" firstAttribute="top" secondItem="ITd-Nj-Y8H" secondAttribute="bottom" id="q6p-Kk-9Br"/>
                                         <constraint firstAttribute="bottom" secondItem="925" secondAttribute="bottom" constant="10" id="wNJ-Ef-ULr"/>
                                         <constraint firstAttribute="trailing" secondItem="925" secondAttribute="trailing" constant="17" id="wou-Vb-dDp"/>
-                                        <constraint firstItem="925" firstAttribute="leading" secondItem="ukh-cm-ynB" secondAttribute="trailing" constant="30" id="yYu-k7-hwe"/>
                                     </constraints>
                                 </view>
                                 <connections>
