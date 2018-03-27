@@ -3,11 +3,13 @@
 #import "ComplexModificationsFileImportWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "PreferencesWindowController.h"
+#import "SimpleModificationsTableViewController.h"
 #import "SystemPreferencesManager.h"
 #import "libkrbn.h"
 
 @interface AppDelegate ()
 
+@property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet ComplexModificationsFileImportWindowController* complexModificationsFileImportWindowController;
 @property(weak) IBOutlet AlertWindowController* alertWindowController;
 @property(weak) IBOutlet NSWindow* preferencesWindow;
@@ -42,7 +44,8 @@
 }
 
 - (void)handleGetURLEvent:(NSAppleEventDescriptor*)event withReplyEvent:(NSAppleEventDescriptor*)replyEvent {
-  //  url == @"karabiner://karabiner/assets/complex_modifications/import?url=xxx"
+  // - url == @"karabiner://karabiner/assets/complex_modifications/import?url=xxx"
+  // - url == @"karabiner://karabiner/simple_modifications/new?json={xxx}"
   NSString* url = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
   NSLog(@"handleGetURLEvent %@", url);
 
@@ -57,6 +60,16 @@
         return;
       }
     }
+  }
+  if ([urlComponents.path isEqualToString:@"/simple_modifications/new"]) {
+    [self.simpleModificationsTableViewController openSimpleModificationsTab];
+
+    for (NSURLQueryItem* pair in urlComponents.queryItems) {
+      if ([@"json" isEqualToString:pair.name]) {
+        [self.simpleModificationsTableViewController addItemFromJson:pair.value];
+      }
+    }
+    return;
   }
 
   NSAlert* alert = [NSAlert new];

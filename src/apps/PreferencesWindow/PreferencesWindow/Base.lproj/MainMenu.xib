@@ -73,6 +73,7 @@
                 <outlet property="complexModificationsFileImportWindowController" destination="1ch-Te-EDv" id="TJS-aK-9xm"/>
                 <outlet property="preferencesWindow" destination="QvC-M9-y7g" id="91M-TG-qdJ"/>
                 <outlet property="preferencesWindowController" destination="5ke-qB-Wr5" id="Iam-4e-IHj"/>
+                <outlet property="simpleModificationsTableViewController" destination="4f7-Hm-cOy" id="9Ly-1w-WDk"/>
                 <outlet property="systemPreferencesManager" destination="gwA-uV-a9x" id="LEs-Qx-33f"/>
             </connections>
         </customObject>
@@ -143,6 +144,7 @@
         <customObject id="4f7-Hm-cOy" customClass="SimpleModificationsTableViewController">
             <connections>
                 <outlet property="connectedDevicesPopupButton" destination="oB5-NY-D3P" id="xlz-VY-1hg"/>
+                <outlet property="simpleModificationsTabViewItem" destination="SOT-pf-9fT" id="pe2-Cp-nCe"/>
                 <outlet property="tableView" destination="qEO-TG-yM2" id="a70-Me-u6U"/>
             </connections>
         </customObject>
@@ -177,11 +179,11 @@
         </customObject>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
             <items>
-                <menuItem title="Karabiner-Elements" id="1Xt-HY-uBw">
+                <menuItem title="Karabiner-Elements Preferences" id="1Xt-HY-uBw" userLabel="Karabiner-Elements Preferences">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Karabiner-Elements" systemMenu="apple" id="uQy-DD-JDr">
+                    <menu key="submenu" title="Karabiner-Elements Preferences" systemMenu="apple" id="uQy-DD-JDr">
                         <items>
-                            <menuItem title="Hide Karabiner-Elements" keyEquivalent="h" id="Olw-nP-bQN">
+                            <menuItem title="Hide Karabiner-Elements Preferences" keyEquivalent="h" id="Olw-nP-bQN">
                                 <connections>
                                     <action selector="hide:" target="-1" id="PnN-Uc-m68"/>
                                 </connections>
@@ -196,6 +198,12 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="unhideAllApplications:" target="-1" id="Dhg-Le-xox"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="TZI-3b-uc9"/>
+                            <menuItem title="Quit Karabiner-Elements Preferences" keyEquivalent="q" id="pc0-ds-IqP">
+                                <connections>
+                                    <action selector="terminate:" target="-1" id="J9R-Lm-n58"/>
                                 </connections>
                             </menuItem>
                         </items>

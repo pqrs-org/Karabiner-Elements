@@ -15,4 +15,7 @@
 - (void)updateConnectedDevicesMenu;
 - (NSInteger)selectedConnectedDeviceIndex;
 
+- (void)openSimpleModificationsTab;
+- (void)addItemFromJson:(NSString*)jsonString;
+
 @end
