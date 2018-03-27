@@ -10,9 +10,9 @@
   }
 
   NSError* error = nil;
-  NSDictionary* jsonObject = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding]
-                                                             options:0
-                                                               error:&error];
+  id jsonObject = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding]
+                                                  options:0
+                                                    error:&error];
 
   if (error) {
     NSLog(@"JSONObjectWithData error @ [JsonUtility loadString]: %@", error);
