@@ -24,6 +24,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [self setKeyResponder];
   [self setWindowProperty:self];
+  [self.eventQueue setup];
   [self.frontmostApplicationController setup];
   [self.variablesController setup];
   [self.devicesController setup];

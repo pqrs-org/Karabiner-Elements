@@ -6,6 +6,7 @@
 
 @property(readonly) NSInteger observedDeviceCount;
 
+- (void)setup;
 - (void)pushMouseEvent:(NSEvent*)event;
 
 @end

@@ -23,6 +23,7 @@
 		34C92D221122EDA100B0B4ED /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C92D211122EDA100B0B4ED /* Carbon.framework */; };
 		34CA697F174FB72900EC8EFB /* EventQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA6978174FB72900EC8EFB /* EventQueue.m */; };
 		34CA6980174FB72900EC8EFB /* KeyResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA697A174FB72900EC8EFB /* KeyResponder.m */; };
+		34F709CC206B5BF70027C649 /* libKarabinerKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F709CB206B5BF70027C649 /* libKarabinerKit.a */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -64,6 +65,7 @@
 		34CA6978174FB72900EC8EFB /* EventQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EventQueue.m; path = Classes/EventQueue.m; sourceTree = "<group>"; };
 		34CA6979174FB72900EC8EFB /* KeyResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyResponder.h; path = Classes/KeyResponder.h; sourceTree = "<group>"; };
 		34CA697A174FB72900EC8EFB /* KeyResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KeyResponder.m; path = Classes/KeyResponder.m; sourceTree = "<group>"; };
+		34F709CB206B5BF70027C649 /* libKarabinerKit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libKarabinerKit.a; path = ../lib/KarabinerKit/build/Release/libKarabinerKit.a; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Karabiner-EventViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Karabiner-EventViewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -73,6 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34F709CC206B5BF70027C649 /* libKarabinerKit.a in Frameworks */,
 				34B97B1B1DBB276B00EB3583 /* libc++.dylib in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				34C92D221122EDA100B0B4ED /* Carbon.framework in Frameworks */,
@@ -172,6 +175,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				34F709CB206B5BF70027C649 /* libKarabinerKit.a */,
 				34C92D211122EDA100B0B4ED /* Carbon.framework */,
 				34B97B1A1DBB276B00EB3583 /* libc++.dylib */,
 				34B97B181DBB276200EB3583 /* libkrbn.a */,
@@ -350,7 +354,11 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = ../../lib/libkrbn/build/Release;
+				HEADER_SEARCH_PATHS = ../lib/KarabinerKit/;
+				LIBRARY_SEARCH_PATHS = (
+					../../lib/libkrbn/build/Release,
+					../lib/KarabinerKit/build/Release,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;

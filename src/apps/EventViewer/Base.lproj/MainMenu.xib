@@ -378,15 +378,28 @@
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </tableHeaderView>
                                                     </scrollView>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="e5W-WO-Kah">
+                                                        <rect key="frame" x="712" y="232" width="81" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ShI-z6-Eh3">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="addSimpleModification:" target="571" id="ZGo-zy-0fr"/>
+                                                        </connections>
+                                                    </button>
                                                 </subviews>
                                                 <constraints>
+                                                    <constraint firstItem="e5W-WO-Kah" firstAttribute="centerY" secondItem="541" secondAttribute="centerY" id="3Fl-Aj-5Hc"/>
                                                     <constraint firstAttribute="trailing" secondItem="561" secondAttribute="trailing" constant="17" id="6ub-8q-RbA"/>
                                                     <constraint firstItem="541" firstAttribute="top" secondItem="pJS-41-sBt" secondAttribute="top" constant="10" id="8y2-ps-2mb"/>
                                                     <constraint firstAttribute="bottom" secondItem="561" secondAttribute="bottom" constant="10" id="Aeq-xs-rFb"/>
                                                     <constraint firstItem="541" firstAttribute="leading" secondItem="pJS-41-sBt" secondAttribute="leading" constant="17" id="PPE-xi-CuH"/>
                                                     <constraint firstItem="539" firstAttribute="centerY" secondItem="541" secondAttribute="centerY" id="e1u-iG-67n"/>
                                                     <constraint firstItem="561" firstAttribute="top" secondItem="541" secondAttribute="bottom" constant="10" id="eZ2-ey-mm9"/>
+                                                    <constraint firstItem="e5W-WO-Kah" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="pJS-41-sBt" secondAttribute="leading" constant="20" symbolic="YES" id="hVv-BT-Sof"/>
                                                     <constraint firstItem="539" firstAttribute="leading" secondItem="541" secondAttribute="trailing" constant="10" id="lnu-2U-wtg"/>
+                                                    <constraint firstAttribute="trailing" secondItem="e5W-WO-Kah" secondAttribute="trailing" constant="17" id="oa7-b8-mKs"/>
                                                     <constraint firstItem="561" firstAttribute="leading" secondItem="541" secondAttribute="leading" id="pfn-WU-u72"/>
                                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="539" secondAttribute="trailing" constant="20" symbolic="YES" id="z4N-2m-jQX"/>
                                                 </constraints>
@@ -758,6 +771,7 @@
         </customObject>
         <customObject id="571" customClass="EventQueue">
             <connections>
+                <outlet property="addSimpleModificationButton" destination="e5W-WO-Kah" id="eWW-tb-Yab"/>
                 <outlet property="view" destination="564" id="qxL-30-rPh"/>
             </connections>
         </customObject>
