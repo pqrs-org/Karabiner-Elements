@@ -66,4 +66,8 @@ static void staticCallback(void* context) {
   [NSApp terminate:nil];
 }
 
+- (IBAction)openSystemPolicyPreventsLoadingKextHelpWebPage:(id)sender {
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://pqrs.org/osx/karabiner/help.html#kext-allow-button-does-not-work"]];
+}
+
 @end
