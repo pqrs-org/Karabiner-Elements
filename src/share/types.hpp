@@ -1144,6 +1144,16 @@ public:
     return boost::none;
   }
 
+  static boost::optional<modifier_flag> make_modifier_flag(const hid_value& hid_value) {
+    if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
+      if (auto hid_usage = hid_value.get_hid_usage()) {
+        return make_modifier_flag(*hid_usage_page,
+                                  *hid_usage);
+      }
+    }
+    return boost::none;
+  }
+
   static boost::optional<pqrs::karabiner_virtual_hid_device::hid_report::modifier> make_hid_report_modifier(modifier_flag modifier_flag) {
     switch (modifier_flag) {
       case modifier_flag::left_control:
@@ -1523,6 +1533,16 @@ public:
     return boost::none;
   }
 
+  static boost::optional<key_code> make_key_code(const hid_value& hid_value) {
+    if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
+      if (auto hid_usage = hid_value.get_hid_usage()) {
+        return make_key_code(*hid_usage_page,
+                             *hid_usage);
+      }
+    }
+    return boost::none;
+  }
+
   static boost::optional<hid_usage_page> make_hid_usage_page(key_code key_code) {
     switch (key_code) {
       case key_code::fn:
@@ -1714,6 +1734,16 @@ public:
     return boost::none;
   }
 
+  static boost::optional<consumer_key_code> make_consumer_key_code(const hid_value& hid_value) {
+    if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
+      if (auto hid_usage = hid_value.get_hid_usage()) {
+        return make_consumer_key_code(*hid_usage_page,
+                                      *hid_usage);
+      }
+    }
+    return boost::none;
+  }
+
   static boost::optional<hid_usage_page> make_hid_usage_page(consumer_key_code consumer_key_code) {
     return hid_usage_page::consumer;
   }
@@ -1811,6 +1841,16 @@ public:
   static boost::optional<pointing_button> make_pointing_button(hid_usage_page usage_page, hid_usage usage) {
     if (usage_page == hid_usage_page::button) {
       return pointing_button(usage);
+    }
+    return boost::none;
+  }
+
+  static boost::optional<pointing_button> make_pointing_button(const hid_value& hid_value) {
+    if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
+      if (auto hid_usage = hid_value.get_hid_usage()) {
+        return make_pointing_button(*hid_usage_page,
+                                    *hid_usage);
+      }
     }
     return boost::none;
   }
