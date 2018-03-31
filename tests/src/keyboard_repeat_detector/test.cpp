@@ -57,4 +57,24 @@ TEST_CASE("is_repeating") {
                                *(krbn::types::make_hid_usage(krbn::key_code::escape)),
                                krbn::event_type::key_up);
   REQUIRE(keyboard_repeat_detector.is_repeating() == false);
+
+  // ----------------------------------------
+  // hid_value
+
+  {
+    krbn::hid_value hid_value(0,
+                              1,
+                              *(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
+                              *(krbn::types::make_hid_usage(krbn::key_code::spacebar)));
+    keyboard_repeat_detector.set(hid_value);
+    REQUIRE(keyboard_repeat_detector.is_repeating() == true);
+  }
+  {
+    krbn::hid_value hid_value(0,
+                              0,
+                              *(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
+                              *(krbn::types::make_hid_usage(krbn::key_code::spacebar)));
+    keyboard_repeat_detector.set(hid_value);
+    REQUIRE(keyboard_repeat_detector.is_repeating() == false);
+  }
 }

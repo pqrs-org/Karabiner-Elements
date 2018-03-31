@@ -37,6 +37,16 @@ public:
     }
   }
 
+  void set(const hid_value& hid_value) {
+    if (auto hid_usage_page = hid_value.get_hid_usage_page()) {
+      if (auto hid_usage = hid_value.get_hid_usage()) {
+        set(*hid_usage_page,
+            *hid_usage,
+            hid_value.get_integer_value() ? event_type::key_down : event_type::key_up);
+      }
+    }
+  }
+
   void clear(void) {
     repeating_key_ = boost::none;
   }
