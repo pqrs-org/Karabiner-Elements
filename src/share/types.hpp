@@ -358,6 +358,19 @@ public:
     }
   }
 
+  nlohmann::json to_json(void) const {
+    nlohmann::json j;
+    j["time_stamp"] = time_stamp_;
+    j["integer_value"] = integer_value_;
+    if (hid_usage_page_) {
+      j["hid_usage_page"] = *hid_usage_page_;
+    }
+    if (hid_usage_) {
+      j["hid_usage"] = *hid_usage_;
+    }
+    return j;
+  }
+
   uint64_t get_time_stamp(void) const {
     return time_stamp_;
   }
