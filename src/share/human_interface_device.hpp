@@ -21,6 +21,7 @@
 #include <IOKit/hid/IOHIDValue.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/optional.hpp>
+#include <boost/signals2.hpp>
 #include <cstdint>
 #include <functional>
 #include <list>
@@ -40,6 +41,10 @@ public:
   typedef std::function<void(human_interface_device& device,
                              event_queue& event_queue)>
       value_callback;
+
+  boost::signals2::signal<void(human_interface_device&,
+                               const std::vector<hid_value>&)>
+      hid_values_arrived;
 
   typedef std::function<void(human_interface_device& device,
                              IOHIDReportType type,
@@ -690,13 +695,15 @@ private:
   }
 
   void queue_value_available_callback(void) {
-    std::vector<krbn::hid_value> hid_values;
+    std::vector<hid_value> hid_values;
 
     while (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
       hid_values.emplace_back(value);
 
       CFRelease(value);
     }
+
+    hid_values_arrived(*this, hid_values);
 
     for (const auto& pair : event_queue::make_queued_events(hid_values, device_id_)) {
       auto& hid_value = pair.first;
