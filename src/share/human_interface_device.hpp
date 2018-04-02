@@ -866,4 +866,19 @@ private:
   std::unordered_set<uint64_t> pressed_keys_;
   std::unordered_set<uint64_t> pressed_pointing_buttons_;
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const human_interface_device::grabbable_state& value) {
+  switch (value) {
+    case human_interface_device::grabbable_state::grabbable:
+      stream << "grabbable";
+      break;
+    case human_interface_device::grabbable_state::ungrabbable_temporarily:
+      stream << "ungrabbable_temporarily";
+      break;
+    case human_interface_device::grabbable_state::ungrabbable_permanently:
+      stream << "ungrabbable_permanently";
+      break;
+  }
+  return stream;
+}
 } // namespace krbn
