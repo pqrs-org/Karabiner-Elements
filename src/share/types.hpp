@@ -387,6 +387,12 @@ public:
     return hid_usage_;
   }
 
+  bool conforms_to(hid_usage_page hid_usage_page,
+                   hid_usage hid_usage) const {
+    return hid_usage_page_ == hid_usage_page &&
+           hid_usage_ == hid_usage;
+  }
+
   bool operator==(const hid_value& other) const {
     return time_stamp_ == other.time_stamp_ &&
            integer_value_ == other.integer_value_ &&
