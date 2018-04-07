@@ -74,13 +74,6 @@ enum {
   self = [super init];
 
   if (self) {
-    libkrbn_hid_value_observer* p = NULL;
-    if (libkrbn_hid_value_observer_initialize(&p,
-                                              hid_value_observer_callback,
-                                              (__bridge void*)(self))) {
-      self.libkrbn_hid_value_observer = p;
-    }
-
     _queue = [NSMutableArray new];
   }
 
@@ -88,14 +81,48 @@ enum {
 }
 
 - (void)dealloc {
-  if (self.libkrbn_hid_value_observer) {
-    libkrbn_hid_value_observer* p = self.libkrbn_hid_value_observer;
-    libkrbn_hid_value_observer_terminate(&p);
-  }
+  [self terminateHidValueObserver];
+
+  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self
+                                                             name:nil
+                                                           object:nil];
 }
 
 - (void)setup {
+  [self initializeHidValueObserver];
   [self updateAddSimpleModificationButton:nil];
+
+  {
+    NSString* name = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_device_grabbing_state_is_changed()];
+    NSString* object = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_observed_object()];
+
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self
+                                                        selector:@selector(deviceGrabbingStateIsChangedCallback)
+                                                            name:name
+                                                          object:object
+                                              suspensionBehavior:NSNotificationSuspensionBehaviorDeliverImmediately];
+  }
+}
+
+- (void)initializeHidValueObserver {
+  if (self.libkrbn_hid_value_observer) {
+    [self terminateHidValueObserver];
+  }
+
+  libkrbn_hid_value_observer* p = NULL;
+  if (libkrbn_hid_value_observer_initialize(&p,
+                                            hid_value_observer_callback,
+                                            (__bridge void*)(self))) {
+    self.libkrbn_hid_value_observer = p;
+  }
+}
+
+- (void)terminateHidValueObserver {
+  if (self.libkrbn_hid_value_observer) {
+    libkrbn_hid_value_observer* p = self.libkrbn_hid_value_observer;
+    libkrbn_hid_value_observer_terminate(&p);
+    self.libkrbn_hid_value_observer = nil;
+  }
 }
 
 - (void)updateAddSimpleModificationButton:(NSString*)title {
@@ -105,6 +132,10 @@ enum {
     self.addSimpleModificationButton.hidden = YES;
   }
   self.addSimpleModificationButton.title = title;
+}
+
+- (void)deviceGrabbingStateIsChangedCallback {
+  [self initializeHidValueObserver];
 }
 
 - (NSInteger)observedDeviceCount {

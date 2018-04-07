@@ -183,5 +183,9 @@ public:
   static const char* get_distributed_notification_console_user_server_is_disabled(void) {
     return "console_user_server_is_disabled";
   }
+
+  static const char* get_distributed_notification_device_grabbing_state_is_changed(void) {
+    return "device_grabbing_state_is_changed";
+  }
 };
 } // namespace krbn

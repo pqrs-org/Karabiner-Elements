@@ -20,6 +20,7 @@ void libkrbn_initialize(void);
 const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
 const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(void);
 const char* _Nonnull libkrbn_get_distributed_notification_console_user_server_is_disabled(void);
+const char* _Nonnull libkrbn_get_distributed_notification_device_grabbing_state_is_changed(void);
 const char* _Nonnull libkrbn_get_grabber_alerts_json_file_path(void);
 const char* _Nonnull libkrbn_get_devices_json_file_path(void);
 const char* _Nonnull libkrbn_get_device_details_json_file_path(void);

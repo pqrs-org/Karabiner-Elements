@@ -537,10 +537,14 @@ private:
     }
 
     update_virtual_hid_pointing();
+
+    apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
   }
 
   void ungrabbed_callback(human_interface_device& device) {
     post_device_ungrabbed_event(device.get_device_id());
+
+    apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
   }
 
   void disabled_callback(human_interface_device& device) {

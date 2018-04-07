@@ -30,6 +30,10 @@ const char* libkrbn_get_distributed_notification_console_user_server_is_disabled
   return krbn::constants::get_distributed_notification_console_user_server_is_disabled();
 }
 
+const char* libkrbn_get_distributed_notification_device_grabbing_state_is_changed(void) {
+  return krbn::constants::get_distributed_notification_device_grabbing_state_is_changed();
+}
+
 const char* libkrbn_get_grabber_alerts_json_file_path(void) {
   return krbn::constants::get_grabber_alerts_json_file_path();
 }
