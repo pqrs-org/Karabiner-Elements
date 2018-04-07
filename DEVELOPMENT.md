@@ -49,6 +49,13 @@ IOKit cannot catch events from Apple Trackpads.<br />
 
 Thus, we should use CGEventTap together for pointing devices.
 
+### `IOHIDQueueRegisterValueAvailableCallback` from multiple processes.
+
+We can use `IOHIDDeviceOpen` and `IOHIDQueueRegisterValueAvailableCallback` from multiple processes.
+
+Generally, `ValueAvailableCallback` is not called for `IOHIDDeviceOpen(kIOHIDOptionsTypeNone)` while device is opened with `kIOHIDOptionsTypeSeizeDevice`.
+However, it seems `ValueAvailableCallback` is called both seized `IOHIDDeviceRef` and normal `IOHIDDeviceRef` in some cases (e.g. after awake from sleep)
+
 ## CGEventTapCreate
 
 `CGEventTapCreate` is a limited approach.<br />
