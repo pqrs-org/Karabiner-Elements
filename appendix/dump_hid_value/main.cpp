@@ -1,7 +1,6 @@
 #include "boost_defs.hpp"
 
 #include "human_interface_device.hpp"
-#include "human_interface_device_observer.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include <CoreFoundation/CoreFoundation.h>
@@ -66,12 +65,10 @@ private:
 
     krbn::iokit_utility::log_matching_device(device);
 
-    auto observer = std::make_shared<krbn::human_interface_device_observer>(device);
-    observer->hid_value_arrived.connect([&](auto& human_interface_device_observer,
-                                            auto& hid_value) {
-      print_hid_value(human_interface_device_observer, hid_value);
-    });
-    hid_observers_[device] = observer;
+    hids_[device] = std::make_unique<krbn::human_interface_device>(device);
+    auto& dev = hids_[device];
+    dev->set_value_callback(boost::bind(&dump_hid_value::value_callback, this, _1, _2));
+    dev->observe();
   }
 
   static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
@@ -94,100 +91,123 @@ private:
 
     krbn::iokit_utility::log_removal_device(device);
 
-    auto it = hid_observers_.find(device);
-    if (it != hid_observers_.end()) {
-      hid_observers_.erase(it);
+    auto it = hids_.find(device);
+    if (it != hids_.end()) {
+      auto& dev = it->second;
+      if (dev) {
+        hids_.erase(it);
+      }
     }
   }
 
-  void print_hid_value(const krbn::human_interface_device_observer& human_interface_device_observer,
-                       const krbn::hid_value& hid_value) const {
-    if (auto key_code = krbn::types::make_key_code(hid_value)) {
-      if (auto key_code_name = krbn::types::make_key_code_name(*key_code)) {
-        std::cout << *key_code_name;
-      } else {
-        std::cout << "key_code:" << *key_code;
+  void value_callback(krbn::human_interface_device& device,
+                      krbn::event_queue& event_queue) {
+    for (const auto& queued_event : event_queue.get_events()) {
+      switch (queued_event.get_event().get_type()) {
+        case krbn::event_queue::queued_event::event::type::none:
+          std::cout << "none" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::key_code:
+          if (auto key_code = queued_event.get_event().get_key_code()) {
+            std::cout << "Key: " << std::dec << static_cast<uint32_t>(*key_code) << " "
+                      << queued_event.get_event_type()
+                      << std::endl;
+          }
+          break;
+
+        case krbn::event_queue::queued_event::event::type::consumer_key_code:
+          if (auto consumer_key_code = queued_event.get_event().get_consumer_key_code()) {
+            std::cout << "ConsumerKey: " << std::dec << static_cast<uint32_t>(*consumer_key_code) << " "
+                      << queued_event.get_event_type()
+                      << std::endl;
+          }
+          break;
+
+        case krbn::event_queue::queued_event::event::type::pointing_button:
+          if (auto pointing_button = queued_event.get_event().get_pointing_button()) {
+            std::cout << "Button: " << std::dec << static_cast<uint32_t>(*pointing_button) << " "
+                      << queued_event.get_event_type()
+                      << std::endl;
+          }
+          break;
+
+        case krbn::event_queue::queued_event::event::type::pointing_motion:
+          if (auto pointing_motion = queued_event.get_event().get_pointing_motion()) {
+            std::cout << "pointing_motion: " << pointing_motion->to_json() << std::endl;
+          }
+          break;
+
+        case krbn::event_queue::queued_event::event::type::shell_command:
+          std::cout << "shell_command" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::select_input_source:
+          std::cout << "select_input_source" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::set_variable:
+          std::cout << "set_variable" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::mouse_key:
+          std::cout << "mouse_key" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::stop_keyboard_repeat:
+          std::cout << "stop_keyboard_repeat" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
+          std::cout << "device_keys_and_pointing_buttons_are_released for " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::device_ungrabbed:
+          std::cout << "device_ungrabbed for " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::caps_lock_state_changed:
+          if (auto integer_value = queued_event.get_event().get_integer_value()) {
+            std::cout << "caps_lock_state_changed " << *integer_value << std::endl;
+          }
+          break;
+
+        case krbn::event_queue::queued_event::event::type::event_from_ignored_device:
+          std::cout << "event_from_ignored_device from " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
+          std::cout << "pointing_device_event_from_event_tap from " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          break;
+
+        case krbn::event_queue::queued_event::event::type::frontmost_application_changed:
+          if (auto frontmost_application = queued_event.get_event().get_frontmost_application()) {
+            std::cout << "frontmost_application_changed "
+                      << frontmost_application->get_bundle_identifier() << " "
+                      << frontmost_application->get_file_path() << std::endl;
+          }
+          break;
+
+        case krbn::event_queue::queued_event::event::type::input_source_changed:
+          if (auto input_source_identifiers = queued_event.get_event().get_input_source_identifiers()) {
+            std::cout << "input_source_changed " << input_source_identifiers << std::endl;
+          }
+          break;
+
+        case krbn::event_queue::queued_event::event::type::keyboard_type_changed:
+          if (auto keyboard_type = queued_event.get_event().get_keyboard_type()) {
+            std::cout << "keyboard_type_changed " << keyboard_type << std::endl;
+          }
+          break;
       }
-
-      if (hid_value.get_integer_value()) {
-        std::cout << " key_down";
-      } else {
-        std::cout << " key_up";
-      }
-
-      std::cout << std::endl;
-      std::cout << "  is_grabbable:" << human_interface_device_observer.is_grabbable(false) << std::endl;
-      return;
     }
 
-    if (auto consumer_key_code = krbn::types::make_consumer_key_code(hid_value)) {
-      if (auto consumer_key_code_name = krbn::types::make_consumer_key_code_name(*consumer_key_code)) {
-        std::cout << *consumer_key_code_name;
-      } else {
-        std::cout << "consumer_key_code:" << *consumer_key_code;
-      }
-
-      if (hid_value.get_integer_value()) {
-        std::cout << " key_down";
-      } else {
-        std::cout << " key_up";
-      }
-
-      std::cout << std::endl;
-      std::cout << "  is_grabbable:" << human_interface_device_observer.is_grabbable(false) << std::endl;
-      return;
-    }
-
-    if (auto pointing_button = krbn::types::make_pointing_button(hid_value)) {
-      if (auto pointing_button_name = krbn::types::make_pointing_button_name(*pointing_button)) {
-        std::cout << *pointing_button_name;
-      } else {
-        std::cout << "pointing_button:" << *pointing_button;
-      }
-
-      if (hid_value.get_integer_value()) {
-        std::cout << " key_down";
-      } else {
-        std::cout << " key_up";
-      }
-
-      std::cout << std::endl;
-      std::cout << "  is_grabbable:" << human_interface_device_observer.is_grabbable(false) << std::endl;
-      return;
-    }
-
-    if (hid_value.conforms_to(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_x)) {
-      std::cout << "pointing_motion x:" << hid_value.get_integer_value() << std::endl;
-      return;
-    }
-    if (hid_value.conforms_to(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_y)) {
-      std::cout << "pointing_motion y:" << hid_value.get_integer_value() << std::endl;
-      return;
-    }
-    if (hid_value.conforms_to(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_wheel)) {
-      std::cout << "pointing_motion vertical_wheel:" << hid_value.get_integer_value() << std::endl;
-      return;
-    }
-    if (hid_value.conforms_to(krbn::hid_usage_page::consumer, krbn::hid_usage::csmr_acpan)) {
-      std::cout << "pointing_motion horizontal_wheel:" << hid_value.get_integer_value() << std::endl;
-      return;
-    }
-
-    if (hid_value.conforms_to(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(0x1)) ||
-        hid_value.conforms_to(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(0x2)) ||
-        hid_value.conforms_to(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(0x3)) ||
-        hid_value.conforms_to(krbn::hid_usage_page::keyboard_or_keypad, krbn::hid_usage(0xffffffff)) ||
-        hid_value.conforms_to(krbn::hid_usage_page::consumer, krbn::hid_usage(0xffffffff)) ||
-        hid_value.conforms_to(krbn::hid_usage_page::apple_vendor_keyboard, krbn::hid_usage(0xffffffff)) ||
-        hid_value.conforms_to(krbn::hid_usage_page::apple_vendor_top_case, krbn::hid_usage(0xffffffff))) {
-      return;
-    }
-
-    std::cout << "hid_value:" << hid_value.to_json() << std::endl;
+    event_queue.clear_events();
   }
 
   IOHIDManagerRef _Nullable manager_;
-  std::unordered_map<IOHIDDeviceRef, std::shared_ptr<krbn::human_interface_device_observer>> hid_observers_;
+  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<krbn::human_interface_device>> hids_;
+  krbn::event_queue event_queue_;
 };
 } // namespace
 
