@@ -690,7 +690,7 @@ private:
   }
 
   void queue_value_available_callback(void) {
-    std::vector<krbn::hid_value> hid_values;
+    std::vector<hid_value> hid_values;
 
     while (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
       hid_values.emplace_back(value);
