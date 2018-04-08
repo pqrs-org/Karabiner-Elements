@@ -176,6 +176,13 @@ public:
                                       CFSTR(kIOHIDElementUsageKey), usage);
   }
 
+  static IOHIDDeviceRef _Nullable create_hid_device(IOHIDDeviceRef _Nonnull device) {
+    if (auto service = IOHIDDeviceGetService(device)) {
+      return IOHIDDeviceCreate(kCFAllocatorDefault, service);
+    }
+    return nullptr;
+  }
+
   static boost::optional<uint64_t> find_registry_entry_id(IOHIDDeviceRef _Nonnull device) {
     return find_registry_entry_id(IOHIDDeviceGetService(device));
   }
