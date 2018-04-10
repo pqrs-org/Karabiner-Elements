@@ -18,3 +18,6 @@
 * bitmask:
   * version v1.1
   * url: https://github.com/oliora/bitmask/releases
+* type_safe:
+  * version: 384b3e83ab78383933e5e3db203a1a85baac1bde
+  * url: https://github.com/foonathan/type_safe
