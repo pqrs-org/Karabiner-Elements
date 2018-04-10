@@ -56,6 +56,21 @@ We can use `IOHIDDeviceOpen` and `IOHIDQueueRegisterValueAvailableCallback` from
 Generally, `ValueAvailableCallback` is not called for `IOHIDDeviceOpen(kIOHIDOptionsTypeNone)` while device is opened with `kIOHIDOptionsTypeSeizeDevice`.
 However, it seems `ValueAvailableCallback` is called both seized `IOHIDDeviceRef` and normal `IOHIDDeviceRef` in some cases (e.g. after awake from sleep)
 
+### `IOHIDQueueRegisterValueAvailableCallback` from multiple IOHIDDeviceRef for one device
+
+We can create multiple IOHIDDeviceRef for one device by using `IOHIDDeviceCreate`.
+In this case, `ValueAvailableCallback` is called both seized `IOHIDDeviceRef` and normal `IOHIDDeviceRef`.
+
+```
+// IOHIDDeviceRef device1 is passed by IOHIDManagerRegisterDeviceMatchingCallback
+IOHIDDeviceRef device2 = IOHIDDeviceCreate(kCFAllocatorDefault, IOHIDDeviceGetService(device1));
+
+IOHIDDeviceOpen(device1, kIOHIDOptionsTypeNone);
+IOHIDDeviceOpen(device2, kIOHIDOptionsTypeSeizeDevice);
+
+// ValueAvailableCallback is called both device1 and device2 even device2 seizes the device. (on macOS 10.13.4)
+```
+
 ## CGEventTapCreate
 
 `CGEventTapCreate` is a limited approach.<br />
