@@ -327,6 +327,10 @@ enum class led_state : uint32_t {
   off,
 };
 
+enum class registry_entry_id : uint64_t {
+  zero = 0,
+};
+
 enum class vendor_id : uint32_t {
   zero = 0,
 };
