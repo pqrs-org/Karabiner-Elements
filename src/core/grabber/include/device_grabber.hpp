@@ -324,43 +324,43 @@ private:
       return;
     }
 
-    // Skip if same device is already matched.
-    // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
-    if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
-      for (const auto& h : hids_) {
-        if (auto e = h.second->find_registry_entry_id()) {
-          if (*registry_entry_id == *e) {
-            return;
-          }
-        }
-      }
-    }
-
     iokit_utility::log_matching_device(device);
 
-    auto dev = std::make_unique<human_interface_device>(device);
-    dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
-    dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
-    dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
-    dev->set_disabled_callback(std::bind(&device_grabber::disabled_callback, this, std::placeholders::_1));
-    dev->set_value_callback(std::bind(&device_grabber::value_callback,
-                                      this,
-                                      std::placeholders::_1,
-                                      std::placeholders::_2));
-    logger::get_logger().info("{0} is detected.", dev->get_name_for_log());
+    if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
+      registry_entry_ids_[device] = *registry_entry_id;
 
-    dev->observe();
+      // Skip if same device is already matched.
+      // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
+      auto it = hids_.find(*registry_entry_id);
+      if (it != std::end(hids_)) {
+        logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
+        return;
+      }
 
-    hids_[device] = std::move(dev);
+      auto dev = std::make_unique<human_interface_device>(device);
+      dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
+      dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
+      dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
+      dev->set_disabled_callback(std::bind(&device_grabber::disabled_callback, this, std::placeholders::_1));
+      dev->set_value_callback(std::bind(&device_grabber::value_callback,
+                                        this,
+                                        std::placeholders::_1,
+                                        std::placeholders::_2));
+      logger::get_logger().info("{0} is detected.", dev->get_name_for_log());
 
-    output_devices_json();
-    output_device_details_json();
+      dev->observe();
 
-    update_virtual_hid_pointing();
+      hids_[*registry_entry_id] = std::move(dev);
 
-    // ----------------------------------------
-    if (mode_ == mode::grabbing) {
-      grab_devices();
+      output_devices_json();
+      output_device_details_json();
+
+      update_virtual_hid_pointing();
+
+      // ----------------------------------------
+      if (mode_ == mode::grabbing) {
+        grab_devices();
+      }
     }
   }
 
@@ -384,14 +384,32 @@ private:
 
     iokit_utility::log_removal_device(device);
 
-    auto it = hids_.find(device);
-    if (it != hids_.end()) {
-      auto& dev = it->second;
-      if (dev) {
-        logger::get_logger().info("{0} is removed.", dev->get_name_for_log());
-        dev->set_removed();
-        dev->ungrab();
-        hids_.erase(it);
+    // ----------------------------------------
+
+    registry_entry_id registry_entry_id = registry_entry_id::zero;
+
+    {
+      auto it = registry_entry_ids_.find(device);
+      if (it == std::end(registry_entry_ids_)) {
+        return;
+      }
+
+      registry_entry_id = it->second;
+      registry_entry_ids_.erase(device);
+    }
+
+    // ----------------------------------------
+
+    {
+      auto it = hids_.find(registry_entry_id);
+      if (it != hids_.end()) {
+        auto& dev = it->second;
+        if (dev) {
+          logger::get_logger().info("{0} is removed.", dev->get_name_for_log());
+          dev->set_removed();
+          dev->ungrab();
+          hids_.erase(it);
+        }
       }
     }
 
@@ -412,6 +430,7 @@ private:
     update_virtual_hid_pointing();
 
     // ----------------------------------------
+    // Refresh grab state in order to apply disable_built_in_keyboard_if_exists.
 
     if (mode_ == mode::grabbing) {
       grab_devices();
@@ -975,7 +994,9 @@ private:
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   IOHIDManagerRef _Nullable manager_;
 
-  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<human_interface_device>> hids_;
+  std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
+
+  std::unordered_map<registry_entry_id, std::unique_ptr<human_interface_device>> hids_;
 
   core_configuration::profile profile_;
   system_preferences system_preferences_;
