@@ -38,7 +38,7 @@ TEST_CASE("to_json") {
                                       "p"s,
                                       "s"s,
                                       "t"s,
-                                      98765,
+                                      krbn::registry_entry_id(98765),
                                       false,
                                       true);
     nlohmann::json json;
@@ -131,7 +131,7 @@ TEST_CASE("compare") {
                                      "p1"s,
                                      "s1"s,
                                      "t1"s,
-                                     98765,
+                                     krbn::registry_entry_id(98765),
                                      true,
                                      true);
 
@@ -142,7 +142,7 @@ TEST_CASE("compare") {
                                      "p1"s,
                                      "s1"s,
                                      "t1"s,
-                                     98765,
+                                     krbn::registry_entry_id(98765),
                                      true,
                                      false);
 
@@ -153,7 +153,7 @@ TEST_CASE("compare") {
                                      "p2"s,
                                      "s1"s,
                                      "t1"s,
-                                     98765,
+                                     krbn::registry_entry_id(98765),
                                      false,
                                      true);
 
@@ -164,7 +164,7 @@ TEST_CASE("compare") {
                                      "p2"s,
                                      "s1"s,
                                      "t1"s,
-                                     98765,
+                                     krbn::registry_entry_id(98765),
                                      false,
                                      false);
 

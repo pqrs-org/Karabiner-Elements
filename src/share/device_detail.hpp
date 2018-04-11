@@ -17,7 +17,7 @@ public:
                 boost::optional<std::string> product,
                 boost::optional<std::string> serial_number,
                 boost::optional<std::string> transport,
-                boost::optional<uint64_t> registry_entry_id,
+                boost::optional<registry_entry_id> registry_entry_id,
                 boost::optional<bool> is_keyboard,
                 boost::optional<bool> is_pointing_device) : vendor_id_(vendor_id),
                                                             product_id_(product_id),
@@ -66,7 +66,7 @@ public:
       transport_ = *v;
     }
     if (auto v = json_utility::find_optional<uint64_t>(json, "registry_entry_id")) {
-      registry_entry_id_ = *v;
+      registry_entry_id_ = registry_entry_id(*v);
     }
     if (auto v = json_utility::find_optional<bool>(json, "is_keyboard")) {
       is_keyboard_ = *v;
@@ -141,7 +141,7 @@ public:
     return transport_;
   }
 
-  boost::optional<uint64_t> get_registry_entry_id(void) const {
+  boost::optional<registry_entry_id> get_registry_entry_id(void) const {
     return registry_entry_id_;
   }
 
@@ -231,11 +231,11 @@ private:
     return false;
   }
 
-  uint64_t make_registry_entry_id_value(void) const {
+  registry_entry_id make_registry_entry_id_value(void) const {
     if (registry_entry_id_) {
       return *registry_entry_id_;
     }
-    return 0;
+    return registry_entry_id::zero;
   }
 
   boost::optional<vendor_id> vendor_id_;
@@ -245,7 +245,7 @@ private:
   boost::optional<std::string> product_;
   boost::optional<std::string> serial_number_;
   boost::optional<std::string> transport_;
-  boost::optional<uint64_t> registry_entry_id_;
+  boost::optional<registry_entry_id> registry_entry_id_;
   boost::optional<bool> is_keyboard_;
   boost::optional<bool> is_pointing_device_;
 };

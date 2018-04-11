@@ -82,7 +82,7 @@ public:
 #undef KRBN_IOKIT_UTILITY_ERROR_NAME
   }
 
-  static boost::optional<uint64_t> find_registry_entry_id(io_registry_entry_t registry_entry) {
+  static boost::optional<registry_entry_id> find_registry_entry_id(io_registry_entry_t registry_entry) {
     // Note:
     // IORegistryEntryGetRegistryEntryID returns MACH_SEND_INVALID_DEST in callback of IOHIDManagerRegisterDeviceRemovalCallback.
     // Thus, we cannot use it as a unique id for device matching/removal.
@@ -92,7 +92,7 @@ public:
     if (kr != KERN_SUCCESS) {
       return boost::none;
     }
-    return value;
+    return registry_entry_id(value);
   }
 
   static boost::optional<std::string> find_string_property(io_service_t service, CFStringRef _Nonnull key) {
@@ -183,7 +183,7 @@ public:
     return nullptr;
   }
 
-  static boost::optional<uint64_t> find_registry_entry_id(IOHIDDeviceRef _Nonnull device) {
+  static boost::optional<registry_entry_id> find_registry_entry_id(IOHIDDeviceRef _Nonnull device) {
     return find_registry_entry_id(IOHIDDeviceGetService(device));
   }
 
@@ -287,7 +287,7 @@ public:
       logger::get_logger().info("  serial_number: {0}", *serial_number);
     }
     if (auto registry_entry_id = find_registry_entry_id(device)) {
-      logger::get_logger().info("  registry_entry_id: {0}", *registry_entry_id);
+      logger::get_logger().info("  registry_entry_id: {0}", static_cast<uint64_t>(*registry_entry_id));
     }
     logger::get_logger().info("  is_keyboard: {0}", is_keyboard(device));
     logger::get_logger().info("  is_pointing_device: {0}", is_pointing_device(device));

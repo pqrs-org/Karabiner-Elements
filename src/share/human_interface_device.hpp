@@ -462,7 +462,7 @@ public:
     });
   }
 
-  boost::optional<uint64_t> find_registry_entry_id(void) const {
+  boost::optional<registry_entry_id> find_registry_entry_id(void) const {
     return iokit_utility::find_registry_entry_id(device_);
   }
 

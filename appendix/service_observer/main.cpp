@@ -9,7 +9,7 @@ namespace {
 void matched_callback(io_iterator_t iterator) {
   while (auto service = IOIteratorNext(iterator)) {
     if (auto registry_entry_id = krbn::iokit_utility::find_registry_entry_id(service)) {
-      std::cout << "matched_callback " << *registry_entry_id << std::endl;
+      std::cout << "matched_callback " << static_cast<uint64_t>(*registry_entry_id) << std::endl;
     }
     IOObjectRelease(service);
   }
@@ -18,7 +18,7 @@ void matched_callback(io_iterator_t iterator) {
 void terminated_callback(io_iterator_t iterator) {
   while (auto service = IOIteratorNext(iterator)) {
     if (auto registry_entry_id = krbn::iokit_utility::find_registry_entry_id(service)) {
-      std::cout << "terminated_callback " << *registry_entry_id << std::endl;
+      std::cout << "terminated_callback " << static_cast<uint64_t>(*registry_entry_id) << std::endl;
     }
     IOObjectRelease(service);
   }
