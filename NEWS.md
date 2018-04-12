@@ -1,4 +1,4 @@
-# Since 11.6.0 (beta)
+# Version 12.0.0
 
 * macOS 10.11 support has been dropped.<br />
   Karabiner-Elements works on macOS 10.12 (Sierra) or later.
