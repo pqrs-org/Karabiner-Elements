@@ -333,7 +333,7 @@ private:
       // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
       auto it = hids_.find(*registry_entry_id);
       if (it != std::end(hids_)) {
-        logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
+        logger::get_logger().info("registry_entry_id:{0} already exists.", static_cast<uint64_t>(*registry_entry_id));
         return;
       }
 
