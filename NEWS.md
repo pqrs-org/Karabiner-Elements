@@ -1,3 +1,8 @@
+# Since 12.0.0 (beta)
+
+* Added `simultaneous_options.key_up_when`.
+
+
 # Version 12.0.0
 
 * macOS 10.11 support has been dropped.<br />
