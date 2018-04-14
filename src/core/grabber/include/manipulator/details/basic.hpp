@@ -24,8 +24,14 @@ public:
         strict_inverse,
       };
 
+      enum class key_up_when {
+        any,
+        all,
+      };
+
       simultaneous_options(void) : key_down_order_(key_order::insensitive),
-                                   key_up_order_(key_order::insensitive) {
+                                   key_up_order_(key_order::insensitive),
+                                   key_up_when_(key_up_when::any) {
       }
 
       void handle_json(const nlohmann::json& json) {
@@ -56,6 +62,17 @@ public:
             continue;
           }
 
+          if (key == "key_up_when") {
+            if (!value.is_string()) {
+              logger::get_logger().error("complex_modifications json error: `key_up_when` should be string: {0}", json.dump());
+              continue;
+            }
+
+            key_up_when_ = value;
+
+            continue;
+          }
+
           if (key == "to_after_key_up") {
             if (!value.is_array()) {
               logger::get_logger().error("complex_modifications json error: `to_after_key_up` should be array: {0}", json.dump());
@@ -81,6 +98,10 @@ public:
         return key_up_order_;
       }
 
+      key_up_when get_key_up_when(void) const {
+        return key_up_when_;
+      }
+
       const std::vector<to_event_definition>& get_to_after_key_up(void) const {
         return to_after_key_up_;
       }
@@ -88,6 +109,7 @@ public:
     private:
       key_order key_down_order_;
       key_order key_up_order_;
+      key_up_when key_up_when_;
       std::vector<to_event_definition> to_after_key_up_;
     };
 
@@ -1208,54 +1230,90 @@ public:
 
               break;
 
-            case event_type::key_up:
-              if (!current_manipulated_original_event->get_key_up_posted()) {
-                current_manipulated_original_event->set_key_up_posted(true);
+            case event_type::key_up: {
+              bool skip = false;
 
-                // to_
+              switch (from_.get_simultaneous_options().get_key_up_when()) {
+                case from_event_definition::simultaneous_options::key_up_when::any:
+                  break;
 
-                post_events_at_key_up(front_input_event,
-                                      *current_manipulated_original_event,
-                                      time_stamp_delay,
-                                      *output_event_queue);
+                case from_event_definition::simultaneous_options::key_up_when::all:
+                  if (!current_manipulated_original_event->get_from_events().empty()) {
+                    skip = true;
+                  }
+                  break;
+              }
 
-                post_from_mandatory_modifiers_key_down(front_input_event,
-                                                       *current_manipulated_original_event,
-                                                       time_stamp_delay,
-                                                       *output_event_queue);
+              if (!skip) {
+                if (!current_manipulated_original_event->get_key_up_posted()) {
+                  current_manipulated_original_event->set_key_up_posted(true);
 
-                // to_after_key_up_
+                  // to_
 
-                if (!to_after_key_up_.empty()) {
-                  post_from_mandatory_modifiers_key_up(front_input_event,
-                                                       *current_manipulated_original_event,
-                                                       time_stamp_delay,
-                                                       *output_event_queue);
-
-                  post_extra_to_events(front_input_event,
-                                       to_after_key_up_,
-                                       time_stamp_delay,
-                                       *output_event_queue);
+                  post_events_at_key_up(front_input_event,
+                                        *current_manipulated_original_event,
+                                        time_stamp_delay,
+                                        *output_event_queue);
 
                   post_from_mandatory_modifiers_key_down(front_input_event,
                                                          *current_manipulated_original_event,
                                                          time_stamp_delay,
                                                          *output_event_queue);
-                }
 
-                // to_if_alone_
+                  // to_after_key_up_
 
-                if (!to_if_alone_.empty()) {
-                  uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
-                  if (current_manipulated_original_event->get_alone() &&
-                      nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                  if (!to_after_key_up_.empty()) {
                     post_from_mandatory_modifiers_key_up(front_input_event,
                                                          *current_manipulated_original_event,
                                                          time_stamp_delay,
                                                          *output_event_queue);
 
                     post_extra_to_events(front_input_event,
-                                         to_if_alone_,
+                                         to_after_key_up_,
+                                         time_stamp_delay,
+                                         *output_event_queue);
+
+                    post_from_mandatory_modifiers_key_down(front_input_event,
+                                                           *current_manipulated_original_event,
+                                                           time_stamp_delay,
+                                                           *output_event_queue);
+                  }
+
+                  // to_if_alone_
+
+                  if (!to_if_alone_.empty()) {
+                    uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
+                    if (current_manipulated_original_event->get_alone() &&
+                        nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
+                      post_from_mandatory_modifiers_key_up(front_input_event,
+                                                           *current_manipulated_original_event,
+                                                           time_stamp_delay,
+                                                           *output_event_queue);
+
+                      post_extra_to_events(front_input_event,
+                                           to_if_alone_,
+                                           time_stamp_delay,
+                                           *output_event_queue);
+
+                      post_from_mandatory_modifiers_key_down(front_input_event,
+                                                             *current_manipulated_original_event,
+                                                             time_stamp_delay,
+                                                             *output_event_queue);
+                    }
+                  }
+                }
+
+                // simultaneous_options.to_after_key_up_
+
+                if (!from_.get_simultaneous_options().get_to_after_key_up().empty()) {
+                  if (current_manipulated_original_event->get_from_events().empty()) {
+                    post_from_mandatory_modifiers_key_up(front_input_event,
+                                                         *current_manipulated_original_event,
+                                                         time_stamp_delay,
+                                                         *output_event_queue);
+
+                    post_extra_to_events(front_input_event,
+                                         from_.get_simultaneous_options().get_to_after_key_up(),
                                          time_stamp_delay,
                                          *output_event_queue);
 
@@ -1267,28 +1325,8 @@ public:
                 }
               }
 
-              // simultaneous_options.to_after_key_up_
-
-              if (!from_.get_simultaneous_options().get_to_after_key_up().empty()) {
-                if (current_manipulated_original_event->get_from_events().empty()) {
-                  post_from_mandatory_modifiers_key_up(front_input_event,
-                                                       *current_manipulated_original_event,
-                                                       time_stamp_delay,
-                                                       *output_event_queue);
-
-                  post_extra_to_events(front_input_event,
-                                       from_.get_simultaneous_options().get_to_after_key_up(),
-                                       time_stamp_delay,
-                                       *output_event_queue);
-
-                  post_from_mandatory_modifiers_key_down(front_input_event,
-                                                         *current_manipulated_original_event,
-                                                         time_stamp_delay,
-                                                         *output_event_queue);
-                }
-              }
-
               break;
+            }
 
             case event_type::single:
               break;
@@ -1717,6 +1755,19 @@ inline void from_json(const nlohmann::json& json, basic::from_event_definition::
   } else {
     logger::get_logger().error("complex_modifications json error: Unknown simultaneous_options::key_order: {0}", json.dump());
     value = basic::from_event_definition::simultaneous_options::key_order::insensitive;
+  }
+}
+
+inline void from_json(const nlohmann::json& json, basic::from_event_definition::simultaneous_options::key_up_when& value) {
+  auto s = json.get<std::string>();
+
+  if (s == "any") {
+    value = basic::from_event_definition::simultaneous_options::key_up_when::any;
+  } else if (s == "all") {
+    value = basic::from_event_definition::simultaneous_options::key_up_when::all;
+  } else {
+    logger::get_logger().error("complex_modifications json error: Unknown simultaneous_options::key_up_when: {0}", json.dump());
+    value = basic::from_event_definition::simultaneous_options::key_up_when::any;
   }
 }
 } // namespace details
