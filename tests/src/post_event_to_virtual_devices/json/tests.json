@@ -854,5 +854,13 @@
         ],
         "input_event_queue": "json/input_event_queue/simultaneous_24.json",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_24.json"
+    },
+    {
+        "description": "simultaneous_25 (key_up_when)",
+        "rules": [
+            "json/rules/simultaneous.json"
+        ],
+        "input_event_queue": "json/input_event_queue/simultaneous_25.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_25.json"
     }
 ]

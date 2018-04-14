@@ -284,5 +284,33 @@
             }
         ],
         "type": "basic"
+    },
+    {
+        "description": "1+2 -> left_control (key_up_when)",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "1"
+                },
+                {
+                    "key_code": "2"
+                }
+            ],
+            "simultaneous_options": {
+                "key_up_when": "all"
+            },
+            "modifiers": {
+                "mandatory": [],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_control"
+            }
+        ]
     }
 ]
