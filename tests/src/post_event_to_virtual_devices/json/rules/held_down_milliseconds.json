@@ -1,0 +1,25 @@
+[
+    {
+        "description": "caps_lock -> left_control",
+        "type": "basic",
+        "from": {
+            "key_code": "caps_lock",
+            "modifiers": {
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "left_control"
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "caps_lock",
+                "held_down_milliseconds": 500
+            }
+        ]
+    }
+]
