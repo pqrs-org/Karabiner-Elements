@@ -18,7 +18,7 @@
         "to_if_alone": [
             {
                 "key_code": "caps_lock",
-                "held_down_milliseconds": 500
+                "hold_down_milliseconds": 500
             }
         ]
     }

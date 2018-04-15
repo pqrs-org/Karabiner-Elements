@@ -632,12 +632,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/repeat_2.json"
     },
     {
-        "description": "held_down_milliseconds_1",
+        "description": "hold_down_milliseconds_1",
         "rules": [
-            "json/rules/held_down_milliseconds.json"
+            "json/rules/hold_down_milliseconds.json"
         ],
-        "input_event_queue": "json/input_event_queue/held_down_milliseconds_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/held_down_milliseconds_1.json"
+        "input_event_queue": "json/input_event_queue/hold_down_milliseconds_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/hold_down_milliseconds_1.json"
     },
     {
         "description": "from_any_1",

@@ -494,7 +494,7 @@ class to_event_definition final {
 public:
   to_event_definition(const nlohmann::json& json) : lazy_(false),
                                                     repeat_(true),
-                                                    held_down_milliseconds_(0) {
+                                                    hold_down_milliseconds_(0) {
     if (!json.is_object()) {
       logger::get_logger().error("complex_modifications json error: Invalid form of to_event_definition: {0}", json.dump());
       return;
@@ -536,13 +536,14 @@ public:
         continue;
       }
 
-      if (key == "held_down_milliseconds") {
+      if (key == "hold_down_milliseconds" ||
+          key == "held_down_milliseconds") {
         if (!value.is_number()) {
-          logger::get_logger().error("complex_modifications json error: Invalid form of held_down_milliseconds: {0}", json.dump());
+          logger::get_logger().error("complex_modifications json error: Invalid form of hold_down_milliseconds: {0}", json.dump());
           continue;
         }
 
-        held_down_milliseconds_ = value;
+        hold_down_milliseconds_ = value;
 
         continue;
       }
@@ -588,8 +589,8 @@ public:
     return repeat_;
   }
 
-  int get_held_down_milliseconds(void) const {
-    return held_down_milliseconds_;
+  int get_hold_down_milliseconds(void) const {
+    return hold_down_milliseconds_;
   }
 
   bool needs_virtual_hid_pointing(void) const {
@@ -625,7 +626,7 @@ private:
   std::unordered_set<modifier_definition::modifier> modifiers_;
   bool lazy_;
   bool repeat_;
-  int held_down_milliseconds_;
+  int hold_down_milliseconds_;
 };
 
 enum class manipulate_result {

@@ -1533,7 +1533,7 @@ public:
         // Post key_up event
 
         if (it != std::end(to_events) - 1 || !it->get_repeat()) {
-          time_stamp_delay += it->get_held_down_milliseconds() * NSEC_PER_MSEC;
+          time_stamp_delay += it->get_hold_down_milliseconds() * NSEC_PER_MSEC;
 
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
@@ -1681,7 +1681,7 @@ private:
         // Post key_up event
 
         {
-          time_stamp_delay += it->get_held_down_milliseconds() * NSEC_PER_MSEC;
+          time_stamp_delay += it->get_hold_down_milliseconds() * NSEC_PER_MSEC;
 
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
