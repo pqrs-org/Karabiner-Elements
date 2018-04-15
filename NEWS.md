@@ -1,6 +1,7 @@
-# Since 12.0.0 (beta)
+# Next release
 
 * Added `simultaneous_options.key_up_when`.
+* Added `held_down_milliseconds` into `to event definition`.
 
 
 # Version 12.0.0
