@@ -1,3 +1,8 @@
+# Version 6.7.0
+
+* Report Count of virtual keyboard has been increased. (6 -> 32)
+
+
 # Version 6.6.0
 
 * `pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization::caps_lock_delay_milliseconds` has been removed.

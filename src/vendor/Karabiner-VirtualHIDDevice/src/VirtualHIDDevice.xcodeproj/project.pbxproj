@@ -215,9 +215,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1.0.0d1;
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
-				MODULE_NAME = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060600;
+				MODULE_NAME = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060700;
 				MODULE_VERSION = 1.0.0d1;
-				PRODUCT_BUNDLE_IDENTIFIER = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060600;
+				PRODUCT_BUNDLE_IDENTIFIER = org.pqrs.driver.Karabiner.VirtualHIDDevice.v060700;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = kext;
 			};

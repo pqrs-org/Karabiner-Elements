@@ -82,7 +82,7 @@ TEST_CASE("modifiers") {
 TEST_CASE("keys") {
   {
     pqrs::karabiner_virtual_hid_device::hid_report::keys keys;
-    uint8_t expected[6];
+    uint8_t expected[32];
 
     REQUIRE(keys.count() == 0);
     REQUIRE(keys.empty());
@@ -144,16 +144,16 @@ TEST_CASE("keys") {
     pqrs::karabiner_virtual_hid_device::hid_report::keys keys;
     REQUIRE(keys.count() == 0);
 
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 32; ++i) {
       keys.insert(i + 1);
       REQUIRE(keys.count() == (i + 1));
     }
 
     keys.insert(10);
-    REQUIRE(keys.count() == 6);
+    REQUIRE(keys.count() == 32);
 
     keys.insert(20);
-    REQUIRE(keys.count() == 6);
+    REQUIRE(keys.count() == 32);
   }
 }
 

@@ -115,7 +115,7 @@ public:
     public:
       keys(void) : keys_{} {}
 
-      const uint8_t (&get_raw_value(void) const)[6] {
+      const uint8_t (&get_raw_value(void) const)[32] {
         return keys_;
       }
 
@@ -175,7 +175,7 @@ public:
       bool operator!=(const keys& other) const { return !(*this == other); }
 
     private:
-      uint8_t keys_[6];
+      uint8_t keys_[32];
     };
 
     class __attribute__((packed)) buttons final {
