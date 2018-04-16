@@ -10,7 +10,7 @@
   Karabiner-Elements works on macOS 10.12 (Sierra) or later.
 * The virtual keyboard compatibility has been improved.
 * `Keyboard type` in the virtual keyboard preferences has been removed. (Adverse effect of virtual keyboard improvement.)<br />
-  Please change the keyboard type from `System Preferences &gt; Keyboard &gt; Change Keyboard Type...`.
+  Please change the keyboard type from `System Preferences > Keyboard > Change Keyboard Type...`.
   ![Keyboard Preferences](https://pqrs.org/osx/karabiner/img/news/v12.0.0_0.png)
 * `Caps Lock Delay` in the virtual keyboard preferences has been removed. (Adverse effect of virtual keyboard improvement.)
 * EventViewer has been improved showing the correct key name for PC keyboard keys and international keys.
