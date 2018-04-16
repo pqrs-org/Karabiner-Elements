@@ -1,3 +1,8 @@
+# Version 6.8.0
+
+* The kext binary has been built on macOS 10.12 in order to avoid kextload issue on macOS 10.12.
+
+
 # Version 6.7.0
 
 * Report Count of virtual keyboard has been increased. (6 -> 32)
