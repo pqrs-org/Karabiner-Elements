@@ -1,9 +1,9 @@
 # Classes
 
 * VirtualHIDRoot
-  * VirtualHIDRoot_UserClient
-    * VirtualHIDKeyboard
-    * VirtualHIDPointing
+    * VirtualHIDRoot_UserClient
+        * VirtualHIDKeyboard
+        * VirtualHIDPointing
 
 # Restrictions
 

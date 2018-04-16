@@ -93,7 +93,7 @@
 # Version 4.2.0
 
 * Fixed issue:
-  * `update.sh` fails to copy kext when the kext file is not in /Library/Extensions and kext is already loaded.
+    * `update.sh` fails to copy kext when the kext file is not in /Library/Extensions and kext is already loaded.
 
 
 # Version 4.1.0
