@@ -505,7 +505,6 @@ public:
                                const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
                                uint64_t key_down_time_stamp) : from_events_(from_events),
                                                                from_mandatory_modifiers_(from_mandatory_modifiers),
-                                                               from_mandatory_modifiers_restored_(false),
                                                                key_down_time_stamp_(key_down_time_stamp),
                                                                alone_(true),
                                                                key_up_posted_(false) {
@@ -519,12 +518,8 @@ public:
       return from_mandatory_modifiers_;
     }
 
-    bool get_from_mandatory_modifiers_restored(void) const {
-      return from_mandatory_modifiers_restored_;
-    }
-
-    void set_from_mandatory_modifiers_restored(bool value) {
-      from_mandatory_modifiers_restored_ = value;
+    std::unordered_set<modifier_flag>& get_key_up_posted_from_mandatory_modifiers(void) {
+      return key_up_posted_from_mandatory_modifiers_;
     }
 
     uint64_t get_key_down_time_stamp(void) const {
@@ -585,7 +580,7 @@ public:
   private:
     std::unordered_set<from_event, from_event_hash> from_events_;
     std::unordered_set<modifier_flag> from_mandatory_modifiers_;
-    bool from_mandatory_modifiers_restored_;
+    std::unordered_set<modifier_flag> key_up_posted_from_mandatory_modifiers_;
     uint64_t key_down_time_stamp_;
     bool alone_;
     events_at_key_up events_at_key_up_;
@@ -1457,28 +1452,80 @@ public:
                                             manipulated_original_event& current_manipulated_original_event,
                                             uint64_t& time_stamp_delay,
                                             event_queue& output_event_queue) const {
+    // ----------------------------------------
+    // Make target modifiers
+
+    std::unordered_set<modifier_flag> modifiers;
+
+    for (const auto& m : current_manipulated_original_event.get_from_mandatory_modifiers()) {
+      auto& key_up_posted_from_mandatory_modifiers = current_manipulated_original_event.get_key_up_posted_from_mandatory_modifiers();
+
+      if (key_up_posted_from_mandatory_modifiers.find(m) != std::end(key_up_posted_from_mandatory_modifiers)) {
+        continue;
+      }
+
+      // All from_mandatory_modifiers are usually pressed when `post_from_mandatory_modifiers_key_up` is called.
+      // However, there are some exceptional cases.
+      //
+      // Example:
+      //   - from:            left_shift+f2
+      //   - to:              left_shift+f3
+      //   - to_after_key_up: left_shift+tab
+      //
+      //   1. left_shift key_down
+      //   2. f2 key_down
+      //   3. left_shift key_up
+      //   4. f2 key_up
+      //
+      //   to_after_key_up is called at 4.
+      //   to_after_key_up calls `post_from_mandatory_modifiers_key_up` but `left_shift` is not pressed.
+      //
+      // We should not post key_up event in this case.
+
+      if (!output_event_queue.get_modifier_flag_manager().is_pressed(m)) {
+        continue;
+      }
+
+      modifiers.insert(m);
+      key_up_posted_from_mandatory_modifiers.insert(m);
+    }
+
+    // ----------------------------------------
+
     post_lazy_modifier_key_events(front_input_event,
-                                  current_manipulated_original_event.get_from_mandatory_modifiers(),
+                                  modifiers,
                                   event_type::key_up,
                                   time_stamp_delay,
                                   output_event_queue);
-
-    current_manipulated_original_event.set_from_mandatory_modifiers_restored(false);
   }
 
   void post_from_mandatory_modifiers_key_down(const event_queue::queued_event& front_input_event,
                                               manipulated_original_event& current_manipulated_original_event,
                                               uint64_t& time_stamp_delay,
                                               event_queue& output_event_queue) const {
-    if (!current_manipulated_original_event.get_from_mandatory_modifiers_restored()) {
-      current_manipulated_original_event.set_from_mandatory_modifiers_restored(true);
+    // ----------------------------------------
+    // Make target modifiers
 
-      post_lazy_modifier_key_events(front_input_event,
-                                    current_manipulated_original_event.get_from_mandatory_modifiers(),
-                                    event_type::key_down,
-                                    time_stamp_delay,
-                                    output_event_queue);
+    std::unordered_set<modifier_flag> modifiers;
+
+    for (const auto& m : current_manipulated_original_event.get_from_mandatory_modifiers()) {
+      auto& key_up_posted_from_mandatory_modifiers = current_manipulated_original_event.get_key_up_posted_from_mandatory_modifiers();
+
+      if (key_up_posted_from_mandatory_modifiers.find(m) == std::end(key_up_posted_from_mandatory_modifiers)) {
+        continue;
+      }
+
+      modifiers.insert(m);
+      key_up_posted_from_mandatory_modifiers.erase(m);
     }
+
+    // ----------------------------------------
+
+    post_lazy_modifier_key_events(front_input_event,
+                                  modifiers,
+                                  event_type::key_down,
+                                  time_stamp_delay,
+                                  output_event_queue);
   }
 
   void post_events_at_key_down(const event_queue::queued_event& front_input_event,

@@ -50,6 +50,37 @@
         "type": "basic"
     },
     {
+        "description": "left_shift+f2 -> left_shift+f3 (left_shift+tab)",
+        "from": {
+            "key_code": "f2",
+            "modifiers": {
+                "mandatory": [
+                    "left_shift"
+                ],
+                "optional": [
+                    "any"
+                ]
+            }
+        },
+        "to": [
+            {
+                "key_code": "f3",
+                "modifiers": [
+                    "left_shift"
+                ]
+            }
+        ],
+        "to_after_key_up": [
+            {
+                "key_code": "tab",
+                "modifiers": [
+                    "left_shift"
+                ]
+            }
+        ],
+        "type": "basic"
+    },
+    {
         "description": "spacebar -> left_shift (with to_alone)",
         "from": {
             "key_code": "spacebar",
