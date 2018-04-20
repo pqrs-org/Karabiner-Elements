@@ -21,6 +21,8 @@
  */
 SU_EXPORT extern NSString *const SUSparkleErrorDomain;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++98-compat"
 typedef NS_ENUM(OSStatus, SUError) {
     // Appcast phase errors.
     SUAppcastParseError = 1000,
@@ -49,5 +51,6 @@ typedef NS_ENUM(OSStatus, SUError) {
     // System phase errors
     SUSystemPowerOffError = 5000
 };
+#pragma clang diagnostic pop
 
 #endif
