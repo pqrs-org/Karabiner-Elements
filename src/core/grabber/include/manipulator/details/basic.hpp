@@ -507,6 +507,7 @@ public:
                                                                from_mandatory_modifiers_(from_mandatory_modifiers),
                                                                key_down_time_stamp_(key_down_time_stamp),
                                                                alone_(true),
+                                                               halted_(false),
                                                                key_up_posted_(false) {
     }
 
@@ -528,6 +529,14 @@ public:
 
     bool get_alone(void) const {
       return alone_;
+    }
+
+    bool get_halted(void) const {
+      return halted_;
+    }
+
+    void set_halted(void) {
+      halted_ = true;
     }
 
     const events_at_key_up& get_events_at_key_up(void) const {
@@ -583,6 +592,7 @@ public:
     std::unordered_set<modifier_flag> key_up_posted_from_mandatory_modifiers_;
     uint64_t key_down_time_stamp_;
     bool alone_;
+    bool halted_;
     events_at_key_up events_at_key_up_;
     bool key_up_posted_;
   };
@@ -674,6 +684,10 @@ public:
                                                               *cmoe,
                                                               time_stamp_delay,
                                                               *oeq);
+              }
+
+              if (basic_.is_last_to_event_halt_event(to_)) {
+                cmoe->set_halted();
               }
 
               // ----------------------------------------
@@ -1257,7 +1271,8 @@ public:
 
                   // to_after_key_up_
 
-                  if (!to_after_key_up_.empty()) {
+                  if (!to_after_key_up_.empty() &&
+                      !current_manipulated_original_event->get_halted()) {
                     post_from_mandatory_modifiers_key_up(front_input_event,
                                                          *current_manipulated_original_event,
                                                          time_stamp_delay,
@@ -1276,7 +1291,8 @@ public:
 
                   // to_if_alone_
 
-                  if (!to_if_alone_.empty()) {
+                  if (!to_if_alone_.empty() &&
+                      !current_manipulated_original_event->get_halted()) {
                     uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                     if (current_manipulated_original_event->get_alone() &&
                         nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
@@ -1300,7 +1316,8 @@ public:
 
                 // simultaneous_options.to_after_key_up_
 
-                if (!from_.get_simultaneous_options().get_to_after_key_up().empty()) {
+                if (!from_.get_simultaneous_options().get_to_after_key_up().empty() &&
+                    !current_manipulated_original_event->get_halted()) {
                   if (current_manipulated_original_event->get_from_events().empty()) {
                     post_from_mandatory_modifiers_key_up(front_input_event,
                                                          *current_manipulated_original_event,
@@ -1329,7 +1346,7 @@ public:
 
           // to_if_held_down_
 
-          if (to_if_held_down_) {
+          if (to_if_held_down_ && !current_manipulated_original_event->get_halted()) {
             to_if_held_down_->setup(front_input_event,
                                     current_manipulated_original_event,
                                     output_event_queue,
@@ -1338,7 +1355,7 @@ public:
 
           // to_delayed_action_
 
-          if (to_delayed_action_) {
+          if (to_delayed_action_ && !current_manipulated_original_event->get_halted()) {
             to_delayed_action_->setup(front_input_event,
                                       current_manipulated_original_event->get_from_mandatory_modifiers(),
                                       output_event_queue,
@@ -1662,6 +1679,19 @@ private:
           return true;
         }
       }
+    }
+
+    return false;
+  }
+
+  bool is_last_to_event_halt_event(const std::vector<to_event_definition>& to_events) const {
+    if (to_events.empty()) {
+      return false;
+    }
+
+    auto event = std::end(to_events);
+    if (event->get_halt()) {
+      return true;
     }
 
     return false;
