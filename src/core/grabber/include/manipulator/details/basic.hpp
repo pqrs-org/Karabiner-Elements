@@ -29,7 +29,8 @@ public:
         all,
       };
 
-      simultaneous_options(void) : key_down_order_(key_order::insensitive),
+      simultaneous_options(void) : detect_key_down_uninterruptedly_(false),
+                                   key_down_order_(key_order::insensitive),
                                    key_up_order_(key_order::insensitive),
                                    key_up_when_(key_up_when::any) {
       }
@@ -39,6 +40,17 @@ public:
           // it.key() is always std::string.
           const auto& key = it.key();
           const auto& value = it.value();
+
+          if (key == "detect_key_down_uninterruptedly") {
+            if (!value.is_boolean()) {
+              logger::get_logger().error("complex_modifications json error: `detect_key_down_uninterruptedly` should be boolean: {0}", json.dump());
+              continue;
+            }
+
+            detect_key_down_uninterruptedly_ = value;
+
+            continue;
+          }
 
           if (key == "key_down_order") {
             if (!value.is_string()) {
@@ -90,6 +102,10 @@ public:
         }
       }
 
+      bool get_detect_key_down_uninterruptedly(void) const {
+        return detect_key_down_uninterruptedly_;
+      }
+
       key_order get_key_down_order(void) const {
         return key_down_order_;
       }
@@ -107,6 +123,7 @@ public:
       }
 
     private:
+      bool detect_key_down_uninterruptedly_;
       key_order key_down_order_;
       key_order key_up_order_;
       key_up_when key_up_when_;
@@ -1035,8 +1052,10 @@ public:
                       } else {
                         // Do not manipulate if another event arrived.
 
-                        if (!all_from_events_found(from_events)) {
-                          is_target = false;
+                        if (!from_.get_simultaneous_options().get_detect_key_down_uninterruptedly()) {
+                          if (!all_from_events_found(from_events)) {
+                            is_target = false;
+                          }
                         }
                       }
 
