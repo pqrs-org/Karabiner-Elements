@@ -2,7 +2,9 @@
 
 ## Next release
 
-* Added `simultaneous_options.detect_key_down_uninterruptedly`, `simultaneous_options.key_up_when`.
+* Added new items into `simultaneous_options`.
+  * `simultaneous_options.detect_key_down_uninterruptedly`
+  * `simultaneous_options.key_up_when`.
 * Added `hold_down_milliseconds` into `to event definition`.
 * Increased rollover limit of virtual keyboard. (6 -&gt; 32)<br />
   This change mainly improves usability when you are using multiple keyboards at the same time.
