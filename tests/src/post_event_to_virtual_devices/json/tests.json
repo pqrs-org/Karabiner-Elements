@@ -1,890 +1,859 @@
 [
     {
         "description": "generic_1",
-        "rules": [
-            "json/rules/empty.json"
-        ],
+        "rules": ["json/rules/empty.json"],
         "input_event_queue": "json/input_event_queue/generic_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/generic_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/generic_1.json"
     },
     {
         "description": "same_modifier_twice_from_different_devices_1",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/same_modifier_twice_from_different_devices_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/same_modifier_twice_from_different_devices_1.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/same_modifier_twice_from_different_devices_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/same_modifier_twice_from_different_devices_1.json"
     },
     {
         "description": "same_modifier_twice_from_different_devices_2",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/same_modifier_twice_from_different_devices_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/same_modifier_twice_from_different_devices_2.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/same_modifier_twice_from_different_devices_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/same_modifier_twice_from_different_devices_2.json"
     },
     {
         "description": "stop_keyboard_repeat_1",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/stop_keyboard_repeat_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_1.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/stop_keyboard_repeat_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_1.json"
     },
     {
         "description": "stop_keyboard_repeat_2",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/stop_keyboard_repeat_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_2.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/stop_keyboard_repeat_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_2.json"
     },
     {
         "description": "stop_keyboard_repeat_3",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/stop_keyboard_repeat_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_3.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/stop_keyboard_repeat_3.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_3.json"
     },
     {
         "description": "device_ungrabbed_event_1",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/device_ungrabbed_event_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_1.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/device_ungrabbed_event_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_1.json"
     },
     {
         "description": "device_ungrabbed_event_2",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/device_ungrabbed_event_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_2.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/device_ungrabbed_event_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_2.json"
     },
     {
         "description": "device_ungrabbed_event_3",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/device_ungrabbed_event_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_3.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/device_ungrabbed_event_3.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_3.json"
     },
     {
         "description": "wait_between_events_1",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/wait_between_events_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_between_events_1.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/wait_between_events_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/wait_between_events_1.json"
     },
     {
         "description": "wait_between_events_2 (key_up and single)",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/wait_between_events_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_between_events_2.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/wait_between_events_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/wait_between_events_2.json"
     },
     {
         "description": "collapse_lazy_events_1",
-        "rules": [
-            "json/rules/empty.json"
-        ],
-        "input_event_queue": "json/input_event_queue/collapse_lazy_events_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/collapse_lazy_events_1.json"
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue":
+            "json/input_event_queue/collapse_lazy_events_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/collapse_lazy_events_1.json"
     },
     {
         "description": "not_changed_1",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
+        "rules": ["json/rules/from_key.json"],
         "input_event_queue": "json/input_event_queue/not_changed_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/not_changed_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/not_changed_1.json"
     },
     {
         "description": "f1 -> f2 (key to key)",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
+        "rules": ["json/rules/from_key.json"],
         "input_event_queue": "json/input_event_queue/key_to_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_key_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/key_to_key_1.json"
     },
     {
         "description": "f2 -> left_shift (key to modifier)",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
+        "rules": ["json/rules/from_key.json"],
         "input_event_queue": "json/input_event_queue/key_to_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_1.json"
     },
     {
         "description": "f3 -> left_command+spacebar (key to modifier+key)",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
-        "input_event_queue": "json/input_event_queue/key_to_modifier_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_key_1.json"
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue":
+            "json/input_event_queue/key_to_modifier_key_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_key_1.json"
     },
     {
-        "description": "f4 -> left_command+left_option (key to modifier+modifier)",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
-        "input_event_queue": "json/input_event_queue/key_to_modifier_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_modifier_1.json"
+        "description":
+            "f4 -> left_command+left_option (key to modifier+modifier)",
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue":
+            "json/input_event_queue/key_to_modifier_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_modifier_1.json"
     },
     {
         "description": "left_shift+f5 -> spacebar (modifier+key to key)",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_key_to_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_key_1.json"
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_key_to_key_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_key_1.json"
     },
     {
         "description": "left_command+f6 -> fn (modifier+key to modifier)",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_key_to_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_1.json"
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_key_to_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_1.json"
     },
     {
-        "description": "right_option+f7 -> right_command+spacebar (modifier+key to modifier+key)",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_key_to_modifier_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_key_1.json"
+        "description":
+            "right_option+f7 -> right_command+spacebar (modifier+key to modifier+key)",
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_key_to_modifier_key_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_key_1.json"
     },
     {
-        "description": "right_option+f8 -> right_command+right_control (modifier+key to modifier+modifier)",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_key_to_modifier_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_modifier_1.json"
+        "description":
+            "right_option+f8 -> right_command+right_control (modifier+key to modifier+modifier)",
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_key_to_modifier_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_modifier_1.json"
     },
     {
         "description": "right_shift -> f1 (modifier -> key)",
-        "rules": [
-            "json/rules/from_modifier.json"
-        ],
+        "rules": ["json/rules/from_modifier.json"],
         "input_event_queue": "json/input_event_queue/modifier_to_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_key_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_to_key_1.json"
     },
     {
         "description": "left_shift -> fn (modifier -> modifier)",
-        "rules": [
-            "json/rules/from_modifier.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_to_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_1.json"
+        "rules": ["json/rules/from_modifier.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_to_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_1.json"
     },
     {
         "description": "left_control -> fn+f3 (modifier -> modifier+key)",
-        "rules": [
-            "json/rules/from_modifier.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_to_modifier_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_key_1.json"
+        "rules": ["json/rules/from_modifier.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_to_modifier_key_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_key_1.json"
     },
     {
-        "description": "left_command -> fn+right_option (modifier -> modifier+modifier)",
-        "rules": [
-            "json/rules/from_modifier.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_to_modifier_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_modifier_1.json"
+        "description":
+            "left_command -> fn+right_option (modifier -> modifier+modifier)",
+        "rules": ["json/rules/from_modifier.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_to_modifier_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_modifier_1.json"
     },
     {
-        "description": "right_command+right_option -> f5 (modifier+modifier -> key)",
-        "rules": [
-            "json/rules/from_modifier.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_key_1.json"
+        "description":
+            "right_command+right_option -> f5 (modifier+modifier -> key)",
+        "rules": ["json/rules/from_modifier.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_modifier_to_key_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_key_1.json"
     },
     {
-        "description": "right_control+right_option -> left_shift (modifier+modifier -> modifier) (1)",
-        "rules": [
-            "json/rules/from_modifier.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_1.json"
+        "description":
+            "right_control+right_option -> left_shift (modifier+modifier -> modifier) (1)",
+        "rules": ["json/rules/from_modifier.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_modifier_to_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_1.json"
     },
     {
-        "description": "right_control+right_option -> left_shift (modifier+modifier -> modifier) (2)",
-        "rules": [
-            "json/rules/from_modifier.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_modifier_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_2.json"
+        "description":
+            "right_control+right_option -> left_shift (modifier+modifier -> modifier) (2)",
+        "rules": ["json/rules/from_modifier.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_modifier_to_modifier_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_2.json"
     },
     {
-        "description": "right_control+right_command -> left_shift+f7 (modifier+modifier -> modifier+key)",
-        "rules": [
-            "json/rules/from_modifier.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_modifier_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_key_1.json"
+        "description":
+            "right_control+right_command -> left_shift+f7 (modifier+modifier -> modifier+key)",
+        "rules": ["json/rules/from_modifier.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_modifier_to_modifier_key_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_key_1.json"
     },
     {
-        "description": "right_command+right_control -> left_shift+left_option (modifier+modifier -> modifier+modifier)",
-        "rules": [
-            "json/rules/from_modifier.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_modifier_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_modifier_1.json"
+        "description":
+            "right_command+right_control -> left_shift+left_option (modifier+modifier -> modifier+modifier)",
+        "rules": ["json/rules/from_modifier.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_modifier_to_modifier_modifier_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_modifier_1.json"
     },
     {
         "description": "button10 -> button11 (button to button)",
-        "rules": [
-            "json/rules/from_pointing_button.json"
-        ],
-        "input_event_queue": "json/input_event_queue/pointing_button_to_pointing_button_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_button_to_pointing_button_1.json"
+        "rules": ["json/rules/from_pointing_button.json"],
+        "input_event_queue":
+            "json/input_event_queue/pointing_button_to_pointing_button_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/pointing_button_to_pointing_button_1.json"
     },
     {
-        "description": "button11 -> left_command+button12 (button to modifier+button)",
-        "rules": [
-            "json/rules/from_pointing_button.json"
-        ],
-        "input_event_queue": "json/input_event_queue/pointing_button_to_modifier_pointing_button_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_button_to_modifier_pointing_button_1.json"
+        "description":
+            "button11 -> left_command+button12 (button to modifier+button)",
+        "rules": ["json/rules/from_pointing_button.json"],
+        "input_event_queue":
+            "json/input_event_queue/pointing_button_to_modifier_pointing_button_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/pointing_button_to_modifier_pointing_button_1.json"
     },
     {
         "description": "button11 -> left_command+button12 (with key event)",
-        "rules": [
-            "json/rules/from_pointing_button.json"
-        ],
-        "input_event_queue": "json/input_event_queue/pointing_button_to_modifier_pointing_button_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_button_to_modifier_pointing_button_2.json"
+        "rules": ["json/rules/from_pointing_button.json"],
+        "input_event_queue":
+            "json/input_event_queue/pointing_button_to_modifier_pointing_button_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/pointing_button_to_modifier_pointing_button_2.json"
     },
     {
-        "description": "left_control+button12 -> button13 (modifier+button to button)",
-        "rules": [
-            "json/rules/from_pointing_button.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_pointing_button_to_pointing_button_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_pointing_button_1.json"
+        "description":
+            "left_control+button12 -> button13 (modifier+button to button)",
+        "rules": ["json/rules/from_pointing_button.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_pointing_button_to_pointing_button_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_pointing_button_1.json"
     },
     {
         "description": "left_control+button12 -> button13 (with key event)",
-        "rules": [
-            "json/rules/from_pointing_button.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_pointing_button_to_pointing_button_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_pointing_button_2.json"
+        "rules": ["json/rules/from_pointing_button.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_pointing_button_to_pointing_button_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_pointing_button_2.json"
     },
     {
-        "description": "right_control+button13 -> left_option+button14 (modifier+button to modifier+button)",
-        "rules": [
-            "json/rules/from_pointing_button.json"
-        ],
-        "input_event_queue": "json/input_event_queue/modifier_pointing_button_to_modifier_pointing_button_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_modifier_pointing_button_1.json"
+        "description":
+            "right_control+button13 -> left_option+button14 (modifier+button to modifier+button)",
+        "rules": ["json/rules/from_pointing_button.json"],
+        "input_event_queue":
+            "json/input_event_queue/modifier_pointing_button_to_modifier_pointing_button_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_modifier_pointing_button_1.json"
     },
     {
         "description": "to_if_alone_1",
-        "rules": [
-            "json/rules/to_if_alone.json"
-        ],
+        "rules": ["json/rules/to_if_alone.json"],
         "input_event_queue": "json/input_event_queue/to_if_alone_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_alone_1.json"
     },
     {
         "description": "to_if_alone_2",
-        "rules": [
-            "json/rules/to_if_alone.json"
-        ],
+        "rules": ["json/rules/to_if_alone.json"],
         "input_event_queue": "json/input_event_queue/to_if_alone_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_2.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_alone_2.json"
     },
     {
         "description": "to_if_alone_3",
-        "rules": [
-            "json/rules/to_if_alone.json"
-        ],
+        "rules": ["json/rules/to_if_alone.json"],
         "input_event_queue": "json/input_event_queue/to_if_alone_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_3.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_alone_3.json"
     },
     {
         "description": "to_if_alone_4",
-        "rules": [
-            "json/rules/to_if_alone.json"
-        ],
+        "rules": ["json/rules/to_if_alone.json"],
         "input_event_queue": "json/input_event_queue/to_if_alone_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_4.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_alone_4.json"
     },
     {
-        "description": "to_if_alone_5 (command+escape -> left_control (spacebar))",
-        "rules": [
-            "json/rules/to_if_alone.json"
-        ],
+        "description":
+            "to_if_alone_5 (command+escape -> left_control (spacebar))",
+        "rules": ["json/rules/to_if_alone.json"],
         "input_event_queue": "json/input_event_queue/to_if_alone_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_5.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_alone_5.json"
     },
     {
-        "description": "to_if_alone_6 (shift+tab -> return_or_enter (spacebar))",
-        "rules": [
-            "json/rules/to_if_alone.json"
-        ],
+        "description":
+            "to_if_alone_6 (shift+tab -> return_or_enter (spacebar))",
+        "rules": ["json/rules/to_if_alone.json"],
         "input_event_queue": "json/input_event_queue/to_if_alone_6.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_6.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_alone_6.json"
     },
     {
         "description": "to_after_key_up_1",
-        "rules": [
-            "json/rules/to_after_key_up.json"
-        ],
+        "rules": ["json/rules/to_after_key_up.json"],
         "input_event_queue": "json/input_event_queue/to_after_key_up_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_1.json"
     },
     {
         "description": "to_after_key_up_2",
-        "rules": [
-            "json/rules/to_after_key_up.json"
-        ],
+        "rules": ["json/rules/to_after_key_up.json"],
         "input_event_queue": "json/input_event_queue/to_after_key_up_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_2.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_2.json"
     },
     {
         "description": "to_after_key_up_3",
-        "rules": [
-            "json/rules/to_after_key_up.json"
-        ],
+        "rules": ["json/rules/to_after_key_up.json"],
         "input_event_queue": "json/input_event_queue/to_after_key_up_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_3.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_3.json"
     },
     {
         "description": "to_after_key_up_4 (modifier in `to_after_key_up`)",
-        "rules": [
-            "json/rules/to_after_key_up.json"
-        ],
+        "rules": ["json/rules/to_after_key_up.json"],
         "input_event_queue": "json/input_event_queue/to_after_key_up_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_4.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_4.json"
     },
     {
         "description": "to_after_key_up_5 (modifier in `to_after_key_up`)",
-        "rules": [
-            "json/rules/to_after_key_up.json"
-        ],
+        "rules": ["json/rules/to_after_key_up.json"],
         "input_event_queue": "json/input_event_queue/to_after_key_up_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_5.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_5.json"
     },
     {
         "description": "to_if_held_down_1 (canceled by self)",
-        "rules": [
-            "json/rules/to_if_held_down.json"
-        ],
+        "rules": ["json/rules/to_if_held_down.json"],
         "input_event_queue": "json/input_event_queue/to_if_held_down_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_1.json"
     },
     {
         "description": "to_if_held_down_2 (canceled by another key)",
-        "rules": [
-            "json/rules/to_if_held_down.json"
-        ],
+        "rules": ["json/rules/to_if_held_down.json"],
         "input_event_queue": "json/input_event_queue/to_if_held_down_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_2.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_2.json"
     },
     {
         "description": "to_if_held_down_3 (invoked key_down)",
-        "rules": [
-            "json/rules/to_if_held_down.json"
-        ],
+        "rules": ["json/rules/to_if_held_down.json"],
         "input_event_queue": "json/input_event_queue/to_if_held_down_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_3.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_3.json"
     },
     {
         "description": "to_if_held_down_4 (invoked key_down,key_up)",
-        "rules": [
-            "json/rules/to_if_held_down.json"
-        ],
+        "rules": ["json/rules/to_if_held_down.json"],
         "input_event_queue": "json/input_event_queue/to_if_held_down_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_4.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_4.json"
     },
     {
         "description": "to_if_held_down_5 (with `to_`)",
-        "rules": [
-            "json/rules/to_if_held_down.json"
-        ],
+        "rules": ["json/rules/to_if_held_down.json"],
         "input_event_queue": "json/input_event_queue/to_if_held_down_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_5.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_5.json"
     },
     {
         "description": "to_if_held_down_6 (from: modifier+key)",
-        "rules": [
-            "json/rules/to_if_held_down.json"
-        ],
+        "rules": ["json/rules/to_if_held_down.json"],
         "input_event_queue": "json/input_event_queue/to_if_held_down_6.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_6.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_6.json"
     },
     {
         "description": "to_if_held_down_7 (from: modifier+key, to modifier)",
-        "rules": [
-            "json/rules/to_if_held_down.json"
-        ],
+        "rules": ["json/rules/to_if_held_down.json"],
         "input_event_queue": "json/input_event_queue/to_if_held_down_7.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_7.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_7.json"
     },
     {
         "description": "to_delayed_action (no invoke, no cancel)",
-        "rules": [
-            "json/rules/to_delayed_action.json"
-        ],
+        "rules": ["json/rules/to_delayed_action.json"],
         "input_event_queue": "json/input_event_queue/to_delayed_action_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_1.json"
     },
     {
         "description": "to_delayed_action (invoke)",
-        "rules": [
-            "json/rules/to_delayed_action.json"
-        ],
+        "rules": ["json/rules/to_delayed_action.json"],
         "input_event_queue": "json/input_event_queue/to_delayed_action_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_2.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_2.json"
     },
     {
         "description": "to_delayed_action (cancel)",
-        "rules": [
-            "json/rules/to_delayed_action.json"
-        ],
+        "rules": ["json/rules/to_delayed_action.json"],
         "input_event_queue": "json/input_event_queue/to_delayed_action_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_3.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_3.json"
     },
     {
         "description": "to_delayed_action (cancel by ignored device)",
-        "rules": [
-            "json/rules/to_delayed_action.json"
-        ],
+        "rules": ["json/rules/to_delayed_action.json"],
         "input_event_queue": "json/input_event_queue/to_delayed_action_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_4.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_4.json"
     },
     {
         "description": "to_delayed_action cx",
-        "rules": [
-            "json/rules/to_delayed_action_cx.json"
-        ],
-        "input_event_queue": "json/input_event_queue/to_delayed_action_cx_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_cx_1.json"
+        "rules": ["json/rules/to_delayed_action_cx.json"],
+        "input_event_queue":
+            "json/input_event_queue/to_delayed_action_cx_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_cx_1.json"
     },
     {
-        "description": "fn+up_arrow to fn+page_up (from modifiers == to modifiers)",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/from_modifiers_equal_to_modifiers_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_equal_to_modifiers_1.json"
+        "description":
+            "fn+up_arrow to fn+page_up (from modifiers == to modifiers)",
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/from_modifiers_equal_to_modifiers_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/from_modifiers_equal_to_modifiers_1.json"
     },
     {
-        "description": "fn+up_arrow to fn+page_up (from modifiers == to modifiers) (release fn before up_arrow)",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/from_modifiers_equal_to_modifiers_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_equal_to_modifiers_2.json"
+        "description":
+            "fn+up_arrow to fn+page_up (from modifiers == to modifiers) (release fn before up_arrow)",
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/from_modifiers_equal_to_modifiers_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/from_modifiers_equal_to_modifiers_2.json"
     },
     {
         "description": "event_from_ignored_device",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/event_from_ignored_device_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/event_from_ignored_device_1.json"
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/event_from_ignored_device_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/event_from_ignored_device_1.json"
     },
     {
         "description": "event_from_ignored_device and key repeat",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/event_from_ignored_device_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/event_from_ignored_device_2.json"
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/event_from_ignored_device_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/event_from_ignored_device_2.json"
     },
     {
         "description": "pointing_device_event",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_1.json"
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/pointing_device_event_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_1.json"
     },
     {
         "description": "pointing_device_event and key repeat",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_2.json"
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/pointing_device_event_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_2.json"
     },
     {
-        "description": "pointing_device_event (pointing_button and pointing_motion)",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_3.json"
+        "description":
+            "pointing_device_event (pointing_button and pointing_motion)",
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/pointing_device_event_3.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_3.json"
     },
     {
         "description": "pointing_device_event_from_event_tap",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_from_event_tap_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_1.json"
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/pointing_device_event_from_event_tap_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_1.json"
     },
     {
         "description": "pointing_device_event_from_event_tap and key repeat",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_from_event_tap_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_2.json"
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/pointing_device_event_from_event_tap_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_2.json"
     },
     {
-        "description": "pointing_device_event_from_event_tap and pointing_button",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_from_event_tap_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_3.json"
+        "description":
+            "pointing_device_event_from_event_tap and pointing_button",
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/pointing_device_event_from_event_tap_3.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_3.json"
     },
     {
-        "description": "control+p to up_arrow (from modifiers.optional) / control-p, tab",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/from_modifiers_optional_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_1.json"
+        "description":
+            "control+p to up_arrow (from modifiers.optional) / control-p, tab",
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/from_modifiers_optional_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_1.json"
     },
     {
-        "description": "control+p to up_arrow (from modifiers.optional) / control-option-p",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/from_modifiers_optional_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_2.json"
+        "description":
+            "control+p to up_arrow (from modifiers.optional) / control-option-p",
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/from_modifiers_optional_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_2.json"
     },
     {
-        "description": "control+p to up_arrow (from modifiers.optional) / control-shift-p",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/from_modifiers_optional_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_3.json"
+        "description":
+            "control+p to up_arrow (from modifiers.optional) / control-shift-p",
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/from_modifiers_optional_3.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_3.json"
     },
     {
-        "description": "control+p to up_arrow (from modifiers.optional) lazy modifiers",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
-        "input_event_queue": "json/input_event_queue/from_modifiers_optional_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_4.json"
+        "description":
+            "control+p to up_arrow (from modifiers.optional) lazy modifiers",
+        "rules": ["json/rules/complex_modifications.json"],
+        "input_event_queue":
+            "json/input_event_queue/from_modifiers_optional_4.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_4.json"
     },
     {
-        "description": "control+u to shift+control+a,delete_or_backspace (multiple to keys)",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
+        "description":
+            "control+u to shift+control+a,delete_or_backspace (multiple to keys)",
+        "rules": ["json/rules/complex_modifications.json"],
         "input_event_queue": "json/input_event_queue/multiple_to_keys_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/multiple_to_keys_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/multiple_to_keys_1.json"
     },
     {
-        "description": "control+f1 to shift+control+a,delete_or_backspace,vk_none (multiple to keys)",
-        "rules": [
-            "json/rules/complex_modifications.json"
-        ],
+        "description":
+            "control+f1 to shift+control+a,delete_or_backspace,vk_none (multiple to keys)",
+        "rules": ["json/rules/complex_modifications.json"],
         "input_event_queue": "json/input_event_queue/multiple_to_keys_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/multiple_to_keys_2.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/multiple_to_keys_2.json"
     },
     {
         "description": "device_keys_and_pointing_buttons_are_released_1",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
-        "input_event_queue": "json/input_event_queue/device_keys_and_pointing_buttons_are_released_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_keys_and_pointing_buttons_are_released_1.json"
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue":
+            "json/input_event_queue/device_keys_and_pointing_buttons_are_released_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/device_keys_and_pointing_buttons_are_released_1.json"
     },
     {
         "description": "device_keys_and_pointing_buttons_are_released_2",
-        "rules": [
-            "json/rules/from_key.json"
-        ],
-        "input_event_queue": "json/input_event_queue/device_keys_and_pointing_buttons_are_released_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_keys_and_pointing_buttons_are_released_2.json"
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue":
+            "json/input_event_queue/device_keys_and_pointing_buttons_are_released_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/device_keys_and_pointing_buttons_are_released_2.json"
     },
     {
         "description": "lazy_1",
-        "rules": [
-            "json/rules/lazy.json"
-        ],
+        "rules": ["json/rules/lazy.json"],
         "input_event_queue": "json/input_event_queue/lazy_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/lazy_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/lazy_1.json"
     },
     {
         "description": "lazy_2 (with to_if_alone)",
-        "rules": [
-            "json/rules/lazy.json"
-        ],
+        "rules": ["json/rules/lazy.json"],
         "input_event_queue": "json/input_event_queue/lazy_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/lazy_2.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/lazy_2.json"
     },
     {
         "description": "repeat_1",
-        "rules": [
-            "json/rules/repeat.json"
-        ],
+        "rules": ["json/rules/repeat.json"],
         "input_event_queue": "json/input_event_queue/repeat_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/repeat_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/repeat_1.json"
     },
     {
         "description": "repeat_2",
-        "rules": [
-            "json/rules/repeat.json"
-        ],
+        "rules": ["json/rules/repeat.json"],
         "input_event_queue": "json/input_event_queue/repeat_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/repeat_2.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/repeat_2.json"
     },
     {
         "description": "hold_down_milliseconds_1",
-        "rules": [
-            "json/rules/hold_down_milliseconds.json"
-        ],
-        "input_event_queue": "json/input_event_queue/hold_down_milliseconds_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/hold_down_milliseconds_1.json"
+        "rules": ["json/rules/hold_down_milliseconds.json"],
+        "input_event_queue":
+            "json/input_event_queue/hold_down_milliseconds_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/hold_down_milliseconds_1.json"
     },
     {
         "description": "from_any_1",
-        "rules": [
-            "json/rules/from_any.json"
-        ],
+        "rules": ["json/rules/from_any.json"],
         "input_event_queue": "json/input_event_queue/from_any_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_any_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/from_any_1.json"
     },
     {
         "description": "mouse_key_1",
-        "rules": [
-            "json/rules/mouse_key.json"
-        ],
+        "rules": ["json/rules/mouse_key.json"],
         "input_event_queue": "json/input_event_queue/mouse_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/mouse_key_1.json"
     },
     {
         "description": "mouse_key_2",
-        "rules": [
-            "json/rules/mouse_key.json"
-        ],
+        "rules": ["json/rules/mouse_key.json"],
         "input_event_queue": "json/input_event_queue/mouse_key_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_2.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/mouse_key_2.json"
     },
     {
         "description": "mouse_key_3",
-        "rules": [
-            "json/rules/mouse_key.json"
-        ],
+        "rules": ["json/rules/mouse_key.json"],
         "input_event_queue": "json/input_event_queue/mouse_key_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_3.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/mouse_key_3.json"
     },
     {
         "description": "simultaneous_1",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_1.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_1.json"
     },
     {
         "description": "simultaneous_2",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_2.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_2.json"
     },
     {
         "description": "simultaneous_3 (multiple devices)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_3.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_3.json"
     },
     {
         "description": "simultaneous_4 (key is released)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_4.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_4.json"
     },
     {
         "description": "simultaneous_5 (key is released, then pressed)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_5.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_5.json"
     },
     {
         "description": "simultaneous_6 (with modifier)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_6.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_6.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_6.json"
     },
     {
         "description": "simultaneous_7 (with modifier)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_7.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_7.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_7.json"
     },
     {
         "description": "simultaneous_8 (modifier is released)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_8.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_8.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_8.json"
     },
     {
         "description": "simultaneous_9 (simultaneous_threshold_milliseconds)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_9.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_9.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_9.json"
     },
     {
         "description": "simultaneous_10 (invalid events)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_10.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_10.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_10.json"
     },
     {
         "description": "simultaneous_11 (not continued events)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_11.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_11.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_11.json"
     },
     {
         "description": "simultaneous_12 (key_up in continued events)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_12.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_12.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_12.json"
     },
     {
         "description": "simultaneous_13 (multiple from events)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_13.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_13.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_13.json"
     },
     {
         "description": "simultaneous_14 (multiple from events is released)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_14.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_14.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_14.json"
     },
     {
         "description": "simultaneous_15 (pointing_motion)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_15.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_15.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_15.json"
     },
     {
         "description": "simultaneous_16 (to_if_held_down)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_16.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_16.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_16.json"
     },
     {
         "description": "simultaneous_17 (to_if_alone)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_17.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_17.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_17.json"
     },
     {
         "description": "simultaneous_18 (key_down_order)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_18.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_18.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_18.json"
     },
     {
         "description": "simultaneous_19 (key_down_order)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_19.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_19.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_19.json"
     },
     {
         "description": "simultaneous_20 (key_down_order, key_up_order)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_20.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_20.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_20.json"
     },
     {
         "description": "simultaneous_21 (key_down_order, key_up_order)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_21.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_21.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_21.json"
     },
     {
         "description": "simultaneous_22 (key_down_order, key_up_order)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_22.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_22.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_22.json"
     },
     {
         "description": "simultaneous_23 (key_down_order, key_up_order)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_23.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_23.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_23.json"
     },
     {
         "description": "simultaneous_24 (simple_vi_mode)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_24.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_24.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_24.json"
     },
     {
         "description": "simultaneous_25 (key_up_when)",
-        "rules": [
-            "json/rules/simultaneous.json"
-        ],
+        "rules": ["json/rules/simultaneous.json"],
         "input_event_queue": "json/input_event_queue/simultaneous_25.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_25.json"
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_25.json"
+    },
+    {
+        "description": "simultaneous_26 (detect_key_down_uninterruptedly)",
+        "rules": ["json/rules/simultaneous.json"],
+        "input_event_queue": "json/input_event_queue/simultaneous_26.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/simultaneous_26.json"
     }
 ]

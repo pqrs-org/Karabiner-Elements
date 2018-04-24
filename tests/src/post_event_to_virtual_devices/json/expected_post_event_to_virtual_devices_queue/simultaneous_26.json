@@ -1,0 +1,23 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [
+                "5"
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 5000000,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                "5",
+                "1"
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 10000000,
+        "type": "keyboard_input"
+    }
+]

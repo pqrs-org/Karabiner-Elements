@@ -13,9 +13,7 @@
             ],
             "modifiers": {
                 "mandatory": [],
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -40,12 +38,8 @@
                 }
             ],
             "modifiers": {
-                "mandatory": [
-                    "left_shift"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["left_shift"],
+                "optional": ["any"]
             }
         },
         "to": [
@@ -105,9 +99,7 @@
             ],
             "modifiers": {
                 "mandatory": [],
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to_if_held_down": [
@@ -130,9 +122,7 @@
             ],
             "modifiers": {
                 "mandatory": [],
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -212,12 +202,8 @@
                 ]
             },
             "modifiers": {
-                "mandatory": [
-                    "left_shift"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["left_shift"],
+                "optional": ["any"]
             }
         },
         "to": [
@@ -302,14 +288,34 @@
             },
             "modifiers": {
                 "mandatory": [],
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
             {
                 "key_code": "left_control"
+            }
+        ]
+    },
+    {
+        "description": "3+4 -> 5 (detect_key_down_uninterruptedly)",
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                {
+                    "key_code": "3"
+                },
+                {
+                    "key_code": "4"
+                }
+            ],
+            "simultaneous_options": {
+                "detect_key_down_uninterruptedly": true
+            }
+        },
+        "to": [
+            {
+                "key_code": "5"
             }
         ]
     }
