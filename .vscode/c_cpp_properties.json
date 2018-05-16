@@ -4,8 +4,9 @@
             "name": "Mac",
             "browse": {
                 "path": [
-                    "./src/share",
-                    "./src/vendor",
+                    "${workspaceFolder}/src/share",
+                    "${workspaceFolder}/src/vendor",
+                    "${workspaceFolder}/src/core/grabber",
                     "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/4.2.1/tr1",
                     "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++",
                     "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
@@ -20,7 +21,9 @@
             },
             "defines": [],
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/src/share",
+                "${workspaceFolder}/src/vendor",
+                "${workspaceFolder}/src/core/grabber",
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/4.2.1/tr1",
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++",
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
