@@ -5,10 +5,15 @@
 * Added new items into `simultaneous_options`.
   * `simultaneous_options.detect_key_down_uninterruptedly`
   * `simultaneous_options.key_up_when`.
-* Added `hold_down_milliseconds` into `to event definition`.
+* Added new parameters into `to event definition`.
+  * `hold_down_milliseconds`
+  * `halt`
 * Increased rollover limit of virtual keyboard. (6 -&gt; 32)<br />
   This change mainly improves usability when you are using multiple keyboards at the same time.
 * Improved modifier flags handling in `to_after_key_up` and `to_if_alone`.
+* Incompatible changes
+  * Changed the order of `to_if_alone` and `to_after_key_up` event handling.<br />
+    `to_if_alone` will be handled before `to_after_key_up`.
 
 ## Version 12.0.0
 
