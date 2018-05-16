@@ -1,0 +1,20 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [
+                "f2"
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 5000000,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 10000000,
+        "type": "keyboard_input"
+    }
+]
