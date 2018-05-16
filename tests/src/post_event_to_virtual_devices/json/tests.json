@@ -855,5 +855,19 @@
         "input_event_queue": "json/input_event_queue/simultaneous_26.json",
         "expected_post_event_to_virtual_devices_queue":
             "json/expected_post_event_to_virtual_devices_queue/simultaneous_26.json"
+    },
+    {
+        "description": "halt_1 (halted)",
+        "rules": ["json/rules/halt.json"],
+        "input_event_queue": "json/input_event_queue/halt_1.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/halt_1.json"
+    },
+    {
+        "description": "halt_2 (not halted)",
+        "rules": ["json/rules/halt.json"],
+        "input_event_queue": "json/input_event_queue/halt_2.json",
+        "expected_post_event_to_virtual_devices_queue":
+            "json/expected_post_event_to_virtual_devices_queue/halt_2.json"
     }
 ]

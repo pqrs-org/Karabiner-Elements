@@ -1,0 +1,22 @@
+[
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "f1"
+        },
+        "to_after_key_up": [
+            {
+                "key_code": "f2"
+            }
+        ],
+        "to_if_held_down": [
+            {
+                "key_code": "f3"
+            },
+            {
+                "key_code": "f4",
+                "halt": true
+            }
+        ]
+    }
+]
