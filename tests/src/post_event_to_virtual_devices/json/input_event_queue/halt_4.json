@@ -1,0 +1,53 @@
+[
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "f5",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f5",
+            "type": "key_code"
+        },
+        "event_time_stamp": {
+            "time_stamp": 2000000
+        },
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "key_code": "spacebar",
+            "type": "key_code"
+        },
+        "event_time_stamp": {
+            "time_stamp": 4000000
+        },
+        "valid": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "key_code": "f5",
+            "type": "key_code"
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "key_code": "f5",
+            "type": "key_code"
+        },
+        "event_time_stamp": {
+            "time_stamp": 6000000
+        },
+        "valid": true
+    }
+]

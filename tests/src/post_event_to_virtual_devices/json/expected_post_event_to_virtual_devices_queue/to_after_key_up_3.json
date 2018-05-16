@@ -20,7 +20,7 @@
     {
         "keyboard_input": {
             "keys": [
-                "tab"
+                "spacebar"
             ],
             "modifiers": []
         },
@@ -38,7 +38,7 @@
     {
         "keyboard_input": {
             "keys": [
-                "spacebar"
+                "tab"
             ],
             "modifiers": []
         },

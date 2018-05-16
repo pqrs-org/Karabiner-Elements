@@ -1289,26 +1289,6 @@ public:
                                                          time_stamp_delay,
                                                          *output_event_queue);
 
-                  // to_after_key_up_
-
-                  if (!to_after_key_up_.empty()) {
-                    post_from_mandatory_modifiers_key_up(front_input_event,
-                                                         *current_manipulated_original_event,
-                                                         time_stamp_delay,
-                                                         *output_event_queue);
-
-                    post_extra_to_events(front_input_event,
-                                         to_after_key_up_,
-                                         *current_manipulated_original_event,
-                                         time_stamp_delay,
-                                         *output_event_queue);
-
-                    post_from_mandatory_modifiers_key_down(front_input_event,
-                                                           *current_manipulated_original_event,
-                                                           time_stamp_delay,
-                                                           *output_event_queue);
-                  }
-
                   // to_if_alone_
 
                   if (!to_if_alone_.empty()) {
@@ -1331,6 +1311,26 @@ public:
                                                              time_stamp_delay,
                                                              *output_event_queue);
                     }
+                  }
+
+                  // to_after_key_up_
+
+                  if (!to_after_key_up_.empty()) {
+                    post_from_mandatory_modifiers_key_up(front_input_event,
+                                                         *current_manipulated_original_event,
+                                                         time_stamp_delay,
+                                                         *output_event_queue);
+
+                    post_extra_to_events(front_input_event,
+                                         to_after_key_up_,
+                                         *current_manipulated_original_event,
+                                         time_stamp_delay,
+                                         *output_event_queue);
+
+                    post_from_mandatory_modifiers_key_down(front_input_event,
+                                                           *current_manipulated_original_event,
+                                                           time_stamp_delay,
+                                                           *output_event_queue);
                   }
                 }
 

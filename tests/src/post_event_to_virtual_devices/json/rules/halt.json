@@ -1,5 +1,6 @@
 [
     {
+        "description": "with to_if_held_down",
         "type": "basic",
         "from": {
             "key_code": "f1"
@@ -15,6 +16,24 @@
             },
             {
                 "key_code": "f4",
+                "halt": true
+            }
+        ]
+    },
+    {
+        "description": "with to_if_alone",
+        "type": "basic",
+        "from": {
+            "key_code": "f5"
+        },
+        "to_after_key_up": [
+            {
+                "key_code": "f6"
+            }
+        ],
+        "to_if_alone": [
+            {
+                "key_code": "f7",
                 "halt": true
             }
         ]
