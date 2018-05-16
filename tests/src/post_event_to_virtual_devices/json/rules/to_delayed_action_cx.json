@@ -11,20 +11,14 @@
         "from": {
             "key_code": "s",
             "modifiers": {
-                "mandatory": [
-                    "control"
-                ],
-                "optional": [
-                    "caps_lock"
-                ]
+                "mandatory": ["control"],
+                "optional": ["caps_lock"]
             }
         },
         "to": [
             {
                 "key_code": "s",
-                "modifiers": [
-                    "left_command"
-                ]
+                "modifiers": ["left_command"]
             }
         ]
     },
@@ -40,20 +34,14 @@
         "from": {
             "key_code": "f",
             "modifiers": {
-                "mandatory": [
-                    "control"
-                ],
-                "optional": [
-                    "caps_lock"
-                ]
+                "mandatory": ["control"],
+                "optional": ["caps_lock"]
             }
         },
         "to": [
             {
                 "key_code": "o",
-                "modifiers": [
-                    "left_command"
-                ]
+                "modifiers": ["left_command"]
             }
         ]
     },
@@ -69,9 +57,7 @@
         "from": {
             "any": "key_code",
             "modifiers": {
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         }
     },
@@ -80,12 +66,8 @@
         "from": {
             "key_code": "x",
             "modifiers": {
-                "mandatory": [
-                    "control"
-                ],
-                "optional": [
-                    "caps_lock"
-                ]
+                "mandatory": ["control"],
+                "optional": ["caps_lock"]
             }
         },
         "to": [

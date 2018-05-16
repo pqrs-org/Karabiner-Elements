@@ -18,9 +18,7 @@
         "from": {
             "key_code": "f3",
             "modifiers": {
-                "mandatory": [
-                    "left_shift"
-                ]
+                "mandatory": ["left_shift"]
             }
         },
         "to": [
@@ -35,9 +33,7 @@
         "from": {
             "key_code": "right_command",
             "modifiers": {
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -58,20 +54,14 @@
         "from": {
             "key_code": "right_shift",
             "modifiers": {
-                "mandatory": [
-                    "right_command"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["right_command"],
+                "optional": ["any"]
             }
         },
         "to": [
             {
                 "key_code": "right_shift",
-                "modifiers": [
-                    "right_command"
-                ],
+                "modifiers": ["right_command"],
                 "lazy": true
             }
         ],

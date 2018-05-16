@@ -5,9 +5,7 @@
         "from": {
             "any": "key_code",
             "modifiers": {
-                "mandatory": [
-                    "shift"
-                ]
+                "mandatory": ["shift"]
             }
         }
     },
@@ -17,9 +15,7 @@
         "from": {
             "any": "consumer_key_code",
             "modifiers": {
-                "mandatory": [
-                    "control"
-                ]
+                "mandatory": ["control"]
             }
         }
     },
@@ -29,9 +25,7 @@
         "from": {
             "any": "pointing_button",
             "modifiers": {
-                "mandatory": [
-                    "command"
-                ]
+                "mandatory": ["command"]
             }
         }
     }

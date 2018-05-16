@@ -5,12 +5,8 @@
         "from": {
             "key_code": "d",
             "modifiers": {
-                "mandatory": [
-                    "right_shift"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["right_shift"],
+                "optional": ["any"]
             }
         },
         "to": [
@@ -27,12 +23,8 @@
         "from": {
             "key_code": "f",
             "modifiers": {
-                "mandatory": [
-                    "right_shift"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["right_shift"],
+                "optional": ["any"]
             }
         },
         "to": [

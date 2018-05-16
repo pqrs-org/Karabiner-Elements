@@ -4,12 +4,8 @@
         "from": {
             "key_code": "f12",
             "modifiers": {
-                "mandatory": [
-                    "command"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["command"],
+                "optional": ["any"]
             }
         },
         "to": [
@@ -24,9 +20,7 @@
                 },
                 {
                     "key_code": "c",
-                    "modifiers": [
-                        "left_shift"
-                    ]
+                    "modifiers": ["left_shift"]
                 }
             ],
             "to_if_canceled": [
@@ -35,9 +29,7 @@
                 },
                 {
                     "key_code": "e",
-                    "modifiers": [
-                        "left_shift"
-                    ]
+                    "modifiers": ["left_shift"]
                 }
             ]
         }

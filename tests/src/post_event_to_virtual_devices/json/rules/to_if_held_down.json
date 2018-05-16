@@ -4,9 +4,7 @@
         "from": {
             "key_code": "f1",
             "modifiers": {
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to_if_held_down": [
@@ -21,9 +19,7 @@
         "from": {
             "key_code": "f2",
             "modifiers": {
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -43,12 +39,8 @@
         "from": {
             "key_code": "f3",
             "modifiers": {
-                "mandatory": [
-                    "left_shift"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["left_shift"],
+                "optional": ["any"]
             }
         },
         "to": [
@@ -64,16 +56,13 @@
         "type": "basic"
     },
     {
-        "description": "left_shift+f4 -> right_shift,right_control (from: modifier+key)",
+        "description":
+            "left_shift+f4 -> right_shift,right_control (from: modifier+key)",
         "from": {
             "key_code": "f4",
             "modifiers": {
-                "mandatory": [
-                    "left_shift"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["left_shift"],
+                "optional": ["any"]
             }
         },
         "to": [

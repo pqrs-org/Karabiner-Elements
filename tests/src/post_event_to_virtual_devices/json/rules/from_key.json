@@ -6,9 +6,7 @@
             "key_code": "f1",
             "modifiers": {
                 "mandatory": [],
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -25,9 +23,7 @@
             "key_code": "f2",
             "modifiers": {
                 "mandatory": [],
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -44,38 +40,31 @@
             "key_code": "f3",
             "modifiers": {
                 "mandatory": [],
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
             {
                 "key_code": "spacebar",
-                "modifiers": [
-                    "left_command"
-                ]
+                "modifiers": ["left_command"]
             }
         ]
     },
     {
-        "description": "f4 -> left_command+left_option (key to modifier+modifier)",
+        "description":
+            "f4 -> left_command+left_option (key to modifier+modifier)",
         "type": "basic",
         "from": {
             "key_code": "f4",
             "modifiers": {
                 "mandatory": [],
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
             {
                 "key_code": "left_option",
-                "modifiers": [
-                    "left_command"
-                ]
+                "modifiers": ["left_command"]
             }
         ]
     },
@@ -85,12 +74,8 @@
         "from": {
             "key_code": "f5",
             "modifiers": {
-                "mandatory": [
-                    "left_shift"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["left_shift"],
+                "optional": ["any"]
             }
         },
         "to": [
@@ -106,12 +91,8 @@
         "from": {
             "key_code": "f6",
             "modifiers": {
-                "mandatory": [
-                    "left_command"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["left_command"],
+                "optional": ["any"]
             }
         },
         "to": [
@@ -122,48 +103,38 @@
         ]
     },
     {
-        "description": "right_option+f7 -> right_command+spacebar (modifier+key to modifier+key)",
+        "description":
+            "right_option+f7 -> right_command+spacebar (modifier+key to modifier+key)",
         "type": "basic",
         "from": {
             "key_code": "f7",
             "modifiers": {
-                "mandatory": [
-                    "right_option"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["right_option"],
+                "optional": ["any"]
             }
         },
         "to": [
             {
                 "key_code": "spacebar",
-                "modifiers": [
-                    "right_command"
-                ]
+                "modifiers": ["right_command"]
             }
         ]
     },
     {
-        "description": "right_option+f8 -> right_command+right_control (modifier+key to modifier+modifier)",
+        "description":
+            "right_option+f8 -> right_command+right_control (modifier+key to modifier+modifier)",
         "type": "basic",
         "from": {
             "key_code": "f8",
             "modifiers": {
-                "mandatory": [
-                    "right_option"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["right_option"],
+                "optional": ["any"]
             }
         },
         "to": [
             {
                 "key_code": "right_control",
-                "modifiers": [
-                    "right_command"
-                ]
+                "modifiers": ["right_command"]
             }
         ]
     }

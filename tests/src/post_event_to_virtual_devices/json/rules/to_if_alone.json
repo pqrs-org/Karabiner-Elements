@@ -4,9 +4,7 @@
         "from": {
             "key_code": "f1",
             "modifiers": {
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -21,9 +19,7 @@
         "from": {
             "key_code": "right_control",
             "modifiers": {
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -43,9 +39,7 @@
         "from": {
             "key_code": "spacebar",
             "modifiers": {
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -68,12 +62,8 @@
         "from": {
             "key_code": "escape",
             "modifiers": {
-                "mandatory": [
-                    "command"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["command"],
+                "optional": ["any"]
             }
         },
         "to": [
@@ -93,12 +83,8 @@
         "from": {
             "key_code": "tab",
             "modifiers": {
-                "mandatory": [
-                    "shift"
-                ],
-                "optional": [
-                    "any"
-                ]
+                "mandatory": ["shift"],
+                "optional": ["any"]
             }
         },
         "to": [
@@ -118,9 +104,7 @@
         "from": {
             "key_code": "f2",
             "modifiers": {
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [],
