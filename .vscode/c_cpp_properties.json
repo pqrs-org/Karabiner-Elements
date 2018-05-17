@@ -33,13 +33,7 @@
                 "/usr/include/c++/4.2.1",
                 "/usr/local/include"
             ],
-            "macFrameworkPath": [
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/ApplicationServices.framework/Frameworks",
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Carbon.framework/Frameworks",
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks",
-                "/Library/Frameworks",
-                "/System/Library/Frameworks"
-            ]
+            "macFrameworkPath": []
         }
     ],
     "version": 4
