@@ -12,47 +12,47 @@ Thus, Karabiner-Elements was made from scratch for new macOS.
 
 Karabiner-Elements is ready to use today. It provides a useful subset of Karabiner's features that you can begin using immediately.
 
-You can download the latest Karabiner-Elements from https://pqrs.org/osx/karabiner/
+You can download the latest Karabiner-Elements from <https://pqrs.org/osx/karabiner/>
 
 ### Old releases
 
 You can download previous versions of Karabiner-Elements from here:
-https://github.com/tekezo/pqrs.org/tree/master/webroot/osx/karabiner/files
+<https://github.com/tekezo/pqrs.org/tree/master/webroot/osx/karabiner/files>
 
 ## System requirements
 
-* macOS 10.12.*
-* macOS 10.13.*
+* macOS Sierra (10.12)
+* macOS High Sierra (10.13)
 
 # Usage
 
-https://pqrs.org/osx/karabiner/document.html
+<https://pqrs.org/osx/karabiner/document.html>
 
 ## How to build
 
-System requirements:
+System requirements to build Karabiner-Elements:
 
 * macOS 10.13+
 * Xcode 9+
 * Command Line Tools for Xcode
-* Boost 1.61.0+ (header-only) http://www.boost.org/
+* Boost 1.61.0+ (header-only) <http://www.boost.org/>
+* CMake (`brew install cmake`)
 
 To install the Boost requirement, [download the latest Boost release](http://www.boost.org/), open the `boost` folder inside of it, and move all of the files there into `/opt/local/include/boost/`.
 
 (For example, the version.hpp should be located in `/opt/local/include/boost/version.hpp`)
 
-
 ### Step 1: Getting source code
 
 Clone the source from github.
 
-```
+```shell
 git clone --depth 1 https://github.com/tekezo/Karabiner-Elements.git
 ```
 
 ### Step 2: Building a package
 
-```
+```shell
 cd Karabiner-Elements
 make
 ```
@@ -61,4 +61,4 @@ The `make` script will create a redistributable **Karabiner-Elements-VERSION.dmg
 
 # Donations
 
-If you would like to contribute financially to the development of Karabiner Elements, donations can be made via https://pqrs.org/osx/karabiner/pricing.html
+If you would like to contribute financially to the development of Karabiner Elements, donations can be made via <https://pqrs.org/osx/karabiner/pricing.html>
