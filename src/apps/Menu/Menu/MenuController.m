@@ -62,10 +62,12 @@
   KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
   if (coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
     self.statusItem.button.title = coreConfigurationModel.selectedProfileName;
+    self.statusItem.button.imagePosition = NSImageLeft;
     return;
   }
 
   self.statusItem.button.title = @"";
+  self.statusItem.button.imagePosition = NSImageOnly;
 }
 
 - (void)menuNeedsUpdate:(NSMenu*)menu {
