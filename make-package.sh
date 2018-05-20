@@ -2,8 +2,6 @@
 
 # Package build into a signed .dmg file
 
-PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin"; export PATH
-
 version=$(cat version)
 
 echo "make build"
@@ -34,15 +32,15 @@ basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
 cp src/bin/cli/build/Release/karabiner_cli "$basedir"
 cp src/core/console_user_server/build/Release/karabiner_console_user_server "$basedir"
-cp src/core/grabber/build/Release/karabiner_grabber "$basedir"
+cp src/core/grabber/build/karabiner_grabber "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/updater"
 mkdir -p "$basedir"
 cp -R "src/apps/Updater/build/Release/Karabiner-Elements.app" "$basedir"
 
-mkdir -p                  "pkgroot/Library"
+mkdir -p "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"
-cp -R files/LaunchAgents  "pkgroot/Library"
+cp -R files/LaunchAgents "pkgroot/Library"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions"
 mkdir -p "$basedir"
@@ -73,18 +71,18 @@ rm -rf $archiveName
 mkdir $archiveName
 
 pkgbuild \
-    --root pkgroot \
-    --component-plist pkginfo/pkgbuild.plist \
-    --scripts pkginfo/Scripts \
-    --identifier $pkgIdentifier \
-    --version $version \
-    --install-location "/" \
-    $archiveName/Installer.pkg
+	--root pkgroot \
+	--component-plist pkginfo/pkgbuild.plist \
+	--scripts pkginfo/Scripts \
+	--identifier $pkgIdentifier \
+	--version $version \
+	--install-location "/" \
+	$archiveName/Installer.pkg
 
 productbuild \
-    --distribution pkginfo/Distribution.xml \
-    --package-path $archiveName \
-    $archiveName/$pkgName
+	--distribution pkginfo/Distribution.xml \
+	--package-path $archiveName \
+	$archiveName/$pkgName
 
 rm -f $archiveName/Installer.pkg
 
