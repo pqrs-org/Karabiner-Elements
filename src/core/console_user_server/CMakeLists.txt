@@ -20,19 +20,15 @@ include_directories(
   ./include
 )
 
-find_library(CARBON_LIBRARY Carbon)
-find_library(COCOA_LIBRARY Cocoa)
-find_library(SYSTEMCONFIGURATION_LIBRARY SystemConfiguration)
-
 add_executable(
   karabiner_console_user_server
-  main.cpp
+  src/main.cpp
   ../../share/frontmost_application_observer_objc.m
 )
 
 target_link_libraries(
   karabiner_console_user_server
-  ${CARBON_LIBRARY}
-  ${COCOA_LIBRARY}
-  ${SYSTEMCONFIGURATION_LIBRARY}
+  "-framework Carbon"
+  "-framework Cocoa"
+  "-framework SystemConfiguration"
 )
