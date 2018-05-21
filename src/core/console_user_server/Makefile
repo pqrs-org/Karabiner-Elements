@@ -1,20 +1,9 @@
-CONFIGURATION = Release
-
 all:
-	make -C ../../share
-	xcodebuild -alltargets -configuration $(CONFIGURATION) build
+	mkdir -p build && cd build && cmake .. && make
 
 clean:
 	rm -rf build
-	rm -f *.xcodeproj/*.mode1
-	rm -f *.xcodeproj/*.mode1v3
-	rm -f *.xcodeproj/*.pbxuser
-	rm -rf *.xcodeproj/xcuserdata
-	rm -rf *.xcodeproj/project.xcworkspace/xcuserdata
-
-xcode:
-	open *.xcodeproj
 
 install: all
-	sudo install -m 755 ./build/Release/karabiner_console_user_server '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_console_user_server'
-	-sudo killall karabiner_console_user_server
+	sudo install -m 755 ./build/karabiner_console_user_server '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_console_user_server'
+	sudo killall karabiner_console_user_server
