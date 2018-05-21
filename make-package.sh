@@ -30,7 +30,7 @@ cp -R "src/vendor/Karabiner-VirtualHIDDevice/dist/uninstall.sh" "$basedir/uninst
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
-cp src/bin/cli/build/Release/karabiner_cli "$basedir"
+cp src/bin/cli/build/karabiner_cli "$basedir"
 cp src/core/console_user_server/build/karabiner_console_user_server "$basedir"
 cp src/core/grabber/build/karabiner_grabber "$basedir"
 
