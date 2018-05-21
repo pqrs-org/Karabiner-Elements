@@ -19,15 +19,16 @@ include_directories(
   ./include
 )
 
-find_library(CARBON_LIBRARY Carbon)
-find_library(IOKIT_LIBRARY IOKit)
-find_library(SYSTEMCONFIGURATION_LIBRARY SystemConfiguration)
-
-add_executable(karabiner_grabber main.cpp)
+add_executable(
+  karabiner_grabber
+  src/main.cpp
+)
 
 target_link_libraries(
   karabiner_grabber
-  ${CARBON_LIBRARY}
-  ${IOKIT_LIBRARY}
-  ${SYSTEMCONFIGURATION_LIBRARY}
+  "-framework CoreFoundation"
+  "-framework CoreGraphics"
+  "-framework CoreServices"
+  "-framework IOKit"
+  "-framework SystemConfiguration"
 )
