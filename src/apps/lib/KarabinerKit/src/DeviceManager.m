@@ -1,5 +1,5 @@
-#import "DeviceManager.h"
-#import "NotificationKeys.h"
+#import "KarabinerKit/DeviceManager.h"
+#import "KarabinerKit/NotificationKeys.h"
 #import "libkrbn.h"
 
 @interface KarabinerKitDeviceManager ()

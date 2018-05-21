@@ -1,4 +1,4 @@
-#import "ConnectedDevices.h"
+#import "KarabinerKit/ConnectedDevices.h"
 
 @interface KarabinerKitConnectedDevices ()
 

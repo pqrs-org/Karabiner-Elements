@@ -1,4 +1,4 @@
-#import "CoreConfigurationModel.h"
+#import "KarabinerKit/CoreConfigurationModel.h"
 #import "KarabinerKit/KarabinerKit.h"
 
 @interface KarabinerKitCoreConfigurationModel ()

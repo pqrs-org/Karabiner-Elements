@@ -1,5 +1,5 @@
-#import "ComplexModificationsAssetsRuleModel.h"
-#import "CoreConfigurationModel.h"
+#import "KarabinerKit/ComplexModificationsAssetsRuleModel.h"
+#import "KarabinerKit/CoreConfigurationModel.h"
 
 @interface KarabinerKitComplexModificationsAssetsRuleModel ()
 

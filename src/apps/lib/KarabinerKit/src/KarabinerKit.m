@@ -1,4 +1,4 @@
-#import "KarabinerKit.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn.h"
 
 static libkrbn_version_monitor* libkrbn_version_monitor_ = NULL;

@@ -1,4 +1,4 @@
-#import "JsonUtility.h"
+#import "KarabinerKit/JsonUtility.h"
 #include "libkrbn.h"
 
 @implementation KarabinerKitJsonUtility
