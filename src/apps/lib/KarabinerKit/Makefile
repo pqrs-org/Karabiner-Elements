@@ -1,6 +1,7 @@
 all:
 	make -C ../../../lib/libkrbn
-	mkdir -p build && cd build && cmake .. && make
+	make build_xcode
 
-clean:
-	rm -rf build
+clean: clean_builds
+
+include ../../../Makefile.rules

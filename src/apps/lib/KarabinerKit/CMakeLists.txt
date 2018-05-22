@@ -17,7 +17,7 @@ include_directories(
   /usr/local/include
   ../../../share
   ../../../vendor
-  ../../../lib/libkrbn
+  ../../../lib/libkrbn/include
   ./include
 )
 
@@ -32,9 +32,4 @@ add_library(
   src/DeviceManager.m
   src/JsonUtility.m
   src/KarabinerKit.m
-)
-
-target_link_libraries(
-  KarabinerKit
-  ../../../lib/libkrbn/build/libkrbn.a
 )
