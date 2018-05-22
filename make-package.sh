@@ -19,7 +19,7 @@ cp version "$basedir"
 cp src/scripts/uninstall.sh "$basedir"
 cp src/scripts/uninstall_core.sh "$basedir"
 cp files/complex_modifications_rules_example.json "$basedir"
-cp -R "src/apps/Menu/build/Release/Karabiner-Menu.app" "$basedir"
+cp -R "src/apps/Menu/build_xcode/build/Release/Karabiner-Menu.app" "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
 mkdir -p "$basedir"
