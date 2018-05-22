@@ -30,9 +30,9 @@ cp -R "src/vendor/Karabiner-VirtualHIDDevice/dist/uninstall.sh" "$basedir/uninst
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
-cp src/bin/cli/build/karabiner_cli "$basedir"
-cp src/core/console_user_server/build/karabiner_console_user_server "$basedir"
-cp src/core/grabber/build/karabiner_grabber "$basedir"
+cp src/bin/cli/build_xcode/build/Release/karabiner_cli "$basedir"
+cp src/core/console_user_server/build_xcode/build/Release/karabiner_console_user_server "$basedir"
+cp src/core/grabber/build_xcode/build/Release/karabiner_grabber "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/updater"
 mkdir -p "$basedir"
