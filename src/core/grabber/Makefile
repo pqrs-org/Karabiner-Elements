@@ -1,9 +1,9 @@
-all:
-	mkdir -p build && cd build && cmake .. && make
+all: build_xcode
 
-clean:
-	rm -rf build
+clean: clean_builds
 
 install: all
 	sudo install -m 755 ./build/karabiner_grabber '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_grabber'
 	sudo killall karabiner_grabber
+
+include ../../Makefile.rules
