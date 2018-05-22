@@ -9,21 +9,19 @@
 
 #include "msvc_sink.h"
 
-namespace spdlog
-{
-namespace sinks
-{
+namespace spdlog {
+namespace sinks {
 
 /*
-* Windows debug sink (logging using OutputDebugStringA, synonym for msvc_sink)
-*/
+ * Windows debug sink (logging using OutputDebugStringA, synonym for msvc_sink)
+ */
 template<class Mutex>
 using windebug_sink = msvc_sink<Mutex>;
 
-typedef msvc_sink_mt windebug_sink_mt;
-typedef msvc_sink_st windebug_sink_st;
+using windebug_sink_mt = msvc_sink_mt;
+using windebug_sink_st = msvc_sink_st;
 
-}
-}
+} // namespace sinks
+} // namespace spdlog
 
 #endif

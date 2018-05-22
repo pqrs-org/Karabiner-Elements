@@ -38,11 +38,16 @@ THE SOFTWARE.
 #include <unordered_set>
 #include <vector>
 
+#ifdef __cpp_lib_optional
+#include <optional>
+#define CXXOPTS_HAS_OPTIONAL
+#endif
+
 namespace cxxopts
 {
   static constexpr struct {
     uint8_t major, minor, patch;
-  } version = {2, 0, 0};
+  } version = {2, 1, 0};
 }
 
 //when we ask cxxopts to use Unicode, help strings are processed using ICU,
@@ -444,9 +449,9 @@ namespace cxxopts
       std::basic_regex<char> integer_pattern
         ("(-)?(0x)?([1-9a-zA-Z][0-9a-zA-Z]*)|((0x)?0)");
       std::basic_regex<char> truthy_pattern
-        ("t|true|T|True");
+        ("(t|T)(rue)?");
       std::basic_regex<char> falsy_pattern
-        ("(f|false|F|False)?");
+        ("((f|F)(alse)?)?");
     }
 
     namespace detail
@@ -534,7 +539,7 @@ namespace cxxopts
       constexpr auto umax = std::numeric_limits<US>::max();
       constexpr bool is_signed = std::numeric_limits<T>::is_signed;
       const bool negative = match.length(1) > 0;
-      const auto base = match.length(2) > 0 ? 16 : 10;
+      const uint8_t base = match.length(2) > 0 ? 16 : 10;
 
       auto value_match = match[3];
 
@@ -542,7 +547,7 @@ namespace cxxopts
 
       for (auto iter = value_match.first; iter != value_match.second; ++iter)
       {
-        int digit = 0;
+        size_t digit = 0;
 
         if (*iter >= '0' && *iter <= '9')
         {
@@ -696,6 +701,17 @@ namespace cxxopts
       parse_value(text, v);
       value.push_back(v);
     }
+
+#ifdef CXXOPTS_HAS_OPTIONAL
+    template <typename T>
+    void
+    parse_value(const std::string& text, std::optional<T>& value)
+    {
+      T result;
+      parse_value(text, result);
+      value = std::move(result);
+    }
+#endif
 
     template <typename T>
     struct type_is_container
@@ -855,13 +871,13 @@ namespace cxxopts
 
       standard_value()
       {
-        set_implicit();
+        set_default_and_implicit();
       }
 
       standard_value(bool* b)
       : abstract_value(b)
       {
-        set_implicit();
+        set_default_and_implicit();
       }
 
       std::shared_ptr<Value>
@@ -873,8 +889,10 @@ namespace cxxopts
       private:
 
       void
-      set_implicit()
+      set_default_and_implicit()
       {
+        m_default = true;
+        m_default_value = "false";
         m_implicit = true;
         m_implicit_value = "true";
       }
@@ -902,13 +920,13 @@ namespace cxxopts
     public:
     OptionDetails
     (
-      const std::string& short_name,
-      const std::string& long_name,
+      const std::string& short_,
+      const std::string& long_,
       const String& desc,
       std::shared_ptr<const Value> val
     )
-    : m_short(short_name)
-    , m_long(long_name)
+    : m_short(short_)
+    , m_long(long_)
     , m_desc(desc)
     , m_value(val)
     , m_count(0)
@@ -1001,7 +1019,6 @@ namespace cxxopts
     {
       ensure_value(details);
       m_value->parse();
-      m_count++;
     }
 
     size_t
@@ -1038,9 +1055,9 @@ namespace cxxopts
   class KeyValue
   {
     public:
-    KeyValue(std::string key, std::string value)
-    : m_key(std::move(key))
-    , m_value(std::move(value))
+    KeyValue(std::string key_, std::string value_)
+    : m_key(std::move(key_))
+    , m_value(std::move(value_))
     {
     }
 
@@ -1078,9 +1095,9 @@ namespace cxxopts
     ParseResult(
       const std::unordered_map<std::string, std::shared_ptr<OptionDetails>>&,
       std::vector<std::string>,
-      int&, char**&);
+      int&, const char**&);
 
-    int
+    size_t
     count(const std::string& o) const
     {
       auto iter = m_options.find(o);
@@ -1121,7 +1138,7 @@ namespace cxxopts
     get_option(std::shared_ptr<OptionDetails>);
 
     void
-    parse(int& argc, char**& argv);
+    parse(int& argc, const char**& argv);
 
     void
     add_to_option(const std::string& option, const std::string& arg);
@@ -1144,7 +1161,7 @@ namespace cxxopts
     checked_parse_arg
     (
       int argc,
-      char* argv[],
+      const char* argv[],
       int& current,
       std::shared_ptr<OptionDetails> value,
       const std::string& name
@@ -1167,6 +1184,7 @@ namespace cxxopts
     Options(std::string program, std::string help_string = "")
     : m_program(std::move(program))
     , m_help_string(toLocalString(std::move(help_string)))
+    , m_custom_help("[OPTION...]")
     , m_positional_help("positional parameters")
     , m_show_positional(false)
     , m_next_positional(m_positional.end())
@@ -1181,6 +1199,13 @@ namespace cxxopts
     }
 
     Options&
+    custom_help(std::string help_text)
+    {
+      m_custom_help = std::move(help_text);
+      return *this;
+    }
+
+    Options&
     show_positional_help()
     {
       m_show_positional = true;
@@ -1188,7 +1213,7 @@ namespace cxxopts
     }
 
     ParseResult
-    parse(int& argc, char**& argv);
+    parse(int& argc, const char**& argv);
 
     OptionAdder
     add_options(std::string group = "");
@@ -1210,6 +1235,9 @@ namespace cxxopts
 
     void
     parse_positional(std::vector<std::string> options);
+
+    void
+    parse_positional(std::initializer_list<std::string> options);
 
     std::string
     help(const std::vector<std::string>& groups = {""}) const;
@@ -1244,6 +1272,7 @@ namespace cxxopts
 
     std::string m_program;
     String m_help_string;
+    std::string m_custom_help;
     std::string m_positional_help;
     bool m_show_positional;
 
@@ -1343,7 +1372,7 @@ namespace cxxopts
     {
       auto desc = o.desc;
 
-      if (o.has_default)
+      if (o.has_default && (!o.is_boolean || o.default_value != "false"))
       {
         desc += toLocalString(" (default: " + o.default_value + ")");
       }
@@ -1402,7 +1431,7 @@ ParseResult::ParseResult
 (
   const std::unordered_map<std::string, std::shared_ptr<OptionDetails>>& options,
   std::vector<std::string> positional,
-  int& argc, char**& argv
+  int& argc, const char**& argv
 )
 : m_options(options)
 , m_positional(std::move(positional))
@@ -1503,7 +1532,7 @@ void
 ParseResult::checked_parse_arg
 (
   int argc,
-  char* argv[],
+  const char* argv[],
   int& current,
   std::shared_ptr<OptionDetails> value,
   const std::string& name
@@ -1522,7 +1551,7 @@ ParseResult::checked_parse_arg
   }
   else
   {
-    if (argv[current + 1][0] == '-' && value->value().has_implicit())
+    if (value->value().has_implicit())
     {
       parse_option(value, name, value->value().get_implicit_value());
     }
@@ -1558,7 +1587,7 @@ ParseResult::consume_positional(std::string a)
     if (iter != m_options.end())
     {
       auto& result = m_results[iter->second];
-      if (!iter->second->value().is_container()) 
+      if (!iter->second->value().is_container())
       {
         if (result.count() == 0)
         {
@@ -1588,7 +1617,7 @@ inline
 void
 Options::parse_positional(std::string option)
 {
-  parse_positional(std::vector<std::string>{option});
+  parse_positional(std::vector<std::string>{std::move(option)});
 }
 
 inline
@@ -1602,8 +1631,15 @@ Options::parse_positional(std::vector<std::string> options)
 }
 
 inline
+void
+Options::parse_positional(std::initializer_list<std::string> options)
+{
+  parse_positional(std::vector<std::string>(std::move(options)));
+}
+
+inline
 ParseResult
-Options::parse(int& argc, char**& argv)
+Options::parse(int& argc, const char**& argv)
 {
   ParseResult result(m_options, m_positional, argc, argv);
   return result;
@@ -1611,7 +1647,7 @@ Options::parse(int& argc, char**& argv)
 
 inline
 void
-ParseResult::parse(int& argc, char**& argv)
+ParseResult::parse(int& argc, const char**& argv)
 {
   int current = 1;
 
@@ -1696,7 +1732,7 @@ ParseResult::parse(int& argc, char**& argv)
         auto opt = iter->second;
 
         //equals provided for long option?
-        if (result[3].length() != 0)
+        if (result[2].length() != 0)
         {
           //parse the option given
 
@@ -1918,9 +1954,9 @@ std::string
 Options::help(const std::vector<std::string>& help_groups) const
 {
   String result = m_help_string + "\nUsage:\n  " +
-    toLocalString(m_program) + " [OPTION...]";
+    toLocalString(m_program) + " " + toLocalString(m_custom_help);
 
-  if (m_positional.size() > 0) {
+  if (m_positional.size() > 0 && m_positional_help.size() > 0) {
     result += " " + toLocalString(m_positional_help);
   }
 
