@@ -1,5 +1,5 @@
-all:
-	mkdir -p build && cd build && cmake .. && make
+all: build_xcode
 
-clean:
-	rm -rf build
+clean: clean_builds
+
+include ../../Makefile.rules

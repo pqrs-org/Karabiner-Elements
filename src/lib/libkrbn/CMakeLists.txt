@@ -16,17 +16,18 @@ include_directories(
   /usr/local/include
   ../../share
   ../../vendor
+  ./include
 )
 
 add_library(
   krbn
-  libkrbn.cpp
-  libkrbn_complex_modifications_assets_manager.cpp
-  libkrbn_configuration.cpp
-  libkrbn_connected_devices.cpp
-  libkrbn_file_monitor.cpp
-  libkrbn_hid_value_observer.cpp
-  libkrbn_log_monitor.cpp
-  libkrbn_system_preferences_monitor.cpp
-  libkrbn_version_monitor.cpp
+  src/libkrbn.cpp
+  src/libkrbn_complex_modifications_assets_manager.cpp
+  src/libkrbn_configuration.cpp
+  src/libkrbn_connected_devices.cpp
+  src/libkrbn_file_monitor.cpp
+  src/libkrbn_hid_value_observer.cpp
+  src/libkrbn_log_monitor.cpp
+  src/libkrbn_system_preferences_monitor.cpp
+  src/libkrbn_version_monitor.cpp
 )
