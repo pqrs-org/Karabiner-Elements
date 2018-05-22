@@ -1,4 +1,4 @@
-#include "../../src/lib/libkrbn/libkrbn.h"
+#include "../../src/lib/libkrbn/include/libkrbn.h"
 #include "gcd_utility.hpp"
 #include "thread_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
