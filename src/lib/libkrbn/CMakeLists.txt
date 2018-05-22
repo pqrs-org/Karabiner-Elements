@@ -8,7 +8,8 @@ add_compile_options(
   -Wall
   -Werror
   -O2
-  -std=c++14
+  $<$<COMPILE_LANGUAGE:CXX>:-std=c++14>
+  $<$<COMPILE_LANGUAGE:C>:-fobjc-arc>
 )
 
 include_directories(
@@ -30,4 +31,5 @@ add_library(
   src/libkrbn_log_monitor.cpp
   src/libkrbn_system_preferences_monitor.cpp
   src/libkrbn_version_monitor.cpp
+  ../../share/frontmost_application_observer_objc.m
 )
