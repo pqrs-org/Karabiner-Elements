@@ -14,3 +14,9 @@ configure_file (
   "${CMAKE_CURRENT_LIST_DIR}/share/karabiner_version.h.in"
   "${CMAKE_CURRENT_LIST_DIR}/share/karabiner_version.h"
 )
+
+# Variables to avoid string replacement in Info.plist
+
+set(PLIST_EXECUTABLE_NAME "$\{EXECUTABLE_NAME\}")
+set(PLIST_MACOSX_DEPLOYMENT_TARGET "$\{MACOSX_DEPLOYMENT_TARGET\}")
+set(PLIST_PRODUCT_NAME "$\{PRODUCT_NAME\}")
