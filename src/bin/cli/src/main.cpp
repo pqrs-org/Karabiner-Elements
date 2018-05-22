@@ -53,7 +53,7 @@ int remove_system_default_profile(void) {
 }
 } // namespace
 
-int main(int argc, char* argv[]) {
+int main(int argc, const char** argv) {
   krbn::thread_utility::register_main_thread();
 
   {
