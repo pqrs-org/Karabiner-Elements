@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>Your Great App's Changelog</title>
+        <description>Most recent changes with links to updates.</description>
+        <language>en</language>
+        <item>
+            <title>Version 2.0 (2 bugs fixed; 3 new features)</title>
+            <sparkle:releaseNotesLink>
+                http://you.com/app/2.0.html
+            </sparkle:releaseNotesLink>
+            <pubDate>Wed, 09 Jan 2006 19:20:11 +0000</pubDate>
+            <enclosure url="http://you.com/app/Your%20Great%20App%202.0.zip" sparkle:version="2.0" length="1623481" type="application/octet-stream" sparkle:dsaSignature="BAFJW4B6B1K1JyW30nbkBwainOzrN6EQuAh" />
+            <sparkle:minimumSystemVersion>10.7</sparkle:minimumSystemVersion>
+        </item>
+
+        <item>
+            <title>Version 1.5 (8 bugs fixed; 2 new features)</title>
+            <sparkle:releaseNotesLink>
+                http://you.com/app/1.5.html
+            </sparkle:releaseNotesLink>
+            <pubDate>Wed, 01 Jan 2006 12:20:11 +0000</pubDate>
+            <enclosure url="http://you.com/app/Your%20Great%20App%201.5.zip" sparkle:version="1.5" length="1472893" type="application/octet-stream" sparkle:dsaSignature="234818feCa1JyW30nbkBwainOzrN6EQuAh" />
+            <sparkle:minimumSystemVersion>10.7</sparkle:minimumSystemVersion>
+        </item>
+
+        <!-- Now here's an example of a version with a weird internal version number (like an SVN revision) but a human-readable external one. -->
+        <item>
+            <title>Version 1.4 (5 bugs fixed; 2 new features)</title>
+            <sparkle:releaseNotesLink>
+                http://you.com/app/1.4.html
+            </sparkle:releaseNotesLink>
+            <pubDate>Wed, 25 Dec 2005 12:20:11 +0000</pubDate>
+            <enclosure url="http://you.com/app/Your%20Great%20App%201.4.zip" sparkle:version="241" sparkle:shortVersionString="1.4" sparkle:dsaSignature="MC0CFBfeCa1JyW30nbkBwainOzrN6EQuAh=" length="1472349" type="application/octet-stream" />
+            <sparkle:minimumSystemVersion>10.7</sparkle:minimumSystemVersion>
+        </item>
+    </channel>
+</rss>
