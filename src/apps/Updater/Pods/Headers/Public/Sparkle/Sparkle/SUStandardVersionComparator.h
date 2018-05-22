@@ -1,1 +1,0 @@
-../../../../Sparkle/Sparkle.framework/Versions/A/Headers/SUStandardVersionComparator.h
