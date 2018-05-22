@@ -15,12 +15,6 @@
 * cxxopts:
   * version: v2.0.0
   * url: <https://github.com/jarro2783/cxxopts/releases>
-* bitmask:
-  * version v1.1
-  * url: <https://github.com/oliora/bitmask/releases>
-* type_safe:
-  * version: 384b3e83ab78383933e5e3db203a1a85baac1bde
-  * url: <https://github.com/foonathan/type_safe>
 * Sparkle:
   * version: 1.19.0
   * url: <https://github.com/sparkle-project/Sparkle/releases>
