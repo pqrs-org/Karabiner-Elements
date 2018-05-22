@@ -36,7 +36,7 @@ cp src/core/grabber/build_xcode/build/Release/karabiner_grabber "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/updater"
 mkdir -p "$basedir"
-cp -R "src/apps/Updater/build/Release/Karabiner-Elements.app" "$basedir"
+cp -R "src/apps/Updater/build_xcode/build/Release/Karabiner-Elements.app" "$basedir"
 
 mkdir -p "pkgroot/Library"
 cp -R files/LaunchDaemons "pkgroot/Library"
@@ -48,7 +48,7 @@ cp -R src/vendor/Karabiner-VirtualHIDDevice/dist/org.pqrs.driver.Karabiner.Virtu
 
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"
-cp -R "src/apps/PreferencesWindow/build/Release/Karabiner-Elements.app" "$basedir"
+cp -R "src/apps/PreferencesWindow/build_xcode/build/Release/Karabiner-Elements.app" "$basedir"
 cp -R "src/apps/EventViewer/build_xcode/build/Release/Karabiner-EventViewer.app" "$basedir"
 
 # Sign with Developer ID
@@ -80,7 +80,7 @@ pkgbuild \
 	$archiveName/Installer.pkg
 
 productbuild \
-	--distribution pkginfo/Distribution.xml \
+	--distribution pkginfo/build/Distribution.xml \
 	--package-path $archiveName \
 	$archiveName/$pkgName
 
