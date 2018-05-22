@@ -4,7 +4,7 @@ all:
 
 clean: clean_builds
 
-run: all
+run:
 	./build_xcode/build/Release/Karabiner-EventViewer.app/Contents/MacOS/Karabiner-EventViewer
 
 include ../../Makefile.rules
