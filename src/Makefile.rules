@@ -10,7 +10,7 @@ build_xcode:
 	mkdir -p build_xcode \
 		&& cd build_xcode \
 		&& cmake -G Xcode .. \
-		&& xcodebuild -configuration Release SYMROOT="$(CURDIR)/build"
+		&& xcodebuild -configuration Release SYMROOT="$(CURDIR)/build_xcode/build"
 
 .PHONY: clean_builds
 clean_builds:
