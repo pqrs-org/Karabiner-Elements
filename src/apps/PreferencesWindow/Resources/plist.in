@@ -9,7 +9,7 @@
     <key>CFBundleIconFile</key>
     <string>app.icns</string>
     <key>CFBundleIdentifier</key>
-    <string>org.pqrs.Karabiner-Elements-Preferences-Window</string>
+    <string>org.pqrs.Karabiner-Elements.Preferences</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
