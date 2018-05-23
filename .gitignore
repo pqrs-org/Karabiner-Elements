@@ -8,8 +8,3 @@ a.out
 pkgroot/
 build/
 build_xcode/
-xcuserdata/
-*.mode1
-*.mode1v3
-*.pbxuser
-*.xccheckout
