@@ -16,14 +16,22 @@ public:
   typedef std::function<void(const T&)> handler;
 
   async_sequential_dispatcher(const handler& handler) : handler_(handler),
-                                                        exit_(false),
-                                                        worker_thread_(&async_sequential_dispatcher::loop, this) {
+                                                        exit_(false) {
+    refresh_worker_thread();
   }
 
   ~async_sequential_dispatcher(void) {
-    exit_ = true;
-    queue_cv_.notify_one();
-    worker_thread_.join();
+    {
+      std::unique_lock<std::mutex> queue_lock(queue_mutex_);
+      queue_.clear();
+    }
+
+    if (worker_thread_) {
+      exit_ = true;
+      queue_cv_.notify_one();
+      worker_thread_->join();
+      worker_thread_ = nullptr;
+    }
   }
 
   void push_back(const std::shared_ptr<T>& entry) {
@@ -38,18 +46,26 @@ public:
   }
 
   void wait(void) {
-    while (true) {
-      {
-        std::unique_lock<std::mutex> queue_lock(queue_mutex_);
-        if (queue_.empty()) {
-          break;
-        }
-      }
+    if (worker_thread_) {
+      exit_ = true;
       queue_cv_.notify_one();
+      worker_thread_->join();
+      worker_thread_ = nullptr;
     }
+
+    refresh_worker_thread();
   }
 
 private:
+  void refresh_worker_thread(void) {
+    if (worker_thread_) {
+      wait();
+    }
+
+    exit_ = false;
+    worker_thread_ = std::make_unique<std::thread>(&async_sequential_dispatcher::loop, this);
+  }
+
   void loop(void) {
     while (!exit_) {
       std::shared_ptr<T> entry;
@@ -74,12 +90,24 @@ private:
         handler_(*entry);
       }
     }
+
+    // Handle remaining entries
+
+    {
+      std::unique_lock<std::mutex> queue_lock(queue_mutex_);
+      while (!queue_.empty()) {
+        if (handler_) {
+          handler_(*(queue_.front()));
+          queue_.pop_front();
+        }
+      }
+    }
   }
 
   handler handler_;
 
   std::atomic<bool> exit_;
-  std::thread worker_thread_;
+  std::unique_ptr<std::thread> worker_thread_;
 
   std::deque<std::shared_ptr<T>> queue_;
   std::mutex queue_mutex_;
