@@ -33,11 +33,10 @@ void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
   }
 }
 
-bool libkrbn_core_configuration_save(libkrbn_core_configuration* p) {
+void libkrbn_core_configuration_save(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
-    return c->get_core_configuration().save_to_file(krbn::constants::get_user_core_configuration_file_path());
+    c->get_core_configuration().save_to_file(krbn::constants::get_user_core_configuration_file_path());
   }
-  return false;
 }
 
 bool libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(libkrbn_core_configuration* p) {

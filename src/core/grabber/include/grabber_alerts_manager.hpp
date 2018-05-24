@@ -92,7 +92,7 @@ private:
   void save_to_file_(void) {
     if (!output_json_file_path_.empty()) {
       filesystem::create_directory_with_intermediate_directories(filesystem::dirname(output_json_file_path_), 0755);
-      json_utility::save_to_file(to_json(), output_json_file_path_);
+      json_utility::save_to_file(to_json(), output_json_file_path_, 0644);
     }
   }
 

@@ -417,9 +417,9 @@ public:
   // the user data will be lost by the `save` method.
   // Thus, we should call the `save` method only when it is neccessary.
 
-  bool save_to_file(const std::string& file_path) {
+  void save_to_file(const std::string& file_path) {
     filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path), 0700);
-    return json_utility::save_to_file(to_json(), file_path);
+    json_utility::save_to_file(to_json(), file_path, 0600);
   }
 
 private:

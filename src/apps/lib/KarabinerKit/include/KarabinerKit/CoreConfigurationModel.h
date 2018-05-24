@@ -7,7 +7,7 @@
 
 - (instancetype)initWithInitializedCoreConfiguration:(libkrbn_core_configuration*)initializedCoreConfiguration;
 
-- (BOOL)save;
+- (void)save;
 
 @property BOOL globalConfigurationCheckForUpdatesOnStartup;
 @property BOOL globalConfigurationShowInMenuBar;

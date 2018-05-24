@@ -28,8 +28,8 @@
   }
 }
 
-- (BOOL)save {
-  return libkrbn_core_configuration_save(self.libkrbnCoreConfiguration);
+- (void)save {
+  libkrbn_core_configuration_save(self.libkrbnCoreConfiguration);
 }
 
 - (BOOL)globalConfigurationCheckForUpdatesOnStartup {

@@ -212,9 +212,9 @@ public:
     devices_.clear();
   }
 
-  bool save_to_file(const std::string& file_path) {
+  void save_to_file(const std::string& file_path) {
     filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path), 0755);
-    return json_utility::save_to_file(to_json(), file_path);
+    json_utility::save_to_file(to_json(), file_path, 0644);
   }
 
 private:

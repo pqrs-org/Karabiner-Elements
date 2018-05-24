@@ -66,8 +66,9 @@ public:
     return fallback_value;
   }
 
-  static bool save_to_file(const nlohmann::json& json,
-                           const std::string& file_path) {
+  static void save_to_file(const nlohmann::json& json,
+                           const std::string& file_path,
+                           boost::optional<mode_t> mode) {
     try {
       std::string tmp_file_path = file_path + ".tmp";
 
@@ -79,7 +80,9 @@ public:
 
         unlink(file_path.c_str());
         rename(tmp_file_path.c_str(), file_path.c_str());
-        return true;
+        if (mode) {
+          chmod(file_path.c_str(), *mode);
+        }
       } else {
         logger::get_logger().error("json_utility::save_to_file failed to open: {0}", file_path);
       }
@@ -87,8 +90,6 @@ public:
     } catch (std::exception& e) {
       logger::get_logger().error("json_utility::save_to_file error: {0}", e.what());
     }
-
-    return false;
   }
 };
 } // namespace krbn

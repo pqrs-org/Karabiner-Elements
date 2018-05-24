@@ -9,7 +9,7 @@
 + (id)loadFile:(NSString*)filePath;
 
 + (NSString*)createJsonString:(id)json;
-+ (void)saveJsonToFile:(id)json filePath:(NSString*)filePath;
++ (void)saveJsonToFile:(id)json filePath:(NSString*)filePath mode:(mode_t)mode;
 
 + (NSString*)createPrettyPrintedString:(NSString*)string;
 

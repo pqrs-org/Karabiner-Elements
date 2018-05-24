@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,7 +31,7 @@ const char* _Nonnull libkrbn_get_user_complex_modifications_assets_directory(voi
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name);
 void libkrbn_unlock_single_application(void);
 
-bool libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string);
+void libkrbn_save_beautified_json_string(const char* _Nonnull file_path, const char* _Nonnull json_string, mode_t mode);
 
 void libkrbn_launchctl_manage_console_user_server(bool load);
 void libkrbn_launchctl_restart_console_user_server(void);
@@ -60,7 +61,7 @@ bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* _Nonn
 
 typedef void libkrbn_core_configuration;
 void libkrbn_core_configuration_terminate(libkrbn_core_configuration* _Nullable* _Nonnull p);
-bool libkrbn_core_configuration_save(libkrbn_core_configuration* _Nonnull p);
+void libkrbn_core_configuration_save(libkrbn_core_configuration* _Nonnull p);
 
 // global_configuration
 

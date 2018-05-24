@@ -746,9 +746,7 @@ private:
     }
 
     auto file_path = constants::get_devices_json_file_path();
-    if (connected_devices.save_to_file(file_path)) {
-      chmod(file_path, 0644);
-    }
+    connected_devices.save_to_file(file_path);
   }
 
   void output_device_details_json(void) const {
@@ -766,7 +764,7 @@ private:
 
     auto file_path = constants::get_device_details_json_file_path();
     filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path), 0755);
-    json_utility::save_to_file(nlohmann::json(device_details), file_path);
+    json_utility::save_to_file(nlohmann::json(device_details), file_path, 0644);
   }
 
   void set_profile(const core_configuration::profile& profile) {
