@@ -17,9 +17,7 @@ public:
 
   async_sequential_dispatcher(const handler& handler) : handler_(handler),
                                                         exit_(false),
-                                                        worker_thread_([this] {
-                                                          loop();
-                                                        }) {
+                                                        worker_thread_(&async_sequential_dispatcher::loop, this) {
   }
 
   ~async_sequential_dispatcher(void) {
