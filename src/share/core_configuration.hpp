@@ -418,8 +418,7 @@ public:
   // Thus, we should call the `save` method only when it is neccessary.
 
   void save_to_file(const std::string& file_path) {
-    filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path), 0700);
-    json_utility::save_to_file(to_json(), file_path, 0600);
+    json_utility::save_to_file(to_json(), file_path, 0700, 0600);
   }
 
 private:

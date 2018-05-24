@@ -763,8 +763,7 @@ private:
               });
 
     auto file_path = constants::get_device_details_json_file_path();
-    filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path), 0755);
-    json_utility::save_to_file(nlohmann::json(device_details), file_path, 0644);
+    json_utility::save_to_file(nlohmann::json(device_details), file_path, 0755, 0644);
   }
 
   void set_profile(const core_configuration::profile& profile) {

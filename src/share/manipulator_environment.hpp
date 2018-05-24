@@ -151,8 +151,7 @@ public:
 private:
   void save_to_file(void) const {
     if (!output_json_file_path_.empty()) {
-      filesystem::create_directory_with_intermediate_directories(filesystem::dirname(output_json_file_path_), 0755);
-      json_utility::save_to_file(to_json(), output_json_file_path_, 0644);
+      json_utility::save_to_file(to_json(), output_json_file_path_, 0755, 0644);
     }
   }
 

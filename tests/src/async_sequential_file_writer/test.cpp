@@ -10,11 +10,11 @@ TEST_CASE("initialize") {
 
 TEST_CASE("async_sequential_file_writer") {
   krbn::async_sequential_file_writer writer;
-  writer.push_back("tmp/example", "example1", boost::none);
-  writer.push_back("tmp/example", "example2", boost::none);
-  writer.push_back("tmp/example", "example3", boost::none);
-  writer.push_back("tmp/mode666", "mode666", 0666);
-  writer.push_back("tmp/mode644", "mode644", 0644);
-  writer.push_back("not_found/example", "example", boost::none);
+  writer.push_back("tmp/example", "example1", 0755, 0600);
+  writer.push_back("tmp/example", "example2", 0755, 0600);
+  writer.push_back("tmp/example", "example3", 0755, 0600);
+  writer.push_back("tmp/mode666", "mode666", 0755, 0666);
+  writer.push_back("tmp/mode644", "mode644", 0755, 0644);
+  writer.push_back("tmp/not_found/example", "example", 0755, 0600);
   writer.wait();
 }

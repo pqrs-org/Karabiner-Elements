@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "filesystem.hpp"
 #include "logger.hpp"
 #include <boost/optional.hpp>
 #include <fstream>
@@ -68,8 +69,12 @@ public:
 
   static void save_to_file(const nlohmann::json& json,
                            const std::string& file_path,
-                           boost::optional<mode_t> mode) {
+                           mode_t parent_directory_mode,
+                           mode_t file_mode) {
     try {
+      filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path),
+                                                                 parent_directory_mode);
+
       std::string tmp_file_path = file_path + ".tmp";
 
       unlink(tmp_file_path.c_str());
@@ -80,9 +85,7 @@ public:
 
         unlink(file_path.c_str());
         rename(tmp_file_path.c_str(), file_path.c_str());
-        if (mode) {
-          chmod(file_path.c_str(), *mode);
-        }
+        chmod(file_path.c_str(), file_mode);
       } else {
         logger::get_logger().error("json_utility::save_to_file failed to open: {0}", file_path);
       }

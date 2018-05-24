@@ -61,10 +61,16 @@
   return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
-+ (void)saveJsonToFile:(id)json filePath:(NSString*)filePath mode:(mode_t)mode {
++ (void)saveJsonToFile:(id)json
+               filePath:(NSString*)filePath
+    parentDirectoryMode:(mode_t)parentDirectoryMode
+               fileMode:(mode_t)fileMode {
   NSString* string = [self createJsonString:json];
   if (string) {
-    libkrbn_save_beautified_json_string(filePath.UTF8String, string.UTF8String, mode);
+    libkrbn_save_beautified_json_string(filePath.UTF8String,
+                                        string.UTF8String,
+                                        parentDirectoryMode,
+                                        fileMode);
   }
 }
 

@@ -1,10 +1,8 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "async_sequential_dispatcher.hpp"
+#include "filesystem.hpp"
 #include "logger.hpp"
-#include <boost/optional.hpp>
 #include <fstream>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -16,9 +14,11 @@ public:
   public:
     entry(const std::string& file_path,
           const std::string& body,
-          boost::optional<mode_t> mode) : file_path_(file_path),
-                                          body_(body),
-                                          mode_(mode) {
+          mode_t parent_directory_mode,
+          mode_t file_mode) : file_path_(file_path),
+                              body_(body),
+                              parent_directory_mode_(parent_directory_mode),
+                              file_mode_(file_mode) {
     }
 
     const std::string& get_file_path(void) const {
@@ -29,14 +29,19 @@ public:
       return body_;
     }
 
-    boost::optional<mode_t> get_mode(void) const {
-      return mode_;
+    mode_t get_parent_directory_mode(void) const {
+      return parent_directory_mode_;
+    }
+
+    mode_t get_file_mode(void) const {
+      return file_mode_;
     }
 
   private:
     std::string file_path_;
     std::string body_;
-    boost::optional<mode_t> mode_;
+    mode_t parent_directory_mode_;
+    mode_t file_mode_;
   };
 
   async_sequential_file_writer(void) : async_sequential_dispatcher_(std::bind(&async_sequential_file_writer::write,
@@ -46,8 +51,12 @@ public:
 
   void push_back(const std::string& file_path,
                  const std::string& body,
-                 boost::optional<mode_t> mode) {
-    async_sequential_dispatcher_.push_back(std::make_shared<entry>(file_path, body, mode));
+                 mode_t parent_directory_mode,
+                 mode_t file_mode) {
+    async_sequential_dispatcher_.push_back(std::make_shared<entry>(file_path,
+                                                                   body,
+                                                                   parent_directory_mode,
+                                                                   file_mode));
   }
 
   void wait(void) {
@@ -57,6 +66,9 @@ public:
 private:
   void write(const entry& entry) {
     try {
+      filesystem::create_directory_with_intermediate_directories(filesystem::dirname(entry.get_file_path()),
+                                                                 entry.get_parent_directory_mode());
+
       std::string tmp_file_path = entry.get_file_path() + ".tmp";
 
       unlink(tmp_file_path.c_str());
@@ -68,9 +80,7 @@ private:
         unlink(entry.get_file_path().c_str());
         rename(tmp_file_path.c_str(), entry.get_file_path().c_str());
 
-        if (auto mode = entry.get_mode()) {
-          chmod(entry.get_file_path().c_str(), *mode);
-        }
+        chmod(entry.get_file_path().c_str(), entry.get_file_mode());
       } else {
         logger::get_logger().error("json_utility::save_to_file failed to open: {0}", entry.get_file_path());
       }
