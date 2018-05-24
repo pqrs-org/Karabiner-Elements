@@ -59,19 +59,3 @@ TEST_CASE("find_optional") {
   REQUIRE(krbn::json_utility::find_copy(json, "object", nlohmann::json("fallback_value")) == json["object"]);
   REQUIRE(krbn::json_utility::find_copy(json, "unknown", nlohmann::json("fallback_value")) == nlohmann::json("fallback_value"));
 }
-
-TEST_CASE("save_to_file") {
-  nlohmann::json json;
-  json["number"] = 123;
-
-  REQUIRE(krbn::json_utility::save_to_file(json, "404/saved.json") == false);
-
-  unlink("tmp/saved.json");
-  REQUIRE(krbn::json_utility::save_to_file(json, "tmp/saved.json"));
-  {
-    std::ifstream ifs("tmp/saved.json");
-    REQUIRE(ifs);
-    auto j = nlohmann::json::parse(ifs);
-    REQUIRE(json == j);
-  }
-}
