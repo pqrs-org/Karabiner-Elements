@@ -63,6 +63,18 @@ public:
     async_sequential_dispatcher_.wait();
   }
 
+  static async_sequential_file_writer& get_instance(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
+    static std::unique_ptr<async_sequential_file_writer> instance_;
+    if (!instance_) {
+      instance_ = std::make_unique<async_sequential_file_writer>();
+    }
+
+    return *instance_;
+  }
+
 private:
   void write(const entry& entry) {
     try {

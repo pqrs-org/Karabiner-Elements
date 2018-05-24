@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "async_sequential_file_writer.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
 #include <boost/optional.hpp>
@@ -70,28 +71,15 @@ public:
   static void save_to_file(const nlohmann::json& json,
                            const std::string& file_path,
                            mode_t parent_directory_mode,
-                           mode_t file_mode) {
-    try {
-      filesystem::create_directory_with_intermediate_directories(filesystem::dirname(file_path),
-                                                                 parent_directory_mode);
+                           mode_t file_mode,
+                           bool wait = false) {
+    async_sequential_file_writer::get_instance().push_back(file_path,
+                                                           json.dump(4),
+                                                           parent_directory_mode,
+                                                           file_mode);
 
-      std::string tmp_file_path = file_path + ".tmp";
-
-      unlink(tmp_file_path.c_str());
-
-      std::ofstream output(tmp_file_path);
-      if (output) {
-        output << std::setw(4) << json << std::endl;
-
-        unlink(file_path.c_str());
-        rename(tmp_file_path.c_str(), file_path.c_str());
-        chmod(file_path.c_str(), file_mode);
-      } else {
-        logger::get_logger().error("json_utility::save_to_file failed to open: {0}", file_path);
-      }
-
-    } catch (std::exception& e) {
-      logger::get_logger().error("json_utility::save_to_file error: {0}", e.what());
+    if (wait) {
+      async_sequential_file_writer::get_instance().wait();
     }
   }
 };

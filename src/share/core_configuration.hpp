@@ -418,7 +418,7 @@ public:
   // Thus, we should call the `save` method only when it is neccessary.
 
   void save_to_file(const std::string& file_path) {
-    json_utility::save_to_file(to_json(), file_path, 0700, 0600);
+    json_utility::save_to_file(to_json(), file_path, 0700, 0600, true);
   }
 
 private:
