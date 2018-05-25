@@ -62,18 +62,6 @@ void libkrbn_unlock_single_application(void) {
   krbn::process_utility::unlock_single_application();
 }
 
-void libkrbn_save_beautified_json_string(const char* _Nonnull file_path,
-                                         const char* _Nonnull json_string,
-                                         mode_t parent_directory_mode,
-                                         mode_t file_mode) {
-  try {
-    // nlohmann::json sorts dictionary keys.
-    auto json = nlohmann::json::parse(json_string);
-    krbn::json_utility::save_to_file(json, file_path, parent_directory_mode, file_mode);
-  } catch (std::exception& e) {
-  }
-}
-
 void libkrbn_launchctl_manage_console_user_server(bool load) {
   krbn::launchctl_utility::manage_console_user_server(load);
 }

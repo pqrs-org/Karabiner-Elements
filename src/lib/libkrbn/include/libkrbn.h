@@ -31,11 +31,6 @@ const char* _Nonnull libkrbn_get_user_complex_modifications_assets_directory(voi
 bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name);
 void libkrbn_unlock_single_application(void);
 
-void libkrbn_save_beautified_json_string(const char* _Nonnull file_path,
-                                         const char* _Nonnull json_string,
-                                         mode_t parent_directory_mode,
-                                         mode_t file_mode);
-
 void libkrbn_launchctl_manage_console_user_server(bool load);
 void libkrbn_launchctl_restart_console_user_server(void);
 
