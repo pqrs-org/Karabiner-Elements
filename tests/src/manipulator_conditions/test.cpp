@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
+#include "../share/json_helper.hpp"
 #include "manipulator/condition_manager.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "thread_utility.hpp"
@@ -159,6 +160,11 @@ TEST_CASE("manipulator_environment.save_to_file") {
   manipulator_environment.set_variable("value1", 100);
   manipulator_environment.set_variable("value2", 200);
   manipulator_environment.set_keyboard_type("iso");
+
+  krbn::async_sequential_file_writer::get_instance().wait();
+
+  REQUIRE(krbn::unit_testing::json_helper::compare_files("expected/manipulator_environment.json",
+                                                         "tmp/manipulator_environment.json"));
 }
 
 TEST_CASE("conditions.frontmost_application") {

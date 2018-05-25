@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
+#include "../share/json_helper.hpp"
 #include "grabber_alerts_manager.hpp"
 #include "thread_utility.hpp"
 #include <unistd.h>
@@ -35,15 +36,7 @@ TEST_CASE("set_alert") {
   krbn::async_sequential_file_writer::get_instance().wait();
 
   for (const auto& file_name : file_names) {
-    std::ifstream expected_stream("expected/"s + file_name);
-    std::ifstream actual_stream("tmp/"s + file_name);
-
-    nlohmann::json expected;
-    expected_stream >> expected;
-
-    nlohmann::json actual;
-    actual_stream >> actual;
-
-    REQUIRE(expected == actual);
+    REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/"s + file_name,
+                                                           "expected/"s + file_name));
   }
 }
