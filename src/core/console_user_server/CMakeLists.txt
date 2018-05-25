@@ -4,19 +4,7 @@ include (../../common.cmake)
 
 project (karabiner_console_user_server)
 
-add_compile_options(
-  -Wall
-  -Werror
-  -O2
-  $<$<COMPILE_LANGUAGE:CXX>:-std=c++14>
-  $<$<COMPILE_LANGUAGE:C>:-fobjc-arc>
-)
-
 include_directories(
-  /opt/local/include
-  /usr/local/include
-  ../../share
-  ../../vendor
   ./include
 )
 

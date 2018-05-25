@@ -4,20 +4,6 @@ include (../../common.cmake)
 
 project (karabiner_cli)
 
-add_compile_options(
-  -Wall
-  -Werror
-  -O2
-  -std=c++14
-)
-
-include_directories(
-  /opt/local/include
-  /usr/local/include
-  ../../share
-  ../../vendor
-)
-
 add_executable(
   karabiner_cli
   src/main.cpp

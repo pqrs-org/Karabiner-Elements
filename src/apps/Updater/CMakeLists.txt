@@ -5,19 +5,10 @@ include (../../common.cmake)
 project (Karabiner-Elements)
 
 add_compile_options(
-  -Wall
-  -Werror
-  -O2
-  -fmodules
-  -fobjc-arc
   -F${CMAKE_CURRENT_LIST_DIR}/../../vendor/Sparkle
 )
 
 include_directories(
-  /opt/local/include
-  /usr/local/include
-  ../../share
-  ../../vendor
   ../../lib/libkrbn/include
   ../lib/KarabinerKit/include
   ../share

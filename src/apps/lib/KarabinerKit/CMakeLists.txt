@@ -4,19 +4,7 @@ include (../../../common.cmake)
 
 project (KarabinerKit)
 
-add_compile_options(
-  -Wall
-  -Werror
-  -O2
-  -fmodules
-  -fobjc-arc
-)
-
 include_directories(
-  /opt/local/include
-  /usr/local/include
-  ../../../share
-  ../../../vendor
   ../../../lib/libkrbn/include
   ./include
 )
