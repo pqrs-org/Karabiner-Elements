@@ -1,11 +1,6 @@
-include ../Makefile.common
+all: build_make
+	./build/test
 
-CXXFLAGS += \
-	-I../../../src/share \
-	-I../../../src/vendor \
-	-I../../../src/core/grabber/include
+clean: clean_builds
 
-include ../Makefile.rules
-
-a.out: $(SOURCES)
-	$(CXX) $(CXXFLAGS) -o $@ $(SOURCES) $(LDFLAGS)
+include ../../../src/Makefile.rules

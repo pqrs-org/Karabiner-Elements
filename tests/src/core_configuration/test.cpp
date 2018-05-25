@@ -141,7 +141,7 @@ TEST_CASE("broken.json") {
     }
   }
   {
-    krbn::core_configuration configuration("a.out");
+    krbn::core_configuration configuration("/bin/ls");
 
     REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
     REQUIRE(configuration.is_loaded() == false);

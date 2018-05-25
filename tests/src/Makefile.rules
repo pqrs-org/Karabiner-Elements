@@ -1,7 +1,0 @@
-all: run
-
-run: a.out
-	@./a.out
-
-clean::
-	rm -f *.o a.out

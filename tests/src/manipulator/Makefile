@@ -1,18 +1,6 @@
-include ../Makefile.common
+all: build_make
+	./build/test
 
-CXXFLAGS += \
-	-I../../../src/share \
-	-I../../../src/vendor \
-	-I../../../src/core/grabber/include
+clean: clean_builds
 
-LDFLAGS += -framework CoreFoundation
-
-include ../Makefile.rules
-
-a.out: test.cpp
-	$(CXX) $(CXXFLAGS) -o $@ test.cpp $(LDFLAGS)
-
-.PHONY: overwrite_expected_results
-overwrite_expected_results: overwrite_expected_results.cpp
-	$(CXX) $(CXXFLAGS) -o $@ overwrite_expected_results.cpp $(LDFLAGS)
-	./overwrite_expected_results
+include ../../../src/Makefile.rules

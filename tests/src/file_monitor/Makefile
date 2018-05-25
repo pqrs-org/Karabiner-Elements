@@ -1,15 +1,6 @@
-include ../Makefile.common
+all: build_make
+	bash ./run.bash
 
-CXXFLAGS += \
-	-I../../../src/share \
-	-I../../../src/vendor
+clean: clean_builds
 
-LDFLAGS += -framework Carbon
-
-include ../Makefile.rules
-
-a.out: $(SOURCES)
-	$(CXX) $(CXXFLAGS) -o $@ $(SOURCES) $(LDFLAGS)
-
-run: a.out
-	./run.sh
+include ../../../src/Makefile.rules
