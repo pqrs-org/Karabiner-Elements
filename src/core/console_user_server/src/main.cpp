@@ -22,6 +22,7 @@ int main(int argc, const char* argv[]) {
       krbn::filesystem::create_directory_with_intermediate_directories(log_directory, 0700);
 
       if (krbn::filesystem::is_directory(log_directory)) {
+        spd::set_async_mode(4096);
         std::string log_file_path = log_directory + "/console_user_server.log";
         auto l = spdlog::rotating_logger_mt("console_user_server", log_file_path.c_str(), 256 * 1024, 3);
         l->flush_on(spdlog::level::info);
