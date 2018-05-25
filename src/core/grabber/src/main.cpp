@@ -28,7 +28,7 @@ int main(int argc, const char* argv[]) {
     auto log_directory = "/var/log/karabiner";
     mkdir(log_directory, 0755);
     if (krbn::filesystem::is_directory(log_directory)) {
-      spd::set_async_mode(4096);
+      spdlog::set_async_mode(4096);
       auto l = spdlog::rotating_logger_mt("grabber", "/var/log/karabiner/grabber.log", 256 * 1024, 3);
       l->flush_on(spdlog::level::info);
       l->set_pattern(krbn::spdlog_utility::get_pattern());
