@@ -8,6 +8,8 @@ build:
 clean:
 	$(MAKE) -C pkginfo clean
 	$(MAKE) -C src clean
+	rm -rf pkgroot
+	rm -f *.dmg
 
 gitclean:
 	git clean -f -x -d
