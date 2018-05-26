@@ -2,7 +2,7 @@
 
 cd $(dirname $0)
 
-./build/test >log
+./build/karabiner_test >log
 
 [ $(grep test1 log | grep -c info) != '1' ] && exit 1
 [ $(grep test1 log | grep -c warn) != '1' ] && exit 1

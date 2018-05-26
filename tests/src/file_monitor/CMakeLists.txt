@@ -2,14 +2,14 @@ cmake_minimum_required (VERSION 3.9)
 
 include (../../../src/common.cmake)
 
-project (test)
+project (karabiner_test)
 
 add_executable(
-  test
+  karabiner_test
   test.cpp
 )
 
 target_link_libraries(
-  test
+  karabiner_test
   "-framework CoreServices"
 )

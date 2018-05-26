@@ -1,5 +1,5 @@
 all: build_make
-	./build/test
+	./build/karabiner_test
 	rmdir mkdir_example/a/b/c/d/e
 	rmdir mkdir_example/a/b/c/d
 	rmdir mkdir_example/a/b/c

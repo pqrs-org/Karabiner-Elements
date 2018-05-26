@@ -6,7 +6,7 @@ cd "$basedir"
 
 rm -rf target
 
-./build/test &
+./build/karabiner_test &
 
 sleep 1 && mkdir -p target/sub
 # generic file modification
