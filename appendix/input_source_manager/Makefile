@@ -1,7 +1,8 @@
-all: main.o
-	c++ -framework CoreFoundation -framework Carbon -framework Cocoa main.o
+all: build_make
 
-run: all
-	./a.out
+clean: clean_builds
 
-include ../Makefile.rules
+run:
+	./build/a.out
+
+include ../../src/Makefile.rules

@@ -1,7 +1,8 @@
-all: main.o
-	c++ -framework CoreFoundation -framework Security main.o
+all: build_make
 
-run: all
-	./a.out $(shell ps uxaw |grep karabiner_grabber | grep -v grep | awk '{print $$2}')
+clean: clean_builds
 
-include ../Makefile.rules
+run:
+	./build/a.out $(shell ps uxaw |grep karabiner_grabber | grep -v grep | awk '{print $$2}')
+
+include ../../src/Makefile.rules

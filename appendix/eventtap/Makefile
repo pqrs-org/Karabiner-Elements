@@ -1,7 +1,8 @@
-all: main.o
-	c++ -framework CoreFoundation -framework CoreGraphics main.o
+all: build_make
 
-run: all
-	sudo ./a.out
+clean: clean_builds
 
-include ../Makefile.rules
+run:
+	sudo ./build/a.out
+
+include ../../src/Makefile.rules

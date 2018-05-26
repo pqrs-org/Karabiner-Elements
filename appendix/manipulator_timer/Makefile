@@ -1,8 +1,8 @@
-all: main.o
-	c++ -framework CoreFoundation -framework SystemConfiguration main.o
+all: build_make
 
-run: all
-	./a.out
+clean: clean_builds
 
-include ../Makefile.rules
-CXXFLAGS += -I../../src/core/grabber/include
+run:
+	./build/a.out
+
+include ../../src/Makefile.rules

@@ -1,6 +1,0 @@
-CFLAGS   = -I../../src/share -I../../src/vendor -I/opt/local/include -I/usr/local/include -Wall -Werror -O2 -fobjc-arc
-CXXFLAGS = $(CFLAGS) -std=c++14
-
-clean:
-	rm -f *.o
-	rm -f a.out

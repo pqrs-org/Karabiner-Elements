@@ -133,6 +133,7 @@ int main(int argc, const char* argv[]) {
 
   if (getuid() != 0) {
     krbn::logger::get_logger().error("control_led requires root privilege.");
+    return 1;
   }
 
   control_led d;
