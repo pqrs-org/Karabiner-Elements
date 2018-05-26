@@ -8,8 +8,8 @@ echo "Countdown 1"
 sleep 1
 echo "Start"
 
-for i in $(seq 1 10); do
-	./build/a.out >/dev/null &
+for i in $(seq 1 50); do
+	./build/a.out &
 done
 
 ./build/a.out
