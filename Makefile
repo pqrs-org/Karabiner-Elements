@@ -1,4 +1,4 @@
-all: gitclean
+all: clean
 	./make-package.sh
 
 build:
