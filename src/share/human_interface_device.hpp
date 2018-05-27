@@ -31,12 +31,6 @@
 namespace krbn {
 class human_interface_device final {
 public:
-  enum class grabbable_state {
-    grabbable,
-    ungrabbable_temporarily,
-    ungrabbable_permanently,
-  };
-
   typedef std::function<void(human_interface_device& device,
                              event_queue& event_queue)>
       value_callback;
@@ -545,7 +539,7 @@ public:
 
     if (keyboard_repeat_detector_.is_repeating()) {
       is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while a key is repeating.");
-      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+      return grabbable_state::ungrabbable_temporarily;
     }
 
     // Ungrabbable while modifier keys are pressed
@@ -561,7 +555,7 @@ public:
       }
       ss << ")";
       is_grabbable_callback_log_reducer_.warn(ss.str());
-      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+      return grabbable_state::ungrabbable_temporarily;
     }
 
     // ----------------------------------------
@@ -572,7 +566,7 @@ public:
       // (To release the button, we have to send a hid report to the device. But we cannot do it.)
 
       is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while mouse buttons are pressed.");
-      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+      return grabbable_state::ungrabbable_temporarily;
     }
 
     // ----------------------------------------
@@ -859,19 +853,4 @@ private:
   std::unordered_set<uint64_t> pressed_keys_;
   std::unordered_set<uint64_t> pressed_pointing_buttons_;
 };
-
-inline std::ostream& operator<<(std::ostream& stream, const human_interface_device::grabbable_state& value) {
-  switch (value) {
-    case human_interface_device::grabbable_state::grabbable:
-      stream << "grabbable";
-      break;
-    case human_interface_device::grabbable_state::ungrabbable_temporarily:
-      stream << "ungrabbable_temporarily";
-      break;
-    case human_interface_device::grabbable_state::ungrabbable_permanently:
-      stream << "ungrabbable_permanently";
-      break;
-  }
-  return stream;
-}
 } // namespace krbn

@@ -182,7 +182,7 @@ public:
   void grab_devices(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       for (const auto& it : hids_) {
-        if ((it.second)->is_grabbable() == human_interface_device::grabbable_state::ungrabbable_permanently) {
+        if ((it.second)->is_grabbable() == grabbable_state::ungrabbable_permanently) {
           (it.second)->ungrab();
         } else {
           (it.second)->grab();
@@ -514,14 +514,14 @@ private:
     krbn_notification_center::get_instance().input_event_arrived();
   }
 
-  human_interface_device::grabbable_state is_grabbable_callback(human_interface_device& device) {
+  grabbable_state is_grabbable_callback(human_interface_device& device) {
     if (is_ignored_device(device)) {
       // If we need to disable the built-in keyboard, we have to grab it.
       if (device.is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
         // Do nothing
       } else {
         logger::get_logger().info("{0} is ignored.", device.get_name_for_log());
-        return human_interface_device::grabbable_state::ungrabbable_permanently;
+        return grabbable_state::ungrabbable_permanently;
       }
     }
 
@@ -531,18 +531,18 @@ private:
     if (!virtual_hid_device_client_.is_connected()) {
       std::string message = "virtual_hid_device_client is not connected yet. Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);
-      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+      return grabbable_state::ungrabbable_temporarily;
     }
 
     if (!virtual_hid_device_client_.is_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);
-      return human_interface_device::grabbable_state::ungrabbable_temporarily;
+      return grabbable_state::ungrabbable_temporarily;
     }
 
     // ----------------------------------------
 
-    return human_interface_device::grabbable_state::grabbable;
+    return grabbable_state::grabbable;
   }
 
   void grabbed_callback(human_interface_device& device) {

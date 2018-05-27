@@ -327,6 +327,12 @@ enum class led_state : uint32_t {
   off,
 };
 
+enum class grabbable_state : uint32 {
+  grabbable,
+  ungrabbable_temporarily,
+  ungrabbable_permanently,
+};
+
 enum class registry_entry_id : uint64_t {
   zero = 0,
 };
@@ -2030,6 +2036,21 @@ inline std::ostream& operator<<(std::ostream& stream, const container<modifier_f
 template <template <class T, class H, class K, class A> class container>
 inline std::ostream& operator<<(std::ostream& stream, const container<modifier_flag, std::hash<modifier_flag>, std::equal_to<modifier_flag>, std::allocator<modifier_flag>>& values) {
   return stream_utility::output_enums(stream, values);
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const grabbable_state& value) {
+  switch (value) {
+    case grabbable_state::grabbable:
+      stream << "grabbable";
+      break;
+    case grabbable_state::ungrabbable_temporarily:
+      stream << "ungrabbable_temporarily";
+      break;
+    case grabbable_state::ungrabbable_permanently:
+      stream << "ungrabbable_permanently";
+      break;
+  }
+  return stream;
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const pointing_motion& value) {
