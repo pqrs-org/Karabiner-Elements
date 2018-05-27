@@ -11,6 +11,7 @@
 * Increased rollover limit of virtual keyboard. (6 -&gt; 32)<br />
   This change mainly improves usability when you are using multiple keyboards at the same time.
 * Improved modifier flags handling in `to_after_key_up` and `to_if_alone`.
+* Fixed a random key repeat issue at extremely high system CPU usage.
 * Incompatible changes
   * Changed the order of `to_if_alone` and `to_after_key_up` event handling.<br />
     `to_if_alone` will be handled before `to_after_key_up`.
