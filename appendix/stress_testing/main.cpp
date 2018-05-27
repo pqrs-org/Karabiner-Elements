@@ -28,9 +28,9 @@ int main(void) {
     std::this_thread::sleep_for(10s);
   }
 
-  lock.clear(std::memory_order_release);
-
   // Stop threads
+
+  lock.clear(std::memory_order_release);
 
   for (auto&& t : threads) {
     t.join();
