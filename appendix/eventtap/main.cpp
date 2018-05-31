@@ -44,6 +44,8 @@ int main(int argc, const char* argv[]) {
   }
 
   auto mask = CGEventMaskBit(kCGEventFlagsChanged) |
+              CGEventMaskBit(kCGEventKeyDown) |
+              CGEventMaskBit(kCGEventKeyUp) |
               CGEventMaskBit(kCGEventLeftMouseDown) |
               CGEventMaskBit(kCGEventLeftMouseUp) |
               CGEventMaskBit(kCGEventRightMouseDown) |
