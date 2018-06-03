@@ -333,6 +333,13 @@ enum class grabbable_state : uint32 {
   ungrabbable_permanently,
 };
 
+enum class ungrabbable_temporarily_reason : uint32 {
+  none,
+  key_repeating,
+  modifier_key_pressed,
+  pointing_button_pressed,
+};
+
 enum class registry_entry_id : uint64_t {
   zero = 0,
 };
