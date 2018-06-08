@@ -5,6 +5,7 @@
 #include <array>
 #include <boost/optional.hpp>
 #include <climits>
+#include <fstream>
 #include <string>
 #include <sys/stat.h>
 
@@ -30,6 +31,19 @@ public:
     }
 
     return true;
+  }
+
+  static void copy(const std::string& from_file_path,
+                   const std::string& to_file_path) {
+    std::ifstream ifstream(from_file_path);
+    if (!ifstream) {
+      return;
+    }
+    std::ofstream ofstream(to_file_path);
+    if (!ofstream) {
+      return;
+    }
+    ofstream << ifstream.rdbuf();
   }
 
   static boost::optional<off_t> file_size(const std::string& path) {
