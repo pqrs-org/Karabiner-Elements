@@ -6,6 +6,7 @@
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "session.hpp"
+#include "time_utility.hpp"
 #include "types.hpp"
 #include <fstream>
 #include <json/json.hpp>
@@ -417,11 +418,37 @@ public:
   // the user data will be lost by the `save` method.
   // Thus, we should call the `save` method only when it is neccessary.
 
-  void save_to_file_synchronously(const std::string& file_path) {
+  void save_to_file_synchronously(void) {
+    make_backup_file();
+
+    auto file_path = constants::get_user_core_configuration_file_path();
     json_utility::save_to_file(to_json(), file_path, 0700, 0600, true);
   }
 
 private:
+  void make_backup_file(void) {
+    auto file_path = constants::get_user_core_configuration_file_path();
+
+    if (!filesystem::exists(file_path)) {
+      return;
+    }
+
+    auto backups_directory = constants::get_user_core_configuration_automatic_backups_directory();
+    if (backups_directory.empty()) {
+      return;
+    }
+
+    filesystem::create_directory_with_intermediate_directories(backups_directory, 0700);
+
+    auto backup_file_path = backups_directory +
+                            "/karabiner." + time_utility::make_current_local_yyyymmdd_string() + ".json";
+    if (filesystem::exists(backup_file_path)) {
+      return;
+    }
+
+    filesystem::copy(file_path, backup_file_path);
+  }
+
   nlohmann::json json_;
   bool loaded_;
 

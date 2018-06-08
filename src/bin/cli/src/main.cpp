@@ -16,7 +16,7 @@ void select_profile(const std::string& name) {
                                         for (size_t i = 0; i < profiles.size(); ++i) {
                                           if (profiles[i].get_name() == name) {
                                             core_configuration->select_profile(i);
-                                            core_configuration->save_to_file_synchronously(krbn::constants::get_user_core_configuration_file_path());
+                                            core_configuration->save_to_file_synchronously();
                                             return;
                                           }
                                         }
@@ -26,17 +26,8 @@ void select_profile(const std::string& name) {
 
 int copy_current_profile_to_system_default_profile(void) {
   krbn::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_system_configuration_directory(), 0755);
-  std::ifstream ifstream(krbn::constants::get_user_core_configuration_file_path());
-  if (!ifstream) {
-    krbn::logger::get_logger().error("Failed to open {0}", krbn::constants::get_user_core_configuration_file_path());
-    return 1;
-  }
-  std::ofstream ofstream(krbn::constants::get_system_core_configuration_file_path());
-  if (!ofstream) {
-    krbn::logger::get_logger().error("Failed to open {0}", krbn::constants::get_system_core_configuration_file_path());
-    return 1;
-  }
-  ofstream << ifstream.rdbuf();
+  krbn::filesystem::copy(krbn::constants::get_user_core_configuration_file_path(),
+                         krbn::constants::get_system_core_configuration_file_path());
   return 0;
 }
 
