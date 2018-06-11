@@ -9,6 +9,7 @@
 #include "time_utility.hpp"
 #include "types.hpp"
 #include <fstream>
+#include <glob.h>
 #include <json/json.hpp>
 #include <natural_sort/natural_sort.hpp>
 #include <string>
@@ -420,6 +421,7 @@ public:
 
   void save_to_file_synchronously(void) {
     make_backup_file();
+    remove_old_backup_files();
 
     auto file_path = constants::get_user_core_configuration_file_path();
     json_utility::save_to_file(to_json(), file_path, 0700, 0600, true);
@@ -441,12 +443,25 @@ private:
     filesystem::create_directory_with_intermediate_directories(backups_directory, 0700);
 
     auto backup_file_path = backups_directory +
-                            "/karabiner." + time_utility::make_current_local_yyyymmdd_string() + ".json";
+                            "/karabiner_" + time_utility::make_current_local_yyyymmdd_string() + ".json";
     if (filesystem::exists(backup_file_path)) {
       return;
     }
 
     filesystem::copy(file_path, backup_file_path);
+  }
+
+  void remove_old_backup_files(void) {
+    auto backups_directory = constants::get_user_core_configuration_automatic_backups_directory();
+    auto pattern = backups_directory + "/karabiner_????????.json";
+
+    glob_t glob_result;
+    glob(pattern.c_str(), 0, nullptr, &glob_result);
+    const int keep_count = 20;
+    for (int i = 0; i < glob_result.gl_pathc - keep_count; i++) {
+      unlink(glob_result.gl_pathv[i]);
+    }
+    globfree(&glob_result);
   }
 
   nlohmann::json json_;

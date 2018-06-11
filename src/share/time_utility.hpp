@@ -29,7 +29,7 @@ public:
     tm tm;
     localtime_r(&t, &tm);
 
-    return fmt::format("{0:04d}-{1:02d}-{2:02d}",
+    return fmt::format("{0:04d}{1:02d}{2:02d}",
                        tm.tm_year + 1900,
                        tm.tm_mon + 1,
                        tm.tm_mday);

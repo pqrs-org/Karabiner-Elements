@@ -3,7 +3,7 @@
 ## Next release
 
 - Karabiner-Elements makes a backup file of karabiner.json before updating it if the backup file does not exists.
-  (~/.config/karabiner/automatic_backups/karabiner.YYYY-MM-DD.json)
+  (~/.config/karabiner/automatic_backups/karabiner_YYYYMMDD.json)
 
 ## Version 12.1.0
 
