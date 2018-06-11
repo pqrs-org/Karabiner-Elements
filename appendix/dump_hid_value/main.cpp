@@ -103,6 +103,8 @@ private:
   void value_callback(krbn::human_interface_device& device,
                       krbn::event_queue& event_queue) {
     for (const auto& queued_event : event_queue.get_events()) {
+      std::cout << queued_event.get_event_time_stamp().get_time_stamp() << " ";
+
       switch (queued_event.get_event().get_type()) {
         case krbn::event_queue::queued_event::event::type::none:
           std::cout << "none" << std::endl;
@@ -199,6 +201,9 @@ private:
             std::cout << "keyboard_type_changed " << keyboard_type << std::endl;
           }
           break;
+
+        default:
+          std::cout << std::endl;
       }
     }
 
