@@ -1987,6 +1987,7 @@ KRBN_TYPES_STREAM_OUTPUT(hid_usage);
 KRBN_TYPES_STREAM_OUTPUT(key_code);
 KRBN_TYPES_STREAM_OUTPUT(consumer_key_code);
 KRBN_TYPES_STREAM_OUTPUT(pointing_button);
+KRBN_TYPES_STREAM_OUTPUT(registry_entry_id);
 KRBN_TYPES_STREAM_OUTPUT(vendor_id);
 KRBN_TYPES_STREAM_OUTPUT(product_id);
 KRBN_TYPES_STREAM_OUTPUT(location_id);
@@ -2055,6 +2056,24 @@ inline std::ostream& operator<<(std::ostream& stream, const grabbable_state& val
       break;
     case grabbable_state::ungrabbable_permanently:
       stream << "ungrabbable_permanently";
+      break;
+  }
+  return stream;
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const ungrabbable_temporarily_reason& value) {
+  switch (value) {
+    case ungrabbable_temporarily_reason::none:
+      stream << "ungrabbable_temporarily_reason::none";
+      break;
+    case ungrabbable_temporarily_reason::key_repeating:
+      stream << "ungrabbable_temporarily_reason::key_repeating";
+      break;
+    case ungrabbable_temporarily_reason::modifier_key_pressed:
+      stream << "ungrabbable_temporarily_reason::modifier_key_pressed";
+      break;
+    case ungrabbable_temporarily_reason::pointing_button_pressed:
+      stream << "ungrabbable_temporarily_reason::pointing_button_pressed";
       break;
   }
   return stream;
