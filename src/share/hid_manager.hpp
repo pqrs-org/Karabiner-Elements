@@ -83,6 +83,8 @@ private:
     iokit_utility::log_matching_device(device);
 
     if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
+      // iokit_utility::find_registry_entry_id will be failed in device_removal_callback at least on macOS 10.13.
+      // Thus, we have to memory device and registry_entry_id correspondence by myself.
       registry_entry_ids_[device] = *registry_entry_id;
 
       // Skip if same device is already matched.
@@ -138,9 +140,26 @@ private:
           hids_.erase(it);
         }
       }
-    }
 
-    registry_entry_ids_.erase(device);
+      // There might be multiple devices for one registry_entry_id.
+      // (For example, keyboard and mouse combined device.)
+      // And there is possibility that removal callback is not called with some device.
+      //
+      // For example, there are 3 devices for 1 registry_entry_id (4294974284).
+      //   - device1 { device:0x7fb9d64078a0 => registry_entry_id:4294974284 }
+      //   - device2 { device:0x7fb9d8301390 => registry_entry_id:4294974284 }
+      //   - device3 { device:0x7fb9d830a630 => registry_entry_id:4294974284 }
+      // And device_removal_callback are called only with device1 and device2.
+      //
+      // We should remove device1, device2 and device3 at the same time in order to deal with this case.
+
+      for (auto it = std::begin(registry_entry_ids_); it != std::end(registry_entry_ids_);) {
+        if (it->second == *registry_entry_id) {
+          it = registry_entry_ids_.erase(it);
+        } else
+          std::advance(it, 1);
+      }
+    }
   }
 
   boost::optional<registry_entry_id> find_registry_entry_id(IOHIDDeviceRef _Nonnull device) {
