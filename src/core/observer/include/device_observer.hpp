@@ -2,18 +2,11 @@
 
 #include "boost_defs.hpp"
 
-#include "apple_hid_usage_tables.hpp"
-#include "configuration_monitor.hpp"
-#include "constants.hpp"
-#include "device_detail.hpp"
 #include "gcd_utility.hpp"
+#include "grabbable_state_manager.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
-#include "json_utility.hpp"
-#include "krbn_notification_center.hpp"
 #include "logger.hpp"
-#include "spdlog_utility.hpp"
-#include "system_preferences_utility.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
 #include <boost/algorithm/string.hpp>
@@ -161,6 +154,7 @@ private:
 
   void value_callback(human_interface_device& device,
                       event_queue& event_queue) {
+    grabbable_state_manager_.update(event_queue);
   }
 
   IOHIDManagerRef _Nullable manager_;
@@ -169,6 +163,6 @@ private:
 
   std::unordered_map<registry_entry_id, std::unique_ptr<human_interface_device>> hids_;
 
-  std::shared_ptr<event_queue> merged_input_event_queue_;
+  grabbable_state_manager grabbable_state_manager_;
 };
 } // namespace krbn
