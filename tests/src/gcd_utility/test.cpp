@@ -94,20 +94,21 @@ TEST_CASE("main_queue_after_timer") {
     }
 
     {
+      value = 1;
       {
-        krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
+        krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 1000 * NSEC_PER_MSEC),
                                                         true,
                                                         ^{
                                                           ++value;
                                                         });
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 
         // timer will be canceled.
       }
       REQUIRE(value == 2);
 
       // The dispatch_after_timer is not called after destructed.
-      std::this_thread::sleep_for(std::chrono::milliseconds(200));
+      std::this_thread::sleep_for(std::chrono::milliseconds(3000));
       REQUIRE(value == 2);
     }
 
