@@ -1,19 +1,6 @@
 #include "boost_defs.hpp"
 
-#include "human_interface_device.hpp"
-#include "iokit_utility.hpp"
-#include <CoreFoundation/CoreFoundation.h>
-#include <IOKit/IOKitLib.h>
-#include <IOKit/hid/IOHIDDevice.h>
-#include <IOKit/hid/IOHIDElement.h>
-#include <IOKit/hid/IOHIDManager.h>
-#include <IOKit/hid/IOHIDQueue.h>
-#include <IOKit/hid/IOHIDValue.h>
-#include <IOKit/hidsystem/IOHIDShared.h>
-#include <IOKit/hidsystem/ev_keymap.h>
-#include <boost/bind.hpp>
-#include <iostream>
-#include <mach/mach_time.h>
+#include "hid_manager.hpp"
 
 namespace {
 class dump_hid_report final {
@@ -21,89 +8,31 @@ public:
   dump_hid_report(const dump_hid_report&) = delete;
 
   dump_hid_report(void) {
-    manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-    if (!manager_) {
-      return;
-    }
+    hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
+      human_interface_device.register_report_callback([&](auto&& human_interface_device,
+                                                          auto&& type,
+                                                          auto&& report_id,
+                                                          auto&& report,
+                                                          auto&& report_length) {
+        report_callback(human_interface_device, type, report_id, report, report_length);
+      });
 
-    auto device_matching_dictionaries = krbn::iokit_utility::create_device_matching_dictionaries({
+      auto r = human_interface_device.open();
+      if (r != kIOReturnSuccess) {
+        krbn::logger::get_logger().error("failed to open");
+        return;
+      }
+      human_interface_device.schedule();
+    });
+
+    hid_manager_.start({
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
     });
-    if (device_matching_dictionaries) {
-      IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
-      CFRelease(device_matching_dictionaries);
-
-      IOHIDManagerRegisterDeviceMatchingCallback(manager_, static_device_matching_callback, this);
-      IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
-
-      IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-    }
   }
 
 private:
-  static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
-    if (result != kIOReturnSuccess || !device) {
-      return;
-    }
-
-    auto self = static_cast<dump_hid_report*>(context);
-    if (!self) {
-      return;
-    }
-
-    self->device_matching_callback(device);
-  }
-
-  void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
-    if (!device) {
-      return;
-    }
-
-    krbn::iokit_utility::log_matching_device(device);
-
-    hids_[device] = std::make_unique<krbn::human_interface_device>(device);
-    auto& dev = hids_[device];
-
-    auto r = dev->open();
-    if (r != kIOReturnSuccess) {
-      krbn::logger::get_logger().error("failed to open");
-      return;
-    }
-    dev->register_report_callback(boost::bind(&dump_hid_report::report_callback, this, _1, _2, _3, _4, _5));
-    dev->schedule();
-  }
-
-  static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
-    if (result != kIOReturnSuccess || !device) {
-      return;
-    }
-
-    auto self = static_cast<dump_hid_report*>(context);
-    if (!self) {
-      return;
-    }
-
-    self->device_removal_callback(device);
-  }
-
-  void device_removal_callback(IOHIDDeviceRef _Nonnull device) {
-    if (!device) {
-      return;
-    }
-
-    krbn::iokit_utility::log_removal_device(device);
-
-    auto it = hids_.find(device);
-    if (it != hids_.end()) {
-      auto& dev = it->second;
-      if (dev) {
-        hids_.erase(it);
-      }
-    }
-  }
-
   void report_callback(krbn::human_interface_device& device,
                        IOHIDReportType type,
                        uint32_t report_id,
@@ -127,8 +56,7 @@ private:
     }
   }
 
-  IOHIDManagerRef _Nullable manager_;
-  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<krbn::human_interface_device>> hids_;
+  krbn::hid_manager hid_manager_;
 };
 } // namespace
 
