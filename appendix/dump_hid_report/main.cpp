@@ -1,5 +1,3 @@
-#include "boost_defs.hpp"
-
 #include "hid_manager.hpp"
 
 namespace {
