@@ -1,16 +1,6 @@
-#include "boost_defs.hpp"
-
-#include "human_interface_device.hpp"
+#include "hid_manager.hpp"
 #include "libkrbn.h"
-#include <IOKit/IOKitLib.h>
-#include <IOKit/hid/IOHIDDevice.h>
-#include <IOKit/hid/IOHIDElement.h>
-#include <IOKit/hid/IOHIDManager.h>
-#include <IOKit/hid/IOHIDQueue.h>
-#include <IOKit/hid/IOHIDValue.h>
-#include <IOKit/hidsystem/IOHIDShared.h>
-#include <IOKit/hidsystem/ev_keymap.h>
-#include <boost/bind.hpp>
+#include <mutex>
 
 namespace {
 class libkrbn_hid_value_observer_class final {
@@ -19,102 +9,35 @@ public:
 
   libkrbn_hid_value_observer_class(libkrbn_hid_value_observer_callback callback,
                                    void* refcon) : callback_(callback),
-                                                   refcon_(refcon) {
-    manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-    if (!manager_) {
-      return;
-    }
+                                                   refcon_(refcon),
+                                                   observed_device_count_(0) {
+    hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
+      human_interface_device.set_value_callback([&](auto&& human_interface_device,
+                                                    auto&& event_queue) {
+        value_callback(human_interface_device, event_queue);
+      });
+      human_interface_device.observe();
 
-    auto device_matching_dictionaries = krbn::iokit_utility::create_device_matching_dictionaries({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-        // std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
-        // std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
+      std::lock_guard<std::mutex> lock(observed_device_count_mutex_);
+      ++observed_device_count_;
     });
-    if (device_matching_dictionaries) {
-      IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
-      CFRelease(device_matching_dictionaries);
 
-      IOHIDManagerRegisterDeviceMatchingCallback(manager_, static_device_matching_callback, this);
-      IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
+    hid_manager_.device_removed.connect([&](auto&& human_interface_device) {
+      std::lock_guard<std::mutex> lock(observed_device_count_mutex_);
+      --observed_device_count_;
+    });
 
-      IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-    }
-  }
-
-  ~libkrbn_hid_value_observer_class(void) {
-    if (manager_) {
-      IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-      CFRelease(manager_);
-      manager_ = nullptr;
-    }
+    hid_manager_.start({
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+    });
   }
 
   size_t calculate_observed_device_count(void) const {
-    size_t result = 0;
-    for (const auto& h : hids_) {
-      if (h.second->get_observed()) {
-        ++result;
-      }
-    }
-    return result;
+    std::lock_guard<std::mutex> lock(observed_device_count_mutex_);
+    return observed_device_count_;
   }
 
 private:
-  static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
-    if (result != kIOReturnSuccess || !device) {
-      return;
-    }
-
-    auto self = static_cast<libkrbn_hid_value_observer_class*>(context);
-    if (!self) {
-      return;
-    }
-
-    self->device_matching_callback(device);
-  }
-
-  void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
-    if (!device) {
-      return;
-    }
-
-    krbn::iokit_utility::log_matching_device(device);
-
-    hids_[device] = std::make_unique<krbn::human_interface_device>(device);
-    auto& dev = hids_[device];
-    dev->set_value_callback(boost::bind(&libkrbn_hid_value_observer_class::value_callback, this, _1, _2));
-    dev->observe();
-  }
-
-  static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
-    if (result != kIOReturnSuccess || !device) {
-      return;
-    }
-
-    auto self = static_cast<libkrbn_hid_value_observer_class*>(context);
-    if (!self) {
-      return;
-    }
-
-    self->device_removal_callback(device);
-  }
-
-  void device_removal_callback(IOHIDDeviceRef _Nonnull device) {
-    if (!device) {
-      return;
-    }
-
-    krbn::iokit_utility::log_removal_device(device);
-
-    auto it = hids_.find(device);
-    if (it != hids_.end()) {
-      auto& dev = it->second;
-      if (dev) {
-        hids_.erase(it);
-      }
-    }
-  }
-
   void value_callback(krbn::human_interface_device& device,
                       krbn::event_queue& event_queue) {
     for (const auto& queued_event : event_queue.get_events()) {
@@ -176,8 +99,9 @@ private:
   libkrbn_hid_value_observer_callback callback_;
   void* refcon_;
 
-  IOHIDManagerRef _Nullable manager_;
-  std::unordered_map<IOHIDDeviceRef, std::unique_ptr<krbn::human_interface_device>> hids_;
+  krbn::hid_manager hid_manager_;
+  size_t observed_device_count_;
+  mutable std::mutex observed_device_count_mutex_;
 };
 } // namespace
 
