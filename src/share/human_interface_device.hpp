@@ -296,6 +296,21 @@ public:
     });
   }
 
+  IOReturn set_report(IOHIDReportType report_type,
+                      CFIndex report_id,
+                      const uint8_t* _Nonnull report,
+                      CFIndex report_length) {
+    IOReturn __block r;
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      r = IOHIDDeviceSetReport(device_,
+                               report_type,
+                               report_id,
+                               report,
+                               report_length);
+    });
+    return r;
+  }
+
   void set_removed(void) {
     removed_ = true;
   }
