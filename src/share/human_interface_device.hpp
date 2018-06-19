@@ -98,9 +98,8 @@ public:
 
       auto vendor_id = iokit_utility::find_vendor_id(device_);
       auto product_id = iokit_utility::find_product_id(device_);
-      bool is_keyboard = IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Keyboard);
-      bool is_pointing_device = IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Pointer) ||
-                                IOHIDDeviceConformsTo(device_, kHIDPage_GenericDesktop, kHIDUsage_GD_Mouse);
+      bool is_keyboard = iokit_utility::is_keyboard(device_);
+      bool is_pointing_device = iokit_utility::is_pointing_device(device_);
       device_identifiers identifiers(vendor_id,
                                      product_id,
                                      is_keyboard,
@@ -505,6 +504,10 @@ public:
 
   boost::optional<std::string> find_transport(void) const {
     return iokit_utility::find_transport(device_);
+  }
+
+  bool is_karabiner_virtual_hid_device(void) const {
+    return iokit_utility::is_karabiner_virtual_hid_device(device_);
   }
 
   std::string get_name_for_log(void) const {
