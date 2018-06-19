@@ -1,19 +1,23 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
+#include "boost_utility.hpp"
 #include "gcd_utility.hpp"
 #include "human_interface_device.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
-#include <boost/signals2.hpp>
 #include <unordered_map>
 
 namespace krbn {
 class hid_manager final {
 public:
+  // Return false to ignore device.
+  boost::signals2::signal<bool(IOHIDDeviceRef _Nonnull),
+                          boost_utility::signal2_combiner_call_while_true>
+      device_detecting;
+
   boost::signals2::signal<void(human_interface_device&)> device_detected;
+
   boost::signals2::signal<void(human_interface_device&)> device_removed;
 
   hid_manager(const hid_manager&) = delete;
@@ -23,6 +27,10 @@ public:
 
   ~hid_manager(void) {
     stop();
+  }
+
+  const std::unordered_map<registry_entry_id, std::shared_ptr<human_interface_device>>& get_hids(void) const {
+    return hids_;
   }
 
   void start(const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) {
@@ -77,6 +85,10 @@ private:
 
   void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
     if (!device) {
+      return;
+    }
+
+    if (!device_detecting(device)) {
       return;
     }
 
@@ -135,9 +147,10 @@ private:
         if (auto hid = it->second) {
           logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
 
+          hids_.erase(it);
+
           hid->set_removed();
           device_removed(*hid);
-          hids_.erase(it);
         }
       }
 
