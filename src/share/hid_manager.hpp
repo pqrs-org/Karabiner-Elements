@@ -63,6 +63,9 @@ public:
         CFRelease(manager_);
         manager_ = nullptr;
       }
+
+      registry_entry_ids_.clear();
+      hids_.clear();
     });
   }
 
