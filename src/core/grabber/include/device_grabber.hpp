@@ -8,6 +8,7 @@
 #include "device_detail.hpp"
 #include "event_tap_manager.hpp"
 #include "gcd_utility.hpp"
+#include "hid_manager.hpp"
 #include "human_interface_device.hpp"
 #include "iokit_utility.hpp"
 #include "json_utility.hpp"
@@ -19,7 +20,6 @@
 #include "system_preferences_utility.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
-#include <IOKit/hid/IOHIDManager.h>
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <json/json.hpp>
@@ -29,6 +29,11 @@
 namespace krbn {
 class device_grabber final {
 public:
+  enum class mode {
+    observing,
+    grabbing,
+  };
+
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(void) : profile_(nlohmann::json()),
@@ -95,26 +100,67 @@ public:
           }
         });
 
-    manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-    if (!manager_) {
-      logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
-      return;
-    }
+    hid_manager_.device_detecting.connect([](auto&& device) {
+      if (iokit_utility::is_karabiner_virtual_hid_device(device)) {
+        return false;
+      }
+      return true;
+    });
 
-    auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries({
+    hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
+      human_interface_device.set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
+      human_interface_device.set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
+      human_interface_device.set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
+      human_interface_device.set_disabled_callback(std::bind(&device_grabber::disabled_callback, this, std::placeholders::_1));
+      human_interface_device.set_value_callback(std::bind(&device_grabber::value_callback,
+                                                          this,
+                                                          std::placeholders::_1,
+                                                          std::placeholders::_2));
+      human_interface_device.observe();
+
+      output_devices_json();
+      output_device_details_json();
+
+      update_virtual_hid_pointing();
+
+      // ----------------------------------------
+      if (mode_ == mode::grabbing) {
+        grab_devices();
+      }
+    });
+
+    hid_manager_.device_removed.connect([&](auto&& human_interface_device) {
+      human_interface_device.ungrab();
+
+      output_devices_json();
+      output_device_details_json();
+
+      // ----------------------------------------
+
+      if (human_interface_device.is_keyboard() &&
+          human_interface_device.is_karabiner_virtual_hid_device()) {
+        virtual_hid_device_client_.close();
+        ungrab_devices();
+
+        virtual_hid_device_client_.connect();
+        grab_devices();
+      }
+
+      update_virtual_hid_pointing();
+
+      // ----------------------------------------
+      // Refresh grab state in order to apply disable_built_in_keyboard_if_exists.
+
+      if (mode_ == mode::grabbing) {
+        grab_devices();
+      }
+    });
+
+    hid_manager_.start({
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
     });
-    if (device_matching_dictionaries) {
-      IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
-      CFRelease(device_matching_dictionaries);
-
-      IOHIDManagerRegisterDeviceMatchingCallback(manager_, static_device_matching_callback, this);
-      IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
-
-      IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-    }
   }
 
   ~device_grabber(void) {
@@ -124,12 +170,6 @@ public:
 
       input_event_arrived_connection_.disconnect();
       manipulator_timer_invoked_connection_.disconnect();
-
-      if (manager_) {
-        IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-        CFRelease(manager_);
-        manager_ = nullptr;
-      }
 
       led_monitor_timer_ = nullptr;
 
@@ -181,7 +221,7 @@ public:
 
   void grab_devices(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      for (const auto& it : hids_) {
+      for (const auto& it : hid_manager_.get_hids()) {
         if ((it.second)->is_grabbable() == grabbable_state::ungrabbable_permanently) {
           (it.second)->ungrab();
         } else {
@@ -195,7 +235,7 @@ public:
 
   void ungrab_devices(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      for (auto&& it : hids_) {
+      for (auto&& it : hid_manager_.get_hids()) {
         (it.second)->ungrab();
       }
 
@@ -297,146 +337,6 @@ public:
   }
 
 private:
-  enum class mode {
-    observing,
-    grabbing,
-  };
-
-  static void static_device_matching_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
-    if (result != kIOReturnSuccess) {
-      return;
-    }
-
-    auto self = static_cast<device_grabber*>(context);
-    if (!self) {
-      return;
-    }
-
-    self->device_matching_callback(device);
-  }
-
-  void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
-    if (!device) {
-      return;
-    }
-
-    if (iokit_utility::is_karabiner_virtual_hid_device(device)) {
-      return;
-    }
-
-    iokit_utility::log_matching_device(device);
-
-    if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
-      registry_entry_ids_[device] = *registry_entry_id;
-
-      // Skip if same device is already matched.
-      // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
-      auto it = hids_.find(*registry_entry_id);
-      if (it != std::end(hids_)) {
-        logger::get_logger().info("registry_entry_id:{0} already exists.", static_cast<uint64_t>(*registry_entry_id));
-        return;
-      }
-
-      auto dev = std::make_unique<human_interface_device>(device);
-      dev->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
-      dev->set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
-      dev->set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
-      dev->set_disabled_callback(std::bind(&device_grabber::disabled_callback, this, std::placeholders::_1));
-      dev->set_value_callback(std::bind(&device_grabber::value_callback,
-                                        this,
-                                        std::placeholders::_1,
-                                        std::placeholders::_2));
-      logger::get_logger().info("{0} is detected.", dev->get_name_for_log());
-
-      dev->observe();
-
-      hids_[*registry_entry_id] = std::move(dev);
-
-      output_devices_json();
-      output_device_details_json();
-
-      update_virtual_hid_pointing();
-
-      // ----------------------------------------
-      if (mode_ == mode::grabbing) {
-        grab_devices();
-      }
-    }
-  }
-
-  static void static_device_removal_callback(void* _Nullable context, IOReturn result, void* _Nullable sender, IOHIDDeviceRef _Nonnull device) {
-    if (result != kIOReturnSuccess) {
-      return;
-    }
-
-    auto self = static_cast<device_grabber*>(context);
-    if (!self) {
-      return;
-    }
-
-    self->device_removal_callback(device);
-  }
-
-  void device_removal_callback(IOHIDDeviceRef _Nonnull device) {
-    if (!device) {
-      return;
-    }
-
-    iokit_utility::log_removal_device(device);
-
-    // ----------------------------------------
-
-    registry_entry_id registry_entry_id = registry_entry_id::zero;
-
-    {
-      auto it = registry_entry_ids_.find(device);
-      if (it == std::end(registry_entry_ids_)) {
-        return;
-      }
-
-      registry_entry_id = it->second;
-      registry_entry_ids_.erase(device);
-    }
-
-    // ----------------------------------------
-
-    {
-      auto it = hids_.find(registry_entry_id);
-      if (it != hids_.end()) {
-        auto& dev = it->second;
-        if (dev) {
-          logger::get_logger().info("{0} is removed.", dev->get_name_for_log());
-          dev->set_removed();
-          dev->ungrab();
-          hids_.erase(it);
-        }
-      }
-    }
-
-    output_devices_json();
-    output_device_details_json();
-
-    // ----------------------------------------
-
-    if (iokit_utility::is_keyboard(device) &&
-        iokit_utility::is_karabiner_virtual_hid_device(device)) {
-      virtual_hid_device_client_.close();
-      ungrab_devices();
-
-      virtual_hid_device_client_.connect();
-      grab_devices();
-    }
-
-    update_virtual_hid_pointing();
-
-    // ----------------------------------------
-    // Refresh grab state in order to apply disable_built_in_keyboard_if_exists.
-
-    if (mode_ == mode::grabbing) {
-      grab_devices();
-    }
-  }
-
   void manipulate(uint64_t now) {
     {
       // Avoid recursive call
@@ -563,6 +463,8 @@ private:
   void ungrabbed_callback(human_interface_device& device) {
     post_device_ungrabbed_event(device.get_device_id());
 
+    update_virtual_hid_pointing();
+
     apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
   }
 
@@ -656,7 +558,7 @@ private:
 
   void update_caps_lock_led(bool caps_lock_state) {
     if (core_configuration_) {
-      for (const auto& it : hids_) {
+      for (const auto& it : hid_manager_.get_hids()) {
         auto& di = (it.second)->get_connected_device().get_identifiers();
         bool manipulate_caps_lock_led = core_configuration_->get_selected_profile().get_device_manipulate_caps_lock_led(di);
         if ((it.second)->is_grabbed() &&
@@ -668,7 +570,7 @@ private:
   }
 
   bool is_pointing_device_grabbed(void) const {
-    for (const auto& it : hids_) {
+    for (const auto& it : hid_manager_.get_hids()) {
       if ((it.second)->is_pointing_device() &&
           (it.second)->is_grabbed()) {
         return true;
@@ -721,7 +623,7 @@ private:
   }
 
   bool need_to_disable_built_in_keyboard(void) const {
-    for (const auto& it : hids_) {
+    for (const auto& it : hid_manager_.get_hids()) {
       if (get_disable_built_in_keyboard_if_exists(*(it.second))) {
         return true;
       }
@@ -730,7 +632,7 @@ private:
   }
 
   void enable_devices(void) {
-    for (const auto& it : hids_) {
+    for (const auto& it : hid_manager_.get_hids()) {
       if ((it.second)->is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
         (it.second)->disable();
       } else {
@@ -741,7 +643,7 @@ private:
 
   void output_devices_json(void) const {
     connected_devices connected_devices;
-    for (const auto& it : hids_) {
+    for (const auto& it : hid_manager_.get_hids()) {
       connected_devices.push_back_device(it.second->get_connected_device());
     }
 
@@ -752,7 +654,7 @@ private:
   void output_device_details_json(void) const {
     // ----------------------------------------
     std::vector<device_detail> device_details;
-    for (const auto& pair : hids_) {
+    for (const auto& pair : hid_manager_.get_hids()) {
       device_details.push_back(pair.second->make_device_detail());
     }
 
@@ -989,11 +891,7 @@ private:
   std::shared_ptr<core_configuration> core_configuration_;
 
   std::unique_ptr<event_tap_manager> event_tap_manager_;
-  IOHIDManagerRef _Nullable manager_;
-
-  std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
-
-  std::unordered_map<registry_entry_id, std::unique_ptr<human_interface_device>> hids_;
+  hid_manager hid_manager_;
 
   core_configuration::profile profile_;
   system_preferences system_preferences_;
