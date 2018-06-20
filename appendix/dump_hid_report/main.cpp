@@ -30,6 +30,10 @@ public:
     });
   }
 
+  ~dump_hid_report(void) {
+    hid_manager_.stop();
+  }
+
 private:
   void report_callback(krbn::human_interface_device& device,
                        IOHIDReportType type,

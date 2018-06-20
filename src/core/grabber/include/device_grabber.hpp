@@ -168,6 +168,8 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       stop_grabbing();
 
+      hid_manager_.stop();
+
       input_event_arrived_connection_.disconnect();
       manipulator_timer_invoked_connection_.disconnect();
 

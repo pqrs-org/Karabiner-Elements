@@ -44,6 +44,7 @@ public:
   }
 
   ~device_observer(void) {
+    hid_manager_.stop();
   }
 
 private:

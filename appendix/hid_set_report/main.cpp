@@ -37,6 +37,10 @@ public:
     });
   }
 
+  ~hid_set_report(void) {
+    hid_manager_.stop();
+  }
+
 private:
   krbn::hid_manager hid_manager_;
 };

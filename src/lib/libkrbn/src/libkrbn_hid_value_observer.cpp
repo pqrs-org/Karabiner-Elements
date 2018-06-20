@@ -32,6 +32,10 @@ public:
     });
   }
 
+  ~libkrbn_hid_value_observer_class(void) {
+    hid_manager_.stop();
+  }
+
   size_t calculate_observed_device_count(void) const {
     std::lock_guard<std::mutex> lock(observed_device_count_mutex_);
     return observed_device_count_;

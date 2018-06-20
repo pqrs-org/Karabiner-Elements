@@ -24,6 +24,10 @@ public:
     });
   }
 
+  ~dump_hid_value(void) {
+    hid_manager_.stop();
+  }
+
 private:
   void value_callback(krbn::human_interface_device& device,
                       krbn::event_queue& event_queue) {

@@ -41,6 +41,10 @@ public:
     });
   }
 
+  ~control_led(void) {
+    hid_manager_.stop();
+  }
+
 private:
   krbn::hid_manager hid_manager_;
 };
