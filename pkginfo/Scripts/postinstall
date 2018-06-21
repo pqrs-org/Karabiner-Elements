@@ -6,6 +6,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
 # Relaunch karabiner_grabber
 
 killall karabiner_grabber
+killall karabiner_observer
 killall karabiner_console_user_server
 
 # If plistFilePath is already bootstrapped and disabled, launchctl bootstrap will fail until it is enabled again.
@@ -13,5 +14,9 @@ killall karabiner_console_user_server
 launchctl enable system/org.pqrs.karabiner.karabiner_grabber
 launchctl bootstrap system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
 launchctl enable system/org.pqrs.karabiner.karabiner_grabber
+
+launchctl enable system/org.pqrs.karabiner.karabiner_observer
+launchctl bootstrap system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist
+launchctl enable system/org.pqrs.karabiner.karabiner_observer
 
 exit 0

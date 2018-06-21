@@ -21,6 +21,12 @@ public:
   device_observer(const device_observer&) = delete;
 
   device_observer(void) {
+    grabbable_state_manager_.grabbable_state_updated.connect([](auto&& registry_entry_id,
+                                                                auto&& grabbable_state,
+                                                                auto&& ungrabbable_temporarily_reason,
+                                                                auto&& time_stamp) {
+    });
+
     hid_manager_.device_detecting.connect([](auto&& device) {
       if (iokit_utility::is_karabiner_virtual_hid_device(device)) {
         return false;
