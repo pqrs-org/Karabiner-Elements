@@ -22,7 +22,8 @@ public:
       ++observed_device_count_;
     });
 
-    hid_manager_.device_removed.connect([&](auto&& human_interface_device) {
+    hid_manager_.device_removed.connect([&](auto&& registry_entry_id,
+                                            auto&& human_interface_device) {
       std::lock_guard<std::mutex> lock(observed_device_count_mutex_);
       --observed_device_count_;
     });

@@ -129,8 +129,11 @@ public:
       }
     });
 
-    hid_manager_.device_removed.connect([&](auto&& human_interface_device) {
+    hid_manager_.device_removed.connect([&](auto&& registry_entry_id,
+                                            auto&& human_interface_device) {
       human_interface_device.ungrab();
+
+      grabbable_states_.erase(registry_entry_id);
 
       output_devices_json();
       output_device_details_json();
@@ -339,6 +342,35 @@ public:
   }
 
 private:
+  class grabbable_state_entry {
+    grabbable_state_entry(grabbable_state grabbable_state,
+                          ungrabbable_temporarily_reason ungrabbable_temporarily_reason) : grabbable_state_(grabbable_state),
+                                                                                           ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
+                                                                                           logged_(false) {
+    }
+
+    grabbable_state get_grabbable_state(void) const {
+      return grabbable_state_;
+    }
+
+    ungrabbable_temporarily_reason get_ungrabbable_temporarily_reason(void) const {
+      return ungrabbable_temporarily_reason_;
+    }
+
+    bool get_logged(void) const {
+      return logged_;
+    }
+
+    void set_logged(void) {
+      logged_ = true;
+    }
+
+  private:
+    grabbable_state grabbable_state_;
+    ungrabbable_temporarily_reason ungrabbable_temporarily_reason_;
+    bool logged_;
+  };
+
   void manipulate(uint64_t now) {
     {
       // Avoid recursive call
@@ -894,6 +926,8 @@ private:
 
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   hid_manager hid_manager_;
+
+  std::unordered_map<registry_entry_id, grabbable_state_entry> grabbable_states_;
 
   core_configuration::profile profile_;
   system_preferences system_preferences_;
