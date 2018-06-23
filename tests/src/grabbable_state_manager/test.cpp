@@ -386,7 +386,50 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
 
-  {
-    REQUIRE(actual_grabbable_state_updated_history == expected_grabbable_state_updated_history);
-  }
+  // multiple reasons
+
+  event_queue.clear_events();
+  event_queue.emplace_back_event(device_id1,
+                                 krbn::event_queue::queued_event::event_time_stamp(10000),
+                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
+                                 krbn::event_type::key_down,
+                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
+  event_queue.emplace_back_event(device_id1,
+                                 krbn::event_queue::queued_event::event_time_stamp(11000),
+                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_type::key_down,
+                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+  event_queue.emplace_back_event(device_id1,
+                                 krbn::event_queue::queued_event::event_time_stamp(12000),
+                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_type::key_up,
+                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+  event_queue.emplace_back_event(device_id1,
+                                 krbn::event_queue::queued_event::event_time_stamp(13000),
+                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
+                                 krbn::event_type::key_up,
+                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
+
+  grabbable_state_manager.update(event_queue);
+
+  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+                                                        krbn::grabbable_state::ungrabbable_temporarily,
+                                                        krbn::ungrabbable_temporarily_reason::modifier_key_pressed,
+                                                        10000);
+  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+                                                        krbn::grabbable_state::ungrabbable_temporarily,
+                                                        krbn::ungrabbable_temporarily_reason::key_repeating,
+                                                        11000);
+  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+                                                        krbn::grabbable_state::ungrabbable_temporarily,
+                                                        krbn::ungrabbable_temporarily_reason::modifier_key_pressed,
+                                                        12000);
+  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+                                                        krbn::grabbable_state::grabbable,
+                                                        krbn::ungrabbable_temporarily_reason::none,
+                                                        13000);
+
+  // Test actual_grabbable_state_updated_history
+
+  REQUIRE(actual_grabbable_state_updated_history == expected_grabbable_state_updated_history);
 }
