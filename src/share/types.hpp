@@ -33,6 +33,8 @@ class device_detail;
 
 enum class operation_type : uint8_t {
   none,
+  // observer -> grabber
+  grabbable_state_updated,
   // console_user_server -> grabber
   connect,
   system_preferences_updated,
@@ -1896,6 +1898,16 @@ private:
     static std::unordered_map<device_id, std::shared_ptr<device_detail>> map;
     return map;
   }
+};
+
+struct operation_type_grabbable_state_updated_struct {
+  operation_type_grabbable_state_updated_struct(void) : operation_type(operation_type::grabbable_state_updated) {}
+
+  const operation_type operation_type;
+  registry_entry_id registry_entry_id;
+  grabbable_state grabbable_state;
+  ungrabbable_temporarily_reason ungrabbable_temporarily_reason;
+  uint64_t time_stamp;
 };
 
 struct operation_type_connect_struct {

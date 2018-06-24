@@ -59,6 +59,19 @@ private:
 
       if (!ec && n > 0) {
         switch (operation_type(buffer_[0])) {
+          case operation_type::grabbable_state_updated:
+            if (n != sizeof(operation_type_grabbable_state_updated_struct)) {
+              logger::get_logger().error("invalid size for operation_type::grabbable_state_updated");
+            } else {
+              auto p = reinterpret_cast<operation_type_grabbable_state_updated_struct*>(&(buffer_[0]));
+
+              device_grabber_.update_grabbable_state(p->registry_entry_id,
+                                                     p->grabbable_state,
+                                                     p->ungrabbable_temporarily_reason,
+                                                     p->time_stamp);
+            }
+            break;
+
           case operation_type::connect:
             if (n != sizeof(operation_type_connect_struct)) {
               logger::get_logger().error("invalid size for operation_type::connect");

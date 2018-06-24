@@ -4,27 +4,25 @@
 
 #include "gcd_utility.hpp"
 #include "grabbable_state_manager.hpp"
+#include "grabber_client.hpp"
 #include "hid_manager.hpp"
-#include "human_interface_device.hpp"
-#include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
-#include <boost/algorithm/string.hpp>
-#include <fstream>
-#include <json/json.hpp>
-#include <thread>
-#include <time.h>
 
 namespace krbn {
 class device_observer final {
 public:
   device_observer(const device_observer&) = delete;
 
-  device_observer(void) {
-    grabbable_state_manager_.grabbable_state_updated.connect([](auto&& registry_entry_id,
-                                                                auto&& grabbable_state,
-                                                                auto&& ungrabbable_temporarily_reason,
-                                                                auto&& time_stamp) {
+  device_observer(const grabber_client& grabber_client) : grabber_client_(grabber_client) {
+    grabbable_state_manager_.grabbable_state_updated.connect([&](auto&& registry_entry_id,
+                                                                 auto&& grabbable_state,
+                                                                 auto&& ungrabbable_temporarily_reason,
+                                                                 auto&& time_stamp) {
+      grabber_client_.grabbable_state_updated(registry_entry_id,
+                                              grabbable_state,
+                                              ungrabbable_temporarily_reason,
+                                              time_stamp);
     });
 
     hid_manager_.device_detecting.connect([](auto&& device) {
@@ -35,10 +33,10 @@ public:
     });
 
     hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
-      human_interface_device.set_value_callback(std::bind(&device_observer::value_callback,
-                                                          this,
-                                                          std::placeholders::_1,
-                                                          std::placeholders::_2));
+      human_interface_device.set_value_callback([&](auto&& human_interface_device,
+                                                    auto&& event_queue) {
+        value_callback(human_interface_device, event_queue);
+      });
       human_interface_device.observe();
     });
 
@@ -58,6 +56,8 @@ private:
                       event_queue& event_queue) {
     grabbable_state_manager_.update(event_queue);
   }
+
+  const grabber_client& grabber_client_;
 
   hid_manager hid_manager_;
   grabbable_state_manager grabbable_state_manager_;

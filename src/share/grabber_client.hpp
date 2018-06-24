@@ -32,20 +32,32 @@ public:
     client_ = std::make_unique<local_datagram_client>(constants::get_grabber_socket_file_path());
   }
 
-  void connect(void) {
+  void grabbable_state_updated(registry_entry_id registry_entry_id,
+                               grabbable_state grabbable_state,
+                               ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
+                               uint64_t time_stamp) const {
+    operation_type_grabbable_state_updated_struct s;
+    s.registry_entry_id = registry_entry_id;
+    s.grabbable_state = grabbable_state;
+    s.ungrabbable_temporarily_reason = ungrabbable_temporarily_reason;
+    s.time_stamp = time_stamp;
+    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+  }
+
+  void connect(void) const {
     operation_type_connect_struct s;
     s.pid = getpid();
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
-  void system_preferences_updated(const system_preferences& system_preferences) {
+  void system_preferences_updated(const system_preferences& system_preferences) const {
     operation_type_system_preferences_updated_struct s;
     s.system_preferences = system_preferences;
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
   void frontmost_application_changed(const std::string& bundle_identifier,
-                                     const std::string& file_path) {
+                                     const std::string& file_path) const {
     operation_type_frontmost_application_changed_struct s;
 
     strlcpy(s.bundle_identifier,
@@ -59,7 +71,7 @@ public:
     client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
-  void input_source_changed(const input_source_identifiers& input_source_identifiers) {
+  void input_source_changed(const input_source_identifiers& input_source_identifiers) const {
     operation_type_input_source_changed_struct s;
 
     if (auto& v = input_source_identifiers.get_language()) {

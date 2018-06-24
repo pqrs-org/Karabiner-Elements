@@ -1,5 +1,5 @@
+#include "connection_manager.hpp"
 #include "constants.hpp"
-#include "device_observer.hpp"
 #include "filesystem.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -51,11 +51,10 @@ int main(int argc, const char* argv[]) {
     exit(0);
   });
 
-  auto device_observer_ptr = std::make_unique<krbn::device_observer>();
+  krbn::connection_manager manager(*version_monitor_ptr);
 
   CFRunLoopRun();
 
-  device_observer_ptr = nullptr;
   version_monitor_ptr = nullptr;
 
   return 0;

@@ -183,6 +183,19 @@ public:
     });
   }
 
+  void update_grabbable_state(registry_entry_id registry_entry_id,
+                              grabbable_state grabbable_state,
+                              ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
+                              uint64_t time_stamp) {
+    logger::get_logger().info("update_grabbable_state time_stamp:{0} registry_entry_id:{1} grabbable_state:{2}",
+                              time_stamp,
+                              static_cast<uint64_t>(registry_entry_id),
+                              static_cast<uint32_t>(grabbable_state));
+    grabbable_states_[registry_entry_id] = std::make_shared<grabbable_state_entry>(grabbable_state,
+                                                                                   ungrabbable_temporarily_reason,
+                                                                                   time_stamp);
+  }
+
   void start_grabbing(const std::string& user_core_configuration_file_path) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       mode_ = mode::grabbing;
@@ -343,10 +356,13 @@ public:
 
 private:
   class grabbable_state_entry {
+  public:
     grabbable_state_entry(grabbable_state grabbable_state,
-                          ungrabbable_temporarily_reason ungrabbable_temporarily_reason) : grabbable_state_(grabbable_state),
-                                                                                           ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
-                                                                                           logged_(false) {
+                          ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
+                          uint64_t time_stamp) : grabbable_state_(grabbable_state),
+                                                 ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
+                                                 time_stamp_(time_stamp),
+                                                 logged_(false) {
     }
 
     grabbable_state get_grabbable_state(void) const {
@@ -355,6 +371,10 @@ private:
 
     ungrabbable_temporarily_reason get_ungrabbable_temporarily_reason(void) const {
       return ungrabbable_temporarily_reason_;
+    }
+
+    uint64_t get_time_stamp(void) const {
+      return time_stamp_;
     }
 
     bool get_logged(void) const {
@@ -368,6 +388,7 @@ private:
   private:
     grabbable_state grabbable_state_;
     ungrabbable_temporarily_reason ungrabbable_temporarily_reason_;
+    uint64_t time_stamp_;
     bool logged_;
   };
 
@@ -927,7 +948,7 @@ private:
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   hid_manager hid_manager_;
 
-  std::unordered_map<registry_entry_id, grabbable_state_entry> grabbable_states_;
+  std::unordered_map<registry_entry_id, std::shared_ptr<grabbable_state_entry>> grabbable_states_;
 
   core_configuration::profile profile_;
   system_preferences system_preferences_;

@@ -18,4 +18,5 @@ target_link_libraries(
   "-framework CoreFoundation"
   "-framework CoreServices"
   "-framework IOKit"
+  "-framework SystemConfiguration"
 )
