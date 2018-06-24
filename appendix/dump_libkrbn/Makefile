@@ -1,4 +1,6 @@
-all: build_make
+all:
+	$(MAKE) -C ../../src/lib/libkrbn
+	$(MAKE) build_make
 
 clean: clean_builds
 

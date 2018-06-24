@@ -34,7 +34,7 @@ class device_detail;
 enum class operation_type : uint8_t {
   none,
   // observer -> grabber
-  grabbable_state_updated,
+  grabbable_state_changed,
   // console_user_server -> grabber
   connect,
   system_preferences_updated,
@@ -1900,8 +1900,8 @@ private:
   }
 };
 
-struct operation_type_grabbable_state_updated_struct {
-  operation_type_grabbable_state_updated_struct(void) : operation_type(operation_type::grabbable_state_updated) {}
+struct operation_type_grabbable_state_changed_struct {
+  operation_type_grabbable_state_changed_struct(void) : operation_type(operation_type::grabbable_state_changed) {}
 
   const operation_type operation_type;
   registry_entry_id registry_entry_id;

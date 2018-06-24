@@ -32,11 +32,11 @@ public:
     client_ = std::make_unique<local_datagram_client>(constants::get_grabber_socket_file_path());
   }
 
-  void grabbable_state_updated(registry_entry_id registry_entry_id,
+  void grabbable_state_changed(registry_entry_id registry_entry_id,
                                grabbable_state grabbable_state,
                                ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
                                uint64_t time_stamp) const {
-    operation_type_grabbable_state_updated_struct s;
+    operation_type_grabbable_state_changed_struct s;
     s.registry_entry_id = registry_entry_id;
     s.grabbable_state = grabbable_state;
     s.ungrabbable_temporarily_reason = ungrabbable_temporarily_reason;

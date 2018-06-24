@@ -13,9 +13,9 @@ auto registry_entry_id1 = krbn::registry_entry_id(4001);
 auto registry_entry_id2 = krbn::registry_entry_id(4002);
 } // namespace
 
-class grabbable_state_updated_history_entry final {
+class grabbable_state_changed_history_entry final {
 public:
-  grabbable_state_updated_history_entry(krbn::registry_entry_id registry_entry_id,
+  grabbable_state_changed_history_entry(krbn::registry_entry_id registry_entry_id,
                                         krbn::grabbable_state grabbable_state,
                                         krbn::ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
                                         uint64_t time_stamp) : registry_entry_id_(registry_entry_id),
@@ -40,7 +40,7 @@ public:
     return time_stamp_;
   }
 
-  bool operator==(const grabbable_state_updated_history_entry& other) const {
+  bool operator==(const grabbable_state_changed_history_entry& other) const {
     return registry_entry_id_ == other.registry_entry_id_ &&
            grabbable_state_ == other.grabbable_state_ &&
            ungrabbable_temporarily_reason_ == other.ungrabbable_temporarily_reason_ &&
@@ -54,7 +54,7 @@ private:
   uint64_t time_stamp_;
 };
 
-inline std::ostream& operator<<(std::ostream& stream, const grabbable_state_updated_history_entry& value) {
+inline std::ostream& operator<<(std::ostream& stream, const grabbable_state_changed_history_entry& value) {
   stream << "["
          << value.get_registry_entry_id() << ","
          << value.get_grabbable_state() << ","
@@ -108,15 +108,15 @@ TEST_CASE("grabbable_state_manager") {
   krbn::grabbable_state_manager grabbable_state_manager;
   krbn::event_queue event_queue;
 
-  std::vector<grabbable_state_updated_history_entry> actual_grabbable_state_updated_history;
-  std::vector<grabbable_state_updated_history_entry> expected_grabbable_state_updated_history;
+  std::vector<grabbable_state_changed_history_entry> actual_grabbable_state_changed_history;
+  std::vector<grabbable_state_changed_history_entry> expected_grabbable_state_changed_history;
 
-  grabbable_state_manager.grabbable_state_updated.connect([&](
+  grabbable_state_manager.grabbable_state_changed.connect([&](
                                                               krbn::registry_entry_id registry_entry_id,
                                                               krbn::grabbable_state grabbable_state,
                                                               krbn::ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
                                                               uint64_t time_stamp) {
-    actual_grabbable_state_updated_history.emplace_back(registry_entry_id,
+    actual_grabbable_state_changed_history.emplace_back(registry_entry_id,
                                                         grabbable_state,
                                                         ungrabbable_temporarily_reason,
                                                         time_stamp);
@@ -165,7 +165,7 @@ TEST_CASE("grabbable_state_manager") {
 
   grabbable_state_manager.update(event_queue);
 
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::ungrabbable_temporarily,
                                                         krbn::ungrabbable_temporarily_reason::key_repeating,
                                                         2000);
@@ -194,7 +194,7 @@ TEST_CASE("grabbable_state_manager") {
 
   grabbable_state_manager.update(event_queue);
 
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::grabbable,
                                                         krbn::ungrabbable_temporarily_reason::none,
                                                         3000);
@@ -223,7 +223,7 @@ TEST_CASE("grabbable_state_manager") {
 
   grabbable_state_manager.update(event_queue);
 
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::ungrabbable_temporarily,
                                                         krbn::ungrabbable_temporarily_reason::key_repeating,
                                                         4000);
@@ -252,7 +252,7 @@ TEST_CASE("grabbable_state_manager") {
 
   grabbable_state_manager.update(event_queue);
 
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::grabbable,
                                                         krbn::ungrabbable_temporarily_reason::none,
                                                         5000);
@@ -281,7 +281,7 @@ TEST_CASE("grabbable_state_manager") {
 
   grabbable_state_manager.update(event_queue);
 
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::ungrabbable_temporarily,
                                                         krbn::ungrabbable_temporarily_reason::modifier_key_pressed,
                                                         6000);
@@ -310,7 +310,7 @@ TEST_CASE("grabbable_state_manager") {
 
   grabbable_state_manager.update(event_queue);
 
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::grabbable,
                                                         krbn::ungrabbable_temporarily_reason::none,
                                                         7000);
@@ -339,7 +339,7 @@ TEST_CASE("grabbable_state_manager") {
 
   grabbable_state_manager.update(event_queue);
 
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id2,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id2,
                                                         krbn::grabbable_state::ungrabbable_temporarily,
                                                         krbn::ungrabbable_temporarily_reason::pointing_button_pressed,
                                                         8000);
@@ -368,7 +368,7 @@ TEST_CASE("grabbable_state_manager") {
 
   grabbable_state_manager.update(event_queue);
 
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id2,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id2,
                                                         krbn::grabbable_state::grabbable,
                                                         krbn::ungrabbable_temporarily_reason::none,
                                                         9000);
@@ -412,24 +412,24 @@ TEST_CASE("grabbable_state_manager") {
 
   grabbable_state_manager.update(event_queue);
 
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::ungrabbable_temporarily,
                                                         krbn::ungrabbable_temporarily_reason::modifier_key_pressed,
                                                         10000);
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::ungrabbable_temporarily,
                                                         krbn::ungrabbable_temporarily_reason::key_repeating,
                                                         11000);
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::ungrabbable_temporarily,
                                                         krbn::ungrabbable_temporarily_reason::modifier_key_pressed,
                                                         12000);
-  expected_grabbable_state_updated_history.emplace_back(registry_entry_id1,
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::grabbable,
                                                         krbn::ungrabbable_temporarily_reason::none,
                                                         13000);
 
-  // Test actual_grabbable_state_updated_history
+  // Test actual_grabbable_state_changed_history
 
-  REQUIRE(actual_grabbable_state_updated_history == expected_grabbable_state_updated_history);
+  REQUIRE(actual_grabbable_state_changed_history == expected_grabbable_state_changed_history);
 }

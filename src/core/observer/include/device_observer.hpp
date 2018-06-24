@@ -15,11 +15,11 @@ public:
   device_observer(const device_observer&) = delete;
 
   device_observer(const grabber_client& grabber_client) : grabber_client_(grabber_client) {
-    grabbable_state_manager_.grabbable_state_updated.connect([&](auto&& registry_entry_id,
+    grabbable_state_manager_.grabbable_state_changed.connect([&](auto&& registry_entry_id,
                                                                  auto&& grabbable_state,
                                                                  auto&& ungrabbable_temporarily_reason,
                                                                  auto&& time_stamp) {
-      grabber_client_.grabbable_state_updated(registry_entry_id,
+      grabber_client_.grabbable_state_changed(registry_entry_id,
                                               grabbable_state,
                                               ungrabbable_temporarily_reason,
                                               time_stamp);

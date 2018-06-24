@@ -16,7 +16,7 @@ public:
                                grabbable_state,
                                ungrabbable_temporarily_reason,
                                uint64_t)>
-      grabbable_state_updated;
+      grabbable_state_changed;
 
   void update(const event_queue& event_queue) {
     for (const auto& queued_event : event_queue.get_events()) {
@@ -36,7 +36,7 @@ public:
             auto new_state = it->second.get_grabbable_state();
 
             if (old_state != new_state) {
-              grabbable_state_updated(*registry_entry_id,
+              grabbable_state_changed(*registry_entry_id,
                                       new_state.first,
                                       new_state.second,
                                       queued_event.get_event_time_stamp().get_time_stamp());
