@@ -1,3 +1,4 @@
+#include "console_user_id_monitor.hpp"
 #include "session.hpp"
 #include "thread_utility.hpp"
 #include <chrono>
@@ -7,12 +8,19 @@
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
-  while (true) {
-    if (auto current_console_user_id = krbn::session::get_current_console_user_id()) {
-      std::cout << "current_console_user_id: " << *current_console_user_id << std::endl;
+  krbn::console_user_id_monitor console_user_id_monitor;
+
+  console_user_id_monitor.console_user_id_changed.connect([&](auto&& uid) {
+    if (uid) {
+      std::cout << "console_user_id_changed: " << *uid << std::endl;
+    } else {
+      std::cout << "console_user_id_changed: none" << std::endl;
     }
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-  }
+  });
+
+  console_user_id_monitor.start();
+
+  CFRunLoopRun();
 
   return 0;
 }
