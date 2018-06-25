@@ -16,8 +16,17 @@ public:
   console_user_id_monitor(const console_user_id_monitor&) = delete;
 
   console_user_id_monitor(void) {
+  }
+
+  ~console_user_id_monitor(void) {
+    stop();
+  }
+
+  void start(void) {
+    stop();
+
     timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-        dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
+        DISPATCH_TIME_NOW,
         1 * NSEC_PER_SEC,
         0,
         ^{
@@ -31,7 +40,7 @@ public:
         });
   }
 
-  ~console_user_id_monitor(void) {
+  void stop(void) {
     timer_ = nullptr;
   }
 
