@@ -79,10 +79,8 @@ private:
   }
 
   void grabber_is_launched_callback(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      logger::get_logger().info("connection_manager::grabber_is_launched_callback");
-      release();
-    });
+    logger::get_logger().info("connection_manager::grabber_is_launched_callback");
+    exit(0);
   }
 
   version_monitor& version_monitor_;
