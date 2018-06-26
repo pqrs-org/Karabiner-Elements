@@ -2,6 +2,7 @@
 
 #include "apple_notification_center.hpp"
 #include "configuration_manager.hpp"
+#include "console_user_id_monitor.hpp"
 #include "constants.hpp"
 #include "frontmost_application_observer.hpp"
 #include "gcd_utility.hpp"
@@ -24,66 +25,28 @@ public:
                                                                 static_grabber_is_launched_callback,
                                                                 constants::get_distributed_notification_grabber_is_launched());
 
-    auto current_uid = getuid();
+    console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
+      version_monitor_.manual_check();
+      release();
 
-    timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-        dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
-        1 * NSEC_PER_SEC,
-        0,
-        ^{
-          if (auto uid = session::get_current_console_user_id()) {
-            if (current_uid == *uid) {
-              try {
-                if (!receiver_) {
-                  receiver_ = std::make_unique<receiver>();
-                }
+      if (uid != getuid()) {
+        return;
+      }
 
-                if (!grabber_client_) {
-                  version_monitor_.manual_check();
-
-                  grabber_client_ = std::make_unique<grabber_client>();
-                  grabber_client_->connect();
-                  logger::get_logger().info("grabber_client_ is connected");
-                }
-
-                if (!configuration_manager_) {
-                  configuration_manager_ = std::make_unique<configuration_manager>();
-                }
-
-                if (!system_preferences_monitor_) {
-                  system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
-                      std::bind(&connection_manager::system_preferences_updated_callback, this, std::placeholders::_1),
-                      configuration_manager_->get_configuration_monitor());
-                }
-
-                if (!frontmost_application_observer_) {
-                  frontmost_application_observer_ = std::make_unique<frontmost_application_observer>(
-                      std::bind(&connection_manager::frontmost_application_changed_callback, this, std::placeholders::_1, std::placeholders::_2));
-                }
-
-                if (!input_source_observer_) {
-                  input_source_observer_ = std::make_unique<input_source_observer>(
-                      std::bind(&connection_manager::input_source_changed_callback, this, std::placeholders::_1));
-                }
-
-                return;
-
-              } catch (std::exception& ex) {
-                logger::get_logger().warn(ex.what());
-              }
-            }
-          }
-
-          release();
-        });
+      timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(1 * NSEC_PER_SEC,
+                                                                     ^{
+                                                                       return setup();
+                                                                     });
+    });
+    console_user_id_monitor_.start();
   }
 
   ~connection_manager(void) {
-    timer_ = nullptr;
-
     gcd_utility::dispatch_sync_in_main_queue(^{
       release();
     });
+
+    console_user_id_monitor_.stop();
 
     apple_notification_center::unobserve_distributed_notification(this,
                                                                   constants::get_distributed_notification_grabber_is_launched());
@@ -97,6 +60,47 @@ private:
     configuration_manager_ = nullptr;
     grabber_client_ = nullptr;
     receiver_ = nullptr;
+    timer_ = nullptr;
+  }
+
+  bool setup(void) {
+    try {
+      if (!receiver_) {
+        receiver_ = std::make_unique<receiver>();
+      }
+
+      if (!grabber_client_) {
+        grabber_client_ = std::make_unique<grabber_client>();
+        grabber_client_->connect();
+        logger::get_logger().info("grabber_client_ is connected");
+      }
+
+      if (!configuration_manager_) {
+        configuration_manager_ = std::make_unique<configuration_manager>();
+      }
+
+      if (!system_preferences_monitor_) {
+        system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
+            std::bind(&connection_manager::system_preferences_updated_callback, this, std::placeholders::_1),
+            configuration_manager_->get_configuration_monitor());
+      }
+
+      if (!frontmost_application_observer_) {
+        frontmost_application_observer_ = std::make_unique<frontmost_application_observer>(
+            std::bind(&connection_manager::frontmost_application_changed_callback, this, std::placeholders::_1, std::placeholders::_2));
+      }
+
+      if (!input_source_observer_) {
+        input_source_observer_ = std::make_unique<input_source_observer>(
+            std::bind(&connection_manager::input_source_changed_callback, this, std::placeholders::_1));
+      }
+
+      return true;
+
+    } catch (std::exception& ex) {
+      logger::get_logger().warn(ex.what());
+    }
+    return false;
   }
 
   static void static_grabber_is_launched_callback(CFNotificationCenterRef center,
@@ -109,10 +113,8 @@ private:
   }
 
   void grabber_is_launched_callback(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      logger::get_logger().info("connection_manager::grabber_is_launched_callback");
-      release();
-    });
+    logger::get_logger().info("connection_manager::grabber_is_launched_callback");
+    exit(0);
   }
 
   void system_preferences_updated_callback(const system_preferences& system_preferences) {
@@ -141,7 +143,8 @@ private:
 
   version_monitor& version_monitor_;
 
-  std::unique_ptr<gcd_utility::main_queue_timer> timer_;
+  console_user_id_monitor console_user_id_monitor_;
+  std::unique_ptr<gcd_utility::fire_while_false_timer> timer_;
 
   std::unique_ptr<receiver> receiver_;
 
