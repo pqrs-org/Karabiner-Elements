@@ -7,7 +7,7 @@ public:
   hid_set_report(const hid_set_report&) = delete;
 
   hid_set_report(void) {
-    hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
+    hid_manager_.device_detected.connect([](auto&& human_interface_device) {
       auto r = human_interface_device.open();
       if (r != kIOReturnSuccess) {
         krbn::logger::get_logger().error("failed to open");

@@ -6,12 +6,12 @@ public:
   dump_hid_report(const dump_hid_report&) = delete;
 
   dump_hid_report(void) {
-    hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
-      human_interface_device.register_report_callback([&](auto&& human_interface_device,
-                                                          auto&& type,
-                                                          auto&& report_id,
-                                                          auto&& report,
-                                                          auto&& report_length) {
+    hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
+      human_interface_device.register_report_callback([this](auto&& human_interface_device,
+                                                             auto&& type,
+                                                             auto&& report_id,
+                                                             auto&& report,
+                                                             auto&& report_length) {
         report_callback(human_interface_device, type, report_id, report, report_length);
       });
 

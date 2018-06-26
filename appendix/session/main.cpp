@@ -10,7 +10,7 @@ int main(int argc, const char* argv[]) {
 
   krbn::console_user_id_monitor console_user_id_monitor;
 
-  console_user_id_monitor.console_user_id_changed.connect([&](auto&& uid) {
+  console_user_id_monitor.console_user_id_changed.connect([](auto&& uid) {
     if (uid) {
       std::cout << "console_user_id_changed: " << *uid << std::endl;
     } else {

@@ -9,8 +9,8 @@ public:
   dump_hid_value(const dump_hid_value&) = delete;
 
   dump_hid_value(void) {
-    hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
-      human_interface_device.set_value_callback([&](auto&& human_interface_device,
+    hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
+      human_interface_device.set_value_callback([this](auto&& human_interface_device,
                                                     auto&& event_queue) {
         value_callback(human_interface_device, event_queue);
       });
