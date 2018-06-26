@@ -8,9 +8,6 @@
 #include "process_utility.hpp"
 #include "thread_utility.hpp"
 #include "version_monitor.hpp"
-#include <iostream>
-#include <sstream>
-#include <unistd.h>
 
 int main(int argc, const char* argv[]) {
   if (getuid() != 0) {
