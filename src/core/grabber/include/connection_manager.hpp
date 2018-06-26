@@ -18,7 +18,7 @@ public:
   connection_manager(version_monitor& version_monitor,
                      device_grabber& device_grabber) : version_monitor_(version_monitor),
                                                        device_grabber_(device_grabber) {
-    console_user_id_monitor_.console_user_id_changed.connect([&](boost::optional<uid_t> uid) {
+    console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
       if (uid) {
         logger::get_logger().info("current_console_user_id: {0}", *uid);
       } else {

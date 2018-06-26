@@ -44,14 +44,14 @@ public:
                          posted_event_queue_(std::make_shared<event_queue>()),
                          mode_(mode::observing),
                          suspended_(false) {
-    client_connected_connection = virtual_hid_device_client_.client_connected.connect([&]() {
+    client_connected_connection = virtual_hid_device_client_.client_connected.connect([this]() {
       logger::get_logger().info("virtual_hid_device_client_ is connected");
 
       update_virtual_hid_keyboard();
       update_virtual_hid_pointing();
     });
 
-    client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect([&]() {
+    client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect([this]() {
       logger::get_logger().info("virtual_hid_device_client_ is disconnected");
 
       stop_grabbing();
@@ -74,11 +74,11 @@ public:
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
                                                             posted_event_queue_);
 
-    input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
+    input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this]() {
       manipulate(mach_absolute_time());
     });
 
-    manipulator_timer_invoked_connection_ = manipulator::manipulator_timer::get_instance().timer_invoked.connect([&](auto timer_id, auto now) {
+    manipulator_timer_invoked_connection_ = manipulator::manipulator_timer::get_instance().timer_invoked.connect([this](auto timer_id, auto now) {
       if (manipulator_timer_id_ == timer_id) {
         manipulator_timer_id_ = boost::none;
         manipulate(now);
@@ -107,7 +107,7 @@ public:
       return true;
     });
 
-    hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
+    hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
       human_interface_device.set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
       human_interface_device.set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
       human_interface_device.set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
@@ -129,8 +129,8 @@ public:
       }
     });
 
-    hid_manager_.device_removed.connect([&](auto&& registry_entry_id,
-                                            auto&& human_interface_device) {
+    hid_manager_.device_removed.connect([this](auto&& registry_entry_id,
+                                               auto&& human_interface_device) {
       human_interface_device.ungrab();
 
       grabbable_states_.erase(registry_entry_id);
@@ -715,7 +715,7 @@ private:
 
     std::sort(std::begin(device_details),
               std::end(device_details),
-              [&](auto& a, auto& b) {
+              [](auto& a, auto& b) {
                 return a.compare(b);
               });
 
