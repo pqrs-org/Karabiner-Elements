@@ -15,10 +15,10 @@ public:
   device_observer(const device_observer&) = delete;
 
   device_observer(const grabber_client& grabber_client) : grabber_client_(grabber_client) {
-    grabbable_state_manager_.grabbable_state_changed.connect([&](auto&& registry_entry_id,
-                                                                 auto&& grabbable_state,
-                                                                 auto&& ungrabbable_temporarily_reason,
-                                                                 auto&& time_stamp) {
+    grabbable_state_manager_.grabbable_state_changed.connect([this](auto&& registry_entry_id,
+                                                                    auto&& grabbable_state,
+                                                                    auto&& ungrabbable_temporarily_reason,
+                                                                    auto&& time_stamp) {
       grabber_client_.grabbable_state_changed(registry_entry_id,
                                               grabbable_state,
                                               ungrabbable_temporarily_reason,
@@ -32,9 +32,9 @@ public:
       return true;
     });
 
-    hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
-      human_interface_device.set_value_callback([&](auto&& human_interface_device,
-                                                    auto&& event_queue) {
+    hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
+      human_interface_device.set_value_callback([this](auto&& human_interface_device,
+                                                       auto&& event_queue) {
         value_callback(human_interface_device, event_queue);
       });
       human_interface_device.observe();

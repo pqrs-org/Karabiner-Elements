@@ -9,7 +9,7 @@ public:
   manipulator_manager(const manipulator_manager&) = delete;
 
   manipulator_manager(void) {
-    manipulator_timer_connection_ = manipulator_timer::get_instance().timer_invoked.connect([&](auto timer_id, auto now) {
+    manipulator_timer_connection_ = manipulator_timer::get_instance().timer_invoked.connect([this](auto timer_id, auto now) {
       for (auto&& m : manipulators_) {
         m->manipulator_timer_invoked(timer_id, now);
       }

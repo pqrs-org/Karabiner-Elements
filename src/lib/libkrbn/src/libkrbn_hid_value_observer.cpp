@@ -11,9 +11,9 @@ public:
                                    void* refcon) : callback_(callback),
                                                    refcon_(refcon),
                                                    observed_device_count_(0) {
-    hid_manager_.device_detected.connect([&](auto&& human_interface_device) {
-      human_interface_device.set_value_callback([&](auto&& human_interface_device,
-                                                    auto&& event_queue) {
+    hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
+      human_interface_device.set_value_callback([this](auto&& human_interface_device,
+                                                       auto&& event_queue) {
         value_callback(human_interface_device, event_queue);
       });
       human_interface_device.observe();
@@ -22,8 +22,8 @@ public:
       ++observed_device_count_;
     });
 
-    hid_manager_.device_removed.connect([&](auto&& registry_entry_id,
-                                            auto&& human_interface_device) {
+    hid_manager_.device_removed.connect([this](auto&& registry_entry_id,
+                                               auto&& human_interface_device) {
       std::lock_guard<std::mutex> lock(observed_device_count_mutex_);
       --observed_device_count_;
     });
