@@ -112,6 +112,28 @@ public:
     dispatch_source_t _Nonnull timer_;
   };
 
+  class fire_while_false_timer final {
+  public:
+    fire_while_false_timer(uint64_t interval, bool (^_Nonnull block)(void)) {
+      timer_ = std::make_unique<gcd_utility::main_queue_timer>(
+          DISPATCH_TIME_NOW,
+          interval,
+          0,
+          ^{
+            if (block()) {
+              timer_ = nullptr;
+            }
+          });
+    }
+
+    ~fire_while_false_timer(void) {
+      timer_ = nullptr;
+    }
+
+  private:
+    std::unique_ptr<main_queue_timer> timer_;
+  };
+
 private:
   static std::string get_next_queue_label(void) {
     static std::mutex mutex;
