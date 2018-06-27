@@ -1,6 +1,5 @@
 #pragma once
 
-#include "apple_notification_center.hpp"
 #include "configuration_manager.hpp"
 #include "console_user_id_monitor.hpp"
 #include "constants.hpp"
@@ -21,10 +20,6 @@ public:
   connection_manager(const connection_manager&) = delete;
 
   connection_manager(version_monitor& version_monitor) : version_monitor_(version_monitor) {
-    apple_notification_center::observe_distributed_notification(this,
-                                                                static_grabber_is_launched_callback,
-                                                                constants::get_distributed_notification_grabber_is_launched());
-
     console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
       version_monitor_.manual_check();
       release();
@@ -101,20 +96,6 @@ private:
       logger::get_logger().warn(ex.what());
     }
     return false;
-  }
-
-  static void static_grabber_is_launched_callback(CFNotificationCenterRef center,
-                                                  void* observer,
-                                                  CFStringRef notification_name,
-                                                  const void* observed_object,
-                                                  CFDictionaryRef user_info) {
-    auto self = static_cast<connection_manager*>(observer);
-    self->grabber_is_launched_callback();
-  }
-
-  void grabber_is_launched_callback(void) {
-    logger::get_logger().info("connection_manager::grabber_is_launched_callback");
-    exit(0);
   }
 
   void system_preferences_updated_callback(const system_preferences& system_preferences) {
