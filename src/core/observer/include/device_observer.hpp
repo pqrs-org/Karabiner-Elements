@@ -25,6 +25,8 @@ public:
                                               time_stamp);
     });
 
+    hid_manager_.set_log_enabled(true);
+
     hid_manager_.device_detecting.connect([](auto&& device) {
       if (iokit_utility::is_karabiner_virtual_hid_device(device)) {
         return false;
