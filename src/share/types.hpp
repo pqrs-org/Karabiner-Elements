@@ -333,6 +333,7 @@ enum class grabbable_state : uint32 {
   grabbable,
   ungrabbable_temporarily,
   ungrabbable_permanently,
+  device_error,
 };
 
 enum class ungrabbable_temporarily_reason : uint32 {
@@ -2068,6 +2069,9 @@ inline std::ostream& operator<<(std::ostream& stream, const grabbable_state& val
       break;
     case grabbable_state::ungrabbable_permanently:
       stream << "ungrabbable_permanently";
+      break;
+    case grabbable_state::device_error:
+      stream << "device_error";
       break;
   }
   return stream;

@@ -385,6 +385,9 @@ public:
               case grabbable_state::ungrabbable_permanently:
                 cancel_grab_timer();
                 return;
+
+              case grabbable_state::device_error:
+                return;
             }
 
             // ----------------------------------------
