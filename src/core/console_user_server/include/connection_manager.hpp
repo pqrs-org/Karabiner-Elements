@@ -28,7 +28,7 @@ public:
         return;
       }
 
-      timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(1 * NSEC_PER_SEC,
+      timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(3 * NSEC_PER_SEC,
                                                                      ^{
                                                                        return setup();
                                                                      });
