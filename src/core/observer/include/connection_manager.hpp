@@ -1,6 +1,5 @@
 #pragma once
 
-#include "apple_notification_center.hpp"
 #include "constants.hpp"
 #include "device_observer.hpp"
 #include "grabber_client.hpp"
@@ -12,10 +11,6 @@ public:
   connection_manager(const connection_manager&) = delete;
 
   connection_manager(version_monitor& version_monitor) : version_monitor_(version_monitor) {
-    apple_notification_center::observe_distributed_notification(this,
-                                                                static_grabber_is_launched_callback,
-                                                                constants::get_distributed_notification_grabber_is_launched());
-
     timer_ = std::make_unique<gcd_utility::main_queue_timer>(
         dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
         1 * NSEC_PER_SEC,
@@ -67,20 +62,6 @@ private:
     last_uid_ = boost::none;
     device_observer_ = nullptr;
     grabber_client_ = nullptr;
-  }
-
-  static void static_grabber_is_launched_callback(CFNotificationCenterRef center,
-                                                  void* observer,
-                                                  CFStringRef notification_name,
-                                                  const void* observed_object,
-                                                  CFDictionaryRef user_info) {
-    auto self = static_cast<connection_manager*>(observer);
-    self->grabber_is_launched_callback();
-  }
-
-  void grabber_is_launched_callback(void) {
-    logger::get_logger().info("connection_manager::grabber_is_launched_callback");
-    exit(0);
   }
 
   version_monitor& version_monitor_;
