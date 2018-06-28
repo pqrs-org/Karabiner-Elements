@@ -42,9 +42,6 @@ public:
     });
 
     console_user_id_monitor_.stop();
-
-    apple_notification_center::unobserve_distributed_notification(this,
-                                                                  constants::get_distributed_notification_grabber_is_launched());
   }
 
 private:

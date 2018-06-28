@@ -63,6 +63,9 @@ public:
   }
 
   ~karabiner_console_user_server(void) {
+    apple_notification_center::unobserve_distributed_notification(this,
+                                                                  constants::get_distributed_notification_grabber_is_launched());
+
     connection_manager_ = nullptr;
     grabber_alerts_monitor_ = nullptr;
     version_monitor_ = nullptr;
