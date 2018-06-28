@@ -1,7 +1,9 @@
 #pragma once
 
+#include "console_user_id_monitor.hpp"
 #include "constants.hpp"
 #include "device_observer.hpp"
+#include "gcd_utility.hpp"
 #include "grabber_client.hpp"
 #include "version_monitor.hpp"
 
@@ -11,64 +13,57 @@ public:
   connection_manager(const connection_manager&) = delete;
 
   connection_manager(version_monitor& version_monitor) : version_monitor_(version_monitor) {
-    timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-        dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),
-        1 * NSEC_PER_SEC,
-        0,
-        ^{
-          auto actual_uid = session::get_current_console_user_id();
-          auto uid = actual_uid;
-          if (!uid) {
-            // Ensure last_uid_ != uid at the first timer invocation.
-            uid = 0;
-          }
+    console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
+      if (uid) {
+        logger::get_logger().info("current_console_user_id: {0}", *uid);
+      } else {
+        logger::get_logger().info("current_console_user_id: none");
+        uid = 0;
+      }
 
-          if (last_uid_ != uid) {
-            if (actual_uid) {
-              logger::get_logger().info("current_console_user_id: {0}", *actual_uid);
-            } else {
-              logger::get_logger().info("current_console_user_id: none");
-            }
+      version_monitor_.manual_check();
+      release();
 
-            version_monitor_.manual_check();
-
-            try {
-              release();
-
-              grabber_client_ = std::make_unique<grabber_client>();
-              device_observer_ = std::make_unique<device_observer>(*grabber_client_);
-
-              last_uid_ = uid;
-            } catch (std::exception& ex) {
-              logger::get_logger().warn(ex.what());
-            }
-          }
-        });
+      timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(3 * NSEC_PER_SEC,
+                                                                     ^{
+                                                                       return setup();
+                                                                     });
+    });
+    console_user_id_monitor_.start();
   }
 
   ~connection_manager(void) {
-    timer_ = nullptr;
-
     gcd_utility::dispatch_sync_in_main_queue(^{
       release();
     });
 
-    apple_notification_center::unobserve_distributed_notification(this,
-                                                                  constants::get_distributed_notification_grabber_is_launched());
+    console_user_id_monitor_.stop();
   }
 
 private:
   void release(void) {
-    last_uid_ = boost::none;
     device_observer_ = nullptr;
     grabber_client_ = nullptr;
+    timer_ = nullptr;
+  }
+
+  bool setup(void) {
+    try {
+      grabber_client_ = std::make_unique<grabber_client>();
+      device_observer_ = std::make_unique<device_observer>(*grabber_client_);
+
+      return true;
+    } catch (std::exception& ex) {
+      logger::get_logger().warn(ex.what());
+    }
+
+    return false;
   }
 
   version_monitor& version_monitor_;
 
-  std::unique_ptr<gcd_utility::main_queue_timer> timer_;
-
-  boost::optional<uid_t> last_uid_;
+  console_user_id_monitor console_user_id_monitor_;
+  std::unique_ptr<gcd_utility::fire_while_false_timer> timer_;
 
   std::unique_ptr<grabber_client> grabber_client_;
   std::unique_ptr<device_observer> device_observer_;
