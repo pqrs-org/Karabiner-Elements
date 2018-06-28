@@ -18,6 +18,33 @@ public:
                                uint64_t)>
       grabbable_state_changed;
 
+  void update(registry_entry_id registry_entry_id,
+              grabbable_state grabbable_state,
+              ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
+              uint64_t time_stamp) {
+    auto it = entries_.find(registry_entry_id);
+    if (it == std::end(entries_)) {
+      entries_.emplace(registry_entry_id, entry{});
+      it = entries_.find(registry_entry_id);
+    }
+
+    if (it != std::end(entries_)) {
+      auto old_state = it->second.get_grabbable_state();
+
+      it->second.set_grabbable_state(grabbable_state,
+                                     ungrabbable_temporarily_reason);
+
+      auto new_state = it->second.get_grabbable_state();
+
+      if (old_state != new_state) {
+        grabbable_state_changed(registry_entry_id,
+                                new_state.first,
+                                new_state.second,
+                                time_stamp);
+      }
+    }
+  }
+
   void update(const event_queue& event_queue) {
     for (const auto& queued_event : event_queue.get_events()) {
       if (auto device_detail = types::find_device_detail(queued_event.get_device_id())) {

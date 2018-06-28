@@ -433,3 +433,61 @@ TEST_CASE("grabbable_state_manager") {
 
   REQUIRE(actual_grabbable_state_changed_history == expected_grabbable_state_changed_history);
 }
+
+TEST_CASE("device_error") {
+  krbn::grabbable_state_manager grabbable_state_manager;
+  krbn::event_queue event_queue;
+
+  std::vector<grabbable_state_changed_history_entry> actual_grabbable_state_changed_history;
+  std::vector<grabbable_state_changed_history_entry> expected_grabbable_state_changed_history;
+
+  grabbable_state_manager.grabbable_state_changed.connect([&](
+                                                              krbn::registry_entry_id registry_entry_id,
+                                                              krbn::grabbable_state grabbable_state,
+                                                              krbn::ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
+                                                              uint64_t time_stamp) {
+    actual_grabbable_state_changed_history.emplace_back(registry_entry_id,
+                                                        grabbable_state,
+                                                        ungrabbable_temporarily_reason,
+                                                        time_stamp);
+  });
+
+  {
+    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    REQUIRE(!actual);
+  }
+
+  // set device_error
+
+  grabbable_state_manager.update(registry_entry_id1,
+                                 krbn::grabbable_state::device_error,
+                                 krbn::ungrabbable_temporarily_reason::none,
+                                 1000);
+
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
+                                                        krbn::grabbable_state::device_error,
+                                                        krbn::ungrabbable_temporarily_reason::none,
+                                                        1000);
+
+  // key repeating
+
+  event_queue.clear_events();
+  event_queue.emplace_back_event(device_id1,
+                                 krbn::event_queue::queued_event::event_time_stamp(2000),
+                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_type::key_down,
+                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+
+  grabbable_state_manager.update(event_queue);
+
+  {
+    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto expected = std::make_pair(krbn::grabbable_state::device_error,
+                                   krbn::ungrabbable_temporarily_reason::none);
+    REQUIRE(*actual == expected);
+  }
+
+  // Test actual_grabbable_state_changed_history
+
+  REQUIRE(actual_grabbable_state_changed_history == expected_grabbable_state_changed_history);
+}

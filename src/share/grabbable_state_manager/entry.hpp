@@ -2,36 +2,18 @@
 
 class entry final {
 public:
+  entry(void) : grabbable_state_(grabbable_state::grabbable,
+                                 ungrabbable_temporarily_reason::none) {
+  }
+
   std::pair<grabbable_state, ungrabbable_temporarily_reason> get_grabbable_state(void) const {
-    // Ungrabbable while key repeating
+    return grabbable_state_;
+  }
 
-    if (keyboard_repeat_detector_.is_repeating()) {
-      return std::make_pair(grabbable_state::ungrabbable_temporarily,
-                            ungrabbable_temporarily_reason::key_repeating);
-    }
-
-    // Ungrabbable while modifier keys are pressed
-    //
-    // We have to check the modifier keys state to avoid pressed physical modifiers affects in mouse events.
-    // (See DEVELOPMENT.md > Modifier flags handling in kernel)
-
-    if (!pressed_modifier_flags_.empty()) {
-      return std::make_pair(grabbable_state::ungrabbable_temporarily,
-                            ungrabbable_temporarily_reason::modifier_key_pressed);
-    }
-
-    // Ungrabbable while pointing button is pressed.
-    //
-    // We should not grab the device while a button is pressed since we cannot release the button.
-    // (To release the button, we have to send a hid report to the device. But we cannot do it.)
-
-    if (!pressed_pointing_buttons_.empty()) {
-      return std::make_pair(grabbable_state::ungrabbable_temporarily,
-                            ungrabbable_temporarily_reason::pointing_button_pressed);
-    }
-
-    return std::make_pair(grabbable_state::grabbable,
-                          ungrabbable_temporarily_reason::none);
+  void set_grabbable_state(grabbable_state grabbable_state,
+                           ungrabbable_temporarily_reason ungrabbable_temporarily_reason) {
+    grabbable_state_.first = grabbable_state;
+    grabbable_state_.second = ungrabbable_temporarily_reason;
   }
 
   void update(const event_queue::queued_event& queued_event) {
@@ -71,10 +53,54 @@ public:
         pressed_pointing_buttons_.erase(*pointing_button);
       }
     }
+
+    update_grabbable_state();
   }
 
 private:
+  void update_grabbable_state(void) {
+    if (grabbable_state_.first != grabbable_state::grabbable &&
+        grabbable_state_.first != grabbable_state::ungrabbable_temporarily &&
+        grabbable_state_.first != grabbable_state::ungrabbable_permanently) {
+      return;
+    }
+
+    // Ungrabbable while key repeating
+
+    if (keyboard_repeat_detector_.is_repeating()) {
+      grabbable_state_ = std::make_pair(grabbable_state::ungrabbable_temporarily,
+                                        ungrabbable_temporarily_reason::key_repeating);
+      return;
+    }
+
+    // Ungrabbable while modifier keys are pressed
+    //
+    // We have to check the modifier keys state to avoid pressed physical modifiers affects in mouse events.
+    // (See DEVELOPMENT.md > Modifier flags handling in kernel)
+
+    if (!pressed_modifier_flags_.empty()) {
+      grabbable_state_ = std::make_pair(grabbable_state::ungrabbable_temporarily,
+                                        ungrabbable_temporarily_reason::modifier_key_pressed);
+      return;
+    }
+
+    // Ungrabbable while pointing button is pressed.
+    //
+    // We should not grab the device while a button is pressed since we cannot release the button.
+    // (To release the button, we have to send a hid report to the device. But we cannot do it.)
+
+    if (!pressed_pointing_buttons_.empty()) {
+      grabbable_state_ = std::make_pair(grabbable_state::ungrabbable_temporarily,
+                                        ungrabbable_temporarily_reason::pointing_button_pressed);
+      return;
+    }
+
+    grabbable_state_ = std::make_pair(grabbable_state::grabbable,
+                                      ungrabbable_temporarily_reason::none);
+  }
+
   keyboard_repeat_detector keyboard_repeat_detector_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   std::unordered_set<pointing_button> pressed_pointing_buttons_;
+  std::pair<grabbable_state, ungrabbable_temporarily_reason> grabbable_state_;
 };
