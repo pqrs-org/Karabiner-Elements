@@ -88,10 +88,10 @@ private:
       }
 
       return true;
-
     } catch (std::exception& ex) {
       logger::get_logger().warn(ex.what());
     }
+
     return false;
   }
 
