@@ -35,11 +35,28 @@ public:
     });
 
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device.set_value_callback([this](auto&& human_interface_device,
-                                                       auto&& event_queue) {
-        value_callback(human_interface_device, event_queue);
-      });
-      human_interface_device.observe();
+      if (auto registry_entry_id = human_interface_device.find_registry_entry_id()) {
+        grabbable_state_manager_.update(*registry_entry_id,
+                                        grabbable_state::device_error,
+                                        ungrabbable_temporarily_reason::none,
+                                        mach_absolute_time());
+
+        human_interface_device.device_observed.connect([this, registry_entry_id](auto&& human_interface_device) {
+          if (auto state = grabbable_state_manager_.get_grabbable_state(*registry_entry_id)) {
+            if (state->first == grabbable_state::device_error) {
+              grabbable_state_manager_.update(*registry_entry_id,
+                                              grabbable_state::grabbable,
+                                              ungrabbable_temporarily_reason::none,
+                                              mach_absolute_time());
+            }
+          }
+        });
+        human_interface_device.set_value_callback([this](auto&& human_interface_device,
+                                                         auto&& event_queue) {
+          value_callback(human_interface_device, event_queue);
+        });
+        human_interface_device.observe();
+      }
     });
 
     hid_manager_.start({

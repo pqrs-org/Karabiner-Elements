@@ -21,6 +21,7 @@
 #include <IOKit/hid/IOHIDValue.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/optional.hpp>
+#include <boost/signals2.hpp>
 #include <cstdint>
 #include <functional>
 #include <list>
@@ -43,6 +44,8 @@ public:
       report_callback;
 
   typedef std::function<grabbable_state(human_interface_device& device)> is_grabbable_callback;
+
+  boost::signals2::signal<void(human_interface_device&)> device_observed;
 
   typedef std::function<void(human_interface_device& device)> grabbed_callback;
   typedef std::function<void(human_interface_device& device)> ungrabbed_callback;
@@ -335,6 +338,8 @@ public:
       schedule();
 
       observed_ = true;
+
+      device_observed(*this);
     });
   }
 
