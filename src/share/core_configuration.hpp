@@ -453,13 +453,18 @@ private:
 
   void remove_old_backup_files(void) {
     auto backups_directory = constants::get_user_core_configuration_automatic_backups_directory();
+    if (backups_directory.empty()) {
+      return;
+    }
+
     auto pattern = backups_directory + "/karabiner_????????.json";
 
     glob_t glob_result;
-    glob(pattern.c_str(), 0, nullptr, &glob_result);
-    const int keep_count = 20;
-    for (int i = 0; i < glob_result.gl_pathc - keep_count; i++) {
-      unlink(glob_result.gl_pathv[i]);
+    if (glob(pattern.c_str(), 0, nullptr, &glob_result) == 0) {
+      const int keep_count = 20;
+      for (int i = 0; i < static_cast<int>(glob_result.gl_pathc) - keep_count; ++i) {
+        unlink(glob_result.gl_pathv[i]);
+      }
     }
     globfree(&glob_result);
   }
