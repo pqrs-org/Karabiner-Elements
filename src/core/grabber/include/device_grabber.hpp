@@ -187,10 +187,12 @@ public:
                               grabbable_state grabbable_state,
                               ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
                               uint64_t time_stamp) {
+#if 0
     logger::get_logger().info("update_grabbable_state time_stamp:{0} registry_entry_id:{1} grabbable_state:{2}",
                               time_stamp,
                               static_cast<uint64_t>(registry_entry_id),
                               static_cast<uint32_t>(grabbable_state));
+#endif
     grabbable_states_[registry_entry_id] = std::make_shared<grabbable_state_entry>(grabbable_state,
                                                                                    ungrabbable_temporarily_reason,
                                                                                    time_stamp);
