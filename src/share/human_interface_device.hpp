@@ -191,6 +191,9 @@ public:
   ~human_interface_device(void) {
     // Release device_ and queue_ in main thread to avoid callback invocations after object has been destroyed.
     gcd_utility::dispatch_sync_in_main_queue(^{
+      grab_timer_ = nullptr;
+      observe_timer_ = nullptr;
+
       // Unregister all callbacks.
       unschedule();
       unregister_report_callback();
@@ -319,33 +322,46 @@ public:
 
   // High-level utility method.
   void observe(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (removed_) {
-        return;
-      }
+    boost::optional<IOReturn> __block last_open_error;
 
-      if (observed_) {
-        return;
-      }
+    observe_timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(
+        3 * NSEC_PER_SEC,
+        ^{
+          if (removed_) {
+            return true;
+          }
 
-      auto r = open();
-      if (r != kIOReturnSuccess) {
-        logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
-        return;
-      }
+          if (observed_) {
+            return true;
+          }
 
-      queue_start();
-      schedule();
+          auto r = open();
+          if (r != kIOReturnSuccess) {
+            if (last_open_error != r) {
+              last_open_error = r;
+              logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+            }
+            return false;
+          }
 
-      observed_ = true;
+          queue_start();
+          schedule();
 
-      device_observed(*this);
-    });
+          observed_ = true;
+
+          logger::get_logger().info("{0} is observed.", get_name_for_log());
+
+          device_observed(*this);
+
+          return true;
+        });
   }
 
   // High-level utility method.
   void unobserve(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
+      observe_timer_ = nullptr;
+
       if (!observed_) {
         return;
       }
@@ -863,6 +879,7 @@ private:
   grabbed_callback grabbed_callback_;
   ungrabbed_callback ungrabbed_callback_;
   disabled_callback disabled_callback_;
+  std::unique_ptr<gcd_utility::fire_while_false_timer> observe_timer_;
   std::unique_ptr<gcd_utility::main_queue_timer> grab_timer_;
   bool removed_;
   bool observed_;
