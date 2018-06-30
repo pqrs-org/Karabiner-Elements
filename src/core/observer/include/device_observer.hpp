@@ -43,6 +43,7 @@ public:
 
         human_interface_device.device_observed.connect([this, registry_entry_id](auto&& human_interface_device) {
           if (auto state = grabbable_state_manager_.get_grabbable_state(*registry_entry_id)) {
+            // Keep grabbable_state if the state is already changed by value_callback.
             if (state->first == grabbable_state::device_error) {
               grabbable_state_manager_.update(*registry_entry_id,
                                               grabbable_state::grabbable,

@@ -59,12 +59,6 @@ public:
 
 private:
   void update_grabbable_state(void) {
-    if (grabbable_state_.first != grabbable_state::grabbable &&
-        grabbable_state_.first != grabbable_state::ungrabbable_temporarily &&
-        grabbable_state_.first != grabbable_state::ungrabbable_permanently) {
-      return;
-    }
-
     // Ungrabbable while key repeating
 
     if (keyboard_repeat_detector_.is_repeating()) {

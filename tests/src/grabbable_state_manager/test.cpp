@@ -469,7 +469,7 @@ TEST_CASE("device_error") {
                                                         krbn::ungrabbable_temporarily_reason::none,
                                                         1000);
 
-  // key repeating
+  // key repeating (device_error will be canceled by `grabbable_state_manager::update`.)
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
@@ -478,12 +478,17 @@ TEST_CASE("device_error") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::queued_event::event(krbn::key_code::a));
 
+  expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
+                                                        krbn::grabbable_state::ungrabbable_temporarily,
+                                                        krbn::ungrabbable_temporarily_reason::key_repeating,
+                                                        2000);
+
   grabbable_state_manager.update(event_queue);
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
-    auto expected = std::make_pair(krbn::grabbable_state::device_error,
-                                   krbn::ungrabbable_temporarily_reason::none);
+    auto expected = std::make_pair(krbn::grabbable_state::ungrabbable_temporarily,
+                                   krbn::ungrabbable_temporarily_reason::key_repeating);
     REQUIRE(*actual == expected);
   }
 
