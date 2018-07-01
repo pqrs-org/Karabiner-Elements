@@ -2,14 +2,20 @@
 
 ## Core Processes
 
-* `karabiner_grabber`
-  * Run with root privilege.
-  * Seize the input devices and modify events then post events using `Karabiner-VirtualHIDDevice`.
-* `karabiner_console_user_server`
-  * Run with console user privilege.
-  * Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
-  * Execute shell commands which are specified by `shell_command` in `complex_modifications`.
-  * `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
+- `karabiner_grabber`
+  - Run with root privilege.
+  - Seize the input devices and modify events then post events using `Karabiner-VirtualHIDDevice`.
+- `karabiner_observer`
+  - Run with root privilege.
+  - Observe input devices and manage the grabbable state.
+  - Tell the grabbable state to `karabiner_grabber`.
+- `karabiner_console_user_server`
+  - Run with console user privilege.
+  - Monitor system preferences values (key repeat, etc) and notify them to `karabiner_grabber`.
+  - Execute shell commands which are specified by `shell_command` in `complex_modifications`.
+  - `karabiner_grabber` seizes devices only when `karabiner_console_user_server` is running.
+
+![processes](images/processes.svg)
 
 ### program sequence
 
@@ -21,6 +27,11 @@
 2.  `karabiner_grabber` opens grabber server unix domain socket.
 3.  `karabiner_grabber` start polling the session state.
 4.  When session state is changed, `karabiner_grabber` changes the unix domain socket owner to console user.
+
+`karabiner_observer`
+
+1.  Run `karabiner_observer`.
+2.  `karabiner_observer` observes devices and tell the state to `karabiner_grabber`.
 
 #### device grabbing
 
@@ -119,9 +130,9 @@ It requires posting coregraphics events.<br />
 
 `CGEventPost` does not support some key events in OS X 10.12.
 
-* Mission Control key
-* Launchpad key
-* Option-Command-Escape
+- Mission Control key
+- Launchpad key
+- Option-Command-Escape
 
 Thus, `karabiner_grabber` does not use `CGEventPost`.
 
