@@ -112,10 +112,11 @@ public:
       human_interface_device.set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
       human_interface_device.set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
       human_interface_device.set_disabled_callback(std::bind(&device_grabber::disabled_callback, this, std::placeholders::_1));
-      human_interface_device.set_value_callback(std::bind(&device_grabber::value_callback,
-                                                          this,
-                                                          std::placeholders::_1,
-                                                          std::placeholders::_2));
+      human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
+                                                           auto&& event_queue) {
+        values_arrived(human_interface_device, event_queue);
+      });
+
       human_interface_device.observe();
 
       output_devices_json();
@@ -412,7 +413,7 @@ private:
     }
   }
 
-  void value_callback(human_interface_device& device,
+  void values_arrived(human_interface_device& device,
                       event_queue& event_queue) {
     if (device.get_disabled()) {
       // Do nothing

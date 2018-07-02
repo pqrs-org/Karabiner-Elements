@@ -12,9 +12,9 @@ public:
                                                    refcon_(refcon),
                                                    observed_device_count_(0) {
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device.set_value_callback([this](auto&& human_interface_device,
-                                                       auto&& event_queue) {
-        value_callback(human_interface_device, event_queue);
+      human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
+                                                           auto&& event_queue) {
+        values_arrived(human_interface_device, event_queue);
       });
       human_interface_device.observe();
 
@@ -43,7 +43,7 @@ public:
   }
 
 private:
-  void value_callback(krbn::human_interface_device& device,
+  void values_arrived(krbn::human_interface_device& device,
                       krbn::event_queue& event_queue) {
     for (const auto& queued_event : event_queue.get_events()) {
       libkrbn_hid_value_event_type event_type = libkrbn_hid_value_event_type_key_down;

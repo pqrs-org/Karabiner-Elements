@@ -52,9 +52,9 @@ public:
             }
           }
         });
-        human_interface_device.set_value_callback([this](auto&& human_interface_device,
-                                                         auto&& event_queue) {
-          value_callback(human_interface_device, event_queue);
+        human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
+                                                             auto&& event_queue) {
+          grabbable_state_manager_.update(event_queue);
         });
         human_interface_device.observe();
       }
@@ -72,11 +72,6 @@ public:
   }
 
 private:
-  void value_callback(human_interface_device& device,
-                      event_queue& event_queue) {
-    grabbable_state_manager_.update(event_queue);
-  }
-
   const grabber_client& grabber_client_;
 
   hid_manager hid_manager_;

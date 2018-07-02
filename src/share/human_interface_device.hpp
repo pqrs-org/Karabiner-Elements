@@ -32,9 +32,9 @@
 namespace krbn {
 class human_interface_device final {
 public:
-  typedef std::function<void(human_interface_device& device,
-                             event_queue& event_queue)>
-      value_callback;
+  boost::signals2::signal<void(human_interface_device& device,
+                               event_queue& event_queue)>
+      values_arrived;
 
   typedef std::function<void(human_interface_device& device,
                              IOHIDReportType type,
@@ -562,12 +562,6 @@ public:
     });
   }
 
-  void set_value_callback(const value_callback& callback) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      value_callback_ = callback;
-    });
-  }
-
   grabbable_state is_grabbable(void) {
     if (is_grabbable_callback_) {
       auto state = is_grabbable_callback_(*this);
@@ -796,10 +790,7 @@ private:
       }
     }
 
-    // Call value_callback_.
-    if (value_callback_) {
-      value_callback_(*this, input_event_queue_);
-    }
+    values_arrived(*this, input_event_queue_);
 
     input_event_queue_.clear_events();
   }
@@ -869,7 +860,6 @@ private:
 
   event_queue input_event_queue_;
 
-  value_callback value_callback_;
   report_callback report_callback_;
   std::vector<uint8_t> report_buffer_;
 

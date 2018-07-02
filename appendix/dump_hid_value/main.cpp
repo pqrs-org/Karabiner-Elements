@@ -10,9 +10,9 @@ public:
 
   dump_hid_value(void) {
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device.set_value_callback([this](auto&& human_interface_device,
-                                                    auto&& event_queue) {
-        value_callback(human_interface_device, event_queue);
+      human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
+                                                           auto&& event_queue) {
+        values_arrived(human_interface_device, event_queue);
       });
       human_interface_device.observe();
     });
@@ -29,7 +29,7 @@ public:
   }
 
 private:
-  void value_callback(krbn::human_interface_device& device,
+  void values_arrived(krbn::human_interface_device& device,
                       krbn::event_queue& event_queue) {
     for (const auto& queued_event : event_queue.get_events()) {
       std::cout << queued_event.get_event_time_stamp().get_time_stamp() << " ";
