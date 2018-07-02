@@ -7,17 +7,18 @@ public:
 
   dump_hid_report(void) {
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device.register_report_callback([this](auto&& human_interface_device,
-                                                             auto&& type,
-                                                             auto&& report_id,
-                                                             auto&& report,
-                                                             auto&& report_length) {
-        report_callback(human_interface_device, type, report_id, report, report_length);
+      human_interface_device.report_arrived.connect([this](auto&& human_interface_device,
+                                                           auto&& type,
+                                                           auto&& report_id,
+                                                           auto&& report,
+                                                           auto&& report_length) {
+        report_arrived(human_interface_device, type, report_id, report, report_length);
       });
+      human_interface_device.enable_report_callback();
 
       auto r = human_interface_device.open();
       if (r != kIOReturnSuccess) {
-        krbn::logger::get_logger().error("failed to open");
+        krbn::logger::get_logger().error("failed to open {0}", human_interface_device.get_name_for_log());
         return;
       }
       human_interface_device.schedule();
@@ -35,11 +36,11 @@ public:
   }
 
 private:
-  void report_callback(krbn::human_interface_device& device,
-                       IOHIDReportType type,
-                       uint32_t report_id,
-                       uint8_t* report,
-                       CFIndex report_length) {
+  void report_arrived(krbn::human_interface_device& device,
+                      IOHIDReportType type,
+                      uint32_t report_id,
+                      uint8_t* report,
+                      CFIndex report_length) {
     // Logitech Unifying Receiver sends a lot of null report. We ignore them.
     if (auto manufacturer = device.find_manufacturer()) {
       if (auto product = device.find_product()) {

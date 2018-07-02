@@ -36,12 +36,12 @@ public:
                                event_queue& event_queue)>
       values_arrived;
 
-  typedef std::function<void(human_interface_device& device,
-                             IOHIDReportType type,
-                             uint32_t report_id,
-                             uint8_t* _Nonnull report,
-                             CFIndex report_length)>
-      report_callback;
+  boost::signals2::signal<void(human_interface_device& device,
+                               IOHIDReportType type,
+                               uint32_t report_id,
+                               uint8_t* _Nonnull report,
+                               CFIndex report_length)>
+      report_arrived;
 
   typedef std::function<grabbable_state(human_interface_device& device)> is_grabbable_callback;
 
@@ -196,7 +196,7 @@ public:
 
       // Unregister all callbacks.
       unschedule();
-      unregister_report_callback();
+      disable_report_callback();
       queue_stop();
       close();
 
@@ -267,21 +267,17 @@ public:
     });
   }
 
-  void register_report_callback(const report_callback& callback) {
+  void enable_report_callback(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      report_callback_ = callback;
-
       resize_report_buffer();
       IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
     });
   }
 
-  void unregister_report_callback(void) {
+  void disable_report_callback(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       resize_report_buffer();
       IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
-
-      report_callback_ = nullptr;
     });
   }
 
@@ -829,9 +825,7 @@ private:
                              uint32_t report_id,
                              uint8_t* _Nullable report,
                              CFIndex report_length) {
-    if (report_callback_) {
-      report_callback_(*this, type, report_id, report, report_length);
-    }
+    report_arrived(*this, type, report_id, report, report_length);
   }
 
   uint64_t elements_key(hid_usage_page usage_page, hid_usage usage) const {
@@ -860,7 +854,6 @@ private:
 
   event_queue input_event_queue_;
 
-  report_callback report_callback_;
   std::vector<uint8_t> report_buffer_;
 
   is_grabbable_callback is_grabbable_callback_;
@@ -875,7 +868,7 @@ private:
   bool observed_;
   bool grabbed_;
   // `disabled_` is ignoring input events from this device.
-  // (== `grabbed_` and does not call `value_callback_`)
+  // (== `grabbed_` and does not call `values_arrived`)
   bool disabled_;
 
   std::unique_ptr<connected_devices::device> connected_device_;
