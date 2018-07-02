@@ -109,9 +109,15 @@ public:
 
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
       human_interface_device.set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
-      human_interface_device.set_grabbed_callback(std::bind(&device_grabber::grabbed_callback, this, std::placeholders::_1));
-      human_interface_device.set_ungrabbed_callback(std::bind(&device_grabber::ungrabbed_callback, this, std::placeholders::_1));
-      human_interface_device.set_disabled_callback(std::bind(&device_grabber::disabled_callback, this, std::placeholders::_1));
+      human_interface_device.device_grabbed.connect([this](auto&& human_interface_device) {
+        device_grabbed(human_interface_device);
+      });
+      human_interface_device.device_ungrabbed.connect([this](auto&& human_interface_device) {
+        device_ungrabbed(human_interface_device);
+      });
+      human_interface_device.device_disabled.connect([this](auto&& human_interface_device) {
+        device_disabled(human_interface_device);
+      });
       human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
                                                            auto&& event_queue) {
         values_arrived(human_interface_device, event_queue);
@@ -503,7 +509,7 @@ private:
     return grabbable_state::grabbable;
   }
 
-  void grabbed_callback(human_interface_device& device) {
+  void device_grabbed(human_interface_device& device) {
     // set keyboard led
     if (event_tap_manager_) {
       bool state = false;
@@ -518,7 +524,7 @@ private:
     apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
   }
 
-  void ungrabbed_callback(human_interface_device& device) {
+  void device_ungrabbed(human_interface_device& device) {
     post_device_ungrabbed_event(device.get_device_id());
 
     update_virtual_hid_pointing();
@@ -526,7 +532,7 @@ private:
     apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
   }
 
-  void disabled_callback(human_interface_device& device) {
+  void device_disabled(human_interface_device& device) {
     // Post device_ungrabbed event in order to release modifier_flags.
     post_device_ungrabbed_event(device.get_device_id());
   }
