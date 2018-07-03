@@ -195,15 +195,19 @@ public:
                               grabbable_state grabbable_state,
                               ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
                               uint64_t time_stamp) {
-#if 0
-    logger::get_logger().info("update_grabbable_state time_stamp:{0} registry_entry_id:{1} grabbable_state:{2}",
-                              time_stamp,
-                              static_cast<uint64_t>(registry_entry_id),
-                              static_cast<uint32_t>(grabbable_state));
-#endif
-    grabbable_states_[registry_entry_id] = std::make_shared<grabbable_state_entry>(grabbable_state,
-                                                                                   ungrabbable_temporarily_reason,
-                                                                                   time_stamp);
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      // Ignore if the first grabbed event is already arrived.
+
+      auto it = first_grabbed_event_time_stamps_.find(registry_entry_id);
+      if (it != std::end(first_grabbed_event_time_stamps_) &&
+          it->second <= time_stamp) {
+        return;
+      }
+
+      grabbable_states_[registry_entry_id] = std::make_shared<grabbable_state_entry>(grabbable_state,
+                                                                                     ungrabbable_temporarily_reason,
+                                                                                     time_stamp);
+    });
   }
 
   void start_grabbing(const std::string& user_core_configuration_file_path) {
