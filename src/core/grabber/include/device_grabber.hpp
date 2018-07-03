@@ -141,6 +141,7 @@ public:
       human_interface_device.ungrab();
 
       grabbable_states_.erase(registry_entry_id);
+      first_grabbed_event_time_stamps_.erase(registry_entry_id);
 
       output_devices_json();
       output_device_details_json();
@@ -434,6 +435,22 @@ private:
 
           merged_input_event_queue_->push_back_event(qe);
 
+          // Update first_grabbed_event_time_stamps_
+
+          if (auto device_detail = types::find_device_detail(queued_event.get_device_id())) {
+            if (auto registry_entry_id = device_detail->get_registry_entry_id()) {
+              auto it = first_grabbed_event_time_stamps_.find(*registry_entry_id);
+              if (it == std::end(first_grabbed_event_time_stamps_)) {
+                auto time_stamp = queued_event.get_event_time_stamp().get_time_stamp();
+                first_grabbed_event_time_stamps_.emplace(*registry_entry_id, time_stamp);
+
+                logger::get_logger().info("first grabbed event: registry_entry_id:{0} time_stamp:{1}",
+                                          static_cast<uint64_t>(*registry_entry_id),
+                                          time_stamp);
+              }
+            }
+          }
+
         } else {
           // device is ignored
           auto event = event_queue::queued_event::event::make_event_from_ignored_device_event();
@@ -525,6 +542,10 @@ private:
   }
 
   void device_ungrabbed(human_interface_device& device) {
+    if (auto registry_entry_id = device.find_registry_entry_id()) {
+      first_grabbed_event_time_stamps_.erase(*registry_entry_id);
+    }
+
     post_device_ungrabbed_event(device.get_device_id());
 
     update_virtual_hid_pointing();
@@ -958,6 +979,7 @@ private:
   hid_manager hid_manager_;
 
   std::unordered_map<registry_entry_id, std::shared_ptr<grabbable_state_entry>> grabbable_states_;
+  std::unordered_map<registry_entry_id, uint64_t> first_grabbed_event_time_stamps_;
 
   core_configuration::profile profile_;
   system_preferences system_preferences_;
