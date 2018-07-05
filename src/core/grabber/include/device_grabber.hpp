@@ -546,9 +546,7 @@ private:
   }
 
   void device_ungrabbed(human_interface_device& device) {
-    if (auto registry_entry_id = device.find_registry_entry_id()) {
-      first_grabbed_event_time_stamps_.erase(*registry_entry_id);
-    }
+    first_grabbed_event_time_stamps_.erase(device.get_registry_entry_id());
 
     post_device_ungrabbed_event(device.get_device_id());
 

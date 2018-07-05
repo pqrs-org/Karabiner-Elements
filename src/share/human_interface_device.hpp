@@ -485,10 +485,6 @@ public:
     });
   }
 
-  boost::optional<registry_entry_id> find_registry_entry_id(void) const {
-    return iokit_utility::find_registry_entry_id(device_);
-  }
-
   boost::optional<long> find_max_input_report_size(void) const {
     return iokit_utility::find_max_input_report_size(device_);
   }

@@ -35,29 +35,27 @@ public:
     });
 
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      if (auto registry_entry_id = human_interface_device.find_registry_entry_id()) {
-        grabbable_state_manager_.update(*registry_entry_id,
-                                        grabbable_state::device_error,
-                                        ungrabbable_temporarily_reason::none,
-                                        mach_absolute_time());
+      grabbable_state_manager_.update(human_interface_device.get_registry_entry_id(),
+                                      grabbable_state::device_error,
+                                      ungrabbable_temporarily_reason::none,
+                                      mach_absolute_time());
 
-        human_interface_device.device_observed.connect([this, registry_entry_id](auto&& human_interface_device) {
-          if (auto state = grabbable_state_manager_.get_grabbable_state(*registry_entry_id)) {
-            // Keep grabbable_state if the state is already changed by value_callback.
-            if (state->first == grabbable_state::device_error) {
-              grabbable_state_manager_.update(*registry_entry_id,
-                                              grabbable_state::grabbable,
-                                              ungrabbable_temporarily_reason::none,
-                                              mach_absolute_time());
-            }
+      human_interface_device.device_observed.connect([this](auto&& human_interface_device) {
+        if (auto state = grabbable_state_manager_.get_grabbable_state(human_interface_device.get_registry_entry_id())) {
+          // Keep grabbable_state if the state is already changed by value_callback.
+          if (state->first == grabbable_state::device_error) {
+            grabbable_state_manager_.update(human_interface_device.get_registry_entry_id(),
+                                            grabbable_state::grabbable,
+                                            ungrabbable_temporarily_reason::none,
+                                            mach_absolute_time());
           }
-        });
-        human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
-                                                             auto&& event_queue) {
-          grabbable_state_manager_.update(event_queue);
-        });
-        human_interface_device.observe();
-      }
+        }
+      });
+      human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
+                                                           auto&& event_queue) {
+        grabbable_state_manager_.update(event_queue);
+      });
+      human_interface_device.observe();
     });
 
     hid_manager_.start({
