@@ -52,13 +52,15 @@ public:
 
   human_interface_device(const human_interface_device&) = delete;
 
-  human_interface_device(IOHIDDeviceRef _Nonnull device) : device_(device),
-                                                           device_id_(types::make_new_device_id(std::make_shared<device_detail>(device))),
-                                                           queue_(nullptr),
-                                                           removed_(false),
-                                                           observed_(false),
-                                                           grabbed_(false),
-                                                           disabled_(false) {
+  human_interface_device(IOHIDDeviceRef _Nonnull device,
+                         registry_entry_id registry_entry_id) : device_(device),
+                                                                device_id_(types::make_new_device_id(std::make_shared<device_detail>(device))),
+                                                                queue_(nullptr),
+                                                                registry_entry_id_(registry_entry_id),
+                                                                removed_(false),
+                                                                observed_(false),
+                                                                grabbed_(false),
+                                                                disabled_(false) {
     // ----------------------------------------
     // Retain device_
 
@@ -523,6 +525,10 @@ public:
     return iokit_utility::is_karabiner_virtual_hid_device(device_);
   }
 
+  registry_entry_id get_registry_entry_id(void) const {
+    return registry_entry_id_;
+  }
+
   std::string get_name_for_log(void) const {
     return name_for_log_;
   }
@@ -824,6 +830,8 @@ private:
   device_id device_id_;
   IOHIDQueueRef _Nullable queue_;
   std::vector<IOHIDElementRef> elements_;
+
+  registry_entry_id registry_entry_id_;
 
   std::string name_for_log_;
 

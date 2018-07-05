@@ -121,7 +121,7 @@ private:
         return;
       }
 
-      auto hid = std::make_shared<human_interface_device>(device);
+      auto hid = std::make_shared<human_interface_device>(device, *registry_entry_id);
       hids_[*registry_entry_id] = hid;
 
       if (log_enabled_) {
