@@ -7,6 +7,7 @@ all:
 	$(MAKE) -C bin/cli
 	$(MAKE) -C core/console_user_server
 	$(MAKE) -C core/grabber
+	$(MAKE) -C core/observer
 	$(MAKE) -C lib/libkrbn
 
 clean:
@@ -18,4 +19,5 @@ clean:
 	$(MAKE) -C bin/cli clean
 	$(MAKE) -C core/console_user_server clean
 	$(MAKE) -C core/grabber clean
+	$(MAKE) -C core/observer clean
 	$(MAKE) -C lib/libkrbn clean
