@@ -526,6 +526,67 @@ private:
     }
 
     // ----------------------------------------
+    // Check observer state
+
+    {
+      auto it = grabbable_states_.find(device.get_registry_entry_id());
+      if (it == std::end(grabbable_states_)) {
+        std::string message = fmt::format("{0} is not observed yet. Please wait for a while.",
+                                          device.get_name_for_log());
+        is_grabbable_callback_log_reducer_.warn(message);
+        return grabbable_state::ungrabbable_temporarily;
+      }
+
+      switch (it->second->get_grabbable_state()) {
+        case grabbable_state::grabbable:
+          break;
+
+        case grabbable_state::ungrabbable_temporarily: {
+          std::string message;
+          switch (it->second->get_ungrabbable_temporarily_reason()) {
+            case ungrabbable_temporarily_reason::none: {
+              message = fmt::format("{0} is ungrabbable temporarily",
+                                    device.get_name_for_log());
+              break;
+            }
+            case ungrabbable_temporarily_reason::key_repeating: {
+              message = fmt::format("{0} is ungrabbable temporarily while a key is repeating.",
+                                    device.get_name_for_log());
+              break;
+            }
+            case ungrabbable_temporarily_reason::modifier_key_pressed: {
+              message = fmt::format("{0} is ungrabbable temporarily while any modifier flags are pressed.",
+                                    device.get_name_for_log());
+              break;
+            }
+            case ungrabbable_temporarily_reason::pointing_button_pressed: {
+              message = fmt::format("{0} is ungrabbable temporarily while mouse buttons are pressed.",
+                                    device.get_name_for_log());
+              break;
+            }
+          }
+          is_grabbable_callback_log_reducer_.warn(message);
+
+          return grabbable_state::ungrabbable_temporarily;
+        }
+
+        case grabbable_state::ungrabbable_permanently: {
+          std::string message = fmt::format("{0} is ungrabbable permanently.",
+                                            device.get_name_for_log());
+          is_grabbable_callback_log_reducer_.warn(message);
+          return grabbable_state::ungrabbable_permanently;
+        }
+
+        case grabbable_state::device_error: {
+          std::string message = fmt::format("{0} is ungrabbable temporarily by a failure of accessing device.",
+                                            device.get_name_for_log());
+          is_grabbable_callback_log_reducer_.warn(message);
+          return grabbable_state::ungrabbable_temporarily;
+        }
+      }
+    }
+
+    // ----------------------------------------
 
     return grabbable_state::grabbable;
   }

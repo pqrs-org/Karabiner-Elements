@@ -544,41 +544,6 @@ public:
     }
 
     // ----------------------------------------
-    // Ungrabbable while key repeating
-
-    if (keyboard_repeat_detector_.is_repeating()) {
-      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while a key is repeating.");
-      return grabbable_state::ungrabbable_temporarily;
-    }
-
-    // Ungrabbable while modifier keys are pressed
-    //
-    // We have to check the modifier keys state to avoid pressed physical modifiers affects in mouse events.
-    // (See DEVELOPMENT.md > Modifier flags handling in kernel)
-
-    if (!pressed_modifier_flags_.empty()) {
-      std::stringstream ss;
-      ss << "We cannot grab " << get_name_for_log() << " while any modifier flags are pressed. (";
-      for (const auto& m : pressed_modifier_flags_) {
-        ss << m << " ";
-      }
-      ss << ")";
-      is_grabbable_callback_log_reducer_.warn(ss.str());
-      return grabbable_state::ungrabbable_temporarily;
-    }
-
-    // ----------------------------------------
-    // Ungrabbable while pointing button is pressed.
-
-    if (!pressed_pointing_buttons_.empty()) {
-      // We should not grab the device while a button is pressed since we cannot release the button.
-      // (To release the button, we have to send a hid report to the device. But we cannot do it.)
-
-      is_grabbable_callback_log_reducer_.warn(std::string("We cannot grab ") + get_name_for_log() + " while mouse buttons are pressed.");
-      return grabbable_state::ungrabbable_temporarily;
-    }
-
-    // ----------------------------------------
 
     return grabbable_state::grabbable;
   }
