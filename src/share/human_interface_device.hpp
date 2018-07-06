@@ -234,6 +234,10 @@ public:
     return observed_;
   }
 
+  bool get_grabbed(void) const {
+    return grabbed_;
+  }
+
   IOReturn open(IOOptionBits options = kIOHIDOptionsTypeNone) {
     IOReturn __block r;
     gcd_utility::dispatch_sync_in_main_queue(^{
@@ -450,8 +454,6 @@ public:
       close();
 
       device_ungrabbed(*this);
-
-      observe();
     });
   }
 

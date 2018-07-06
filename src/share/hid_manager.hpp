@@ -36,6 +36,14 @@ public:
     return hids_;
   }
 
+  std::shared_ptr<human_interface_device> find_human_interface_device(registry_entry_id registry_entry_id) const {
+    auto it = hids_.find(registry_entry_id);
+    if (it != std::end(hids_)) {
+      return it->second;
+    }
+    return nullptr;
+  }
+
   void set_log_enabled(bool value) {
     log_enabled_ = value;
   }

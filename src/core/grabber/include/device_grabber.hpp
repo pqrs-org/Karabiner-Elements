@@ -113,6 +113,7 @@ public:
         device_grabbed(human_interface_device);
       });
       human_interface_device.device_ungrabbed.connect([this](auto&& human_interface_device) {
+        logger::get_logger().info("{0} is ungrabbed", human_interface_device.get_name_for_log());
         device_ungrabbed(human_interface_device);
       });
       human_interface_device.device_disabled.connect([this](auto&& human_interface_device) {
@@ -207,6 +208,15 @@ public:
       grabbable_states_[registry_entry_id] = std::make_shared<grabbable_state_entry>(grabbable_state,
                                                                                      ungrabbable_temporarily_reason,
                                                                                      time_stamp);
+
+      if (grabbable_state != grabbable_state::grabbable) {
+        if (auto hid = hid_manager_.find_human_interface_device(registry_entry_id)) {
+          if (hid->get_grabbed()) {
+            hid->ungrab();
+            hid->grab();
+          }
+        }
+      }
     });
   }
 
