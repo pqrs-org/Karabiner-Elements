@@ -680,39 +680,6 @@ private:
             if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::key_code ||
                 queued_event.get_event().get_type() == event_queue::queued_event::event::type::consumer_key_code ||
                 queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
-
-              // Update keyboard_repeat_detector_
-
-              if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::key_code ||
-                  queued_event.get_event().get_type() == event_queue::queued_event::event::type::consumer_key_code) {
-                keyboard_repeat_detector_.set(*hid_usage_page,
-                                              *hid_usage,
-                                              queued_event.get_event_type());
-              }
-
-              // Update pressed_modifier_flags_
-
-              if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::key_code) {
-                if (auto m = types::make_modifier_flag(*hid_usage_page,
-                                                       *hid_usage)) {
-                  if (queued_event.get_event_type() == event_type::key_down) {
-                    pressed_modifier_flags_.insert(*m);
-                  } else if (queued_event.get_event_type() == event_type::key_up) {
-                    pressed_modifier_flags_.erase(*m);
-                  }
-                }
-              }
-
-              // Update pressed_pointing_buttons_
-
-              if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
-                if (queued_event.get_event_type() == event_type::key_down) {
-                  pressed_pointing_buttons_.insert(elements_key(*hid_usage_page, *hid_usage));
-                } else if (queued_event.get_event_type() == event_type::key_up) {
-                  pressed_pointing_buttons_.erase(elements_key(*hid_usage_page, *hid_usage));
-                }
-              }
-
               // Send `device_keys_and_pointing_buttons_are_released` event if needed.
 
               if (queued_event.get_event_type() == event_type::key_down) {
@@ -816,10 +783,8 @@ private:
 
   std::unique_ptr<connected_devices::device> connected_device_;
 
-  keyboard_repeat_detector keyboard_repeat_detector_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
 
   std::unordered_set<uint64_t> pressed_keys_;
-  std::unordered_set<uint64_t> pressed_pointing_buttons_;
 };
 } // namespace krbn
