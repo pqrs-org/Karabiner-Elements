@@ -41,6 +41,9 @@ public:
                                       mach_absolute_time());
 
       human_interface_device.device_observed.connect([this](auto&& human_interface_device) {
+        logger::get_logger().info("{0} is observed.",
+                                  human_interface_device.get_name_for_log());
+
         if (auto state = grabbable_state_manager_.get_grabbable_state(human_interface_device.get_registry_entry_id())) {
           // Keep grabbable_state if the state is already changed by value_callback.
           if (state->first == grabbable_state::device_error) {
