@@ -21,6 +21,7 @@
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 #include <boost/algorithm/string.hpp>
+#include <deque>
 #include <fstream>
 #include <json/json.hpp>
 #include <thread>
@@ -197,16 +198,36 @@ public:
                               uint64_t time_stamp) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       // Ignore if the first grabbed event is already arrived.
-
-      auto it = first_grabbed_event_time_stamps_.find(registry_entry_id);
-      if (it != std::end(first_grabbed_event_time_stamps_) &&
-          it->second <= time_stamp) {
-        return;
+      {
+        auto it = first_grabbed_event_time_stamps_.find(registry_entry_id);
+        if (it != std::end(first_grabbed_event_time_stamps_) &&
+            it->second <= time_stamp) {
+          return;
+        }
       }
 
-      grabbable_states_[registry_entry_id] = std::make_shared<grabbable_state_entry>(grabbable_state,
-                                                                                     ungrabbable_temporarily_reason,
-                                                                                     time_stamp);
+      {
+        auto it = grabbable_states_.find(registry_entry_id);
+        if (it == std::end(grabbable_states_)) {
+          grabbable_states_[registry_entry_id] = {};
+        }
+      }
+
+      auto& entries = grabbable_states_[registry_entry_id];
+
+      entries.push_back(
+          std::make_shared<grabbable_state_entry>(grabbable_state,
+                                                  ungrabbable_temporarily_reason,
+                                                  time_stamp));
+
+      // Keep multiple entries for when the first grabbed event(s) calls
+      // `update_grabbable_state` before `values_arrived` callback.
+
+      const int max_entries = 32;
+
+      while (entries.size() > max_entries) {
+        grabbable_states_[registry_entry_id].pop_front();
+      }
 
       if (grabbable_state != grabbable_state::grabbable) {
         if (auto hid = hid_manager_.find_human_interface_device(registry_entry_id)) {
@@ -451,6 +472,10 @@ private:
               logger::get_logger().info("first grabbed event: registry_entry_id:{0} time_stamp:{1}",
                                         static_cast<uint64_t>(*registry_entry_id),
                                         time_stamp);
+
+              // Update grabbable_states_
+              erase_grabbable_state_entries_after_first_grabbed_event(*registry_entry_id,
+                                                                      time_stamp);
             }
           }
         }
@@ -487,6 +512,20 @@ private:
 
     krbn_notification_center::get_instance().input_event_arrived();
     // manipulator_managers_connector_.log_events_sizes(logger::get_logger());
+  }
+
+  void erase_grabbable_state_entries_after_first_grabbed_event(registry_entry_id registry_entry_id,
+                                                               uint64_t time_stamp) {
+    auto it = grabbable_states_.find(registry_entry_id);
+    if (it != std::end(grabbable_states_)) {
+      auto& entries = it->second;
+      entries.erase(std::remove_if(std::begin(entries),
+                                   std::end(entries),
+                                   [&](const auto& e) {
+                                     return e->get_time_stamp() >= time_stamp;
+                                   }),
+                    std::end(entries));
+    }
   }
 
   void post_device_ungrabbed_event(device_id device_id) {
@@ -553,13 +592,20 @@ private:
         return grabbable_state::ungrabbable_temporarily;
       }
 
-      switch (it->second->get_grabbable_state()) {
+      if (it->second.empty()) {
+        std::string message = fmt::format("{0} is ungrabbable temporarily.",
+                                          device.get_name_for_log());
+        is_grabbable_callback_log_reducer_.warn(message);
+        return grabbable_state::ungrabbable_temporarily;
+      }
+
+      switch (it->second.back()->get_grabbable_state()) {
         case grabbable_state::grabbable:
           break;
 
         case grabbable_state::ungrabbable_temporarily: {
           std::string message;
-          switch (it->second->get_ungrabbable_temporarily_reason()) {
+          switch (it->second.back()->get_ungrabbable_temporarily_reason()) {
             case ungrabbable_temporarily_reason::none: {
               message = fmt::format("{0} is ungrabbable temporarily",
                                     device.get_name_for_log());
@@ -1057,7 +1103,7 @@ private:
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   hid_manager hid_manager_;
 
-  std::unordered_map<registry_entry_id, std::shared_ptr<grabbable_state_entry>> grabbable_states_;
+  std::unordered_map<registry_entry_id, std::deque<std::shared_ptr<grabbable_state_entry>>> grabbable_states_;
   std::unordered_map<registry_entry_id, uint64_t> first_grabbed_event_time_stamps_;
 
   core_configuration::profile profile_;
