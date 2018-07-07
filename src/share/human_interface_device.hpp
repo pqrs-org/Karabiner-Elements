@@ -46,6 +46,7 @@ public:
   typedef std::function<grabbable_state(human_interface_device& device)> is_grabbable_callback;
 
   boost::signals2::signal<void(human_interface_device&)> device_observed;
+  boost::signals2::signal<void(human_interface_device&)> device_unobserved;
   boost::signals2::signal<void(human_interface_device&)> device_grabbed;
   boost::signals2::signal<void(human_interface_device&)> device_ungrabbed;
   boost::signals2::signal<void(human_interface_device&)> device_disabled;
@@ -322,40 +323,47 @@ public:
   }
 
   // High-level utility method.
+
   void observe(void) {
-    boost::optional<IOReturn> __block last_open_error;
+    gcd_utility::dispatch_sync_in_main_queue(^{
+      observe_log_reducer_.reset();
 
-    observe_timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(
-        3 * NSEC_PER_SEC,
-        ^{
-          if (removed_) {
-            return true;
-          }
+      observe_timer_ = nullptr;
+      grab_timer_ = nullptr;
 
-          if (observed_) {
-            return true;
-          }
-
-          auto r = open();
-          if (r != kIOReturnSuccess) {
-            if (last_open_error != r) {
-              last_open_error = r;
-              logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
+      observe_timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(
+          3 * NSEC_PER_SEC,
+          ^{
+            if (removed_) {
+              return true;
             }
-            return false;
-          }
 
-          queue_start();
-          schedule();
+            if (observed_) {
+              return true;
+            }
 
-          observed_ = true;
+            // ----------------------------------------
+            auto r = open();
+            if (r != kIOReturnSuccess) {
+              auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
+                                         iokit_utility::get_error_name(r),
+                                         r,
+                                         name_for_log_);
+              observe_log_reducer_.error(message);
+              return false;
+            }
 
-          logger::get_logger().info("{0} is observed.", get_name_for_log());
+            // ----------------------------------------
+            observed_ = true;
 
-          device_observed(*this);
+            device_observed(*this);
 
-          return true;
-        });
+            queue_start();
+            schedule();
+
+            return true;
+          });
+    });
   }
 
   // High-level utility method.
@@ -372,68 +380,62 @@ public:
       close();
 
       observed_ = false;
+
+      device_unobserved(*this);
     });
   }
 
   // High-level utility method.
   void grab(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (removed_) {
-        return;
-      }
+      grab_log_reducer_.reset();
 
-      if (grabbed_) {
-        return;
-      }
+      observe_timer_ = nullptr;
+      grab_timer_ = nullptr;
 
-      cancel_grab_timer();
-
-      is_grabbable_callback_log_reducer_.reset();
-
-      grab_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-          // We have to set an initial wait since OS X will lost the device if we called IOHIDDeviceOpen(kIOHIDOptionsTypeSeizeDevice) in device_matching_callback.
-          // (The device will be unusable after karabiner_grabber is quitted if we don't wait here.)
-          dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC),
-          100 * NSEC_PER_MSEC,
-          0,
+      grab_timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(
+          1 * NSEC_PER_SEC,
           ^{
+            if (removed_) {
+              return true;
+            }
+
+            if (grabbed_) {
+              return true;
+            }
+
             switch (is_grabbable()) {
               case grabbable_state::grabbable:
                 break;
 
               case grabbable_state::ungrabbable_temporarily:
-                return;
+              case grabbable_state::device_error:
+                return false;
 
               case grabbable_state::ungrabbable_permanently:
-                cancel_grab_timer();
-                return;
-
-              case grabbable_state::device_error:
-                return;
+                return true;
             }
-
-            // ----------------------------------------
-            grabbed_ = true;
-
-            unobserve();
 
             // ----------------------------------------
             auto r = open(kIOHIDOptionsTypeSeizeDevice);
             if (r != kIOReturnSuccess) {
-              logger::get_logger().error("IOHIDDeviceOpen error: {0} ({1}) {2}", iokit_utility::get_error_name(r), r, name_for_log_);
-              cancel_grab_timer();
-              return;
+              auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
+                                         iokit_utility::get_error_name(r),
+                                         r,
+                                         name_for_log_);
+              grab_log_reducer_.error(message);
+              return false;
             }
+
+            // ----------------------------------------
+            grabbed_ = true;
 
             device_grabbed(*this);
 
             queue_start();
             schedule();
 
-            // ----------------------------------------
-            logger::get_logger().info("{0} is grabbed", get_name_for_log());
-
-            cancel_grab_timer();
+            return true;
           });
     });
   }
@@ -441,17 +443,17 @@ public:
   // High-level utility method.
   void ungrab(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
+      grab_timer_ = nullptr;
+
       if (!grabbed_) {
         return;
       }
 
-      grabbed_ = false;
-
-      cancel_grab_timer();
-
       unschedule();
       queue_stop();
       close();
+
+      grabbed_ = false;
 
       device_ungrabbed(*this);
     });
@@ -752,10 +754,6 @@ private:
     report_buffer_.resize(buffer_size);
   }
 
-  void cancel_grab_timer(void) {
-    grab_timer_ = nullptr;
-  }
-
   IOHIDDeviceRef _Nonnull device_;
   device_id device_id_;
   IOHIDQueueRef _Nullable queue_;
@@ -770,10 +768,13 @@ private:
   std::vector<uint8_t> report_buffer_;
 
   is_grabbable_callback is_grabbable_callback_;
-  spdlog_utility::log_reducer is_grabbable_callback_log_reducer_;
+
+  spdlog_utility::log_reducer observe_log_reducer_;
+  spdlog_utility::log_reducer grab_log_reducer_;
 
   std::unique_ptr<gcd_utility::fire_while_false_timer> observe_timer_;
-  std::unique_ptr<gcd_utility::main_queue_timer> grab_timer_;
+  std::unique_ptr<gcd_utility::fire_while_false_timer> grab_timer_;
+
   bool removed_;
   bool observed_;
   bool grabbed_;
@@ -782,8 +783,6 @@ private:
   bool disabled_;
 
   std::unique_ptr<connected_devices::device> connected_device_;
-
-  std::unordered_set<modifier_flag> pressed_modifier_flags_;
 
   std::unordered_set<uint64_t> pressed_keys_;
 };

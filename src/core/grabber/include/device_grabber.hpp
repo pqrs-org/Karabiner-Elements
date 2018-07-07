@@ -110,6 +110,7 @@ public:
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
       human_interface_device.set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
       human_interface_device.device_grabbed.connect([this](auto&& human_interface_device) {
+        logger::get_logger().info("{0} is grabbed", human_interface_device.get_name_for_log());
         device_grabbed(human_interface_device);
       });
       human_interface_device.device_ungrabbed.connect([this](auto&& human_interface_device) {
@@ -123,8 +124,6 @@ public:
                                                            auto&& event_queue) {
         values_arrived(human_interface_device, event_queue);
       });
-
-      human_interface_device.observe();
 
       output_devices_json();
       output_device_details_json();
@@ -266,7 +265,9 @@ public:
       for (const auto& it : hid_manager_.get_hids()) {
         if ((it.second)->is_grabbable() == grabbable_state::ungrabbable_permanently) {
           (it.second)->ungrab();
+          (it.second)->observe();
         } else {
+          (it.second)->unobserve();
           (it.second)->grab();
         }
       }
