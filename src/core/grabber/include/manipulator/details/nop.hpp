@@ -42,10 +42,6 @@ public:
                                              uint64_t time_stamp) {
   }
 
-  virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
-                                                event_queue& output_event_queue) {
-  }
-
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
                                                            event_queue& output_event_queue) {
   }

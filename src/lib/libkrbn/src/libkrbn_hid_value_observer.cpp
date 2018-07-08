@@ -89,7 +89,6 @@ private:
         case krbn::event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
         case krbn::event_queue::queued_event::event::type::device_ungrabbed:
         case krbn::event_queue::queued_event::event::type::caps_lock_state_changed:
-        case krbn::event_queue::queued_event::event::type::event_from_ignored_device:
         case krbn::event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
         case krbn::event_queue::queued_event::event::type::frontmost_application_changed:
         case krbn::event_queue::queued_event::event::type::input_source_changed:

@@ -286,9 +286,7 @@ public:
       for (const auto& it : hid_manager_.get_hids()) {
         if ((it.second)->is_grabbable() == grabbable_state::ungrabbable_permanently) {
           (it.second)->ungrab();
-          (it.second)->observe();
         } else {
-          (it.second)->unobserve();
           (it.second)->grab();
         }
       }
@@ -460,23 +458,21 @@ private:
                       event_queue& event_queue) {
     // Update first_grabbed_event_time_stamps_
 
-    if (device.is_grabbed()) {
-      for (const auto& queued_event : event_queue.get_events()) {
-        if (auto device_detail = types::find_device_detail(queued_event.get_device_id())) {
-          if (auto registry_entry_id = device_detail->get_registry_entry_id()) {
-            auto it = first_grabbed_event_time_stamps_.find(*registry_entry_id);
-            if (it == std::end(first_grabbed_event_time_stamps_)) {
-              auto time_stamp = queued_event.get_event_time_stamp().get_time_stamp();
-              first_grabbed_event_time_stamps_.emplace(*registry_entry_id, time_stamp);
+    for (const auto& queued_event : event_queue.get_events()) {
+      if (auto device_detail = types::find_device_detail(queued_event.get_device_id())) {
+        if (auto registry_entry_id = device_detail->get_registry_entry_id()) {
+          auto it = first_grabbed_event_time_stamps_.find(*registry_entry_id);
+          if (it == std::end(first_grabbed_event_time_stamps_)) {
+            auto time_stamp = queued_event.get_event_time_stamp().get_time_stamp();
+            first_grabbed_event_time_stamps_.emplace(*registry_entry_id, time_stamp);
 
-              logger::get_logger().info("first grabbed event: registry_entry_id:{0} time_stamp:{1}",
-                                        static_cast<uint64_t>(*registry_entry_id),
-                                        time_stamp);
+            logger::get_logger().info("first grabbed event: registry_entry_id:{0} time_stamp:{1}",
+                                      static_cast<uint64_t>(*registry_entry_id),
+                                      time_stamp);
 
-              // Update grabbable_states_
-              erase_grabbable_state_entries_after_first_grabbed_event(*registry_entry_id,
-                                                                      time_stamp);
-            }
+            // Update grabbable_states_
+            erase_grabbable_state_entries_after_first_grabbed_event(*registry_entry_id,
+                                                                    time_stamp);
           }
         }
       }
@@ -488,25 +484,13 @@ private:
       // Do nothing
     } else {
       for (const auto& queued_event : event_queue.get_events()) {
-        if (device.is_grabbed()) {
-          event_queue::queued_event qe(queued_event.get_device_id(),
-                                       queued_event.get_event_time_stamp(),
-                                       queued_event.get_event(),
-                                       queued_event.get_event_type(),
-                                       queued_event.get_original_event());
+        event_queue::queued_event qe(queued_event.get_device_id(),
+                                     queued_event.get_event_time_stamp(),
+                                     queued_event.get_event(),
+                                     queued_event.get_event_type(),
+                                     queued_event.get_original_event());
 
-          merged_input_event_queue_->push_back_event(qe);
-        } else {
-          // device is ignored
-          auto event = event_queue::queued_event::event::make_event_from_ignored_device_event();
-          event_queue::queued_event qe(queued_event.get_device_id(),
-                                       queued_event.get_event_time_stamp(),
-                                       event,
-                                       queued_event.get_event_type(),
-                                       queued_event.get_event());
-
-          merged_input_event_queue_->push_back_event(qe);
-        }
+        merged_input_event_queue_->push_back_event(qe);
       }
     }
 

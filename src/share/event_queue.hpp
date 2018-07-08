@@ -36,7 +36,6 @@ public:
         device_keys_and_pointing_buttons_are_released,
         device_ungrabbed,
         caps_lock_state_changed,
-        event_from_ignored_device,
         pointing_device_event_from_event_tap,
         frontmost_application_changed,
         input_source_changed,
@@ -149,7 +148,6 @@ public:
           case type::stop_keyboard_repeat:
           case type::device_keys_and_pointing_buttons_are_released:
           case type::device_ungrabbed:
-          case type::event_from_ignored_device:
           case type::pointing_device_event_from_event_tap:
             break;
         }
@@ -245,7 +243,6 @@ public:
           case type::stop_keyboard_repeat:
           case type::device_keys_and_pointing_buttons_are_released:
           case type::device_ungrabbed:
-          case type::event_from_ignored_device:
           case type::pointing_device_event_from_event_tap:
             break;
         }
@@ -312,10 +309,6 @@ public:
 
       static event make_device_ungrabbed_event(void) {
         return make_virtual_event(type::device_ungrabbed);
-      }
-
-      static event make_event_from_ignored_device_event(void) {
-        return make_virtual_event(type::event_from_ignored_device);
       }
 
       static event make_pointing_device_event_from_event_tap_event(void) {
@@ -508,7 +501,6 @@ public:
           TO_C_STRING(device_keys_and_pointing_buttons_are_released);
           TO_C_STRING(device_ungrabbed);
           TO_C_STRING(caps_lock_state_changed);
-          TO_C_STRING(event_from_ignored_device);
           TO_C_STRING(pointing_device_event_from_event_tap);
           TO_C_STRING(frontmost_application_changed);
           TO_C_STRING(input_source_changed);
@@ -540,7 +532,6 @@ public:
         TO_TYPE(device_keys_and_pointing_buttons_are_released);
         TO_TYPE(device_ungrabbed);
         TO_TYPE(caps_lock_state_changed);
-        TO_TYPE(event_from_ignored_device);
         TO_TYPE(pointing_device_event_from_event_tap);
         TO_TYPE(frontmost_application_changed);
         TO_TYPE(input_source_changed);

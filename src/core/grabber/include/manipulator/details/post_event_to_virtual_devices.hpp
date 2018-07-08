@@ -1049,7 +1049,6 @@ public:
         case event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
         case event_queue::queued_event::event::type::device_ungrabbed:
         case event_queue::queued_event::event::type::caps_lock_state_changed:
-        case event_queue::queued_event::event::type::event_from_ignored_device:
         case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
         case event_queue::queued_event::event::type::frontmost_application_changed:
         case event_queue::queued_event::event::type::input_source_changed:
@@ -1142,8 +1141,8 @@ public:
                                                      time_stamp);
   }
 
-  virtual void handle_event_from_ignored_device(const event_queue::queued_event& front_input_event,
-                                                event_queue& output_event_queue) {
+  virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
+                                                           event_queue& output_event_queue) {
     // We should not dispatch modifier key events while key repeating.
     //
     // macOS does not ignore the modifier state change while key repeating.
@@ -1174,12 +1173,6 @@ public:
       case event_type::key_up:
         break;
     }
-  }
-
-  virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
-                                                           event_queue& output_event_queue) {
-    handle_event_from_ignored_device(front_input_event,
-                                     output_event_queue);
   }
 
   virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {

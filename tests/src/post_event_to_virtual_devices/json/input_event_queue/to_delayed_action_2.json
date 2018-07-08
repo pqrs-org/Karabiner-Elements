@@ -70,13 +70,13 @@
     {
         "device_id": 2,
         "event": {
-            "type": "event_from_ignored_device"
+            "type": "pointing_device_event_from_event_tap"
         },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
-            "key_code": "spacebar",
-            "type": "key_code"
+            "pointing_button": "button1",
+            "type": "pointing_button"
         },
         "event_time_stamp": {
             "time_stamp": 10000000

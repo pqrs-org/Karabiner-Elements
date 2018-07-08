@@ -60,13 +60,6 @@ public:
             }
             break;
 
-          case event_queue::queued_event::event::type::event_from_ignored_device:
-            for (auto&& m : manipulators_) {
-              m->handle_event_from_ignored_device(front_input_event,
-                                                  *output_event_queue);
-            }
-            break;
-
           case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
             for (auto&& m : manipulators_) {
               m->handle_pointing_device_event_from_event_tap(front_input_event,
