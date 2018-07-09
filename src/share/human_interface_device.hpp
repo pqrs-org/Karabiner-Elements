@@ -240,65 +240,81 @@ public:
   }
 
   IOReturn open(IOOptionBits options = kIOHIDOptionsTypeNone) {
-    IOReturn __block r;
+    IOReturn __block r = kIOReturnError;
     gcd_utility::dispatch_sync_in_main_queue(^{
-      r = IOHIDDeviceOpen(device_, options);
+      if (!removed_) {
+        r = IOHIDDeviceOpen(device_, options);
+      }
     });
     return r;
   }
 
   IOReturn close(void) {
-    IOReturn __block r;
+    IOReturn __block r = kIOReturnError;
     gcd_utility::dispatch_sync_in_main_queue(^{
-      r = IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
+      if (!removed_) {
+        r = IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
+      }
     });
     return r;
   }
 
   void schedule(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      IOHIDDeviceScheduleWithRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-      if (queue_) {
-        IOHIDQueueScheduleWithRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+      if (!removed_) {
+        IOHIDDeviceScheduleWithRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+        if (queue_) {
+          IOHIDQueueScheduleWithRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+        }
       }
     });
   }
 
   void unschedule(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (queue_) {
-        IOHIDQueueUnscheduleFromRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+      if (!removed_) {
+        if (queue_) {
+          IOHIDQueueUnscheduleFromRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+        }
+        IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
       }
-      IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     });
   }
 
   void enable_report_callback(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      resize_report_buffer();
-      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
+      if (!removed_) {
+        resize_report_buffer();
+        IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
+      }
     });
   }
 
   void disable_report_callback(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      resize_report_buffer();
-      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
+      if (!removed_) {
+        resize_report_buffer();
+        IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
+      }
     });
   }
 
   void queue_start(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (queue_) {
-        IOHIDQueueStart(queue_);
+      if (!removed_) {
+        if (queue_) {
+          IOHIDQueueStart(queue_);
+        }
       }
     });
   }
 
   void queue_stop(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      if (queue_) {
-        IOHIDQueueStop(queue_);
+      if (!removed_) {
+        if (queue_) {
+          IOHIDQueueStop(queue_);
+        }
       }
     });
   }
@@ -307,13 +323,15 @@ public:
                       CFIndex report_id,
                       const uint8_t* _Nonnull report,
                       CFIndex report_length) {
-    IOReturn __block r;
+    IOReturn __block r = kIOReturnError;
     gcd_utility::dispatch_sync_in_main_queue(^{
-      r = IOHIDDeviceSetReport(device_,
-                               report_type,
-                               report_id,
-                               report,
-                               report_length);
+      if (!removed_) {
+        r = IOHIDDeviceSetReport(device_,
+                                 report_type,
+                                 report_id,
+                                 report,
+                                 report_length);
+      }
     });
     return r;
   }
