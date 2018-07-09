@@ -318,6 +318,10 @@ public:
     return r;
   }
 
+  bool get_removed(void) const {
+    return removed_;
+  }
+
   void set_removed(void) {
     removed_ = true;
   }
