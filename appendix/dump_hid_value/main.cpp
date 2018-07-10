@@ -16,9 +16,17 @@ public:
         values_arrived(human_interface_device, event_queue);
       });
 
+      // Observe
+
       auto hid_observer = std::make_shared<krbn::hid_observer>(human_interface_device);
-      hid_observers_[human_interface_device.get_registry_entry_id()] = hid_observer;
+
+      hid_observer->device_observed.connect([&](auto&& human_interface_device) {
+        krbn::logger::get_logger().info("{0} is observed.", human_interface_device.get_name_for_log());
+      });
+
       hid_observer->observe();
+
+      hid_observers_[human_interface_device.get_registry_entry_id()] = hid_observer;
     });
 
     hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
