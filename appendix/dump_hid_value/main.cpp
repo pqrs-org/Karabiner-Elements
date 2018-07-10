@@ -41,6 +41,7 @@ public:
   }
 
   ~dump_hid_value(void) {
+    hid_observers_.clear();
     hid_manager_.stop();
   }
 
