@@ -1,4 +1,5 @@
 #include "hid_manager.hpp"
+#include "hid_observer.hpp"
 #include "libkrbn.h"
 #include <mutex>
 
@@ -9,22 +10,20 @@ public:
 
   libkrbn_hid_value_observer_class(libkrbn_hid_value_observer_callback callback,
                                    void* refcon) : callback_(callback),
-                                                   refcon_(refcon),
-                                                   observed_device_count_(0) {
+                                                   refcon_(refcon) {
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
       human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
                                                            auto&& event_queue) {
         values_arrived(human_interface_device, event_queue);
       });
-      human_interface_device.observe();
 
-      std::lock_guard<std::mutex> lock(observed_device_count_mutex_);
-      ++observed_device_count_;
+      auto hid_observer = std::make_shared<krbn::hid_observer>(human_interface_device);
+      hid_observer->observe();
+      hid_observers_[human_interface_device.get_registry_entry_id()] = hid_observer;
     });
 
     hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
-      std::lock_guard<std::mutex> lock(observed_device_count_mutex_);
-      --observed_device_count_;
+      hid_observers_.erase(human_interface_device.get_registry_entry_id());
     });
 
     hid_manager_.start({
@@ -33,12 +32,22 @@ public:
   }
 
   ~libkrbn_hid_value_observer_class(void) {
+    hid_observers_.clear();
     hid_manager_.stop();
   }
 
   size_t calculate_observed_device_count(void) const {
-    std::lock_guard<std::mutex> lock(observed_device_count_mutex_);
-    return observed_device_count_;
+    size_t __block count = 0;
+
+    krbn::gcd_utility::dispatch_sync_in_main_queue(^{
+      for (const auto& pair : hid_observers_) {
+        if (pair.second->get_observed()) {
+          ++count;
+        }
+      }
+    });
+
+    return count;
   }
 
 private:
@@ -103,8 +112,7 @@ private:
   void* refcon_;
 
   krbn::hid_manager hid_manager_;
-  size_t observed_device_count_;
-  mutable std::mutex observed_device_count_mutex_;
+  std::unordered_map<krbn::registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 };
 } // namespace
 
