@@ -39,6 +39,10 @@ public:
                                                                 grabbed_(false) {
   }
 
+  ~hid_grabber(void) {
+    ungrab();
+  }
+
   bool get_grabbed(void) const {
     return grabbed_;
   }
