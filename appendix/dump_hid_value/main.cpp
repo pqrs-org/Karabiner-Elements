@@ -1,6 +1,7 @@
 #include "boost_defs.hpp"
 
 #include "hid_manager.hpp"
+#include "hid_observer.hpp"
 #include <boost/optional/optional_io.hpp>
 
 namespace {
@@ -14,7 +15,15 @@ public:
                                                            auto&& event_queue) {
         values_arrived(human_interface_device, event_queue);
       });
-      human_interface_device.observe();
+
+      auto hid_observer = std::make_shared<krbn::hid_observer>(human_interface_device);
+      hid_observers_[human_interface_device.get_registry_entry_id()] = hid_observer;
+      hid_observer->observe();
+    });
+
+    hid_manager_.device_removed.connect([this](auto&& registyr_entry_id,
+                                               auto&& human_interface_device) {
+      hid_observers_.erase(human_interface_device.get_registry_entry_id());
     });
 
     hid_manager_.start({
@@ -136,6 +145,7 @@ private:
   }
 
   krbn::hid_manager hid_manager_;
+  std::unordered_map<krbn::registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 };
 } // namespace
 
