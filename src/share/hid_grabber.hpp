@@ -66,6 +66,7 @@ public:
 
               case grabbable_state::ungrabbable_temporarily:
               case grabbable_state::device_error:
+                // Retry
                 return false;
 
               case grabbable_state::ungrabbable_permanently:
