@@ -18,8 +18,7 @@ public:
 
   boost::signals2::signal<void(human_interface_device&)> device_detected;
 
-  boost::signals2::signal<void(registry_entry_id,
-                               human_interface_device&)>
+  boost::signals2::signal<void(human_interface_device&)>
       device_removed;
 
   hid_manager(const hid_manager&) = delete;
@@ -178,7 +177,7 @@ private:
           hids_.erase(it);
 
           hid->set_removed();
-          device_removed(*registry_entry_id, *hid);
+          device_removed(*hid);
         }
       }
 

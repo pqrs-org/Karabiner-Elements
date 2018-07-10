@@ -21,8 +21,7 @@ public:
       hid_observer->observe();
     });
 
-    hid_manager_.device_removed.connect([this](auto&& registyr_entry_id,
-                                               auto&& human_interface_device) {
+    hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
       hid_observers_.erase(human_interface_device.get_registry_entry_id());
     });
 
