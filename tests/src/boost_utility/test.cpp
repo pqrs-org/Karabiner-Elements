@@ -13,6 +13,8 @@ TEST_CASE("signal2_combiner_call_while_true") {
                           krbn::boost_utility::signal2_combiner_call_while_true>
       signal;
 
+  REQUIRE(signal() == true);
+
   int counter = 0;
 
   signal.connect([&]() {
