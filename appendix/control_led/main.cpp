@@ -5,7 +5,9 @@ class control_led final {
 public:
   control_led(const control_led&) = delete;
 
-  control_led(void) {
+  control_led(void) : hid_manager_({
+                          std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+                      }) {
     hid_manager_.device_detected.connect([](auto&& human_interface_device) {
       auto r = human_interface_device->open();
       if (r != kIOReturnSuccess) {
@@ -36,9 +38,7 @@ public:
       }
     });
 
-    hid_manager_.start({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-    });
+    hid_manager_.start();
   }
 
   ~control_led(void) {

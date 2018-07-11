@@ -23,8 +23,9 @@ public:
 
   hid_manager(const hid_manager&) = delete;
 
-  hid_manager(void) : manager_(nullptr),
-                      log_enabled_(false) {
+  hid_manager(const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) : usage_pairs_(usage_pairs),
+                                                                                      manager_(nullptr),
+                                                                                      log_enabled_(false) {
   }
 
   ~hid_manager(void) {
@@ -47,7 +48,7 @@ public:
     log_enabled_ = value;
   }
 
-  void start(const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) {
+  void start(void) {
     if (manager_) {
       stop();
     }
@@ -58,7 +59,7 @@ public:
       return;
     }
 
-    if (auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries(usage_pairs)) {
+    if (auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries(usage_pairs_)) {
       IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
       CFRelease(device_matching_dictionaries);
     }
@@ -67,11 +68,21 @@ public:
     IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
 
     IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+
+    refresh_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
+        DISPATCH_TIME_NOW,
+        5.0 * NSEC_PER_SEC,
+        0,
+        ^{
+          refresh_if_needed();
+        });
   }
 
   void stop(void) {
     // Release manager_ in main thread to avoid callback invocations after object has been destroyed.
     gcd_utility::dispatch_sync_in_main_queue(^{
+      refresh_timer_ = nullptr;
+
       if (manager_) {
         IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
         CFRelease(manager_);
@@ -202,6 +213,23 @@ private:
     }
   }
 
+  void refresh_if_needed(void) {
+    // `device_removal_callback` is sometimes missed
+    // and invalid human_interface_devices are remained into hids_.
+    // (The problem is likely occur just after wake up from sleep.)
+    //
+    // We validate the human_interface_device,
+    // and then reload devices if there is an invalid human_interface_device.
+
+    for (const auto& hid : hids_) {
+      if (!hid.second->validate()) {
+        logger::get_logger().warn("Refreshing hid_manager since a dangling human_interface_device is found. ({0})",
+                                  hid.second->get_name_for_log());
+        start();
+      }
+    }
+  }
+
   boost::optional<registry_entry_id> find_registry_entry_id(IOHIDDeviceRef _Nonnull device) {
     auto it = registry_entry_ids_.find(device);
     if (it != std::end(registry_entry_ids_)) {
@@ -210,9 +238,11 @@ private:
     return boost::none;
   }
 
+  std::vector<std::pair<hid_usage_page, hid_usage>> usage_pairs_;
   IOHIDManagerRef _Nullable manager_;
   std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
   std::unordered_map<registry_entry_id, std::shared_ptr<human_interface_device>> hids_;
+  std::unique_ptr<gcd_utility::main_queue_timer> refresh_timer_;
   bool log_enabled_;
 };
 } // namespace krbn

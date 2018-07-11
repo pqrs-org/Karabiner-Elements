@@ -37,7 +37,12 @@ public:
 
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(void) : profile_(nlohmann::json()),
+  device_grabber(void) : hid_manager_({
+                             std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
+                             std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
+                             std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
+                         }),
+                         profile_(nlohmann::json()),
                          merged_input_event_queue_(std::make_shared<event_queue>()),
                          simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                          complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
@@ -167,11 +172,7 @@ public:
       }
     });
 
-    hid_manager_.start({
-        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
-        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
-        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
-    });
+    hid_manager_.start();
   }
 
   ~device_grabber(void) {

@@ -10,7 +10,10 @@ public:
 
   libkrbn_hid_value_observer_class(libkrbn_hid_value_observer_callback callback,
                                    void* refcon) : callback_(callback),
-                                                   refcon_(refcon) {
+                                                   refcon_(refcon),
+                                                   hid_manager_({
+                                                       std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+                                                   }) {
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
       human_interface_device->values_arrived.connect([this](auto&& human_interface_device,
                                                             auto&& event_queue) {
@@ -26,9 +29,7 @@ public:
       hid_observers_.erase(human_interface_device->get_registry_entry_id());
     });
 
-    hid_manager_.start({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-    });
+    hid_manager_.start();
   }
 
   ~libkrbn_hid_value_observer_class(void) {

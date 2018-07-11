@@ -15,7 +15,12 @@ class device_observer final {
 public:
   device_observer(const device_observer&) = delete;
 
-  device_observer(const grabber_client& grabber_client) : grabber_client_(grabber_client) {
+  device_observer(const grabber_client& grabber_client) : grabber_client_(grabber_client),
+                                                          hid_manager_({
+                                                              std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
+                                                              std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
+                                                              std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
+                                                          }) {
     grabbable_state_manager_.grabbable_state_changed.connect([this](auto&& registry_entry_id,
                                                                     auto&& grabbable_state,
                                                                     auto&& ungrabbable_temporarily_reason,
@@ -67,11 +72,7 @@ public:
       hid_observers_[human_interface_device->get_registry_entry_id()] = observer;
     });
 
-    hid_manager_.start({
-        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
-        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
-        std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
-    });
+    hid_manager_.start();
   }
 
   ~device_observer(void) {

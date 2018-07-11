@@ -9,7 +9,11 @@ class dump_hid_value final {
 public:
   dump_hid_value(const dump_hid_value&) = delete;
 
-  dump_hid_value(void) {
+  dump_hid_value(void) : hid_manager_({
+                             std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+                             std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
+                             std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
+                         }) {
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
       human_interface_device->values_arrived.connect([this](auto&& human_interface_device,
                                                             auto&& event_queue) {
@@ -33,11 +37,7 @@ public:
       hid_observers_.erase(human_interface_device->get_registry_entry_id());
     });
 
-    hid_manager_.start({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
-    });
+    hid_manager_.start();
   }
 
   ~dump_hid_value(void) {

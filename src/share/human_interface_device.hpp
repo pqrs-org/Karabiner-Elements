@@ -231,6 +231,16 @@ public:
     return grabbed_;
   }
 
+  bool validate(void) const {
+    // `iokit_utility::find_registry_entry_id` is failed after `device_` is removed.
+
+    if (!iokit_utility::find_registry_entry_id(device_)) {
+      return false;
+    }
+
+    return true;
+  }
+
   IOReturn open(IOOptionBits options = kIOHIDOptionsTypeNone) {
     IOReturn __block r = kIOReturnError;
     gcd_utility::dispatch_sync_in_main_queue(^{

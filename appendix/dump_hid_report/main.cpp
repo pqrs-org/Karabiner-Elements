@@ -5,7 +5,11 @@ class dump_hid_report final {
 public:
   dump_hid_report(const dump_hid_report&) = delete;
 
-  dump_hid_report(void) {
+  dump_hid_report(void) : hid_manager_({
+                              std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+                              std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
+                              std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
+                          }) {
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
       human_interface_device->report_arrived.connect([this](auto&& human_interface_device,
                                                             auto&& type,
@@ -24,11 +28,7 @@ public:
       human_interface_device->schedule();
     });
 
-    hid_manager_.start({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
-    });
+    hid_manager_.start();
   }
 
   ~dump_hid_report(void) {

@@ -6,7 +6,9 @@ class hid_set_report final {
 public:
   hid_set_report(const hid_set_report&) = delete;
 
-  hid_set_report(void) {
+  hid_set_report(void) : hid_manager_({
+                             std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+                         }) {
     hid_manager_.device_detected.connect([](auto&& human_interface_device) {
       auto r = human_interface_device->open();
       if (r != kIOReturnSuccess) {
@@ -32,9 +34,7 @@ public:
       human_interface_device->close();
     });
 
-    hid_manager_.start({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-    });
+    hid_manager_.start();
   }
 
   ~hid_set_report(void) {
