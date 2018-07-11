@@ -25,18 +25,18 @@ public:
 
   // Signals
 
-  boost::signals2::signal<grabbable_state(human_interface_device&),
+  boost::signals2::signal<grabbable_state(std::shared_ptr<human_interface_device>),
                           signal2_combiner_call_while_grabbable>
       device_grabbing;
 
-  boost::signals2::signal<void(human_interface_device&)> device_grabbed;
+  boost::signals2::signal<void(std::shared_ptr<human_interface_device>)> device_grabbed;
 
-  boost::signals2::signal<void(human_interface_device&)> device_ungrabbed;
+  boost::signals2::signal<void(std::shared_ptr<human_interface_device>)> device_ungrabbed;
 
   // Methods
 
-  hid_grabber(human_interface_device& human_interface_device) : human_interface_device_(human_interface_device),
-                                                                grabbed_(false) {
+  hid_grabber(std::shared_ptr<human_interface_device> human_interface_device) : human_interface_device_(human_interface_device),
+                                                                                grabbed_(false) {
   }
 
   ~hid_grabber(void) {
@@ -56,45 +56,47 @@ public:
       timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(
           1 * NSEC_PER_SEC,
           ^{
-            if (human_interface_device_.get_removed()) {
-              return true;
-            }
-
-            if (grabbed_) {
-              return true;
-            }
-
-            switch (device_grabbing(human_interface_device_)) {
-              case grabbable_state::grabbable:
-                break;
-
-              case grabbable_state::ungrabbable_temporarily:
-              case grabbable_state::device_error:
-                // Retry
-                return false;
-
-              case grabbable_state::ungrabbable_permanently:
+            if (auto hid = human_interface_device_.lock()) {
+              if (hid->get_removed()) {
                 return true;
+              }
+
+              if (grabbed_) {
+                return true;
+              }
+
+              switch (device_grabbing(hid)) {
+                case grabbable_state::grabbable:
+                  break;
+
+                case grabbable_state::ungrabbable_temporarily:
+                case grabbable_state::device_error:
+                  // Retry
+                  return false;
+
+                case grabbable_state::ungrabbable_permanently:
+                  return true;
+              }
+
+              // ----------------------------------------
+              auto r = hid->open(kIOHIDOptionsTypeSeizeDevice);
+              if (r != kIOReturnSuccess) {
+                auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
+                                           iokit_utility::get_error_name(r),
+                                           r,
+                                           hid->get_name_for_log());
+                log_reducer_.error(message);
+                return false;
+              }
+
+              // ----------------------------------------
+              grabbed_ = true;
+
+              device_grabbed(hid);
+
+              hid->queue_start();
+              hid->schedule();
             }
-
-            // ----------------------------------------
-            auto r = human_interface_device_.open(kIOHIDOptionsTypeSeizeDevice);
-            if (r != kIOReturnSuccess) {
-              auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
-                                         iokit_utility::get_error_name(r),
-                                         r,
-                                         human_interface_device_.get_name_for_log());
-              log_reducer_.error(message);
-              return false;
-            }
-
-            // ----------------------------------------
-            grabbed_ = true;
-
-            device_grabbed(human_interface_device_);
-
-            human_interface_device_.queue_start();
-            human_interface_device_.schedule();
 
             return true;
           });
@@ -105,22 +107,24 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       timer_ = nullptr;
 
-      if (!grabbed_) {
-        return;
+      if (auto hid = human_interface_device_.lock()) {
+        if (!grabbed_) {
+          return;
+        }
+
+        hid->unschedule();
+        hid->queue_stop();
+        hid->close();
+
+        grabbed_ = false;
+
+        device_ungrabbed(hid);
       }
-
-      human_interface_device_.unschedule();
-      human_interface_device_.queue_stop();
-      human_interface_device_.close();
-
-      grabbed_ = false;
-
-      device_ungrabbed(human_interface_device_);
     });
   }
 
 private:
-  human_interface_device& human_interface_device_;
+  std::weak_ptr<human_interface_device> human_interface_device_;
   bool grabbed_;
   std::unique_ptr<gcd_utility::fire_while_false_timer> timer_;
   spdlog_utility::log_reducer log_reducer_;
