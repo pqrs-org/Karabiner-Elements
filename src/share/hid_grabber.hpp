@@ -43,6 +43,10 @@ public:
     ungrab();
   }
 
+  std::weak_ptr<human_interface_device> get_human_interface_device(void) {
+    return human_interface_device_;
+  }
+
   bool get_grabbed(void) const {
     return grabbed_;
   }
