@@ -202,6 +202,7 @@ private:
         logger::get_logger().warn("Refreshing hid_manager since a dangling human_interface_device is found. ({0})",
                                   hid.second->get_name_for_log());
         start();
+        break;
       }
     }
   }
