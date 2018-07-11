@@ -23,7 +23,6 @@
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <cstdint>
-#include <functional>
 #include <list>
 #include <mach/mach_time.h>
 #include <unordered_map>
@@ -43,8 +42,6 @@ public:
                                CFIndex report_length)>
       report_arrived;
 
-  typedef std::function<grabbable_state(human_interface_device& device)> is_grabbable_callback;
-
   boost::signals2::signal<void(human_interface_device&)> device_grabbed;
   boost::signals2::signal<void(human_interface_device&)> device_ungrabbed;
   boost::signals2::signal<void(human_interface_device&)> device_disabled;
@@ -57,7 +54,6 @@ public:
                                                                 queue_(nullptr),
                                                                 registry_entry_id_(registry_entry_id),
                                                                 removed_(false),
-                                                                grabbed_(false),
                                                                 disabled_(false) {
     // ----------------------------------------
     // Retain device_
@@ -227,10 +223,6 @@ public:
     return device_id_;
   }
 
-  bool get_grabbed(void) const {
-    return grabbed_;
-  }
-
   bool validate(void) const {
     // `iokit_utility::find_registry_entry_id` is failed after `device_` is removed.
 
@@ -346,79 +338,6 @@ public:
     removed_ = true;
   }
 
-  // High-level utility method.
-  void grab(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      grab_log_reducer_.reset();
-
-      grab_timer_ = nullptr;
-
-      grab_timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(
-          1 * NSEC_PER_SEC,
-          ^{
-            if (removed_) {
-              return true;
-            }
-
-            if (grabbed_) {
-              return true;
-            }
-
-            switch (is_grabbable()) {
-              case grabbable_state::grabbable:
-                break;
-
-              case grabbable_state::ungrabbable_temporarily:
-              case grabbable_state::device_error:
-                return false;
-
-              case grabbable_state::ungrabbable_permanently:
-                return true;
-            }
-
-            // ----------------------------------------
-            auto r = open(kIOHIDOptionsTypeSeizeDevice);
-            if (r != kIOReturnSuccess) {
-              auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
-                                         iokit_utility::get_error_name(r),
-                                         r,
-                                         name_for_log_);
-              grab_log_reducer_.error(message);
-              return false;
-            }
-
-            // ----------------------------------------
-            grabbed_ = true;
-
-            device_grabbed(*this);
-
-            queue_start();
-            schedule();
-
-            return true;
-          });
-    });
-  }
-
-  // High-level utility method.
-  void ungrab(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      grab_timer_ = nullptr;
-
-      if (!grabbed_) {
-        return;
-      }
-
-      unschedule();
-      queue_stop();
-      close();
-
-      grabbed_ = false;
-
-      device_ungrabbed(*this);
-    });
-  }
-
   bool get_disabled(void) const {
     return disabled_;
   }
@@ -491,33 +410,6 @@ public:
 
   std::string get_name_for_log(void) const {
     return name_for_log_;
-  }
-
-  void set_is_grabbable_callback(const is_grabbable_callback& callback) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      is_grabbable_callback_ = callback;
-    });
-  }
-
-  grabbable_state is_grabbable(void) {
-    if (is_grabbable_callback_) {
-      auto state = is_grabbable_callback_(*this);
-      if (state != grabbable_state::grabbable) {
-        return state;
-      }
-    }
-
-    // ----------------------------------------
-
-    return grabbable_state::grabbable;
-  }
-
-  bool is_grabbed(void) const {
-    bool __block r = false;
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      r = grabbed_;
-    });
-    return r;
   }
 
 #pragma mark - usage specific utilities
@@ -727,14 +619,11 @@ private:
 
   std::vector<uint8_t> report_buffer_;
 
-  is_grabbable_callback is_grabbable_callback_;
-
   spdlog_utility::log_reducer grab_log_reducer_;
 
   std::unique_ptr<gcd_utility::fire_while_false_timer> grab_timer_;
 
   bool removed_;
-  bool grabbed_;
   // `disabled_` is ignoring input events from this device.
   // (== `grabbed_` and does not call `values_arrived`)
   bool disabled_;
