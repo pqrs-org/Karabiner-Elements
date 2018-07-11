@@ -24,8 +24,7 @@ public:
   hid_manager(const hid_manager&) = delete;
 
   hid_manager(const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) : usage_pairs_(usage_pairs),
-                                                                                      manager_(nullptr),
-                                                                                      log_enabled_(false) {
+                                                                                      manager_(nullptr) {
   }
 
   ~hid_manager(void) {
@@ -42,10 +41,6 @@ public:
       return it->second;
     }
     return nullptr;
-  }
-
-  void set_log_enabled(bool value) {
-    log_enabled_ = value;
   }
 
   void start(void) {
@@ -120,10 +115,6 @@ private:
       return;
     }
 
-    if (log_enabled_) {
-      iokit_utility::log_matching_device(device);
-    }
-
     if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
       // iokit_utility::find_registry_entry_id will be failed in device_removal_callback at least on macOS 10.13.
       // Thus, we have to memory device and registry_entry_id correspondence by myself.
@@ -133,18 +124,11 @@ private:
       // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
       auto it = hids_.find(*registry_entry_id);
       if (it != std::end(hids_)) {
-        if (log_enabled_) {
-          logger::get_logger().info("registry_entry_id:{0} already exists.", static_cast<uint64_t>(*registry_entry_id));
-        }
         return;
       }
 
       auto hid = std::make_shared<human_interface_device>(device, *registry_entry_id);
       hids_[*registry_entry_id] = hid;
-
-      if (log_enabled_) {
-        logger::get_logger().info("{0} is detected.", hid->get_name_for_log());
-      }
 
       device_detected(hid);
     }
@@ -171,20 +155,12 @@ private:
       return;
     }
 
-    if (log_enabled_) {
-      iokit_utility::log_removal_device(device);
-    }
-
     // ----------------------------------------
 
     if (auto registry_entry_id = find_registry_entry_id(device)) {
       auto it = hids_.find(*registry_entry_id);
       if (it != hids_.end()) {
         if (auto hid = it->second) {
-          if (log_enabled_) {
-            logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
-          }
-
           hids_.erase(it);
 
           hid->set_removed();
@@ -243,6 +219,5 @@ private:
   std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
   std::unordered_map<registry_entry_id, std::shared_ptr<human_interface_device>> hids_;
   std::unique_ptr<gcd_utility::main_queue_timer> refresh_timer_;
-  bool log_enabled_;
 };
 } // namespace krbn

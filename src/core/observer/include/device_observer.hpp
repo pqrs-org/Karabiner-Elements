@@ -31,16 +31,19 @@ public:
                                               time_stamp);
     });
 
-    hid_manager_.set_log_enabled(true);
-
     hid_manager_.device_detecting.connect([](auto&& device) {
       if (iokit_utility::is_karabiner_virtual_hid_device(device)) {
         return false;
       }
+
+      iokit_utility::log_matching_device(device);
+
       return true;
     });
 
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
+      logger::get_logger().info("{0} is detected.", human_interface_device->get_name_for_log());
+
       grabbable_state_manager_.update(human_interface_device->get_registry_entry_id(),
                                       grabbable_state::device_error,
                                       ungrabbable_temporarily_reason::none,
@@ -70,6 +73,10 @@ public:
       observer->observe();
 
       hid_observers_[human_interface_device->get_registry_entry_id()] = observer;
+    });
+
+    hid_manager_.device_removed.connect([](auto&& human_interface_device) {
+      logger::get_logger().info("{0} is removed.", human_interface_device->get_name_for_log());
     });
 
     hid_manager_.start();
