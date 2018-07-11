@@ -75,8 +75,10 @@ public:
       hid_observers_[human_interface_device->get_registry_entry_id()] = observer;
     });
 
-    hid_manager_.device_removed.connect([](auto&& human_interface_device) {
+    hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
       logger::get_logger().info("{0} is removed.", human_interface_device->get_name_for_log());
+
+      hid_observers_.erase(human_interface_device->get_registry_entry_id());
     });
 
     hid_manager_.start();
