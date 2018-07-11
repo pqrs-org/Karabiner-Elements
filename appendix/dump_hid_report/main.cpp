@@ -7,21 +7,21 @@ public:
 
   dump_hid_report(void) {
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device.report_arrived.connect([this](auto&& human_interface_device,
-                                                           auto&& type,
-                                                           auto&& report_id,
-                                                           auto&& report,
-                                                           auto&& report_length) {
+      human_interface_device->report_arrived.connect([this](auto&& human_interface_device,
+                                                            auto&& type,
+                                                            auto&& report_id,
+                                                            auto&& report,
+                                                            auto&& report_length) {
         report_arrived(human_interface_device, type, report_id, report, report_length);
       });
-      human_interface_device.enable_report_callback();
+      human_interface_device->enable_report_callback();
 
-      auto r = human_interface_device.open();
+      auto r = human_interface_device->open();
       if (r != kIOReturnSuccess) {
-        krbn::logger::get_logger().error("failed to open {0}", human_interface_device.get_name_for_log());
+        krbn::logger::get_logger().error("failed to open {0}", human_interface_device->get_name_for_log());
         return;
       }
-      human_interface_device.schedule();
+      human_interface_device->schedule();
     });
 
     hid_manager_.start({

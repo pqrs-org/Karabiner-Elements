@@ -7,13 +7,13 @@ public:
 
   control_led(void) {
     hid_manager_.device_detected.connect([](auto&& human_interface_device) {
-      auto r = human_interface_device.open();
+      auto r = human_interface_device->open();
       if (r != kIOReturnSuccess) {
         krbn::logger::get_logger().error("failed to open");
         return;
       }
 
-      if (auto caps_lock_led_state = human_interface_device.get_caps_lock_led_state()) {
+      if (auto caps_lock_led_state = human_interface_device->get_caps_lock_led_state()) {
         switch (*caps_lock_led_state) {
           case krbn::led_state::on:
             krbn::logger::get_logger().info("caps_lock_led_state is on.");
@@ -24,9 +24,9 @@ public:
         }
 
         if (caps_lock_led_state == krbn::led_state::on) {
-          human_interface_device.set_caps_lock_led_state(krbn::led_state::off);
+          human_interface_device->set_caps_lock_led_state(krbn::led_state::off);
         } else {
-          human_interface_device.set_caps_lock_led_state(krbn::led_state::on);
+          human_interface_device->set_caps_lock_led_state(krbn::led_state::on);
         }
 
         krbn::logger::get_logger().info("set_caps_lock_led_state is called.");

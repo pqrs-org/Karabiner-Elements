@@ -16,9 +16,9 @@ public:
                           boost_utility::signal2_combiner_call_while_true>
       device_detecting;
 
-  boost::signals2::signal<void(human_interface_device&)> device_detected;
+  boost::signals2::signal<void(std::shared_ptr<human_interface_device>)> device_detected;
 
-  boost::signals2::signal<void(human_interface_device&)>
+  boost::signals2::signal<void(std::shared_ptr<human_interface_device>)>
       device_removed;
 
   hid_manager(const hid_manager&) = delete;
@@ -135,7 +135,7 @@ private:
         logger::get_logger().info("{0} is detected.", hid->get_name_for_log());
       }
 
-      device_detected(*hid);
+      device_detected(hid);
     }
   }
 
@@ -177,7 +177,7 @@ private:
           hids_.erase(it);
 
           hid->set_removed();
-          device_removed(*hid);
+          device_removed(hid);
         }
       }
 

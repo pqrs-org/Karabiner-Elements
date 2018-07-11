@@ -11,8 +11,8 @@ public:
 
   dump_hid_value(void) {
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
-                                                           auto&& event_queue) {
+      human_interface_device->values_arrived.connect([this](auto&& human_interface_device,
+                                                            auto&& event_queue) {
         values_arrived(human_interface_device, event_queue);
       });
 
@@ -21,16 +21,16 @@ public:
       auto hid_observer = std::make_shared<krbn::hid_observer>(human_interface_device);
 
       hid_observer->device_observed.connect([&](auto&& human_interface_device) {
-        krbn::logger::get_logger().info("{0} is observed.", human_interface_device.get_name_for_log());
+        krbn::logger::get_logger().info("{0} is observed.", human_interface_device->get_name_for_log());
       });
 
       hid_observer->observe();
 
-      hid_observers_[human_interface_device.get_registry_entry_id()] = hid_observer;
+      hid_observers_[human_interface_device->get_registry_entry_id()] = hid_observer;
     });
 
     hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
-      hid_observers_.erase(human_interface_device.get_registry_entry_id());
+      hid_observers_.erase(human_interface_device->get_registry_entry_id());
     });
 
     hid_manager_.start({

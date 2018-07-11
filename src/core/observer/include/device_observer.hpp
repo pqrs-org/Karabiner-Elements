@@ -35,12 +35,12 @@ public:
     });
 
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      grabbable_state_manager_.update(human_interface_device.get_registry_entry_id(),
+      grabbable_state_manager_.update(human_interface_device->get_registry_entry_id(),
                                       grabbable_state::device_error,
                                       ungrabbable_temporarily_reason::none,
                                       mach_absolute_time());
 
-      human_interface_device.device_observed.connect([this](auto&& human_interface_device) {
+      human_interface_device->device_observed.connect([this](auto&& human_interface_device) {
         logger::get_logger().info("{0} is observed.",
                                   human_interface_device.get_name_for_log());
 
@@ -54,11 +54,11 @@ public:
           }
         }
       });
-      human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
-                                                           auto&& event_queue) {
+      human_interface_device->values_arrived.connect([this](auto&& human_interface_device,
+                                                            auto&& event_queue) {
         grabbable_state_manager_.update(event_queue);
       });
-      human_interface_device.observe();
+      human_interface_device->observe();
     });
 
     hid_manager_.start({

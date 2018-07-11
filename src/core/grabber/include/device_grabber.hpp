@@ -109,20 +109,20 @@ public:
     });
 
     hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device.set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
-      human_interface_device.device_grabbed.connect([this](auto&& human_interface_device) {
+      human_interface_device->set_is_grabbable_callback(std::bind(&device_grabber::is_grabbable_callback, this, std::placeholders::_1));
+      human_interface_device->device_grabbed.connect([this](auto&& human_interface_device) {
         logger::get_logger().info("{0} is grabbed", human_interface_device.get_name_for_log());
         device_grabbed(human_interface_device);
       });
-      human_interface_device.device_ungrabbed.connect([this](auto&& human_interface_device) {
+      human_interface_device->device_ungrabbed.connect([this](auto&& human_interface_device) {
         logger::get_logger().info("{0} is ungrabbed", human_interface_device.get_name_for_log());
         device_ungrabbed(human_interface_device);
       });
-      human_interface_device.device_disabled.connect([this](auto&& human_interface_device) {
+      human_interface_device->device_disabled.connect([this](auto&& human_interface_device) {
         device_disabled(human_interface_device);
       });
-      human_interface_device.values_arrived.connect([this](auto&& human_interface_device,
-                                                           auto&& event_queue) {
+      human_interface_device->values_arrived.connect([this](auto&& human_interface_device,
+                                                            auto&& event_queue) {
         values_arrived(human_interface_device, event_queue);
       });
 
@@ -138,18 +138,18 @@ public:
     });
 
     hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
-      human_interface_device.ungrab();
+      human_interface_device->ungrab();
 
-      grabbable_states_.erase(human_interface_device.get_registry_entry_id());
-      first_grabbed_event_time_stamps_.erase(human_interface_device.get_registry_entry_id());
+      grabbable_states_.erase(human_interface_device->get_registry_entry_id());
+      first_grabbed_event_time_stamps_.erase(human_interface_device->get_registry_entry_id());
 
       output_devices_json();
       output_device_details_json();
 
       // ----------------------------------------
 
-      if (human_interface_device.is_keyboard() &&
-          human_interface_device.is_karabiner_virtual_hid_device()) {
+      if (human_interface_device->is_keyboard() &&
+          human_interface_device->is_karabiner_virtual_hid_device()) {
         virtual_hid_device_client_.close();
         ungrab_devices();
 
