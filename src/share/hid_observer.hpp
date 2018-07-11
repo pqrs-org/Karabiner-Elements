@@ -23,6 +23,10 @@ public:
     unobserve();
   }
 
+  std::weak_ptr<human_interface_device> get_human_interface_device(void) {
+    return human_interface_device_;
+  }
+
   bool get_observed(void) const {
     return observed_;
   }
