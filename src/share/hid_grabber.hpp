@@ -47,6 +47,14 @@ public:
     return grabbed_;
   }
 
+  grabbable_state make_grabbable_state(void) {
+    if (auto hid = human_interface_device_.lock()) {
+      return device_grabbing(hid);
+    }
+
+    return grabbable_state::ungrabbable_permanently;
+  }
+
   void grab(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       log_reducer_.reset();
@@ -65,7 +73,7 @@ public:
                 return true;
               }
 
-              switch (device_grabbing(hid)) {
+              switch (make_grabbable_state()) {
                 case grabbable_state::grabbable:
                   break;
 
