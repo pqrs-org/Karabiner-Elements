@@ -7,6 +7,7 @@
 @property(weak) IBOutlet NSMenu* menu;
 @property NSStatusItem* statusItem;
 @property NSImage* menuIcon;
+@property id configurationLoadedObserver;
 
 @end
 
@@ -31,22 +32,22 @@
   [self setStatusItemImage];
   [self setStatusItemTitle];
 
-  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
-                                                  if (!coreConfigurationModel.globalConfigurationShowInMenuBar &&
-                                                      !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
-                                                    [NSApp terminate:nil];
-                                                  }
-                                                  [self setStatusItemImage];
-                                                  [self setStatusItemTitle];
-                                                }];
+  self.configurationLoadedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
+                                                                                       object:nil
+                                                                                        queue:[NSOperationQueue mainQueue]
+                                                                                   usingBlock:^(NSNotification* note) {
+                                                                                     KarabinerKitCoreConfigurationModel* coreConfigurationModel = [KarabinerKitConfigurationManager sharedManager].coreConfigurationModel;
+                                                                                     if (!coreConfigurationModel.globalConfigurationShowInMenuBar &&
+                                                                                         !coreConfigurationModel.globalConfigurationShowProfileNameInMenuBar) {
+                                                                                       [NSApp terminate:nil];
+                                                                                     }
+                                                                                     [self setStatusItemImage];
+                                                                                     [self setStatusItemTitle];
+                                                                                   }];
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:self.configurationLoadedObserver];
 }
 
 - (void)setStatusItemImage {

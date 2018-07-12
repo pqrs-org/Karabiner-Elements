@@ -40,6 +40,8 @@
 @property(weak) IBOutlet SimpleModificationsMenuManager* simpleModificationsMenuManager;
 @property(weak) IBOutlet SimpleModificationsTableViewController* simpleModificationsTableViewController;
 @property(weak) IBOutlet SystemPreferencesManager* systemPreferencesManager;
+@property id configurationLoadedObserver;
+@property id preferencesUpdatedObserver;
 
 @end
 
@@ -61,25 +63,25 @@
   [self.logFileTextViewController monitor];
 
   @weakify(self);
-  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  @strongify(self);
-                                                  if (!self) return;
+  self.configurationLoadedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
+                                                                                       object:nil
+                                                                                        queue:[NSOperationQueue mainQueue]
+                                                                                   usingBlock:^(NSNotification* note) {
+                                                                                     @strongify(self);
+                                                                                     if (!self) return;
 
-                                                  [self setupVirtualHIDKeyboardCountryCode:nil];
-                                                  [self setupMiscTabControls];
-                                                }];
-  [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  @strongify(self);
-                                                  if (!self) return;
+                                                                                     [self setupVirtualHIDKeyboardCountryCode:nil];
+                                                                                     [self setupMiscTabControls];
+                                                                                   }];
+  self.preferencesUpdatedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kSystemPreferencesValuesAreUpdated
+                                                                                      object:nil
+                                                                                       queue:[NSOperationQueue mainQueue]
+                                                                                  usingBlock:^(NSNotification* note) {
+                                                                                    @strongify(self);
+                                                                                    if (!self) return;
 
-                                                  [self updateSystemPreferencesUIValues];
-                                                }];
+                                                                                    [self updateSystemPreferencesUIValues];
+                                                                                  }];
 
   // ----------------------------------------
   // Update UI values
@@ -98,7 +100,8 @@
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:self.configurationLoadedObserver];
+  [[NSNotificationCenter defaultCenter] removeObserver:self.preferencesUpdatedObserver];
 }
 
 - (void)show {

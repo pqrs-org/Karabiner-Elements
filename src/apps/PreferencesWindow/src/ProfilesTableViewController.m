@@ -6,23 +6,24 @@
 @interface ProfilesTableViewController ()
 
 @property(weak) IBOutlet NSTableView* tableView;
+@property id configurationLoadedObserver;
 
 @end
 
 @implementation ProfilesTableViewController
 
 - (void)setup {
-  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  [self.tableView reloadData];
-                                                }];
+  self.configurationLoadedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
+                                                                                       object:nil
+                                                                                        queue:[NSOperationQueue mainQueue]
+                                                                                   usingBlock:^(NSNotification* note) {
+                                                                                     [self.tableView reloadData];
+                                                                                   }];
   [self.tableView reloadData];
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:self.configurationLoadedObserver];
 }
 
 - (void)valueChanged:(id)sender {

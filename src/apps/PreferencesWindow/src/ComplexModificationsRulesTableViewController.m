@@ -13,20 +13,25 @@
 @property(weak) IBOutlet NSTabViewItem* rulesTabViewItem;
 @property(weak) IBOutlet NSTableView* tableView;
 @property(weak) IBOutlet NSWindow* window;
+@property id configurationLoadedObserver;
 
 @end
 
 @implementation ComplexModificationsRulesTableViewController
 
 - (void)setup {
-  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  [self.tableView reloadData];
-                                                }];
+  self.configurationLoadedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
+                                                                                       object:nil
+                                                                                        queue:[NSOperationQueue mainQueue]
+                                                                                   usingBlock:^(NSNotification* note) {
+                                                                                     [self.tableView reloadData];
+                                                                                   }];
 
   [self updateUpDownButtons];
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self.configurationLoadedObserver];
 }
 
 - (IBAction)openRulesSite:(id)sender {

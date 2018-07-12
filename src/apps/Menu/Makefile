@@ -1,4 +1,6 @@
-all: build_xcode
+all:
+	make -C ../lib/KarabinerKit
+	make build_xcode
 
 clean: clean_builds
 

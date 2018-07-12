@@ -13,31 +13,34 @@
 @property(weak) IBOutlet FnFunctionKeysTableViewController* fnFunctionKeysTableViewController;
 @property(weak) IBOutlet NSPanel* hasCapsLockLedConfirmationPanel;
 @property(weak) IBOutlet NSWindow* window;
+@property id configurationLoadedObserver;
+@property id devicesUpdatedObserver;
 
 @end
 
 @implementation DevicesTableViewController
 
 - (void)setup {
-  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  [self.tableView reloadData];
-                                                  [self.externalKeyboardTableView reloadData];
-                                                }];
+  self.configurationLoadedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
+                                                                                       object:nil
+                                                                                        queue:[NSOperationQueue mainQueue]
+                                                                                   usingBlock:^(NSNotification* note) {
+                                                                                     [self.tableView reloadData];
+                                                                                     [self.externalKeyboardTableView reloadData];
+                                                                                   }];
 
-  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  [self.tableView reloadData];
-                                                  [self.externalKeyboardTableView reloadData];
-                                                }];
+  self.devicesUpdatedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitDevicesAreUpdated
+                                                                                  object:nil
+                                                                                   queue:[NSOperationQueue mainQueue]
+                                                                              usingBlock:^(NSNotification* note) {
+                                                                                [self.tableView reloadData];
+                                                                                [self.externalKeyboardTableView reloadData];
+                                                                              }];
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:self.configurationLoadedObserver];
+  [[NSNotificationCenter defaultCenter] removeObserver:self.devicesUpdatedObserver];
 }
 
 - (void)valueChanged:(id)sender {
@@ -48,7 +51,7 @@
     DevicesTableCellView* cellView = [self.tableView viewAtColumn:0 row:row makeIfNecessary:NO];
     libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
     [coreConfigurationModel setSelectedProfileDeviceIgnore:&(deviceIdentifiers)
-                                                           value:(cellView.checkbox.state == NSOffState)];
+                                                     value:(cellView.checkbox.state == NSOffState)];
     [coreConfigurationModel save];
     goto finish;
   }
@@ -58,7 +61,7 @@
     DevicesTableCellView* cellView = [self.externalKeyboardTableView viewAtColumn:0 row:row makeIfNecessary:NO];
     libkrbn_device_identifiers deviceIdentifiers = cellView.deviceIdentifiers;
     [coreConfigurationModel setSelectedProfileDeviceDisableBuiltInKeyboardIfExists:&(deviceIdentifiers)
-                                                                                   value:(cellView.checkbox.state == NSOnState)];
+                                                                             value:(cellView.checkbox.state == NSOnState)];
     [coreConfigurationModel save];
     goto finish;
   }
@@ -77,13 +80,13 @@ finish:
 
     if (cellView.checkbox.state == NSOffState) {
       [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
-                                                                            value:NO];
+                                                                      value:NO];
       [coreConfigurationModel save];
 
     } else {
       if (libkrbn_device_identifiers_is_apple(&deviceIdentifiers)) {
         [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
-                                                                              value:YES];
+                                                                        value:YES];
         [coreConfigurationModel save];
 
       } else {
@@ -91,7 +94,7 @@ finish:
               completionHandler:^(NSModalResponse returnCode) {
                 if (returnCode == NSModalResponseOK) {
                   [coreConfigurationModel setSelectedProfileDeviceManipulateCapsLockLed:&(deviceIdentifiers)
-                                                                                        value:YES];
+                                                                                  value:YES];
                   [coreConfigurationModel save];
 
                 } else {

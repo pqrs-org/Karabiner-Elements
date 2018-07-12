@@ -11,20 +11,25 @@
 @property(weak) IBOutlet NSTextField* basicToDelayedActionDelayMillisecondsText;
 @property(weak) IBOutlet NSStepper* basicSimultaneousThresholdMillisecondsStepper;
 @property(weak) IBOutlet NSTextField* basicSimultaneousThresholdMillisecondsText;
+@property id configurationLoadedObserver;
 
 @end
 
 @implementation ComplexModificationsParametersTabController
 
 - (void)setup {
-  [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
-                                                    object:nil
-                                                     queue:[NSOperationQueue mainQueue]
-                                                usingBlock:^(NSNotification* note) {
-                                                  [self updateValues];
-                                                }];
+  self.configurationLoadedObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kKarabinerKitConfigurationIsLoaded
+                                                                                       object:nil
+                                                                                        queue:[NSOperationQueue mainQueue]
+                                                                                   usingBlock:^(NSNotification* note) {
+                                                                                     [self updateValues];
+                                                                                   }];
 
   [self updateValues];
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self.configurationLoadedObserver];
 }
 
 - (void)updateValues {
