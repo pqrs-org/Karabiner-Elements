@@ -186,8 +186,6 @@ public:
   ~human_interface_device(void) {
     // Release device_ and queue_ in main thread to avoid callback invocations after object has been destroyed.
     gcd_utility::dispatch_sync_in_main_queue(^{
-      grab_timer_ = nullptr;
-
       // Unregister all callbacks.
       unschedule();
       disable_report_callback();
@@ -618,10 +616,6 @@ private:
   event_queue input_event_queue_;
 
   std::vector<uint8_t> report_buffer_;
-
-  spdlog_utility::log_reducer grab_log_reducer_;
-
-  std::unique_ptr<gcd_utility::fire_while_false_timer> grab_timer_;
 
   bool removed_;
   // `disabled_` is ignoring input events from this device.
