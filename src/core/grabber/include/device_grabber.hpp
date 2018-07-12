@@ -49,8 +49,7 @@ public:
                          complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                          fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
                          posted_event_queue_(std::make_shared<event_queue>()),
-                         mode_(mode::observing),
-                         suspended_(false) {
+                         mode_(mode::observing) {
     client_connected_connection = virtual_hid_device_client_.client_connected.connect([this]() {
       logger::get_logger().info("virtual_hid_device_client_ is connected");
 
@@ -314,34 +313,6 @@ public:
       }
 
       logger::get_logger().info("Connected devices are ungrabbed");
-    });
-  }
-
-  void suspend(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!suspended_) {
-        logger::get_logger().info("device_grabber::suspend");
-
-        suspended_ = true;
-
-        if (mode_ == mode::grabbing) {
-          ungrab_devices();
-        }
-      }
-    });
-  }
-
-  void resume(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (suspended_) {
-        logger::get_logger().info("device_grabber::resume");
-
-        suspended_ = false;
-
-        if (mode_ == mode::grabbing) {
-          grab_devices();
-        }
-      }
     });
   }
 
@@ -1137,7 +1108,5 @@ private:
   mode mode_;
 
   spdlog_utility::log_reducer is_grabbable_callback_log_reducer_;
-
-  bool suspended_;
 };
 } // namespace krbn
