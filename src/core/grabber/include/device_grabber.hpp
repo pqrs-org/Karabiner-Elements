@@ -914,9 +914,9 @@ private:
 
     for (const auto& rule : profile_.get_complex_modifications().get_rules()) {
       for (const auto& manipulator : rule.get_manipulators()) {
-        auto m = krbn::manipulator::manipulator_factory::make_manipulator(manipulator.get_json(), manipulator.get_parameters());
+        auto m = manipulator::manipulator_factory::make_manipulator(manipulator.get_json(), manipulator.get_parameters());
         for (const auto& c : manipulator.get_conditions()) {
-          m->push_back_condition(krbn::manipulator::manipulator_factory::make_condition(c.get_json()));
+          m->push_back_condition(manipulator::manipulator_factory::make_condition(c.get_json()));
         }
         complex_modifications_manipulator_manager_.push_back_manipulator(m);
       }

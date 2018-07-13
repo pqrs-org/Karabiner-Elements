@@ -11,12 +11,12 @@ public:
   condition_manager(void) {
   }
 
-  void push_back_condition(const std::shared_ptr<krbn::manipulator::details::conditions::base>& condition) {
+  void push_back_condition(const std::shared_ptr<manipulator::details::conditions::base>& condition) {
     conditions_.push_back(condition);
   }
 
   bool is_fulfilled(const event_queue::queued_event& queued_event,
-                    const krbn::manipulator_environment& manipulator_environment) const {
+                    const manipulator_environment& manipulator_environment) const {
     bool result = true;
 
     for (const auto& c : conditions_) {
@@ -30,7 +30,7 @@ public:
   }
 
 private:
-  std::vector<std::shared_ptr<krbn::manipulator::details::conditions::base>> conditions_;
+  std::vector<std::shared_ptr<manipulator::details::conditions::base>> conditions_;
 };
 } // namespace manipulator
 } // namespace krbn
