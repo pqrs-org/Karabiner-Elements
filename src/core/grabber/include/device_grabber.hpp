@@ -7,6 +7,7 @@
 #include "constants.hpp"
 #include "device_detail.hpp"
 #include "event_tap_manager.hpp"
+#include "event_tap_utility.hpp"
 #include "gcd_utility.hpp"
 #include "hid_grabber.hpp"
 #include "hid_manager.hpp"
@@ -655,77 +656,14 @@ private:
     update_caps_lock_led(caps_lock_state);
   }
 
-  void event_tap_pointing_device_event_callback(CGEventType type, CGEventRef _Nullable event) {
-    boost::optional<event_type> pseudo_event_type;
-    boost::optional<event_queue::queued_event::event> pseudo_event;
-
-    switch (type) {
-      case kCGEventLeftMouseDown:
-        pseudo_event_type = event_type::key_down;
-        pseudo_event = event_queue::queued_event::event(pointing_button::button1);
-        break;
-
-      case kCGEventLeftMouseUp:
-        pseudo_event_type = event_type::key_up;
-        pseudo_event = event_queue::queued_event::event(pointing_button::button1);
-        break;
-
-      case kCGEventRightMouseDown:
-        pseudo_event_type = event_type::key_down;
-        pseudo_event = event_queue::queued_event::event(pointing_button::button2);
-        break;
-
-      case kCGEventRightMouseUp:
-        pseudo_event_type = event_type::key_up;
-        pseudo_event = event_queue::queued_event::event(pointing_button::button2);
-        break;
-
-      case kCGEventOtherMouseDown:
-        pseudo_event_type = event_type::key_down;
-        pseudo_event = event_queue::queued_event::event(pointing_button::button3);
-        break;
-
-      case kCGEventOtherMouseUp:
-        pseudo_event_type = event_type::key_up;
-        pseudo_event = event_queue::queued_event::event(pointing_button::button3);
-        break;
-
-      case kCGEventMouseMoved:
-      case kCGEventLeftMouseDragged:
-      case kCGEventRightMouseDragged:
-      case kCGEventOtherMouseDragged:
-        pseudo_event_type = event_type::single;
-        pseudo_event = event_queue::queued_event::event(pointing_motion());
-        break;
-
-      case kCGEventScrollWheel:
-        pseudo_event_type = event_type::single;
-        // Set non-zero value for `manipulator::details::base::unset_alone_if_needed`.
-        {
-          pointing_motion pointing_motion;
-          pointing_motion.set_vertical_wheel(1);
-          pseudo_event = event_queue::queued_event::event(pointing_motion);
-        }
-        break;
-
-      case kCGEventNull:
-      case kCGEventKeyDown:
-      case kCGEventKeyUp:
-      case kCGEventFlagsChanged:
-      case kCGEventTabletPointer:
-      case kCGEventTabletProximity:
-      case kCGEventTapDisabledByTimeout:
-      case kCGEventTapDisabledByUserInput:
-        break;
-    }
-
-    if (pseudo_event_type && pseudo_event) {
+  void event_tap_pointing_device_event_callback(CGEventType type, CGEventRef event) {
+    if (auto pseudo_event = event_tap_utility::make_event(type, event)) {
       auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
       event_queue::queued_event queued_event(device_id(0),
                                              event_queue::queued_event::event_time_stamp(mach_absolute_time()),
                                              e,
-                                             *pseudo_event_type,
-                                             *pseudo_event);
+                                             pseudo_event->first,
+                                             pseudo_event->second);
 
       merged_input_event_queue_->push_back_event(queued_event);
 
