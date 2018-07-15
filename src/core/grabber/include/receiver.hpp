@@ -65,10 +65,7 @@ private:
             } else {
               auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(&(buffer_[0]));
 
-              device_grabber_.update_grabbable_state(p->registry_entry_id,
-                                                     p->grabbable_state,
-                                                     p->ungrabbable_temporarily_reason,
-                                                     p->time_stamp);
+              device_grabber_.update_grabbable_state(p->grabbable_state);
             }
             break;
 

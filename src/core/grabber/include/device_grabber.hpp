@@ -203,16 +203,15 @@ public:
     });
   }
 
-  void update_grabbable_state(registry_entry_id registry_entry_id,
-                              grabbable_state grabbable_state,
-                              ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
-                              uint64_t time_stamp) {
+  void update_grabbable_state(grabbable_state state) {
     gcd_utility::dispatch_sync_in_main_queue(^{
+      auto registry_entry_id = state.get_registry_entry_id();
+
       // Ignore if the first grabbed event is already arrived.
       {
         auto it = first_grabbed_event_time_stamps_.find(registry_entry_id);
         if (it != std::end(first_grabbed_event_time_stamps_) &&
-            it->second <= time_stamp) {
+            it->second <= state.get_time_stamp()) {
           return;
         }
       }
@@ -226,10 +225,7 @@ public:
 
       auto& entries = grabbable_states_[registry_entry_id];
 
-      entries.push_back(
-          std::make_shared<grabbable_state_entry>(grabbable_state,
-                                                  ungrabbable_temporarily_reason,
-                                                  time_stamp));
+      entries.push_back(state);
 
       // Keep multiple entries for when the first grabbed event(s) calls
       // `update_grabbable_state` before `values_arrived` callback.
@@ -240,7 +236,7 @@ public:
         grabbable_states_[registry_entry_id].pop_front();
       }
 
-      if (grabbable_state != grabbable_state::grabbable) {
+      if (state.get_state() != grabbable_state::state::grabbable) {
         auto it = hid_grabbers_.find(registry_entry_id);
         if (it != std::end(hid_grabbers_)) {
           if (it->second->get_grabbed()) {
@@ -296,7 +292,7 @@ public:
   void grab_devices(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       for (auto& pair : hid_grabbers_) {
-        if (pair.second->make_grabbable_state() == grabbable_state::ungrabbable_permanently) {
+        if (pair.second->make_grabbable_state() == grabbable_state::state::ungrabbable_permanently) {
           pair.second->ungrab();
         } else {
           pair.second->grab();
@@ -383,43 +379,6 @@ public:
   }
 
 private:
-  class grabbable_state_entry {
-  public:
-    grabbable_state_entry(grabbable_state grabbable_state,
-                          ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
-                          uint64_t time_stamp) : grabbable_state_(grabbable_state),
-                                                 ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
-                                                 time_stamp_(time_stamp),
-                                                 logged_(false) {
-    }
-
-    grabbable_state get_grabbable_state(void) const {
-      return grabbable_state_;
-    }
-
-    ungrabbable_temporarily_reason get_ungrabbable_temporarily_reason(void) const {
-      return ungrabbable_temporarily_reason_;
-    }
-
-    uint64_t get_time_stamp(void) const {
-      return time_stamp_;
-    }
-
-    bool get_logged(void) const {
-      return logged_;
-    }
-
-    void set_logged(void) {
-      logged_ = true;
-    }
-
-  private:
-    grabbable_state grabbable_state_;
-    ungrabbable_temporarily_reason ungrabbable_temporarily_reason_;
-    uint64_t time_stamp_;
-    bool logged_;
-  };
-
   void manipulate(uint64_t now) {
     {
       // Avoid recursive call
@@ -490,7 +449,7 @@ private:
       entries.erase(std::remove_if(std::begin(entries),
                                    std::end(entries),
                                    [&](const auto& e) {
-                                     return e->get_time_stamp() >= time_stamp;
+                                     return e.get_time_stamp() >= time_stamp;
                                    }),
                     std::end(entries));
     }
@@ -522,14 +481,14 @@ private:
     krbn_notification_center::get_instance().input_event_arrived();
   }
 
-  grabbable_state is_grabbable_callback(std::shared_ptr<human_interface_device> device) {
+  grabbable_state::state is_grabbable_callback(std::shared_ptr<human_interface_device> device) {
     if (is_ignored_device(*device)) {
       // If we need to disable the built-in keyboard, we have to grab it.
       if (device->is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
         // Do nothing
       } else {
         logger::get_logger().info("{0} is ignored.", device->get_name_for_log());
-        return grabbable_state::ungrabbable_permanently;
+        return grabbable_state::state::ungrabbable_permanently;
       }
     }
 
@@ -539,13 +498,13 @@ private:
     if (!virtual_hid_device_client_.is_connected()) {
       std::string message = "virtual_hid_device_client is not connected yet. Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);
-      return grabbable_state::ungrabbable_temporarily;
+      return grabbable_state::state::ungrabbable_temporarily;
     }
 
     if (!virtual_hid_device_client_.is_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       is_grabbable_callback_log_reducer_.warn(message);
-      return grabbable_state::ungrabbable_temporarily;
+      return grabbable_state::state::ungrabbable_temporarily;
     }
 
     // ----------------------------------------
@@ -557,39 +516,42 @@ private:
         std::string message = fmt::format("{0} is not observed yet. Please wait for a while.",
                                           device->get_name_for_log());
         is_grabbable_callback_log_reducer_.warn(message);
-        return grabbable_state::ungrabbable_temporarily;
+        return grabbable_state::state::ungrabbable_temporarily;
       }
 
       if (it->second.empty()) {
         std::string message = fmt::format("{0} is ungrabbable temporarily.",
                                           device->get_name_for_log());
         is_grabbable_callback_log_reducer_.warn(message);
-        return grabbable_state::ungrabbable_temporarily;
+        return grabbable_state::state::ungrabbable_temporarily;
       }
 
-      switch (it->second.back()->get_grabbable_state()) {
-        case grabbable_state::grabbable:
+      switch (it->second.back().get_state()) {
+        case grabbable_state::state::none:
+          return grabbable_state::state::ungrabbable_temporarily;
+
+        case grabbable_state::state::grabbable:
           break;
 
-        case grabbable_state::ungrabbable_temporarily: {
+        case grabbable_state::state::ungrabbable_temporarily: {
           std::string message;
-          switch (it->second.back()->get_ungrabbable_temporarily_reason()) {
-            case ungrabbable_temporarily_reason::none: {
+          switch (it->second.back().get_ungrabbable_temporarily_reason()) {
+            case grabbable_state::ungrabbable_temporarily_reason::none: {
               message = fmt::format("{0} is ungrabbable temporarily",
                                     device->get_name_for_log());
               break;
             }
-            case ungrabbable_temporarily_reason::key_repeating: {
+            case grabbable_state::ungrabbable_temporarily_reason::key_repeating: {
               message = fmt::format("{0} is ungrabbable temporarily while a key is repeating.",
                                     device->get_name_for_log());
               break;
             }
-            case ungrabbable_temporarily_reason::modifier_key_pressed: {
+            case grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed: {
               message = fmt::format("{0} is ungrabbable temporarily while any modifier flags are pressed.",
                                     device->get_name_for_log());
               break;
             }
-            case ungrabbable_temporarily_reason::pointing_button_pressed: {
+            case grabbable_state::ungrabbable_temporarily_reason::pointing_button_pressed: {
               message = fmt::format("{0} is ungrabbable temporarily while mouse buttons are pressed.",
                                     device->get_name_for_log());
               break;
@@ -597,28 +559,28 @@ private:
           }
           is_grabbable_callback_log_reducer_.warn(message);
 
-          return grabbable_state::ungrabbable_temporarily;
+          return grabbable_state::state::ungrabbable_temporarily;
         }
 
-        case grabbable_state::ungrabbable_permanently: {
+        case grabbable_state::state::ungrabbable_permanently: {
           std::string message = fmt::format("{0} is ungrabbable permanently.",
                                             device->get_name_for_log());
           is_grabbable_callback_log_reducer_.warn(message);
-          return grabbable_state::ungrabbable_permanently;
+          return grabbable_state::state::ungrabbable_permanently;
         }
 
-        case grabbable_state::device_error: {
+        case grabbable_state::state::device_error: {
           std::string message = fmt::format("{0} is ungrabbable temporarily by a failure of accessing device.",
                                             device->get_name_for_log());
           is_grabbable_callback_log_reducer_.warn(message);
-          return grabbable_state::ungrabbable_temporarily;
+          return grabbable_state::state::ungrabbable_temporarily;
         }
       }
     }
 
     // ----------------------------------------
 
-    return grabbable_state::grabbable;
+    return grabbable_state::state::grabbable;
   }
 
   void device_grabbed(std::shared_ptr<human_interface_device> device) {
@@ -1013,7 +975,7 @@ private:
   hid_manager hid_manager_;
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_grabber>> hid_grabbers_;
 
-  std::unordered_map<registry_entry_id, std::deque<std::shared_ptr<grabbable_state_entry>>> grabbable_states_;
+  std::unordered_map<registry_entry_id, std::deque<grabbable_state>> grabbable_states_;
   std::unordered_map<registry_entry_id, uint64_t> first_grabbed_event_time_stamps_;
 
   core_configuration::profile profile_;

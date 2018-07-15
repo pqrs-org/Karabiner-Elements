@@ -8,14 +8,14 @@ namespace krbn {
 class hid_grabber final {
 public:
   struct signal2_combiner_call_while_grabbable {
-    typedef grabbable_state result_type;
+    typedef grabbable_state::state result_type;
 
     template <typename input_iterator>
     result_type operator()(input_iterator first_observer,
                            input_iterator last_observer) const {
-      result_type value = grabbable_state::grabbable;
+      result_type value = grabbable_state::state::grabbable;
       for (;
-           first_observer != last_observer && value == grabbable_state::grabbable;
+           first_observer != last_observer && value == grabbable_state::state::grabbable;
            std::advance(first_observer, 1)) {
         value = *first_observer;
       }
@@ -25,7 +25,7 @@ public:
 
   // Signals
 
-  boost::signals2::signal<grabbable_state(std::shared_ptr<human_interface_device>),
+  boost::signals2::signal<grabbable_state::state(std::shared_ptr<human_interface_device>),
                           signal2_combiner_call_while_grabbable>
       device_grabbing;
 
@@ -51,12 +51,12 @@ public:
     return grabbed_;
   }
 
-  grabbable_state make_grabbable_state(void) {
+  grabbable_state::state make_grabbable_state(void) {
     if (auto hid = human_interface_device_.lock()) {
       return device_grabbing(hid);
     }
 
-    return grabbable_state::ungrabbable_permanently;
+    return grabbable_state::state::ungrabbable_permanently;
   }
 
   void grab(void) {
@@ -78,15 +78,16 @@ public:
               }
 
               switch (make_grabbable_state()) {
-                case grabbable_state::grabbable:
+                case grabbable_state::state::grabbable:
                   break;
 
-                case grabbable_state::ungrabbable_temporarily:
-                case grabbable_state::device_error:
+                case grabbable_state::state::none:
+                case grabbable_state::state::ungrabbable_temporarily:
+                case grabbable_state::state::device_error:
                   // Retry
                   return false;
 
-                case grabbable_state::ungrabbable_permanently:
+                case grabbable_state::state::ungrabbable_permanently:
                   return true;
               }
 

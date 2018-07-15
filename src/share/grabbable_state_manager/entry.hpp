@@ -2,21 +2,23 @@
 
 class entry final {
 public:
-  entry(void) : grabbable_state_(grabbable_state::grabbable,
-                                 ungrabbable_temporarily_reason::none) {
+  entry(registry_entry_id registry_entry_id) : grabbable_state_(registry_entry_id,
+                                                                grabbable_state::state::none,
+                                                                grabbable_state::ungrabbable_temporarily_reason::none,
+                                                                0) {
   }
 
-  std::pair<grabbable_state, ungrabbable_temporarily_reason> get_grabbable_state(void) const {
+  const grabbable_state& get_grabbable_state(void) const {
     return grabbable_state_;
   }
 
-  void set_grabbable_state(grabbable_state grabbable_state,
-                           ungrabbable_temporarily_reason ungrabbable_temporarily_reason) {
-    grabbable_state_.first = grabbable_state;
-    grabbable_state_.second = ungrabbable_temporarily_reason;
+  void set_grabbable_state(grabbable_state grabbable_state) {
+    grabbable_state_ = grabbable_state;
   }
 
-  void update(const event_queue::queued_event& queued_event) {
+  void update(registry_entry_id registry_entry_id,
+              uint64_t time_stamp,
+              const event_queue::queued_event& queued_event) {
     if (auto key_code = queued_event.get_event().get_key_code()) {
       if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
         if (auto hid_usage = types::make_hid_usage(*key_code)) {
@@ -54,16 +56,19 @@ public:
       }
     }
 
-    update_grabbable_state();
+    update_grabbable_state(registry_entry_id, time_stamp);
   }
 
 private:
-  void update_grabbable_state(void) {
+  void update_grabbable_state(registry_entry_id registry_entry_id,
+                              uint64_t time_stamp) {
     // Ungrabbable while key repeating
 
     if (keyboard_repeat_detector_.is_repeating()) {
-      grabbable_state_ = std::make_pair(grabbable_state::ungrabbable_temporarily,
-                                        ungrabbable_temporarily_reason::key_repeating);
+      grabbable_state_ = grabbable_state(registry_entry_id,
+                                         grabbable_state::state::ungrabbable_temporarily,
+                                         grabbable_state::ungrabbable_temporarily_reason::key_repeating,
+                                         time_stamp);
       return;
     }
 
@@ -73,8 +78,10 @@ private:
     // (See DEVELOPMENT.md > Modifier flags handling in kernel)
 
     if (!pressed_modifier_flags_.empty()) {
-      grabbable_state_ = std::make_pair(grabbable_state::ungrabbable_temporarily,
-                                        ungrabbable_temporarily_reason::modifier_key_pressed);
+      grabbable_state_ = grabbable_state(registry_entry_id,
+                                         grabbable_state::state::ungrabbable_temporarily,
+                                         grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed,
+                                         time_stamp);
       return;
     }
 
@@ -84,17 +91,21 @@ private:
     // (To release the button, we have to send a hid report to the device. But we cannot do it.)
 
     if (!pressed_pointing_buttons_.empty()) {
-      grabbable_state_ = std::make_pair(grabbable_state::ungrabbable_temporarily,
-                                        ungrabbable_temporarily_reason::pointing_button_pressed);
+      grabbable_state_ = grabbable_state(registry_entry_id,
+                                         grabbable_state::state::ungrabbable_temporarily,
+                                         grabbable_state::ungrabbable_temporarily_reason::pointing_button_pressed,
+                                         time_stamp);
       return;
     }
 
-    grabbable_state_ = std::make_pair(grabbable_state::grabbable,
-                                      ungrabbable_temporarily_reason::none);
+    grabbable_state_ = grabbable_state(registry_entry_id,
+                                       grabbable_state::state::grabbable,
+                                       grabbable_state::ungrabbable_temporarily_reason::none,
+                                       time_stamp);
   }
 
   keyboard_repeat_detector keyboard_repeat_detector_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   std::unordered_set<pointing_button> pressed_pointing_buttons_;
-  std::pair<grabbable_state, ungrabbable_temporarily_reason> grabbable_state_;
+  grabbable_state grabbable_state_;
 };

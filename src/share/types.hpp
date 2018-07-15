@@ -329,20 +329,6 @@ enum class led_state : uint32_t {
   off,
 };
 
-enum class grabbable_state : uint32 {
-  grabbable,
-  ungrabbable_temporarily,
-  ungrabbable_permanently,
-  device_error,
-};
-
-enum class ungrabbable_temporarily_reason : uint32 {
-  none,
-  key_repeating,
-  modifier_key_pressed,
-  pointing_button_pressed,
-};
-
 enum class registry_entry_id : uint64_t {
   zero = 0,
 };
@@ -535,6 +521,76 @@ private:
   int y_;
   int vertical_wheel_;
   int horizontal_wheel_;
+};
+
+class grabbable_state final {
+public:
+  enum class state : uint32 {
+    none,
+    grabbable,
+    ungrabbable_temporarily,
+    ungrabbable_permanently,
+    device_error,
+  };
+
+  enum class ungrabbable_temporarily_reason : uint32 {
+    none,
+    key_repeating,
+    modifier_key_pressed,
+    pointing_button_pressed,
+  };
+
+  grabbable_state(void) : grabbable_state(registry_entry_id::zero,
+                                          state::grabbable,
+                                          ungrabbable_temporarily_reason::none,
+                                          0) {
+  }
+
+  grabbable_state(registry_entry_id registry_entry_id,
+                  state state,
+                  ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
+                  uint64_t time_stamp) : registry_entry_id_(registry_entry_id),
+                                         state_(state),
+                                         ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
+                                         time_stamp_(time_stamp) {
+  }
+
+  registry_entry_id get_registry_entry_id(void) const {
+    return registry_entry_id_;
+  }
+
+  state get_state(void) const {
+    return state_;
+  }
+
+  ungrabbable_temporarily_reason get_ungrabbable_temporarily_reason(void) const {
+    return ungrabbable_temporarily_reason_;
+  }
+
+  uint64_t get_time_stamp(void) const {
+    return time_stamp_;
+  }
+
+  bool equals_except_time_stamp(const grabbable_state& other) const {
+    return registry_entry_id_ == other.registry_entry_id_ &&
+           state_ == other.state_ &&
+           ungrabbable_temporarily_reason_ == other.ungrabbable_temporarily_reason_;
+  }
+
+  bool operator==(const grabbable_state& other) const {
+    return registry_entry_id_ == other.registry_entry_id_ &&
+           state_ == other.state_ &&
+           ungrabbable_temporarily_reason_ == other.ungrabbable_temporarily_reason_ &&
+           time_stamp_ == other.time_stamp_;
+  }
+
+  bool operator!=(const grabbable_state& other) const { return !(*this == other); }
+
+private:
+  registry_entry_id registry_entry_id_;
+  state state_;
+  ungrabbable_temporarily_reason ungrabbable_temporarily_reason_;
+  uint64_t time_stamp_;
 };
 
 class device_identifiers final {
@@ -1905,10 +1961,7 @@ struct operation_type_grabbable_state_changed_struct {
   operation_type_grabbable_state_changed_struct(void) : operation_type(operation_type::grabbable_state_changed) {}
 
   const operation_type operation_type;
-  registry_entry_id registry_entry_id;
   grabbable_state grabbable_state;
-  ungrabbable_temporarily_reason ungrabbable_temporarily_reason;
-  uint64_t time_stamp;
 };
 
 struct operation_type_connect_struct {
@@ -2059,44 +2112,57 @@ inline std::ostream& operator<<(std::ostream& stream, const container<modifier_f
   return stream_utility::output_enums(stream, values);
 }
 
-inline std::ostream& operator<<(std::ostream& stream, const grabbable_state& value) {
+inline std::ostream& operator<<(std::ostream& stream, const pointing_motion& value) {
+  stream << "pointing_motion:" << value.to_json();
+  return stream;
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const grabbable_state::state& value) {
   switch (value) {
-    case grabbable_state::grabbable:
-      stream << "grabbable";
+    case grabbable_state::state::none:
+      stream << "state::none";
       break;
-    case grabbable_state::ungrabbable_temporarily:
-      stream << "ungrabbable_temporarily";
+    case grabbable_state::state::grabbable:
+      stream << "state::grabbable";
       break;
-    case grabbable_state::ungrabbable_permanently:
-      stream << "ungrabbable_permanently";
+    case grabbable_state::state::ungrabbable_temporarily:
+      stream << "state::ungrabbable_temporarily";
       break;
-    case grabbable_state::device_error:
-      stream << "device_error";
+    case grabbable_state::state::ungrabbable_permanently:
+      stream << "state::ungrabbable_permanently";
+      break;
+    case grabbable_state::state::device_error:
+      stream << "state::device_error";
       break;
   }
   return stream;
 }
 
-inline std::ostream& operator<<(std::ostream& stream, const ungrabbable_temporarily_reason& value) {
+inline std::ostream& operator<<(std::ostream& stream, const grabbable_state::ungrabbable_temporarily_reason& value) {
   switch (value) {
-    case ungrabbable_temporarily_reason::none:
+    case grabbable_state::ungrabbable_temporarily_reason::none:
       stream << "ungrabbable_temporarily_reason::none";
       break;
-    case ungrabbable_temporarily_reason::key_repeating:
+    case grabbable_state::ungrabbable_temporarily_reason::key_repeating:
       stream << "ungrabbable_temporarily_reason::key_repeating";
       break;
-    case ungrabbable_temporarily_reason::modifier_key_pressed:
+    case grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed:
       stream << "ungrabbable_temporarily_reason::modifier_key_pressed";
       break;
-    case ungrabbable_temporarily_reason::pointing_button_pressed:
+    case grabbable_state::ungrabbable_temporarily_reason::pointing_button_pressed:
       stream << "ungrabbable_temporarily_reason::pointing_button_pressed";
       break;
   }
   return stream;
 }
 
-inline std::ostream& operator<<(std::ostream& stream, const pointing_motion& value) {
-  stream << "pointing_motion:" << value.to_json();
+inline std::ostream& operator<<(std::ostream& stream, const grabbable_state& value) {
+  stream << "["
+         << value.get_registry_entry_id() << ","
+         << value.get_state() << ","
+         << value.get_ungrabbable_temporarily_reason() << ","
+         << value.get_time_stamp()
+         << "]";
   return stream;
 }
 

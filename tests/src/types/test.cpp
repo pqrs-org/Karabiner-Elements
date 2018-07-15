@@ -33,8 +33,9 @@ TEST_CASE("pointing_motion") {
     REQUIRE(pointing_motion.get_vertical_wheel() == 3);
     REQUIRE(pointing_motion.get_horizontal_wheel() == 4);
   }
+}
 
-  // setter, getter
+TEST_CASE("pointing_motion::setter,getter") {
   {
     krbn::pointing_motion pointing_motion;
 
@@ -55,7 +56,9 @@ TEST_CASE("pointing_motion") {
     json["horizontal_wheel"] = -2;
     REQUIRE(pointing_motion.to_json() == json);
   }
+}
 
+TEST_CASE("pointing_motion::from_json") {
   // from_json
   {
     nlohmann::json json;
@@ -70,44 +73,87 @@ TEST_CASE("pointing_motion") {
     REQUIRE(pointing_motion.get_vertical_wheel() == 20);
     REQUIRE(pointing_motion.get_horizontal_wheel() == -20);
   }
+}
 
+TEST_CASE("pointing_motion::is_zero") {
   // is_zero
   {
-      {krbn::pointing_motion pointing_motion;
-  REQUIRE(pointing_motion.is_zero());
-}
-{
-  krbn::pointing_motion pointing_motion;
-  pointing_motion.set_x(1);
-  REQUIRE(!pointing_motion.is_zero());
-}
-{
-  krbn::pointing_motion pointing_motion;
-  pointing_motion.set_y(1);
-  REQUIRE(!pointing_motion.is_zero());
-}
-{
-  krbn::pointing_motion pointing_motion;
-  pointing_motion.set_vertical_wheel(1);
-  REQUIRE(!pointing_motion.is_zero());
-}
-{
-  krbn::pointing_motion pointing_motion;
-  pointing_motion.set_horizontal_wheel(1);
-  REQUIRE(!pointing_motion.is_zero());
-}
+    krbn::pointing_motion pointing_motion;
+    REQUIRE(pointing_motion.is_zero());
+  }
+  {
+    krbn::pointing_motion pointing_motion;
+    pointing_motion.set_x(1);
+    REQUIRE(!pointing_motion.is_zero());
+  }
+  {
+    krbn::pointing_motion pointing_motion;
+    pointing_motion.set_y(1);
+    REQUIRE(!pointing_motion.is_zero());
+  }
+  {
+    krbn::pointing_motion pointing_motion;
+    pointing_motion.set_vertical_wheel(1);
+    REQUIRE(!pointing_motion.is_zero());
+  }
+  {
+    krbn::pointing_motion pointing_motion;
+    pointing_motion.set_horizontal_wheel(1);
+    REQUIRE(!pointing_motion.is_zero());
+  }
 }
 
-// clear
-{
-  krbn::pointing_motion pointing_motion;
-  pointing_motion.set_x(1);
-  pointing_motion.set_y(1);
-  pointing_motion.set_vertical_wheel(1);
-  pointing_motion.set_horizontal_wheel(1);
-  pointing_motion.clear();
-  REQUIRE(pointing_motion.is_zero());
+TEST_CASE("pointing_motion::clear") {
+  // clear
+  {
+    krbn::pointing_motion pointing_motion;
+    pointing_motion.set_x(1);
+    pointing_motion.set_y(1);
+    pointing_motion.set_vertical_wheel(1);
+    pointing_motion.set_horizontal_wheel(1);
+    pointing_motion.clear();
+    REQUIRE(pointing_motion.is_zero());
+  }
 }
+
+TEST_CASE("grabbable_state") {
+  {
+    krbn::grabbable_state grabbable_state;
+    REQUIRE(grabbable_state.get_registry_entry_id() == krbn::registry_entry_id::zero);
+    REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::grabbable);
+    REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::none);
+    REQUIRE(grabbable_state.get_time_stamp() == 0);
+  }
+  {
+    krbn::grabbable_state grabbable_state(krbn::registry_entry_id(1234),
+                                          krbn::grabbable_state::state::ungrabbable_temporarily,
+                                          krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
+                                          1000);
+    REQUIRE(grabbable_state.get_registry_entry_id() == krbn::registry_entry_id(1234));
+    REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::ungrabbable_temporarily);
+    REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating);
+    REQUIRE(grabbable_state.get_time_stamp() == 1000);
+  }
+}
+
+TEST_CASE("grabbable_state::equals_except_time_stamp") {
+  {
+    krbn::grabbable_state grabbable_state1(krbn::registry_entry_id(1234),
+                                           krbn::grabbable_state::state::ungrabbable_temporarily,
+                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
+                                           1000);
+    krbn::grabbable_state grabbable_state2(krbn::registry_entry_id(1234),
+                                           krbn::grabbable_state::state::ungrabbable_temporarily,
+                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
+                                           2000);
+    krbn::grabbable_state grabbable_state3(krbn::registry_entry_id(1234),
+                                           krbn::grabbable_state::state::device_error,
+                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
+                                           3000);
+    REQUIRE(grabbable_state1 != grabbable_state2);
+    REQUIRE(grabbable_state1.equals_except_time_stamp(grabbable_state2));
+    REQUIRE(!grabbable_state1.equals_except_time_stamp(grabbable_state3));
+  }
 }
 
 TEST_CASE("device_identifiers") {

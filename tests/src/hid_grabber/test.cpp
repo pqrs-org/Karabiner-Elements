@@ -9,35 +9,35 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("signal2_combiner_call_while_grabbable") {
-  boost::signals2::signal<krbn::grabbable_state(void),
+  boost::signals2::signal<krbn::grabbable_state::state(void),
                           krbn::hid_grabber::signal2_combiner_call_while_grabbable>
       signal;
 
-  REQUIRE(signal() == krbn::grabbable_state::grabbable);
+  REQUIRE(signal() == krbn::grabbable_state::state::grabbable);
 
   int counter = 0;
 
   signal.connect([&]() {
     ++counter;
-    return krbn::grabbable_state::grabbable;
+    return krbn::grabbable_state::state::grabbable;
   });
 
   signal.connect([&]() {
     ++counter;
-    return krbn::grabbable_state::grabbable;
+    return krbn::grabbable_state::state::grabbable;
   });
 
   signal.connect([&]() {
     ++counter;
-    return krbn::grabbable_state::ungrabbable_temporarily;
+    return krbn::grabbable_state::state::ungrabbable_temporarily;
   });
 
   signal.connect([&]() {
     // never called
     ++counter;
-    return krbn::grabbable_state::ungrabbable_permanently;
+    return krbn::grabbable_state::state::ungrabbable_permanently;
   });
 
-  REQUIRE(signal() == krbn::grabbable_state::ungrabbable_temporarily);
+  REQUIRE(signal() == krbn::grabbable_state::state::ungrabbable_temporarily);
   REQUIRE(counter == 3);
 }
