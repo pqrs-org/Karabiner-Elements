@@ -3,10 +3,11 @@
 #include "device_detail.hpp"
 #include "event_queue.hpp"
 #include "grabbable_state_queue.hpp"
+#include "shared_instance_provider.hpp"
 #include <unordered_map>
 
 namespace krbn {
-class grabbable_state_queues_manager final {
+class grabbable_state_queues_manager final : public shared_instance_provider<grabbable_state_queues_manager> {
 public:
   std::shared_ptr<grabbable_state> find_current_grabbable_state(registry_entry_id registry_entry_id) const {
     auto it = queues_.find(registry_entry_id);
