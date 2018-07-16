@@ -54,7 +54,7 @@ public:
 
     first_grabbed_event_time_stamp_ = time_stamp;
 
-    logger::get_logger().info("first grabbed event: time_stamp:{1}",
+    logger::get_logger().info("first grabbed event: time_stamp:{0}",
                               time_stamp);
 
     // Erase states after first_grabbed_event_time_stamp_.
