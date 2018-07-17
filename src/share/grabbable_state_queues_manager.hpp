@@ -9,25 +9,21 @@
 namespace krbn {
 class grabbable_state_queues_manager final : public shared_instance_provider<grabbable_state_queues_manager> {
 public:
-  std::shared_ptr<grabbable_state> find_current_grabbable_state(registry_entry_id registry_entry_id) const {
+  boost::optional<grabbable_state> find_current_grabbable_state(registry_entry_id registry_entry_id) const {
     auto it = queues_.find(registry_entry_id);
     if (it != std::end(queues_)) {
       return it->second->find_current_grabbable_state();
     }
 
-    return nullptr;
+    return boost::none;
   }
 
   void clear(void) {
     queues_.clear();
   }
 
-  void update_grabbable_state(std::shared_ptr<grabbable_state> state) {
-    if (!state) {
-      return;
-    }
-
-    auto queue = find_or_create_queue(state->get_registry_entry_id());
+  void update_grabbable_state(const grabbable_state& state) {
+    auto queue = find_or_create_queue(state.get_registry_entry_id());
     queue->push_back_grabbable_state(state);
   }
 

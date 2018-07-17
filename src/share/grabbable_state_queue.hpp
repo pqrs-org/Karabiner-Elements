@@ -20,9 +20,9 @@ public:
     return first_grabbed_event_time_stamp_;
   }
 
-  std::shared_ptr<grabbable_state> find_current_grabbable_state(void) const {
+  boost::optional<grabbable_state> find_current_grabbable_state(void) const {
     if (grabbable_states_.empty()) {
-      return nullptr;
+      return boost::none;
     }
 
     return grabbable_states_.back();
@@ -33,10 +33,10 @@ public:
     first_grabbed_event_time_stamp_ = boost::none;
   }
 
-  void push_back_grabbable_state(std::shared_ptr<grabbable_state> state) {
+  void push_back_grabbable_state(const grabbable_state& state) {
     // Ignore if the first grabbed event is already arrived.
     if (first_grabbed_event_time_stamp_ &&
-        *first_grabbed_event_time_stamp_ <= state->get_time_stamp()) {
+        *first_grabbed_event_time_stamp_ <= state.get_time_stamp()) {
       return;
     }
 
@@ -61,7 +61,7 @@ public:
     grabbable_states_.erase(std::remove_if(std::begin(grabbable_states_),
                                            std::end(grabbable_states_),
                                            [&](const auto& s) {
-                                             return s->get_time_stamp() >= time_stamp;
+                                             return s.get_time_stamp() >= time_stamp;
                                            }),
                             std::end(grabbable_states_));
   }
@@ -70,7 +70,7 @@ private:
   // Keep multiple entries for when `push_back_entry` is called multiple times before `set_first_grabbed_event_time_stamp`.
   // (We should remove entries after first_grabbed_event_time_stamp_.)
 
-  boost::circular_buffer<std::shared_ptr<grabbable_state>> grabbable_states_;
+  boost::circular_buffer<grabbable_state> grabbable_states_;
   boost::optional<uint64_t> first_grabbed_event_time_stamp_;
 };
 } // namespace krbn

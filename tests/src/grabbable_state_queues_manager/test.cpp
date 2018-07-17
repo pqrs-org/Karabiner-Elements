@@ -58,11 +58,10 @@ TEST_CASE("grabbable_state_queues_manager") {
     REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
 
     for (auto time_stamp = 1000ULL; time_stamp < 10000ULL; time_stamp += 1000ULL) {
-      auto state = std::make_shared<krbn::grabbable_state>(
-          registry_entry_id1,
-          krbn::grabbable_state::state::grabbable,
-          krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-          time_stamp);
+      krbn::grabbable_state state(registry_entry_id1,
+                                  krbn::grabbable_state::state::grabbable,
+                                  krbn::grabbable_state::ungrabbable_temporarily_reason::none,
+                                  time_stamp);
       manager.update_grabbable_state(state);
       REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == time_stamp);
       REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
