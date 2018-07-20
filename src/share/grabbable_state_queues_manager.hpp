@@ -22,21 +22,32 @@ public:
     queues_.clear();
   }
 
-  void update_grabbable_state(const grabbable_state& state) {
+  bool update_grabbable_state(const grabbable_state& state) {
     auto queue = find_or_create_queue(state.get_registry_entry_id());
-    queue->push_back_grabbable_state(state);
+    return queue->push_back_grabbable_state(state);
   }
 
-  void update_first_grabbed_event_time_stamp(const event_queue& event_queue) {
+  bool update_first_grabbed_event_time_stamp(const event_queue& event_queue) {
+    bool result = false;
+
     for (const auto& queued_event : event_queue.get_events()) {
       if (auto device_detail = types::find_device_detail(queued_event.get_device_id())) {
         if (auto registry_entry_id = device_detail->get_registry_entry_id()) {
           auto queue = find_or_create_queue(*registry_entry_id);
           auto time_stamp = queued_event.get_event_time_stamp().get_time_stamp();
-          queue->update_first_grabbed_event_time_stamp(time_stamp);
+          if (queue->update_first_grabbed_event_time_stamp(time_stamp)) {
+            result = true;
+          }
         }
       }
     }
+
+    return result;
+  }
+
+  void unset_first_grabbed_event_time_stamp(registry_entry_id registry_entry_id) {
+    auto queue = find_or_create_queue(registry_entry_id);
+    queue->unset_first_grabbed_event_time_stamp();
   }
 
   void erase_queue(registry_entry_id registry_entry_id) {
