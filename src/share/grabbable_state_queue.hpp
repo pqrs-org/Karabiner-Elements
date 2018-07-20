@@ -33,11 +33,11 @@ public:
     first_grabbed_event_time_stamp_ = boost::none;
   }
 
-  void push_back_grabbable_state(const grabbable_state& state) {
+  bool push_back_grabbable_state(const grabbable_state& state) {
     // Ignore if the first grabbed event is already arrived.
     if (first_grabbed_event_time_stamp_ &&
         *first_grabbed_event_time_stamp_ <= state.get_time_stamp()) {
-      return;
+      return false;
     }
 
     if (grabbable_states_.full()) {
@@ -45,11 +45,13 @@ public:
     }
 
     grabbable_states_.push_back(state);
+
+    return true;
   }
 
-  void update_first_grabbed_event_time_stamp(uint64_t time_stamp) {
+  bool update_first_grabbed_event_time_stamp(uint64_t time_stamp) {
     if (first_grabbed_event_time_stamp_) {
-      return;
+      return false;
     }
 
     first_grabbed_event_time_stamp_ = time_stamp;
@@ -64,6 +66,12 @@ public:
                                              return s.get_time_stamp() >= time_stamp;
                                            }),
                             std::end(grabbable_states_));
+
+    return true;
+  }
+
+  void unset_first_grabbed_event_time_stamp(void) {
+    first_grabbed_event_time_stamp_ = boost::none;
   }
 
 private:

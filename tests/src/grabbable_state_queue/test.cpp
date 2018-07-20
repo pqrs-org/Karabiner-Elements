@@ -24,13 +24,17 @@ TEST_CASE("grabbable_state_queue") {
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                   time_stamp);
-      queue.push_back_grabbable_state(state);
+      REQUIRE(queue.push_back_grabbable_state(state));
 
       REQUIRE(*(queue.find_current_grabbable_state()) == state);
     }
 
     // Remove states after first_grabbed_event_time_stamp_.
-    queue.update_first_grabbed_event_time_stamp(5000ULL);
+    REQUIRE(queue.update_first_grabbed_event_time_stamp(5000ULL));
+    REQUIRE(*(queue.get_first_grabbed_event_time_stamp()) == 5000ULL);
+    REQUIRE(queue.find_current_grabbable_state()->get_time_stamp() == 4000ULL);
+
+    REQUIRE(!queue.update_first_grabbed_event_time_stamp(3000ULL));
     REQUIRE(*(queue.get_first_grabbed_event_time_stamp()) == 5000ULL);
     REQUIRE(queue.find_current_grabbable_state()->get_time_stamp() == 4000ULL);
 
@@ -40,7 +44,7 @@ TEST_CASE("grabbable_state_queue") {
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                   6000ULL);
-      queue.push_back_grabbable_state(state);
+      REQUIRE(!queue.push_back_grabbable_state(state));
       REQUIRE(queue.find_current_grabbable_state()->get_time_stamp() == 4000ULL);
     }
     {
@@ -48,8 +52,16 @@ TEST_CASE("grabbable_state_queue") {
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                   4500ULL);
-      queue.push_back_grabbable_state(state);
+      REQUIRE(queue.push_back_grabbable_state(state));
       REQUIRE(queue.find_current_grabbable_state()->get_time_stamp() == 4500ULL);
     }
+
+    // Unset first_grabbed_event_time_stamp_.
+    queue.unset_first_grabbed_event_time_stamp();
+    REQUIRE(!queue.get_first_grabbed_event_time_stamp());
+
+    REQUIRE(queue.update_first_grabbed_event_time_stamp(3000ULL));
+    REQUIRE(*(queue.get_first_grabbed_event_time_stamp()) == 3000ULL);
+    REQUIRE(queue.find_current_grabbable_state()->get_time_stamp() == 2000ULL);
   }
 }
