@@ -12,8 +12,12 @@ class grabbable_state_manager final {
 public:
 #include "grabbable_state_manager/entry.hpp"
 
+  // Signals
+
   boost::signals2::signal<void(const grabbable_state&)>
       grabbable_state_changed;
+
+  // Methods
 
   void update(grabbable_state state) {
     auto registry_entry_id = state.get_registry_entry_id();
