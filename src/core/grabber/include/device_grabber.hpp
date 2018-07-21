@@ -9,6 +9,7 @@
 #include "event_tap_manager.hpp"
 #include "event_tap_utility.hpp"
 #include "gcd_utility.hpp"
+#include "grabbable_state_queues_manager.hpp"
 #include "hid_grabber.hpp"
 #include "hid_manager.hpp"
 #include "human_interface_device.hpp"
@@ -51,17 +52,21 @@ public:
                          fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
                          posted_event_queue_(std::make_shared<event_queue>()),
                          mode_(mode::observing) {
-    client_connected_connection = virtual_hid_device_client_.client_connected.connect([this]() {
+    client_connected_connection_ = virtual_hid_device_client_.client_connected.connect([this]() {
       logger::get_logger().info("virtual_hid_device_client_ is connected");
 
       update_virtual_hid_keyboard();
       update_virtual_hid_pointing();
     });
 
-    client_disconnected_connection = virtual_hid_device_client_.client_disconnected.connect([this]() {
+    client_disconnected_connection_ = virtual_hid_device_client_.client_disconnected.connect([this]() {
       logger::get_logger().info("virtual_hid_device_client_ is disconnected");
 
       stop_grabbing();
+    });
+
+    grabbable_state_changed_connection_ = grabbable_state_queues_manager::get_shared_instance()->grabbable_state_changed.connect([this](auto&& registry_entry_id, auto&& grabbable_state) {
+      retry_grab(registry_entry_id, grabbable_state);
     });
 
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_);
@@ -153,10 +158,11 @@ public:
     });
 
     hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
-      hid_grabbers_.erase(human_interface_device->get_registry_entry_id());
+      auto registry_entry_id = human_interface_device->get_registry_entry_id();
 
-      grabbable_states_.erase(human_interface_device->get_registry_entry_id());
-      first_grabbed_event_time_stamps_.erase(human_interface_device->get_registry_entry_id());
+      hid_grabbers_.erase(registry_entry_id);
+
+      grabbable_state_queues_manager::get_shared_instance()->erase_queue(registry_entry_id);
 
       output_devices_json();
       output_device_details_json();
@@ -198,53 +204,10 @@ public:
 
       led_monitor_timer_ = nullptr;
 
-      client_connected_connection.disconnect();
-      client_disconnected_connection.disconnect();
-    });
-  }
+      grabbable_state_changed_connection_.disconnect();
 
-  void update_grabbable_state(grabbable_state state) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      auto registry_entry_id = state.get_registry_entry_id();
-
-      // Ignore if the first grabbed event is already arrived.
-      {
-        auto it = first_grabbed_event_time_stamps_.find(registry_entry_id);
-        if (it != std::end(first_grabbed_event_time_stamps_) &&
-            it->second <= state.get_time_stamp()) {
-          return;
-        }
-      }
-
-      {
-        auto it = grabbable_states_.find(registry_entry_id);
-        if (it == std::end(grabbable_states_)) {
-          grabbable_states_[registry_entry_id] = {};
-        }
-      }
-
-      auto& entries = grabbable_states_[registry_entry_id];
-
-      entries.push_back(state);
-
-      // Keep multiple entries for when the first grabbed event(s) calls
-      // `update_grabbable_state` before `values_arrived` callback.
-
-      const int max_entries = 32;
-
-      while (entries.size() > max_entries) {
-        grabbable_states_[registry_entry_id].pop_front();
-      }
-
-      if (state.get_state() != grabbable_state::state::grabbable) {
-        auto it = hid_grabbers_.find(registry_entry_id);
-        if (it != std::end(hid_grabbers_)) {
-          if (it->second->get_grabbed()) {
-            it->second->ungrab();
-            it->second->grab();
-          }
-        }
-      }
+      client_connected_connection_.disconnect();
+      client_disconnected_connection_.disconnect();
     });
   }
 
@@ -379,6 +342,41 @@ public:
   }
 
 private:
+  void retry_grab(registry_entry_id registry_entry_id, boost::optional<grabbable_state> grabbable_state) {
+    auto manager = grabbable_state_queues_manager::get_shared_instance();
+
+    if (auto grabber = find_hid_grabber(registry_entry_id)) {
+      // Check grabbable state
+
+      bool grabbable = false;
+      if (grabbable_state &&
+          grabbable_state->get_state() == grabbable_state::state::grabbable) {
+        grabbable = true;
+      }
+
+      // Grab device
+
+      if (grabbable) {
+        // Call `grab` again if current_grabbable_state is `grabbable` and not grabbed yet.
+        if (!grabber->get_grabbed()) {
+          grabber->ungrab();
+          grabber->grab();
+        }
+      } else {
+        // We should `ungrab` since current_grabbable_state is not `grabbable`.
+        grabber->ungrab();
+      }
+    }
+  }
+
+  std::shared_ptr<hid_grabber> find_hid_grabber(registry_entry_id registry_entry_id) {
+    auto it = hid_grabbers_.find(registry_entry_id);
+    if (it != std::end(hid_grabbers_)) {
+      return it->second;
+    }
+    return nullptr;
+  }
+
   void manipulate(uint64_t now) {
     {
       // Avoid recursive call
@@ -399,27 +397,9 @@ private:
 
   void values_arrived(human_interface_device& device,
                       event_queue& event_queue) {
-    // Update first_grabbed_event_time_stamps_
+    // Update grabbable_state_queue
 
-    for (const auto& queued_event : event_queue.get_events()) {
-      if (auto device_detail = types::find_device_detail(queued_event.get_device_id())) {
-        if (auto registry_entry_id = device_detail->get_registry_entry_id()) {
-          auto it = first_grabbed_event_time_stamps_.find(*registry_entry_id);
-          if (it == std::end(first_grabbed_event_time_stamps_)) {
-            auto time_stamp = queued_event.get_event_time_stamp().get_time_stamp();
-            first_grabbed_event_time_stamps_.emplace(*registry_entry_id, time_stamp);
-
-            logger::get_logger().info("first grabbed event: registry_entry_id:{0} time_stamp:{1}",
-                                      static_cast<uint64_t>(*registry_entry_id),
-                                      time_stamp);
-
-            // Update grabbable_states_
-            erase_grabbable_state_entries_after_first_grabbed_event(*registry_entry_id,
-                                                                    time_stamp);
-          }
-        }
-      }
-    }
+    grabbable_state_queues_manager::get_shared_instance()->update_first_grabbed_event_time_stamp(event_queue);
 
     // Manipulate events
 
@@ -439,20 +419,6 @@ private:
 
     krbn_notification_center::get_instance().input_event_arrived();
     // manipulator_managers_connector_.log_events_sizes(logger::get_logger());
-  }
-
-  void erase_grabbable_state_entries_after_first_grabbed_event(registry_entry_id registry_entry_id,
-                                                               uint64_t time_stamp) {
-    auto it = grabbable_states_.find(registry_entry_id);
-    if (it != std::end(grabbable_states_)) {
-      auto& entries = it->second;
-      entries.erase(std::remove_if(std::begin(entries),
-                                   std::end(entries),
-                                   [&](const auto& e) {
-                                     return e.get_time_stamp() >= time_stamp;
-                                   }),
-                    std::end(entries));
-    }
   }
 
   void post_device_ungrabbed_event(device_id device_id) {
@@ -487,7 +453,8 @@ private:
       if (device->is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
         // Do nothing
       } else {
-        logger::get_logger().info("{0} is ignored.", device->get_name_for_log());
+        auto message = fmt::format("{0} is ignored.", device->get_name_for_log());
+        is_grabbable_callback_log_reducer_.info(message);
         return grabbable_state::state::ungrabbable_permanently;
       }
     }
@@ -511,22 +478,16 @@ private:
     // Check observer state
 
     {
-      auto it = grabbable_states_.find(device->get_registry_entry_id());
-      if (it == std::end(grabbable_states_)) {
+      auto state = grabbable_state_queues_manager::get_shared_instance()->find_current_grabbable_state(device->get_registry_entry_id());
+
+      if (!state) {
         std::string message = fmt::format("{0} is not observed yet. Please wait for a while.",
                                           device->get_name_for_log());
         is_grabbable_callback_log_reducer_.warn(message);
         return grabbable_state::state::ungrabbable_temporarily;
       }
 
-      if (it->second.empty()) {
-        std::string message = fmt::format("{0} is ungrabbable temporarily.",
-                                          device->get_name_for_log());
-        is_grabbable_callback_log_reducer_.warn(message);
-        return grabbable_state::state::ungrabbable_temporarily;
-      }
-
-      switch (it->second.back().get_state()) {
+      switch (state->get_state()) {
         case grabbable_state::state::none:
           return grabbable_state::state::ungrabbable_temporarily;
 
@@ -535,7 +496,7 @@ private:
 
         case grabbable_state::state::ungrabbable_temporarily: {
           std::string message;
-          switch (it->second.back().get_ungrabbable_temporarily_reason()) {
+          switch (state->get_ungrabbable_temporarily_reason()) {
             case grabbable_state::ungrabbable_temporarily_reason::none: {
               message = fmt::format("{0} is ungrabbable temporarily",
                                     device->get_name_for_log());
@@ -599,7 +560,7 @@ private:
   }
 
   void device_ungrabbed(std::shared_ptr<human_interface_device> device) {
-    first_grabbed_event_time_stamps_.erase(device->get_registry_entry_id());
+    grabbable_state_queues_manager::get_shared_instance()->unset_first_grabbed_event_time_stamp(device->get_registry_entry_id());
 
     post_device_ungrabbed_event(device->get_device_id());
 
@@ -965,8 +926,10 @@ private:
   }
 
   virtual_hid_device_client virtual_hid_device_client_;
-  boost::signals2::connection client_connected_connection;
-  boost::signals2::connection client_disconnected_connection;
+  boost::signals2::connection client_connected_connection_;
+  boost::signals2::connection client_disconnected_connection_;
+
+  boost::signals2::connection grabbable_state_changed_connection_;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
   std::shared_ptr<core_configuration> core_configuration_;
@@ -974,9 +937,6 @@ private:
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   hid_manager hid_manager_;
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_grabber>> hid_grabbers_;
-
-  std::unordered_map<registry_entry_id, std::deque<grabbable_state>> grabbable_states_;
-  std::unordered_map<registry_entry_id, uint64_t> first_grabbed_event_time_stamps_;
 
   core_configuration::profile profile_;
   system_preferences system_preferences_;

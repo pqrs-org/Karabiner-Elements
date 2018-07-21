@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "device_grabber.hpp"
+#include "grabbable_state_queues_manager.hpp"
 #include "local_datagram_server.hpp"
 #include "process_monitor.hpp"
 #include "session.hpp"
@@ -53,6 +54,8 @@ private:
       return;
     }
 
+    grabbable_state_queues_manager::get_shared_instance()->clear();
+
     while (!exit_loop_) {
       boost::system::error_code ec;
       std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
@@ -65,7 +68,11 @@ private:
             } else {
               auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(&(buffer_[0]));
 
-              device_grabber_.update_grabbable_state(p->grabbable_state);
+              // Copy `grabbable_state` for dispatch_async.
+              auto state = p->grabbable_state;
+              dispatch_async(dispatch_get_main_queue(), ^{
+                grabbable_state_queues_manager::get_shared_instance()->update_grabbable_state(state);
+              });
             }
             break;
 
