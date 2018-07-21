@@ -1,8 +1,11 @@
 #define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
+#include "boost_defs.hpp"
+
 #include "grabbable_state_queues_manager.hpp"
 #include "thread_utility.hpp"
+#include <boost/optional/optional_io.hpp>
 
 namespace {
 auto device_id1 = krbn::device_id::zero;
@@ -54,9 +57,36 @@ TEST_CASE("initialize") {
 TEST_CASE("grabbable_state_queues_manager") {
   {
     krbn::grabbable_state_queues_manager manager;
+
+    std::unordered_map<krbn::registry_entry_id, boost::optional<krbn::grabbable_state>> last_changed_grabbable_states;
+    last_changed_grabbable_states[registry_entry_id1] = boost::none;
+    last_changed_grabbable_states[registry_entry_id2] = boost::none;
+
+    std::unordered_map<krbn::registry_entry_id, int> changed_counts;
+    changed_counts[registry_entry_id1] = 0;
+    changed_counts[registry_entry_id2] = 0;
+
+    manager.grabbable_state_changed.connect([&](auto&& registry_entry_id, auto&& grabbable_state) {
+      last_changed_grabbable_states[registry_entry_id] = grabbable_state;
+      ++(changed_counts[registry_entry_id]);
+    });
+
     REQUIRE(!manager.find_current_grabbable_state(registry_entry_id1));
     REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
 
+    // Clear
+    manager.clear();
+
+    // Check last_changed_grabbable_states
+    {
+      REQUIRE(last_changed_grabbable_states[registry_entry_id1] == boost::none);
+      REQUIRE(changed_counts[registry_entry_id1] == 0);
+
+      REQUIRE(last_changed_grabbable_states[registry_entry_id2] == boost::none);
+      REQUIRE(changed_counts[registry_entry_id2] == 0);
+    }
+
+    // `update_grabbable_state`
     for (auto time_stamp = 1000ULL; time_stamp < 10000ULL; time_stamp += 1000ULL) {
       krbn::grabbable_state state(registry_entry_id1,
                                   krbn::grabbable_state::state::grabbable,
@@ -67,6 +97,20 @@ TEST_CASE("grabbable_state_queues_manager") {
       REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
     }
 
+    // Check last_changed_grabbable_states
+    {
+      krbn::grabbable_state state(registry_entry_id1,
+                                  krbn::grabbable_state::state::grabbable,
+                                  krbn::grabbable_state::ungrabbable_temporarily_reason::none,
+                                  1000ULL);
+      REQUIRE(last_changed_grabbable_states[registry_entry_id1] == state);
+      REQUIRE(changed_counts[registry_entry_id1] == 1);
+
+      REQUIRE(last_changed_grabbable_states[registry_entry_id2] == boost::none);
+      REQUIRE(changed_counts[registry_entry_id2] == 0);
+    }
+
+    // `update_first_grabbed_event_time_stamp`
     {
       krbn::event_queue event_queue;
       event_queue.emplace_back_event(device_id1,
