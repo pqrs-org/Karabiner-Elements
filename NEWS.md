@@ -4,6 +4,7 @@
 
 - Karabiner-Elements makes a backup file of karabiner.json before updating it if the backup file does not exists.
   (~/.config/karabiner/automatic_backups/karabiner_YYYYMMDD.json)
+- A device grabbing process has been improved. (Observing device state by a separated `karabiner_observer` process.)
 
 ## Version 12.1.0
 
