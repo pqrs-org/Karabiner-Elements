@@ -94,14 +94,12 @@ int main(int argc, const char* argv[]) {
   }
 
   krbn::manipulator::manipulator_timer::get_instance().enable();
-  auto device_grabber_ptr = std::make_unique<krbn::device_grabber>();
-  krbn::connection_manager connection_manager(*version_monitor_ptr, *device_grabber_ptr);
+  krbn::connection_manager connection_manager(*version_monitor_ptr);
 
   krbn::apple_notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
 
   CFRunLoopRun();
 
-  device_grabber_ptr = nullptr;
   version_monitor_ptr = nullptr;
 
   return 0;

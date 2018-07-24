@@ -14,8 +14,7 @@ class receiver final {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(device_grabber& device_grabber) : device_grabber_(device_grabber),
-                                             exit_loop_(false) {
+  receiver(void) : exit_loop_(false) {
     const size_t buffer_length = 32 * 1024;
     buffer_.resize(buffer_length);
 
@@ -44,8 +43,7 @@ public:
 
     server_ = nullptr;
     console_user_server_process_monitor_ = nullptr;
-    device_grabber_.stop_grabbing();
-    device_grabber_.unset_profile();
+    device_grabber_ = nullptr;
   }
 
 private:
@@ -68,10 +66,8 @@ private:
             } else {
               auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(&(buffer_[0]));
 
-              // Copy `grabbable_state` for dispatch_async.
-              auto state = p->grabbable_state;
-              dispatch_async(dispatch_get_main_queue(), ^{
-                grabbable_state_queues_manager::get_shared_instance()->update_grabbable_state(state);
+              gcd_utility::dispatch_sync_in_main_queue(^{
+                grabbable_state_queues_manager::get_shared_instance()->update_grabbable_state(p->grabbable_state);
               });
             }
             break;
@@ -87,12 +83,16 @@ private:
 
               logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
-              device_grabber_.start_grabbing(p->user_core_configuration_file_path);
+              gcd_utility::dispatch_sync_in_main_queue(^{
+                device_grabber_ = nullptr;
+                device_grabber_ = std::make_unique<device_grabber>();
+                device_grabber_->start(p->user_core_configuration_file_path);
 
-              // monitor the last process
-              console_user_server_process_monitor_ = nullptr;
-              console_user_server_process_monitor_ = std::make_unique<process_monitor>(p->pid,
-                                                                                       std::bind(&receiver::console_user_server_exit_callback, this));
+                // monitor the last process
+                console_user_server_process_monitor_ = nullptr;
+                console_user_server_process_monitor_ = std::make_unique<process_monitor>(p->pid,
+                                                                                         std::bind(&receiver::console_user_server_exit_callback, this));
+              });
             }
             break;
 
@@ -101,8 +101,13 @@ private:
               logger::get_logger().error("invalid size for operation_type::system_preferences_updated ({0})", n);
             } else {
               auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(&(buffer_[0]));
-              device_grabber_.set_system_preferences(p->system_preferences);
-              logger::get_logger().info("system_preferences_updated");
+
+              gcd_utility::dispatch_sync_in_main_queue(^{
+                if (device_grabber_) {
+                  device_grabber_->set_system_preferences(p->system_preferences);
+                  logger::get_logger().info("system_preferences_updated");
+                }
+              });
             }
             break;
 
@@ -116,8 +121,12 @@ private:
               p->bundle_identifier[sizeof(p->bundle_identifier) - 1] = '\0';
               p->file_path[sizeof(p->file_path) - 1] = '\0';
 
-              device_grabber_.post_frontmost_application_changed_event(p->bundle_identifier,
-                                                                       p->file_path);
+              gcd_utility::dispatch_sync_in_main_queue(^{
+                if (device_grabber_) {
+                  device_grabber_->post_frontmost_application_changed_event(p->bundle_identifier,
+                                                                            p->file_path);
+                }
+              });
             }
             break;
 
@@ -132,9 +141,13 @@ private:
               p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
               p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
 
-              device_grabber_.post_input_source_changed_event({std::string(p->language),
-                                                               std::string(p->input_source_id),
-                                                               std::string(p->input_mode_id)});
+              gcd_utility::dispatch_sync_in_main_queue(^{
+                if (device_grabber_) {
+                  device_grabber_->post_input_source_changed_event({std::string(p->language),
+                                                                    std::string(p->input_source_id),
+                                                                    std::string(p->input_mode_id)});
+                }
+              });
             }
             break;
 
@@ -146,10 +159,7 @@ private:
   }
 
   void console_user_server_exit_callback(void) {
-    device_grabber_.post_frontmost_application_changed_event("", "");
-    device_grabber_.post_input_source_changed_event({boost::none, boost::none, boost::none});
-
-    device_grabber_.stop_grabbing();
+    device_grabber_ = nullptr;
 
     start_grabbing_if_system_core_configuration_file_exists();
   }
@@ -157,11 +167,11 @@ private:
   void start_grabbing_if_system_core_configuration_file_exists(void) {
     auto file_path = constants::get_system_core_configuration_file_path();
     if (filesystem::exists(file_path)) {
-      device_grabber_.start_grabbing(file_path);
+      device_grabber_ = nullptr;
+      device_grabber_ = std::make_unique<device_grabber>();
+      device_grabber_->start(file_path);
     }
   }
-
-  device_grabber& device_grabber_;
 
   std::vector<uint8_t> buffer_;
   std::unique_ptr<local_datagram_server> server_;
@@ -169,5 +179,6 @@ private:
   std::atomic<bool> exit_loop_;
 
   std::unique_ptr<process_monitor> console_user_server_process_monitor_;
+  std::unique_ptr<device_grabber> device_grabber_;
 };
 } // namespace krbn

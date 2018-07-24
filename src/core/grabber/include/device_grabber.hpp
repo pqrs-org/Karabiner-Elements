@@ -33,11 +33,6 @@
 namespace krbn {
 class device_grabber final {
 public:
-  enum class mode {
-    observing,
-    grabbing,
-  };
-
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(void) : hid_manager_({
@@ -50,8 +45,7 @@ public:
                          simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                          complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                          fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
-                         posted_event_queue_(std::make_shared<event_queue>()),
-                         mode_(mode::observing) {
+                         posted_event_queue_(std::make_shared<event_queue>()) {
     client_connected_connection_ = virtual_hid_device_client_.client_connected.connect([this]() {
       logger::get_logger().info("virtual_hid_device_client_ is connected");
 
@@ -62,7 +56,7 @@ public:
     client_disconnected_connection_ = virtual_hid_device_client_.client_disconnected.connect([this]() {
       logger::get_logger().info("virtual_hid_device_client_ is disconnected");
 
-      stop_grabbing();
+      stop();
     });
 
     grabbable_state_changed_connection_ = grabbable_state_queues_manager::get_shared_instance()->grabbable_state_changed.connect([this](auto&& registry_entry_id, auto&& grabbable_state) {
@@ -152,9 +146,7 @@ public:
       update_virtual_hid_pointing();
 
       // ----------------------------------------
-      if (mode_ == mode::grabbing) {
-        grab_devices();
-      }
+      grab_devices();
     });
 
     hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
@@ -183,9 +175,7 @@ public:
       // ----------------------------------------
       // Refresh grab state in order to apply disable_built_in_keyboard_if_exists.
 
-      if (mode_ == mode::grabbing) {
-        grab_devices();
-      }
+      grab_devices();
     });
 
     hid_manager_.start();
@@ -194,7 +184,7 @@ public:
   ~device_grabber(void) {
     // Release manager_ in main thread to avoid callback invocations after object has been destroyed.
     gcd_utility::dispatch_sync_in_main_queue(^{
-      stop_grabbing();
+      stop();
 
       hid_grabbers_.clear();
       hid_manager_.stop();
@@ -211,10 +201,8 @@ public:
     });
   }
 
-  void start_grabbing(const std::string& user_core_configuration_file_path) {
+  void start(const std::string& user_core_configuration_file_path) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      mode_ = mode::grabbing;
-
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_manager here.
       event_tap_manager_ = std::make_unique<event_tap_manager>(std::bind(&device_grabber::caps_lock_state_changed_callback,
@@ -238,13 +226,11 @@ public:
     });
   }
 
-  void stop_grabbing(void) {
+  void stop(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       configuration_monitor_ = nullptr;
 
       ungrab_devices();
-
-      mode_ = mode::observing;
 
       event_tap_manager_ = nullptr;
 
@@ -623,26 +609,19 @@ private:
 
   void update_virtual_hid_keyboard(void) {
     if (virtual_hid_device_client_.is_connected()) {
-      if (mode_ == mode::grabbing) {
-        pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-        properties.country_code = profile_.get_virtual_hid_keyboard().get_country_code();
+      pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
+      properties.country_code = profile_.get_virtual_hid_keyboard().get_country_code();
 
-        virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
-        return;
-      }
-
-      virtual_hid_device_client_.terminate_virtual_hid_keyboard();
+      virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
     }
   }
 
   void update_virtual_hid_pointing(void) {
     if (virtual_hid_device_client_.is_connected()) {
-      if (mode_ == mode::grabbing) {
-        if (is_pointing_device_grabbed() ||
-            manipulator_managers_connector_.needs_virtual_hid_pointing()) {
-          virtual_hid_device_client_.initialize_virtual_hid_pointing();
-          return;
-        }
+      if (is_pointing_device_grabbed() ||
+          manipulator_managers_connector_.needs_virtual_hid_pointing()) {
+        virtual_hid_device_client_.initialize_virtual_hid_pointing();
+        return;
       }
 
       virtual_hid_device_client_.terminate_virtual_hid_pointing();
@@ -964,8 +943,6 @@ private:
   std::shared_ptr<event_queue> posted_event_queue_;
 
   std::unique_ptr<gcd_utility::main_queue_timer> led_monitor_timer_;
-
-  mode mode_;
 
   spdlog_utility::log_reducer is_grabbable_callback_log_reducer_;
 };
