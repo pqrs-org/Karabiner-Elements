@@ -56,6 +56,8 @@ mkdir -p "$basedir"
 cp -R "src/apps/PreferencesWindow/build_xcode/build/Release/Karabiner-Elements.app" "$basedir"
 cp -R "src/apps/EventViewer/build_xcode/build/Release/Karabiner-EventViewer.app" "$basedir"
 
+set +e
+
 # Sign with Developer ID
 bash scripts/codesign.sh "pkgroot"
 
@@ -64,8 +66,6 @@ sh "scripts/setpermissions.sh" pkgroot
 
 chmod 755 pkginfo/Scripts/postinstall
 chmod 755 pkginfo/Scripts/preinstall
-
-set +e
 
 # --------------------------------------------------
 echo "Create pkg"
