@@ -26,7 +26,11 @@ public:
         throw std::runtime_error("grabber socket is not writable");
       }
     } else {
-      throw std::runtime_error("session::get_current_console_user_id error");
+      // `get_current_console_user_id` is failed in loginwindow.
+      // Allow `karabiner_observer` process (uid == 0) for when system core_configuration_file exists.
+      if (getuid() != 0) {
+        throw std::runtime_error("session::get_current_console_user_id error");
+      }
     }
 
     client_ = std::make_unique<local_datagram_client>(constants::get_grabber_socket_file_path());
