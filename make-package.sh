@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -u
+
 # Package build into a signed .dmg file
 
 version=$(cat version)
@@ -9,6 +11,8 @@ ruby scripts/reduce-logs.rb 'make build' || exit 99
 
 # --------------------------------------------------
 echo "Copy Files"
+
+set -e
 
 rm -rf pkgroot
 mkdir -p pkgroot
@@ -60,6 +64,8 @@ sh "scripts/setpermissions.sh" pkgroot
 
 chmod 755 pkginfo/Scripts/postinstall
 chmod 755 pkginfo/Scripts/preinstall
+
+set +e
 
 # --------------------------------------------------
 echo "Create pkg"
