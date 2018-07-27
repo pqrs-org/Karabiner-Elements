@@ -17,7 +17,7 @@ class local_datagram_client final {
 public:
   // Signals
 
-  // Note: These signals are fired on non-main thread.
+  // Note: These signals are fired on local_datagram_client's thread.
 
   boost::signals2::signal<void(void)> connected;
   boost::signals2::signal<void(const boost::system::error_code&)> connect_failed;
