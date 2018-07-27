@@ -4,38 +4,135 @@
 
 BEGIN_BOOST_INCLUDE
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
+#include <boost/signals2.hpp>
 END_BOOST_INCLUDE
 
 #include "logger.hpp"
+#include <atomic>
+#include <chrono>
 #include <thread>
 
 namespace krbn {
 class local_datagram_client final {
 public:
+  // Signals
+
+  // Note: These signals are fired on non-main thread.
+
+  boost::signals2::signal<void(void)> connected;
+  boost::signals2::signal<void(const boost::system::error_code&)> connect_failed;
+  boost::signals2::signal<void(void)> closed;
+
+  // Methods
+
   local_datagram_client(const local_datagram_client&) = delete;
 
-  local_datagram_client(const char* _Nonnull path) : endpoint_(path),
-                                                     io_service_(),
-                                                     work_(io_service_),
-                                                     socket_(io_service_) {
-    socket_.open();
-    thread_ = std::thread([this] { (this->io_service_).run(); });
+  local_datagram_client(const std::string& path) : path_(path),
+                                                   io_service_(),
+                                                   work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
+                                                   socket_(io_service_),
+                                                   connected_(false),
+                                                   heartbeat_enabled_(false) {
+    io_service_thread_ = std::thread([this] {
+      (this->io_service_).run();
+    });
   }
 
   ~local_datagram_client(void) {
-    io_service_.post(boost::bind(&local_datagram_client::do_stop, this));
-    thread_.join();
+    close();
+
+    if (io_service_thread_.joinable()) {
+      work_ = nullptr;
+      io_service_thread_.join();
+    }
   }
 
-  void send_to(const std::vector<uint8_t>& v) {
+  void connect(void) {
+    close();
+
+    io_service_.post([this] {
+      connected_ = false;
+
+      // open
+
+      {
+        boost::system::error_code error_code;
+        socket_.open(boost::asio::local::datagram_protocol::socket::protocol_type(),
+                     error_code);
+        if (error_code) {
+          connect_failed(error_code);
+          return;
+        }
+      }
+
+      // async_connect
+
+      socket_.async_connect(boost::asio::local::datagram_protocol::endpoint(path_),
+                            [this](auto&& error_code) {
+                              if (error_code) {
+                                connect_failed(error_code);
+                              } else {
+                                connected_ = true;
+                                connected();
+                              }
+                            });
+    });
+  }
+
+  void close(void) {
+    stop_heartbeat();
+
+    io_service_.post([this] {
+      boost::system::error_code error_code;
+
+      socket_.cancel(error_code);
+      socket_.close(error_code);
+
+      if (connected_) {
+        connected_ = false;
+        closed();
+      }
+    });
+  }
+
+  void start_heartbeat(std::chrono::milliseconds heartbeat_interval) {
+    stop_heartbeat();
+
+    io_service_.post([this, heartbeat_interval] {
+      heartbeat_enabled_ = true;
+      heartbeat_thread_ = std::thread([this, heartbeat_interval] {
+        std::vector<uint8_t> data;
+        while (heartbeat_enabled_) {
+          std::this_thread::sleep_for(heartbeat_interval);
+
+          async_send(data);
+        }
+      });
+    });
+  }
+
+  void stop_heartbeat(void) {
+    io_service_.post([this] {
+      heartbeat_enabled_ = false;
+
+      if (heartbeat_thread_.joinable()) {
+        heartbeat_thread_.join();
+      }
+    });
+  }
+
+  void async_send(const std::vector<uint8_t>& v) {
     auto ptr = std::make_shared<buffer>(v);
-    io_service_.post(boost::bind(&local_datagram_client::do_send, this, ptr));
+    io_service_.post([this, ptr] {
+      do_async_send(ptr);
+    });
   }
 
-  void send_to(const uint8_t* _Nonnull p, size_t length) {
+  void async_send(const uint8_t* _Nonnull p, size_t length) {
     auto ptr = std::make_shared<buffer>(p, length);
-    io_service_.post(boost::bind(&local_datagram_client::do_send, this, ptr));
+    io_service_.post([this, ptr] {
+      do_async_send(ptr);
+    });
   }
 
 private:
@@ -56,31 +153,24 @@ private:
     std::vector<uint8_t> v_;
   };
 
-  void do_send(const std::shared_ptr<buffer>& ptr) {
-    socket_.async_send_to(boost::asio::buffer(ptr->get_vector()),
-                          endpoint_,
-                          boost::bind(&local_datagram_client::handle_send,
-                                      this,
-                                      boost::asio::placeholders::error,
-                                      ptr));
+  void do_async_send(std::shared_ptr<buffer> ptr) {
+    socket_.async_send(boost::asio::buffer(ptr->get_vector()),
+                       [this, ptr](auto&& error_code,
+                                   auto&& bytes_transferred) {
+                         if (error_code) {
+                           close();
+                         }
+                       });
   }
 
-  void handle_send(const boost::system::error_code& ec,
-                   const std::shared_ptr<buffer>& ptr) {
-    // buffer will be released.
-    if (ec) {
-      logger::get_logger().warn("local_datagram_client error: {0}", ec.message());
-    }
-  }
-
-  void do_stop(void) {
-    io_service_.stop();
-  }
-
-  boost::asio::local::datagram_protocol::endpoint endpoint_;
+  std::string path_;
   boost::asio::io_service io_service_;
-  boost::asio::io_service::work work_;
+  std::unique_ptr<boost::asio::io_service::work> work_;
   boost::asio::local::datagram_protocol::socket socket_;
-  std::thread thread_;
+  std::thread io_service_thread_;
+  bool connected_;
+
+  std::thread heartbeat_thread_;
+  std::atomic<bool> heartbeat_enabled_;
 };
 } // namespace krbn
