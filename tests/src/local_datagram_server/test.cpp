@@ -76,6 +76,8 @@ public:
 
     client_->connect_failed.connect([this](auto&& error_code) {
       connected_ = false;
+
+      std::cout << error_code.message() << std::endl;
     });
 
     client_->closed.connect([this](void) {
@@ -140,6 +142,18 @@ TEST_CASE("keep existing file in destructor") {
   }
 
   REQUIRE(krbn::filesystem::exists(regular_file_path));
+}
+
+TEST_CASE("permission error") {
+  auto server = std::make_unique<test_server>();
+
+  chmod(socket_path.c_str(), 0000);
+
+  auto client = std::make_unique<test_client>();
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+  REQUIRE(client->get_connected() == false);
 }
 
 TEST_CASE("local_datagram_server") {
