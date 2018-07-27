@@ -46,10 +46,11 @@ public:
     }
   }
 
-  void connect(const std::string& path) {
+  void connect(const std::string& path,
+               boost::optional<std::chrono::milliseconds> heartbeat_interval) {
     close();
 
-    io_service_.post([this, path] {
+    io_service_.post([this, path, heartbeat_interval] {
       connected_ = false;
 
       // open
@@ -67,11 +68,24 @@ public:
       // async_connect
 
       socket_.async_connect(boost::asio::local::datagram_protocol::endpoint(path),
-                            [this](auto&& error_code) {
+                            [this, heartbeat_interval](auto&& error_code) {
                               if (error_code) {
                                 connect_failed(error_code);
                               } else {
                                 connected_ = true;
+
+                                if (heartbeat_interval) {
+                                  heartbeat_enabled_ = true;
+                                  heartbeat_thread_ = std::thread([this, heartbeat_interval] {
+                                    std::vector<uint8_t> data;
+                                    while (heartbeat_enabled_) {
+                                      std::this_thread::sleep_for(*heartbeat_interval);
+
+                                      async_send(data);
+                                    }
+                                  });
+                                }
+
                                 connected();
                               }
                             });
@@ -79,9 +93,12 @@ public:
   }
 
   void close(void) {
-    stop_heartbeat();
-
     io_service_.post([this] {
+      heartbeat_enabled_ = false;
+      if (heartbeat_thread_.joinable()) {
+        heartbeat_thread_.join();
+      }
+
       boost::system::error_code error_code;
 
       socket_.cancel(error_code);
@@ -90,32 +107,6 @@ public:
       if (connected_) {
         connected_ = false;
         closed();
-      }
-    });
-  }
-
-  void start_heartbeat(std::chrono::milliseconds heartbeat_interval) {
-    stop_heartbeat();
-
-    io_service_.post([this, heartbeat_interval] {
-      heartbeat_enabled_ = true;
-      heartbeat_thread_ = std::thread([this, heartbeat_interval] {
-        std::vector<uint8_t> data;
-        while (heartbeat_enabled_) {
-          std::this_thread::sleep_for(heartbeat_interval);
-
-          async_send(data);
-        }
-      });
-    });
-  }
-
-  void stop_heartbeat(void) {
-    io_service_.post([this] {
-      heartbeat_enabled_ = false;
-
-      if (heartbeat_thread_.joinable()) {
-        heartbeat_thread_.join();
       }
     });
   }

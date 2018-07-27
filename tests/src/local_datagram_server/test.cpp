@@ -70,8 +70,6 @@ public:
 
     client_->connected.connect([this](void) {
       connected_ = true;
-
-      client_->start_heartbeat(client_heartbeat_interval);
     });
 
     client_->connect_failed.connect([this](auto&& error_code) {
@@ -84,7 +82,8 @@ public:
       closed_ = true;
     });
 
-    client_->connect(socket_path);
+    client_->connect(socket_path,
+                     client_heartbeat_interval);
   }
 
   ~test_client(void) {
