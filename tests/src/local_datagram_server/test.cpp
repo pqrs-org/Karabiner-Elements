@@ -66,7 +66,7 @@ private:
 class test_client final {
 public:
   test_client(void) : closed_(false) {
-    client_ = std::make_unique<krbn::local_datagram_client>(socket_path);
+    client_ = std::make_unique<krbn::local_datagram_client>();
 
     client_->connected.connect([this](void) {
       connected_ = true;
@@ -84,7 +84,7 @@ public:
       closed_ = true;
     });
 
-    client_->connect();
+    client_->connect(socket_path);
   }
 
   ~test_client(void) {

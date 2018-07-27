@@ -27,12 +27,11 @@ public:
 
   local_datagram_client(const local_datagram_client&) = delete;
 
-  local_datagram_client(const std::string& path) : path_(path),
-                                                   io_service_(),
-                                                   work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
-                                                   socket_(io_service_),
-                                                   connected_(false),
-                                                   heartbeat_enabled_(false) {
+  local_datagram_client(void) : io_service_(),
+                                work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
+                                socket_(io_service_),
+                                connected_(false),
+                                heartbeat_enabled_(false) {
     io_service_thread_ = std::thread([this] {
       (this->io_service_).run();
     });
@@ -47,10 +46,10 @@ public:
     }
   }
 
-  void connect(void) {
+  void connect(const std::string& path) {
     close();
 
-    io_service_.post([this] {
+    io_service_.post([this, path] {
       connected_ = false;
 
       // open
@@ -67,7 +66,7 @@ public:
 
       // async_connect
 
-      socket_.async_connect(boost::asio::local::datagram_protocol::endpoint(path_),
+      socket_.async_connect(boost::asio::local::datagram_protocol::endpoint(path),
                             [this](auto&& error_code) {
                               if (error_code) {
                                 connect_failed(error_code);
@@ -163,7 +162,6 @@ private:
                        });
   }
 
-  std::string path_;
   boost::asio::io_service io_service_;
   std::unique_ptr<boost::asio::io_service::work> work_;
   boost::asio::local::datagram_protocol::socket socket_;
