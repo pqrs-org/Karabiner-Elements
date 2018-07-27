@@ -440,8 +440,7 @@ public:
         if (auto shell_command = e.get_shell_command()) {
           try {
             if (auto current_console_user_id = session::get_current_console_user_id()) {
-              console_user_server_client client(*current_console_user_id);
-              client.shell_command_execution(*shell_command);
+              console_user_server_client::get_shared_instance()->shell_command_execution(*shell_command);
             }
           } catch (std::exception& e) {
             logger::get_logger().error("error in shell_command: {0}", e.what());
@@ -450,9 +449,8 @@ public:
         if (auto input_source_selectors = e.get_input_source_selectors()) {
           try {
             if (auto current_console_user_id = session::get_current_console_user_id()) {
-              console_user_server_client client(*current_console_user_id);
               for (const auto& s : *input_source_selectors) {
-                client.select_input_source(s, now);
+                console_user_server_client::get_shared_instance()->select_input_source(s, now);
               }
             }
           } catch (std::exception& e) {

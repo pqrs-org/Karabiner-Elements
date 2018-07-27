@@ -7,17 +7,20 @@
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
-  try {
-    krbn::console_user_server_client client(getuid());
-    //krbn::console_user_server_client client(201);
+  auto client = krbn::console_user_server_client::get_shared_instance();
 
-    {
-      std::string shell_command = "open /Applications/Safari.app";
-      client.shell_command_execution(shell_command);
-    }
-  } catch (std::exception& e) {
-    krbn::logger::get_logger().error(e.what());
-  }
+  client->connected.connect([client](void) {
+    std::string shell_command = "open /Applications/Safari.app";
+    client->shell_command_execution(shell_command);
+  });
+
+  client->connect_failed.connect([](auto&& error_code) {
+    krbn::logger::get_logger().error("Failed to connect");
+  });
+
+  client->start();
+
+  CFRunLoopRun();
 
   return 0;
 }
