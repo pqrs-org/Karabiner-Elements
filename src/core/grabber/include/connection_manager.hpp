@@ -15,6 +15,9 @@ public:
   connection_manager(const connection_manager&) = delete;
 
   connection_manager(version_monitor& version_monitor) : version_monitor_(version_monitor) {
+    // We do not have to observe the state of console_user_server_client connection.
+    krbn::console_user_server_client::get_shared_instance()->start();
+
     console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
       if (uid) {
         logger::get_logger().info("current_console_user_id: {0}", *uid);
