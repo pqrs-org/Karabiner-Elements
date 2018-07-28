@@ -146,13 +146,38 @@ TEST_CASE("keep existing file in destructor") {
 TEST_CASE("permission error") {
   auto server = std::make_unique<test_server>();
 
+  // ----
   chmod(socket_path.c_str(), 0000);
 
-  auto client = std::make_unique<test_client>();
+  {
+    auto client = std::make_unique<test_client>();
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-  REQUIRE(client->get_connected() == false);
+    REQUIRE(client->get_connected() == false);
+  }
+
+  // -r--
+  chmod(socket_path.c_str(), 0400);
+
+  {
+    auto client = std::make_unique<test_client>();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(client->get_connected() == false);
+  }
+
+  // -rw-
+  chmod(socket_path.c_str(), 0600);
+
+  {
+    auto client = std::make_unique<test_client>();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(client->get_connected() == true);
+  }
 }
 
 TEST_CASE("local_datagram_server") {
