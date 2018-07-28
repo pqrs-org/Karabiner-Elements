@@ -23,7 +23,7 @@ TEST_CASE("timer") {
     REQUIRE(count == 1);
   }
 
-  // Cancel
+  // Cancel (1)
 
   {
     size_t count = 0;
@@ -34,6 +34,23 @@ TEST_CASE("timer") {
                                       });
 
     timer.cancel();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    REQUIRE(count == 0);
+  }
+
+  // Cancel (2)
+
+  {
+    size_t count = 0;
+
+    {
+      krbn::thread_utility::timer timer(std::chrono::milliseconds(500),
+                                        [&] {
+                                          ++count;
+                                        });
+    }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
