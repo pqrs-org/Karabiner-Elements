@@ -10,7 +10,8 @@ END_BOOST_INCLUDE
 #include <unistd.h>
 
 namespace krbn {
-class local_datagram_server final {
+namespace local_datagram {
+class server final {
 public:
   // Signals
 
@@ -18,17 +19,17 @@ public:
 
   // Methods
 
-  local_datagram_server(const local_datagram_server&) = delete;
+  server(const server&) = delete;
 
-  local_datagram_server(const std::string& path) : endpoint_(path),
-                                                   io_service_(),
-                                                   socket_(io_service_, endpoint_),
-                                                   deadline_(io_service_) {
+  server(const std::string& path) : endpoint_(path),
+                                    io_service_(),
+                                    socket_(io_service_, endpoint_),
+                                    deadline_(io_service_) {
     deadline_.expires_at(boost::posix_time::pos_infin);
     check_deadline();
   }
 
-  ~local_datagram_server(void) {
+  ~server(void) {
     unlink(endpoint_.path().c_str());
   }
 
@@ -42,7 +43,7 @@ public:
     std::size_t length = 0;
 
     socket_.async_receive(boost::asio::buffer(buffer),
-                          boost::bind(&local_datagram_server::handle_receive, _1, _2, &ec, &length));
+                          boost::bind(&server::handle_receive, _1, _2, &ec, &length));
 
     do {
       io_service_.run_one();
@@ -58,7 +59,7 @@ private:
       deadline_.expires_at(boost::posix_time::pos_infin);
     }
 
-    deadline_.async_wait(boost::bind(&local_datagram_server::check_deadline, this));
+    deadline_.async_wait(boost::bind(&server::check_deadline, this));
   }
 
   static void handle_receive(const boost::system::error_code& ec,
@@ -74,4 +75,5 @@ private:
   boost::asio::local::datagram_protocol::socket socket_;
   boost::asio::deadline_timer deadline_;
 };
+} // namespace local_datagram
 } // namespace krbn

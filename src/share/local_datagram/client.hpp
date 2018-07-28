@@ -13,11 +13,12 @@ END_BOOST_INCLUDE
 #include <thread>
 
 namespace krbn {
-class local_datagram_client final {
+namespace local_datagram {
+class client final {
 public:
   // Signals
 
-  // Note: These signals are fired on local_datagram_client's thread.
+  // Note: These signals are fired on client's thread.
 
   boost::signals2::signal<void(void)> connected;
   boost::signals2::signal<void(const boost::system::error_code&)> connect_failed;
@@ -25,19 +26,19 @@ public:
 
   // Methods
 
-  local_datagram_client(const local_datagram_client&) = delete;
+  client(const client&) = delete;
 
-  local_datagram_client(void) : io_service_(),
-                                work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
-                                socket_(io_service_),
-                                connected_(false),
-                                heartbeat_enabled_(false) {
+  client(void) : io_service_(),
+                 work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
+                 socket_(io_service_),
+                 connected_(false),
+                 heartbeat_enabled_(false) {
     io_service_thread_ = std::thread([this] {
       (this->io_service_).run();
     });
   }
 
-  ~local_datagram_client(void) {
+  ~client(void) {
     close();
 
     if (io_service_thread_.joinable()) {
@@ -162,4 +163,5 @@ private:
   std::thread heartbeat_thread_;
   std::atomic<bool> heartbeat_enabled_;
 };
+} // namespace local_datagram
 } // namespace krbn

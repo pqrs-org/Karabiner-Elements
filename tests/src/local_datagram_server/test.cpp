@@ -4,8 +4,8 @@
 #include "boost_defs.hpp"
 
 #include "filesystem.hpp"
-#include "local_datagram_client.hpp"
-#include "local_datagram_server.hpp"
+#include "local_datagram/client.hpp"
+#include "local_datagram/server.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
@@ -31,7 +31,7 @@ public:
 
     reset_count();
 
-    server_ = std::make_unique<krbn::local_datagram_server>(socket_path);
+    server_ = std::make_unique<krbn::local_datagram::server>(socket_path);
 
     thread_ = std::thread([this] {
       while (!exit_loop_) {
@@ -59,14 +59,14 @@ public:
 
 private:
   std::atomic<bool> exit_loop_;
-  std::unique_ptr<krbn::local_datagram_server> server_;
+  std::unique_ptr<krbn::local_datagram::server> server_;
   std::thread thread_;
 };
 
 class test_client final {
 public:
   test_client(void) : closed_(false) {
-    client_ = std::make_unique<krbn::local_datagram_client>();
+    client_ = std::make_unique<krbn::local_datagram::client>();
 
     client_->connected.connect([this](void) {
       connected_ = true;
@@ -106,7 +106,7 @@ public:
 private:
   boost::optional<bool> connected_;
   bool closed_;
-  std::unique_ptr<krbn::local_datagram_client> client_;
+  std::unique_ptr<krbn::local_datagram::client> client_;
 };
 } // namespace
 
@@ -115,7 +115,7 @@ TEST_CASE("socket file") {
   REQUIRE(!krbn::filesystem::exists(socket_path));
 
   {
-    krbn::local_datagram_server server(socket_path);
+    krbn::local_datagram::server server(socket_path);
     REQUIRE(krbn::filesystem::exists(socket_path));
   }
 
@@ -123,7 +123,7 @@ TEST_CASE("socket file") {
 }
 
 TEST_CASE("fail to create socket file") {
-  REQUIRE_THROWS(krbn::local_datagram_server("/not_found/server.sock"));
+  REQUIRE_THROWS(krbn::local_datagram::server("/not_found/server.sock"));
 }
 
 TEST_CASE("keep existing file in destructor") {
@@ -137,7 +137,7 @@ TEST_CASE("keep existing file in destructor") {
   REQUIRE(krbn::filesystem::exists(regular_file_path));
 
   {
-    REQUIRE_THROWS(krbn::local_datagram_server(regular_file_path));
+    REQUIRE_THROWS(krbn::local_datagram::server(regular_file_path));
   }
 
   REQUIRE(krbn::filesystem::exists(regular_file_path));
@@ -180,7 +180,7 @@ TEST_CASE("permission error") {
   }
 }
 
-TEST_CASE("local_datagram_server") {
+TEST_CASE("local_datagram::server") {
   {
     auto server = std::make_unique<test_server>();
 
