@@ -27,7 +27,7 @@ public:
   class timer final {
   public:
     timer(std::chrono::milliseconds interval,
-          const std::function<void(void)>& function) {
+          const std::function<void(void)>& function) : cancel_flag_(false) {
       thread_ = std::thread([this, interval, function] {
         // Wait
         {
