@@ -2,56 +2,83 @@
 
 #include "constants.hpp"
 #include "filesystem.hpp"
-#include "local_datagram/client.hpp"
+#include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
 #include "session.hpp"
+#include "shared_instance_provider.hpp"
 #include "types.hpp"
 #include <unistd.h>
 #include <vector>
 
 namespace krbn {
-class grabber_client final {
+class grabber_client final : public shared_instance_provider<grabber_client> {
 public:
+  // Signals
+
+  // Note: These signals are fired on local_datagram::client's thread.
+
+  boost::signals2::signal<void(void)> connected;
+  boost::signals2::signal<void(const boost::system::error_code&)> connect_failed;
+  boost::signals2::signal<void(void)> closed;
+
+  // Methods
+
   grabber_client(const grabber_client&) = delete;
 
   grabber_client(void) {
-    // Check socket file existance
-    if (!filesystem::exists(constants::get_grabber_socket_file_path())) {
-      throw std::runtime_error("grabber socket is not found");
-    }
+  }
 
-    // Check socket file permission
-    if (auto current_console_user_id = session::get_current_console_user_id()) {
-      if (!filesystem::is_owned(constants::get_grabber_socket_file_path(), *current_console_user_id)) {
-        throw std::runtime_error("grabber socket is not writable");
-      }
-    } else {
-      // `get_current_console_user_id` is failed in loginwindow.
-      // Allow `karabiner_observer` process (uid == 0) for when system core_configuration_file exists.
-      if (getuid() != 0) {
-        throw std::runtime_error("session::get_current_console_user_id error");
-      }
-    }
+  void start(void) {
+    std::lock_guard<std::mutex> lock(client_manager_mutex_);
 
-    client_ = std::make_unique<local_datagram::client>(constants::get_grabber_socket_file_path());
+    client_manager_ = nullptr;
+
+    auto socket_file_path = constants::get_grabber_socket_file_path();
+    std::chrono::milliseconds heartbeat_interval(3000);
+    std::chrono::milliseconds reconnect_interval(1000);
+
+    client_manager_ = std::make_unique<local_datagram::client_manager>(socket_file_path,
+                                                                       heartbeat_interval,
+                                                                       reconnect_interval);
+
+    client_manager_->connected.connect([this](void) {
+      logger::get_logger().info("grabber_client is connected.");
+
+      connected();
+    });
+
+    client_manager_->connect_failed.connect([this](auto&& error_code) {
+      connect_failed(error_code);
+    });
+
+    client_manager_->closed.connect([this](void) {
+      logger::get_logger().info("grabber_client is closed.");
+
+      closed();
+    });
+
+    client_manager_->start();
   }
 
   void grabbable_state_changed(grabbable_state grabbable_state) const {
     operation_type_grabbable_state_changed_struct s;
     s.grabbable_state = grabbable_state;
-    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+
+    async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
   void connect(void) const {
     operation_type_connect_struct s;
     s.pid = getpid();
-    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+
+    async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
   void system_preferences_updated(const system_preferences& system_preferences) const {
     operation_type_system_preferences_updated_struct s;
     s.system_preferences = system_preferences;
-    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+
+    async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
   void frontmost_application_changed(const std::string& bundle_identifier,
@@ -66,7 +93,7 @@ public:
             file_path.c_str(),
             sizeof(s.file_path));
 
-    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+    async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
   void input_source_changed(const input_source_identifiers& input_source_identifiers) const {
@@ -90,10 +117,21 @@ public:
               sizeof(s.input_mode_id));
     }
 
-    client_->send_to(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+    async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
 private:
-  std::unique_ptr<local_datagram::client> client_;
+  void async_send(const uint8_t* _Nonnull p, size_t length) const {
+    std::lock_guard<std::mutex> lock(client_manager_mutex_);
+
+    if (client_manager_) {
+      if (auto client = client_manager_->get_client()) {
+        client->async_send(p, length);
+      }
+    }
+  }
+
+  std::unique_ptr<local_datagram::client_manager> client_manager_;
+  mutable std::mutex client_manager_mutex_;
 };
 } // namespace krbn
