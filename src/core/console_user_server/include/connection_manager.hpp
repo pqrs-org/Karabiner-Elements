@@ -19,9 +19,9 @@ class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(version_monitor& version_monitor) : version_monitor_(version_monitor) {
+  connection_manager(void) {
     console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
-      version_monitor_.manual_check();
+      version_monitor::get_shared_instance()->manual_check();
       release();
 
       if (uid != getuid()) {
@@ -118,8 +118,6 @@ private:
       grabber_client_->input_source_changed(input_source_identifiers);
     }
   }
-
-  version_monitor& version_monitor_;
 
   console_user_id_monitor console_user_id_monitor_;
   std::unique_ptr<gcd_utility::fire_while_false_timer> timer_;

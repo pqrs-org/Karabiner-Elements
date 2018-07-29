@@ -5,9 +5,13 @@
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
-  krbn::version_monitor monitor([] {
-    krbn::logger::get_logger().info("version_changed_callback");
+  auto monitor = krbn::version_monitor::get_shared_instance();
+
+  monitor->changed.connect([] {
+    krbn::logger::get_logger().info("changed");
   });
+
+  monitor->start();
 
   CFRunLoopRun();
   return 0;

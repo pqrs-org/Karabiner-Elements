@@ -14,7 +14,7 @@ class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(version_monitor& version_monitor) : version_monitor_(version_monitor) {
+  connection_manager(void) {
     // We do not have to observe the state of console_user_server_client connection.
     krbn::console_user_server_client::get_shared_instance()->start();
 
@@ -26,7 +26,7 @@ public:
         uid = 0;
       }
 
-      version_monitor_.manual_check();
+      version_monitor::get_shared_instance()->manual_check();
 
       // Prepare console_user_server_socket_directory
       {
@@ -49,8 +49,6 @@ public:
   }
 
 private:
-  version_monitor& version_monitor_;
-
   console_user_id_monitor console_user_id_monitor_;
   std::unique_ptr<receiver> receiver_;
 };

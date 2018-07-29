@@ -41,10 +41,6 @@ public:
       exit(0);
     }
 
-    version_monitor_ = std::make_unique<version_monitor>([] {
-      exit(0);
-    });
-
     grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>([] {
       logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
       application_launcher::launch_preferences();
@@ -68,12 +64,11 @@ public:
 
     connection_manager_ = nullptr;
     grabber_alerts_monitor_ = nullptr;
-    version_monitor_ = nullptr;
   }
 
   void refresh_connection_manager(void) {
     connection_manager_ = nullptr;
-    connection_manager_ = std::make_unique<connection_manager>(*version_monitor_);
+    connection_manager_ = std::make_unique<connection_manager>();
   }
 
 private:
@@ -91,7 +86,6 @@ private:
     refresh_connection_manager();
   }
 
-  std::unique_ptr<version_monitor> version_monitor_;
   std::unique_ptr<grabber_alerts_monitor> grabber_alerts_monitor_;
   std::unique_ptr<connection_manager> connection_manager_;
 };
@@ -101,6 +95,18 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
   krbn::thread_utility::register_main_thread();
+
+  {
+    // Setup version_monitor
+
+    auto version_monitor = krbn::version_monitor::get_shared_instance();
+
+    version_monitor->changed.connect([] {
+      exit(0);
+    });
+
+    version_monitor->start();
+  }
 
   krbn::karabiner_console_user_server karabiner_console_user_server;
 
