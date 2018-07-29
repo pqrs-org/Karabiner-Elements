@@ -1,17 +1,11 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "console_user_id_monitor.hpp"
 #include "constants.hpp"
-#include "filesystem.hpp"
-#include "gcd_utility.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
-#include "session.hpp"
 #include "shared_instance_provider.hpp"
 #include "types.hpp"
-#include <boost/signals2.hpp>
 #include <sstream>
 #include <unistd.h>
 #include <vector>
@@ -34,6 +28,8 @@ public:
   console_user_server_client(void) {
     console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
       if (uid) {
+        std::lock_guard<std::mutex> lock(client_manager_mutex_);
+
         client_manager_ = nullptr;
 
         auto socket_file_path = make_console_user_server_socket_file_path(*uid);
@@ -69,7 +65,7 @@ public:
     console_user_id_monitor_.start();
   }
 
-  void shell_command_execution(const std::string& shell_command) {
+  void shell_command_execution(const std::string& shell_command) const {
     operation_type_shell_command_execution_struct s;
 
     if (shell_command.length() >= sizeof(s.shell_command)) {
@@ -81,13 +77,7 @@ public:
             shell_command.c_str(),
             sizeof(s.shell_command));
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (client_manager_) {
-        if (auto client = client_manager_->get_client()) {
-          client->async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
-        }
-      }
-    });
+    async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
   }
 
   void select_input_source(const input_source_selector& input_source_selector, uint64_t time_stamp) {
@@ -127,13 +117,7 @@ public:
               sizeof(s.input_mode_id));
     }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (client_manager_) {
-        if (auto client = client_manager_->get_client()) {
-          client->async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
-        }
-      }
-    });
+    async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
   }
 
   static std::string make_console_user_server_socket_directory(uid_t uid) {
@@ -147,7 +131,19 @@ public:
   }
 
 private:
+  void async_send(const uint8_t* _Nonnull p, size_t length) const {
+    std::lock_guard<std::mutex> lock(client_manager_mutex_);
+
+    if (client_manager_) {
+      if (auto client = client_manager_->get_client()) {
+        client->async_send(p, length);
+      }
+    }
+  }
+
   console_user_id_monitor console_user_id_monitor_;
+
   std::unique_ptr<local_datagram::client_manager> client_manager_;
+  mutable std::mutex client_manager_mutex_;
 };
 } // namespace krbn
