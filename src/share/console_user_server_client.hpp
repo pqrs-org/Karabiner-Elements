@@ -6,7 +6,7 @@
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include "gcd_utility.hpp"
-#include "local_datagram/client.hpp"
+#include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
 #include "session.hpp"
 #include "shared_instance_provider.hpp"
@@ -34,7 +34,33 @@ public:
   console_user_server_client(void) {
     console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
       if (uid) {
-        connect(*uid);
+        client_manager_ = nullptr;
+
+        auto socket_file_path = make_console_user_server_socket_file_path(*uid);
+        std::chrono::milliseconds heartbeat_interval(3000);
+        std::chrono::milliseconds reconnect_interval(1000);
+
+        client_manager_ = std::make_unique<local_datagram::client_manager>(socket_file_path,
+                                                                           heartbeat_interval,
+                                                                           reconnect_interval);
+
+        client_manager_->connected.connect([this, uid](void) {
+          logger::get_logger().info("console_user_server_client is connected. (uid:{0})", *uid);
+
+          connected();
+        });
+
+        client_manager_->connect_failed.connect([this](auto&& error_code) {
+          connect_failed(error_code);
+        });
+
+        client_manager_->closed.connect([this, uid](void) {
+          logger::get_logger().info("console_user_server_client is closed. (uid:{0})", *uid);
+
+          closed();
+        });
+
+        client_manager_->start();
       }
     });
   }
@@ -56,8 +82,10 @@ public:
             sizeof(s.shell_command));
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (client_) {
-        client_->async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
+      if (client_manager_) {
+        if (auto client = client_manager_->get_client()) {
+          client->async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
+        }
       }
     });
   }
@@ -100,8 +128,10 @@ public:
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (client_) {
-        client_->async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
+      if (client_manager_) {
+        if (auto client = client_manager_->get_client()) {
+          client->async_send(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
+        }
       }
     });
   }
@@ -117,49 +147,7 @@ public:
   }
 
 private:
-  void connect(uid_t uid) {
-    auto socket_file_path = make_console_user_server_socket_file_path(uid);
-
-    connect_retry_timer_ = nullptr;
-    client_ = nullptr;
-
-    client_ = std::make_unique<local_datagram::client>();
-
-    client_->connected.connect([this, uid](void) {
-      logger::get_logger().info("console_user_server_client is connected. (uid:{0})", uid);
-
-      connected();
-    });
-
-    client_->connect_failed.connect([this, uid](auto&& error_code) {
-      connect_failed(error_code);
-
-      start_connect_retry_timer(uid);
-    });
-
-    client_->closed.connect([this, uid](void) {
-      logger::get_logger().info("console_user_server_client is closed. (uid:{0})", uid);
-
-      closed();
-
-      start_connect_retry_timer(uid);
-    });
-
-    client_->connect(socket_file_path,
-                     std::chrono::milliseconds(3000));
-  }
-
-  void start_connect_retry_timer(uid_t uid) {
-    connect_retry_timer_ = std::make_unique<gcd_utility::main_queue_after_timer>(
-        dispatch_time(DISPATCH_TIME_NOW, 3.0 * NSEC_PER_SEC),
-        false,
-        ^{
-          connect(uid);
-        });
-  }
-
   console_user_id_monitor console_user_id_monitor_;
-  std::unique_ptr<local_datagram::client> client_;
-  std::unique_ptr<gcd_utility::main_queue_after_timer> connect_retry_timer_;
+  std::unique_ptr<local_datagram::client_manager> client_manager_;
 };
 } // namespace krbn
