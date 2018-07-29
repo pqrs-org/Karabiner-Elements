@@ -29,6 +29,12 @@ public:
     stop();
   }
 
+  std::shared_ptr<client> get_client(void) {
+    std::lock_guard<std::mutex> lock(client_mutex_);
+
+    return client_;
+  }
+
   void start(void) {
     stop();
 
@@ -50,7 +56,7 @@ private:
     std::lock_guard<std::mutex> lock(client_mutex_);
 
     client_ = nullptr;
-    client_ = std::make_unique<client>();
+    client_ = std::make_shared<client>();
 
     client_->connected.connect([this](void) {
       connected();
@@ -102,7 +108,7 @@ private:
 
   bool stopped_;
 
-  std::unique_ptr<client> client_;
+  std::shared_ptr<client> client_;
   std::mutex client_mutex_;
 
   std::unique_ptr<thread_utility::timer> reconnect_timer_;
