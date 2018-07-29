@@ -21,7 +21,8 @@ public:
                  boost::optional<std::chrono::milliseconds> heartbeat_interval,
                  std::chrono::milliseconds reconnect_interval) : path_(path),
                                                                  heartbeat_interval_(heartbeat_interval),
-                                                                 reconnect_interval_(reconnect_interval) {
+                                                                 reconnect_interval_(reconnect_interval),
+                                                                 stopped_(true) {
   }
 
   ~client_manager(void) {
@@ -30,17 +31,23 @@ public:
 
   void start(void) {
     stop();
+
+    stopped_ = false;
+
     connect();
   }
 
   void stop(void) {
+    // We have to set stopped_ before `close` to prevent `start_reconnect_thread` by `closed` signal.
+    stopped_ = true;
+
     stop_reconnect_thread();
     close();
   }
 
 private:
   void connect(void) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(client_mutex_);
 
     client_ = nullptr;
     client_ = std::make_unique<client>();
@@ -52,13 +59,17 @@ private:
     client_->connect_failed.connect([this](auto&& error_code) {
       connect_failed(error_code);
 
-      start_reconnect_thread();
+      if (!stopped_) {
+        start_reconnect_thread();
+      }
     });
 
     client_->closed.connect([this](void) {
       closed();
 
-      start_reconnect_thread();
+      if (!stopped_) {
+        start_reconnect_thread();
+      }
     });
 
     client_->connect(path_,
@@ -66,13 +77,13 @@ private:
   }
 
   void close(void) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(client_mutex_);
 
     client_ = nullptr;
   }
 
   void start_reconnect_thread(void) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(reconnect_timer_mutex_);
 
     reconnect_timer_ = std::make_unique<thread_utility::timer>(reconnect_interval_, [this] {
       connect();
@@ -80,7 +91,7 @@ private:
   }
 
   void stop_reconnect_thread(void) {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(reconnect_timer_mutex_);
 
     reconnect_timer_ = nullptr;
   }
@@ -89,9 +100,13 @@ private:
   boost::optional<std::chrono::milliseconds> heartbeat_interval_;
   std::chrono::milliseconds reconnect_interval_;
 
+  bool stopped_;
+
   std::unique_ptr<client> client_;
+  std::mutex client_mutex_;
+
   std::unique_ptr<thread_utility::timer> reconnect_timer_;
-  std::mutex mutex_;
+  std::mutex reconnect_timer_mutex_;
 };
 } // namespace local_datagram
 } // namespace krbn
