@@ -25,11 +25,17 @@ public:
 
   grabber_client(const grabber_client&) = delete;
 
-  grabber_client(void) {
+  grabber_client(void) : started_(false) {
   }
 
   void start(void) {
     std::lock_guard<std::mutex> lock(client_manager_mutex_);
+
+    if (started_) {
+      return;
+    }
+
+    started_ = true;
 
     client_manager_ = nullptr;
 
@@ -58,6 +64,14 @@ public:
     });
 
     client_manager_->start();
+  }
+
+  void stop(void) {
+    std::lock_guard<std::mutex> lock(client_manager_mutex_);
+
+    started_ = false;
+
+    client_manager_ = nullptr;
   }
 
   void grabbable_state_changed(grabbable_state grabbable_state) const {
@@ -130,6 +144,8 @@ private:
       }
     }
   }
+
+  bool started_;
 
   std::unique_ptr<local_datagram::client_manager> client_manager_;
   mutable std::mutex client_manager_mutex_;
