@@ -101,7 +101,13 @@ public:
 
   void async_send(void) {
     std::vector<uint8_t> client_buffer(32);
-    client_->async_send(client_buffer);
+    if (client_) {
+      client_->async_send(client_buffer);
+    }
+  }
+
+  void destroy_client(void) {
+    client_ = nullptr;
   }
 
 private:
@@ -249,6 +255,33 @@ TEST_CASE("local_datagram::server") {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     REQUIRE(server_receive_count == 0);
+  }
+
+  // `closed` is called in destructor.
+  {
+    test_server server;
+    test_client client;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(client.get_connected() == true);
+
+    client.destroy_client();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(client.get_closed());
+  }
+
+  // `closed` is not called in destructor if not connected.
+  {
+    test_client client;
+
+    client.destroy_client();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(!client.get_closed());
   }
 }
 
