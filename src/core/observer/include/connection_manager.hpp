@@ -12,60 +12,92 @@ class connection_manager final {
 public:
   connection_manager(const connection_manager&) = delete;
 
-  connection_manager(version_monitor& version_monitor) : version_monitor_(version_monitor) {
-    console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
-      if (uid) {
-        logger::get_logger().info("current_console_user_id: {0}", *uid);
-      } else {
-        logger::get_logger().info("current_console_user_id: none");
-        uid = 0;
-      }
+  connection_manager(void) : client_available_states_(static_cast<size_t>(client_type::end_), false) {
+    // Setup grabber_client
 
-      version_monitor_.manual_check();
-      release();
+    auto grabber_client = grabber_client::get_shared_instance();
 
-      timer_ = std::make_unique<gcd_utility::fire_while_false_timer>(3 * NSEC_PER_SEC,
-                                                                     ^{
-                                                                       return setup();
-                                                                     });
-    });
-    console_user_id_monitor_.start();
+    connections_.push_back(grabber_client->connected.connect([this] {
+      version_monitor::get_shared_instance()->manual_check();
+
+      set_client_available_state(client_type::grabber_client, true);
+    }));
+
+    connections_.push_back(grabber_client->connect_failed.connect([this](auto&& error_code) {
+      version_monitor::get_shared_instance()->manual_check();
+
+      set_client_available_state(client_type::grabber_client, false);
+    }));
+
+    connections_.push_back(grabber_client->closed.connect([this] {
+      version_monitor::get_shared_instance()->manual_check();
+
+      set_client_available_state(client_type::grabber_client, false);
+    }));
+
+    grabber_client->start();
   }
 
   ~connection_manager(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      release();
-    });
-
-    console_user_id_monitor_.stop();
+    for (auto&& c : connections_) {
+      c.disconnect();
+    }
   }
 
 private:
-  void release(void) {
-    device_observer_ = nullptr;
-    grabber_client_ = nullptr;
-    timer_ = nullptr;
-  }
+  enum class client_type {
+    grabber_client,
+    end_,
+  };
 
-  bool setup(void) {
-    try {
-      grabber_client_ = std::make_unique<grabber_client>();
-      device_observer_ = std::make_unique<device_observer>(*grabber_client_);
+  void set_client_available_state(client_type type, bool value) {
+    {
+      std::lock_guard<std::mutex> lock(client_available_states_mutex_);
 
-      return true;
-    } catch (std::exception& ex) {
-      logger::get_logger().warn(ex.what());
+      client_available_states_[static_cast<size_t>(type)] = value;
     }
 
-    return false;
+    update_device_observer();
   }
 
-  version_monitor& version_monitor_;
+  void update_device_observer(void) {
+    bool device_observer_available = false;
 
-  console_user_id_monitor console_user_id_monitor_;
-  std::unique_ptr<gcd_utility::fire_while_false_timer> timer_;
+    {
+      std::lock_guard<std::mutex> lock(client_available_states_mutex_);
 
-  std::unique_ptr<grabber_client> grabber_client_;
+      if (std::all_of(std::begin(client_available_states_),
+                      std::end(client_available_states_),
+                      [](auto&& state) { return state == true; })) {
+        device_observer_available = true;
+      }
+    }
+
+    // Update device_observer_.
+
+    {
+      std::lock_guard<std::mutex> lock(device_observer_mutex_);
+
+      if (device_observer_available) {
+        if (!device_observer_) {
+          device_observer_ = std::make_unique<device_observer>();
+          logger::get_logger().info("device_observer is created.");
+        }
+      } else {
+        if (device_observer_) {
+          device_observer_ = nullptr;
+          logger::get_logger().info("device_observer is destroyed.");
+        }
+      }
+    }
+  }
+
+  std::vector<boost::signals2::connection> connections_;
+
+  std::vector<bool> client_available_states_;
+  std::mutex client_available_states_mutex_;
+
   std::unique_ptr<device_observer> device_observer_;
+  std::mutex device_observer_mutex_;
 };
 } // namespace krbn

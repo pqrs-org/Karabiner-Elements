@@ -40,45 +40,14 @@ public:
       }
     }
 
-    version_monitor_ = std::make_unique<version_monitor>([] {
-      exit(0);
-    });
-
-    refresh_connection_manager();
-
-    apple_notification_center::observe_distributed_notification(this,
-                                                                static_grabber_is_launched_callback,
-                                                                constants::get_distributed_notification_grabber_is_launched());
+    connection_manager_ = std::make_unique<connection_manager>();
   }
 
   ~karabiner_observer(void) {
-    apple_notification_center::unobserve_distributed_notification(this,
-                                                                  constants::get_distributed_notification_grabber_is_launched());
     connection_manager_ = nullptr;
-    version_monitor_ = nullptr;
-  }
-
-  void refresh_connection_manager(void) {
-    connection_manager_ = nullptr;
-    connection_manager_ = std::make_unique<connection_manager>(*version_monitor_);
   }
 
 private:
-  static void static_grabber_is_launched_callback(CFNotificationCenterRef center,
-                                                  void* observer,
-                                                  CFStringRef notification_name,
-                                                  const void* observed_object,
-                                                  CFDictionaryRef user_info) {
-    auto self = static_cast<karabiner_observer*>(observer);
-    self->grabber_is_launched_callback();
-  }
-
-  void grabber_is_launched_callback(void) {
-    logger::get_logger().info("grabber_is_launched_callback");
-    refresh_connection_manager();
-  }
-
-  std::unique_ptr<version_monitor> version_monitor_;
   std::unique_ptr<connection_manager> connection_manager_;
 };
 } // namespace krbn
@@ -92,6 +61,18 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
   krbn::thread_utility::register_main_thread();
+
+  {
+    // Setup version_monitor
+
+    auto version_monitor = krbn::version_monitor::get_shared_instance();
+
+    version_monitor->changed.connect([] {
+      exit(0);
+    });
+
+    version_monitor->start();
+  }
 
   krbn::karabiner_observer karabiner_observer;
 
