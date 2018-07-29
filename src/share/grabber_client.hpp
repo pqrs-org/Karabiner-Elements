@@ -2,7 +2,7 @@
 
 #include "constants.hpp"
 #include "filesystem.hpp"
-#include "local_datagram_client.hpp"
+#include "local_datagram/client.hpp"
 #include "logger.hpp"
 #include "session.hpp"
 #include "types.hpp"
@@ -33,7 +33,7 @@ public:
       }
     }
 
-    client_ = std::make_unique<local_datagram_client>(constants::get_grabber_socket_file_path());
+    client_ = std::make_unique<local_datagram::client>(constants::get_grabber_socket_file_path());
   }
 
   void grabbable_state_changed(grabbable_state grabbable_state) const {
@@ -94,6 +94,6 @@ public:
   }
 
 private:
-  std::unique_ptr<local_datagram_client> client_;
+  std::unique_ptr<local_datagram::client> client_;
 };
 } // namespace krbn

@@ -3,7 +3,7 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "input_source_manager.hpp"
-#include "local_datagram_server.hpp"
+#include "local_datagram/server.hpp"
 #include "shell_utility.hpp"
 #include "types.hpp"
 #include <vector>
@@ -22,7 +22,7 @@ public:
 
     auto path = socket_file_path.c_str();
     unlink(path);
-    server_ = std::make_unique<local_datagram_server>(path);
+    server_ = std::make_unique<local_datagram::server>(path);
 
     chmod(path, 0600);
 
@@ -122,7 +122,7 @@ private:
 
   std::string socket_path_;
   std::vector<uint8_t> buffer_;
-  std::unique_ptr<local_datagram_server> server_;
+  std::unique_ptr<local_datagram::server> server_;
   std::thread thread_;
   std::atomic<bool> exit_loop_;
 

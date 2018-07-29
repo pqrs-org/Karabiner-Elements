@@ -3,7 +3,7 @@
 #include "constants.hpp"
 #include "device_grabber.hpp"
 #include "grabbable_state_queues_manager.hpp"
-#include "local_datagram_server.hpp"
+#include "local_datagram/server.hpp"
 #include "process_monitor.hpp"
 #include "session.hpp"
 #include "types.hpp"
@@ -20,7 +20,7 @@ public:
 
     const char* path = constants::get_grabber_socket_file_path();
     unlink(path);
-    server_ = std::make_unique<local_datagram_server>(path);
+    server_ = std::make_unique<local_datagram::server>(path);
 
     if (auto uid = session::get_current_console_user_id()) {
       chown(path, *uid, 0);
@@ -174,7 +174,7 @@ private:
   }
 
   std::vector<uint8_t> buffer_;
-  std::unique_ptr<local_datagram_server> server_;
+  std::unique_ptr<local_datagram::server> server_;
   std::thread thread_;
   std::atomic<bool> exit_loop_;
 

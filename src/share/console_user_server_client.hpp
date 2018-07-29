@@ -6,7 +6,7 @@
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include "gcd_utility.hpp"
-#include "local_datagram_client.hpp"
+#include "local_datagram/client.hpp"
 #include "logger.hpp"
 #include "session.hpp"
 #include "shared_instance_provider.hpp"
@@ -21,7 +21,7 @@ class console_user_server_client final : public shared_instance_provider<console
 public:
   // Signals
 
-  // Note: These signals are fired on local_datagram_client's thread.
+  // Note: These signals are fired on local_datagram::client's thread.
 
   boost::signals2::signal<void(void)> connected;
   boost::signals2::signal<void(const boost::system::error_code&)> connect_failed;
@@ -123,7 +123,7 @@ private:
     connect_retry_timer_ = nullptr;
     client_ = nullptr;
 
-    client_ = std::make_unique<local_datagram_client>();
+    client_ = std::make_unique<local_datagram::client>();
 
     client_->connected.connect([this, uid](void) {
       logger::get_logger().info("console_user_server_client is connected. (uid:{0})", uid);
@@ -159,7 +159,7 @@ private:
   }
 
   console_user_id_monitor console_user_id_monitor_;
-  std::unique_ptr<local_datagram_client> client_;
+  std::unique_ptr<local_datagram::client> client_;
   std::unique_ptr<gcd_utility::main_queue_after_timer> connect_retry_timer_;
 };
 } // namespace krbn
