@@ -46,14 +46,10 @@ TEST_CASE("timer") {
     size_t count = 0;
 
     {
-      krbn::thread_utility::timer timer(std::chrono::milliseconds(500),
+      krbn::thread_utility::timer timer(std::chrono::milliseconds(50000),
                                         [&] {
                                           ++count;
                                         });
     }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-    REQUIRE(count == 0);
   }
 }

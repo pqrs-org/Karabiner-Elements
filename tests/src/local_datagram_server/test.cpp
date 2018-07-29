@@ -5,6 +5,7 @@
 
 #include "filesystem.hpp"
 #include "local_datagram/client.hpp"
+#include "local_datagram/client_manager.hpp"
 #include "local_datagram/server.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
@@ -68,7 +69,7 @@ public:
   test_client(void) : closed_(false) {
     client_ = std::make_unique<krbn::local_datagram::client>();
 
-    client_->connected.connect([this](void) {
+    client_->connected.connect([this] {
       connected_ = true;
     });
 
@@ -78,7 +79,7 @@ public:
       std::cout << error_code.message() << std::endl;
     });
 
-    client_->closed.connect([this](void) {
+    client_->closed.connect([this] {
       closed_ = true;
     });
 
@@ -248,5 +249,72 @@ TEST_CASE("local_datagram::server") {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     REQUIRE(server_receive_count == 0);
+  }
+}
+
+TEST_CASE("local_datagram::client_manager") {
+  {
+    size_t connected_count = 0;
+    size_t connect_failed_count = 0;
+    size_t closed_count = 0;
+
+    std::chrono::milliseconds reconnect_interval(100);
+
+    auto client_manager = std::make_unique<krbn::local_datagram::client_manager>(socket_path,
+                                                                                 client_heartbeat_interval,
+                                                                                 reconnect_interval);
+
+    client_manager->connected.connect([&] {
+      ++connected_count;
+      krbn::logger::get_logger().info("client_manager connected: {0}", connected_count);
+    });
+
+    client_manager->connect_failed.connect([&](auto&& error_code) {
+      ++connect_failed_count;
+      krbn::logger::get_logger().info("client_manager connect_failed: {0}", connect_failed_count);
+    });
+
+    client_manager->closed.connect([&] {
+      ++closed_count;
+      krbn::logger::get_logger().info("client_manager closed: {0}", closed_count);
+    });
+
+    // Create client before server
+
+    client_manager->start();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(connected_count == 0);
+    REQUIRE(connect_failed_count > 2);
+    REQUIRE(closed_count == 0);
+
+    // Create server
+
+    auto server = std::make_shared<test_server>();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(connected_count == 1);
+
+    // Shtudown servr
+
+    connect_failed_count = 0;
+
+    server = nullptr;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    REQUIRE(connected_count == 1);
+    REQUIRE(connect_failed_count > 2);
+    REQUIRE(closed_count == 1);
+
+    // Recreate server
+
+    server = std::make_shared<test_server>();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(connected_count == 2);
   }
 }
