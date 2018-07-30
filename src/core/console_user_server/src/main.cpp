@@ -1,4 +1,3 @@
-#include "apple_notification_center.hpp"
 #include "connection_manager.hpp"
 #include "constants.hpp"
 #include "filesystem.hpp"
@@ -51,41 +50,15 @@ public:
     krbn::filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
     krbn::filesystem::create_directory_with_intermediate_directories(constants::get_user_complex_modifications_assets_directory(), 0700);
 
-    refresh_connection_manager();
-
-    apple_notification_center::observe_distributed_notification(this,
-                                                                static_grabber_is_launched_callback,
-                                                                constants::get_distributed_notification_grabber_is_launched());
+    connection_manager_ = std::make_unique<connection_manager>();
   }
 
   ~karabiner_console_user_server(void) {
-    apple_notification_center::unobserve_distributed_notification(this,
-                                                                  constants::get_distributed_notification_grabber_is_launched());
-
     connection_manager_ = nullptr;
     grabber_alerts_monitor_ = nullptr;
   }
 
-  void refresh_connection_manager(void) {
-    connection_manager_ = nullptr;
-    connection_manager_ = std::make_unique<connection_manager>();
-  }
-
 private:
-  static void static_grabber_is_launched_callback(CFNotificationCenterRef center,
-                                                  void* observer,
-                                                  CFStringRef notification_name,
-                                                  const void* observed_object,
-                                                  CFDictionaryRef user_info) {
-    auto self = static_cast<karabiner_console_user_server*>(observer);
-    self->grabber_is_launched_callback();
-  }
-
-  void grabber_is_launched_callback(void) {
-    logger::get_logger().info("grabber_is_launched_callback");
-    refresh_connection_manager();
-  }
-
   std::unique_ptr<grabber_alerts_monitor> grabber_alerts_monitor_;
   std::unique_ptr<connection_manager> connection_manager_;
 };

@@ -20,11 +20,32 @@ public:
   connection_manager(const connection_manager&) = delete;
 
   connection_manager(void) {
+    // Setup grabber_client
+
+    auto grabber_client = grabber_client::get_shared_instance();
+
+    connections_.push_back(grabber_client->connected.connect([] {
+      version_monitor::get_shared_instance()->manual_check();
+
+      grabber_client::get_shared_instance()->connect();
+    }));
+
+    connections_.push_back(grabber_client->connect_failed.connect([](auto&& error_code) {
+      version_monitor::get_shared_instance()->manual_check();
+    }));
+
+    connections_.push_back(grabber_client->closed.connect([] {
+      version_monitor::get_shared_instance()->manual_check();
+    }));
+
+    // Setup console_user_id_monitor_
+
     console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
       version_monitor::get_shared_instance()->manual_check();
       release();
 
       if (uid != getuid()) {
+        grabber_client::get_shared_instance()->stop();
         return;
       }
 
@@ -41,6 +62,10 @@ public:
       release();
     });
 
+    for (auto&& c : connections_) {
+      c.disconnect();
+    }
+
     console_user_id_monitor_.stop();
   }
 
@@ -50,7 +75,6 @@ private:
     frontmost_application_observer_ = nullptr;
     system_preferences_monitor_ = nullptr;
     configuration_manager_ = nullptr;
-    grabber_client_ = nullptr;
     receiver_ = nullptr;
     timer_ = nullptr;
   }
@@ -61,11 +85,7 @@ private:
         receiver_ = std::make_unique<receiver>();
       }
 
-      if (!grabber_client_) {
-        grabber_client_ = std::make_unique<grabber_client>();
-        grabber_client_->connect();
-        logger::get_logger().info("grabber_client_ is connected");
-      }
+      grabber_client::get_shared_instance()->start();
 
       if (!configuration_manager_) {
         configuration_manager_ = std::make_unique<configuration_manager>();
@@ -96,9 +116,7 @@ private:
   }
 
   void system_preferences_updated_callback(const system_preferences& system_preferences) {
-    if (grabber_client_) {
-      grabber_client_->system_preferences_updated(system_preferences);
-    }
+    grabber_client::get_shared_instance()->system_preferences_updated(system_preferences);
   }
 
   void frontmost_application_changed_callback(const std::string& bundle_identifier,
@@ -108,24 +126,22 @@ private:
       return;
     }
 
-    if (grabber_client_) {
-      grabber_client_->frontmost_application_changed(bundle_identifier, file_path);
-    }
+    grabber_client::get_shared_instance()->frontmost_application_changed(bundle_identifier, file_path);
   }
 
   void input_source_changed_callback(const input_source_identifiers& input_source_identifiers) {
-    if (grabber_client_) {
-      grabber_client_->input_source_changed(input_source_identifiers);
-    }
+    grabber_client::get_shared_instance()->input_source_changed(input_source_identifiers);
   }
 
   console_user_id_monitor console_user_id_monitor_;
+
+  std::vector<boost::signals2::connection> connections_;
+
   std::unique_ptr<gcd_utility::fire_while_false_timer> timer_;
 
   std::unique_ptr<receiver> receiver_;
 
   std::unique_ptr<configuration_manager> configuration_manager_;
-  std::unique_ptr<grabber_client> grabber_client_;
   std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
 
   // `frontmost_application_observer` does not work properly in karabiner_grabber after fast user switching.
