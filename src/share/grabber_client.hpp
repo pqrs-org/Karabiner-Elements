@@ -64,6 +64,8 @@ public:
     });
 
     client_manager_->start();
+
+    logger::get_logger().info("grabber_client is started.");
   }
 
   void stop(void) {
@@ -72,6 +74,8 @@ public:
     started_ = false;
 
     client_manager_ = nullptr;
+
+    logger::get_logger().info("grabber_client is stopped.");
   }
 
   void grabbable_state_changed(grabbable_state grabbable_state) const {
