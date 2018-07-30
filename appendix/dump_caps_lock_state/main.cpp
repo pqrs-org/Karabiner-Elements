@@ -1,5 +1,3 @@
-#include "boost_defs.hpp"
-
 #include "hid_system_client.hpp"
 #include "logger.hpp"
 #include <CoreFoundation/CoreFoundation.h>
@@ -11,7 +9,6 @@
 #include <IOKit/hid/IOHIDValue.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/hidsystem/ev_keymap.h>
-#include <boost/bind.hpp>
 #include <iostream>
 #include <mach/mach_time.h>
 
