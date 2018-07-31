@@ -33,11 +33,11 @@ public:
         client_manager_ = nullptr;
 
         auto socket_file_path = make_console_user_server_socket_file_path(*uid);
-        std::chrono::milliseconds heartbeat_interval(3000);
+        std::chrono::milliseconds server_check_interval(3000);
         std::chrono::milliseconds reconnect_interval(1000);
 
         client_manager_ = std::make_unique<local_datagram::client_manager>(socket_file_path,
-                                                                           heartbeat_interval,
+                                                                           server_check_interval,
                                                                            reconnect_interval);
 
         client_manager_->connected.connect([this, uid](void) {

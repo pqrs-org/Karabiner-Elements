@@ -18,9 +18,9 @@ public:
   // Methods
 
   client_manager(const std::string& path,
-                 boost::optional<std::chrono::milliseconds> heartbeat_interval,
+                 boost::optional<std::chrono::milliseconds> server_check_interval,
                  std::chrono::milliseconds reconnect_interval) : path_(path),
-                                                                 heartbeat_interval_(heartbeat_interval),
+                                                                 server_check_interval_(server_check_interval),
                                                                  reconnect_interval_(reconnect_interval),
                                                                  stopped_(true) {
   }
@@ -79,7 +79,7 @@ private:
     });
 
     client_->connect(path_,
-                     heartbeat_interval_);
+                     server_check_interval_);
   }
 
   void close(void) {
@@ -103,7 +103,7 @@ private:
   }
 
   std::string path_;
-  boost::optional<std::chrono::milliseconds> heartbeat_interval_;
+  boost::optional<std::chrono::milliseconds> server_check_interval_;
   std::chrono::milliseconds reconnect_interval_;
 
   bool stopped_;
