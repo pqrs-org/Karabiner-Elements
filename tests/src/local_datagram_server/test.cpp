@@ -7,6 +7,7 @@
 #include "local_datagram/client.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "local_datagram/server.hpp"
+#include "local_datagram/server_manager.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
@@ -17,7 +18,7 @@ TEST_CASE("initialize") {
 namespace {
 const std::string socket_path("tmp/server.sock");
 size_t server_buffer_size(32 * 1024);
-const std::chrono::milliseconds client_heartbeat_interval(100);
+const std::chrono::milliseconds server_check_interval(100);
 
 class test_server final {
 public:
@@ -44,7 +45,9 @@ public:
       received_count_ += buffer.size();
     });
 
-    server_->bind(socket_path, server_buffer_size);
+    server_->bind(socket_path,
+                  server_buffer_size,
+                  server_check_interval);
   }
 
   ~test_server(void) {
@@ -90,7 +93,7 @@ public:
     });
 
     client_->connect(socket_path,
-                     client_heartbeat_interval);
+                     server_check_interval);
   }
 
   ~test_client(void) {
@@ -130,7 +133,9 @@ TEST_CASE("socket file") {
   {
     krbn::local_datagram::server server;
 
-    server.bind(socket_path, server_buffer_size);
+    server.bind(socket_path,
+                server_buffer_size,
+                server_check_interval);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -149,7 +154,9 @@ TEST_CASE("fail to create socket file") {
     failed = true;
   });
 
-  server.bind("/not_found/server.sock", server_buffer_size);
+  server.bind("/not_found/server.sock",
+              server_buffer_size,
+              server_check_interval);
 
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -168,7 +175,9 @@ TEST_CASE("keep existing file in destructor") {
 
   {
     krbn::local_datagram::server server;
-    server.bind(regular_file_path, server_buffer_size);
+    server.bind(regular_file_path,
+                server_buffer_size,
+                server_check_interval);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
@@ -177,42 +186,74 @@ TEST_CASE("keep existing file in destructor") {
 }
 
 TEST_CASE("permission error") {
+  {
+    auto server = std::make_unique<test_server>();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    // ----
+    chmod(socket_path.c_str(), 0000);
+
+    {
+      auto client = std::make_unique<test_client>();
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+      REQUIRE(client->get_connected() == false);
+    }
+
+    REQUIRE(server->get_closed());
+  }
+
+  {
+    auto server = std::make_unique<test_server>();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    // -r--
+    chmod(socket_path.c_str(), 0400);
+
+    {
+      auto client = std::make_unique<test_client>();
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+      REQUIRE(client->get_connected() == false);
+    }
+
+    REQUIRE(server->get_closed());
+  }
+
+  {
+    auto server = std::make_unique<test_server>();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    // -rw-
+    chmod(socket_path.c_str(), 0600);
+
+    {
+      auto client = std::make_unique<test_client>();
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+      REQUIRE(client->get_connected() == true);
+    }
+
+    REQUIRE(!server->get_closed());
+  }
+}
+
+TEST_CASE("close when socket erased") {
   auto server = std::make_unique<test_server>();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-  // ----
-  chmod(socket_path.c_str(), 0000);
+  unlink(socket_path.c_str());
 
-  {
-    auto client = std::make_unique<test_client>();
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-    REQUIRE(client->get_connected() == false);
-  }
-
-  // -r--
-  chmod(socket_path.c_str(), 0400);
-
-  {
-    auto client = std::make_unique<test_client>();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-    REQUIRE(client->get_connected() == false);
-  }
-
-  // -rw-
-  chmod(socket_path.c_str(), 0600);
-
-  {
-    auto client = std::make_unique<test_client>();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-    REQUIRE(client->get_connected() == true);
-  }
+  REQUIRE(server->get_closed());
 }
 
 TEST_CASE("local_datagram::server") {
@@ -320,7 +361,7 @@ TEST_CASE("local_datagram::client_manager") {
     std::chrono::milliseconds reconnect_interval(100);
 
     auto client_manager = std::make_unique<krbn::local_datagram::client_manager>(socket_path,
-                                                                                 client_heartbeat_interval,
+                                                                                 server_check_interval,
                                                                                  reconnect_interval);
 
     client_manager->connected.connect([&] {
