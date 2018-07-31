@@ -49,7 +49,7 @@ public:
                   server_buffer_size,
                   server_check_interval);
 
-    // Roughly wait
+    // Wait server initialization roughly
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
@@ -99,7 +99,7 @@ public:
     client_->connect(socket_path,
                      server_check_interval);
 
-    // Roughly wait
+    // Wait client initialization roughly
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
