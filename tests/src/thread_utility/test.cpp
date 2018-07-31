@@ -79,4 +79,27 @@ TEST_CASE("timer") {
                                         });
     }
   }
+
+  // Cancel while wait
+
+  {
+    size_t count = 0;
+
+    krbn::thread_utility::timer timer(std::chrono::milliseconds(500),
+                                      [&] {
+                                        ++count;
+                                      });
+
+    auto thread = std::thread([&] {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+      timer.cancel();
+    });
+
+    timer.wait();
+
+    REQUIRE(count == 0);
+
+    thread.join();
+  }
 }
