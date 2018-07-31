@@ -48,6 +48,10 @@ public:
     server_->bind(socket_path,
                   server_buffer_size,
                   server_check_interval);
+
+    // Roughly wait
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 
   ~test_server(void) {
@@ -94,6 +98,10 @@ public:
 
     client_->connect(socket_path,
                      server_check_interval);
+
+    // Roughly wait
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 
   ~test_client(void) {
@@ -189,16 +197,11 @@ TEST_CASE("permission error") {
   {
     auto server = std::make_unique<test_server>();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
     // ----
     chmod(socket_path.c_str(), 0000);
 
     {
       auto client = std::make_unique<test_client>();
-
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
       REQUIRE(client->get_connected() == false);
     }
 
@@ -207,17 +210,12 @@ TEST_CASE("permission error") {
 
   {
     auto server = std::make_unique<test_server>();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     // -r--
     chmod(socket_path.c_str(), 0400);
 
     {
       auto client = std::make_unique<test_client>();
-
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
       REQUIRE(client->get_connected() == false);
     }
 
@@ -227,16 +225,11 @@ TEST_CASE("permission error") {
   {
     auto server = std::make_unique<test_server>();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
     // -rw-
     chmod(socket_path.c_str(), 0600);
 
     {
       auto client = std::make_unique<test_client>();
-
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
       REQUIRE(client->get_connected() == true);
     }
 
@@ -246,8 +239,6 @@ TEST_CASE("permission error") {
 
 TEST_CASE("close when socket erased") {
   auto server = std::make_unique<test_server>();
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   unlink(socket_path.c_str());
 
@@ -259,12 +250,7 @@ TEST_CASE("close when socket erased") {
 TEST_CASE("local_datagram::server") {
   {
     auto server = std::make_unique<test_server>();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
     auto client = std::make_unique<test_client>();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     REQUIRE(client->get_connected() == true);
 
@@ -292,8 +278,6 @@ TEST_CASE("local_datagram::server") {
 
     test_client client;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
     REQUIRE(client.get_connected() == false);
 
     client.async_send();
@@ -307,13 +291,9 @@ TEST_CASE("local_datagram::server") {
   {
     test_client client;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
     REQUIRE(client.get_connected() == false);
 
     test_server server;
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     REQUIRE(server.get_received_count() == 0);
 
@@ -328,8 +308,6 @@ TEST_CASE("local_datagram::server") {
   {
     test_server server;
     test_client client;
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     REQUIRE(client.get_connected() == true);
 
@@ -393,8 +371,6 @@ TEST_CASE("local_datagram::client_manager") {
 
     auto server = std::make_shared<test_server>();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
     REQUIRE(connected_count == 1);
 
     // Shtudown servr
@@ -412,8 +388,6 @@ TEST_CASE("local_datagram::client_manager") {
     // Recreate server
 
     server = std::make_shared<test_server>();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     REQUIRE(connected_count == 2);
   }
