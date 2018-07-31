@@ -1,12 +1,6 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
-BEGIN_BOOST_INCLUDE
-#include <boost/asio.hpp>
-#include <boost/signals2.hpp>
-END_BOOST_INCLUDE
-
+#include "local_datagram/client.hpp"
 #include <unistd.h>
 
 namespace krbn {
@@ -29,7 +23,8 @@ public:
   server(void) : io_service_(),
                  work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
                  socket_(io_service_),
-                 bound_(false) {
+                 bound_(false),
+                 server_check_enabled_(false) {
     io_service_thread_ = std::thread([this] {
       (this->io_service_).run();
     });
@@ -45,14 +40,15 @@ public:
   }
 
   void bind(const std::string& path,
-            size_t buffer_size) {
+            size_t buffer_size,
+            boost::optional<std::chrono::milliseconds> server_check_interval) {
     close();
 
-    io_service_.post([this, path, buffer_size] {
+    io_service_.post([this, path, buffer_size, server_check_interval] {
       bound_ = false;
       bound_path_.clear();
 
-      // open
+      // Open
 
       {
         boost::system::error_code error_code;
@@ -64,7 +60,7 @@ public:
         }
       }
 
-      // bind
+      // Bind
 
       {
         boost::system::error_code error_code;
@@ -77,12 +73,17 @@ public:
         }
       }
 
+      // Signal
+
       bound_ = true;
       bound_path_ = path;
 
+      start_server_check_thread(path,
+                                server_check_interval);
+
       bound();
 
-      // async_receive
+      // Receive
 
       buffer_.resize(buffer_size);
       async_receive();
@@ -91,10 +92,16 @@ public:
 
   void close(void) {
     io_service_.post([this] {
+      stop_server_check_thread();
+
+      // Close socket
+
       boost::system::error_code error_code;
 
       socket_.cancel(error_code);
       socket_.close(error_code);
+
+      // Signal
 
       if (bound_) {
         bound_ = false;
@@ -121,6 +128,57 @@ private:
                           });
   }
 
+  void start_server_check_thread(const std::string& path,
+                                 boost::optional<std::chrono::milliseconds> server_check_interval) {
+    stop_server_check_thread();
+
+    if (server_check_interval) {
+      server_check_enabled_ = true;
+
+      server_check_thread_ = std::thread([this, path, server_check_interval] {
+        std::unique_ptr<client> c;
+        bool client_connected = false;
+
+        while (server_check_enabled_) {
+          server_check_timer_ = std::make_shared<thread_utility::timer>(
+              *server_check_interval,
+              [this, path, &c, &client_connected] {
+                // Skip if client is connecting
+                if (c && !client_connected) {
+                  return;
+                }
+
+                c = std::make_unique<client>();
+
+                c->connected.connect([&client_connected] {
+                  client_connected = true;
+                });
+
+                c->connect_failed.connect([this](auto&& error_code) {
+                  close();
+                });
+
+                c->connect(path, boost::none);
+              });
+
+          server_check_timer_->wait();
+        }
+      });
+    }
+  }
+
+  void stop_server_check_thread(void) {
+    server_check_enabled_ = false;
+
+    if (server_check_timer_) {
+      server_check_timer_->cancel();
+    }
+
+    if (server_check_thread_.joinable()) {
+      server_check_thread_.join();
+    }
+  }
+
   boost::asio::io_service io_service_;
   std::unique_ptr<boost::asio::io_service::work> work_;
   boost::asio::local::datagram_protocol::socket socket_;
@@ -129,6 +187,10 @@ private:
   std::string bound_path_;
 
   std::vector<uint8_t> buffer_;
+
+  std::thread server_check_thread_;
+  std::atomic<bool> server_check_enabled_;
+  std::shared_ptr<thread_utility::timer> server_check_timer_;
 };
 } // namespace local_datagram
 } // namespace krbn
