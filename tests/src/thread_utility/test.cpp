@@ -23,6 +23,33 @@ TEST_CASE("timer") {
     REQUIRE(count == 1);
   }
 
+  // Wait
+
+  {
+    size_t count = 0;
+    size_t wait_count = 0;
+
+    krbn::thread_utility::timer timer(std::chrono::milliseconds(500),
+                                      [&] {
+                                        ++count;
+                                      });
+
+    auto thread = std::thread([&] {
+      for (int i = 0; i < 5; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ++wait_count;
+      }
+    });
+
+    timer.wait();
+
+    REQUIRE(count == 1);
+    REQUIRE(wait_count > 1);
+
+    thread.join();
+  }
+
   // Cancel (1)
 
   {

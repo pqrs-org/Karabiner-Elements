@@ -53,6 +53,12 @@ public:
       }
     }
 
+    void wait(void) {
+      if (thread_.joinable()) {
+        thread_.join();
+      }
+    }
+
     void cancel(void) {
       cancel_flag_ = true;
       timer_cv_.notify_one();
