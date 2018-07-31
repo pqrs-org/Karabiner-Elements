@@ -16,52 +16,58 @@ TEST_CASE("initialize") {
 
 namespace {
 const std::string socket_path("tmp/server.sock");
+size_t server_buffer_size(32 * 1024);
 const std::chrono::milliseconds client_heartbeat_interval(100);
-size_t server_count = 0;
-size_t server_receive_count = 0;
-
-void reset_count(void) {
-  server_count = 0;
-  server_receive_count = 0;
-}
 
 class test_server final {
 public:
-  test_server(void) : exit_loop_(false) {
+  test_server(void) : closed_(false),
+                      received_count_(0) {
     unlink(socket_path.c_str());
 
-    reset_count();
+    server_ = std::make_unique<krbn::local_datagram::server>();
 
-    server_ = std::make_unique<krbn::local_datagram::server>(socket_path);
-
-    thread_ = std::thread([this] {
-      while (!exit_loop_) {
-        ++server_count;
-
-        boost::system::error_code ec;
-        std::vector<uint8_t> buffer(1024);
-
-        std::size_t n = server_->receive(boost::asio::buffer(buffer),
-                                         boost::posix_time::milliseconds(100),
-                                         ec);
-
-        if (!ec) {
-          krbn::logger::get_logger().info("server received {0}", n);
-          server_receive_count += n;
-        }
-      }
+    server_->bound.connect([this] {
+      bound_ = true;
     });
+
+    server_->bind_failed.connect([this](auto&& error_code) {
+      bound_ = false;
+    });
+
+    server_->closed.connect([this] {
+      closed_ = true;
+    });
+
+    server_->received.connect([this](auto&& buffer) {
+      krbn::logger::get_logger().info("server received {0}", buffer.size());
+      received_count_ += buffer.size();
+    });
+
+    server_->bind(socket_path, server_buffer_size);
   }
 
   ~test_server(void) {
-    exit_loop_ = true;
-    thread_.join();
+    server_ = nullptr;
+  }
+
+  boost::optional<bool> get_bound(void) const {
+    return bound_;
+  }
+
+  bool get_closed(void) const {
+    return closed_;
+  }
+
+  size_t get_received_count(void) const {
+    return received_count_;
   }
 
 private:
-  std::atomic<bool> exit_loop_;
+  boost::optional<bool> bound_;
+  bool closed_;
+  size_t received_count_;
   std::unique_ptr<krbn::local_datagram::server> server_;
-  std::thread thread_;
 };
 
 class test_client final {
@@ -122,7 +128,12 @@ TEST_CASE("socket file") {
   REQUIRE(!krbn::filesystem::exists(socket_path));
 
   {
-    krbn::local_datagram::server server(socket_path);
+    krbn::local_datagram::server server;
+
+    server.bind(socket_path, server_buffer_size);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
     REQUIRE(krbn::filesystem::exists(socket_path));
   }
 
@@ -130,7 +141,19 @@ TEST_CASE("socket file") {
 }
 
 TEST_CASE("fail to create socket file") {
-  REQUIRE_THROWS(krbn::local_datagram::server("/not_found/server.sock"));
+  krbn::local_datagram::server server;
+
+  bool failed = false;
+
+  server.bind_failed.connect([&](auto&& error_code) {
+    failed = true;
+  });
+
+  server.bind("/not_found/server.sock", server_buffer_size);
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+  REQUIRE(failed == true);
 }
 
 TEST_CASE("keep existing file in destructor") {
@@ -144,7 +167,10 @@ TEST_CASE("keep existing file in destructor") {
   REQUIRE(krbn::filesystem::exists(regular_file_path));
 
   {
-    REQUIRE_THROWS(krbn::local_datagram::server(regular_file_path));
+    krbn::local_datagram::server server;
+    server.bind(regular_file_path, server_buffer_size);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 
   REQUIRE(krbn::filesystem::exists(regular_file_path));
@@ -152,6 +178,8 @@ TEST_CASE("keep existing file in destructor") {
 
 TEST_CASE("permission error") {
   auto server = std::make_unique<test_server>();
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   // ----
   chmod(socket_path.c_str(), 0000);
@@ -200,13 +228,13 @@ TEST_CASE("local_datagram::server") {
     REQUIRE(client->get_connected() == true);
 
     client->async_send();
+    client->async_send();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     REQUIRE(!client->get_closed());
 
-    REQUIRE(server_count > 5);
-    REQUIRE(server_receive_count == 32);
+    REQUIRE(server->get_received_count() == 64);
 
     // Destroy server
 
@@ -219,8 +247,6 @@ TEST_CASE("local_datagram::server") {
 
   // Send after server is destroyed.
   {
-    reset_count();
-
     REQUIRE(!krbn::filesystem::exists(socket_path));
 
     test_client client;
@@ -234,8 +260,6 @@ TEST_CASE("local_datagram::server") {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     REQUIRE(!client.get_closed());
-
-    REQUIRE(server_receive_count == 0);
   }
 
   // Create client before server
@@ -248,13 +272,15 @@ TEST_CASE("local_datagram::server") {
 
     test_server server;
 
-    REQUIRE(server_receive_count == 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(server.get_received_count() == 0);
 
     client.async_send();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-    REQUIRE(server_receive_count == 0);
+    REQUIRE(server.get_received_count() == 0);
   }
 
   // `closed` is called in destructor.

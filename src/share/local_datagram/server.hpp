@@ -4,7 +4,7 @@
 
 BEGIN_BOOST_INCLUDE
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
+#include <boost/signals2.hpp>
 END_BOOST_INCLUDE
 
 #include <unistd.h>
@@ -17,63 +17,118 @@ public:
 
   // Note: These signals are fired on non-main thread.
 
+  boost::signals2::signal<void(void)> bound;
+  boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
+  boost::signals2::signal<void(void)> closed;
+  boost::signals2::signal<void(const boost::asio::const_buffer&)> received;
+
   // Methods
 
   server(const server&) = delete;
 
-  server(const std::string& path) : endpoint_(path),
-                                    io_service_(),
-                                    socket_(io_service_, endpoint_),
-                                    deadline_(io_service_) {
-    deadline_.expires_at(boost::posix_time::pos_infin);
-    check_deadline();
+  server(void) : io_service_(),
+                 work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
+                 socket_(io_service_),
+                 bound_(false) {
+    io_service_thread_ = std::thread([this] {
+      (this->io_service_).run();
+    });
   }
 
   ~server(void) {
-    unlink(endpoint_.path().c_str());
+    close();
+
+    if (io_service_thread_.joinable()) {
+      work_ = nullptr;
+      io_service_thread_.join();
+    }
   }
 
-  // from doc/html/boost_asio/example/cpp03/timeouts/blocking_udp_client.cpp
-  std::size_t receive(const boost::asio::mutable_buffer& buffer,
-                      boost::posix_time::time_duration timeout,
-                      boost::system::error_code& ec) {
-    deadline_.expires_from_now(timeout);
+  void bind(const std::string& path,
+            size_t buffer_size) {
+    close();
 
-    ec = boost::asio::error::would_block;
-    std::size_t length = 0;
+    io_service_.post([this, path, buffer_size] {
+      bound_ = false;
+      bound_path_.clear();
 
-    socket_.async_receive(boost::asio::buffer(buffer),
-                          boost::bind(&server::handle_receive, _1, _2, &ec, &length));
+      // open
 
-    do {
-      io_service_.run_one();
-    } while (ec == boost::asio::error::would_block);
+      {
+        boost::system::error_code error_code;
+        socket_.open(boost::asio::local::datagram_protocol::socket::protocol_type(),
+                     error_code);
+        if (error_code) {
+          bind_failed(error_code);
+          return;
+        }
+      }
 
-    return length;
+      // bind
+
+      {
+        boost::system::error_code error_code;
+        socket_.bind(boost::asio::local::datagram_protocol::endpoint(path),
+                     error_code);
+
+        if (error_code) {
+          bind_failed(error_code);
+          return;
+        }
+      }
+
+      bound_ = true;
+      bound_path_ = path;
+
+      bound();
+
+      // async_receive
+
+      buffer_.resize(buffer_size);
+      async_receive();
+    });
+  }
+
+  void close(void) {
+    io_service_.post([this] {
+      boost::system::error_code error_code;
+
+      socket_.cancel(error_code);
+      socket_.close(error_code);
+
+      if (bound_) {
+        bound_ = false;
+        unlink(bound_path_.c_str());
+
+        closed();
+      }
+    });
   }
 
 private:
-  void check_deadline(void) {
-    if (deadline_.expires_at() <= boost::asio::deadline_timer::traits_type::now()) {
-      socket_.cancel();
-      deadline_.expires_at(boost::posix_time::pos_infin);
-    }
+  void async_receive(void) {
+    socket_.async_receive(boost::asio::buffer(buffer_),
+                          [this](auto&& error_code, auto&& bytes_transferred) {
+                            if (!error_code) {
+                              received(boost::asio::buffer(buffer_, bytes_transferred));
+                            }
 
-    deadline_.async_wait(boost::bind(&server::check_deadline, this));
+                            // receive once if not closed
+
+                            if (bound_) {
+                              async_receive();
+                            }
+                          });
   }
 
-  static void handle_receive(const boost::system::error_code& ec,
-                             std::size_t length,
-                             boost::system::error_code* _Nonnull out_ec,
-                             std::size_t* _Nonnull out_length) {
-    *out_ec = ec;
-    *out_length = length;
-  }
-
-  boost::asio::local::datagram_protocol::endpoint endpoint_;
   boost::asio::io_service io_service_;
+  std::unique_ptr<boost::asio::io_service::work> work_;
   boost::asio::local::datagram_protocol::socket socket_;
-  boost::asio::deadline_timer deadline_;
+  std::thread io_service_thread_;
+  bool bound_;
+  std::string bound_path_;
+
+  std::vector<uint8_t> buffer_;
 };
 } // namespace local_datagram
 } // namespace krbn
