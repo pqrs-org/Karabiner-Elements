@@ -40,7 +40,7 @@ public:
                                                                            server_check_interval,
                                                                            reconnect_interval);
 
-        client_manager_->connected.connect([this, uid](void) {
+        client_manager_->connected.connect([this, uid] {
           logger::get_logger().info("console_user_server_client is connected. (uid:{0})", *uid);
 
           connected();
@@ -50,7 +50,7 @@ public:
           connect_failed(error_code);
         });
 
-        client_manager_->closed.connect([this, uid](void) {
+        client_manager_->closed.connect([this, uid] {
           logger::get_logger().info("console_user_server_client is closed. (uid:{0})", *uid);
 
           closed();

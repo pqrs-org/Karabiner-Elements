@@ -55,7 +55,7 @@ public:
     virtual_hid_keyboard_properties_ = properties;
     virtual_hid_keyboard_ready_ = false;
 
-    call_method([this](void) {
+    call_method([this] {
       logger::get_logger().info("initialize_virtual_hid_keyboard");
       logger::get_logger().info("  country_code:{0}", static_cast<uint32_t>(virtual_hid_keyboard_properties_.country_code));
 
@@ -91,61 +91,61 @@ public:
     virtual_hid_keyboard_ready_check_timer_ = nullptr;
     virtual_hid_keyboard_ready_ = false;
 
-    call_method([this](void) {
+    call_method([this] {
       return pqrs::karabiner_virtual_hid_device_methods::terminate_virtual_hid_keyboard(connect_);
     });
   }
 
   void post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& report) {
-    call_method([this, &report](void) {
+    call_method([this, &report] {
       return pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
     });
   }
 
   void post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::consumer_input& report) {
-    call_method([this, &report](void) {
+    call_method([this, &report] {
       return pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
     });
   }
 
   void post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input& report) {
-    call_method([this, &report](void) {
+    call_method([this, &report] {
       return pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
     });
   }
 
   void post_keyboard_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input& report) {
-    call_method([this, &report](void) {
+    call_method([this, &report] {
       return pqrs::karabiner_virtual_hid_device_methods::post_keyboard_input_report(connect_, report);
     });
   }
 
   void reset_virtual_hid_keyboard(void) {
-    call_method([this](void) {
+    call_method([this] {
       return pqrs::karabiner_virtual_hid_device_methods::reset_virtual_hid_keyboard(connect_);
     });
   }
 
   void initialize_virtual_hid_pointing(void) {
-    call_method([this](void) {
+    call_method([this] {
       return pqrs::karabiner_virtual_hid_device_methods::initialize_virtual_hid_pointing(connect_);
     });
   }
 
   void terminate_virtual_hid_pointing(void) {
-    call_method([this](void) {
+    call_method([this] {
       return pqrs::karabiner_virtual_hid_device_methods::terminate_virtual_hid_pointing(connect_);
     });
   }
 
   void post_pointing_input_report(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& report) {
-    call_method([this, &report](void) {
+    call_method([this, &report] {
       return pqrs::karabiner_virtual_hid_device_methods::post_pointing_input_report(connect_, report);
     });
   }
 
   void reset_virtual_hid_pointing(void) {
-    call_method([this](void) {
+    call_method([this] {
       return pqrs::karabiner_virtual_hid_device_methods::reset_virtual_hid_pointing(connect_);
     });
   }

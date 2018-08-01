@@ -58,7 +58,7 @@ private:
     client_ = nullptr;
     client_ = std::make_shared<client>();
 
-    client_->connected.connect([this](void) {
+    client_->connected.connect([this] {
       connected();
     });
 
@@ -70,7 +70,7 @@ private:
       }
     });
 
-    client_->closed.connect([this](void) {
+    client_->closed.connect([this] {
       closed();
 
       if (!stopped_) {

@@ -47,7 +47,7 @@ public:
                                                                        server_check_interval,
                                                                        reconnect_interval);
 
-    client_manager_->connected.connect([this](void) {
+    client_manager_->connected.connect([this] {
       logger::get_logger().info("grabber_client is connected.");
 
       connected();
@@ -57,7 +57,7 @@ public:
       connect_failed(error_code);
     });
 
-    client_manager_->closed.connect([this](void) {
+    client_manager_->closed.connect([this] {
       logger::get_logger().info("grabber_client is closed.");
 
       closed();

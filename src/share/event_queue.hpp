@@ -988,7 +988,7 @@ public:
     boost::optional<int> pointing_motion_vertical_wheel;
     boost::optional<int> pointing_motion_horizontal_wheel;
 
-    auto emplace_back_pointing_motion_event = [&](void) {
+    auto emplace_back_pointing_motion_event = [&] {
       if (pointing_motion_time_stamp) {
         pointing_motion pointing_motion(
             pointing_motion_x ? *pointing_motion_x : 0,

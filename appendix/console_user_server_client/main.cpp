@@ -9,7 +9,7 @@ int main(int argc, const char* argv[]) {
 
   auto client = krbn::console_user_server_client::get_shared_instance();
 
-  client->connected.connect([client](void) {
+  client->connected.connect([client] {
     std::string shell_command = "open /Applications/Safari.app";
     client->shell_command_execution(shell_command);
   });
