@@ -14,7 +14,7 @@ public:
   boost::signals2::signal<void(void)> bound;
   boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
   boost::signals2::signal<void(void)> closed;
-  boost::signals2::signal<void(const boost::asio::const_buffer&)> received;
+  boost::signals2::signal<void(const boost::asio::mutable_buffer&)> received;
 
   // Methods
 

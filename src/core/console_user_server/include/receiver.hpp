@@ -3,7 +3,7 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "input_source_manager.hpp"
-#include "local_datagram/server.hpp"
+#include "local_datagram/server_manager.hpp"
 #include "shell_utility.hpp"
 #include "types.hpp"
 #include <vector>
@@ -13,55 +13,29 @@ class receiver final {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(void) : exit_loop_(false),
-                   last_select_input_source_time_stamp_(0) {
-    const size_t buffer_length = 32 * 1024;
-    buffer_.resize(buffer_length);
+  receiver(void) : last_select_input_source_time_stamp_(0) {
+    auto uid = getuid();
+    auto socket_file_path = console_user_server_client::make_console_user_server_socket_file_path(uid);
 
-    auto socket_file_path = console_user_server_client::make_console_user_server_socket_file_path(getuid());
+    unlink(socket_file_path.c_str());
 
-    auto path = socket_file_path.c_str();
-    unlink(path);
-    server_ = std::make_unique<local_datagram::server>(path);
+    size_t buffer_size = 32 * 1024;
+    std::chrono::milliseconds server_check_interval(3000);
+    std::chrono::milliseconds reconnect_interval(1000);
 
-    chmod(path, 0600);
+    server_manager_ = std::make_unique<local_datagram::server_manager>(socket_file_path,
+                                                                       buffer_size,
+                                                                       server_check_interval,
+                                                                       reconnect_interval);
 
-    exit_loop_ = false;
-    thread_ = std::thread([this] { this->worker(); });
-
-    logger::get_logger().info("receiver is initialized");
-  }
-
-  ~receiver(void) {
-    unlink(socket_path_.c_str());
-
-    exit_loop_ = true;
-    if (thread_.joinable()) {
-      thread_.join();
-    }
-
-    server_ = nullptr;
-
-    logger::get_logger().info("receiver is terminated");
-  }
-
-private:
-  void worker(void) {
-    if (!server_) {
-      return;
-    }
-
-    while (!exit_loop_) {
-      boost::system::error_code ec;
-      std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
-
-      if (!ec && n > 0) {
-        switch (operation_type(buffer_[0])) {
+    server_manager_->received.connect([this](auto&& buffer) {
+      if (auto type = types::find_operation_type(buffer.data(), buffer.size())) {
+        switch (*type) {
           case operation_type::shell_command_execution:
-            if (n != sizeof(operation_type_shell_command_execution_struct)) {
+            if (buffer.size() != sizeof(operation_type_shell_command_execution_struct)) {
               logger::get_logger().error("invalid size for operation_type::shell_command_execution");
             } else {
-              auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(&(buffer_[0]));
+              auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(buffer.data());
 
               // Ensure shell_command is null-terminated string even if corrupted data is sent.
               p->shell_command[sizeof(p->shell_command) - 1] = '\0';
@@ -74,10 +48,10 @@ private:
             break;
 
           case operation_type::select_input_source:
-            if (n != sizeof(operation_type_select_input_source_struct)) {
+            if (buffer.size() != sizeof(operation_type_select_input_source_struct)) {
               logger::get_logger().error("invalid size for operation_type::select_input_source");
             } else {
-              auto p = reinterpret_cast<operation_type_select_input_source_struct*>(&(buffer_[0]));
+              auto p = reinterpret_cast<operation_type_select_input_source_struct*>(buffer.data());
 
               // Ensure input_source_selector's strings are null-terminated string even if corrupted data is sent.
               p->language[sizeof(p->language) - 1] = '\0';
@@ -117,14 +91,21 @@ private:
             break;
         }
       }
-    }
+    });
+
+    server_manager_->start();
+
+    logger::get_logger().info("receiver is initialized");
   }
 
-  std::string socket_path_;
-  std::vector<uint8_t> buffer_;
-  std::unique_ptr<local_datagram::server> server_;
-  std::thread thread_;
-  std::atomic<bool> exit_loop_;
+  ~receiver(void) {
+    server_manager_ = nullptr;
+
+    logger::get_logger().info("receiver is terminated");
+  }
+
+private:
+  std::unique_ptr<local_datagram::server_manager> server_manager_;
 
   input_source_manager input_source_manager_;
   uint64_t last_select_input_source_time_stamp_;
