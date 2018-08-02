@@ -11,9 +11,20 @@
 namespace krbn {
 class receiver final {
 public:
+  // Signals
+
+  boost::signals2::signal<void(void)> bound;
+  boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
+  boost::signals2::signal<void(void)> closed;
+
+  // Methods
+
   receiver(const receiver&) = delete;
 
   receiver(void) : last_select_input_source_time_stamp_(0) {
+  }
+
+  void start(void) {
     auto uid = getuid();
     auto socket_file_path = console_user_server_client::make_console_user_server_socket_file_path(uid);
 
@@ -27,6 +38,18 @@ public:
                                                                        buffer_size,
                                                                        server_check_interval,
                                                                        reconnect_interval);
+
+    server_manager_->bound.connect([this] {
+      bound();
+    });
+
+    server_manager_->bind_failed.connect([this](auto&& error_code) {
+      bind_failed(error_code);
+    });
+
+    server_manager_->closed.connect([this] {
+      closed();
+    });
 
     server_manager_->received.connect([this](auto&& buffer) {
       if (auto type = types::find_operation_type(buffer.data(), buffer.size())) {
