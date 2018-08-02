@@ -369,7 +369,7 @@ TEST_CASE("local_datagram::client_manager") {
 
     // Create server
 
-    auto server = std::make_shared<test_server>();
+    auto server = std::make_unique<test_server>();
 
     REQUIRE(connected_count == 1);
 
@@ -387,8 +387,54 @@ TEST_CASE("local_datagram::client_manager") {
 
     // Recreate server
 
-    server = std::make_shared<test_server>();
+    server = std::make_unique<test_server>();
 
     REQUIRE(connected_count == 2);
+  }
+}
+
+TEST_CASE("local_datagram::server_manager") {
+  {
+    size_t bound_count = 0;
+    size_t bind_failed_count = 0;
+    size_t closed_count = 0;
+
+    std::chrono::milliseconds reconnect_interval(100);
+
+    auto server_manager = std::make_unique<krbn::local_datagram::server_manager>(socket_path,
+                                                                                 server_buffer_size,
+                                                                                 server_check_interval,
+                                                                                 reconnect_interval);
+
+    server_manager->bound.connect([&] {
+      ++bound_count;
+      krbn::logger::get_logger().info("server_manager bound: {0}", bound_count);
+    });
+
+    server_manager->bind_failed.connect([&](auto&& error_code) {
+      ++bind_failed_count;
+      krbn::logger::get_logger().info("server_manager bind_failed: {0}", bind_failed_count);
+    });
+
+    server_manager->closed.connect([&] {
+      ++closed_count;
+      krbn::logger::get_logger().info("server_manager closed: {0}", closed_count);
+    });
+
+    server_manager->start();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(bound_count == 1);
+    REQUIRE(bind_failed_count == 0);
+    REQUIRE(closed_count == 0);
+
+    unlink(socket_path.c_str());
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(bound_count == 2);
+    REQUIRE(bind_failed_count == 0);
+    REQUIRE(closed_count == 1);
   }
 }
