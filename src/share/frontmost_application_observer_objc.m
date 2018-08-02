@@ -1,4 +1,5 @@
 #import "frontmost_application_observer_objc.h"
+#import "weakify.h"
 #import <Cocoa/Cocoa.h>
 
 @interface KrbnFrontmostApplicationObserver : NSObject
@@ -37,7 +38,11 @@
       NSString* bundleIdentifier = runningApplication.bundleIdentifier;
       NSString* path = [[runningApplication.executableURL path] stringByStandardizingPath];
 
+      @weakify(self);
       dispatch_async(dispatch_get_main_queue(), ^{
+        @strongify(self);
+        if (!self) return;
+
         @try {
           const char* b = [bundleIdentifier UTF8String];
           const char* p = [path UTF8String];
