@@ -64,14 +64,16 @@ public:
               logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
               gcd_utility::dispatch_sync_in_main_queue(^{
-                device_grabber_ = nullptr;
-                device_grabber_ = std::make_unique<device_grabber>();
-                device_grabber_->start(p->user_core_configuration_file_path);
+                start_device_grabber(p->user_core_configuration_file_path);
 
                 // monitor the last process
-                console_user_server_process_monitor_ = nullptr;
-                console_user_server_process_monitor_ = std::make_unique<process_monitor>(p->pid,
-                                                                                         std::bind(&receiver::console_user_server_exit_callback, this));
+                {
+                  std::lock_guard<std::mutex> lock(console_user_server_process_monitor_mutex_);
+
+                  console_user_server_process_monitor_ = nullptr;
+                  console_user_server_process_monitor_ = std::make_unique<process_monitor>(p->pid,
+                                                                                           std::bind(&receiver::console_user_server_exit_callback, this));
+                }
               });
             }
             break;
@@ -83,6 +85,8 @@ public:
               auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(buffer.data());
 
               gcd_utility::dispatch_sync_in_main_queue(^{
+                std::lock_guard<std::mutex> lock(device_grabber_mutex_);
+
                 if (device_grabber_) {
                   device_grabber_->set_system_preferences(p->system_preferences);
                   logger::get_logger().info("system_preferences_updated");
@@ -102,6 +106,8 @@ public:
               p->file_path[sizeof(p->file_path) - 1] = '\0';
 
               gcd_utility::dispatch_sync_in_main_queue(^{
+                std::lock_guard<std::mutex> lock(device_grabber_mutex_);
+
                 if (device_grabber_) {
                   device_grabber_->post_frontmost_application_changed_event(p->bundle_identifier,
                                                                             p->file_path);
@@ -122,6 +128,8 @@ public:
               p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
 
               gcd_utility::dispatch_sync_in_main_queue(^{
+                std::lock_guard<std::mutex> lock(device_grabber_mutex_);
+
                 if (device_grabber_) {
                   device_grabber_->post_input_source_changed_event({std::string(p->language),
                                                                     std::string(p->input_source_id),
@@ -146,15 +154,20 @@ public:
 
   ~receiver(void) {
     server_manager_ = nullptr;
-    console_user_server_process_monitor_ = nullptr;
-    device_grabber_ = nullptr;
+
+    {
+      std::lock_guard<std::mutex> lock(console_user_server_process_monitor_mutex_);
+      console_user_server_process_monitor_ = nullptr;
+    }
+
+    stop_device_grabber();
 
     logger::get_logger().info("receiver is terminated");
   }
 
 private:
   void console_user_server_exit_callback(void) {
-    device_grabber_ = nullptr;
+    stop_device_grabber();
 
     start_grabbing_if_system_core_configuration_file_exists();
   }
@@ -162,15 +175,30 @@ private:
   void start_grabbing_if_system_core_configuration_file_exists(void) {
     auto file_path = constants::get_system_core_configuration_file_path();
     if (filesystem::exists(file_path)) {
-      device_grabber_ = nullptr;
-      device_grabber_ = std::make_unique<device_grabber>();
-      device_grabber_->start(file_path);
+      start_device_grabber(file_path);
     }
+  }
+
+  void start_device_grabber(const std::string& configuration_file_path) {
+    std::lock_guard<std::mutex> lock(device_grabber_mutex_);
+
+    device_grabber_ = nullptr;
+    device_grabber_ = std::make_unique<device_grabber>();
+    device_grabber_->start(configuration_file_path);
+  }
+
+  void stop_device_grabber(void) {
+    std::lock_guard<std::mutex> lock(device_grabber_mutex_);
+
+    device_grabber_ = nullptr;
   }
 
   std::unique_ptr<local_datagram::server_manager> server_manager_;
 
   std::unique_ptr<process_monitor> console_user_server_process_monitor_;
+  std::mutex console_user_server_process_monitor_mutex_;
+
   std::unique_ptr<device_grabber> device_grabber_;
+  std::mutex device_grabber_mutex_;
 };
 } // namespace krbn
