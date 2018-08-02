@@ -1177,6 +1177,15 @@ private:
 
 class types final {
 public:
+  // Find operation_type from operation_type_*_struct .
+  static boost::optional<operation_type> find_operation_type(const void* buffer, size_t buffer_size) {
+    if (!buffer || buffer_size == 0) {
+      return boost::none;
+    }
+    auto p = reinterpret_cast<const uint8_t*>(buffer);
+    return operation_type(p[0]);
+  }
+
   static device_id make_new_device_id(const std::shared_ptr<device_detail>& device_detail) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
@@ -2047,6 +2056,7 @@ struct operation_type_select_input_source_struct {
     return stream_utility::output_enums(stream, values);                                                                                             \
   }
 
+KRBN_TYPES_STREAM_OUTPUT(operation_type);
 KRBN_TYPES_STREAM_OUTPUT(device_id);
 KRBN_TYPES_STREAM_OUTPUT(hid_usage_page);
 KRBN_TYPES_STREAM_OUTPUT(hid_usage);

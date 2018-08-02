@@ -10,6 +10,12 @@ TEST_CASE("initialize") {
   krbn::thread_utility::register_main_thread();
 }
 
+TEST_CASE("operation_type") {
+  krbn::operation_type_connect_struct s;
+  REQUIRE(krbn::types::find_operation_type(reinterpret_cast<void*>(&s),
+                                           sizeof(s)) == krbn::operation_type::connect);
+}
+
 TEST_CASE("pointing_motion") {
   {
     krbn::pointing_motion pointing_motion;
