@@ -15,6 +15,9 @@ public:
   receiver(const receiver&) = delete;
 
   receiver(void) {
+  }
+
+  void start(void) {
     std::string socket_file_path(constants::get_grabber_socket_file_path());
 
     unlink(socket_file_path.c_str());

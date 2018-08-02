@@ -38,6 +38,7 @@ public:
 
       receiver_ = nullptr;
       receiver_ = std::make_unique<receiver>();
+      receiver_->start();
     });
 
     console_user_id_monitor_.start();
