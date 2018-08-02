@@ -1,0 +1,8 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/build/": true,
+        "**/build_xcode/": true
+    }
+}
