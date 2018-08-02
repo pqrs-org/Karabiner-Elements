@@ -3,7 +3,7 @@
 #include "constants.hpp"
 #include "device_grabber.hpp"
 #include "grabbable_state_queues_manager.hpp"
-#include "local_datagram/server.hpp"
+#include "local_datagram/server_manager.hpp"
 #include "process_monitor.hpp"
 #include "session.hpp"
 #include "types.hpp"
@@ -14,57 +14,37 @@ class receiver final {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(void) : exit_loop_(false) {
-    const size_t buffer_length = 32 * 1024;
-    buffer_.resize(buffer_length);
+  receiver(void) {
+    std::string socket_file_path(constants::get_grabber_socket_file_path());
 
-    const char* path = constants::get_grabber_socket_file_path();
-    unlink(path);
-    server_ = std::make_unique<local_datagram::server>(path);
+    unlink(socket_file_path.c_str());
 
-    if (auto uid = session::get_current_console_user_id()) {
-      chown(path, *uid, 0);
-    }
-    chmod(path, 0600);
+    size_t buffer_size = 32 * 1024;
+    std::chrono::milliseconds server_check_interval(3000);
+    std::chrono::milliseconds reconnect_interval(1000);
 
-    start_grabbing_if_system_core_configuration_file_exists();
+    server_manager_ = std::make_unique<local_datagram::server_manager>(socket_file_path,
+                                                                       buffer_size,
+                                                                       server_check_interval,
+                                                                       reconnect_interval);
 
-    exit_loop_ = false;
-    thread_ = std::thread([this] { this->worker(); });
-  }
+    server_manager_->bound.connect([socket_file_path] {
+      if (auto uid = session::get_current_console_user_id()) {
+        chown(socket_file_path.c_str(), *uid, 0);
+      }
+      chmod(socket_file_path.c_str(), 0600);
 
-  ~receiver(void) {
-    unlink(constants::get_grabber_socket_file_path());
+      grabbable_state_queues_manager::get_shared_instance()->clear();
+    });
 
-    exit_loop_ = true;
-    if (thread_.joinable()) {
-      thread_.join();
-    }
-
-    server_ = nullptr;
-    console_user_server_process_monitor_ = nullptr;
-    device_grabber_ = nullptr;
-  }
-
-private:
-  void worker(void) {
-    if (!server_) {
-      return;
-    }
-
-    grabbable_state_queues_manager::get_shared_instance()->clear();
-
-    while (!exit_loop_) {
-      boost::system::error_code ec;
-      std::size_t n = server_->receive(boost::asio::buffer(buffer_), boost::posix_time::seconds(1), ec);
-
-      if (!ec && n > 0) {
-        switch (operation_type(buffer_[0])) {
+    server_manager_->received.connect([this](auto&& buffer) {
+      if (auto type = types::find_operation_type(buffer.data(), buffer.size())) {
+        switch (*type) {
           case operation_type::grabbable_state_changed:
-            if (n != sizeof(operation_type_grabbable_state_changed_struct)) {
-              logger::get_logger().error("invalid size for operation_type::grabbable_state_changed");
+            if (buffer.size() != sizeof(operation_type_grabbable_state_changed_struct)) {
+              logger::get_logger().error("Invalid size for `operation_type::grabbable_state_changed`.");
             } else {
-              auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(&(buffer_[0]));
+              auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(buffer.data());
 
               gcd_utility::dispatch_sync_in_main_queue(^{
                 grabbable_state_queues_manager::get_shared_instance()->update_grabbable_state(p->grabbable_state);
@@ -73,10 +53,10 @@ private:
             break;
 
           case operation_type::connect:
-            if (n != sizeof(operation_type_connect_struct)) {
-              logger::get_logger().error("invalid size for operation_type::connect");
+            if (buffer.size() != sizeof(operation_type_connect_struct)) {
+              logger::get_logger().error("Invalid size for `operation_type::connect`.");
             } else {
-              auto p = reinterpret_cast<operation_type_connect_struct*>(&(buffer_[0]));
+              auto p = reinterpret_cast<operation_type_connect_struct*>(buffer.data());
 
               // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
               p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
@@ -97,10 +77,10 @@ private:
             break;
 
           case operation_type::system_preferences_updated:
-            if (n < sizeof(operation_type_system_preferences_updated_struct)) {
-              logger::get_logger().error("invalid size for operation_type::system_preferences_updated ({0})", n);
+            if (buffer.size() < sizeof(operation_type_system_preferences_updated_struct)) {
+              logger::get_logger().error("Invalid size for `operation_type::system_preferences_updated`.");
             } else {
-              auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(&(buffer_[0]));
+              auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(buffer.data());
 
               gcd_utility::dispatch_sync_in_main_queue(^{
                 if (device_grabber_) {
@@ -112,10 +92,10 @@ private:
             break;
 
           case operation_type::frontmost_application_changed:
-            if (n < sizeof(operation_type_frontmost_application_changed_struct)) {
-              logger::get_logger().error("invalid size for operation_type::frontmost_application_changed ({0})", n);
+            if (buffer.size() < sizeof(operation_type_frontmost_application_changed_struct)) {
+              logger::get_logger().error("Invalid size for `operation_type::frontmost_application_changed`.");
             } else {
-              auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(&(buffer_[0]));
+              auto p = reinterpret_cast<operation_type_frontmost_application_changed_struct*>(buffer.data());
 
               // Ensure bundle_identifier and file_path are null-terminated string even if corrupted data is sent.
               p->bundle_identifier[sizeof(p->bundle_identifier) - 1] = '\0';
@@ -131,10 +111,10 @@ private:
             break;
 
           case operation_type::input_source_changed:
-            if (n < sizeof(operation_type_input_source_changed_struct)) {
-              logger::get_logger().error("invalid size for operation_type::input_source_changed ({0})", n);
+            if (buffer.size() < sizeof(operation_type_input_source_changed_struct)) {
+              logger::get_logger().error("Invalid size for `operation_type::input_source_changed`.");
             } else {
-              auto p = reinterpret_cast<operation_type_input_source_changed_struct*>(&(buffer_[0]));
+              auto p = reinterpret_cast<operation_type_input_source_changed_struct*>(buffer.data());
 
               // Ensure bundle_identifier and file_path are null-terminated string even if corrupted data is sent.
               p->language[sizeof(p->language) - 1] = '\0';
@@ -155,9 +135,24 @@ private:
             break;
         }
       }
-    }
+    });
+
+    server_manager_->start();
+
+    start_grabbing_if_system_core_configuration_file_exists();
+
+    logger::get_logger().info("receiver is initialized");
   }
 
+  ~receiver(void) {
+    server_manager_ = nullptr;
+    console_user_server_process_monitor_ = nullptr;
+    device_grabber_ = nullptr;
+
+    logger::get_logger().info("receiver is terminated");
+  }
+
+private:
   void console_user_server_exit_callback(void) {
     device_grabber_ = nullptr;
 
@@ -173,10 +168,7 @@ private:
     }
   }
 
-  std::vector<uint8_t> buffer_;
-  std::unique_ptr<local_datagram::server> server_;
-  std::thread thread_;
-  std::atomic<bool> exit_loop_;
+  std::unique_ptr<local_datagram::server_manager> server_manager_;
 
   std::unique_ptr<process_monitor> console_user_server_process_monitor_;
   std::unique_ptr<device_grabber> device_grabber_;
