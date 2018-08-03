@@ -8,7 +8,7 @@
 #include "logger.hpp"
 #include "process_utility.hpp"
 #include "thread_utility.hpp"
-#include "version_monitor.hpp"
+#include "version_monitor_utility.hpp"
 
 int main(int argc, const char* argv[]) {
   if (getuid() != 0) {
@@ -90,23 +90,12 @@ int main(int argc, const char* argv[]) {
     chmod(krbn::constants::get_console_user_server_socket_directory(), 0755);
   }
 
-  {
-    // Setup version_monitor
-
-    auto version_monitor = krbn::version_monitor::get_shared_instance();
-
-    version_monitor->changed.connect([] {
-      exit(0);
-    });
-
-    version_monitor->start();
-  }
-
   krbn::manipulator::manipulator_timer::get_instance().enable();
   krbn::connection_manager connection_manager;
 
   krbn::apple_notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
 
+  krbn::version_monitor_utility::start_monitor_to_stop_run_loop_when_version_changed();
   CFRunLoopRun();
 
   return 0;

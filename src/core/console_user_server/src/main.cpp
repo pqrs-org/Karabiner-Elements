@@ -10,6 +10,7 @@
 #include "thread_utility.hpp"
 #include "update_utility.hpp"
 #include "version_monitor.hpp"
+#include "version_monitor_utility.hpp"
 
 namespace krbn {
 class karabiner_console_user_server final {
@@ -69,22 +70,11 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR2, SIG_IGN);
   krbn::thread_utility::register_main_thread();
 
-  {
-    // Setup version_monitor
-
-    auto version_monitor = krbn::version_monitor::get_shared_instance();
-
-    version_monitor->changed.connect([] {
-      exit(0);
-    });
-
-    version_monitor->start();
-  }
-
   krbn::karabiner_console_user_server karabiner_console_user_server;
 
   krbn::update_utility::check_for_updates_on_startup();
 
+  krbn::version_monitor_utility::start_monitor_to_stop_run_loop_when_version_changed();
   CFRunLoopRun();
 
   return 0;
