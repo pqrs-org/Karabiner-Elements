@@ -28,6 +28,10 @@ public:
   grabber_client(void) : started_(false) {
   }
 
+  ~grabber_client(void) {
+    stop();
+  }
+
   void start(void) {
     std::lock_guard<std::mutex> lock(client_manager_mutex_);
 
