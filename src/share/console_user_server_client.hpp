@@ -61,8 +61,22 @@ public:
     });
   }
 
+  ~console_user_server_client(void) {
+    stop();
+  }
+
   void start(void) {
     console_user_id_monitor_.start();
+  }
+
+  void stop(void) {
+    console_user_id_monitor_.stop();
+
+    {
+      std::lock_guard<std::mutex> lock(client_manager_mutex_);
+
+      client_manager_ = nullptr;
+    }
   }
 
   void shell_command_execution(const std::string& shell_command) const {
