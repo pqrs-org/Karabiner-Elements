@@ -4,7 +4,9 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <boost/optional.hpp>
+#include <mutex>
 #include <string>
+#include <thread>
 
 namespace krbn {
 class cf_utility final {
@@ -19,6 +21,10 @@ public:
       }
     }
   };
+
+  // ========================================
+  // Converts
+  // ========================================
 
   static boost::optional<std::string> to_string(CFTypeRef _Nullable value) {
     if (!value) {
@@ -66,6 +72,10 @@ public:
     return boost::none;
   }
 
+  // ========================================
+  // CFArray, CFMutableArray
+  // ========================================
+
   static CFArrayRef _Nonnull create_empty_cfarray(void) {
     return CFArrayCreate(nullptr, nullptr, 0, &kCFTypeArrayCallBacks);
   }
@@ -93,11 +103,117 @@ public:
     return false;
   }
 
+  // ========================================
+  // CFDictionary, CFMutableDictionary
+  // ========================================
+
   static CFMutableDictionaryRef _Nonnull create_cfmutabledictionary(CFIndex capacity = 0) {
     return CFDictionaryCreateMutable(nullptr,
                                      capacity,
                                      &kCFTypeDictionaryKeyCallBacks,
                                      &kCFTypeDictionaryValueCallBacks);
   }
+
+  // ========================================
+  // CFRunLoop
+  // ========================================
+
+  class run_loop_thread final {
+  public:
+    run_loop_thread(void) : run_loop_(nullptr),
+                            running_(false) {
+      thread_ = std::thread([this] {
+        run_loop_ = CFRunLoopGetCurrent();
+        CFRetain(run_loop_);
+
+        // Append empty source to prevent immediately quitting of `CFRunLoopRun`.
+
+        auto context = CFRunLoopSourceContext();
+        context.perform = perform;
+        auto source = CFRunLoopSourceCreate(kCFAllocatorDefault,
+                                            0,
+                                            &context);
+
+        CFRunLoopAddSource(run_loop_,
+                           source,
+                           kCFRunLoopDefaultMode);
+
+        // Run
+
+        CFRunLoopPerformBlock(run_loop_,
+                              kCFRunLoopDefaultMode,
+                              ^{
+                                {
+                                  std::lock_guard<std::mutex> lock(running_mutex_);
+                                  running_ = true;
+                                }
+                                running_cv_.notify_one();
+                              });
+
+        CFRunLoopRun();
+
+        // Remove source
+
+        CFRunLoopRemoveSource(run_loop_,
+                              source,
+                              kCFRunLoopDefaultMode);
+
+        CFRelease(source);
+      });
+    }
+
+    ~run_loop_thread(void) {
+      enqueue(^{
+        CFRunLoopStop(run_loop_);
+      });
+
+      if (thread_.joinable()) {
+        thread_.join();
+      }
+
+      if (run_loop_) {
+        CFRelease(run_loop_);
+      }
+    }
+
+    CFRunLoopRef _Nonnull get_run_loop(void) const {
+      // We wait until running to avoid a segmentation fault which is described in `enqueue`.
+
+      wait_until_running();
+
+      return run_loop_;
+    }
+
+    void enqueue(void (^_Nonnull block)(void)) const {
+      // Do not call `CFRunLoopPerformBlock` until `CFRunLoopRun` is called.
+      // A segmentation fault occurs if we call `CFRunLoopPerformBlock` while `CFRunLoopRun' is processing.
+
+      wait_until_running();
+
+      CFRunLoopPerformBlock(run_loop_,
+                            kCFRunLoopDefaultMode,
+                            block);
+      CFRunLoopWakeUp(run_loop_);
+    }
+
+  private:
+    void wait_until_running(void) const {
+      std::unique_lock<std::mutex> lock(running_mutex_);
+      running_cv_.wait(lock, [this] {
+        return running_;
+      });
+    }
+
+    static void perform(void* _Nullable info) {
+    }
+
+    std::thread thread_;
+
+    CFRunLoopRef _Nullable run_loop_;
+
+    bool running_;
+    mutable std::mutex running_mutex_;
+    mutable std::condition_variable running_cv_;
+  };
 };
 } // namespace krbn
