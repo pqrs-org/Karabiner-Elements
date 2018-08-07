@@ -1,5 +1,5 @@
 all: build_make
-	bash ./run.bash
+	./build/karabiner_test
 
 clean: clean_builds
 

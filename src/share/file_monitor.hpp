@@ -1,26 +1,34 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
+#include "cf_utility.hpp"
 #include "filesystem.hpp"
-#include "gcd_utility.hpp"
 #include "logger.hpp"
 #include <CoreServices/CoreServices.h>
+#include <boost/signals2.hpp>
 #include <utility>
 #include <vector>
 
 namespace krbn {
 class file_monitor final {
 public:
-  typedef std::function<void(const std::string& file_path)> callback;
+  // Signals
 
-  // [
+  boost::signals2::signal<void(const std::string& file_path)> file_changed;
+
+  // Methods
+
+  // targets: [
   //   {directory, [file, file, ...]}
   //   {directory, [file, file, ...]}
   //   ...
   // ]
-  file_monitor(const std::vector<std::pair<std::string, std::vector<std::string>>>& targets,
-               const callback& callback) : callback_(callback),
-                                           directories_(CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks)),
-                                           stream_(nullptr) {
+
+  file_monitor(const std::vector<std::pair<std::string, std::vector<std::string>>>& targets) : directories_(cf_utility::create_cfmutablearray()),
+                                                                                               stream_(nullptr) {
+    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
+
     if (directories_) {
       for (const auto& target : targets) {
         if (auto directory = CFStringCreateWithCString(kCFAllocatorDefault,
@@ -32,7 +40,6 @@ public:
           files_.insert(files_.end(), target.second.begin(), target.second.end());
         }
       }
-      register_stream();
     }
   }
 
@@ -43,6 +50,14 @@ public:
       CFRelease(directories_);
       directories_ = nullptr;
     }
+
+    run_loop_thread_ = nullptr;
+  }
+
+  void start(void) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    register_stream();
   }
 
 private:
@@ -60,12 +75,12 @@ private:
     //
     //   In this case, the callback will not be called.
     //
-    // Thus, we should call the callback manually.
+    // Thus, we should signal manually once.
 
-    if (callback_) {
-      for (const auto& file : files_) {
-        if (filesystem::exists(file)) {
-          callback_(file);
+    for (const auto& file : files_) {
+      if (auto path = filesystem::realpath(file)) {
+        if (filesystem::exists(*path)) {
+          file_changed(*path);
         }
       }
     }
@@ -99,7 +114,9 @@ private:
     if (!stream_) {
       logger::get_logger().error("FSEventStreamCreate error @ {0}", __PRETTY_FUNCTION__);
     } else {
-      FSEventStreamScheduleWithRunLoop(stream_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+      FSEventStreamScheduleWithRunLoop(stream_,
+                                       run_loop_thread_->get_run_loop(),
+                                       kCFRunLoopDefaultMode);
       if (!FSEventStreamStart(stream_)) {
         logger::get_logger().error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
       }
@@ -107,15 +124,12 @@ private:
   }
 
   void unregister_stream(void) {
-    // Release stream_ in main thread to avoid callback invocations after object has been destroyed.
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (stream_) {
-        FSEventStreamStop(stream_);
-        FSEventStreamInvalidate(stream_);
-        FSEventStreamRelease(stream_);
-        stream_ = nullptr;
-      }
-    });
+    if (stream_) {
+      FSEventStreamStop(stream_);
+      FSEventStreamInvalidate(stream_);
+      FSEventStreamRelease(stream_);
+      stream_ = nullptr;
+    }
   }
 
   static void static_stream_callback(ConstFSEventStreamRef stream,
@@ -139,7 +153,7 @@ private:
                        const FSEventStreamEventId event_ids[]) {
     for (size_t i = 0; i < num_events; ++i) {
       if (event_flags[i] & kFSEventStreamEventFlagRootChanged) {
-        logger::get_logger().info("the configuration directory is updated.");
+        logger::get_logger().info("The configuration directory is updated.");
         // re-register stream
         unregister_stream();
         register_stream();
@@ -152,9 +166,7 @@ private:
           for (const auto& file : files_) {
             if (auto path = filesystem::realpath(file)) {
               if (*event_path == *path) {
-                if (callback_) {
-                  callback_(*event_path);
-                }
+                file_changed(*event_path);
               }
             }
           }
@@ -163,10 +175,10 @@ private:
     }
   }
 
-  callback callback_;
-
   CFMutableArrayRef directories_;
   std::vector<std::string> files_;
   FSEventStreamRef stream_;
+  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  std::mutex mutex_;
 };
 } // namespace krbn
