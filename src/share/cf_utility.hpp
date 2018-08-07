@@ -145,6 +145,7 @@ public:
                               ^{
                                 {
                                   std::lock_guard<std::mutex> lock(running_mutex_);
+
                                   running_ = true;
                                 }
                                 running_cv_.notify_one();
@@ -193,12 +194,14 @@ public:
       CFRunLoopPerformBlock(run_loop_,
                             kCFRunLoopDefaultMode,
                             block);
+
       CFRunLoopWakeUp(run_loop_);
     }
 
   private:
     void wait_until_running(void) const {
       std::unique_lock<std::mutex> lock(running_mutex_);
+
       running_cv_.wait(lock, [this] {
         return running_;
       });
