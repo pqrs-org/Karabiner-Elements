@@ -118,6 +118,9 @@ public:
   // CFRunLoop
   // ========================================
 
+  /**
+   * Create a thread and then run CFRunLoop on the thread.
+   */
   class run_loop_thread final {
   public:
     run_loop_thread(void) : run_loop_(nullptr),
