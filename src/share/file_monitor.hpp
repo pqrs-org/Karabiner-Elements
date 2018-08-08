@@ -37,7 +37,11 @@ public:
           CFArrayAppendValue(directories_, directory);
           CFRelease(directory);
 
-          files_.insert(files_.end(), target.second.begin(), target.second.end());
+          for (const auto& t : target.second) {
+            if (auto path = filesystem::realpath(t)) {
+              files_.push_back(*path);
+            }
+          }
         }
       }
     }
@@ -60,6 +64,12 @@ public:
     register_stream();
   }
 
+  void enqueue_file_changed(const std::string& file_path) {
+    run_loop_thread_->enqueue(^{
+      call_file_changed_slots(file_path);
+    });
+  }
+
 private:
   void register_stream(void) {
     // ----------------------------------------
@@ -78,11 +88,9 @@ private:
     // Thus, we should signal manually once.
 
     for (const auto& file : files_) {
-      if (auto path = filesystem::realpath(file)) {
-        if (filesystem::exists(*path)) {
-          file_changed(*path);
-        }
-      }
+      run_loop_thread_->enqueue(^{
+        call_file_changed_slots(file);
+      });
     }
 
     // ----------------------------------------
@@ -159,17 +167,23 @@ private:
         register_stream();
 
       } else {
-        // FSEvents passes realpathed file path to callback.
-        // Thus, we have to compare realpathed file paths.
+        call_file_changed_slots(event_paths[i]);
+      }
+    }
+  }
 
-        if (auto event_path = filesystem::realpath(event_paths[i])) {
-          for (const auto& file : files_) {
-            if (auto path = filesystem::realpath(file)) {
-              if (*event_path == *path) {
-                file_changed(*event_path);
-              }
-            }
-          }
+  void call_file_changed_slots(const std::string& file_path) const {
+    // FSEvents passes realpathed file path to callback.
+    // Thus, we have to compare realpathed file paths.
+
+    if (auto path = filesystem::realpath(file_path)) {
+      if (filesystem::exists(*path)) {
+        if (std::any_of(std::begin(files_),
+                        std::end(files_),
+                        [&](auto&& p) {
+                          return *path == p;
+                        })) {
+          file_changed(*path);
         }
       }
     }

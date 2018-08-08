@@ -21,6 +21,13 @@ public:
     file_monitor_ = std::make_unique<krbn::file_monitor>(targets);
 
     file_monitor_->file_changed.connect([&](auto& file_path) {
+      if (!file_changed_thread_id_) {
+        file_changed_thread_id_ = std::this_thread::get_id();
+      }
+      if (file_changed_thread_id_ != std::this_thread::get_id()) {
+        throw std::logic_error("thread id mismatch");
+      }
+
       last_file_path_ = file_path;
 
       std::ifstream ifstream(file_path);
@@ -65,8 +72,13 @@ public:
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 
+  void enqueue_file_changed(const std::string& file_path) {
+    file_monitor_->enqueue_file_changed(file_path);
+  }
+
 private:
   std::unique_ptr<krbn::file_monitor> file_monitor_;
+  boost::optional<std::thread::id> file_changed_thread_id_;
   std::string last_file_path_;
   std::string last_file_line1_;
   std::string last_file_line2_;
@@ -224,6 +236,19 @@ TEST_CASE("file_monitor") {
     system("mkdir -p target.new/sub");
     system("echo 16 > target.new/sub/file1");
     system("mv target.new target");
+
+    monitor.wait();
+
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file1"));
+    REQUIRE(monitor.get_last_file_line1() == "16");
+    REQUIRE(monitor.get_last_file_line2().empty());
+
+    // ========================================
+    // enqueue_file_changed
+
+    monitor.clear_results();
+
+    monitor.enqueue_file_changed("target/sub/file1");
 
     monitor.wait();
 
