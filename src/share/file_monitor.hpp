@@ -72,6 +72,12 @@ public:
 
 private:
   void register_stream(void) {
+    // Skip if already started.
+
+    if (stream_) {
+      return;
+    }
+
     // ----------------------------------------
     // File System Events API does not call the callback if the root directory and files are moved at the same time.
     //
