@@ -5,7 +5,6 @@
 #include "constants.hpp"
 #include "file_monitor.hpp"
 #include "filesystem.hpp"
-#include "gcd_utility.hpp"
 #include "logger.hpp"
 #include "shared_instance_provider.hpp"
 #include <boost/signals2.hpp>
@@ -16,48 +15,50 @@ class version_monitor final : public shared_instance_provider<version_monitor> {
 public:
   // Signals
 
-  boost::signals2::signal<void(void)> changed;
+  boost::signals2::signal<void(const std::string& version)> changed;
 
   // Methods
 
   version_monitor(const version_monitor&) = delete;
 
-  version_monitor(void) : started_(false) {
+  version_monitor(const std::string& version_file_path) : version_file_path_(version_file_path) {
   }
 
   ~version_monitor(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      file_monitor_ = nullptr;
-    });
+    file_monitor_ = nullptr;
   }
 
   void start(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (started_) {
-        return;
-      }
+    std::lock_guard<std::mutex> lock(file_monitor_mutex_);
 
-      started_ = true;
+    if (file_monitor_) {
+      return;
+    }
 
-      auto version_file_path = constants::get_version_file_path();
-      auto version_file_directory = filesystem::dirname(version_file_path);
+    version_ = read_version_file();
 
-      version_ = read_version_file();
+    // Start file_monitor_
 
-      std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-          {version_file_directory, {version_file_path}},
-      };
-      file_monitor_ = std::make_unique<file_monitor>(targets,
-                                                     [this](const std::string&) {
-                                                       check_version();
-                                                     });
+    std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
+        {
+            filesystem::dirname(version_file_path_),
+            {
+                version_file_path_,
+            },
+        },
+    };
+
+    file_monitor_ = std::make_unique<file_monitor>(targets);
+
+    file_monitor_->file_changed.connect([this](const std::string&) {
+      check_version();
     });
+
+    file_monitor_->start();
   }
 
   void manual_check(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      check_version();
-    });
+    file_monitor_->enqueue_file_changed(version_file_path_);
   }
 
 private:
@@ -68,14 +69,14 @@ private:
 
       version_ = version;
 
-      changed();
+      changed(version_);
     }
   }
 
   std::string read_version_file(void) {
     std::string version;
 
-    std::ifstream stream(constants::get_version_file_path());
+    std::ifstream stream(version_file_path_);
     if (stream) {
       std::getline(stream, version);
     }
@@ -83,8 +84,11 @@ private:
     return version;
   }
 
-  bool started_;
-  std::string version_;
+  std::string version_file_path_;
+
   std::unique_ptr<file_monitor> file_monitor_;
+  std::mutex file_monitor_mutex_;
+
+  std::string version_;
 };
 } // namespace krbn
