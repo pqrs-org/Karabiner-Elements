@@ -53,6 +53,12 @@ public:
     return string;
   }
 
+  static CFStringRef _Nullable create_cfstring(const std::string& string) {
+    return CFStringCreateWithCString(kCFAllocatorDefault,
+                                     string.c_str(),
+                                     kCFStringEncodingUTF8);
+  }
+
   static boost::optional<int64_t> to_int64_t(CFTypeRef _Nullable value) {
     if (!value) {
       return boost::none;
