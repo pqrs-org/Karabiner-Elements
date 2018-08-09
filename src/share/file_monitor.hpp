@@ -60,8 +60,6 @@ public:
   }
 
   void start(void) {
-    std::lock_guard<std::mutex> lock(mutex_);
-
     register_stream();
   }
 
@@ -73,6 +71,8 @@ public:
 
 private:
   void register_stream(void) {
+    std::lock_guard<std::mutex> lock(stream_mutex_);
+
     // Skip if already started.
 
     if (stream_) {
@@ -139,6 +139,8 @@ private:
   }
 
   void unregister_stream(void) {
+    std::lock_guard<std::mutex> lock(stream_mutex_);
+
     if (stream_) {
       FSEventStreamStop(stream_);
       FSEventStreamInvalidate(stream_);
@@ -198,8 +200,9 @@ private:
 
   CFMutableArrayRef directories_;
   std::vector<std::string> files_;
-  FSEventStreamRef stream_;
   std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
-  std::mutex mutex_;
+
+  FSEventStreamRef stream_;
+  std::mutex stream_mutex_;
 };
 } // namespace krbn
