@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "version_monitor.hpp"
 
 namespace krbn {
@@ -14,7 +15,7 @@ public:
       });
     });
 
-    monitor->start();
+    monitor->start(constants::get_version_file_path());
   }
 };
 } // namespace krbn
