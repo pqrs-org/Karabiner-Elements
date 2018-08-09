@@ -8,7 +8,7 @@ TEST_CASE("initialize") {
   krbn::thread_utility::register_main_thread();
 }
 
-TEST_CASE("file_monitor") {
+TEST_CASE("version_monitor") {
   system("rm -rf target");
   system("mkdir -p target/sub/");
   system("echo 1.0.0 > target/sub/version");
