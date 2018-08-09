@@ -21,20 +21,21 @@ public:
 
   version_monitor(const version_monitor&) = delete;
 
-  version_monitor(const std::string& version_file_path) : version_file_path_(version_file_path) {
+  version_monitor(void) {
   }
 
   ~version_monitor(void) {
     file_monitor_ = nullptr;
   }
 
-  void start(void) {
+  void start(const std::string& version_file_path) {
     std::lock_guard<std::mutex> lock(file_monitor_mutex_);
 
     if (file_monitor_) {
       return;
     }
 
+    version_file_path_ = version_file_path;
     version_ = read_version_file();
 
     // Start file_monitor_

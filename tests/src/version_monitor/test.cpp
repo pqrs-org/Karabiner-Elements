@@ -14,7 +14,7 @@ TEST_CASE("version_monitor") {
   system("echo 1.0.0 > target/version");
 
   {
-    krbn::version_monitor version_monitor("target/version");
+    krbn::version_monitor version_monitor;
 
     std::string last_changed_version;
 
@@ -22,7 +22,7 @@ TEST_CASE("version_monitor") {
       last_changed_version = version;
     });
 
-    version_monitor.start();
+    version_monitor.start("target/version");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
