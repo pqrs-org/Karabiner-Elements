@@ -64,7 +64,7 @@ int main(int argc, const char* argv[]) {
 
   krbn::karabiner_observer karabiner_observer;
 
-  krbn::version_monitor_utility::start_monitor_to_stop_run_loop_when_version_changed();
+  krbn::version_monitor_utility::start_monitor_to_stop_main_run_loop_when_version_changed();
   CFRunLoopRun();
 
   return 0;
