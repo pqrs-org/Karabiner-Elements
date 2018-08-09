@@ -19,30 +19,31 @@ public:
 
   // Methods
 
-  // targets: [
-  //   {directory, [file, file, ...]}
-  //   {directory, [file, file, ...]}
-  //   ...
-  // ]
-
-  file_monitor(const std::vector<std::pair<std::string, std::vector<std::string>>>& targets) : directories_(cf_utility::create_cfmutablearray()),
-                                                                                               stream_(nullptr) {
+  file_monitor(const std::vector<std::string>& files) : directories_(cf_utility::create_cfmutablearray()),
+                                                        stream_(nullptr) {
     run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
 
-    if (directories_) {
-      for (const auto& target : targets) {
-        if (auto directory = CFStringCreateWithCString(kCFAllocatorDefault,
-                                                       target.first.c_str(),
-                                                       kCFStringEncodingUTF8)) {
-          CFArrayAppendValue(directories_, directory);
-          CFRelease(directory);
+    std::vector<std::string> directories;
+    for (const auto& f : files) {
+      auto directory = filesystem::dirname(f);
+      if (std::none_of(std::begin(directories),
+                       std::end(directories),
+                       [&](auto&& d) {
+                         return directory == d;
+                       })) {
+        directories.push_back(directory);
+      }
 
-          for (const auto& t : target.second) {
-            if (auto path = filesystem::realpath(t)) {
-              files_.push_back(*path);
-            }
-          }
+      // Do not apply `realpath` here since `realpath(f)` will be failed if `f` does not exist.
+      files_.push_back(f);
+    }
+
+    for (const auto& d : directories) {
+      if (auto directory = cf_utility::create_cfstring(d)) {
+        if (directories_) {
+          CFArrayAppendValue(directories_, directory);
         }
+        CFRelease(directory);
       }
     }
   }
@@ -187,7 +188,7 @@ private:
         if (std::any_of(std::begin(files_),
                         std::end(files_),
                         [&](auto&& p) {
-                          return *path == p;
+                          return *path == filesystem::realpath(p);
                         })) {
           file_changed(*path);
         }

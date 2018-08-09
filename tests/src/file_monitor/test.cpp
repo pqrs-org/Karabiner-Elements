@@ -8,14 +8,10 @@ namespace {
 class test_file_monitor final {
 public:
   test_file_monitor(void) {
-    std::vector<std::pair<std::string, std::vector<std::string>>> targets({
-        {
-            "target/sub",
-            {
-                "target/sub/file1",
-                "target/sub/file2",
-            },
-        },
+    std::vector<std::string> targets({
+        "target/sub1/file1_1",
+        "target/sub1/file1_2",
+        "target/sub2/file2_1",
     });
 
     file_monitor_ = std::make_unique<krbn::file_monitor>(targets);
@@ -33,14 +29,19 @@ public:
       std::ifstream ifstream(file_path);
       REQUIRE(ifstream);
 
-      if (auto realpath = krbn::filesystem::realpath("target/sub/file1")) {
+      if (auto realpath = krbn::filesystem::realpath("target/sub1/file1_1")) {
         if (file_path == *realpath) {
-          std::getline(ifstream, last_file_line1_);
+          std::getline(ifstream, last_file_line1_1_);
         }
       }
-      if (auto realpath = krbn::filesystem::realpath("target/sub/file2")) {
+      if (auto realpath = krbn::filesystem::realpath("target/sub1/file1_2")) {
         if (file_path == *realpath) {
-          std::getline(ifstream, last_file_line2_);
+          std::getline(ifstream, last_file_line1_2_);
+        }
+      }
+      if (auto realpath = krbn::filesystem::realpath("target/sub2/file2_1")) {
+        if (file_path == *realpath) {
+          std::getline(ifstream, last_file_line2_1_);
         }
       }
     });
@@ -54,18 +55,23 @@ public:
     return last_file_path_;
   }
 
-  const std::string& get_last_file_line1(void) const {
-    return last_file_line1_;
+  const std::string& get_last_file_line1_1(void) const {
+    return last_file_line1_1_;
   }
 
-  const std::string& get_last_file_line2(void) const {
-    return last_file_line2_;
+  const std::string& get_last_file_line1_2(void) const {
+    return last_file_line1_2_;
+  }
+
+  const std::string& get_last_file_line2_1(void) const {
+    return last_file_line2_1_;
   }
 
   void clear_results(void) {
     last_file_path_.clear();
-    last_file_line1_.clear();
-    last_file_line2_.clear();
+    last_file_line1_1_.clear();
+    last_file_line1_2_.clear();
+    last_file_line2_1_.clear();
   }
 
   void wait(void) {
@@ -80,8 +86,9 @@ private:
   std::unique_ptr<krbn::file_monitor> file_monitor_;
   boost::optional<std::thread::id> file_changed_thread_id_;
   std::string last_file_path_;
-  std::string last_file_line1_;
-  std::string last_file_line2_;
+  std::string last_file_line1_1_;
+  std::string last_file_line1_2_;
+  std::string last_file_line2_1_;
 };
 } // namespace
 
@@ -90,98 +97,128 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("file_monitor") {
-  system("rm -rf target");
-  system("mkdir -p target/sub");
-  system("echo 10 > target/sub/file1");
-  system("echo 20 > target/sub/file2");
-
   {
+    system("rm -rf target");
+    system("mkdir -p target/sub1");
+    system("mkdir -p target/sub2");
+    system("echo 1_1_0 > target/sub1/file1_1");
+    system("echo 1_2_0 > target/sub1/file1_2");
+
     test_file_monitor monitor;
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file2"));
-    REQUIRE(monitor.get_last_file_line1() == "10");
-    REQUIRE(monitor.get_last_file_line2() == "20");
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_2"));
+    REQUIRE(monitor.get_last_file_line1_1() == "1_1_0");
+    REQUIRE(monitor.get_last_file_line1_2() == "1_2_0");
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
-    // Generic file modification
+    // Generic file modification (update file1_1)
+    // ========================================
 
     monitor.clear_results();
 
-    system("echo 11 > target/sub/file1");
+    system("echo 1_1_1 > target/sub1/file1_1");
 
     monitor.wait();
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file1"));
-    REQUIRE(monitor.get_last_file_line1() == "11");
-    REQUIRE(monitor.get_last_file_line2().empty());
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_1"));
+    REQUIRE(monitor.get_last_file_line1_1() == "1_1_1");
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
-    // Generic file modification
+    // Generic file modification (update file1_1 again)
+    // ========================================
 
     monitor.clear_results();
 
-    system("echo 12 > target/sub/file1");
+    system("echo 1_1_2 > target/sub1/file1_1");
 
     monitor.wait();
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file1"));
-    REQUIRE(monitor.get_last_file_line1() == "12");
-    REQUIRE(monitor.get_last_file_line2().empty());
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_1"));
+    REQUIRE(monitor.get_last_file_line1_1() == "1_1_2");
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
-    // Generic file modification
+    // Generic file modification (update file1_2)
+    // ========================================
 
     monitor.clear_results();
 
-    system("echo 21 > target/sub/file2");
+    system("echo 1_2_1 > target/sub1/file1_2");
 
     monitor.wait();
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file2"));
-    REQUIRE(monitor.get_last_file_line1().empty());
-    REQUIRE(monitor.get_last_file_line2() == "21");
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_2"));
+    REQUIRE(monitor.get_last_file_line1_1().empty());
+    REQUIRE(monitor.get_last_file_line1_2() == "1_2_1");
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
-    // Generic file modification
+    // Generic file modification (update file1_2 again)
+    // ========================================
 
     monitor.clear_results();
 
-    system("echo 22 > target/sub/file2");
+    system("echo 1_2_2 > target/sub1/file1_2");
 
     monitor.wait();
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file2"));
-    REQUIRE(monitor.get_last_file_line1().empty());
-    REQUIRE(monitor.get_last_file_line2() == "22");
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_2"));
+    REQUIRE(monitor.get_last_file_line1_1().empty());
+    REQUIRE(monitor.get_last_file_line1_2() == "1_2_2");
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
-    // Generic file modification
+    // Generic file modification (update file1_1 again)
+    // ========================================
 
     monitor.clear_results();
 
-    system("echo 13 > target/sub/file1");
+    system("echo 1_1_3 > target/sub1/file1_1");
 
     monitor.wait();
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file1"));
-    REQUIRE(monitor.get_last_file_line1() == "13");
-    REQUIRE(monitor.get_last_file_line2().empty());
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_1"));
+    REQUIRE(monitor.get_last_file_line1_1() == "1_1_3");
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
+
+    // ========================================
+    // Generic file modification (update file2_1)
+    // ========================================
+
+    monitor.clear_results();
+
+    system("echo 2_1_1 > target/sub2/file2_1");
+
+    monitor.wait();
+
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub2/file2_1"));
+    REQUIRE(monitor.get_last_file_line1_1().empty());
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1() == "2_1_1");
 
     // ========================================
     // File removal
+    // ========================================
 
     monitor.clear_results();
 
-    system("rm target/sub/file2");
+    system("rm target/sub1/file1_2");
 
     monitor.wait();
 
     REQUIRE(monitor.get_last_file_path().empty());
-    REQUIRE(monitor.get_last_file_line1().empty());
-    REQUIRE(monitor.get_last_file_line2().empty());
+    REQUIRE(monitor.get_last_file_line1_1().empty());
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
     // Directory removal
+    // ========================================
 
     monitor.clear_results();
 
@@ -190,42 +227,48 @@ TEST_CASE("file_monitor") {
     monitor.wait();
 
     REQUIRE(monitor.get_last_file_path().empty());
-    REQUIRE(monitor.get_last_file_line1().empty());
-    REQUIRE(monitor.get_last_file_line2().empty());
+    REQUIRE(monitor.get_last_file_line1_1().empty());
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
     // Generic file modification
+    // ========================================
 
     monitor.clear_results();
 
-    system("mkdir -p target/sub");
+    system("mkdir -p target/sub1");
 
     monitor.wait();
 
-    system("echo 14 > target/sub/file1");
+    system("echo 1_1_4 > target/sub1/file1_1");
 
     monitor.wait();
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file1"));
-    REQUIRE(monitor.get_last_file_line1() == "14");
-    REQUIRE(monitor.get_last_file_line2().empty());
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_1"));
+    REQUIRE(monitor.get_last_file_line1_1() == "1_1_4");
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
     // Move file
+    // ========================================
 
     monitor.clear_results();
 
-    system("echo 15 > target/sub/file1.new");
-    system("mv target/sub/file1.new target/sub/file1");
+    system("echo 1_1_5 > target/sub1/file1_1.new");
+    system("mv target/sub1/file1_1.new target/sub1/file1_1");
 
     monitor.wait();
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file1"));
-    REQUIRE(monitor.get_last_file_line1() == "15");
-    REQUIRE(monitor.get_last_file_line2().empty());
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_1"));
+    REQUIRE(monitor.get_last_file_line1_1() == "1_1_5");
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
     // Move directory
+    // ========================================
 
     monitor.clear_results();
 
@@ -233,27 +276,59 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    system("mkdir -p target.new/sub");
-    system("echo 16 > target.new/sub/file1");
+    system("mkdir -p target.new/sub1");
+    system("echo 1_1_6 > target.new/sub1/file1_1");
     system("mv target.new target");
 
     monitor.wait();
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file1"));
-    REQUIRE(monitor.get_last_file_line1() == "16");
-    REQUIRE(monitor.get_last_file_line2().empty());
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_1"));
+    REQUIRE(monitor.get_last_file_line1_1() == "1_1_6");
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
 
     // ========================================
     // enqueue_file_changed
+    // ========================================
 
     monitor.clear_results();
 
-    monitor.enqueue_file_changed("target/sub/file1");
+    monitor.enqueue_file_changed("target/sub1/file1_1");
 
     monitor.wait();
 
-    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub/file1"));
-    REQUIRE(monitor.get_last_file_line1() == "16");
-    REQUIRE(monitor.get_last_file_line2().empty());
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_1"));
+    REQUIRE(monitor.get_last_file_line1_1() == "1_1_6");
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
+  }
+
+  {
+    // ========================================
+    // Create test_file_monitor when any target files do not exist.
+    // ========================================
+
+    system("rm -rf target");
+
+    test_file_monitor monitor;
+
+    REQUIRE(monitor.get_last_file_path().empty());
+    REQUIRE(monitor.get_last_file_line1_1().empty());
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
+
+    // ========================================
+    // Generic file modification
+    // ========================================
+
+    system("mkdir -p target/sub1");
+    system("echo 1_1_0 > target/sub1/file1_1");
+
+    monitor.wait();
+
+    REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_1"));
+    REQUIRE(monitor.get_last_file_line1_1() == "1_1_0");
+    REQUIRE(monitor.get_last_file_line1_2().empty());
+    REQUIRE(monitor.get_last_file_line2_1().empty());
   }
 }
