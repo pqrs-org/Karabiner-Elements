@@ -41,12 +41,24 @@ public:
       exit(0);
     }
 
-    grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>([] {
+    // ========================================
+
+    grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>();
+
+    grabber_alerts_monitor_->alerts_changed.connect([](auto&& alerts) {
       logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
-      application_launcher::launch_preferences();
+      if (!alerts.empty()) {
+        application_launcher::launch_preferences();
+      }
     });
 
+    grabber_alerts_monitor_->start(constants::get_grabber_alerts_json_file_path());
+
+    // ========================================
+
     migration::migrate_v1();
+
+    // ========================================
 
     krbn::filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
     krbn::filesystem::create_directory_with_intermediate_directories(constants::get_user_complex_modifications_assets_directory(), 0700);
@@ -74,7 +86,7 @@ int main(int argc, const char* argv[]) {
 
   krbn::update_utility::check_for_updates_on_startup();
 
-  krbn::version_monitor_utility::start_monitor_to_stop_run_loop_when_version_changed();
+  krbn::version_monitor_utility::start_monitor_to_stop_main_run_loop_when_version_changed();
   CFRunLoopRun();
 
   return 0;
