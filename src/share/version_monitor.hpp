@@ -39,13 +39,8 @@ public:
 
     // Start file_monitor_
 
-    std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-        {
-            filesystem::dirname(version_file_path_),
-            {
-                version_file_path_,
-            },
-        },
+    std::vector<std::string> targets = {
+        version_file_path_,
     };
 
     file_monitor_ = std::make_unique<file_monitor>(targets);
