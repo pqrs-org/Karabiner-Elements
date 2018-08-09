@@ -10,11 +10,11 @@ TEST_CASE("initialize") {
 
 TEST_CASE("version_monitor") {
   system("rm -rf target");
-  system("mkdir -p target/sub/");
-  system("echo 1.0.0 > target/sub/version");
+  system("mkdir -p target");
+  system("echo 1.0.0 > target/version");
 
   {
-    krbn::version_monitor version_monitor("target/sub/version");
+    krbn::version_monitor version_monitor("target/version");
 
     std::string last_changed_version;
 
@@ -34,7 +34,7 @@ TEST_CASE("version_monitor") {
 
     last_changed_version.clear();
 
-    system("echo 1.1.0 > target/sub/version");
+    system("echo 1.1.0 > target/version");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -46,7 +46,7 @@ TEST_CASE("version_monitor") {
 
     last_changed_version.clear();
 
-    system("touch target/sub/version");
+    system("touch target/version");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -71,7 +71,7 @@ TEST_CASE("version_monitor") {
     last_changed_version.clear();
 
     {
-      std::ofstream("target/sub/version") << "1.2.0";
+      std::ofstream("target/version") << "1.2.0";
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -96,7 +96,7 @@ TEST_CASE("version_monitor") {
 
     last_changed_version.clear();
 
-    system("echo 1.3.0 > target/sub/version");
+    system("echo 1.3.0 > target/version");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
