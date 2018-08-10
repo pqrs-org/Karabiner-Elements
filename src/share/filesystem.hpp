@@ -18,17 +18,24 @@ public:
   }
 
   static bool create_directory_with_intermediate_directories(const std::string& path, mode_t mode) {
-    if (is_directory(path)) {
-      return true;
+    std::vector<std::string> parents;
+    auto directory = path;
+    while (!exists(directory)) {
+      parents.push_back(directory);
+      directory = dirname(directory);
     }
 
-    if (!create_directory_with_intermediate_directories(dirname(path), mode)) {
+    for (auto it = std::rbegin(parents); it != std::rend(parents); std::advance(it, 1)) {
+      if (mkdir(it->c_str(), mode) != 0) {
+        return false;
+      }
+    }
+
+    if (!is_directory(path)) {
       return false;
     }
 
-    if (mkdir(path.c_str(), mode) != 0) {
-      return false;
-    }
+    chmod(path.c_str(), mode);
 
     return true;
   }
@@ -44,6 +51,14 @@ public:
       return;
     }
     ofstream << ifstream.rdbuf();
+  }
+
+  static boost::optional<mode_t> file_access_permissions(const std::string& path) {
+    struct stat s;
+    if (stat(path.c_str(), &s) != 0) {
+      return boost::none;
+    }
+    return s.st_mode & ACCESSPERMS;
   }
 
   static boost::optional<off_t> file_size(const std::string& path) {
