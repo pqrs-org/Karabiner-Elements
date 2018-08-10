@@ -1,12 +1,12 @@
 #pragma once
 
-#include "configuration_manager.hpp"
 #include "console_user_id_monitor.hpp"
 #include "constants.hpp"
 #include "frontmost_application_observer.hpp"
 #include "grabber_client.hpp"
 #include "input_source_observer.hpp"
 #include "logger.hpp"
+#include "menu_process_manager.hpp"
 #include "receiver.hpp"
 #include "session.hpp"
 #include "system_preferences_monitor.hpp"
@@ -21,6 +21,10 @@ public:
   connection_manager(void) {
     console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
       version_monitor::get_shared_instance()->manual_check();
+
+      filesystem::create_directory_with_intermediate_directories(
+          constants::get_user_configuration_directory(),
+          0700);
 
       if (uid != getuid()) {
         stop_grabber_client();
