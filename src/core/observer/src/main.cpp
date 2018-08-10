@@ -9,6 +9,8 @@
 #include "version_monitor.hpp"
 #include "version_monitor_utility.hpp"
 #include <iostream>
+#include <spdlog/async.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 #include <sstream>
 #include <unistd.h>
 
@@ -20,8 +22,10 @@ public:
       auto log_directory = "/var/log/karabiner";
       mkdir(log_directory, 0755);
       if (filesystem::is_directory(log_directory)) {
-        spdlog::set_async_mode(4096);
-        auto l = spdlog::rotating_logger_mt("observer", "/var/log/karabiner/observer.log", 256 * 1024, 3);
+        auto l = spdlog::rotating_logger_mt<spdlog::async_factory>("observer",
+                                                                   "/var/log/karabiner/observer.log",
+                                                                   256 * 1024,
+                                                                   3);
         l->flush_on(spdlog::level::info);
         l->set_pattern(spdlog_utility::get_pattern());
         logger::set_logger(l);

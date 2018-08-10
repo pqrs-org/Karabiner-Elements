@@ -11,6 +11,8 @@
 #include "update_utility.hpp"
 #include "version_monitor.hpp"
 #include "version_monitor_utility.hpp"
+#include <spdlog/async.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 
 namespace krbn {
 class karabiner_console_user_server final {
@@ -22,9 +24,11 @@ public:
         filesystem::create_directory_with_intermediate_directories(log_directory, 0700);
 
         if (filesystem::is_directory(log_directory)) {
-          spdlog::set_async_mode(4096);
           std::string log_file_path = log_directory + "/console_user_server.log";
-          auto l = spdlog::rotating_logger_mt("console_user_server", log_file_path.c_str(), 256 * 1024, 3);
+          auto l = spdlog::rotating_logger_mt<spdlog::async_factory>("console_user_server",
+                                                                     log_file_path.c_str(),
+                                                                     256 * 1024,
+                                                                     3);
           l->flush_on(spdlog::level::info);
           l->set_pattern(spdlog_utility::get_pattern());
           logger::set_logger(l);

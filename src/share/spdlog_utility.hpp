@@ -97,7 +97,7 @@ public:
 
     for (int i = 0; i < spdlog::level::off; ++i) {
       auto level = spdlog::level::level_enum(i);
-      auto level_name = std::string(spdlog::level::to_str(level)) + "]";
+      auto level_name = std::string(spdlog::level::to_c_str(level)) + "]";
 
       if (line.compare(front, level_name.size(), level_name) == 0) {
         return level;

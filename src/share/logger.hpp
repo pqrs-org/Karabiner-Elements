@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_sinks.h>
 
 namespace krbn {
 class logger final {

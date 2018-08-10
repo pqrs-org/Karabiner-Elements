@@ -9,6 +9,8 @@
 #include "process_utility.hpp"
 #include "thread_utility.hpp"
 #include "version_monitor_utility.hpp"
+#include <spdlog/async.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 
 int main(int argc, const char* argv[]) {
   if (getuid() != 0) {
@@ -26,8 +28,10 @@ int main(int argc, const char* argv[]) {
     auto log_directory = "/var/log/karabiner";
     mkdir(log_directory, 0755);
     if (krbn::filesystem::is_directory(log_directory)) {
-      spdlog::set_async_mode(4096);
-      auto l = spdlog::rotating_logger_mt("grabber", "/var/log/karabiner/grabber.log", 256 * 1024, 3);
+      auto l = spdlog::rotating_logger_mt<spdlog::async_factory>("grabber",
+                                                                 "/var/log/karabiner/grabber.log",
+                                                                 256 * 1024,
+                                                                 3);
       l->flush_on(spdlog::level::info);
       l->set_pattern(krbn::spdlog_utility::get_pattern());
       krbn::logger::set_logger(l);
