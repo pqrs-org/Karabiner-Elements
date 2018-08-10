@@ -19,32 +19,6 @@ public:
   connection_manager(const connection_manager&) = delete;
 
   connection_manager(void) {
-    // Setup grabber_client
-
-    auto grabber_client = grabber_client::get_shared_instance();
-
-    connections_.push_back(grabber_client->connected.connect([this] {
-      version_monitor::get_shared_instance()->manual_check();
-
-      grabber_client::get_shared_instance()->connect();
-
-      start_child_monitors();
-    }));
-
-    connections_.push_back(grabber_client->connect_failed.connect([this](auto&& error_code) {
-      version_monitor::get_shared_instance()->manual_check();
-
-      stop_child_monitors();
-    }));
-
-    connections_.push_back(grabber_client->closed.connect([this] {
-      version_monitor::get_shared_instance()->manual_check();
-
-      stop_child_monitors();
-    }));
-
-    // Setup console_user_id_monitor_
-
     console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
       version_monitor::get_shared_instance()->manual_check();
 
@@ -73,32 +47,60 @@ public:
   }
 
   ~connection_manager(void) {
-    stop_grabber_client();
     console_user_id_monitor_.stop();
 
-    for (auto&& c : connections_) {
-      c.disconnect();
-    }
+    receiver_ = nullptr;
+
+    stop_grabber_client();
   }
 
 private:
   void start_grabber_client(void) {
-    grabber_client::get_shared_instance()->start();
+    stop_grabber_client();
+
+    auto grabber_client = grabber_client::get_shared_instance();
+
+    grabber_client_connections_.push_back(grabber_client->connected.connect([this] {
+      version_monitor::get_shared_instance()->manual_check();
+
+      grabber_client::get_shared_instance()->connect();
+
+      start_child_components();
+    }));
+
+    grabber_client_connections_.push_back(grabber_client->connect_failed.connect([this](auto&& error_code) {
+      version_monitor::get_shared_instance()->manual_check();
+
+      stop_child_components();
+    }));
+
+    grabber_client_connections_.push_back(grabber_client->closed.connect([this] {
+      version_monitor::get_shared_instance()->manual_check();
+
+      stop_child_components();
+    }));
+
+    grabber_client->start();
   }
 
   void stop_grabber_client(void) {
-    stop_child_monitors();
     grabber_client::get_shared_instance()->stop();
+
+    for (auto&& c : grabber_client_connections_) {
+      c.disconnect();
+    }
+
+    stop_child_components();
   }
 
-  void start_child_monitors(void) {
+  void start_child_components(void) {
     start_configuration_manager();
     start_system_preferences_monitor();
     start_frontmost_application_observer();
     start_input_source_observer();
   }
 
-  void stop_child_monitors(void) {
+  void stop_child_components(void) {
     stop_configuration_manager();
     stop_system_preferences_monitor();
     stop_frontmost_application_observer();
@@ -174,9 +176,9 @@ private:
 
   console_user_id_monitor console_user_id_monitor_;
 
-  std::vector<boost::signals2::connection> connections_;
-
   std::unique_ptr<receiver> receiver_;
+
+  std::vector<boost::signals2::connection> grabber_client_connections_;
 
   std::unique_ptr<configuration_manager> configuration_manager_;
   std::mutex configuration_manager_mutex_;
