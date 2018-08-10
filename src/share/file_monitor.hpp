@@ -21,7 +21,7 @@ public:
 
   file_monitor(const std::vector<std::string>& files) : directories_(cf_utility::create_cfmutablearray()),
                                                         stream_(nullptr) {
-    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
+    run_loop_thread_ = std::make_shared<cf_utility::run_loop_thread>();
 
     std::vector<std::string> directories;
     for (const auto& f : files) {
@@ -57,6 +57,10 @@ public:
     }
 
     run_loop_thread_ = nullptr;
+  }
+
+  std::shared_ptr<cf_utility::run_loop_thread> get_run_loop_thread(void) const {
+    return run_loop_thread_;
   }
 
   void start(void) {
@@ -200,7 +204,7 @@ private:
 
   CFMutableArrayRef directories_;
   std::vector<std::string> files_;
-  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  std::shared_ptr<cf_utility::run_loop_thread> run_loop_thread_;
 
   FSEventStreamRef stream_;
   std::mutex stream_mutex_;
