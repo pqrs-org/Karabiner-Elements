@@ -10,6 +10,7 @@
 
 TEST_CASE("initialize") {
   krbn::thread_utility::register_main_thread();
+  system("rm -rf mkdir_example");
 }
 
 TEST_CASE("exists") {
@@ -24,7 +25,26 @@ TEST_CASE("exists") {
 TEST_CASE("create_directory_with_intermediate_directories") {
   REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("/", 0700) == true);
   REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories(".", 0700) == true);
+
+  REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("mkdir_example/a/b", 0755) == true);
+  REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("mkdir_example/a/b/c/d", 0750) == true);
   REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("mkdir_example/a/b/c/d/e", 0700) == true);
+
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example")) == 0755);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a")) == 0755);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a/b")) == 0755);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a/b/c")) == 0750);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a/b/c/d")) == 0750);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a/b/c/d/e")) == 0700);
+
+  REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("mkdir_example/a/b/c/d/e", 0755) == true);
+
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example")) == 0755);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a")) == 0755);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a/b")) == 0755);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a/b/c")) == 0750);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a/b/c/d")) == 0750);
+  REQUIRE(*(krbn::filesystem::file_access_permissions("mkdir_example/a/b/c/d/e")) == 0755);
 
   REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("data/file", 0700) == false);
   REQUIRE(krbn::filesystem::create_directory_with_intermediate_directories("data/symlink", 0700) == false);
