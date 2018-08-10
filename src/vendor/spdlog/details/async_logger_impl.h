@@ -5,91 +5,96 @@
 
 #pragma once
 
-// Async Logger implementation
-// Use an async_sink (queue per logger) to perform the logging in a worker thread
+// async logger implementation
+// uses a thread pool to perform the actual logging
 
-#include "../async_logger.h"
-#include "../details/async_log_helper.h"
+#include "spdlog/details/thread_pool.h"
 
 #include <chrono>
-#include <functional>
 #include <memory>
 #include <string>
 
-template<class It>
-inline spdlog::async_logger::async_logger(const std::string &logger_name, const It &begin, const It &end, size_t queue_size,
-    const async_overflow_policy overflow_policy, const std::function<void()> &worker_warmup_cb,
-    const std::chrono::milliseconds &flush_interval_ms, const std::function<void()> &worker_teardown_cb)
-    : logger(logger_name, begin, end)
-    , _async_log_helper(new details::async_log_helper(
-          logger_name, _formatter, _sinks, queue_size, _err_handler, overflow_policy, worker_warmup_cb, flush_interval_ms, worker_teardown_cb))
+template<typename It>
+inline spdlog::async_logger::async_logger(
+    std::string logger_name, const It &begin, const It &end, std::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
+    : logger(std::move(logger_name), begin, end)
+    , thread_pool_(tp)
+    , overflow_policy_(overflow_policy)
 {
 }
 
-inline spdlog::async_logger::async_logger(const std::string &logger_name, sinks_init_list sinks_list, size_t queue_size,
-    const async_overflow_policy overflow_policy, const std::function<void()> &worker_warmup_cb,
-    const std::chrono::milliseconds &flush_interval_ms, const std::function<void()> &worker_teardown_cb)
-    : async_logger(logger_name, sinks_list.begin(), sinks_list.end(), queue_size, overflow_policy, worker_warmup_cb, flush_interval_ms,
-          worker_teardown_cb)
+inline spdlog::async_logger::async_logger(
+    std::string logger_name, sinks_init_list sinks_list, std::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
+    : async_logger(std::move(logger_name), sinks_list.begin(), sinks_list.end(), tp, overflow_policy)
 {
 }
 
-inline spdlog::async_logger::async_logger(const std::string &logger_name, sink_ptr single_sink, size_t queue_size,
-    const async_overflow_policy overflow_policy, const std::function<void()> &worker_warmup_cb,
-    const std::chrono::milliseconds &flush_interval_ms, const std::function<void()> &worker_teardown_cb)
-    : async_logger(
-          logger_name, {std::move(single_sink)}, queue_size, overflow_policy, worker_warmup_cb, flush_interval_ms, worker_teardown_cb)
+inline spdlog::async_logger::async_logger(
+    std::string logger_name, sink_ptr single_sink, std::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
+    : async_logger(std::move(logger_name), {single_sink}, tp, overflow_policy)
 {
 }
 
-inline void spdlog::async_logger::flush()
+// send the log message to the thread pool
+inline void spdlog::async_logger::sink_it_(details::log_msg &msg)
 {
-    _async_log_helper->flush();
+#if defined(SPDLOG_ENABLE_MESSAGE_COUNTER)
+    incr_msg_counter_(msg);
+#endif
+    if (auto pool_ptr = thread_pool_.lock())
+    {
+        pool_ptr->post_log(shared_from_this(), std::move(msg), overflow_policy_);
+    }
+    else
+    {
+        throw spdlog_ex("async log: thread pool doens't exist anymore");
+    }
 }
 
-// Error handler
-inline void spdlog::async_logger::set_error_handler(spdlog::log_err_handler err_handler)
+// send flush request to the thread pool
+inline void spdlog::async_logger::flush_()
 {
-    _err_handler = err_handler;
-    _async_log_helper->set_error_handler(err_handler);
-}
-inline spdlog::log_err_handler spdlog::async_logger::error_handler()
-{
-    return _err_handler;
-}
-
-inline void spdlog::async_logger::_set_formatter(spdlog::formatter_ptr msg_formatter)
-{
-    _formatter = msg_formatter;
-    _async_log_helper->set_formatter(_formatter);
+    if (auto pool_ptr = thread_pool_.lock())
+    {
+        pool_ptr->post_flush(shared_from_this(), overflow_policy_);
+    }
+    else
+    {
+        throw spdlog_ex("async flush: thread pool doesn't exist anymore");
+    }
 }
 
-inline void spdlog::async_logger::_set_pattern(const std::string &pattern, pattern_time_type pattern_time)
-{
-    _formatter = std::make_shared<pattern_formatter>(pattern, pattern_time);
-    _async_log_helper->set_formatter(_formatter);
-}
-
-inline void spdlog::async_logger::_sink_it(details::log_msg &msg)
+//
+// backend functions - called from the thread pool to do the actual job
+//
+inline void spdlog::async_logger::backend_log_(details::log_msg &incoming_log_msg)
 {
     try
     {
-#if defined(SPDLOG_ENABLE_MESSAGE_COUNTER)
-        _incr_msg_counter(msg);
-#endif
-        _async_log_helper->log(msg);
-        if (_should_flush_on(msg))
+        for (auto &s : sinks_)
         {
-            _async_log_helper->flush(); // do async flush
+            if (s->should_log(incoming_log_msg.level))
+            {
+                s->log(incoming_log_msg);
+            }
         }
     }
-    catch (const std::exception &ex)
+    SPDLOG_CATCH_AND_HANDLE
+
+    if (should_flush_(incoming_log_msg))
     {
-        _err_handler(ex.what());
+        backend_flush_();
     }
-    catch (...)
+}
+
+inline void spdlog::async_logger::backend_flush_()
+{
+    try
     {
-        _err_handler("Unknown exception in logger " + _name);
-        throw;
+        for (auto &sink : sinks_)
+        {
+            sink->flush();
+        }
     }
+    SPDLOG_CATCH_AND_HANDLE
 }

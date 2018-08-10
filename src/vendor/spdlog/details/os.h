@@ -236,7 +236,7 @@ inline size_t filesize(FILE *f)
 
 #else // unix
     int fd = fileno(f);
-    // 64 bits(but not in osx or cygwin, where fstat64 is deprecated)
+// 64 bits(but not in osx or cygwin, where fstat64 is deprecated)
 #if !defined(__FreeBSD__) && !defined(__APPLE__) && (defined(__x86_64__) || defined(__ppc64__)) && !defined(__CYGWIN__)
     struct stat64 st;
     if (fstat64(fd, &st) == 0)
@@ -282,7 +282,7 @@ inline int utc_minutes_offset(const std::tm &tm = details::os::localtime())
     return offset;
 #else
 
-#if defined(sun) || defined(__sun)
+#if defined(sun) || defined(__sun) || defined(_AIX)
     // 'tm_gmtoff' field is BSD extension and it's missing on SunOS/Solaris
     struct helper
     {
@@ -321,7 +321,8 @@ inline int utc_minutes_offset(const std::tm &tm = details::os::localtime())
 }
 
 // Return current thread id as size_t
-// It exists because the std::this_thread::get_id() is much slower(especially under VS 2013)
+// It exists because the std::this_thread::get_id() is much slower(especially
+// under VS 2013)
 inline size_t _thread_id()
 {
 #ifdef _WIN32
@@ -382,54 +383,6 @@ inline std::string filename_to_str(const filename_t &filename)
     return filename;
 }
 #endif
-
-inline std::string errno_to_string(char[256], char *res)
-{
-    return std::string(res);
-}
-
-inline std::string errno_to_string(char buf[256], int res)
-{
-    if (res == 0)
-    {
-        return std::string(buf);
-    }
-    return "Unknown error";
-}
-
-// Return errno string (thread safe)
-inline std::string errno_str(int err_num)
-{
-    char buf[256];
-    SPDLOG_CONSTEXPR auto buf_size = sizeof(buf);
-
-#ifdef _WIN32
-    if (strerror_s(buf, buf_size, err_num) == 0)
-    {
-        return std::string(buf);
-    }
-    else
-    {
-        return "Unknown error";
-    }
-
-#elif defined(__FreeBSD__) || defined(__APPLE__) || defined(ANDROID) || defined(__SUNPRO_CC) ||                                            \
-    ((_POSIX_C_SOURCE >= 200112L) && !defined(_GNU_SOURCE)) // posix version
-
-    if (strerror_r(err_num, buf, buf_size) == 0)
-    {
-        return std::string(buf);
-    }
-    else
-    {
-        return "Unknown error";
-    }
-
-#else // gnu version (might not use the given buf, so its retval pointer must be used)
-    auto err = strerror_r(err_num, buf, buf_size); // let compiler choose type
-    return errno_to_string(buf, err);              // use overloading to select correct stringify function
-#endif
-}
 
 inline int pid()
 {
