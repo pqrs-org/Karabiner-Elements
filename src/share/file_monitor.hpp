@@ -63,8 +63,8 @@ public:
     return run_loop_thread_;
   }
 
-  void start(void) {
-    register_stream();
+  bool start(void) {
+    return register_stream();
   }
 
   void enqueue_file_changed(const std::string& file_path) {
@@ -74,13 +74,13 @@ public:
   }
 
 private:
-  void register_stream(void) {
+  bool register_stream(void) {
     std::lock_guard<std::mutex> lock(stream_mutex_);
 
     // Skip if already started.
 
     if (stream_) {
-      return;
+      return false;
     }
 
     // ----------------------------------------
@@ -140,6 +140,8 @@ private:
         logger::get_logger().error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
       }
     }
+
+    return true;
   }
 
   void unregister_stream(void) {
