@@ -18,12 +18,7 @@ public:
 
   grabber_alerts_monitor(const grabber_alerts_monitor&) = delete;
 
-  grabber_alerts_monitor(void) {
-  }
-
-  void start(const std::string& grabber_alerts_json_file_path) {
-    std::lock_guard<std::mutex> lock(file_monitor_mutex_);
-
+  grabber_alerts_monitor(const std::string& grabber_alerts_json_file_path) {
     std::vector<std::string> targets = {
         grabber_alerts_json_file_path,
     };
@@ -56,14 +51,14 @@ public:
         }
       }
     });
+  }
 
+  void start(void) {
     file_monitor_->start();
   }
 
 private:
   std::unique_ptr<file_monitor> file_monitor_;
-  std::mutex file_monitor_mutex_;
-
   boost::optional<std::string> last_json_string_;
 };
 } // namespace krbn

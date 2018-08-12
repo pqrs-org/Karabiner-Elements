@@ -17,7 +17,7 @@ TEST_CASE("grabber_alerts_monitor") {
     system("mkdir -p target");
 
     std::string file_path = "target/karabiner_grabber_alerts.json";
-    krbn::grabber_alerts_monitor grabber_alerts_monitor;
+    krbn::grabber_alerts_monitor grabber_alerts_monitor(file_path);
 
     boost::optional<std::string> last_alerts;
 
@@ -25,7 +25,7 @@ TEST_CASE("grabber_alerts_monitor") {
       last_alerts = alerts.dump();
     });
 
-    grabber_alerts_monitor.start(file_path);
+    grabber_alerts_monitor.start();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
