@@ -16,11 +16,11 @@
 #include <thread>
 
 namespace krbn {
-class connection_manager final {
+class components_manager final {
 public:
-  connection_manager(const connection_manager&) = delete;
+  components_manager(const components_manager&) = delete;
 
-  connection_manager(void) {
+  components_manager(void) {
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
 
     console_user_id_monitor_.console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
@@ -55,7 +55,7 @@ public:
     console_user_id_monitor_.start();
   }
 
-  ~connection_manager(void) {
+  ~components_manager(void) {
     console_user_id_monitor_.stop();
 
     receiver_ = nullptr;

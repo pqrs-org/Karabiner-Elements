@@ -1,4 +1,4 @@
-#include "connection_manager.hpp"
+#include "components_manager.hpp"
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include "grabber_alerts_monitor.hpp"
@@ -65,17 +65,17 @@ public:
     krbn::filesystem::create_directory_with_intermediate_directories(constants::get_user_configuration_directory(), 0700);
     krbn::filesystem::create_directory_with_intermediate_directories(constants::get_user_complex_modifications_assets_directory(), 0700);
 
-    connection_manager_ = std::make_unique<connection_manager>();
+    components_manager_ = std::make_unique<components_manager>();
   }
 
   ~karabiner_console_user_server(void) {
-    connection_manager_ = nullptr;
+    components_manager_ = nullptr;
     grabber_alerts_monitor_ = nullptr;
   }
 
 private:
   std::unique_ptr<grabber_alerts_monitor> grabber_alerts_monitor_;
-  std::unique_ptr<connection_manager> connection_manager_;
+  std::unique_ptr<components_manager> components_manager_;
 };
 } // namespace krbn
 
