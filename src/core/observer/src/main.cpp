@@ -1,4 +1,4 @@
-#include "connection_manager.hpp"
+#include "components_manager.hpp"
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include "karabiner_version.h"
@@ -44,15 +44,15 @@ public:
       }
     }
 
-    connection_manager_ = std::make_unique<connection_manager>();
+    components_manager_ = std::make_unique<components_manager>();
   }
 
   ~karabiner_observer(void) {
-    connection_manager_ = nullptr;
+    components_manager_ = nullptr;
   }
 
 private:
-  std::unique_ptr<connection_manager> connection_manager_;
+  std::unique_ptr<components_manager> components_manager_;
 };
 } // namespace krbn
 
@@ -68,7 +68,6 @@ int main(int argc, const char* argv[]) {
 
   krbn::karabiner_observer karabiner_observer;
 
-  krbn::version_monitor_utility::start_monitor_to_stop_main_run_loop_when_version_changed();
   CFRunLoopRun();
 
   return 0;
