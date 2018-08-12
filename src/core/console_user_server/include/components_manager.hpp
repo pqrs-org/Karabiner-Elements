@@ -11,6 +11,7 @@
 #include "receiver.hpp"
 #include "session.hpp"
 #include "system_preferences_monitor.hpp"
+#include "updater_process_manager.hpp"
 #include "version_monitor.hpp"
 #include "version_monitor_utility.hpp"
 #include <thread>
@@ -116,6 +117,7 @@ private:
           constants::get_user_core_configuration_file_path());
 
       menu_process_manager_ = make_menu_process_manager(configuration_monitor_);
+      updater_process_manager_ = make_updater_process_manager(configuration_monitor_);
       system_preferences_monitor_ = make_system_preferences_monitor(configuration_monitor_,
                                                                     grabber_client_weak_ptr);
       start_frontmost_application_observer();
@@ -129,6 +131,7 @@ private:
     std::lock_guard<std::mutex> lock(child_components_mutex_);
 
     menu_process_manager_ = nullptr;
+    updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     stop_frontmost_application_observer();
     stop_input_source_observer();
@@ -138,6 +141,10 @@ private:
 
   static std::unique_ptr<menu_process_manager> make_menu_process_manager(std::shared_ptr<configuration_monitor> configuration_monitor) {
     return std::make_unique<menu_process_manager>(configuration_monitor);
+  }
+
+  static std::unique_ptr<updater_process_manager> make_updater_process_manager(std::shared_ptr<configuration_monitor> configuration_monitor) {
+    return std::make_unique<updater_process_manager>(configuration_monitor);
   }
 
   static std::unique_ptr<system_preferences_monitor> make_system_preferences_monitor(std::shared_ptr<configuration_monitor> configuration_monitor,
@@ -212,6 +219,7 @@ private:
 
   std::shared_ptr<configuration_monitor> configuration_monitor_;
   std::unique_ptr<menu_process_manager> menu_process_manager_;
+  std::unique_ptr<updater_process_manager> updater_process_manager_;
   std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
   // `frontmost_application_observer` does not work properly in karabiner_grabber after fast user switching.
   // Therefore, we have to use `frontmost_application_observer` in `console_user_server`.

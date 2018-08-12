@@ -8,7 +8,6 @@
 #include "process_utility.hpp"
 #include "spdlog_utility.hpp"
 #include "thread_utility.hpp"
-#include "update_utility.hpp"
 #include <spdlog/async.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 
@@ -85,8 +84,6 @@ int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
   krbn::karabiner_console_user_server karabiner_console_user_server;
-
-  krbn::update_utility::check_for_updates_on_startup();
 
   CFRunLoopRun();
 
