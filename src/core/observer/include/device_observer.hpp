@@ -78,11 +78,15 @@ public:
     });
 
     hid_manager_.start();
+
+    logger::get_logger().info("device_observer is started.");
   }
 
   ~device_observer(void) {
     hid_observers_.clear();
     hid_manager_.stop();
+
+    logger::get_logger().info("device_observer is stopped.");
   }
 
 private:

@@ -52,7 +52,6 @@ private:
     });
 
     grabber_client_->start();
-    logger::get_logger().info("grabber_client is started.");
   }
 
   void stop_grabber_client(void) {
@@ -63,7 +62,6 @@ private:
     }
 
     grabber_client_ = nullptr;
-    logger::get_logger().info("grabber_client is stopped.");
   }
 
   void start_device_observer(void) {
@@ -74,7 +72,6 @@ private:
     }
 
     device_observer_ = std::make_shared<device_observer>(grabber_client_);
-    logger::get_logger().info("device_observer is started.");
   }
 
   void stop_device_observer(void) {
@@ -85,7 +82,6 @@ private:
     }
 
     device_observer_ = nullptr;
-    logger::get_logger().info("device_observer is stopped.");
   }
 
   std::shared_ptr<version_monitor> version_monitor_;
