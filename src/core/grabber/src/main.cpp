@@ -44,7 +44,7 @@ int main(int argc, const char* argv[]) {
   krbn::logger::get_logger().info("version {0}", karabiner_version);
 
   {
-    std::string pid_file_path = std::string(krbn::constants::get_tmp_directory()) + "/karabiner_grabber.pid";
+    std::string pid_file_path = std::string(krbn::constants::get_pid_directory()) + "/karabiner_grabber.pid";
     if (!krbn::process_utility::lock_single_application(pid_file_path)) {
       std::string message("Exit since another process is running.");
       krbn::logger::get_logger().info(message);

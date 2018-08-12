@@ -35,7 +35,7 @@ public:
     logger::get_logger().info("version {0}", karabiner_version);
 
     {
-      std::string pid_file_path = std::string(constants::get_tmp_directory()) + "/karabiner_observer.pid";
+      std::string pid_file_path = std::string(constants::get_pid_directory()) + "/karabiner_observer.pid";
       if (!process_utility::lock_single_application(pid_file_path)) {
         std::string message("Exit since another process is running.");
         logger::get_logger().info(message);

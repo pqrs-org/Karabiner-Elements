@@ -16,6 +16,10 @@ public:
     return "/Library/Application Support/org.pqrs/tmp";
   }
 
+  static const char* get_pid_directory(void) {
+    return "/Library/Application Support/org.pqrs/tmp/pid";
+  }
+
   static const char* get_grabber_socket_file_path(void) {
     return "/Library/Application Support/org.pqrs/tmp/karabiner_grabber_receiver";
   }
