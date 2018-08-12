@@ -21,24 +21,8 @@ public:
 
   version_monitor(const version_monitor&) = delete;
 
-  version_monitor(void) {
-  }
-
-  ~version_monitor(void) {
-    file_monitor_ = nullptr;
-  }
-
-  void start(const std::string& version_file_path) {
-    std::lock_guard<std::mutex> lock(file_monitor_mutex_);
-
-    if (file_monitor_) {
-      return;
-    }
-
-    version_file_path_ = version_file_path;
+  version_monitor(const std::string& version_file_path) : version_file_path_(version_file_path) {
     version_ = read_version_file();
-
-    // Start file_monitor_
 
     std::vector<std::string> targets = {
         version_file_path_,
@@ -49,7 +33,13 @@ public:
     file_monitor_->file_changed.connect([this](const std::string&) {
       check_version();
     });
+  }
 
+  ~version_monitor(void) {
+    file_monitor_ = nullptr;
+  }
+
+  void start() {
     file_monitor_->start();
   }
 
@@ -81,10 +71,7 @@ private:
   }
 
   std::string version_file_path_;
-
-  std::unique_ptr<file_monitor> file_monitor_;
-  std::mutex file_monitor_mutex_;
-
   std::string version_;
+  std::unique_ptr<file_monitor> file_monitor_;
 };
 } // namespace krbn
