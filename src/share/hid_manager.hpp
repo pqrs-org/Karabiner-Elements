@@ -13,7 +13,7 @@ class hid_manager final {
 public:
   // Return false to ignore device.
   boost::signals2::signal<bool(IOHIDDeviceRef _Nonnull),
-                          boost_utility::signal2_combiner_call_while_true>
+                          boost_utility::signals2_combiner_call_while_true>
       device_detecting;
 
   boost::signals2::signal<void(std::shared_ptr<human_interface_device>)> device_detected;
