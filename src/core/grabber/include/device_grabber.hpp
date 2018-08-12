@@ -213,14 +213,25 @@ public:
                                                                          std::placeholders::_1,
                                                                          std::placeholders::_2));
 
-      configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path,
-                                                                       [this](std::shared_ptr<core_configuration> core_configuration) {
-                                                                         core_configuration_ = core_configuration;
+      configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path);
 
-                                                                         is_grabbable_callback_log_reducer_.reset();
-                                                                         set_profile(core_configuration_->get_selected_profile());
-                                                                         grab_devices();
-                                                                       });
+      configuration_monitor_->core_configuration_updated.connect([this](auto&& core_configuration) {
+        {
+          std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+
+          core_configuration_ = core_configuration;
+        }
+
+        // TODO: remove dispatch_async
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+          is_grabbable_callback_log_reducer_.reset();
+          set_profile(core_configuration->get_selected_profile());
+          grab_devices();
+        });
+      });
+
+      configuration_monitor_->start();
 
       virtual_hid_device_client_.connect();
     });
@@ -581,11 +592,19 @@ private:
   }
 
   void update_caps_lock_led(bool caps_lock_state) {
-    if (core_configuration_) {
+    std::shared_ptr<core_configuration> configuration;
+
+    {
+      std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+
+      configuration = core_configuration_;
+    }
+
+    if (configuration) {
       for (const auto& pair : hid_grabbers_) {
         if (auto hid = pair.second->get_human_interface_device().lock()) {
           auto& di = hid->get_connected_device().get_identifiers();
-          bool manipulate_caps_lock_led = core_configuration_->get_selected_profile().get_device_manipulate_caps_lock_led(di);
+          bool manipulate_caps_lock_led = configuration->get_selected_profile().get_device_manipulate_caps_lock_led(di);
           if (pair.second->get_grabbed() &&
               manipulate_caps_lock_led) {
             hid->set_caps_lock_led_state(caps_lock_state ? led_state::on : led_state::off);
@@ -629,6 +648,8 @@ private:
   }
 
   bool is_ignored_device(const human_interface_device& device) const {
+    std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+
     if (core_configuration_) {
       return core_configuration_->get_selected_profile().get_device_ignore(device.get_connected_device().get_identifiers());
     }
@@ -637,6 +658,8 @@ private:
   }
 
   bool get_disable_built_in_keyboard_if_exists(const human_interface_device& device) const {
+    std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+
     if (core_configuration_) {
       return core_configuration_->get_selected_profile().get_device_disable_built_in_keyboard_if_exists(device.get_connected_device().get_identifiers());
     }
@@ -911,7 +934,9 @@ private:
   boost::signals2::connection grabbable_state_changed_connection_;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
+
   std::shared_ptr<core_configuration> core_configuration_;
+  mutable std::mutex core_configuration_mutex_;
 
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   hid_manager hid_manager_;

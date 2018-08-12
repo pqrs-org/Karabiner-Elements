@@ -8,7 +8,6 @@
 #include "logger.hpp"
 #include "process_utility.hpp"
 #include "thread_utility.hpp"
-#include "version_monitor_utility.hpp"
 #include <spdlog/async.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 
@@ -99,7 +98,6 @@ int main(int argc, const char* argv[]) {
 
   krbn::apple_notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
 
-  krbn::version_monitor_utility::start_monitor_to_stop_run_loop_when_version_changed();
   CFRunLoopRun();
 
   return 0;
