@@ -103,60 +103,52 @@ private:
   }
 
   void start_child_components(void) {
-    std::lock_guard<std::mutex> lock(child_components_mutex_);
+    std::weak_ptr<grabber_client> grabber_client_weak_ptr;
+    {
+      std::lock_guard<std::mutex> lock(grabber_client_mutex_);
+      grabber_client_weak_ptr = grabber_client_;
+    }
 
-    configuration_monitor_ = std::make_shared<configuration_monitor>(
-        constants::get_user_core_configuration_file_path());
+    {
+      std::lock_guard<std::mutex> lock(child_components_mutex_);
 
-    start_menu_process_manager();
-    start_system_preferences_monitor();
-    start_frontmost_application_observer();
-    start_input_source_observer();
+      configuration_monitor_ = std::make_shared<configuration_monitor>(
+          constants::get_user_core_configuration_file_path());
 
-    configuration_monitor_->start();
+      menu_process_manager_ = make_menu_process_manager(configuration_monitor_);
+      system_preferences_monitor_ = make_system_preferences_monitor(configuration_monitor_,
+                                                                    grabber_client_weak_ptr);
+      start_frontmost_application_observer();
+      start_input_source_observer();
+
+      configuration_monitor_->start();
+    }
   }
 
   void stop_child_components(void) {
     std::lock_guard<std::mutex> lock(child_components_mutex_);
 
-    stop_menu_process_manager();
-    stop_system_preferences_monitor();
+    menu_process_manager_ = nullptr;
+    system_preferences_monitor_ = nullptr;
     stop_frontmost_application_observer();
     stop_input_source_observer();
 
     configuration_monitor_ = nullptr;
   }
 
-  void start_menu_process_manager(void) {
-    if (menu_process_manager_) {
-      return;
-    }
-
-    menu_process_manager_ = std::make_unique<menu_process_manager>(configuration_monitor_);
+  static std::unique_ptr<menu_process_manager> make_menu_process_manager(std::shared_ptr<configuration_monitor> configuration_monitor) {
+    return std::make_unique<menu_process_manager>(configuration_monitor);
   }
 
-  void stop_menu_process_manager(void) {
-    menu_process_manager_ = nullptr;
-  }
-
-  void start_system_preferences_monitor(void) {
-    if (system_preferences_monitor_) {
-      return;
-    }
-
-    system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(
-        [this](auto&& system_preferences) {
-          std::lock_guard<std::mutex> lock(grabber_client_mutex_);
-
-          if (grabber_client_) {
-            grabber_client_->system_preferences_updated(system_preferences);
+  static std::unique_ptr<system_preferences_monitor> make_system_preferences_monitor(std::shared_ptr<configuration_monitor> configuration_monitor,
+                                                                                     std::weak_ptr<grabber_client> grabber_client) {
+    return std::make_unique<system_preferences_monitor>(
+        [grabber_client](auto&& system_preferences) {
+          if (auto client = grabber_client.lock()) {
+            client->system_preferences_updated(system_preferences);
           }
         },
-        configuration_monitor_);
-  }
-
-  void stop_system_preferences_monitor(void) {
-    system_preferences_monitor_ = nullptr;
+        configuration_monitor);
   }
 
   void start_frontmost_application_observer(void) {
