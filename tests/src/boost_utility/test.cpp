@@ -17,22 +17,22 @@ TEST_CASE("signal2_combiner_call_while_true") {
 
   int counter = 0;
 
-  signal.connect([&]() {
+  signal.connect([&] {
     ++counter;
     return true;
   });
 
-  signal.connect([&]() {
+  signal.connect([&] {
     ++counter;
     return true;
   });
 
-  signal.connect([&]() {
+  signal.connect([&] {
     ++counter;
     return false;
   });
 
-  signal.connect([&]() {
+  signal.connect([&] {
     // never called
     ++counter;
     return true;

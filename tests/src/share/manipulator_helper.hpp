@@ -74,7 +74,7 @@ public:
 
       uint64_t now = 0;
 
-      auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([&]() {
+      auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([&] {
         connector.manipulate(now);
       });
 

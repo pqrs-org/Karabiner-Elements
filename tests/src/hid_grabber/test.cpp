@@ -17,22 +17,22 @@ TEST_CASE("signal2_combiner_call_while_grabbable") {
 
   int counter = 0;
 
-  signal.connect([&]() {
+  signal.connect([&] {
     ++counter;
     return krbn::grabbable_state::state::grabbable;
   });
 
-  signal.connect([&]() {
+  signal.connect([&] {
     ++counter;
     return krbn::grabbable_state::state::grabbable;
   });
 
-  signal.connect([&]() {
+  signal.connect([&] {
     ++counter;
     return krbn::grabbable_state::state::ungrabbable_temporarily;
   });
 
-  signal.connect([&]() {
+  signal.connect([&] {
     // never called
     ++counter;
     return krbn::grabbable_state::state::ungrabbable_permanently;

@@ -46,14 +46,14 @@ public:
                          complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                          fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
                          posted_event_queue_(std::make_shared<event_queue>()) {
-    client_connected_connection_ = virtual_hid_device_client_.client_connected.connect([this]() {
+    client_connected_connection_ = virtual_hid_device_client_.client_connected.connect([this] {
       logger::get_logger().info("virtual_hid_device_client_ is connected");
 
       update_virtual_hid_keyboard();
       update_virtual_hid_pointing();
     });
 
-    client_disconnected_connection_ = virtual_hid_device_client_.client_disconnected.connect([this]() {
+    client_disconnected_connection_ = virtual_hid_device_client_.client_disconnected.connect([this] {
       logger::get_logger().info("virtual_hid_device_client_ is disconnected");
 
       stop();
@@ -80,7 +80,7 @@ public:
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
                                                             posted_event_queue_);
 
-    input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this]() {
+    input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this] {
       manipulate(mach_absolute_time());
     });
 
