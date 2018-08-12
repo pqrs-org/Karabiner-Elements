@@ -22,26 +22,5 @@ public:
       return value;
     }
   };
-
-  class signals2_connections final {
-  public:
-    signals2_connections(const signals2_connections&) = delete;
-
-    signals2_connections(void) {
-    }
-
-    ~signals2_connections(void) {
-      for (const auto& c : connections_) {
-        c.disconnect();
-      }
-    }
-
-    void push_back(const boost::signals2::connection& connection) {
-      connections_.push_back(connection);
-    }
-
-  private:
-    std::vector<boost::signals2::connection> connections_;
-  };
 };
 } // namespace krbn
