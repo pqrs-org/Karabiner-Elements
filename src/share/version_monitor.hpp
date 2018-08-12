@@ -6,12 +6,11 @@
 #include "file_monitor.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
-#include "shared_instance_provider.hpp"
 #include <boost/signals2.hpp>
 #include <fstream>
 
 namespace krbn {
-class version_monitor final : public shared_instance_provider<version_monitor> {
+class version_monitor final {
 public:
   // Signals
 

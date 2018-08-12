@@ -6,8 +6,8 @@
 namespace krbn {
 class version_monitor_utility final {
 public:
-  static void start_monitor_to_stop_main_run_loop_when_version_changed(void) {
-    auto monitor = version_monitor::get_shared_instance();
+  static std::shared_ptr<version_monitor> make_version_monitor_stops_main_run_loop_when_version_changed(void) {
+    auto monitor = std::make_shared<version_monitor>(constants::get_version_file_path());
 
     monitor->changed.connect([](auto&& version) {
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -15,7 +15,9 @@ public:
       });
     });
 
-    monitor->start(constants::get_version_file_path());
+    monitor->start();
+
+    return monitor;
   }
 };
 } // namespace krbn
