@@ -34,8 +34,6 @@ public:
   }
 
   void start() {
-    std::lock_guard<std::mutex> lock(file_monitor_mutex_);
-
     if (file_monitor_->start()) {
       // `core_configuration_file_changed` is enqueued by `file_monitor::start` only if the file exists.
       // We have to enqueue it manually for when the file does not exist.
@@ -63,8 +61,6 @@ public:
   }
 
   std::shared_ptr<cf_utility::run_loop_thread> get_run_loop_thread(void) const {
-    std::lock_guard<std::mutex> lock(file_monitor_mutex_);
-
     return file_monitor_->get_run_loop_thread();
   }
 
@@ -99,9 +95,7 @@ private:
 
   std::string user_core_configuration_file_path_;
   std::string system_core_configuration_file_path_;
-
   std::unique_ptr<file_monitor> file_monitor_;
-  mutable std::mutex file_monitor_mutex_;
 
   std::shared_ptr<core_configuration> core_configuration_;
   mutable std::mutex core_configuration_mutex_;
