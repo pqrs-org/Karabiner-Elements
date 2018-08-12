@@ -15,13 +15,16 @@ class device_observer final {
 public:
   device_observer(const device_observer&) = delete;
 
-  device_observer(void) : hid_manager_({
-                              std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
-                              std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
-                              std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
-                          }) {
-    grabbable_state_manager_.grabbable_state_changed.connect([](auto&& grabbable_state) {
-      grabber_client::get_shared_instance()->grabbable_state_changed(grabbable_state);
+  device_observer(std::weak_ptr<grabber_client> grabber_client) : grabber_client_(grabber_client),
+                                                                  hid_manager_({
+                                                                      std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
+                                                                      std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
+                                                                      std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
+                                                                  }) {
+    grabbable_state_manager_.grabbable_state_changed.connect([this](auto&& grabbable_state) {
+      if (auto client = grabber_client_.lock()) {
+        client->grabbable_state_changed(grabbable_state);
+      }
     });
 
     hid_manager_.device_detecting.connect([](auto&& device) {
@@ -83,6 +86,8 @@ public:
   }
 
 private:
+  std::weak_ptr<grabber_client> grabber_client_;
+
   hid_manager hid_manager_;
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_observer>> hid_observers_;
   grabbable_state_manager grabbable_state_manager_;

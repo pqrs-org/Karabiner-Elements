@@ -5,13 +5,12 @@
 #include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
 #include "session.hpp"
-#include "shared_instance_provider.hpp"
 #include "types.hpp"
 #include <unistd.h>
 #include <vector>
 
 namespace krbn {
-class grabber_client final : public shared_instance_provider<grabber_client> {
+class grabber_client final {
 public:
   // Signals
 
