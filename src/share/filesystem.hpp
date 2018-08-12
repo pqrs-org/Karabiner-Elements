@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 #include <sys/stat.h>
+#include <vector>
 
 namespace krbn {
 class filesystem final {
