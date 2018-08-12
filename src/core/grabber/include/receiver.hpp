@@ -55,11 +55,11 @@ public:
             }
             break;
 
-          case operation_type::connect:
-            if (buffer.size() != sizeof(operation_type_connect_struct)) {
-              logger::get_logger().error("Invalid size for `operation_type::connect`.");
+          case operation_type::connect_console_user_server:
+            if (buffer.size() != sizeof(operation_type_connect_console_user_server_struct)) {
+              logger::get_logger().error("Invalid size for `operation_type::connect_console_user_server`.");
             } else {
-              auto p = reinterpret_cast<operation_type_connect_struct*>(buffer.data());
+              auto p = reinterpret_cast<operation_type_connect_console_user_server_struct*>(buffer.data());
 
               // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
               p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';

@@ -36,7 +36,7 @@ enum class operation_type : uint8_t {
   // observer -> grabber
   grabbable_state_changed,
   // console_user_server -> grabber
-  connect,
+  connect_console_user_server,
   system_preferences_updated,
   frontmost_application_changed,
   input_source_changed,
@@ -1973,8 +1973,8 @@ struct operation_type_grabbable_state_changed_struct {
   grabbable_state grabbable_state;
 };
 
-struct operation_type_connect_struct {
-  operation_type_connect_struct(void) : operation_type(operation_type::connect) {
+struct operation_type_connect_console_user_server_struct {
+  operation_type_connect_console_user_server_struct(void) : operation_type(operation_type::connect_console_user_server) {
     strlcpy(user_core_configuration_file_path,
             constants::get_user_core_configuration_file_path().c_str(),
             sizeof(user_core_configuration_file_path));

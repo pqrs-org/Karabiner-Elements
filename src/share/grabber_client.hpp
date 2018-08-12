@@ -88,8 +88,8 @@ public:
     async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
   }
 
-  void connect(void) const {
-    operation_type_connect_struct s;
+  void connect_console_user_server(void) const {
+    operation_type_connect_console_user_server_struct s;
     s.pid = getpid();
 
     async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));

@@ -77,6 +77,8 @@ private:
     grabber_client_->connected.connect([this] {
       version_monitor_->manual_check();
 
+      grabber_client_->connect_console_user_server();
+
       stop_child_components();
       start_child_components();
     });
