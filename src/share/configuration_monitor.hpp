@@ -36,24 +36,24 @@ public:
   void start() {
     std::lock_guard<std::mutex> lock(file_monitor_mutex_);
 
-    file_monitor_->start();
+    if (file_monitor_->start()) {
+      // `core_configuration_file_changed` is enqueued by `file_monitor::start` only if the file exists.
+      // We have to enqueue it manually for when the file does not exist.
 
-    // `core_configuration_file_changed` is enqueued by `file_monitor::start` only if the file exists.
-    // We have to enqueue it manually for when the file does not exist.
+      file_monitor_->get_run_loop_thread()->enqueue(^{
+        {
+          std::lock_guard<std::mutex> lock(core_configuration_mutex_);
 
-    file_monitor_->get_run_loop_thread()->enqueue(^{
-      {
-        std::lock_guard<std::mutex> lock(core_configuration_mutex_);
-
-        if (core_configuration_) {
-          // `core_configuration_file_changed` is already called.
-          // We do not need call the method again.
-          return;
+          if (core_configuration_) {
+            // `core_configuration_file_changed` is already called.
+            // We do not need call the method again.
+            return;
+          }
         }
-      }
 
-      core_configuration_file_changed();
-    });
+        core_configuration_file_changed();
+      });
+    }
   }
 
   std::shared_ptr<core_configuration> get_core_configuration(void) const {
