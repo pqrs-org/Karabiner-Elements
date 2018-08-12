@@ -9,8 +9,6 @@
 #include "spdlog_utility.hpp"
 #include "thread_utility.hpp"
 #include "update_utility.hpp"
-#include "version_monitor.hpp"
-#include "version_monitor_utility.hpp"
 #include <spdlog/async.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 
@@ -47,7 +45,7 @@ public:
 
     // ========================================
 
-    grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>();
+    grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>(constants::get_grabber_alerts_json_file_path());
 
     grabber_alerts_monitor_->alerts_changed.connect([](auto&& alerts) {
       logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
@@ -56,7 +54,7 @@ public:
       }
     });
 
-    grabber_alerts_monitor_->start(constants::get_grabber_alerts_json_file_path());
+    grabber_alerts_monitor_->start();
 
     // ========================================
 
@@ -90,7 +88,6 @@ int main(int argc, const char* argv[]) {
 
   krbn::update_utility::check_for_updates_on_startup();
 
-  krbn::version_monitor_utility::start_monitor_to_stop_main_run_loop_when_version_changed();
   CFRunLoopRun();
 
   return 0;
