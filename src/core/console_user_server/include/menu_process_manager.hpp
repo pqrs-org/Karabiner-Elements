@@ -1,7 +1,6 @@
 #pragma once
 
 #include "application_launcher.hpp"
-#include "boost_utility.hpp"
 #include "configuration_monitor.hpp"
 
 namespace krbn {
