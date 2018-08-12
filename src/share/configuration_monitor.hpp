@@ -17,15 +17,6 @@ public:
   configuration_monitor(const std::string& user_core_configuration_file_path,
                         const std::string& system_core_configuration_file_path = constants::get_system_core_configuration_file_path()) : user_core_configuration_file_path_(user_core_configuration_file_path),
                                                                                                                                          system_core_configuration_file_path_(system_core_configuration_file_path) {
-  }
-
-  ~configuration_monitor(void) {
-    file_monitor_ = nullptr;
-  }
-
-  void start() {
-    std::lock_guard<std::mutex> lock(file_monitor_mutex_);
-
     std::vector<std::string> targets = {
         user_core_configuration_file_path_,
         system_core_configuration_file_path_,
@@ -36,6 +27,14 @@ public:
     file_monitor_->file_changed.connect([this](auto&& file_path) {
       core_configuration_file_changed();
     });
+  }
+
+  ~configuration_monitor(void) {
+    file_monitor_ = nullptr;
+  }
+
+  void start() {
+    std::lock_guard<std::mutex> lock(file_monitor_mutex_);
 
     file_monitor_->start();
 
@@ -61,6 +60,12 @@ public:
     std::lock_guard<std::mutex> lock(core_configuration_mutex_);
 
     return core_configuration_;
+  }
+
+  std::shared_ptr<cf_utility::run_loop_thread> get_run_loop_thread(void) const {
+    std::lock_guard<std::mutex> lock(file_monitor_mutex_);
+
+    return file_monitor_->get_run_loop_thread();
   }
 
 private:
