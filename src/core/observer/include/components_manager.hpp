@@ -33,43 +33,23 @@ private:
 
     grabber_client_ = std::make_shared<grabber_client>();
 
-    // connected
+    grabber_client_->connected.connect([this] {
+      version_monitor_->manual_check();
 
-    {
-      auto c = grabber_client_->connected.connect([this] {
-        version_monitor_->manual_check();
+      start_device_observer();
+    });
 
-        start_device_observer();
-      });
+    grabber_client_->connect_failed.connect([this](auto&& error_code) {
+      version_monitor_->manual_check();
 
-      grabber_client_connections_.push_back(std::make_unique<boost::signals2::scoped_connection>(c));
-    }
+      stop_device_observer();
+    });
 
-    // connect_failed
+    grabber_client_->closed.connect([this] {
+      version_monitor_->manual_check();
 
-    {
-      auto c = grabber_client_->connect_failed.connect([this](auto&& error_code) {
-        version_monitor_->manual_check();
-
-        stop_device_observer();
-      });
-
-      grabber_client_connections_.push_back(std::make_unique<boost::signals2::scoped_connection>(c));
-    }
-
-    // closed
-
-    {
-      auto c = grabber_client_->closed.connect([this] {
-        version_monitor_->manual_check();
-
-        stop_device_observer();
-      });
-
-      grabber_client_connections_.push_back(std::make_unique<boost::signals2::scoped_connection>(c));
-    }
-
-    // start
+      stop_device_observer();
+    });
 
     grabber_client_->start();
     logger::get_logger().info("grabber_client is started.");
@@ -83,7 +63,6 @@ private:
     }
 
     grabber_client_ = nullptr;
-    grabber_client_connections_.clear();
     logger::get_logger().info("grabber_client is stopped.");
   }
 
@@ -113,8 +92,6 @@ private:
 
   std::shared_ptr<grabber_client> grabber_client_;
   std::mutex grabber_client_mutex_;
-
-  std::vector<std::unique_ptr<boost::signals2::scoped_connection>> grabber_client_connections_;
 
   std::shared_ptr<device_observer> device_observer_;
   std::mutex device_observer_mutex_;
