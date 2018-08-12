@@ -16,12 +16,12 @@ public:
       throw std::runtime_error("failed to get user pid directory");
     }
 
-    filesystem::create_directory_with_intermediate_directories(pid_directory, 0700);
+    filesystem::create_directory_with_intermediate_directories(pid_directory, 0755);
     if (!filesystem::is_directory(pid_directory)) {
       throw std::runtime_error("failed to create pid directory");
     }
 
-    auto fd = open(pid_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0600);
+    auto fd = open(pid_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd < 0) {
       throw std::runtime_error("failed to create pid file");
     }
