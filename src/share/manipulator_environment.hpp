@@ -113,7 +113,7 @@ public:
 
   void set_frontmost_application(const frontmost_application& value) {
     frontmost_application_ = value;
-    save_to_file();
+    async_save_to_file();
   }
 
   const input_source_identifiers& get_input_source_identifiers(void) const {
@@ -122,7 +122,7 @@ public:
 
   void set_input_source_identifiers(const input_source_identifiers& value) {
     input_source_identifiers_ = value;
-    save_to_file();
+    async_save_to_file();
   }
 
   int get_variable(const std::string& name) const {
@@ -136,7 +136,7 @@ public:
   void set_variable(const std::string& name, int value) {
     // logger::get_logger().info("set_variable {0} {1}", name, value);
     variables_[name] = value;
-    save_to_file();
+    async_save_to_file();
   }
 
   const std::string& get_keyboard_type(void) const {
@@ -145,13 +145,13 @@ public:
 
   void set_keyboard_type(const std::string& value) {
     keyboard_type_ = value;
-    save_to_file();
+    async_save_to_file();
   }
 
 private:
-  void save_to_file(void) const {
+  void async_save_to_file(void) const {
     if (!output_json_file_path_.empty()) {
-      json_utility::save_to_file(to_json(), output_json_file_path_, 0755, 0644);
+      json_utility::async_save_to_file(to_json(), output_json_file_path_, 0755, 0644);
     }
   }
 

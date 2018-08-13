@@ -422,12 +422,12 @@ public:
   // the user data will be lost by the `save` method.
   // Thus, we should call the `save` method only when it is neccessary.
 
-  void save_to_file_synchronously(void) {
+  void sync_save_to_file(void) {
     make_backup_file();
     remove_old_backup_files();
 
     auto file_path = constants::get_user_core_configuration_file_path();
-    json_utility::save_to_file(to_json(), file_path, 0700, 0600, true);
+    json_utility::sync_save_to_file(to_json(), file_path, 0700, 0600);
   }
 
 private:

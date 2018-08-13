@@ -16,7 +16,7 @@ void select_profile(const std::string& name) {
                                         for (size_t i = 0; i < profiles.size(); ++i) {
                                           if (profiles[i].get_name() == name) {
                                             core_configuration->select_profile(i);
-                                            core_configuration->save_to_file_synchronously();
+                                            core_configuration->sync_save_to_file();
                                             return;
                                           }
                                         }

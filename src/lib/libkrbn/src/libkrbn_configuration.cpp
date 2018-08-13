@@ -35,7 +35,7 @@ void libkrbn_core_configuration_terminate(libkrbn_core_configuration** p) {
 
 void libkrbn_core_configuration_save(libkrbn_core_configuration* p) {
   if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
-    c->get_core_configuration().save_to_file_synchronously();
+    c->get_core_configuration().sync_save_to_file();
   }
 }
 
