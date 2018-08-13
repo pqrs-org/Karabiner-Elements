@@ -38,7 +38,7 @@ int main(int argc, const char* argv[]) {
   }
 
   krbn::grabber_alerts_manager::enable_json_output(krbn::constants::get_grabber_alerts_json_file_path());
-  krbn::grabber_alerts_manager::save_to_file();
+  krbn::grabber_alerts_manager::async_save_to_file();
 
   krbn::logger::get_logger().info("version {0}", karabiner_version);
 

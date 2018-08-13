@@ -40,7 +40,7 @@ public:
       manager.alerts_.erase(alert);
     }
 
-    manager.save_to_file_();
+    manager.async_save_to_file_();
   }
 
   static void enable_json_output(const std::string& output_json_file_path) {
@@ -61,13 +61,13 @@ public:
     manager.output_json_file_path_.clear();
   }
 
-  static void save_to_file(void) {
+  static void async_save_to_file(void) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
     auto& manager = instance();
 
-    manager.save_to_file_();
+    manager.async_save_to_file_();
   }
 
 private:
@@ -89,9 +89,9 @@ private:
     });
   }
 
-  void save_to_file_(void) {
+  void async_save_to_file_(void) {
     if (!output_json_file_path_.empty()) {
-      json_utility::save_to_file(to_json(), output_json_file_path_, 0755, 0644);
+      json_utility::async_save_to_file(to_json(), output_json_file_path_, 0755, 0644);
     }
   }
 
