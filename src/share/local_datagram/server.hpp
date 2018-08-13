@@ -142,6 +142,7 @@ private:
         while (server_check_enabled_) {
           server_check_timer_ = std::make_shared<thread_utility::timer>(
               *server_check_interval,
+              false,
               [this, path, &c, &client_connected] {
                 // Skip if client is connecting
                 if (c && !client_connected) {

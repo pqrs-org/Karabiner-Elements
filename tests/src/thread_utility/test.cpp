@@ -11,10 +11,12 @@ TEST_CASE("timer") {
   {
     size_t count = 0;
 
-    krbn::thread_utility::timer timer(std::chrono::milliseconds(100),
-                                      [&] {
-                                        ++count;
-                                      });
+    krbn::thread_utility::timer timer(
+        std::chrono::milliseconds(100),
+        false,
+        [&] {
+          ++count;
+        });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -29,10 +31,12 @@ TEST_CASE("timer") {
     size_t count = 0;
     size_t wait_count = 0;
 
-    krbn::thread_utility::timer timer(std::chrono::milliseconds(500),
-                                      [&] {
-                                        ++count;
-                                      });
+    krbn::thread_utility::timer timer(
+        std::chrono::milliseconds(500),
+        false,
+        [&] {
+          ++count;
+        });
 
     auto thread = std::thread([&] {
       for (int i = 0; i < 5; ++i) {
@@ -55,10 +59,12 @@ TEST_CASE("timer") {
   {
     size_t count = 0;
 
-    krbn::thread_utility::timer timer(std::chrono::milliseconds(500),
-                                      [&] {
-                                        ++count;
-                                      });
+    krbn::thread_utility::timer timer(
+        std::chrono::milliseconds(500),
+        false,
+        [&] {
+          ++count;
+        });
 
     timer.cancel();
 
@@ -73,10 +79,12 @@ TEST_CASE("timer") {
     size_t count = 0;
 
     {
-      krbn::thread_utility::timer timer(std::chrono::milliseconds(50000),
-                                        [&] {
-                                          ++count;
-                                        });
+      krbn::thread_utility::timer timer(
+          std::chrono::milliseconds(50000),
+          false,
+          [&] {
+            ++count;
+          });
     }
   }
 
@@ -85,10 +93,12 @@ TEST_CASE("timer") {
   {
     size_t count = 0;
 
-    krbn::thread_utility::timer timer(std::chrono::milliseconds(500),
-                                      [&] {
-                                        ++count;
-                                      });
+    krbn::thread_utility::timer timer(
+        std::chrono::milliseconds(500),
+        false,
+        [&] {
+          ++count;
+        });
 
     auto thread = std::thread([&] {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -101,5 +111,27 @@ TEST_CASE("timer") {
     REQUIRE(count == 0);
 
     thread.join();
+  }
+}
+
+TEST_CASE("timer.repeats") {
+  // Cancel while wait
+
+  {
+    size_t count = 0;
+
+    krbn::thread_utility::timer timer(
+        std::chrono::milliseconds(100),
+        true,
+        [&] {
+          ++count;
+        });
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    timer.cancel();
+    timer.wait();
+
+    REQUIRE(count >= 2);
   }
 }

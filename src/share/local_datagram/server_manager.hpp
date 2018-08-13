@@ -99,9 +99,12 @@ private:
   void start_reconnect_thread(void) {
     std::lock_guard<std::mutex> lock(reconnect_timer_mutex_);
 
-    reconnect_timer_ = std::make_unique<thread_utility::timer>(reconnect_interval_, [this] {
-      connect();
-    });
+    reconnect_timer_ = std::make_unique<thread_utility::timer>(
+        reconnect_interval_,
+        false,
+        [this] {
+          connect();
+        });
   }
 
   void stop_reconnect_thread(void) {

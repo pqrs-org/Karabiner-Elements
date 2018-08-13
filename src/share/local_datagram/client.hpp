@@ -153,6 +153,7 @@ private:
         while (server_check_enabled_) {
           server_check_timer_ = std::make_shared<thread_utility::timer>(
               *server_check_interval,
+              false,
               [this] {
                 std::vector<uint8_t> data;
                 async_send(data);
