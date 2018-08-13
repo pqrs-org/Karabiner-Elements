@@ -95,16 +95,21 @@ public:
       // Other variables
 
       registry_entry_ids_.clear();
-      hids_.clear();
+
+      {
+        std::lock_guard<std::mutex> lock(hids_mutex_);
+
+        hids_.clear();
+      }
 
       logger::get_logger().info("hid_manager is stopped.");
     });
   }
 
-  void enqueue_each_hid(std::function<void(std::vector<std::shared_ptr<human_interface_device>> hids_copy)> function) const {
-    run_loop_thread_->enqueue(^{
-      function(hids_);
-    });
+  std::vector<std::shared_ptr<human_interface_device>> copy_hids(void) const {
+    std::lock_guard<std::mutex> lock(hids_mutex_);
+
+    return hids_;
   }
 
 private:
@@ -141,17 +146,23 @@ private:
       // Skip if same device is already matched.
       // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
 
-      if (std::any_of(std::begin(hids_),
-                      std::end(hids_),
-                      [&](auto&& h) {
-                        return *registry_entry_id == h->get_registry_entry_id();
-                      })) {
-        logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
-        return;
-      }
+      std::shared_ptr<human_interface_device> hid;
 
-      auto hid = std::make_shared<human_interface_device>(device, *registry_entry_id);
-      hids_.push_back(hid);
+      {
+        std::lock_guard<std::mutex> lock(hids_mutex_);
+
+        if (std::any_of(std::begin(hids_),
+                        std::end(hids_),
+                        [&](auto&& h) {
+                          return *registry_entry_id == h->get_registry_entry_id();
+                        })) {
+          logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
+          return;
+        }
+
+        hid = std::make_shared<human_interface_device>(device, *registry_entry_id);
+        hids_.push_back(hid);
+      }
 
       device_detected(hid);
     }
@@ -181,15 +192,23 @@ private:
     // ----------------------------------------
 
     if (auto registry_entry_id = find_registry_entry_id(device)) {
-      auto it = std::find_if(std::begin(hids_),
-                             std::end(hids_),
-                             [&](auto&& h) {
-                               return *registry_entry_id == h->get_registry_entry_id();
-                             });
-      if (it != hids_.end()) {
-        auto hid = *it;
-        hids_.erase(it);
+      std::shared_ptr<human_interface_device> hid;
 
+      {
+        std::lock_guard<std::mutex> lock(hids_mutex_);
+
+        auto it = std::find_if(std::begin(hids_),
+                               std::end(hids_),
+                               [&](auto&& h) {
+                                 return *registry_entry_id == h->get_registry_entry_id();
+                               });
+        if (it != hids_.end()) {
+          hid = *it;
+          hids_.erase(it);
+        }
+      }
+
+      if (hid) {
         hid->set_removed();
         device_removed(hid);
       }
@@ -223,14 +242,24 @@ private:
     // We validate the human_interface_device,
     // and then reload devices if there is an invalid human_interface_device.
 
-    for (const auto& hid : hids_) {
-      if (!hid->validate()) {
-        logger::get_logger().warn("Refreshing hid_manager since a dangling human_interface_device is found. ({0})",
-                                  hid->get_name_for_log());
-        stop();
-        start();
-        break;
+    bool needs_refresh = false;
+
+    {
+      std::lock_guard<std::mutex> lock(hids_mutex_);
+
+      for (const auto& hid : hids_) {
+        if (!hid->validate()) {
+          logger::get_logger().warn("Refreshing hid_manager since a dangling human_interface_device is found. ({0})",
+                                    hid->get_name_for_log());
+          needs_refresh = true;
+          break;
+        }
       }
+    }
+
+    if (needs_refresh) {
+      stop();
+      start();
     }
   }
 
@@ -249,9 +278,9 @@ private:
   IOHIDManagerRef _Nullable manager_;
   std::unique_ptr<thread_utility::timer> refresh_timer_;
 
-  // Note: Ensure access the following varables only in run_loop_thread_.
-
   std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
+  // We do not need to use registry_entry_ids_mutex_ since it is modified only in run_loop_thread_.
   std::vector<std::shared_ptr<human_interface_device>> hids_;
+  mutable std::mutex hids_mutex_;
 };
 } // namespace krbn
