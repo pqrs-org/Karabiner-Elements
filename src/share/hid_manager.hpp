@@ -1,7 +1,8 @@
 #pragma once
 
 #include "boost_utility.hpp"
-#include "gcd_utility.hpp"
+#include "cf_utility.hpp"
+#include "device_detail.hpp"
 #include "human_interface_device.hpp"
 #include "logger.hpp"
 #include "types.hpp"
@@ -25,59 +26,84 @@ public:
 
   hid_manager(const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) : usage_pairs_(usage_pairs),
                                                                                       manager_(nullptr) {
+    run_loop_thread_ = std::make_shared<cf_utility::run_loop_thread>();
   }
 
   ~hid_manager(void) {
     stop();
-  }
 
-  const std::unordered_map<registry_entry_id, std::shared_ptr<human_interface_device>>& get_hids(void) const {
-    return hids_;
+    run_loop_thread_ = nullptr;
   }
 
   void start(void) {
-    if (manager_) {
-      stop();
-    }
+    run_loop_thread_->enqueue(^{
+      if (manager_) {
+        return;
+      }
 
-    manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-    if (!manager_) {
-      logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
-      return;
-    }
+      manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
+      if (!manager_) {
+        logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
+        return;
+      }
 
-    if (auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries(usage_pairs_)) {
-      IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
-      CFRelease(device_matching_dictionaries);
-    }
+      if (auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries(usage_pairs_)) {
+        IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
+        CFRelease(device_matching_dictionaries);
+      }
 
-    IOHIDManagerRegisterDeviceMatchingCallback(manager_, static_device_matching_callback, this);
-    IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
+      IOHIDManagerRegisterDeviceMatchingCallback(manager_, static_device_matching_callback, this);
+      IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
 
-    IOHIDManagerScheduleWithRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+      IOHIDManagerScheduleWithRunLoop(manager_,
+                                      run_loop_thread_->get_run_loop(),
+                                      kCFRunLoopDefaultMode);
 
-    refresh_timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-        DISPATCH_TIME_NOW,
-        5.0 * NSEC_PER_SEC,
-        0,
-        ^{
-          refresh_if_needed();
-        });
+      refresh_timer_ = std::make_unique<thread_utility::timer>(
+          std::chrono::milliseconds(5000),
+          true,
+          [this] {
+            run_loop_thread_->enqueue(^{
+              refresh_if_needed();
+            });
+          });
+
+      logger::get_logger().info("hid_manager is started.");
+    });
   }
 
   void stop(void) {
-    // Release manager_ in main thread to avoid callback invocations after object has been destroyed.
-    gcd_utility::dispatch_sync_in_main_queue(^{
+    run_loop_thread_->enqueue(^{
+      if (!manager_) {
+        return;
+      }
+
+      // refresh_timer_
+
       refresh_timer_ = nullptr;
 
+      // manager_
+
       if (manager_) {
-        IOHIDManagerUnscheduleFromRunLoop(manager_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+        IOHIDManagerUnscheduleFromRunLoop(manager_,
+                                          run_loop_thread_->get_run_loop(),
+                                          kCFRunLoopDefaultMode);
         CFRelease(manager_);
         manager_ = nullptr;
       }
 
+      // Other variables
+
       registry_entry_ids_.clear();
       hids_.clear();
+
+      logger::get_logger().info("hid_manager is stopped.");
+    });
+  }
+
+  void enqueue_each_hid(std::function<void(std::vector<std::shared_ptr<human_interface_device>> hids_copy)> function) const {
+    run_loop_thread_->enqueue(^{
+      function(hids_);
     });
   }
 
@@ -114,13 +140,18 @@ private:
 
       // Skip if same device is already matched.
       // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
-      auto it = hids_.find(*registry_entry_id);
-      if (it != std::end(hids_)) {
+
+      if (std::any_of(std::begin(hids_),
+                      std::end(hids_),
+                      [&](auto&& h) {
+                        return *registry_entry_id == h->get_registry_entry_id();
+                      })) {
+        logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
         return;
       }
 
       auto hid = std::make_shared<human_interface_device>(device, *registry_entry_id);
-      hids_[*registry_entry_id] = hid;
+      hids_.push_back(hid);
 
       device_detected(hid);
     }
@@ -150,14 +181,17 @@ private:
     // ----------------------------------------
 
     if (auto registry_entry_id = find_registry_entry_id(device)) {
-      auto it = hids_.find(*registry_entry_id);
+      auto it = std::find_if(std::begin(hids_),
+                             std::end(hids_),
+                             [&](auto&& h) {
+                               return *registry_entry_id == h->get_registry_entry_id();
+                             });
       if (it != hids_.end()) {
-        if (auto hid = it->second) {
-          hids_.erase(it);
+        auto hid = *it;
+        hids_.erase(it);
 
-          hid->set_removed();
-          device_removed(hid);
-        }
+        hid->set_removed();
+        device_removed(hid);
       }
 
       // There might be multiple devices for one registry_entry_id.
@@ -190,9 +224,10 @@ private:
     // and then reload devices if there is an invalid human_interface_device.
 
     for (const auto& hid : hids_) {
-      if (!hid.second->validate()) {
+      if (!hid->validate()) {
         logger::get_logger().warn("Refreshing hid_manager since a dangling human_interface_device is found. ({0})",
-                                  hid.second->get_name_for_log());
+                                  hid->get_name_for_log());
+        stop();
         start();
         break;
       }
@@ -207,10 +242,16 @@ private:
     return boost::none;
   }
 
+  std::shared_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+
   std::vector<std::pair<hid_usage_page, hid_usage>> usage_pairs_;
+
   IOHIDManagerRef _Nullable manager_;
+  std::unique_ptr<thread_utility::timer> refresh_timer_;
+
+  // Note: Ensure access the following varables only in run_loop_thread_.
+
   std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
-  std::unordered_map<registry_entry_id, std::shared_ptr<human_interface_device>> hids_;
-  std::unique_ptr<gcd_utility::main_queue_timer> refresh_timer_;
+  std::vector<std::shared_ptr<human_interface_device>> hids_;
 };
 } // namespace krbn
