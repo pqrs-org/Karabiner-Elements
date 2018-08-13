@@ -51,22 +51,26 @@ public:
   }
 
   ~file_monitor(void) {
-    unregister_stream();
+    run_loop_thread_->enqueue(^{
+      unregister_stream();
+    });
+
+    run_loop_thread_ = nullptr;
 
     if (directories_) {
       CFRelease(directories_);
       directories_ = nullptr;
     }
-
-    run_loop_thread_ = nullptr;
   }
 
   std::shared_ptr<cf_utility::run_loop_thread> get_run_loop_thread(void) const {
     return run_loop_thread_;
   }
 
-  bool start(void) {
-    return register_stream();
+  void start(void) {
+    run_loop_thread_->enqueue(^{
+      register_stream();
+    });
   }
 
   void enqueue_file_changed(const std::string& file_path) {
@@ -76,13 +80,11 @@ public:
   }
 
 private:
-  bool register_stream(void) {
-    std::lock_guard<std::mutex> lock(stream_mutex_);
-
+  void register_stream(void) {
     // Skip if already started.
 
     if (stream_) {
-      return false;
+      return;
     }
 
     // ----------------------------------------
@@ -101,9 +103,7 @@ private:
     // Thus, we should signal manually once.
 
     for (const auto& file : files_) {
-      run_loop_thread_->enqueue(^{
-        call_file_changed_slots(file);
-      });
+      call_file_changed_slots(file);
     }
 
     // ----------------------------------------
@@ -142,13 +142,9 @@ private:
         logger::get_logger().error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
       }
     }
-
-    return true;
   }
 
   void unregister_stream(void) {
-    std::lock_guard<std::mutex> lock(stream_mutex_);
-
     if (stream_) {
       FSEventStreamStop(stream_);
       FSEventStreamInvalidate(stream_);
@@ -211,6 +207,5 @@ private:
   std::shared_ptr<cf_utility::run_loop_thread> run_loop_thread_;
 
   FSEventStreamRef stream_;
-  std::mutex stream_mutex_;
 };
 } // namespace krbn
