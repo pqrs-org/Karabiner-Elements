@@ -133,5 +133,26 @@ TEST_CASE("timer.repeats") {
     timer.wait();
 
     REQUIRE(count >= 2);
+    REQUIRE(count <= 10);
+  }
+
+  {
+    size_t count = 0;
+
+    // Call `cancel` in `~timer`.
+
+    {
+      krbn::thread_utility::timer timer(
+          std::chrono::milliseconds(100),
+          true,
+          [&] {
+            ++count;
+          });
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+
+    REQUIRE(count >= 2);
+    REQUIRE(count <= 10);
   }
 }
