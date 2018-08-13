@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::grabber_alerts_monitor` can be used safely in a multi-threaded environment.
+
 #include "constants.hpp"
 #include "file_monitor.hpp"
 #include "filesystem.hpp"

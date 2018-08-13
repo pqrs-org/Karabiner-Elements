@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::local_datagram::client` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 BEGIN_BOOST_INCLUDE

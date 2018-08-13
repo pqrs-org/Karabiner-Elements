@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::local_datagram::client_manager` can be used safely in a multi-threaded environment.
+
 #include "local_datagram/client.hpp"
 #include "thread_utility.hpp"
 

@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::cf_utility::run_loop_thread` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include <CoreFoundation/CoreFoundation.h>

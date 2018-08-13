@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::file_monitor` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include "cf_utility.hpp"

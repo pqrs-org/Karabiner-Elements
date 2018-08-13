@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::configuration_monitor` can be used safely in a multi-threaded environment.
+
 #include "core_configuration.hpp"
 #include "file_monitor.hpp"
 #include "logger.hpp"

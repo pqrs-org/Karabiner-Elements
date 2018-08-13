@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::version_monitor` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include "constants.hpp"
