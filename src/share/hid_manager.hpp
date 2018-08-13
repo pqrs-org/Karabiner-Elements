@@ -156,7 +156,7 @@ private:
                         [&](auto&& h) {
                           return *registry_entry_id == h->get_registry_entry_id();
                         })) {
-          logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
+          // logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
           return;
         }
 
