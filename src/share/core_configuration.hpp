@@ -404,13 +404,16 @@ public:
     }
   }
 
-  profile& get_selected_profile(void) {
+  const profile& get_selected_profile(void) const {
     for (auto&& profile : profiles_) {
       if (profile.get_selected()) {
         return profile;
       }
     }
     return profiles_[0];
+  }
+  profile& get_selected_profile(void) {
+    return const_cast<profile&>(static_cast<const core_configuration&>(*this).get_selected_profile());
   }
 
   // Note:
