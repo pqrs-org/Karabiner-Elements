@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::hid_manager` can be used safely in a multi-threaded environment.
+
 #include "boost_utility.hpp"
 #include "cf_utility.hpp"
 #include "device_detail.hpp"
