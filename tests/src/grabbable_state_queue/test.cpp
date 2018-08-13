@@ -112,3 +112,16 @@ TEST_CASE("grabbable_state_queue") {
     REQUIRE(grabbable_state_changed_count == 4);
   }
 }
+
+TEST_CASE("grabbable_state_queue.circular_buffer") {
+  krbn::grabbable_state_queue queue;
+
+  for (int i = 0; i < 10000; ++i) {
+    queue.push_back_grabbable_state(krbn::grabbable_state(registry_entry_id1,
+                                                          krbn::grabbable_state::state::grabbable,
+                                                          krbn::grabbable_state::ungrabbable_temporarily_reason::none,
+                                                          i));
+
+    REQUIRE(queue.find_current_grabbable_state()->get_time_stamp() == i);
+  }
+}

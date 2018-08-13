@@ -56,10 +56,6 @@ public:
 
     auto old_state = find_current_grabbable_state();
 
-    if (grabbable_states_.full()) {
-      grabbable_states_.pop_front();
-    }
-
     grabbable_states_.push_back(state);
 
     auto new_state = find_current_grabbable_state();
