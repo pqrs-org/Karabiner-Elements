@@ -7,7 +7,7 @@
 namespace {
 class test_file_monitor final {
 public:
-  test_file_monitor(void) {
+  test_file_monitor(void) : register_stream_finished_(false) {
     std::vector<std::string> targets({
         "target/sub1/file1_1",
         "target/sub1/file1_2",
@@ -16,11 +16,22 @@ public:
 
     file_monitor_ = std::make_unique<krbn::file_monitor>(targets);
 
-    file_monitor_->file_changed.connect([&](auto& file_path) {
-      if (!file_changed_thread_id_) {
-        file_changed_thread_id_ = std::this_thread::get_id();
+    file_monitor_->register_stream_finished.connect([&] {
+      if (!file_monitor_thread_id_) {
+        file_monitor_thread_id_ = std::this_thread::get_id();
       }
-      if (file_changed_thread_id_ != std::this_thread::get_id()) {
+      if (file_monitor_thread_id_ != std::this_thread::get_id()) {
+        throw std::logic_error("thread id mismatch");
+      }
+
+      register_stream_finished_ = true;
+    });
+
+    file_monitor_->file_changed.connect([&](auto& file_path) {
+      if (!file_monitor_thread_id_) {
+        file_monitor_thread_id_ = std::this_thread::get_id();
+      }
+      if (file_monitor_thread_id_ != std::this_thread::get_id()) {
         throw std::logic_error("thread id mismatch");
       }
 
@@ -49,6 +60,10 @@ public:
     file_monitor_->start();
 
     wait();
+  }
+
+  bool get_register_stream_finished(void) const {
+    return register_stream_finished_;
   }
 
   const std::string& get_last_file_path(void) const {
@@ -84,7 +99,8 @@ public:
 
 private:
   std::unique_ptr<krbn::file_monitor> file_monitor_;
-  boost::optional<std::thread::id> file_changed_thread_id_;
+  boost::optional<std::thread::id> file_monitor_thread_id_;
+  bool register_stream_finished_;
   std::string last_file_path_;
   std::string last_file_line1_1_;
   std::string last_file_line1_2_;
@@ -106,6 +122,7 @@ TEST_CASE("file_monitor") {
 
     test_file_monitor monitor;
 
+    REQUIRE(monitor.get_register_stream_finished());
     REQUIRE(monitor.get_last_file_path() == *krbn::filesystem::realpath("target/sub1/file1_2"));
     REQUIRE(monitor.get_last_file_line1_1() == "1_1_0");
     REQUIRE(monitor.get_last_file_line1_2() == "1_2_0");
@@ -312,6 +329,7 @@ TEST_CASE("file_monitor") {
 
     test_file_monitor monitor;
 
+    REQUIRE(monitor.get_register_stream_finished());
     REQUIRE(monitor.get_last_file_path().empty());
     REQUIRE(monitor.get_last_file_line1_1().empty());
     REQUIRE(monitor.get_last_file_line1_2().empty());

@@ -17,6 +17,7 @@ class file_monitor final {
 public:
   // Signals
 
+  boost::signals2::signal<void(void)> register_stream_finished;
   boost::signals2::signal<void(const std::string& file_path)> file_changed;
 
   // Methods
@@ -142,6 +143,8 @@ private:
         logger::get_logger().error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
       }
     }
+
+    register_stream_finished();
   }
 
   void unregister_stream(void) {
