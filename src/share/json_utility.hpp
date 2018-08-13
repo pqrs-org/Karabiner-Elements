@@ -68,19 +68,26 @@ public:
     return fallback_value;
   }
 
-  static void save_to_file(const nlohmann::json& json,
-                           const std::string& file_path,
-                           mode_t parent_directory_mode,
-                           mode_t file_mode,
-                           bool wait = false) {
+  static void async_save_to_file(const nlohmann::json& json,
+                                 const std::string& file_path,
+                                 mode_t parent_directory_mode,
+                                 mode_t file_mode) {
     async_sequential_file_writer::get_instance().push_back(file_path,
                                                            json.dump(4),
                                                            parent_directory_mode,
                                                            file_mode);
+  }
 
-    if (wait) {
-      async_sequential_file_writer::get_instance().wait();
-    }
+  static void sync_save_to_file(const nlohmann::json& json,
+                                const std::string& file_path,
+                                mode_t parent_directory_mode,
+                                mode_t file_mode) {
+    async_save_to_file(json,
+                       file_path,
+                       parent_directory_mode,
+                       file_mode);
+
+    async_sequential_file_writer::get_instance().wait();
   }
 };
 } // namespace krbn

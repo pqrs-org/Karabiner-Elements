@@ -212,8 +212,8 @@ public:
     devices_.clear();
   }
 
-  void save_to_file(const std::string& file_path) {
-    json_utility::save_to_file(to_json(), file_path, 0755, 0644);
+  void async_save_to_file(const std::string& file_path) {
+    json_utility::async_save_to_file(to_json(), file_path, 0755, 0644);
   }
 
 private:
