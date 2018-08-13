@@ -94,11 +94,11 @@ private:
 
         chmod(entry.get_file_path().c_str(), entry.get_file_mode());
       } else {
-        logger::get_logger().error("json_utility::save_to_file failed to open: {0}", entry.get_file_path());
+        logger::get_logger().error("async_sequential_file_writer::write failed to open: {0}", entry.get_file_path());
       }
 
     } catch (std::exception& e) {
-      logger::get_logger().error("json_utility::save_to_file error: {0}", e.what());
+      logger::get_logger().error("async_sequential_file_writer::write error: {0}", e.what());
     }
   }
 
