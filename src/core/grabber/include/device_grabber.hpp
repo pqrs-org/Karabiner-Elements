@@ -592,7 +592,7 @@ private:
   }
 
   void update_caps_lock_led(bool caps_lock_state) {
-    std::shared_ptr<core_configuration> configuration;
+    std::shared_ptr<const core_configuration> configuration;
 
     {
       std::lock_guard<std::mutex> lock(core_configuration_mutex_);
@@ -667,8 +667,8 @@ private:
   }
 
   bool need_to_disable_built_in_keyboard(void) const {
-    for (const auto& it : hid_manager_.get_hids()) {
-      if (get_disable_built_in_keyboard_if_exists(*(it.second))) {
+    for (const auto& hid : hid_manager_.copy_hids()) {
+      if (get_disable_built_in_keyboard_if_exists(*hid)) {
         return true;
       }
     }
@@ -676,30 +676,30 @@ private:
   }
 
   void enable_devices(void) {
-    for (const auto& it : hid_manager_.get_hids()) {
-      if ((it.second)->is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
-        (it.second)->disable();
+    for (const auto& hid : hid_manager_.copy_hids()) {
+      if (hid->is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
+        hid->disable();
       } else {
-        (it.second)->enable();
+        hid->enable();
       }
     }
   }
 
   void output_devices_json(void) const {
     connected_devices connected_devices;
-    for (const auto& it : hid_manager_.get_hids()) {
-      connected_devices.push_back_device(it.second->get_connected_device());
+    for (const auto& hid : hid_manager_.copy_hids()) {
+      connected_devices.push_back_device(hid->get_connected_device());
     }
 
     auto file_path = constants::get_devices_json_file_path();
-    connected_devices.save_to_file(file_path);
+    connected_devices.async_save_to_file(file_path);
   }
 
   void output_device_details_json(void) const {
     // ----------------------------------------
     std::vector<device_detail> device_details;
-    for (const auto& pair : hid_manager_.get_hids()) {
-      device_details.push_back(pair.second->make_device_detail());
+    for (const auto& hid : hid_manager_.copy_hids()) {
+      device_details.push_back(hid->make_device_detail());
     }
 
     std::sort(std::begin(device_details),
@@ -709,7 +709,7 @@ private:
               });
 
     auto file_path = constants::get_device_details_json_file_path();
-    json_utility::save_to_file(nlohmann::json(device_details), file_path, 0755, 0644);
+    json_utility::async_save_to_file(nlohmann::json(device_details), file_path, 0755, 0644);
   }
 
   void set_profile(const core_configuration::profile& profile) {
@@ -935,7 +935,7 @@ private:
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
 
-  std::shared_ptr<core_configuration> core_configuration_;
+  std::shared_ptr<const core_configuration> core_configuration_;
   mutable std::mutex core_configuration_mutex_;
 
   std::unique_ptr<event_tap_manager> event_tap_manager_;
