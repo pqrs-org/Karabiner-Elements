@@ -11,7 +11,7 @@ class configuration_monitor final {
 public:
   // Signals
 
-  boost::signals2::signal<void(std::shared_ptr<core_configuration> core_configuration)>
+  boost::signals2::signal<void(std::shared_ptr<const core_configuration> core_configuration)>
       core_configuration_updated;
 
   // Methods
@@ -26,6 +26,23 @@ public:
 
     file_monitor_ = std::make_unique<file_monitor>(targets);
 
+    file_monitor_->register_stream_finished.connect([this] {
+      // `core_configuration_file_changed` is enqueued by `file_monitor::start` only if the file exists.
+      // We have to enqueue it manually for when the file does not exist.
+
+      {
+        std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+
+        if (core_configuration_) {
+          // `core_configuration_file_changed` is already called.
+          // We do not need call the method again.
+          return;
+        }
+      }
+
+      core_configuration_file_changed();
+    });
+
     file_monitor_->file_changed.connect([this](auto&& file_path) {
       core_configuration_file_changed();
     });
@@ -36,27 +53,10 @@ public:
   }
 
   void start() {
-    if (file_monitor_->start()) {
-      // `core_configuration_file_changed` is enqueued by `file_monitor::start` only if the file exists.
-      // We have to enqueue it manually for when the file does not exist.
-
-      file_monitor_->get_run_loop_thread()->enqueue(^{
-        {
-          std::lock_guard<std::mutex> lock(core_configuration_mutex_);
-
-          if (core_configuration_) {
-            // `core_configuration_file_changed` is already called.
-            // We do not need call the method again.
-            return;
-          }
-        }
-
-        core_configuration_file_changed();
-      });
-    }
+    file_monitor_->start();
   }
 
-  std::shared_ptr<core_configuration> get_core_configuration(void) const {
+  std::shared_ptr<const core_configuration> get_core_configuration(void) const {
     std::lock_guard<std::mutex> lock(core_configuration_mutex_);
 
     return core_configuration_;
@@ -77,20 +77,21 @@ private:
 
     auto c = std::make_shared<core_configuration>(file_path);
 
+    if (core_configuration_ && !c->is_loaded()) {
+      return;
+    }
+
+    if (core_configuration_ && core_configuration_->to_json() == c->to_json()) {
+      return;
+    }
+
     {
       std::lock_guard<std::mutex> lock(core_configuration_mutex_);
 
-      if (core_configuration_ && !c->is_loaded()) {
-        return;
-      }
-
-      if (core_configuration_ && core_configuration_->to_json() == c->to_json()) {
-        return;
-      }
-
-      logger::get_logger().info("core_configuration is updated.");
       core_configuration_ = c;
     }
+
+    logger::get_logger().info("core_configuration is updated.");
 
     core_configuration_updated(c);
   }
@@ -99,7 +100,7 @@ private:
   std::string system_core_configuration_file_path_;
   std::unique_ptr<file_monitor> file_monitor_;
 
-  std::shared_ptr<core_configuration> core_configuration_;
+  std::shared_ptr<const core_configuration> core_configuration_;
   mutable std::mutex core_configuration_mutex_;
 };
 } // namespace krbn
