@@ -183,6 +183,35 @@ TEST_CASE("timer.repeats") {
   }
 }
 
+TEST_CASE("timer.repeats.interval") {
+  std::cout << "timer.repeats.interval" << std::endl;
+
+  {
+    size_t count = 0;
+
+    krbn::thread_utility::timer timer(
+        [](auto&& count) {
+          if (count == 0) {
+            return std::chrono::milliseconds(0);
+          } else {
+            return std::chrono::milliseconds(500);
+          }
+        },
+        true,
+        [&] {
+          ++count;
+        });
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    REQUIRE(count == 1);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    REQUIRE(count > 1);
+  }
+}
+
 TEST_CASE("queue") {
   std::cout << "queue" << std::endl;
 

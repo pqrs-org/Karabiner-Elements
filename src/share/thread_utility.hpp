@@ -29,16 +29,17 @@ public:
 
   class timer final {
   public:
-    timer(std::chrono::milliseconds interval,
+    timer(const std::function<std::chrono::milliseconds(size_t count)>& interval,
           bool repeats,
           const std::function<void(void)>& function) : cancel_flag_(false),
-                                                       repeats_(repeats) {
+                                                       repeats_(repeats),
+                                                       count_(0) {
       thread_ = std::thread([this, interval, function] {
         do {
           // Wait
           {
             std::unique_lock<std::mutex> lock(timer_mutex_);
-            timer_cv_.wait_for(lock, interval, [this] {
+            timer_cv_.wait_for(lock, interval(count_), [this] {
               return cancel_flag_ == true;
             });
           }
@@ -48,8 +49,16 @@ public:
           }
 
           function();
+          ++count_;
         } while (repeats_);
       });
+    }
+
+    timer(std::chrono::milliseconds interval,
+          bool repeats,
+          const std::function<void(void)>& function) : timer([interval](auto&& count) { return interval; },
+                                                             repeats,
+                                                             function) {
     }
 
     ~timer(void) {
@@ -81,6 +90,7 @@ public:
     std::thread thread_;
     std::atomic<bool> cancel_flag_;
     std::atomic<bool> repeats_;
+    size_t count_;
 
     std::mutex timer_mutex_;
     std::condition_variable timer_cv_;
