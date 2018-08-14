@@ -70,6 +70,10 @@ public:
       timer_cv_.notify_one();
     }
 
+    void unset_repeats(void) {
+      repeats_ = false;
+    }
+
   private:
     std::thread thread_;
     std::atomic<bool> cancel_flag_;
