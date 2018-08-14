@@ -1,5 +1,8 @@
 #pragma once
 
+// `krbn::thread_utility::timer` can be used safely in a multi-threaded environment.
+// `krbn::thread_utility::queue` can be used safely in a multi-threaded environment.
+
 #include <chrono>
 #include <functional>
 #include <mutex>
@@ -81,6 +84,63 @@ public:
 
     std::mutex timer_mutex_;
     std::condition_variable timer_cv_;
+  };
+
+  class queue final {
+  public:
+    queue(void) : exit_(false) {
+      worker_thread_ = std::thread([this] {
+        while (true) {
+          std::function<void(void)> function;
+
+          {
+            std::unique_lock<std::mutex> queue_lock(queue_mutex_);
+            queue_cv_.wait(queue_lock, [this] {
+              return exit_ || !queue_.empty();
+            });
+
+            if (exit_ && queue_.empty()) {
+              break;
+            }
+
+            if (!queue_.empty()) {
+              function = queue_.front();
+              queue_.pop_front();
+            }
+          }
+
+          if (function) {
+            function();
+          }
+        }
+      });
+    }
+
+    ~queue(void) {
+      if (worker_thread_.joinable()) {
+        exit_ = true;
+        queue_cv_.notify_one();
+        worker_thread_.join();
+      }
+    }
+
+    void push_back(const std::function<void(void)>& function) {
+      {
+        std::lock_guard<std::mutex> lock(queue_mutex_);
+
+        queue_.push_back(function);
+      }
+
+      queue_cv_.notify_one();
+    }
+
+  private:
+    std::thread worker_thread_;
+    std::atomic<bool> exit_;
+
+    std::deque<std::function<void(void)>> queue_;
+    std::mutex queue_mutex_;
+    std::condition_variable queue_cv_;
   };
 };
 } // namespace krbn

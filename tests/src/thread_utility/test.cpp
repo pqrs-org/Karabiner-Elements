@@ -8,6 +8,8 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("timer") {
+  std::cout << "timer" << std::endl;
+
   {
     size_t count = 0;
 
@@ -115,6 +117,8 @@ TEST_CASE("timer") {
 }
 
 TEST_CASE("timer.repeats") {
+  std::cout << "timer.repeats" << std::endl;
+
   // Cancel while wait
 
   {
@@ -176,5 +180,51 @@ TEST_CASE("timer.repeats") {
     }
 
     REQUIRE(count == 2);
+  }
+}
+
+TEST_CASE("queue") {
+  std::cout << "queue" << std::endl;
+
+  {
+    size_t count = 0;
+
+    krbn::thread_utility::queue queue;
+
+    for (int i = 0; i < 10000; ++i) {
+      queue.push_back([&count, i] {
+        ++count;
+        if (i % 1000 == 0) {
+          std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
+      });
+    }
+
+    REQUIRE(count < 10000);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    REQUIRE(count == 10000);
+  }
+
+  // Run queued functions in the destructor.
+
+  {
+    size_t count = 0;
+
+    {
+      krbn::thread_utility::queue queue;
+
+      for (int i = 0; i < 10000; ++i) {
+        queue.push_back([&count, i] {
+          ++count;
+          if (i % 1000 == 0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+          }
+        });
+      }
+    }
+
+    REQUIRE(count == 10000);
   }
 }
