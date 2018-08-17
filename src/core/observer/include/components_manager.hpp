@@ -3,7 +3,6 @@
 #include "console_user_id_monitor.hpp"
 #include "constants.hpp"
 #include "device_observer.hpp"
-#include "gcd_utility.hpp"
 #include "grabber_client.hpp"
 #include "version_monitor_utility.hpp"
 

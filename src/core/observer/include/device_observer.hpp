@@ -2,7 +2,6 @@
 
 #include "boost_defs.hpp"
 
-#include "gcd_utility.hpp"
 #include "grabbable_state_manager.hpp"
 #include "grabber_client.hpp"
 #include "hid_manager.hpp"
