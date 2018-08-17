@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::human_interface_device` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include "apple_hid_usage_tables.hpp"
@@ -8,7 +10,6 @@
 #include "core_configuration.hpp"
 #include "device_detail.hpp"
 #include "event_queue.hpp"
-#include "gcd_utility.hpp"
 #include "iokit_utility.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "logger.hpp"
@@ -31,6 +32,14 @@
 namespace krbn {
 class human_interface_device final {
 public:
+  // Signals
+
+  boost::signals2::signal<void(void)> opened;
+  boost::signals2::signal<void(IOReturn error)> open_failed;
+
+  boost::signals2::signal<void(void)> closed;
+  boost::signals2::signal<void(IOReturn error)> close_failed;
+
   boost::signals2::signal<void(human_interface_device& device,
                                event_queue& event_queue)>
       values_arrived;
@@ -44,17 +53,22 @@ public:
 
   boost::signals2::signal<void(human_interface_device&)> device_grabbed;
   boost::signals2::signal<void(human_interface_device&)> device_ungrabbed;
-  boost::signals2::signal<void(human_interface_device&)> device_disabled;
+
+  // Methods
 
   human_interface_device(const human_interface_device&) = delete;
 
   human_interface_device(IOHIDDeviceRef _Nonnull device,
                          registry_entry_id registry_entry_id) : device_(device),
-                                                                device_id_(types::make_new_device_id(std::make_shared<device_detail>(device))),
-                                                                queue_(nullptr),
                                                                 registry_entry_id_(registry_entry_id),
+                                                                device_id_(types::make_new_device_id(std::make_shared<device_detail>(device))),
                                                                 removed_(false),
-                                                                disabled_(false) {
+                                                                opened_(false),
+                                                                queue_(nullptr) {
+    // ----------------------------------------
+
+    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
+
     // ----------------------------------------
     // Retain device_
 
@@ -117,7 +131,7 @@ public:
         is_built_in_trackpad = true;
       }
 
-      connected_device_ = std::make_unique<connected_devices::device>(descriptions,
+      connected_device_ = std::make_shared<connected_devices::device>(descriptions,
                                                                       identifiers,
                                                                       is_built_in_keyboard,
                                                                       is_built_in_trackpad);
@@ -184,14 +198,12 @@ public:
   }
 
   ~human_interface_device(void) {
-    // Release device_ and queue_ in main thread to avoid callback invocations after object has been destroyed.
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      // Unregister all callbacks.
-      unschedule();
-      disable_report_callback();
-      queue_stop();
-      close();
+    async_unschedule();
+    async_disable_report_callback();
+    async_queue_stop();
+    async_close();
 
+    run_loop_thread_->enqueue(^{
       types::detach_device_id(device_id_);
 
       // ----------------------------------------
@@ -215,10 +227,52 @@ public:
 
       CFRelease(device_);
     });
+
+    run_loop_thread_ = nullptr;
+  }
+
+  registry_entry_id get_registry_entry_id(void) const {
+    return registry_entry_id_;
+  }
+
+  std::string get_name_for_log(void) const {
+    return name_for_log_;
   }
 
   device_id get_device_id(void) const {
     return device_id_;
+  }
+
+  bool get_removed(void) const {
+    return removed_;
+  }
+
+  void set_removed(void) {
+    removed_ = true;
+  }
+
+  std::shared_ptr<connected_devices::device> get_connected_device(void) const {
+    return connected_device_;
+  }
+
+  bool is_keyboard(void) const {
+    return connected_device_->get_identifiers().get_is_keyboard();
+  }
+
+  bool is_pointing_device(void) const {
+    return connected_device_->get_identifiers().get_is_pointing_device();
+  }
+
+  bool is_built_in_keyboard(void) const {
+    return connected_device_->get_is_built_in_keyboard();
+  }
+
+  bool is_built_in_trackpad(void) const {
+    return connected_device_->get_is_built_in_trackpad();
+  }
+
+  device_detail make_device_detail(void) const {
+    return device_detail(device_);
   }
 
   bool validate(void) const {
@@ -231,138 +285,136 @@ public:
     return true;
   }
 
-  IOReturn open(IOOptionBits options = kIOHIDOptionsTypeNone) {
-    IOReturn __block r = kIOReturnError;
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!removed_) {
-        r = IOHIDDeviceOpen(device_, options);
-      }
-    });
-    return r;
-  }
-
-  IOReturn close(void) {
-    IOReturn __block r = kIOReturnError;
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!removed_) {
-        r = IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
-      }
-    });
-    return r;
-  }
-
-  void schedule(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!removed_) {
-        IOHIDDeviceScheduleWithRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-        if (queue_) {
-          IOHIDQueueScheduleWithRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-        }
-      }
-    });
-  }
-
-  void unschedule(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!removed_) {
-        if (queue_) {
-          IOHIDQueueUnscheduleFromRunLoop(queue_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-        }
-        IOHIDDeviceUnscheduleFromRunLoop(device_, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-      }
-    });
-  }
-
-  void enable_report_callback(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!removed_) {
-        resize_report_buffer();
-        IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
-      }
-    });
-  }
-
-  void disable_report_callback(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!removed_) {
-        resize_report_buffer();
-        IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
-      }
-    });
-  }
-
-  void queue_start(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!removed_) {
-        if (queue_) {
-          IOHIDQueueStart(queue_);
-        }
-      }
-    });
-  }
-
-  void queue_stop(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!removed_) {
-        if (queue_) {
-          IOHIDQueueStop(queue_);
-        }
-      }
-    });
-  }
-
-  IOReturn set_report(IOHIDReportType report_type,
-                      CFIndex report_id,
-                      const uint8_t* _Nonnull report,
-                      CFIndex report_length) {
-    IOReturn __block r = kIOReturnError;
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!removed_) {
-        r = IOHIDDeviceSetReport(device_,
-                                 report_type,
-                                 report_id,
-                                 report,
-                                 report_length);
-      }
-    });
-    return r;
-  }
-
-  bool get_removed(void) const {
-    return removed_;
-  }
-
-  void set_removed(void) {
-    removed_ = true;
-  }
-
-  bool get_disabled(void) const {
-    return disabled_;
-  }
-
-  void disable(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (disabled_) {
+  void async_open(IOOptionBits options = kIOHIDOptionsTypeNone) {
+    run_loop_thread_->enqueue(^{
+      if (removed_) {
         return;
       }
 
-      disabled_ = true;
-
-      device_disabled(*this);
-
-      logger::get_logger().info("{0} is disabled", get_name_for_log());
+      if (!opened_) {
+        auto r = IOHIDDeviceOpen(device_, options);
+        if (r == kIOReturnSuccess) {
+          opened_ = true;
+          opened();
+        } else {
+          open_failed(r);
+        }
+      }
     });
   }
 
-  void enable(void) {
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (!disabled_) {
+  void async_close(void) {
+    run_loop_thread_->enqueue(^{
+      if (removed_) {
         return;
       }
 
-      disabled_ = false;
+      if (opened_) {
+        auto r = IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
+        if (r == kIOReturnSuccess) {
+          closed();
+        } else {
+          close_failed(r);
+        }
+        opened_ = false;
+      }
+    });
+  }
 
-      logger::get_logger().info("{0} is enabled", get_name_for_log());
+  void async_schedule(void) {
+    run_loop_thread_->enqueue(^{
+      if (removed_) {
+        return;
+      }
+
+      IOHIDDeviceScheduleWithRunLoop(device_,
+                                     run_loop_thread_->get_run_loop(),
+                                     kCFRunLoopDefaultMode);
+      if (queue_) {
+        IOHIDQueueScheduleWithRunLoop(queue_,
+                                      run_loop_thread_->get_run_loop(),
+                                      kCFRunLoopDefaultMode);
+      }
+    });
+  }
+
+  void async_unschedule(void) {
+    run_loop_thread_->enqueue(^{
+      if (removed_) {
+        return;
+      }
+
+      if (queue_) {
+        IOHIDQueueUnscheduleFromRunLoop(queue_,
+                                        run_loop_thread_->get_run_loop(),
+                                        kCFRunLoopDefaultMode);
+      }
+      IOHIDDeviceUnscheduleFromRunLoop(device_,
+                                       run_loop_thread_->get_run_loop(),
+                                       kCFRunLoopDefaultMode);
+    });
+  }
+
+  void async_enable_report_callback(void) {
+    run_loop_thread_->enqueue(^{
+      if (removed_) {
+        return;
+      }
+
+      resize_report_buffer();
+      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
+    });
+  }
+
+  void async_disable_report_callback(void) {
+    run_loop_thread_->enqueue(^{
+      if (removed_) {
+        return;
+      }
+
+      resize_report_buffer();
+      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
+    });
+  }
+
+  void async_queue_start(void) {
+    run_loop_thread_->enqueue(^{
+      if (removed_) {
+        return;
+      }
+
+      if (queue_) {
+        IOHIDQueueStart(queue_);
+      }
+    });
+  }
+
+  void async_queue_stop(void) {
+    run_loop_thread_->enqueue(^{
+      if (removed_) {
+        return;
+      }
+
+      if (queue_) {
+        IOHIDQueueStop(queue_);
+      }
+    });
+  }
+
+  void async_set_report(IOHIDReportType report_type,
+                        CFIndex report_id,
+                        const uint8_t* _Nonnull report,
+                        CFIndex report_length) {
+    run_loop_thread_->enqueue(^{
+      if (removed_) {
+        return;
+      }
+
+      IOHIDDeviceSetReport(device_,
+                           report_type,
+                           report_id,
+                           report,
+                           report_length);
     });
   }
 
@@ -402,52 +454,11 @@ public:
     return iokit_utility::is_karabiner_virtual_hid_device(device_);
   }
 
-  registry_entry_id get_registry_entry_id(void) const {
-    return registry_entry_id_;
-  }
-
-  std::string get_name_for_log(void) const {
-    return name_for_log_;
-  }
-
 #pragma mark - usage specific utilities
 
-  // This method requires root privilege to use IOHIDDeviceGetValue for kHIDPage_LEDs usage.
-  boost::optional<led_state> get_caps_lock_led_state(void) const {
-    boost::optional<led_state> __block state = boost::none;
-
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      for (const auto& e : elements_) {
-        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(e));
-        auto usage = hid_usage(IOHIDElementGetUsage(e));
-
-        if (usage_page == hid_usage_page::leds &&
-            usage == hid_usage::led_caps_lock) {
-          auto max = IOHIDElementGetLogicalMax(e);
-
-          IOHIDValueRef value;
-          auto r = IOHIDDeviceGetValue(device_, e, &value);
-          if (r == kIOReturnSuccess) {
-            auto integer_value = IOHIDValueGetIntegerValue(value);
-            if (integer_value == max) {
-              state = led_state::on;
-            } else {
-              state = led_state::off;
-            }
-            break;
-          }
-        }
-      }
-    });
-
-    return state;
-  }
-
   // This method requires root privilege to use IOHIDDeviceSetValue for kHIDPage_LEDs usage.
-  IOReturn set_caps_lock_led_state(led_state state) {
-    IOReturn __block r = kIOReturnError;
-
-    gcd_utility::dispatch_sync_in_main_queue(^{
+  void async_set_caps_lock_led_state(led_state state) {
+    run_loop_thread_->enqueue(^{
       for (const auto& e : elements_) {
         auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(e));
         auto usage = hid_usage(IOHIDElementGetUsage(e));
@@ -461,7 +472,10 @@ public:
             integer_value = IOHIDElementGetLogicalMin(e);
           }
 
-          if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault, e, mach_absolute_time(), integer_value)) {
+          if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault,
+                                                            e,
+                                                            mach_absolute_time(),
+                                                            integer_value)) {
             IOHIDDeviceSetValue(device_, e, value);
 
             CFRelease(value);
@@ -469,32 +483,6 @@ public:
         }
       }
     });
-
-    return r;
-  }
-
-  const connected_devices::device get_connected_device(void) const {
-    return *connected_device_;
-  }
-
-  bool is_keyboard(void) const {
-    return connected_device_->get_identifiers().get_is_keyboard();
-  }
-
-  bool is_pointing_device(void) const {
-    return connected_device_->get_identifiers().get_is_pointing_device();
-  }
-
-  bool is_built_in_keyboard(void) const {
-    return connected_device_->get_is_built_in_keyboard();
-  }
-
-  bool is_built_in_trackpad(void) const {
-    return connected_device_->get_is_built_in_trackpad();
-  }
-
-  device_detail make_device_detail(void) const {
-    return device_detail(device_);
   }
 
 private:
@@ -605,25 +593,19 @@ private:
   }
 
   IOHIDDeviceRef _Nonnull device_;
-  device_id device_id_;
-  IOHIDQueueRef _Nullable queue_;
-  std::vector<IOHIDElementRef> elements_;
-
   registry_entry_id registry_entry_id_;
 
+  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  device_id device_id_;
   std::string name_for_log_;
+  std::atomic<bool> removed_;
+  std::atomic<bool> opened_;
+  std::shared_ptr<connected_devices::device> connected_device_;
 
+  IOHIDQueueRef _Nullable queue_;
+  std::vector<IOHIDElementRef> elements_;
   event_queue input_event_queue_;
-
   std::vector<uint8_t> report_buffer_;
-
-  bool removed_;
-  // `disabled_` is ignoring input events from this device.
-  // (== `grabbed_` and does not call `values_arrived`)
-  bool disabled_;
-
-  std::unique_ptr<connected_devices::device> connected_device_;
-
   std::unordered_set<uint64_t> pressed_keys_;
 };
 } // namespace krbn

@@ -7,6 +7,7 @@
 #include "device_detail.hpp"
 #include "human_interface_device.hpp"
 #include "logger.hpp"
+#include "thread_utility.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
 #include <unordered_map>
