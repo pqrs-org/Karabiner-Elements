@@ -1194,18 +1194,26 @@ public:
 
     id = device_id(static_cast<uint32_t>(id) + 1);
 
-    auto& map = get_device_id_map();
-    map[id] = device_detail;
+    {
+      std::lock_guard<std::mutex> lock(get_device_id_map_mutex());
+
+      auto& map = get_device_id_map();
+      map[id] = device_detail;
+    }
 
     return id;
   }
 
   static void detach_device_id(device_id device_id) {
+    std::lock_guard<std::mutex> lock(get_device_id_map_mutex());
+
     auto& map = get_device_id_map();
     map.erase(device_id);
   }
 
   static const std::shared_ptr<device_detail> find_device_detail(device_id device_id) {
+    std::lock_guard<std::mutex> lock(get_device_id_map_mutex());
+
     auto& map = get_device_id_map();
     auto it = map.find(device_id);
     if (it == std::end(map)) {
@@ -1963,6 +1971,11 @@ private:
   static std::unordered_map<device_id, std::shared_ptr<device_detail>>& get_device_id_map(void) {
     static std::unordered_map<device_id, std::shared_ptr<device_detail>> map;
     return map;
+  }
+
+  static std::mutex& get_device_id_map_mutex(void) {
+    static std::mutex mutex;
+    return mutex;
   }
 };
 
