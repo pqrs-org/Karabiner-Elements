@@ -1,10 +1,13 @@
 #pragma once
 
+// `krbn::grabbable_state_manager` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include "device_detail.hpp"
 #include "event_queue.hpp"
 #include "keyboard_repeat_detector.hpp"
+#include "thread_utility.hpp"
 #include <boost/signals2.hpp>
 
 namespace krbn {
@@ -19,7 +22,19 @@ public:
 
   // Methods
 
+  grabbable_state_manager(const grabbable_state_manager&) = delete;
+
+  grabbable_state_manager(void) {
+    call_slots_queue_ = std::make_unique<thread_utility::queue>();
+  }
+
+  ~grabbable_state_manager(void) {
+    call_slots_queue_ = nullptr;
+  }
+
   void update(grabbable_state state) {
+    std::lock_guard<std::mutex> lock(entries_mutex_);
+
     auto registry_entry_id = state.get_registry_entry_id();
 
     auto it = entries_.find(registry_entry_id);
@@ -37,12 +52,16 @@ public:
       auto new_state = it->second.get_grabbable_state();
 
       if (!old_state.equals_except_time_stamp(new_state)) {
-        grabbable_state_changed(new_state);
+        call_slots_queue_->push_back([this, new_state] {
+          grabbable_state_changed(new_state);
+        });
       }
     }
   }
 
   void update(const event_queue& event_queue) {
+    std::lock_guard<std::mutex> lock(entries_mutex_);
+
     for (const auto& queued_event : event_queue.get_events()) {
       if (auto device_detail = types::find_device_detail(queued_event.get_device_id())) {
         if (auto registry_entry_id = device_detail->get_registry_entry_id()) {
@@ -66,7 +85,9 @@ public:
             auto new_state = it->second.get_grabbable_state();
 
             if (!old_state.equals_except_time_stamp(new_state)) {
-              grabbable_state_changed(new_state);
+              call_slots_queue_->push_back([this, new_state] {
+                grabbable_state_changed(new_state);
+              });
             }
           }
         }
@@ -75,10 +96,14 @@ public:
   }
 
   void erase(registry_entry_id registry_entry_id) {
+    std::lock_guard<std::mutex> lock(entries_mutex_);
+
     entries_.erase(registry_entry_id);
   }
 
   boost::optional<grabbable_state> get_grabbable_state(registry_entry_id registry_entry_id) const {
+    std::lock_guard<std::mutex> lock(entries_mutex_);
+
     auto it = entries_.find(registry_entry_id);
     if (it != std::end(entries_)) {
       return it->second.get_grabbable_state();
@@ -87,6 +112,9 @@ public:
   }
 
 private:
+  std::unique_ptr<thread_utility::queue> call_slots_queue_;
+
   std::unordered_map<registry_entry_id, entry> entries_;
+  mutable std::mutex entries_mutex_;
 };
 } // namespace krbn
