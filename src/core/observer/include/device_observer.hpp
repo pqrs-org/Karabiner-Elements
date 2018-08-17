@@ -50,6 +50,7 @@ public:
       });
 
       auto observer = std::make_shared<hid_observer>(human_interface_device);
+
       observer->device_observed.connect([this](auto&& human_interface_device) {
         logger::get_logger().info("{0} is observed.",
                                   human_interface_device->get_name_for_log());
