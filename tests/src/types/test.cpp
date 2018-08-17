@@ -11,9 +11,9 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("operation_type") {
-  krbn::operation_type_connect_struct s;
+  krbn::operation_type_connect_console_user_server_struct s;
   REQUIRE(krbn::types::find_operation_type(reinterpret_cast<void*>(&s),
-                                           sizeof(s)) == krbn::operation_type::connect);
+                                           sizeof(s)) == krbn::operation_type::connect_console_user_server);
 }
 
 TEST_CASE("pointing_motion") {
