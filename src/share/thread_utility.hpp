@@ -4,6 +4,7 @@
 // `krbn::thread_utility::queue` can be used safely in a multi-threaded environment.
 
 #include <chrono>
+#include <deque>
 #include <functional>
 #include <mutex>
 #include <thread>
