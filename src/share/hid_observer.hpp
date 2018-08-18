@@ -12,7 +12,6 @@ public:
   // Signals
 
   boost::signals2::signal<void(std::shared_ptr<human_interface_device>)> device_observed;
-
   boost::signals2::signal<void(std::shared_ptr<human_interface_device>)> device_unobserved;
 
   // Methods
