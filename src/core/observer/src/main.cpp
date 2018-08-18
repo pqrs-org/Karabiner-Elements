@@ -7,8 +7,6 @@
 #include "spdlog_utility.hpp"
 #include "thread_utility.hpp"
 #include <iostream>
-#include <spdlog/async.h>
-#include <spdlog/sinks/rotating_file_sink.h>
 #include <sstream>
 #include <unistd.h>
 
@@ -16,19 +14,9 @@ namespace krbn {
 class karabiner_observer final {
 public:
   karabiner_observer(void) {
-    {
-      auto log_directory = "/var/log/karabiner";
-      mkdir(log_directory, 0755);
-      if (filesystem::is_directory(log_directory)) {
-        auto l = spdlog::rotating_logger_mt<spdlog::async_factory>("observer",
-                                                                   "/var/log/karabiner/observer.log",
-                                                                   256 * 1024,
-                                                                   3);
-        l->flush_on(spdlog::level::info);
-        l->set_pattern(spdlog_utility::get_pattern());
-        logger::set_logger(l);
-      }
-    }
+    krbn::logger::set_async_rotating_logger("observer",
+                                            "/var/log/karabiner/observer.log",
+                                            0755);
 
     logger::get_logger().info("version {0}", karabiner_version);
 
