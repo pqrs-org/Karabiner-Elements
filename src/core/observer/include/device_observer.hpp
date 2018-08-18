@@ -85,8 +85,8 @@ public:
   }
 
   ~device_observer(void) {
-    hid_observers_.clear();
     hid_manager_.stop();
+    hid_observers_.clear();
 
     logger::get_logger().info("device_observer is stopped.");
   }
