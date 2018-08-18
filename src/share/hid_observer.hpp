@@ -3,7 +3,7 @@
 // `krbn::hid_observer` can be used safely in a multi-threaded environment.
 
 #include "human_interface_device.hpp"
-#include "spdlog_utility.hpp"
+#include "logger.hpp"
 #include "thread_utility.hpp"
 
 namespace krbn {
@@ -44,7 +44,7 @@ public:
                                      iokit_utility::get_error_name(error),
                                      error,
                                      hid->get_name_for_log());
-          log_reducer_.error(message);
+          logger_unique_filter_.error(message);
         }
       });
       connections_.push_back(std::make_unique<boost::signals2::scoped_connection>(c));
@@ -68,7 +68,7 @@ public:
                                      iokit_utility::get_error_name(error),
                                      error,
                                      hid->get_name_for_log());
-          log_reducer_.error(message);
+          logger_unique_filter_.error(message);
 
           device_unobserved(hid);
         }
@@ -94,7 +94,7 @@ public:
       return;
     }
 
-    log_reducer_.reset();
+    logger_unique_filter_.reset();
 
     timer_ = std::make_unique<thread_utility::timer>(
         [](auto&& count) {
@@ -145,7 +145,7 @@ private:
   std::weak_ptr<human_interface_device> human_interface_device_;
   std::vector<std::unique_ptr<boost::signals2::scoped_connection>> connections_;
   std::atomic<bool> observed_;
-  spdlog_utility::log_reducer log_reducer_;
+  logger::unique_filter logger_unique_filter_;
 
   std::unique_ptr<thread_utility::timer> timer_;
   mutable std::mutex timer_mutex_;

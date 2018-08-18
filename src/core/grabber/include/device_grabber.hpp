@@ -225,7 +225,7 @@ public:
         // TODO: remove dispatch_async
 
         dispatch_async(dispatch_get_main_queue(), ^{
-          is_grabbable_callback_log_reducer_.reset();
+          logger_unique_filter_.reset();
           set_profile(core_configuration->get_selected_profile());
           grab_devices();
         });
@@ -451,7 +451,7 @@ private:
         // Do nothing
       } else {
         auto message = fmt::format("{0} is ignored.", device->get_name_for_log());
-        is_grabbable_callback_log_reducer_.info(message);
+        logger_unique_filter_.info(message);
         return grabbable_state::state::ungrabbable_permanently;
       }
     }
@@ -461,13 +461,13 @@ private:
 
     if (!virtual_hid_device_client_.is_connected()) {
       std::string message = "virtual_hid_device_client is not connected yet. Please wait for a while.";
-      is_grabbable_callback_log_reducer_.warn(message);
+      logger_unique_filter_.warn(message);
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
     if (!virtual_hid_device_client_.is_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
-      is_grabbable_callback_log_reducer_.warn(message);
+      logger_unique_filter_.warn(message);
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
@@ -480,7 +480,7 @@ private:
       if (!state) {
         std::string message = fmt::format("{0} is not observed yet. Please wait for a while.",
                                           device->get_name_for_log());
-        is_grabbable_callback_log_reducer_.warn(message);
+        logger_unique_filter_.warn(message);
         return grabbable_state::state::ungrabbable_temporarily;
       }
 
@@ -515,7 +515,7 @@ private:
               break;
             }
           }
-          is_grabbable_callback_log_reducer_.warn(message);
+          logger_unique_filter_.warn(message);
 
           return grabbable_state::state::ungrabbable_temporarily;
         }
@@ -523,14 +523,14 @@ private:
         case grabbable_state::state::ungrabbable_permanently: {
           std::string message = fmt::format("{0} is ungrabbable permanently.",
                                             device->get_name_for_log());
-          is_grabbable_callback_log_reducer_.warn(message);
+          logger_unique_filter_.warn(message);
           return grabbable_state::state::ungrabbable_permanently;
         }
 
         case grabbable_state::state::device_error: {
           std::string message = fmt::format("{0} is ungrabbable temporarily by a failure of accessing device.",
                                             device->get_name_for_log());
-          is_grabbable_callback_log_reducer_.warn(message);
+          logger_unique_filter_.warn(message);
           return grabbable_state::state::ungrabbable_temporarily;
         }
       }
@@ -969,6 +969,6 @@ private:
 
   std::unique_ptr<gcd_utility::main_queue_timer> led_monitor_timer_;
 
-  spdlog_utility::log_reducer is_grabbable_callback_log_reducer_;
+  logger::unique_filter logger_unique_filter_;
 };
 } // namespace krbn

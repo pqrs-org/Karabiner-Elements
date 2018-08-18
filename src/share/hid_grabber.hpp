@@ -61,7 +61,7 @@ public:
 
   void grab(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
-      log_reducer_.reset();
+      logger_unique_filter_.reset();
 
       timer_ = nullptr;
 
@@ -98,7 +98,7 @@ public:
                                            iokit_utility::get_error_name(r),
                                            r,
                                            hid->get_name_for_log());
-                log_reducer_.error(message);
+                logger_unique_filter_.error(message);
                 return false;
               }
 
@@ -140,6 +140,6 @@ private:
   std::weak_ptr<human_interface_device> human_interface_device_;
   bool grabbed_;
   std::unique_ptr<gcd_utility::fire_while_false_timer> timer_;
-  spdlog_utility::log_reducer log_reducer_;
+  logger::unique_filter logger_unique_filter_;
 };
 } // namespace krbn
