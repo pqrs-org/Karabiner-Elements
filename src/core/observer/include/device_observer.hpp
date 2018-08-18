@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::device_observer` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include "grabbable_state_manager.hpp"
