@@ -10,38 +10,6 @@
 #include <sstream>
 #include <unistd.h>
 
-namespace krbn {
-class karabiner_observer final {
-public:
-  karabiner_observer(void) {
-    krbn::logger::set_async_rotating_logger("observer",
-                                            "/var/log/karabiner/observer.log",
-                                            0755);
-
-    logger::get_logger().info("version {0}", karabiner_version);
-
-    {
-      std::string pid_file_path = std::string(constants::get_pid_directory()) + "/karabiner_observer.pid";
-      if (!process_utility::lock_single_application(pid_file_path)) {
-        std::string message("Exit since another process is running.");
-        logger::get_logger().info(message);
-        std::cerr << message << std::endl;
-        exit(0);
-      }
-    }
-
-    components_manager_ = std::make_unique<components_manager>();
-  }
-
-  ~karabiner_observer(void) {
-    components_manager_ = nullptr;
-  }
-
-private:
-  std::unique_ptr<components_manager> components_manager_;
-};
-} // namespace krbn
-
 int main(int argc, const char* argv[]) {
   if (getuid() != 0) {
     std::cerr << "fatal: karabiner_observer requires root privilege." << std::endl;
@@ -52,9 +20,31 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR2, SIG_IGN);
   krbn::thread_utility::register_main_thread();
 
-  krbn::karabiner_observer karabiner_observer;
+  // Setup logger
+
+  krbn::logger::set_async_rotating_logger("observer",
+                                          "/var/log/karabiner/observer.log",
+                                          0755);
+
+  krbn::logger::get_logger().info("version {0}", karabiner_version);
+
+  // Check another process
+
+  {
+    std::string pid_file_path = krbn::constants::get_pid_directory() + "/karabiner_observer.pid";
+    if (!krbn::process_utility::lock_single_application(pid_file_path)) {
+      krbn::logger::get_logger().info("Exit since another process is running.");
+      exit(0);
+    }
+  }
+
+  // Run components_manager
+
+  auto components_manager = std::make_unique<krbn::components_manager>();
 
   CFRunLoopRun();
+
+  components_manager = nullptr;
 
   return 0;
 }

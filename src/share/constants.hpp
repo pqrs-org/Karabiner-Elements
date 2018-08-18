@@ -16,7 +16,7 @@ public:
     return "/Library/Application Support/org.pqrs/tmp";
   }
 
-  static const char* get_pid_directory(void) {
+  static std::string get_pid_directory(void) {
     return "/Library/Application Support/org.pqrs/tmp/pid";
   }
 
