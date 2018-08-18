@@ -1,5 +1,5 @@
 all: build_make
-	./build/karabiner_test
+	bash check_unique_filter_output.bash
 
 clean: clean_builds
 

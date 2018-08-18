@@ -1,11 +1,17 @@
 #pragma once
 
+#include "filesystem.hpp"
+#include "spdlog_utility.hpp"
 #include <memory>
+#include <spdlog/async.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
 
 namespace krbn {
 class logger final {
 public:
+#include "logger/unique_filter.hpp"
+
   static spdlog::logger& get_logger(void) {
     std::lock_guard<std::mutex> guard(get_mutex());
 
@@ -21,6 +27,22 @@ public:
     std::lock_guard<std::mutex> guard(get_mutex());
 
     get_ptr() = logger;
+  }
+
+  static void set_async_rotating_logger(const std::string& logger_name,
+                                        const std::string& log_file_path,
+                                        mode_t log_directory_mode) {
+    auto directory = filesystem::dirname(log_file_path);
+    filesystem::create_directory_with_intermediate_directories(directory, log_directory_mode);
+    if (filesystem::is_directory(directory)) {
+      auto l = spdlog::rotating_logger_mt<spdlog::async_factory>(logger_name,
+                                                                 log_file_path,
+                                                                 256 * 1024,
+                                                                 3);
+      l->flush_on(spdlog::level::info);
+      l->set_pattern(spdlog_utility::get_pattern());
+      set_logger(l);
+    }
   }
 
 private:
