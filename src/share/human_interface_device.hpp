@@ -67,7 +67,7 @@ public:
                                                                 queue_(nullptr) {
     // ----------------------------------------
 
-    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
+    run_loop_thread_ = std::make_shared<cf_utility::run_loop_thread>();
 
     // ----------------------------------------
     // Retain device_
@@ -233,6 +233,10 @@ public:
 
   registry_entry_id get_registry_entry_id(void) const {
     return registry_entry_id_;
+  }
+
+  std::shared_ptr<cf_utility::run_loop_thread> get_run_loop_thread(void) const {
+    return run_loop_thread_;
   }
 
   std::string get_name_for_log(void) const {
@@ -595,7 +599,7 @@ private:
   IOHIDDeviceRef _Nonnull device_;
   registry_entry_id registry_entry_id_;
 
-  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  std::shared_ptr<cf_utility::run_loop_thread> run_loop_thread_;
   device_id device_id_;
   std::string name_for_log_;
   std::atomic<bool> removed_;
