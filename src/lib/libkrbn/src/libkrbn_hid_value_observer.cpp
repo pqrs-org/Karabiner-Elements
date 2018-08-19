@@ -21,7 +21,7 @@ public:
       });
 
       auto hid_observer = std::make_shared<krbn::hid_observer>(human_interface_device);
-      hid_observer->observe();
+      hid_observer->async_observe();
       hid_observers_[human_interface_device->get_registry_entry_id()] = hid_observer;
     });
 

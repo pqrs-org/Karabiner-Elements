@@ -68,7 +68,7 @@ public:
         }
       });
 
-      observer->observe();
+      observer->async_observe();
 
       hid_observers_[human_interface_device->get_registry_entry_id()] = observer;
     });

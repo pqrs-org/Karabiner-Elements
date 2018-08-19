@@ -32,7 +32,7 @@ public:
         krbn::logger::get_logger().info("{0} is unobserved.", human_interface_device->get_name_for_log());
       });
 
-      hid_observer->observe();
+      hid_observer->async_observe();
 
       hid_observers_[human_interface_device->get_registry_entry_id()] = hid_observer;
     });
