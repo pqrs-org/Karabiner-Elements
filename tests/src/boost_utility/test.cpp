@@ -52,35 +52,65 @@ TEST_CASE("signals2_connections") {
   // `wait_disconnect_all_connections` for empty connections.
   // ============================================================
 
-  signals2_connections.wait_disconnect_all_connections();
+  {
+    signals2_connections.wait_disconnect_all_connections();
+  }
 
   // ============================================================
   // `disconnect_all_connections` and `wait_disconnect_all_connections`.
   // ============================================================
 
   {
-    auto c = signal.connect([&] {
-      ++counter;
+    counter = 0;
+
+    {
+      auto c = signal.connect([&] {
+        ++counter;
+      });
+      signals2_connections.push_back(c);
+    }
+
+    signal();
+    REQUIRE(counter == 1);
+
+    std::thread thread([&] {
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+      signals2_connections.disconnect_all_connections();
     });
-    signals2_connections.push_back(c);
+
+    signal();
+    REQUIRE(counter == 2);
+
+    signals2_connections.wait_disconnect_all_connections();
+
+    signal();
+    REQUIRE(counter == 2);
+
+    thread.join();
   }
 
-  signal();
-  REQUIRE(counter == 1);
+  // ============================================================
+  // `disconnect_all_connections` and `wait_disconnect_all_connections` in the same thread.
+  // ============================================================
 
-  std::thread thread([&] {
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  {
+    counter = 0;
+
+    {
+      auto c = signal.connect([&] {
+        ++counter;
+      });
+      signals2_connections.push_back(c);
+    }
+
+    signal();
+    REQUIRE(counter == 1);
 
     signals2_connections.disconnect_all_connections();
-  });
+    signals2_connections.wait_disconnect_all_connections();
 
-  signal();
-  REQUIRE(counter == 2);
-
-  signals2_connections.wait_disconnect_all_connections();
-
-  signal();
-  REQUIRE(counter == 2);
-
-  thread.join();
+    signal();
+    REQUIRE(counter == 1);
+  }
 }
