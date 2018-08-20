@@ -11,8 +11,7 @@ class configuration_monitor final {
 public:
   // Signals
 
-  boost::signals2::signal<void(std::shared_ptr<const core_configuration> core_configuration)>
-      core_configuration_updated;
+  boost::signals2::signal<void(std::shared_ptr<const core_configuration>)> core_configuration_updated;
 
   // Methods
 
@@ -27,14 +26,14 @@ public:
     file_monitor_ = std::make_unique<file_monitor>(targets);
 
     file_monitor_->register_stream_finished.connect([this] {
-      // `core_configuration_file_changed` is enqueued by `file_monitor::start` only if the file exists.
+      // `core_configuration_updated` is enqueued by `file_monitor::start` only if the file exists.
       // We have to enqueue it manually for when the file does not exist.
 
       {
         std::lock_guard<std::mutex> lock(core_configuration_mutex_);
 
         if (core_configuration_) {
-          // `core_configuration_file_changed` is already called.
+          // `core_configuration_updated` is already called.
           // We do not need call the method again.
           return;
         }
@@ -98,6 +97,7 @@ private:
 
   std::string user_core_configuration_file_path_;
   std::string system_core_configuration_file_path_;
+
   std::unique_ptr<file_monitor> file_monitor_;
 
   std::shared_ptr<const core_configuration> core_configuration_;
