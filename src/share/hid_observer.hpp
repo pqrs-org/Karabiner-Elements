@@ -21,7 +21,7 @@ public:
 
   hid_observer(std::shared_ptr<human_interface_device> human_interface_device) : human_interface_device_(human_interface_device),
                                                                                  observed_(false) {
-    queue_ = std::make_shared<thread_utility::queue>();
+    queue_ = std::make_unique<thread_utility::queue>();
 
     // opened
     {
@@ -170,7 +170,7 @@ public:
   }
 
 private:
-  std::shared_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::queue> queue_;
   std::weak_ptr<human_interface_device> human_interface_device_;
   boost_utility::signals2_connections human_interface_device_connections_;
   bool observed_;
