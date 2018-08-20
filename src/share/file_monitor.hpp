@@ -176,8 +176,11 @@ private:
                        const FSEventStreamEventFlags event_flags[],
                        const FSEventStreamEventId event_ids[]) {
     for (size_t i = 0; i < num_events; ++i) {
-      if (event_flags[i] & kFSEventStreamEventFlagRootChanged) {
+      if (event_flags[i] & (kFSEventStreamEventFlagRootChanged |
+                            kFSEventStreamEventFlagKernelDropped |
+                            kFSEventStreamEventFlagUserDropped)) {
         logger::get_logger().info("The configuration directory is updated.");
+
         // re-register stream
         unregister_stream();
         register_stream();
