@@ -170,8 +170,9 @@ public:
   }
 
 private:
-  std::unique_ptr<thread_utility::queue> queue_;
   std::weak_ptr<human_interface_device> human_interface_device_;
+
+  std::unique_ptr<thread_utility::queue> queue_;
   boost_utility::signals2_connections human_interface_device_connections_;
   bool observed_;
   logger::unique_filter logger_unique_filter_;
