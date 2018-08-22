@@ -1,60 +1,73 @@
 #pragma once
 
+// `krbn::connected_devices_monitor` can be used safely in a multi-threaded environment.
+
 #include "connected_devices.hpp"
 #include "file_monitor.hpp"
-#include "filesystem.hpp"
 #include "logger.hpp"
 
 namespace krbn {
 class connected_devices_monitor final {
 public:
-  typedef std::function<void(std::shared_ptr<connected_devices> connected_devices)> connected_devices_updated_callback;
+  // Signals
 
-  connected_devices_monitor(const connected_devices_updated_callback& callback) : callback_(callback) {
-    std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-        {constants::get_tmp_directory(), {constants::get_devices_json_file_path()}},
+  boost::signals2::signal<void(std::shared_ptr<const connected_devices>)> connected_devices_updated;
+
+  // Methods
+
+  connected_devices_monitor(const std::string& devices_json_file_path) {
+    std::vector<std::string> targets = {
+        devices_json_file_path,
     };
 
-    file_monitor_ = std::make_unique<file_monitor>(targets,
-                                                   [this](const std::string&) {
-                                                     call_connected_devices_updated_callback();
-                                                   });
+    file_monitor_ = std::make_unique<file_monitor>(targets);
 
-    // file_monitor doesn't call the callback if target files are not exists.
-    // Thus, we call the callback manually at here if the callback is not called yet.
-    if (!connected_devices_) {
-      call_connected_devices_updated_callback();
-    }
-  }
+    file_monitor_->file_changed.connect([this](auto&& changed_file_path,
+                                               auto&& file_body) {
+      if (filesystem::exists(changed_file_path)) {
+        logger::get_logger().info("Load {0}...", changed_file_path);
+      }
 
-  ~connected_devices_monitor(void) {
-    // Release file_monitor_ in main thread to avoid callback invocations after object has been destroyed.
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      file_monitor_ = nullptr;
+      auto c = std::make_shared<connected_devices>(changed_file_path);
+
+      if (connected_devices_ && !c->is_loaded()) {
+        return;
+      }
+
+      {
+        std::lock_guard<std::mutex> lock(connected_devices_mutex_);
+
+        connected_devices_ = c;
+      }
+
+      logger::get_logger().info("connected_devices are updated.");
+
+      connected_devices_updated(c);
     });
   }
 
+  ~connected_devices_monitor(void) {
+    file_monitor_ = nullptr;
+  }
+
+  void async_start() {
+    file_monitor_->async_start();
+  }
+
   std::shared_ptr<connected_devices> get_connected_devices(void) const {
+    std::lock_guard<std::mutex> lock(connected_devices_mutex_);
+
     return connected_devices_;
   }
 
-private:
-  void call_connected_devices_updated_callback(void) {
-    logger::get_logger().info("Load karabiner_grabber_devices.json...");
-
-    auto c = std::make_shared<connected_devices>(constants::get_devices_json_file_path());
-    if (!connected_devices_ || c->is_loaded()) {
-      logger::get_logger().info("connected_devices are updated.");
-      connected_devices_ = c;
-      if (callback_) {
-        callback_(connected_devices_);
-      }
-    }
+  std::shared_ptr<cf_utility::run_loop_thread> get_run_loop_thread(void) const {
+    return file_monitor_->get_run_loop_thread();
   }
 
-  connected_devices_updated_callback callback_;
-
+private:
   std::unique_ptr<file_monitor> file_monitor_;
+
   std::shared_ptr<connected_devices> connected_devices_;
+  mutable std::mutex connected_devices_mutex_;
 };
 } // namespace krbn
