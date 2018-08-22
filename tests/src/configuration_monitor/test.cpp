@@ -16,7 +16,7 @@ public:
       last_core_configuration_ = core_configuration;
     });
 
-    configuration_monitor_->start();
+    configuration_monitor_->async_start();
 
     wait();
   }
@@ -85,30 +85,30 @@ TEST_CASE("configuration_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 2);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+    REQUIRE(monitor.get_count() == 3);
+    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == true);
 
     // ============================================================
     // Update system.json
     // ============================================================
 
-    system("echo '{\"global\":{\"show_in_menu_bar\":true}}' > target/system.json");
-
-    monitor.wait();
-
-    REQUIRE(monitor.get_count() == 3);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == true);
-
-    // ============================================================
-    // Update user.json
-    // ============================================================
-
-    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/user.json");
+    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/system.json");
 
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 4);
     REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+
+    // ============================================================
+    // Update user.json
+    // ============================================================
+
+    system("echo '{\"global\":{\"show_in_menu_bar\":true}}' > target/user.json");
+
+    monitor.wait();
+
+    REQUIRE(monitor.get_count() == 5);
+    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == true);
   }
 
   // ============================================================
@@ -133,6 +133,22 @@ TEST_CASE("configuration_monitor") {
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 2);
+    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+  }
+
+  // ============================================================
+  // There are both user.json and system.json at start
+  // ============================================================
+
+  {
+    system("rm -rf target");
+    system("mkdir -p target");
+    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/system.json");
+    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/user.json");
+
+    test_configuration_monitor monitor;
+
+    REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
   }
 
