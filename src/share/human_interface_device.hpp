@@ -44,9 +44,6 @@ public:
 
   boost::signals2::signal<void(IOHIDReportType type, uint32_t report_id, uint8_t* _Nonnull report, CFIndex report_length)> report_arrived;
 
-  boost::signals2::signal<void(human_interface_device&)> device_grabbed;
-  boost::signals2::signal<void(human_interface_device&)> device_ungrabbed;
-
   // Methods
 
   human_interface_device(const human_interface_device&) = delete;
