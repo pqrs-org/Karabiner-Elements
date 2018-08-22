@@ -48,26 +48,26 @@ public:
 
       if (file_path == file_path_1_1) {
         if (file_body) {
-          last_file_line1_1_ = std::string(std::begin(*file_body),
+          last_file_body1_1_ = std::string(std::begin(*file_body),
                                            std::end(*file_body));
         } else {
-          last_file_line1_1_ = boost::none;
+          last_file_body1_1_ = boost::none;
         }
       }
       if (file_path == file_path_1_2) {
         if (file_body) {
-          last_file_line1_2_ = std::string(std::begin(*file_body),
+          last_file_body1_2_ = std::string(std::begin(*file_body),
                                            std::end(*file_body));
         } else {
-          last_file_line1_2_ = boost::none;
+          last_file_body1_2_ = boost::none;
         }
       }
       if (file_path == file_path_2_1) {
         if (file_body) {
-          last_file_line2_1_ = std::string(std::begin(*file_body),
+          last_file_body2_1_ = std::string(std::begin(*file_body),
                                            std::end(*file_body));
         } else {
-          last_file_line2_1_ = boost::none;
+          last_file_body2_1_ = boost::none;
         }
       }
     });
@@ -89,24 +89,24 @@ public:
     return last_file_path_;
   }
 
-  const boost::optional<std::string>& get_last_file_line1_1(void) const {
-    return last_file_line1_1_;
+  const boost::optional<std::string>& get_last_file_body1_1(void) const {
+    return last_file_body1_1_;
   }
 
-  const boost::optional<std::string>& get_last_file_line1_2(void) const {
-    return last_file_line1_2_;
+  const boost::optional<std::string>& get_last_file_body1_2(void) const {
+    return last_file_body1_2_;
   }
 
-  const boost::optional<std::string>& get_last_file_line2_1(void) const {
-    return last_file_line2_1_;
+  const boost::optional<std::string>& get_last_file_body2_1(void) const {
+    return last_file_body2_1_;
   }
 
   void clear_results(void) {
     count_ = 0;
     last_file_path_ = boost::none;
-    last_file_line1_1_ = boost::none;
-    last_file_line1_2_ = boost::none;
-    last_file_line2_1_ = boost::none;
+    last_file_body1_1_ = boost::none;
+    last_file_body1_2_ = boost::none;
+    last_file_body2_1_ = boost::none;
   }
 
   void wait(void) {
@@ -123,9 +123,9 @@ private:
   bool register_stream_finished_;
   size_t count_;
   boost::optional<std::string> last_file_path_;
-  boost::optional<std::string> last_file_line1_1_;
-  boost::optional<std::string> last_file_line1_2_;
-  boost::optional<std::string> last_file_line2_1_;
+  boost::optional<std::string> last_file_body1_1_;
+  boost::optional<std::string> last_file_body1_2_;
+  boost::optional<std::string> last_file_body2_1_;
 };
 } // namespace
 
@@ -148,9 +148,9 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_register_stream_finished());
     REQUIRE(monitor.get_count() == 3);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
-    REQUIRE(monitor.get_last_file_line1_1() == "1_1_0"s);
-    REQUIRE(monitor.get_last_file_line1_2() == "1_2_0"s);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == "1_1_0"s);
+    REQUIRE(monitor.get_last_file_body1_2() == "1_2_0"s);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Generic file modification (update file1_1)
@@ -164,9 +164,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_line1_1() == "1_1_1"s);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == "1_1_1"s);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Generic file modification (update file1_1 again)
@@ -180,9 +180,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_line1_1() == "1_1_2"s);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == "1_1_2"s);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Generic file modification (update file1_2)
@@ -196,9 +196,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_2);
-    REQUIRE(monitor.get_last_file_line1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_line1_2() == "1_2_1"s);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == "1_2_1"s);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Generic file modification (update file1_2 again)
@@ -212,9 +212,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_2);
-    REQUIRE(monitor.get_last_file_line1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_line1_2() == "1_2_2"s);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == "1_2_2"s);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Generic file modification (update file1_1 again)
@@ -228,9 +228,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_line1_1() == "1_1_3"s);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == "1_1_3"s);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Generic file modification (update file2_1)
@@ -244,9 +244,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
-    REQUIRE(monitor.get_last_file_line1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == "2_1_1"s);
+    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == "2_1_1"s);
 
     // ========================================
     // File removal
@@ -260,9 +260,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_2);
-    REQUIRE(monitor.get_last_file_line1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // File removal
@@ -276,9 +276,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
-    REQUIRE(monitor.get_last_file_line1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Directory removal
@@ -292,9 +292,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_line1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Generic file modification
@@ -312,9 +312,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_line1_1() == "1_1_4"s);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == "1_1_4"s);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Move file
@@ -329,9 +329,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_line1_1() == "1_1_5"s);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == "1_1_5"s);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Move directory
@@ -353,9 +353,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 2);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_line1_1() == "1_1_6"s);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == "1_1_6"s);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Ignore own process
@@ -371,9 +371,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 0);
     REQUIRE(monitor.get_last_file_path() == boost::none);
-    REQUIRE(monitor.get_last_file_line1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // enqueue_file_changed
@@ -387,9 +387,9 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_line1_1() == "1_1_7"s);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == "1_1_7"s);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
   }
 
   {
@@ -404,9 +404,9 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_register_stream_finished());
     REQUIRE(monitor.get_count() == 3);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
-    REQUIRE(monitor.get_last_file_line1_1() == boost::none);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
 
     // ========================================
     // Generic file modification
@@ -421,8 +421,8 @@ TEST_CASE("file_monitor") {
 
     REQUIRE(monitor.get_count() == 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
-    REQUIRE(monitor.get_last_file_line1_1() == "1_1_0"s);
-    REQUIRE(monitor.get_last_file_line1_2() == boost::none);
-    REQUIRE(monitor.get_last_file_line2_1() == boost::none);
+    REQUIRE(monitor.get_last_file_body1_1() == "1_1_0"s);
+    REQUIRE(monitor.get_last_file_body1_2() == boost::none);
+    REQUIRE(monitor.get_last_file_body2_1() == boost::none);
   }
 }
