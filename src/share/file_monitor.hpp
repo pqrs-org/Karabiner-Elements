@@ -5,6 +5,7 @@
 #include "boost_defs.hpp"
 
 #include "cf_utility.hpp"
+#include "file_utility.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
 #include <CoreServices/CoreServices.h>
@@ -18,11 +19,12 @@ public:
   // Signals
 
   boost::signals2::signal<void(void)> register_stream_finished;
-  boost::signals2::signal<void(const std::string& file_path)> file_changed;
+  boost::signals2::signal<void(const std::string& file_path, std::shared_ptr<std::vector<uint8_t>> file_body)> file_changed;
 
   // Methods
 
-  file_monitor(const std::vector<std::string>& files) : directories_(cf_utility::create_cfmutablearray()),
+  file_monitor(const std::vector<std::string>& files) : files_(files),
+                                                        directories_(cf_utility::create_cfmutablearray()),
                                                         stream_(nullptr) {
     run_loop_thread_ = std::make_shared<cf_utility::run_loop_thread>();
 
@@ -36,9 +38,6 @@ public:
                        })) {
         directories.push_back(directory);
       }
-
-      // Do not apply `realpath` here since `realpath(f)` will be failed if `f` does not exist.
-      files_.push_back(f);
     }
 
     for (const auto& d : directories) {
@@ -68,7 +67,7 @@ public:
     return run_loop_thread_;
   }
 
-  void start(void) {
+  void async_start(void) {
     run_loop_thread_->enqueue(^{
       register_stream();
     });
@@ -186,32 +185,77 @@ private:
         register_stream();
 
       } else {
-        call_file_changed_slots(event_paths[i]);
-      }
-    }
-  }
+        // FSEvents passes realpathed file path to callback.
+        // Thus, we should to convert it to file path in `files_`.
 
-  void call_file_changed_slots(const std::string& file_path) const {
-    // FSEvents passes realpathed file path to callback.
-    // Thus, we have to compare realpathed file paths.
+        std::string file_path(event_paths[i]);
+        boost::optional<std::string> changed_file_path;
 
-    if (auto path = filesystem::realpath(file_path)) {
-      if (filesystem::exists(*path)) {
-        if (std::any_of(std::begin(files_),
-                        std::end(files_),
-                        [&](auto&& p) {
-                          return *path == filesystem::realpath(p);
-                        })) {
-          file_changed(*path);
+        if (auto realpath = filesystem::realpath(file_path)) {
+          auto it = std::find_if(std::begin(files_),
+                                 std::end(files_),
+                                 [&](auto&& p) {
+                                   return *realpath == filesystem::realpath(p);
+                                 });
+          if (it != std::end(files_)) {
+            stream_file_paths_[file_path] = *it;
+            changed_file_path = *it;
+          }
+        } else {
+          // file_path might be removed.
+          // (`realpath` fails if file does not exist.)
+
+          auto it = stream_file_paths_.find(file_path);
+          if (it != std::end(stream_file_paths_)) {
+            changed_file_path = it->second;
+            stream_file_paths_.erase(it);
+          }
+        }
+
+        if (changed_file_path) {
+          call_file_changed_slots(*changed_file_path);
         }
       }
     }
   }
 
-  CFMutableArrayRef directories_;
-  std::vector<std::string> files_;
-  std::shared_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  void call_file_changed_slots(const std::string& file_path) {
+    if (std::any_of(std::begin(files_),
+                    std::end(files_),
+                    [&](auto&& p) {
+                      return file_path == p;
+                    })) {
+      auto file_body = file_utility::read_file(file_path);
+      auto it = file_bodies_.find(file_path);
+      if (it != std::end(file_bodies_)) {
+        if (it->second && file_body) {
+          if (*(it->second) == *(file_body)) {
+            // file_body is not changed
+            return;
+          }
+        } else if (!it->second && !file_body) {
+          // file_body is not changed
+          return;
+        }
+      }
+      file_bodies_[file_path] = file_body;
 
+      file_changed(file_path,
+                   file_utility::read_file(file_path));
+    }
+  }
+
+  std::vector<std::string> files_;
+
+  std::shared_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  CFMutableArrayRef directories_;
   FSEventStreamRef stream_;
+  // FSEventStreamEventPath -> file in files_
+  // {
+  //   "/Users/tekezo/.../target/sub1/file1_1": "target/sub1/file1_1",
+  //   "/Users/tekezo/.../target/sub1/file1_2": "target/sub1/file1_2",
+  // }
+  std::unordered_map<std::string, std::string> stream_file_paths_;
+  std::unordered_map<std::string, std::shared_ptr<std::vector<uint8_t>>> file_bodies_;
 };
 } // namespace krbn
