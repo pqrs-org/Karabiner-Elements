@@ -35,12 +35,12 @@ public:
   }
 
   ~hid_manager(void) {
-    stop();
+    async_stop();
 
     run_loop_thread_ = nullptr;
   }
 
-  void start(void) {
+  void async_start(void) {
     run_loop_thread_->enqueue(^{
       if (manager_) {
         return;
@@ -77,7 +77,7 @@ public:
     });
   }
 
-  void stop(void) {
+  void async_stop(void) {
     run_loop_thread_->enqueue(^{
       if (!manager_) {
         return;
@@ -276,8 +276,8 @@ private:
     }
 
     if (needs_refresh) {
-      stop();
-      start();
+      async_stop();
+      async_start();
     }
   }
 

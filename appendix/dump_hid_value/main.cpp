@@ -9,12 +9,16 @@ class dump_hid_value final {
 public:
   dump_hid_value(const dump_hid_value&) = delete;
 
-  dump_hid_value(void) : hid_manager_({
-                             std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-                             std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
-                             std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
-                         }) {
-    hid_manager_.device_detected.connect([this](auto&& weak_hid) {
+  dump_hid_value(void) {
+    std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
+    });
+
+    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
+
+    hid_manager_->device_detected.connect([this](auto&& weak_hid) {
       if (auto hid = weak_hid.lock()) {
         hid->values_arrived.connect([this, weak_hid](auto&& weak_event_queue) {
           if (auto hid = weak_hid.lock()) {
@@ -46,19 +50,20 @@ public:
       }
     });
 
-    hid_manager_.device_removed.connect([this](auto&& weak_hid) {
+    hid_manager_->device_removed.connect([this](auto&& weak_hid) {
       if (auto hid = weak_hid.lock()) {
         krbn::logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
         hid_observers_.erase(hid->get_registry_entry_id());
       }
     });
 
-    hid_manager_.start();
+    hid_manager_->async_start();
   }
 
   ~dump_hid_value(void) {
+    hid_manager_ = nullptr;
+
     hid_observers_.clear();
-    hid_manager_.stop();
   }
 
 private:
@@ -166,7 +171,7 @@ private:
     }
   }
 
-  krbn::hid_manager hid_manager_;
+  std::unique_ptr<krbn::hid_manager> hid_manager_;
   std::unordered_map<krbn::registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 };
 } // namespace
