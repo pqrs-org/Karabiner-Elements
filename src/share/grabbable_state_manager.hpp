@@ -17,8 +17,7 @@ public:
 
   // Signals
 
-  boost::signals2::signal<void(const grabbable_state&)>
-      grabbable_state_changed;
+  boost::signals2::signal<void(const grabbable_state&)> grabbable_state_changed;
 
   // Methods
 
