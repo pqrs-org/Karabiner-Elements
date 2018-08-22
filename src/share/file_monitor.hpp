@@ -19,7 +19,7 @@ public:
   // Signals
 
   boost::signals2::signal<void(void)> register_stream_finished;
-  boost::signals2::signal<void(const std::string& changed_file_path, std::shared_ptr<std::vector<uint8_t>> file_body)> file_changed;
+  boost::signals2::signal<void(const std::string& changed_file_path, std::weak_ptr<std::vector<uint8_t>> weak_changed_file_body)> file_changed;
 
   // Methods
 

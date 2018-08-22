@@ -35,7 +35,7 @@ public:
       register_stream_finished_ = true;
     });
 
-    file_monitor_->file_changed.connect([&](auto&& file_path, auto&& file_body) {
+    file_monitor_->file_changed.connect([&](auto&& changed_file_path, auto&& weak_changed_file_body) {
       if (!file_monitor_thread_id_) {
         file_monitor_thread_id_ = std::this_thread::get_id();
       }
@@ -44,26 +44,26 @@ public:
       }
 
       ++count_;
-      last_file_path_ = file_path;
+      last_file_path_ = changed_file_path;
 
-      if (file_path == file_path_1_1) {
-        if (file_body) {
+      if (changed_file_path == file_path_1_1) {
+        if (auto file_body = weak_changed_file_body.lock()) {
           last_file_body1_1_ = std::string(std::begin(*file_body),
                                            std::end(*file_body));
         } else {
           last_file_body1_1_ = boost::none;
         }
       }
-      if (file_path == file_path_1_2) {
-        if (file_body) {
+      if (changed_file_path == file_path_1_2) {
+        if (auto file_body = weak_changed_file_body.lock()) {
           last_file_body1_2_ = std::string(std::begin(*file_body),
                                            std::end(*file_body));
         } else {
           last_file_body1_2_ = boost::none;
         }
       }
-      if (file_path == file_path_2_1) {
-        if (file_body) {
+      if (changed_file_path == file_path_2_1) {
+        if (auto file_body = weak_changed_file_body.lock()) {
           last_file_body2_1_ = std::string(std::begin(*file_body),
                                            std::end(*file_body));
         } else {
