@@ -11,7 +11,7 @@ class configuration_monitor final {
 public:
   // Signals
 
-  boost::signals2::signal<void(std::shared_ptr<const core_configuration>)> core_configuration_updated;
+  boost::signals2::signal<void(std::weak_ptr<const core_configuration>)> core_configuration_updated;
 
   // Methods
 
@@ -27,7 +27,7 @@ public:
     file_monitor_->file_changed.connect([this,
                                          user_core_configuration_file_path,
                                          system_core_configuration_file_path](auto&& changed_file_path,
-                                                                              auto&& file_body) {
+                                                                              auto&& weak_changed_file_body) {
       auto file_path = changed_file_path;
 
       if (filesystem::exists(user_core_configuration_file_path)) {

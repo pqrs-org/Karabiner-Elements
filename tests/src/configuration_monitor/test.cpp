@@ -11,9 +11,11 @@ public:
     configuration_monitor_ = std::make_unique<krbn::configuration_monitor>("target/user.json",
                                                                            "target/system.json");
 
-    configuration_monitor_->core_configuration_updated.connect([this](auto&& core_configuration) {
+    configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
       ++count_;
-      last_core_configuration_ = core_configuration;
+      if (auto c = weak_core_configuration.lock()) {
+        last_core_configuration_ = c;
+      }
     });
 
     configuration_monitor_->async_start();
