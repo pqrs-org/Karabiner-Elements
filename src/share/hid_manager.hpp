@@ -18,10 +18,7 @@ public:
   // Signals
 
   // Return false to ignore device.
-  boost::signals2::signal<bool(IOHIDDeviceRef _Nonnull),
-                          boost_utility::signals2_combiner_call_while_true>
-      device_detecting;
-
+  boost::signals2::signal<bool(IOHIDDeviceRef _Nonnull), boost_utility::signals2_combiner_call_while_true> device_detecting;
   boost::signals2::signal<void(std::weak_ptr<human_interface_device>)> device_detected;
   boost::signals2::signal<void(std::weak_ptr<human_interface_device>)> device_removed;
 

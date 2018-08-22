@@ -28,10 +28,7 @@ public:
 
   // Signals
 
-  boost::signals2::signal<grabbable_state::state(std::weak_ptr<human_interface_device>),
-                          signal2_combiner_call_while_grabbable>
-      device_grabbing;
-
+  boost::signals2::signal<grabbable_state::state(std::weak_ptr<human_interface_device>), signal2_combiner_call_while_grabbable> device_grabbing;
   boost::signals2::signal<void(void)> device_grabbed;
   boost::signals2::signal<void(void)> device_ungrabbed;
 

@@ -9,9 +9,7 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("signal2_combiner_call_while_grabbable") {
-  boost::signals2::signal<krbn::grabbable_state::state(void),
-                          krbn::hid_grabber::signal2_combiner_call_while_grabbable>
-      signal;
+  boost::signals2::signal<krbn::grabbable_state::state(void), krbn::hid_grabber::signal2_combiner_call_while_grabbable> signal;
 
   REQUIRE(signal() == krbn::grabbable_state::state::grabbable);
 

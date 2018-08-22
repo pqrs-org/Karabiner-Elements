@@ -9,9 +9,7 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("signals2_combiner_call_while_true") {
-  boost::signals2::signal<bool(void),
-                          krbn::boost_utility::signals2_combiner_call_while_true>
-      signal;
+  boost::signals2::signal<bool(void), krbn::boost_utility::signals2_combiner_call_while_true> signal;
 
   REQUIRE(signal() == true);
 
