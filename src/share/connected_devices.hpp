@@ -147,22 +147,25 @@ public:
     bool is_built_in_trackpad_;
   };
 
-  connected_devices(void) : loaded_(true) {
+  connected_devices(void) : loaded_(false) {
   }
 
-  connected_devices(const std::string& file_path) : loaded_(true) {
+  connected_devices(const std::string& file_path) : loaded_(false) {
     std::ifstream input(file_path);
     if (input) {
       try {
         auto json = nlohmann::json::parse(input);
+
         if (json.is_array()) {
           for (const auto& j : json) {
             devices_.emplace_back(device(j));
           }
         }
+
+        loaded_ = true;
+
       } catch (std::exception& e) {
         logger::get_logger().error("parse error in {0}: {1}", file_path, e.what());
-        loaded_ = false;
       }
     }
   }

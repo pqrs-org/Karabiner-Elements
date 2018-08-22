@@ -259,7 +259,7 @@ TEST_CASE("connected_devices") {
       connected_devices.push_back_device(device);
     }
 
-    REQUIRE(connected_devices.is_loaded() == true);
+    REQUIRE(connected_devices.is_loaded() == false);
     REQUIRE(connected_devices.get_devices().size() == 5);
     REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
     REQUIRE(connected_devices.get_devices()[0].get_identifiers().get_product_id() == krbn::product_id(5678));
@@ -282,6 +282,13 @@ TEST_CASE("connected_devices") {
     REQUIRE(connected_devices.get_devices()[0].get_is_built_in_trackpad() == false);
     REQUIRE(connected_devices.get_devices()[1].get_is_built_in_keyboard() == false);
     REQUIRE(connected_devices.get_devices()[1].get_is_built_in_trackpad() == true);
+  }
+
+  {
+    krbn::connected_devices connected_devices("json/not_found.json");
+
+    REQUIRE(connected_devices.is_loaded() == false);
+    REQUIRE(connected_devices.get_devices().size() == 0);
   }
 
   {
