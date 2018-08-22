@@ -11,7 +11,7 @@ class connected_devices_monitor final {
 public:
   // Signals
 
-  boost::signals2::signal<void(std::shared_ptr<const connected_devices>)> connected_devices_updated;
+  boost::signals2::signal<void(std::weak_ptr<const connected_devices>)> connected_devices_updated;
 
   // Methods
 

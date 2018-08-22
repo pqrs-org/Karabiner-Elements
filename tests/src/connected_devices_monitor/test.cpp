@@ -10,9 +10,11 @@ public:
   test_connected_devices_monitor(void) : count_(0) {
     connected_devices_monitor_ = std::make_unique<krbn::connected_devices_monitor>("target/devices.json");
 
-    connected_devices_monitor_->connected_devices_updated.connect([this](auto&& connected_devices) {
+    connected_devices_monitor_->connected_devices_updated.connect([this](auto&& weak_connected_devices) {
       ++count_;
-      last_connected_devices_ = connected_devices;
+      if (auto d = weak_connected_devices.lock()) {
+        last_connected_devices_ = d;
+      }
     });
 
     connected_devices_monitor_->async_start();
