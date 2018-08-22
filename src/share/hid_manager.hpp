@@ -15,15 +15,17 @@
 namespace krbn {
 class hid_manager final {
 public:
+  // Signals
+
   // Return false to ignore device.
   boost::signals2::signal<bool(IOHIDDeviceRef _Nonnull),
                           boost_utility::signals2_combiner_call_while_true>
       device_detecting;
 
-  boost::signals2::signal<void(std::shared_ptr<human_interface_device>)> device_detected;
+  boost::signals2::signal<void(std::weak_ptr<human_interface_device>)> device_detected;
+  boost::signals2::signal<void(std::weak_ptr<human_interface_device>)> device_removed;
 
-  boost::signals2::signal<void(std::shared_ptr<human_interface_device>)>
-      device_removed;
+  // Methods
 
   hid_manager(const hid_manager&) = delete;
 
@@ -133,42 +135,48 @@ private:
   }
 
   void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
-    if (!device) {
-      return;
-    }
+    // `static_device_matching_callback` is called by multiple threads.
+    // (It is not called from `run_loop_thread_`.)
+    // Thus, we have to synchronize by using `run_loop_thread_`.
 
-    if (!device_detecting(device)) {
-      return;
-    }
-
-    if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
-      // iokit_utility::find_registry_entry_id will be failed in device_removal_callback at least on macOS 10.13.
-      // Thus, we have to memory device and registry_entry_id correspondence by myself.
-      registry_entry_ids_[device] = *registry_entry_id;
-
-      // Skip if same device is already matched.
-      // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
-
-      std::shared_ptr<human_interface_device> hid;
-
-      {
-        std::lock_guard<std::mutex> lock(hids_mutex_);
-
-        if (std::any_of(std::begin(hids_),
-                        std::end(hids_),
-                        [&](auto&& h) {
-                          return *registry_entry_id == h->get_registry_entry_id();
-                        })) {
-          // logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
-          return;
-        }
-
-        hid = std::make_shared<human_interface_device>(device, *registry_entry_id);
-        hids_.push_back(hid);
+    run_loop_thread_->enqueue(^{
+      if (!device) {
+        return;
       }
 
-      device_detected(hid);
-    }
+      if (!device_detecting(device)) {
+        return;
+      }
+
+      if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
+        // iokit_utility::find_registry_entry_id will be failed in device_removal_callback at least on macOS 10.13.
+        // Thus, we have to memory device and registry_entry_id correspondence by myself.
+        registry_entry_ids_[device] = *registry_entry_id;
+
+        // Skip if same device is already matched.
+        // (Multiple usage device (e.g. usage::pointer and usage::mouse) will be matched twice.)
+
+        std::shared_ptr<human_interface_device> hid;
+
+        {
+          std::lock_guard<std::mutex> lock(hids_mutex_);
+
+          if (std::any_of(std::begin(hids_),
+                          std::end(hids_),
+                          [&](auto&& h) {
+                            return *registry_entry_id == h->get_registry_entry_id();
+                          })) {
+            // logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
+            return;
+          }
+
+          hid = std::make_shared<human_interface_device>(device, *registry_entry_id);
+          hids_.push_back(hid);
+        }
+
+        device_detected(hid);
+      }
+    });
   }
 
   static void static_device_removal_callback(void* _Nullable context,
@@ -188,53 +196,60 @@ private:
   }
 
   void device_removal_callback(IOHIDDeviceRef _Nonnull device) {
-    if (!device) {
-      return;
-    }
+    // `static_device_removal_callback` is called by multiple threads.
+    // (It is not called from `run_loop_thread_`.)
+    // Thus, we have to synchronize by using `run_loop_thread_`.
 
-    // ----------------------------------------
+    run_loop_thread_->enqueue(^{
+      if (!device) {
+        return;
+      }
 
-    if (auto registry_entry_id = find_registry_entry_id(device)) {
-      std::shared_ptr<human_interface_device> hid;
+      // ----------------------------------------
 
-      {
-        std::lock_guard<std::mutex> lock(hids_mutex_);
+      if (auto registry_entry_id = find_registry_entry_id(device)) {
+        std::shared_ptr<human_interface_device> hid;
 
-        auto it = std::find_if(std::begin(hids_),
-                               std::end(hids_),
-                               [&](auto&& h) {
-                                 return *registry_entry_id == h->get_registry_entry_id();
-                               });
-        if (it != hids_.end()) {
-          hid = *it;
-          hids_.erase(it);
+        {
+          std::lock_guard<std::mutex> lock(hids_mutex_);
+
+          auto it = std::find_if(std::begin(hids_),
+                                 std::end(hids_),
+                                 [&](auto&& h) {
+                                   return *registry_entry_id == h->get_registry_entry_id();
+                                 });
+          if (it != hids_.end()) {
+            hid = *it;
+            hids_.erase(it);
+          }
+        }
+
+        if (hid) {
+          hid->set_removed();
+          device_removed(hid);
+        }
+
+        // There might be multiple devices for one registry_entry_id.
+        // (For example, keyboard and mouse combined device.)
+        // And there is possibility that removal callback is not called with some device.
+        //
+        // For example, there are 3 devices for 1 registry_entry_id (4294974284).
+        //   - device1 { device:0x7fb9d64078a0 => registry_entry_id:4294974284 }
+        //   - device2 { device:0x7fb9d8301390 => registry_entry_id:4294974284 }
+        //   - device3 { device:0x7fb9d830a630 => registry_entry_id:4294974284 }
+        // And device_removal_callback are called only with device1 and device2.
+        //
+        // We should remove device1, device2 and device3 at the same time in order to deal with this case.
+
+        for (auto it = std::begin(registry_entry_ids_); it != std::end(registry_entry_ids_);) {
+          if (it->second == *registry_entry_id) {
+            it = registry_entry_ids_.erase(it);
+          } else {
+            std::advance(it, 1);
+          }
         }
       }
-
-      if (hid) {
-        hid->set_removed();
-        device_removed(hid);
-      }
-
-      // There might be multiple devices for one registry_entry_id.
-      // (For example, keyboard and mouse combined device.)
-      // And there is possibility that removal callback is not called with some device.
-      //
-      // For example, there are 3 devices for 1 registry_entry_id (4294974284).
-      //   - device1 { device:0x7fb9d64078a0 => registry_entry_id:4294974284 }
-      //   - device2 { device:0x7fb9d8301390 => registry_entry_id:4294974284 }
-      //   - device3 { device:0x7fb9d830a630 => registry_entry_id:4294974284 }
-      // And device_removal_callback are called only with device1 and device2.
-      //
-      // We should remove device1, device2 and device3 at the same time in order to deal with this case.
-
-      for (auto it = std::begin(registry_entry_ids_); it != std::end(registry_entry_ids_);) {
-        if (it->second == *registry_entry_id) {
-          it = registry_entry_ids_.erase(it);
-        } else
-          std::advance(it, 1);
-      }
-    }
+    });
   }
 
   void refresh_if_needed(void) {
