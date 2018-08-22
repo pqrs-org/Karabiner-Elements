@@ -176,6 +176,7 @@ public:
   const std::vector<device>& get_devices(void) const {
     return devices_;
   }
+
   void push_back_device(const device& device) {
     if (std::find(std::begin(devices_), std::end(devices_), device) != std::end(devices_)) {
       return;
@@ -208,6 +209,7 @@ public:
       return true;
     });
   }
+
   void clear(void) {
     devices_.clear();
   }
