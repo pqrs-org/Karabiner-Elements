@@ -15,7 +15,7 @@ public:
       });
     });
 
-    monitor->start();
+    monitor->async_start();
 
     return monitor;
   }

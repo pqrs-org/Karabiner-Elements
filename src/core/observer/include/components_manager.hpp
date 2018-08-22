@@ -33,19 +33,19 @@ private:
     grabber_client_ = std::make_shared<grabber_client>();
 
     grabber_client_->connected.connect([this] {
-      version_monitor_->manual_check();
+      version_monitor_->async_manual_check();
 
       start_device_observer();
     });
 
     grabber_client_->connect_failed.connect([this](auto&& error_code) {
-      version_monitor_->manual_check();
+      version_monitor_->async_manual_check();
 
       stop_device_observer();
     });
 
     grabber_client_->closed.connect([this] {
-      version_monitor_->manual_check();
+      version_monitor_->async_manual_check();
 
       stop_device_observer();
     });
