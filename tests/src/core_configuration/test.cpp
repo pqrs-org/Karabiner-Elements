@@ -118,6 +118,14 @@ TEST_CASE("valid") {
   }
 }
 
+TEST_CASE("not found") {
+  {
+    krbn::core_configuration configuration("json/not_found.json");
+    REQUIRE(configuration.get_selected_profile().get_name() == "Default profile");
+    REQUIRE(configuration.is_loaded() == false);
+  }
+}
+
 TEST_CASE("broken.json") {
   {
     krbn::core_configuration configuration("json/broken.json");

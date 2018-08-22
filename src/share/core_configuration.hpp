@@ -300,7 +300,7 @@ public:
 
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(const std::string& file_path) : loaded_(true),
+  core_configuration(const std::string& file_path) : loaded_(false),
                                                      global_configuration_(nlohmann::json()) {
     bool valid_file_owner = false;
 
@@ -318,7 +318,6 @@ public:
 
       if (!valid_file_owner) {
         logger::get_logger().warn("{0} is not owned by a valid user.", file_path);
-        loaded_ = false;
 
       } else {
         std::ifstream input(file_path);
@@ -336,10 +335,11 @@ public:
               }
             }
 
+            loaded_ = true;
+
           } catch (std::exception& e) {
             logger::get_logger().error("parse error in {0}: {1}", file_path, e.what());
             json_ = nlohmann::json();
-            loaded_ = false;
           }
         } else {
           logger::get_logger().error("Failed to open {0}", file_path);
