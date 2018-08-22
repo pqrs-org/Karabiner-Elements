@@ -14,32 +14,43 @@ public:
                              std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
                              std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
                          }) {
-    hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device->values_arrived.connect([this](auto&& human_interface_device,
-                                                            auto&& event_queue) {
-        values_arrived(human_interface_device, event_queue);
-      });
+    hid_manager_.device_detected.connect([this](auto&& weak_hid) {
+      if (auto hid = weak_hid.lock()) {
+        hid->values_arrived.connect([this, weak_hid](auto&& weak_event_queue) {
+          if (auto hid = weak_hid.lock()) {
+            if (auto eq = weak_event_queue.lock()) {
+              values_arrived(hid, eq);
+            }
+          }
+        });
 
-      // Observe
+        // Observe
 
-      auto hid_observer = std::make_shared<krbn::hid_observer>(human_interface_device);
+        auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
 
-      hid_observer->device_observed.connect([&](auto&& human_interface_device) {
-        krbn::logger::get_logger().info("{0} is observed.", human_interface_device->get_name_for_log());
-      });
+        hid_observer->device_observed.connect([weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            krbn::logger::get_logger().info("{0} is observed.", hid->get_name_for_log());
+          }
+        });
 
-      hid_observer->device_unobserved.connect([&](auto&& human_interface_device) {
-        krbn::logger::get_logger().info("{0} is unobserved.", human_interface_device->get_name_for_log());
-      });
+        hid_observer->device_unobserved.connect([weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            krbn::logger::get_logger().info("{0} is unobserved.", hid->get_name_for_log());
+          }
+        });
 
-      hid_observer->async_observe();
+        hid_observer->async_observe();
 
-      hid_observers_[human_interface_device->get_registry_entry_id()] = hid_observer;
+        hid_observers_[hid->get_registry_entry_id()] = hid_observer;
+      }
     });
 
-    hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
-      krbn::logger::get_logger().info("{0} is removed.", human_interface_device->get_name_for_log());
-      hid_observers_.erase(human_interface_device->get_registry_entry_id());
+    hid_manager_.device_removed.connect([this](auto&& weak_hid) {
+      if (auto hid = weak_hid.lock()) {
+        krbn::logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
+        hid_observers_.erase(hid->get_registry_entry_id());
+      }
     });
 
     hid_manager_.start();
@@ -51,9 +62,9 @@ public:
   }
 
 private:
-  void values_arrived(krbn::human_interface_device& device,
-                      krbn::event_queue& event_queue) {
-    for (const auto& queued_event : event_queue.get_events()) {
+  void values_arrived(std::shared_ptr<krbn::human_interface_device> hid,
+                      std::shared_ptr<krbn::event_queue> event_queue) {
+    for (const auto& queued_event : event_queue->get_events()) {
       std::cout << queued_event.get_event_time_stamp().get_time_stamp() << " ";
 
       switch (queued_event.get_event().get_type()) {
@@ -112,11 +123,11 @@ private:
           break;
 
         case krbn::event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
-          std::cout << "device_keys_and_pointing_buttons_are_released for " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          std::cout << "device_keys_and_pointing_buttons_are_released for " << hid->get_name_for_log() << " (" << hid->get_device_id() << ")" << std::endl;
           break;
 
         case krbn::event_queue::queued_event::event::type::device_ungrabbed:
-          std::cout << "device_ungrabbed for " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          std::cout << "device_ungrabbed for " << hid->get_name_for_log() << " (" << hid->get_device_id() << ")" << std::endl;
           break;
 
         case krbn::event_queue::queued_event::event::type::caps_lock_state_changed:
@@ -126,7 +137,7 @@ private:
           break;
 
         case krbn::event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
-          std::cout << "pointing_device_event_from_event_tap from " << device.get_name_for_log() << " (" << device.get_device_id() << ")" << std::endl;
+          std::cout << "pointing_device_event_from_event_tap from " << hid->get_name_for_log() << " (" << hid->get_device_id() << ")" << std::endl;
           break;
 
         case krbn::event_queue::queued_event::event::type::frontmost_application_changed:
@@ -153,8 +164,6 @@ private:
           std::cout << std::endl;
       }
     }
-
-    event_queue.clear_events();
   }
 
   krbn::hid_manager hid_manager_;

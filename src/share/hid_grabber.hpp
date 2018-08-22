@@ -28,81 +28,84 @@ public:
 
   // Signals
 
-  boost::signals2::signal<grabbable_state::state(std::shared_ptr<human_interface_device>),
+  boost::signals2::signal<grabbable_state::state(std::weak_ptr<human_interface_device>),
                           signal2_combiner_call_while_grabbable>
       device_grabbing;
-  boost::signals2::signal<void(std::shared_ptr<human_interface_device>)> device_grabbed;
-  boost::signals2::signal<void(std::shared_ptr<human_interface_device>)> device_ungrabbed;
+
+  boost::signals2::signal<void(void)> device_grabbed;
+  boost::signals2::signal<void(void)> device_ungrabbed;
 
   // Methods
 
   hid_grabber(const hid_grabber&) = delete;
 
-  hid_grabber(std::shared_ptr<human_interface_device> human_interface_device) : human_interface_device_(human_interface_device),
-                                                                                grabbed_(false) {
+  hid_grabber(std::weak_ptr<human_interface_device> weak_hid) : weak_hid_(weak_hid),
+                                                                grabbed_(false) {
     queue_ = std::make_unique<thread_utility::queue>();
 
-    // opened
-    {
-      auto c = human_interface_device->opened.connect([this] {
-        queue_->push_back([this] {
-          if (auto hid = human_interface_device_.lock()) {
-            grabbed_ = true;
+    if (auto hid = weak_hid.lock()) {
+      // opened
+      {
+        auto c = hid->opened.connect([this] {
+          queue_->push_back([this] {
+            if (auto hid = weak_hid_.lock()) {
+              grabbed_ = true;
 
-            device_grabbed(hid);
+              device_grabbed();
 
-            hid->async_queue_start();
-            hid->async_schedule();
-          }
+              hid->async_queue_start();
+              hid->async_schedule();
+            }
+          });
         });
-      });
-      human_interface_device_connections_.push_back(c);
-    }
+        human_interface_device_connections_.push_back(c);
+      }
 
-    // open_failed
-    {
-      auto c = human_interface_device->open_failed.connect([this](auto&& error) {
-        queue_->push_back([this, error] {
-          if (auto hid = human_interface_device_.lock()) {
-            auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
-                                       iokit_utility::get_error_name(error),
-                                       error,
-                                       hid->get_name_for_log());
-            logger_unique_filter_.error(message);
-          }
+      // open_failed
+      {
+        auto c = hid->open_failed.connect([this](auto&& error) {
+          queue_->push_back([this, error] {
+            if (auto hid = weak_hid_.lock()) {
+              auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
+                                         iokit_utility::get_error_name(error),
+                                         error,
+                                         hid->get_name_for_log());
+              logger_unique_filter_.error(message);
+            }
+          });
         });
-      });
-      human_interface_device_connections_.push_back(c);
-    }
+        human_interface_device_connections_.push_back(c);
+      }
 
-    // closed
-    {
-      auto c = human_interface_device->closed.connect([this] {
-        queue_->push_back([this] {
-          if (auto hid = human_interface_device_.lock()) {
-            device_ungrabbed(hid);
-          }
+      // closed
+      {
+        auto c = hid->closed.connect([this] {
+          queue_->push_back([this] {
+            if (auto hid = weak_hid_.lock()) {
+              device_ungrabbed();
+            }
+          });
         });
-      });
-      human_interface_device_connections_.push_back(c);
-    }
+        human_interface_device_connections_.push_back(c);
+      }
 
-    // close_failed
-    {
-      auto c = human_interface_device->close_failed.connect([this](auto&& error) {
-        queue_->push_back([this, error] {
-          if (auto hid = human_interface_device_.lock()) {
-            auto message = fmt::format("IOHIDDeviceClose error: {0} ({1}) {2}",
-                                       iokit_utility::get_error_name(error),
-                                       error,
-                                       hid->get_name_for_log());
-            logger_unique_filter_.error(message);
+      // close_failed
+      {
+        auto c = hid->close_failed.connect([this](auto&& error) {
+          queue_->push_back([this, error] {
+            if (auto hid = weak_hid_.lock()) {
+              auto message = fmt::format("IOHIDDeviceClose error: {0} ({1}) {2}",
+                                         iokit_utility::get_error_name(error),
+                                         error,
+                                         hid->get_name_for_log());
+              logger_unique_filter_.error(message);
 
-            device_ungrabbed(hid);
-          }
+              device_ungrabbed();
+            }
+          });
         });
-      });
-      human_interface_device_connections_.push_back(c);
+        human_interface_device_connections_.push_back(c);
+      }
     }
   }
 
@@ -111,7 +114,7 @@ public:
 
     // Disconnect `human_interface_device_connections_`
 
-    if (auto hid = human_interface_device_.lock()) {
+    if (auto hid = weak_hid_.lock()) {
       hid->get_run_loop_thread()->enqueue(^{
         human_interface_device_connections_.disconnect_all_connections();
       });
@@ -126,16 +129,12 @@ public:
     queue_ = nullptr;
   }
 
-  std::weak_ptr<human_interface_device> get_human_interface_device(void) {
-    return human_interface_device_;
+  std::weak_ptr<human_interface_device> get_weak_hid(void) {
+    return weak_hid_;
   }
 
   grabbable_state::state make_grabbable_state(void) {
-    if (auto hid = human_interface_device_.lock()) {
-      return device_grabbing(hid);
-    }
-
-    return grabbable_state::state::ungrabbable_permanently;
+    return device_grabbing(weak_hid);
   }
 
   void async_grab(void) {
@@ -159,7 +158,7 @@ public:
         [this] {
           queue_->push_back([this] {
             if (!grabbed_) {
-              if (auto hid = human_interface_device_.lock()) {
+              if (auto hid = weak_hid_.lock()) {
                 if (!hid->get_removed()) {
                   switch (make_grabbable_state()) {
                     case grabbable_state::state::grabbable:
@@ -197,7 +196,7 @@ public:
 
     queue_->push_back([this] {
       if (grabbed_) {
-        if (auto hid = human_interface_device_.lock()) {
+        if (auto hid = weak_hid_.lock()) {
           hid->async_unschedule();
           hid->async_queue_stop();
           hid->async_close();
@@ -209,7 +208,7 @@ public:
   }
 
 private:
-  std::weak_ptr<human_interface_device> human_interface_device_;
+  std::weak_ptr<human_interface_device> weak_hid_;
 
   std::unique_ptr<thread_utility::queue> queue_;
   boost_utility::signals2_connections human_interface_device_connections_;
