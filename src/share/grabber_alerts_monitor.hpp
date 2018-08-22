@@ -27,11 +27,10 @@ public:
 
     file_monitor_ = std::make_unique<file_monitor>(targets);
 
-    file_monitor_->file_changed.connect([this](const std::string& file_path) {
-      std::ifstream stream(file_path);
-      if (stream) {
+    file_monitor_->file_changed.connect([this](auto&& changed_file_path, auto&& file_body) {
+      if (file_body) {
         try {
-          auto json = nlohmann::json::parse(stream);
+          auto json = nlohmann::json::parse(*file_body);
 
           // json example
           //
@@ -49,14 +48,14 @@ public:
             }
           }
         } catch (std::exception& e) {
-          logger::get_logger().error("parse error in {0}: {1}", file_path, e.what());
+          logger::get_logger().error("parse error in {0}: {1}", changed_file_path, e.what());
         }
       }
     });
   }
 
-  void start(void) {
-    file_monitor_->start();
+  void async_start(void) {
+    file_monitor_->async_start();
   }
 
 private:

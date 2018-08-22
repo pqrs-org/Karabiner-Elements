@@ -25,7 +25,7 @@ TEST_CASE("grabber_alerts_monitor") {
       last_alerts = alerts.dump();
     });
 
-    grabber_alerts_monitor.start();
+    grabber_alerts_monitor.async_start();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
