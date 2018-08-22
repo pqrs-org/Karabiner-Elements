@@ -29,6 +29,10 @@ public:
     return last_core_configuration_;
   }
 
+  std::string get_selected_profile_name(void) const {
+    return last_core_configuration_->get_selected_profile().get_name();
+  }
+
   void wait(void) const {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
@@ -53,32 +57,32 @@ TEST_CASE("configuration_monitor") {
     test_configuration_monitor monitor;
 
     REQUIRE(monitor.get_count() == 1);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == true);
+    REQUIRE(monitor.get_selected_profile_name() == "Default profile");
 
     // ============================================================
     // Update user.json
     // ============================================================
 
-    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/user.json");
+    system("echo '{\"profiles\":[{\"name\":\"user1\",\"selected\":true}]}' > target/user.json");
 
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 2);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+    REQUIRE(monitor.get_selected_profile_name() == "user1");
 
     // ============================================================
     // Update system.json (ignored since user.json exists.)
     // ============================================================
 
-    system("echo '{\"global\":{\"show_in_menu_bar\":true}}' > target/system.json");
+    system("echo '{\"profiles\":[{\"name\":\"system1\",\"selected\":true}]}' > target/system.json");
 
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 2);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+    REQUIRE(monitor.get_selected_profile_name() == "user1");
 
     // ============================================================
-    // Remove user.json (ignored file removal)
+    // Remove user.json (load system.json)
     // ============================================================
 
     system("rm target/user.json");
@@ -86,29 +90,41 @@ TEST_CASE("configuration_monitor") {
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 3);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == true);
+    REQUIRE(monitor.get_selected_profile_name() == "system1");
+
+    // ============================================================
+    // Remove system.json (ignored)
+    // ============================================================
+
+    std::cout << "rm target/system.json" << std::endl;
+    system("rm target/system.json");
+
+    monitor.wait();
+
+    REQUIRE(monitor.get_count() == 3);
+    REQUIRE(monitor.get_selected_profile_name() == "system1");
 
     // ============================================================
     // Update system.json
     // ============================================================
 
-    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/system.json");
+    system("echo '{\"profiles\":[{\"name\":\"system2\",\"selected\":true}]}' > target/system.json");
 
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 4);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+    REQUIRE(monitor.get_selected_profile_name() == "system2");
 
     // ============================================================
     // Update user.json
     // ============================================================
 
-    system("echo '{\"global\":{\"show_in_menu_bar\":true}}' > target/user.json");
+    system("echo '{\"profiles\":[{\"name\":\"user2\",\"selected\":true}]}' > target/user.json");
 
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 5);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == true);
+    REQUIRE(monitor.get_selected_profile_name() == "user2");
   }
 
   // ============================================================
@@ -128,12 +144,12 @@ TEST_CASE("configuration_monitor") {
     // Update user.json
     // ============================================================
 
-    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/user.json");
+    system("echo '{\"profiles\":[{\"name\":\"user1\",\"selected\":true}]}' > target/user.json");
 
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 2);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+    REQUIRE(monitor.get_selected_profile_name() == "user1");
   }
 
   // ============================================================
@@ -143,13 +159,13 @@ TEST_CASE("configuration_monitor") {
   {
     system("rm -rf target");
     system("mkdir -p target");
-    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/system.json");
-    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/user.json");
+    system("echo '{\"profiles\":[{\"name\":\"system1\",\"selected\":true}]}' > target/system.json");
+    system("echo '{\"profiles\":[{\"name\":\"user1\",\"selected\":true}]}' > target/user.json");
 
     test_configuration_monitor monitor;
 
     REQUIRE(monitor.get_count() == 1);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+    REQUIRE(monitor.get_selected_profile_name() == "user1");
   }
 
   // ============================================================
@@ -164,18 +180,18 @@ TEST_CASE("configuration_monitor") {
     test_configuration_monitor monitor;
 
     REQUIRE(monitor.get_count() == 1);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == true);
+    REQUIRE(monitor.get_selected_profile_name() == "Default profile");
 
     // ============================================================
     // Update user.json
     // ============================================================
 
-    system("echo '{\"global\":{\"show_in_menu_bar\":false}}' > target/user.json");
+    system("echo '{\"profiles\":[{\"name\":\"user1\",\"selected\":true}]}' > target/user.json");
 
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 2);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+    REQUIRE(monitor.get_selected_profile_name() == "user1");
 
     // ============================================================
     // Break user.json (ignored)
@@ -186,6 +202,6 @@ TEST_CASE("configuration_monitor") {
     monitor.wait();
 
     REQUIRE(monitor.get_count() == 2);
-    REQUIRE(monitor.get_last_core_configuration()->get_global_configuration().get_show_in_menu_bar() == false);
+    REQUIRE(monitor.get_selected_profile_name() == "user1");
   }
 }
