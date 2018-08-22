@@ -44,7 +44,9 @@ public:
         }
       }
 
-      logger::get_logger().info("Load {0}...", file_path);
+      if (filesystem::exists(file_path)) {
+        logger::get_logger().info("Load {0}...", file_path);
+      }
 
       auto c = std::make_shared<core_configuration>(file_path);
 
