@@ -22,7 +22,7 @@ TEST_CASE("version_monitor") {
       last_changed_version = version;
     });
 
-    version_monitor.start();
+    version_monitor.async_start();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -58,7 +58,7 @@ TEST_CASE("version_monitor") {
 
     last_changed_version.clear();
 
-    version_monitor.manual_check();
+    version_monitor.async_manual_check();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -84,7 +84,7 @@ TEST_CASE("version_monitor") {
 
     last_changed_version.clear();
 
-    version_monitor.manual_check();
+    version_monitor.async_manual_check();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 

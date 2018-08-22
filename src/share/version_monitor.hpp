@@ -8,6 +8,7 @@
 #include "file_monitor.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
+#include <boost/algorithm/string.hpp>
 #include <boost/signals2.hpp>
 #include <fstream>
 
@@ -23,7 +24,7 @@ public:
   version_monitor(const version_monitor&) = delete;
 
   version_monitor(const std::string& version_file_path) : version_file_path_(version_file_path) {
-    version_ = read_version_file();
+    version_ = file_utility::read_file(version_file_path_);
 
     std::vector<std::string> targets = {
         version_file_path_,
@@ -31,8 +32,26 @@ public:
 
     file_monitor_ = std::make_unique<file_monitor>(targets);
 
-    file_monitor_->file_changed.connect([this](const std::string&) {
-      check_version();
+    file_monitor_->file_changed.connect([this](auto&& changed_file_path, auto&& file_body) {
+      if (file_body) {
+        if (version_) {
+          if (*version_ == *file_body) {
+            return;
+          }
+        } else if (!version_ && !file_body) {
+          return;
+        }
+
+        std::string version_string(std::begin(*file_body),
+                                   std::end(*file_body));
+        boost::trim(version_string);
+
+        logger::get_logger().info("Version is changed to {0}", version_string);
+
+        version_ = file_body;
+
+        changed(version_string);
+      }
     });
   }
 
@@ -40,39 +59,18 @@ public:
     file_monitor_ = nullptr;
   }
 
-  void start() {
-    file_monitor_->start();
+  void async_start() {
+    file_monitor_->async_start();
   }
 
-  void manual_check(void) {
+  void async_manual_check(void) {
     file_monitor_->enqueue_file_changed(version_file_path_);
   }
 
 private:
-  void check_version(void) {
-    auto version = read_version_file();
-    if (version_ != version) {
-      logger::get_logger().info("Version is changed: '{0}' -> '{1}'", version_, version);
-
-      version_ = version;
-
-      changed(version_);
-    }
-  }
-
-  std::string read_version_file(void) {
-    std::string version;
-
-    std::ifstream stream(version_file_path_);
-    if (stream) {
-      std::getline(stream, version);
-    }
-
-    return version;
-  }
-
   std::string version_file_path_;
-  std::string version_;
+
+  std::shared_ptr<std::vector<uint8_t>> version_;
   std::unique_ptr<file_monitor> file_monitor_;
 };
 } // namespace krbn
