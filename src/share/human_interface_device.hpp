@@ -40,12 +40,9 @@ public:
   boost::signals2::signal<void(void)> closed;
   boost::signals2::signal<void(IOReturn error)> close_failed;
 
-  boost::signals2::signal<void(human_interface_device& device,
-                               event_queue& event_queue)>
-      values_arrived;
+  boost::signals2::signal<void(std::weak_ptr<event_queue>)> values_arrived;
 
-  boost::signals2::signal<void(human_interface_device& device,
-                               IOHIDReportType type,
+  boost::signals2::signal<void(IOHIDReportType type,
                                uint32_t report_id,
                                uint8_t* _Nonnull report,
                                CFIndex report_length)>
@@ -229,6 +226,8 @@ public:
     });
 
     run_loop_thread_ = nullptr;
+
+    logger::get_logger().info("human_interface_device:{0} is destroyed.", name_for_log_);
   }
 
   registry_entry_id get_registry_entry_id(void) const {
@@ -504,6 +503,7 @@ private:
   }
 
   void queue_value_available_callback(void) {
+    auto input_event_queue = std::make_shared<event_queue>();
     std::vector<hid_value> hid_values;
 
     while (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
@@ -516,7 +516,7 @@ private:
       auto& hid_value = pair.first;
       auto& queued_event = pair.second;
 
-      input_event_queue_.push_back_event(queued_event);
+      input_event_queue->push_back_event(queued_event);
 
       if (hid_value) {
         if (auto hid_usage_page = hid_value->get_hid_usage_page()) {
@@ -532,7 +532,8 @@ private:
                 size_t size = pressed_keys_.size();
                 pressed_keys_.erase(elements_key(*hid_usage_page, *hid_usage));
                 if (size > 0) {
-                  post_device_keys_and_pointing_buttons_are_released_event_if_needed(hid_value->get_time_stamp());
+                  post_device_keys_and_pointing_buttons_are_released_event_if_needed(input_event_queue,
+                                                                                     hid_value->get_time_stamp());
                 }
               }
             }
@@ -541,15 +542,14 @@ private:
       }
     }
 
-    values_arrived(*this, input_event_queue_);
-
-    input_event_queue_.clear_events();
+    values_arrived(input_event_queue);
   }
 
-  void post_device_keys_and_pointing_buttons_are_released_event_if_needed(uint64_t time_stamp) {
+  void post_device_keys_and_pointing_buttons_are_released_event_if_needed(std::shared_ptr<event_queue> input_event_queue,
+                                                                          uint64_t time_stamp) {
     if (pressed_keys_.empty()) {
       auto event = event_queue::queued_event::event::make_device_keys_and_pointing_buttons_are_released_event();
-      input_event_queue_.emplace_back_event(device_id_,
+      input_event_queue->emplace_back_event(device_id_,
                                             event_queue::queued_event::event_time_stamp(time_stamp),
                                             event,
                                             event_type::single,
@@ -580,7 +580,7 @@ private:
                              uint32_t report_id,
                              uint8_t* _Nullable report,
                              CFIndex report_length) {
-    report_arrived(*this, type, report_id, report, report_length);
+    report_arrived(type, report_id, report, report_length);
   }
 
   uint64_t elements_key(hid_usage_page usage_page, hid_usage usage) const {
@@ -608,7 +608,6 @@ private:
 
   IOHIDQueueRef _Nullable queue_;
   std::vector<IOHIDElementRef> elements_;
-  event_queue input_event_queue_;
   std::vector<uint8_t> report_buffer_;
   std::unordered_set<uint64_t> pressed_keys_;
 };
