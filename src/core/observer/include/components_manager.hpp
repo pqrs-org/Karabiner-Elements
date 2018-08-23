@@ -26,6 +26,10 @@ public:
     async_stop_grabber_client();
     async_stop_device_observer();
 
+    queue_->push_back([this] {
+      version_monitor_ = nullptr;
+    });
+
     queue_ = nullptr;
   }
 
@@ -40,7 +44,9 @@ private:
 
       grabber_client_->connected.connect([this] {
         queue_->push_back([this] {
-          version_monitor_->async_manual_check();
+          if (version_monitor_) {
+            version_monitor_->async_manual_check();
+          }
 
           async_start_device_observer();
         });
@@ -48,7 +54,9 @@ private:
 
       grabber_client_->connect_failed.connect([this](auto&& error_code) {
         queue_->push_back([this] {
-          version_monitor_->async_manual_check();
+          if (version_monitor_) {
+            version_monitor_->async_manual_check();
+          }
 
           async_stop_device_observer();
         });
@@ -56,7 +64,9 @@ private:
 
       grabber_client_->closed.connect([this] {
         queue_->push_back([this] {
-          version_monitor_->async_manual_check();
+          if (version_monitor_) {
+            version_monitor_->async_manual_check();
+          }
 
           async_stop_device_observer();
         });
