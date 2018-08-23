@@ -59,11 +59,9 @@ public:
                                                           grabbable_state::ungrabbable_temporarily_reason::none,
                                                           mach_absolute_time()));
 
-          hid->values_arrived.connect([this](auto&& weak_event_queue) {
-            queue_->push_back([this, weak_event_queue] {
-              if (auto eq = weak_event_queue.lock()) {
-                grabbable_state_manager_.update(*eq);
-              }
+          hid->values_arrived.connect([this](auto&& shared_event_queue) {
+            queue_->push_back([this, shared_event_queue] {
+              grabbable_state_manager_.update(*shared_event_queue);
             });
           });
 

@@ -40,7 +40,8 @@ public:
   boost::signals2::signal<void(void)> closed;
   boost::signals2::signal<void(IOReturn error)> close_failed;
 
-  boost::signals2::signal<void(std::weak_ptr<event_queue>)> values_arrived;
+  // `event_queue` is not owned by `human_interface_device`.
+  boost::signals2::signal<void(std::shared_ptr<event_queue>)> values_arrived;
 
   boost::signals2::signal<void(IOHIDReportType type, uint32_t report_id, uint8_t* _Nonnull report, CFIndex report_length)> report_arrived;
 

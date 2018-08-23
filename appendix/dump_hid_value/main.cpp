@@ -10,6 +10,8 @@ public:
   dump_hid_value(const dump_hid_value&) = delete;
 
   dump_hid_value(void) {
+    queue_ = std::make_unique<krbn::thread_utility::queue>();
+
     std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
@@ -20,12 +22,12 @@ public:
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
       if (auto hid = weak_hid.lock()) {
-        hid->values_arrived.connect([this, weak_hid](auto&& weak_event_queue) {
-          if (auto hid = weak_hid.lock()) {
-            if (auto eq = weak_event_queue.lock()) {
-              values_arrived(hid, eq);
+        hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
+          queue_->push_back([this, weak_hid, shared_event_queue] {
+            if (auto hid = weak_hid.lock()) {
+              values_arrived(hid, shared_event_queue);
             }
-          }
+          });
         });
 
         // Observe
@@ -62,6 +64,7 @@ public:
 
   ~dump_hid_value(void) {
     hid_manager_ = nullptr;
+    queue_ = nullptr;
 
     hid_observers_.clear();
   }
@@ -172,6 +175,7 @@ private:
   }
 
   std::unique_ptr<krbn::hid_manager> hid_manager_;
+  std::unique_ptr<krbn::thread_utility::queue> queue_;
   std::unordered_map<krbn::registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 };
 } // namespace
