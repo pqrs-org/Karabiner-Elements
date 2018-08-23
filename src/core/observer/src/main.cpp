@@ -33,8 +33,10 @@ int main(int argc, const char* argv[]) {
   {
     std::string pid_file_path = krbn::constants::get_pid_directory() + "/karabiner_observer.pid";
     if (!krbn::process_utility::lock_single_application(pid_file_path)) {
-      krbn::logger::get_logger().info("Exit since another process is running.");
-      exit(0);
+      auto message = "Exit since another process is running.";
+      krbn::logger::get_logger().info(message);
+      std::cerr << message << std::endl;
+      exit(1);
     }
   }
 
