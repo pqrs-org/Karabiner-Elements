@@ -27,8 +27,8 @@ public:
 
     file_monitor_ = std::make_unique<file_monitor>(targets);
 
-    file_monitor_->file_changed.connect([this](auto&& changed_file_path, auto&& file_body) {
-      if (file_body) {
+    file_monitor_->file_changed.connect([this](auto&& changed_file_path, auto&& weak_changed_file_body) {
+      if (auto file_body = weak_changed_file_body.lock()) {
         try {
           auto json = nlohmann::json::parse(*file_body);
 
