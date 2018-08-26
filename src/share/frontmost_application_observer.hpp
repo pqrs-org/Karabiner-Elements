@@ -1,26 +1,58 @@
 #pragma once
 
+// `krbn::frontmost_application_observer` can be used safely in a multi-threaded environment.
+
+#include "boost_defs.hpp"
+
 #include "frontmost_application_observer_objc.h"
 #include "logger.hpp"
+#include "thread_utility.hpp"
+#include <boost/signals2.hpp>
 
 namespace krbn {
 class frontmost_application_observer final {
 public:
-  typedef std::function<void(const std::string& bundle_identifier,
-                             const std::string& file_path)>
-      callback;
+  // Signals
 
-  frontmost_application_observer(const callback& callback) : callback_(callback),
-                                                             observer_(nullptr) {
-    logger::get_logger().info("frontmost_application_observer initialize");
-    krbn_frontmost_application_observer_initialize(&observer_,
-                                                   static_cpp_callback,
-                                                   this);
+  boost::signals2::signal<void(const std::string& bundle_identifier, const std::string& file_path)> frontmost_application_changed;
+
+  // Methods
+
+  frontmost_application_observer(void) : observer_(nullptr) {
+    queue_ = std::make_unique<thread_utility::queue>();
   }
 
   ~frontmost_application_observer(void) {
-    logger::get_logger().info("frontmost_application_observer terminate");
-    krbn_frontmost_application_observer_terminate(&observer_);
+    async_stop();
+
+    queue_ = nullptr;
+  }
+
+  void async_start(void) {
+    queue_->push_back([this] {
+      if (observer_) {
+        return;
+      }
+
+      krbn_frontmost_application_observer_initialize(&observer_,
+                                                     static_cpp_callback,
+                                                     this);
+
+      logger::get_logger().info("frontmost_application_observer is started");
+    });
+  }
+
+  void async_stop(void) {
+    queue_->push_back([this] {
+      if (!observer_) {
+        return;
+      }
+
+      krbn_frontmost_application_observer_terminate(&observer_);
+      observer_ = nullptr;
+
+      logger::get_logger().info("frontmost_application_observer is stopped");
+    });
   }
 
 private:
@@ -29,18 +61,28 @@ private:
                                   void* context) {
     auto observer = reinterpret_cast<frontmost_application_observer*>(context);
     if (observer) {
-      observer->cpp_callback(bundle_identifier, file_path);
+      std::string bundle_identifier_string;
+      if (bundle_identifier) {
+        bundle_identifier_string = bundle_identifier;
+      }
+
+      std::string file_path_string;
+      if (file_path) {
+        file_path_string = file_path;
+      }
+
+      observer->cpp_callback(bundle_identifier_string, file_path_string);
     }
   }
 
   void cpp_callback(const std::string& bundle_identifier,
                     const std::string& file_path) {
-    if (callback_) {
-      callback_(bundle_identifier, file_path);
-    }
+    queue_->push_back([this, bundle_identifier, file_path] {
+      frontmost_application_changed(bundle_identifier, file_path);
+    });
   }
 
-  callback callback_;
+  std::unique_ptr<thread_utility::queue> queue_;
   krbn_frontmost_application_observer_objc* observer_;
 };
 } // namespace krbn

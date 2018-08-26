@@ -184,7 +184,20 @@ private:
 
     // frontmost_application_observer_
 
-    start_frontmost_application_observer();
+    frontmost_application_observer_ = std::make_unique<frontmost_application_observer>();
+
+    frontmost_application_observer_->frontmost_application_changed.connect([this](auto&& bundle_identifier, auto&& file_path) {
+      queue_->push_back([this, bundle_identifier, file_path] {
+        if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
+            bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
+          return;
+        }
+
+        if (grabber_client_) {
+          grabber_client_->async_frontmost_application_changed(bundle_identifier, file_path);
+        }
+      });
+    });
 
     // input_source_observer_
 
@@ -197,34 +210,10 @@ private:
     menu_process_manager_ = nullptr;
     updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
-    stop_frontmost_application_observer();
+    frontmost_application_observer_ = nullptr;
     stop_input_source_observer();
 
     configuration_monitor_ = nullptr;
-  }
-
-  void start_frontmost_application_observer(void) {
-    if (frontmost_application_observer_) {
-      return;
-    }
-
-    frontmost_application_observer_ = std::make_unique<frontmost_application_observer>(
-        [this](auto&& bundle_identifier, auto&& file_path) {
-          if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
-              bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
-            return;
-          }
-
-          {
-            if (grabber_client_) {
-              grabber_client_->async_frontmost_application_changed(bundle_identifier, file_path);
-            }
-          }
-        });
-  }
-
-  void stop_frontmost_application_observer(void) {
-    frontmost_application_observer_ = nullptr;
   }
 
   void start_input_source_observer(void) {
