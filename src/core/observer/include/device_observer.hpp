@@ -24,7 +24,7 @@ public:
     grabbable_state_manager_.grabbable_state_changed.connect([this](auto&& grabbable_state) {
       queue_->push_back([this, grabbable_state] {
         if (auto client = grabber_client_.lock()) {
-          client->grabbable_state_changed(grabbable_state);
+          client->async_grabbable_state_changed(grabbable_state);
         }
       });
     });

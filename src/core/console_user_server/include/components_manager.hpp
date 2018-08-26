@@ -123,7 +123,7 @@ private:
         }
 
         if (grabber_client_) {
-          grabber_client_->connect_console_user_server();
+          grabber_client_->async_connect_console_user_server();
         }
 
         stop_child_components();
@@ -151,7 +151,7 @@ private:
       });
     });
 
-    grabber_client_->start();
+    grabber_client_->async_start();
   }
 
   void stop_grabber_client(void) {
@@ -217,7 +217,7 @@ private:
 
           {
             if (grabber_client_) {
-              grabber_client_->frontmost_application_changed(bundle_identifier, file_path);
+              grabber_client_->async_frontmost_application_changed(bundle_identifier, file_path);
             }
           }
         });
@@ -235,7 +235,7 @@ private:
     input_source_observer_ = std::make_unique<input_source_observer>(
         [this](auto&& input_source_identifiers) {
           if (grabber_client_) {
-            grabber_client_->input_source_changed(input_source_identifiers);
+            grabber_client_->async_input_source_changed(input_source_identifiers);
           }
         });
   }

@@ -72,7 +72,7 @@ private:
         });
       });
 
-      grabber_client_->start();
+      grabber_client_->async_start();
     });
   }
 
