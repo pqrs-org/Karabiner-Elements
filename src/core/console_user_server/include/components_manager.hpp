@@ -73,7 +73,7 @@ public:
       });
     });
 
-    console_user_id_monitor_->start();
+    console_user_id_monitor_->async_start();
   }
 
   ~components_manager(void) {
