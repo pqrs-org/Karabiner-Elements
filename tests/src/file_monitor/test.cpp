@@ -14,8 +14,7 @@ std::string file_path_2_1 = "../file_monitor/target//sub2/file2_1";
 
 class test_file_monitor final {
 public:
-  test_file_monitor(void) : register_stream_finished_(false),
-                            count_(0) {
+  test_file_monitor(void) : count_(0) {
     std::vector<std::string> targets({
         file_path_1_1,
         file_path_1_2,
@@ -23,17 +22,6 @@ public:
     });
 
     file_monitor_ = std::make_unique<krbn::file_monitor>(targets);
-
-    file_monitor_->register_stream_finished.connect([&] {
-      if (!file_monitor_thread_id_) {
-        file_monitor_thread_id_ = std::this_thread::get_id();
-      }
-      if (file_monitor_thread_id_ != std::this_thread::get_id()) {
-        throw std::logic_error("thread id mismatch");
-      }
-
-      register_stream_finished_ = true;
-    });
 
     file_monitor_->file_changed.connect([&](auto&& changed_file_path, auto&& weak_changed_file_body) {
       if (!file_monitor_thread_id_) {
@@ -77,10 +65,6 @@ public:
     wait();
   }
 
-  bool get_register_stream_finished(void) const {
-    return register_stream_finished_;
-  }
-
   size_t get_count(void) const {
     return count_;
   }
@@ -120,7 +104,6 @@ public:
 private:
   std::unique_ptr<krbn::file_monitor> file_monitor_;
   boost::optional<std::thread::id> file_monitor_thread_id_;
-  bool register_stream_finished_;
   size_t count_;
   boost::optional<std::string> last_file_path_;
   boost::optional<std::string> last_file_body1_1_;
@@ -145,7 +128,6 @@ TEST_CASE("file_monitor") {
 
     test_file_monitor monitor;
 
-    REQUIRE(monitor.get_register_stream_finished());
     REQUIRE(monitor.get_count() == 3);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_0"s);
@@ -401,7 +383,6 @@ TEST_CASE("file_monitor") {
 
     test_file_monitor monitor;
 
-    REQUIRE(monitor.get_register_stream_finished());
     REQUIRE(monitor.get_count() == 3);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
     REQUIRE(monitor.get_last_file_body1_1() == boost::none);
