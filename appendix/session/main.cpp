@@ -18,7 +18,7 @@ int main(int argc, const char* argv[]) {
     }
   });
 
-  console_user_id_monitor.start();
+  console_user_id_monitor.async_start();
 
   CFRunLoopRun();
 
