@@ -2,6 +2,7 @@
 
 // `krbn::configuration_monitor` can be used safely in a multi-threaded environment.
 
+#include "constants.hpp"
 #include "core_configuration.hpp"
 #include "file_monitor.hpp"
 #include "logger.hpp"
@@ -16,7 +17,7 @@ public:
   // Methods
 
   configuration_monitor(const std::string& user_core_configuration_file_path,
-                        const std::string& system_core_configuration_file_path) {
+                        const std::string& system_core_configuration_file_path = constants::get_system_core_configuration_file_path()) {
     std::vector<std::string> targets = {
         user_core_configuration_file_path,
         system_core_configuration_file_path,
