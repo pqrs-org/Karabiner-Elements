@@ -160,15 +160,34 @@ private:
   }
 
   void start_child_components(void) {
-    configuration_monitor_ = std::make_shared<configuration_monitor>(
-        constants::get_user_core_configuration_file_path(),
-        constants::get_system_core_configuration_file_path());
+    configuration_monitor_ = std::make_shared<configuration_monitor>(constants::get_user_core_configuration_file_path());
+
+    // menu_process_manager_
 
     menu_process_manager_ = std::make_unique<menu_process_manager>(configuration_monitor_);
+
+    // updater_process_manager_
+
     updater_process_manager_ = std::make_unique<updater_process_manager>(configuration_monitor_);
-    system_preferences_monitor_ = make_system_preferences_monitor(configuration_monitor_,
-                                                                  grabber_client_);
+
+    // system_preferences_monitor_
+
+    system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(configuration_monitor_);
+
+    system_preferences_monitor_->system_preferences_changed.connect([this](auto&& system_preferences) {
+      queue_->push_back([this, system_preferences] {
+        if (grabber_client_) {
+          grabber_client_->async_system_preferences_updated(system_preferences);
+        }
+      });
+    });
+
+    // frontmost_application_observer_
+
     start_frontmost_application_observer();
+
+    // input_source_observer_
+
     start_input_source_observer();
 
     configuration_monitor_->async_start();
@@ -182,17 +201,6 @@ private:
     stop_input_source_observer();
 
     configuration_monitor_ = nullptr;
-  }
-
-  static std::unique_ptr<system_preferences_monitor> make_system_preferences_monitor(std::shared_ptr<configuration_monitor> configuration_monitor,
-                                                                                     std::weak_ptr<grabber_client> grabber_client) {
-    return std::make_unique<system_preferences_monitor>(
-        [grabber_client](auto&& system_preferences) {
-          if (auto client = grabber_client.lock()) {
-            client->system_preferences_updated(system_preferences);
-          }
-        },
-        configuration_monitor);
   }
 
   void start_frontmost_application_observer(void) {
