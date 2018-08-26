@@ -40,6 +40,7 @@ public:
   void async_start(void) {
     queue_->push_back([this] {
       if (client_manager_) {
+        logger::get_logger().warn("grabber_client is already started.");
         return;
       }
 

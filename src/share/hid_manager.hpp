@@ -40,6 +40,7 @@ public:
   void async_start(void) {
     run_loop_thread_->enqueue(^{
       if (manager_) {
+        logger::get_logger().warn("hid_manager is already started.");
         return;
       }
 
