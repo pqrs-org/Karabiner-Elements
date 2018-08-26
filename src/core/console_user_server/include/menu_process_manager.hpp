@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::menu_process_manager` can be used safely in a multi-threaded environment.
+
 #include "application_launcher.hpp"
 #include "boost_utility.hpp"
 #include "configuration_monitor.hpp"
