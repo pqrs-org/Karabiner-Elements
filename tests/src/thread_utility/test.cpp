@@ -257,3 +257,32 @@ TEST_CASE("queue") {
     REQUIRE(count == 10000);
   }
 }
+
+namespace {
+void queue_recursive_function(krbn::thread_utility::queue& queue,
+                              size_t& count) {
+  ++count;
+  if (count < 5) {
+    queue.push_back([&queue, &count] {
+      queue_recursive_function(queue, count);
+    });
+  }
+}
+} // namespace
+
+TEST_CASE("queue.recursive") {
+  // Call `push_back` in queue's thread.
+
+  {
+    size_t count = 0;
+
+    {
+      krbn::thread_utility::queue queue;
+      queue.push_back([&] {
+        queue_recursive_function(queue, count);
+      });
+    }
+
+    REQUIRE(count == 5);
+  }
+}
