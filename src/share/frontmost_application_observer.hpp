@@ -31,6 +31,7 @@ public:
   void async_start(void) {
     queue_->push_back([this] {
       if (observer_) {
+        logger::get_logger().warn("frontmost_application_observer is already started.");
         return;
       }
 
@@ -38,7 +39,7 @@ public:
                                                      static_cpp_callback,
                                                      this);
 
-      logger::get_logger().info("frontmost_application_observer is started");
+      logger::get_logger().info("frontmost_application_observer is started.");
     });
   }
 
@@ -51,7 +52,7 @@ public:
       krbn_frontmost_application_observer_terminate(&observer_);
       observer_ = nullptr;
 
-      logger::get_logger().info("frontmost_application_observer is stopped");
+      logger::get_logger().info("frontmost_application_observer is stopped.");
     });
   }
 
