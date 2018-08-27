@@ -183,6 +183,8 @@ private:
       });
     });
 
+    system_preferences_monitor_->async_start();
+
     // frontmost_application_observer_
 
     frontmost_application_observer_ = std::make_unique<frontmost_application_observer>();
@@ -200,6 +202,8 @@ private:
       });
     });
 
+    frontmost_application_observer_->async_start();
+
     // input_source_observer_
 
     input_source_observer_ = std::make_unique<input_source_observer>();
@@ -211,6 +215,8 @@ private:
         }
       });
     });
+
+    input_source_observer_->async_start();
 
     // Start configuration_monitor_
 

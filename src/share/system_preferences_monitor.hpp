@@ -31,23 +31,6 @@ public:
         configuration_monitor_connections_.push_back(c);
       }
     }
-
-    // Setup timer_
-
-    timer_ = std::make_unique<thread_utility::timer>(
-        [](auto&& count) {
-          if (count == 0) {
-            return std::chrono::milliseconds(0);
-          } else {
-            return std::chrono::milliseconds(3000);
-          }
-        },
-        true,
-        [this] {
-          queue_->push_back([this] {
-            check_system_preferences();
-          });
-        });
   }
 
   ~system_preferences_monitor(void) {
@@ -73,6 +56,25 @@ public:
 
     queue_->terminate();
     queue_ = nullptr;
+  }
+
+  void async_start(void) {
+    queue_->push_back([this] {
+      timer_ = std::make_unique<thread_utility::timer>(
+          [](auto&& count) {
+            if (count == 0) {
+              return std::chrono::milliseconds(0);
+            } else {
+              return std::chrono::milliseconds(3000);
+            }
+          },
+          true,
+          [this] {
+            queue_->push_back([this] {
+              check_system_preferences();
+            });
+          });
+    });
   }
 
 private:

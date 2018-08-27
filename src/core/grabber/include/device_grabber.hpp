@@ -153,6 +153,7 @@ public:
       auto registry_entry_id = human_interface_device->get_registry_entry_id();
 
       hid_grabbers_.erase(registry_entry_id);
+      device_states_.erase(registry_entry_id);
 
       grabbable_state_queues_manager::get_shared_instance()->erase_queue(registry_entry_id);
 
@@ -253,9 +254,9 @@ public:
     gcd_utility::dispatch_sync_in_main_queue(^{
       for (auto& pair : hid_grabbers_) {
         if (pair.second->make_grabbable_state() == grabbable_state::state::ungrabbable_permanently) {
-          pair.second->ungrab();
+          pair.second->async_ungrab();
         } else {
-          pair.second->grab();
+          pair.second->async_grab();
         }
       }
 
@@ -266,7 +267,7 @@ public:
   void ungrab_devices(void) {
     gcd_utility::dispatch_sync_in_main_queue(^{
       for (auto& pair : hid_grabbers_) {
-        pair.second->ungrab();
+        pair.second->async_ungrab();
       }
 
       logger::get_logger().info("Connected devices are ungrabbed");
@@ -339,6 +340,71 @@ public:
   }
 
 private:
+  class device_state {
+  public:
+    device_state(void) : grabbed_(false),
+                         disabled_(false) {
+    }
+
+    bool get_grabbed(void) const {
+      return grabbed_;
+    }
+
+    void set_grabbed(bool value) {
+      grabbed_ = value;
+    }
+
+    bool get_disabled(void) const {
+      return disabled_;
+    }
+
+    void set_disabled(bool value) {
+      disabled_ = value;
+    }
+
+  private:
+    bool grabbed_;
+    bool disabled_;
+  };
+
+  std::shared_ptr<device_state> find_device_state(registry_entry_id registry_entry_id) const {
+    auto it = device_states_.find(registry_entry_id);
+    if (it != std::end(device_states_)) {
+      return it->second;
+    }
+    return nullptr;
+  }
+
+  bool grabbed(registry_entry_id registry_entry_id) const {
+    if (auto device_state = find_device_state(registry_entry_id)) {
+      return device_state->get_grabbed();
+    }
+    return false;
+  }
+
+  void set_grabbed(registry_entry_id registry_entry_id, bool value) {
+    auto device_state = find_device_state(registry_entry_id);
+    if (!device_state) {
+      device_state = std::make_shared<device_state>()
+    }
+    device_state->set_grabbed(value);
+  }
+
+  bool disabled(registry_entry_id registry_entry_id) const {
+    if (auto device_state = find_device_state(registry_entry_id)) {
+      return device_state->get_disabled();
+    }
+    return false;
+  }
+
+  void set_disabled(registry_entry_id registry_entry_id, bool value) {
+    auto device_state = find_device_state(registry_entry_id);
+    if (!device_state) {
+      device_state = std::make_shared<device_state>()
+    }
+    device_state->set_disabled(value);
+  }
+
   void retry_grab(registry_entry_id registry_entry_id, boost::optional<grabbable_state> grabbable_state) {
     auto manager = grabbable_state_queues_manager::get_shared_instance();
 
@@ -355,13 +421,13 @@ private:
 
       if (grabbable) {
         // Call `grab` again if current_grabbable_state is `grabbable` and not grabbed yet.
-        if (!grabber->get_grabbed()) {
-          grabber->ungrab();
-          grabber->grab();
+        if (!grabbed(registry_entry_id)) {
+          grabber->async_ungrab();
+          grabber->async_grab();
         }
       } else {
         // We should `ungrab` since current_grabbable_state is not `grabbable`.
-        grabber->ungrab();
+        grabber->async_ungrab();
       }
     }
   }
@@ -400,7 +466,7 @@ private:
 
     // Manipulate events
 
-    if (device.get_disabled()) {
+    if (disabled(device.get_registry_entry_id())) {
       // Do nothing
     } else {
       for (const auto& queued_event : event_queue.get_events()) {
@@ -542,6 +608,8 @@ private:
   }
 
   void device_grabbed(std::shared_ptr<human_interface_device> device) {
+    set_grabbed(device->get_registry_entry_id(), true);
+
     // set keyboard led
     if (event_tap_manager_) {
       bool state = false;
@@ -557,6 +625,8 @@ private:
   }
 
   void device_ungrabbed(std::shared_ptr<human_interface_device> device) {
+    set_grabbed(device->get_registry_entry_id(), false);
+
     grabbable_state_queues_manager::get_shared_instance()->unset_first_grabbed_event_time_stamp(device->get_registry_entry_id());
 
     post_device_ungrabbed_event(device->get_device_id());
@@ -605,7 +675,7 @@ private:
         if (auto hid = pair.second->get_human_interface_device().lock()) {
           auto& di = hid->get_connected_device().get_identifiers();
           bool manipulate_caps_lock_led = configuration->get_selected_profile().get_device_manipulate_caps_lock_led(di);
-          if (pair.second->get_grabbed() &&
+          if (grabbed(hid->get_registry_entry_id()) &&
               manipulate_caps_lock_led) {
             hid->set_caps_lock_led_state(caps_lock_state ? led_state::on : led_state::off);
           }
@@ -618,7 +688,7 @@ private:
     for (const auto& pair : hid_grabbers_) {
       if (auto hid = pair.second->get_human_interface_device().lock()) {
         if (hid->is_pointing_device() &&
-            pair.second->get_grabbed()) {
+            grabbed(hid->get_registry_entry_id()) {
           return true;
         }
       }
@@ -678,9 +748,9 @@ private:
   void enable_devices(void) {
     for (const auto& hid : hid_manager_.copy_hids()) {
       if (hid->is_built_in_keyboard() && need_to_disable_built_in_keyboard()) {
-        hid->disable();
+        set_disabled(hid->get_registry_entry_id(), true);
       } else {
-        hid->enable();
+        set_disabled(hid->get_registry_entry_id(), false);
       }
     }
   }
@@ -941,6 +1011,7 @@ private:
   std::unique_ptr<event_tap_manager> event_tap_manager_;
   hid_manager hid_manager_;
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_grabber>> hid_grabbers_;
+  std::unordered_map<registry_entry_id, std::shared_ptr<device_state>> device_states_;
 
   core_configuration::profile profile_;
   system_preferences system_preferences_;

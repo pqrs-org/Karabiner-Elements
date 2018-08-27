@@ -22,6 +22,8 @@ int main(int argc, const char* argv[]) {
     std::cout << "  keyboard_type: " << static_cast<int>(system_preferences.get_keyboard_type()) << std::endl;
   });
 
+  monitor.async_start();
+
   configuration_monitor->async_start();
 
   CFRunLoopRun();
