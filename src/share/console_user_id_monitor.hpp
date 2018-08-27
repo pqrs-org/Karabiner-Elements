@@ -28,6 +28,7 @@ public:
   ~console_user_id_monitor(void) {
     async_stop();
 
+    queue_->terminate();
     queue_ = nullptr;
   }
 

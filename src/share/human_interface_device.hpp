@@ -219,6 +219,7 @@ public:
       CFRelease(device_);
     });
 
+    run_loop_thread_->terminate();
     run_loop_thread_ = nullptr;
 
     logger::get_logger().info("human_interface_device:{0} is destroyed.", name_for_log_);

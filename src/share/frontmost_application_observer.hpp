@@ -25,6 +25,7 @@ public:
   ~frontmost_application_observer(void) {
     async_stop();
 
+    queue_->terminate();
     queue_ = nullptr;
   }
 

@@ -113,6 +113,7 @@ public:
 
     hid_observers_.clear();
 
+    queue_->terminate();
     queue_ = nullptr;
 
     logger::get_logger().info("device_observer is stopped.");

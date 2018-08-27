@@ -72,6 +72,7 @@ public:
       client_manager_ = nullptr;
     });
 
+    queue_->terminate();
     queue_ = nullptr;
   }
 

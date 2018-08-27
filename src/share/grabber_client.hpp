@@ -34,6 +34,7 @@ public:
   ~grabber_client(void) {
     async_stop();
 
+    queue_->terminate();
     queue_ = nullptr;
   }
 

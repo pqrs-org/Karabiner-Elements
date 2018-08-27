@@ -71,6 +71,7 @@ public:
 
     // Destroy queue_
 
+    queue_->terminate();
     queue_ = nullptr;
   }
 

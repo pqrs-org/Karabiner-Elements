@@ -123,6 +123,7 @@ public:
 
     // Release `queue_`
 
+    queue_->terminate();
     queue_ = nullptr;
   }
 

@@ -34,6 +34,7 @@ public:
   ~hid_manager(void) {
     async_stop();
 
+    run_loop_thread_->terminate();
     run_loop_thread_ = nullptr;
   }
 

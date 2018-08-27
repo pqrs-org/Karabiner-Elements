@@ -28,6 +28,7 @@ public:
   }
 
   ~grabbable_state_manager(void) {
+    call_slots_queue_->terminate();
     call_slots_queue_ = nullptr;
   }
 

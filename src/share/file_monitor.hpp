@@ -54,6 +54,7 @@ public:
       unregister_stream();
     });
 
+    run_loop_thread_->terminate();
     run_loop_thread_ = nullptr;
 
     if (directories_) {

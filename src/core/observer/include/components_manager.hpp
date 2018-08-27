@@ -30,6 +30,7 @@ public:
       version_monitor_ = nullptr;
     });
 
+    queue_->terminate();
     queue_ = nullptr;
   }
 
