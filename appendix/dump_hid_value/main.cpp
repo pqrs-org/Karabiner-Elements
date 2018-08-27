@@ -64,14 +64,15 @@ public:
 
   ~dump_hid_value(void) {
     hid_manager_ = nullptr;
-    queue_ = nullptr;
-
     hid_observers_.clear();
+
+    queue_->terminate();
+    queue_ = nullptr;
   }
 
 private:
   void values_arrived(std::shared_ptr<krbn::human_interface_device> hid,
-                      std::shared_ptr<krbn::event_queue> event_queue) {
+                      std::shared_ptr<krbn::event_queue> event_queue) const {
     for (const auto& queued_event : event_queue->get_events()) {
       std::cout << queued_event.get_event_time_stamp().get_time_stamp() << " ";
 
@@ -174,8 +175,8 @@ private:
     }
   }
 
-  std::unique_ptr<krbn::hid_manager> hid_manager_;
   std::unique_ptr<krbn::thread_utility::queue> queue_;
+  std::unique_ptr<krbn::hid_manager> hid_manager_;
   std::unordered_map<krbn::registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 };
 } // namespace
@@ -183,7 +184,15 @@ private:
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
-  dump_hid_value d;
+  signal(SIGINT, [](int) {
+    CFRunLoopStop(CFRunLoopGetMain());
+  });
+
+  auto d = std::make_unique<dump_hid_value>();
+
   CFRunLoopRun();
+
+  d = nullptr;
+
   return 0;
 }
