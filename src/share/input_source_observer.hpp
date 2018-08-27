@@ -1,36 +1,78 @@
 #pragma once
 
+// `krbn::input_source_observer` can be used safely in a multi-threaded environment.
+
+#include "boost_defs.hpp"
+
 #include "cf_utility.hpp"
 #include "input_source_utility.hpp"
 #include "logger.hpp"
+#include "thread_utility.hpp"
 #include "types.hpp"
 #include <Carbon/Carbon.h>
+#include <boost/signals2.hpp>
 
 namespace krbn {
 class input_source_observer final {
 public:
-  typedef std::function<void(const input_source_identifiers& input_source_identifiers)> callback;
+  // Signals
 
-  input_source_observer(const callback& callback) : callback_(callback) {
-    logger::get_logger().info("input_source_observer initialize");
+  boost::signals2::signal<void(const input_source_identifiers& input_source_identifiers)> input_source_changed;
 
-    CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(),
-                                    this,
-                                    static_input_source_changed_callback,
-                                    kTISNotifySelectedKeyboardInputSourceChanged,
-                                    nullptr,
-                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+  // Methods
 
-    input_source_changed_callback();
+  input_source_observer(const input_source_observer&) = delete;
+
+  input_source_observer(void) : started_(false) {
+    queue_ = std::make_unique<thread_utility::queue>();
   }
 
   ~input_source_observer(void) {
-    logger::get_logger().info("input_source_observer terminate");
+    async_stop();
 
-    CFNotificationCenterRemoveObserver(CFNotificationCenterGetDistributedCenter(),
-                                       this,
-                                       kTISNotifySelectedKeyboardInputSourceChanged,
-                                       nullptr);
+    queue_->terminate();
+    queue_ = nullptr;
+  }
+
+  void async_start(void) {
+    queue_->push_back([this] {
+      if (started_) {
+        logger::get_logger().warn("input_source_observer is already started.");
+        return;
+      }
+
+      started_ = true;
+
+      CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(),
+                                      this,
+                                      static_input_source_changed_callback,
+                                      kTISNotifySelectedKeyboardInputSourceChanged,
+                                      nullptr,
+                                      CFNotificationSuspensionBehaviorDeliverImmediately);
+
+      logger::get_logger().info("input_source_observer is started.");
+
+      // Call `input_source_changed` slots for the current input source.
+
+      input_source_changed_callback();
+    });
+  }
+
+  void async_stop(void) {
+    queue_->push_back([this] {
+      if (!started_) {
+        return;
+      }
+
+      CFNotificationCenterRemoveObserver(CFNotificationCenterGetDistributedCenter(),
+                                         this,
+                                         kTISNotifySelectedKeyboardInputSourceChanged,
+                                         nullptr);
+
+      started_ = false;
+
+      logger::get_logger().info("input_source_observer is stopped.");
+    });
   }
 
 private:
@@ -46,15 +88,16 @@ private:
   }
 
   void input_source_changed_callback(void) {
-    if (auto p = TISCopyCurrentKeyboardInputSource()) {
-      if (callback_) {
-        callback_(input_source_identifiers(p));
-      }
+    queue_->push_back([this] {
+      if (auto p = TISCopyCurrentKeyboardInputSource()) {
+        input_source_changed(input_source_identifiers(p));
 
-      CFRelease(p);
-    }
+        CFRelease(p);
+      }
+    });
   }
 
-  callback callback_;
+  std::unique_ptr<thread_utility::queue> queue_;
+  bool started_;
 };
 } // namespace krbn
