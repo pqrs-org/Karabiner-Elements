@@ -202,7 +202,17 @@ private:
 
     // input_source_observer_
 
-    start_input_source_observer();
+    input_source_observer_ = std::make_unique<input_source_observer>();
+
+    input_source_observer_->input_source_changed.connect([this](auto&& input_source_identifiers) {
+      queue_->push_back([this, input_source_identifiers] {
+        if (grabber_client_) {
+          grabber_client_->async_input_source_changed(input_source_identifiers);
+        }
+      });
+    });
+
+    // Start configuration_monitor_
 
     configuration_monitor_->async_start();
   }
@@ -212,26 +222,9 @@ private:
     updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     frontmost_application_observer_ = nullptr;
-    stop_input_source_observer();
+    input_source_observer_ = nullptr;
 
     configuration_monitor_ = nullptr;
-  }
-
-  void start_input_source_observer(void) {
-    if (input_source_observer_) {
-      return;
-    }
-
-    input_source_observer_ = std::make_unique<input_source_observer>(
-        [this](auto&& input_source_identifiers) {
-          if (grabber_client_) {
-            grabber_client_->async_input_source_changed(input_source_identifiers);
-          }
-        });
-  }
-
-  void stop_input_source_observer(void) {
-    input_source_observer_ = nullptr;
   }
 
   std::unique_ptr<thread_utility::queue> queue_;

@@ -46,5 +46,7 @@ int main(int argc, const char* argv[]) {
 
   components_manager = nullptr;
 
+  krbn::logger::get_logger().info("karabiner_console_user_server is terminated.");
+
   return 0;
 }
