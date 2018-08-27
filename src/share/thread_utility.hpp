@@ -3,6 +3,7 @@
 // `krbn::thread_utility::timer` can be used safely in a multi-threaded environment.
 // `krbn::thread_utility::queue` can be used safely in a multi-threaded environment.
 
+#include "logger.hpp"
 #include <chrono>
 #include <deque>
 #include <functional>
@@ -128,6 +129,30 @@ public:
     }
 
     ~queue(void) {
+      if (worker_thread_.joinable()) {
+        logger::get_logger().error("Call `thread_utility::queue::terminate` before destroy ``thread_utility::queue`");
+        terminate();
+      }
+    }
+
+    void terminate(void) {
+      // We should separate `~queue` and `terminate` to ensure queue exists until all jobs are processed.
+      //
+      // Example:
+      // ----------------------------------------
+      // auto q = std::unique_ptr<thread_utility::queue>();
+      //
+      // q->push_back([q] {
+      //   // `q` might be nullptr if we call `terminate` before `q = nullptr`.
+      //   q->push_back([] {
+      //     std::cout << "hello" << std::endl;
+      //   }
+      // });
+      //
+      // q->terminate();
+      // q = nullptr;
+      // ----------------------------------------
+
       if (worker_thread_.joinable()) {
         exit_ = true;
         queue_cv_.notify_one();

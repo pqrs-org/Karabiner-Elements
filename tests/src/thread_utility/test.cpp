@@ -234,6 +234,8 @@ TEST_CASE("queue") {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     REQUIRE(count == 10000);
+
+    queue.terminate();
   }
 
   // Run queued functions in the destructor.
@@ -252,6 +254,8 @@ TEST_CASE("queue") {
           }
         });
       }
+
+      queue.terminate();
     }
 
     REQUIRE(count == 10000);
@@ -272,6 +276,32 @@ void queue_recursive_function(krbn::thread_utility::queue& queue,
     });
   }
 }
+
+class queue_recursive_class final {
+public:
+  queue_recursive_class(size_t& count) : count_(count) {
+    queue_ = std::make_unique<krbn::thread_utility::queue>();
+  }
+
+  ~queue_recursive_class(void) {
+    queue_->terminate();
+    queue_ = nullptr;
+  }
+
+  void push_back(void) {
+    queue_->push_back([this] {
+      queue_->push_back([this] {
+        ++count_;
+        std::cout << "queue_recursive_class finished" << std::endl;
+      });
+    });
+  }
+
+private:
+  size_t& count_;
+
+  std::unique_ptr<krbn::thread_utility::queue> queue_;
+};
 } // namespace
 
 TEST_CASE("queue.recursive") {
@@ -284,11 +314,26 @@ TEST_CASE("queue.recursive") {
 
     {
       krbn::thread_utility::queue queue;
+
       queue.push_back([&] {
         queue_recursive_function(queue, count);
       });
+
+      queue.terminate();
     }
 
     REQUIRE(count == 5);
+  }
+
+  {
+    size_t count = 0;
+
+    {
+      queue_recursive_class queue_recursive_class(count);
+
+      queue_recursive_class.push_back();
+    }
+
+    REQUIRE(count == 1);
   }
 }
