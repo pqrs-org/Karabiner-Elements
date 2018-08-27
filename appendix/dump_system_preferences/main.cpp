@@ -7,6 +7,10 @@
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
+  signal(SIGINT, [](int) {
+    CFRunLoopStop(CFRunLoopGetMain());
+  });
+
   auto configuration_monitor = std::make_shared<krbn::configuration_monitor>(krbn::constants::get_user_core_configuration_file_path());
 
   krbn::system_preferences_monitor monitor(configuration_monitor);
@@ -21,6 +25,8 @@ int main(int argc, const char* argv[]) {
   configuration_monitor->async_start();
 
   CFRunLoopRun();
+
+  configuration_monitor = nullptr;
 
   return 0;
 }
