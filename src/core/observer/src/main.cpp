@@ -48,5 +48,7 @@ int main(int argc, const char* argv[]) {
 
   components_manager = nullptr;
 
+  krbn::logger::get_logger().info("karabiner_observer is terminated.");
+
   return 0;
 }
