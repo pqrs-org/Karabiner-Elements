@@ -4,6 +4,7 @@
 
 #include "boost_defs.hpp"
 
+#include "logger.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <boost/optional.hpp>
 #include <mutex>
@@ -175,16 +176,23 @@ public:
     }
 
     ~run_loop_thread(void) {
+      if (thread_.joinable()) {
+        logger::get_logger().error("Call `cf_utility::run_loop_thread::terminate` before destroy `cf_utility::run_loop_thread`");
+        terminate();
+      }
+
+      if (run_loop_) {
+        CFRelease(run_loop_);
+      }
+    }
+
+    void terminate(void) {
       enqueue(^{
         CFRunLoopStop(run_loop_);
       });
 
       if (thread_.joinable()) {
         thread_.join();
-      }
-
-      if (run_loop_) {
-        CFRelease(run_loop_);
       }
     }
 

@@ -36,7 +36,9 @@ public:
 
       // Verify counts
 
+      thread1_->terminate();
       thread1_ = nullptr;
+      thread2_->terminate();
       thread2_ = nullptr;
 
       REQUIRE(count1_ == 5);
