@@ -5,45 +5,48 @@ class dump_hid_report final {
 public:
   dump_hid_report(const dump_hid_report&) = delete;
 
-  dump_hid_report(void) : hid_manager_({
-                              std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-                              std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
-                              std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
-                          }) {
-    hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device->report_arrived.connect([this](auto&& human_interface_device,
-                                                            auto&& type,
-                                                            auto&& report_id,
-                                                            auto&& report,
-                                                            auto&& report_length) {
-        report_arrived(human_interface_device, type, report_id, report, report_length);
-      });
-      human_interface_device->enable_report_callback();
-
-      auto r = human_interface_device->open();
-      if (r != kIOReturnSuccess) {
-        krbn::logger::get_logger().error("failed to open {0}", human_interface_device->get_name_for_log());
-        return;
-      }
-      human_interface_device->schedule();
+  dump_hid_report(void) {
+    std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
     });
 
-    hid_manager_.start();
+    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
+
+    hid_manager_->device_detected.connect([this](auto&& weak_hid) {
+      if (auto hid = weak_hid.lock()) {
+        hid->report_arrived.connect([this, weak_hid](auto&& type,
+                                                     auto&& report_id,
+                                                     auto&& report,
+                                                     auto&& report_length) {
+          if (auto hid = weak_hid.lock()) {
+            report_arrived(hid, type, report_id, report, report_length);
+          }
+        });
+
+        hid->async_enable_report_callback();
+        hid->async_open();
+        hid->async_schedule();
+      }
+    });
+
+    hid_manager_->async_start();
   }
 
   ~dump_hid_report(void) {
-    hid_manager_.stop();
+    hid_manager_ = nullptr;
   }
 
 private:
-  void report_arrived(krbn::human_interface_device& device,
+  void report_arrived(std::shared_ptr<krbn::human_interface_device> hid,
                       IOHIDReportType type,
                       uint32_t report_id,
                       uint8_t* report,
-                      CFIndex report_length) {
+                      CFIndex report_length) const {
     // Logitech Unifying Receiver sends a lot of null report. We ignore them.
-    if (auto manufacturer = device.find_manufacturer()) {
-      if (auto product = device.find_product()) {
+    if (auto manufacturer = hid->find_manufacturer()) {
+      if (auto product = hid->find_product()) {
         if (*manufacturer == "Logitech" && *product == "USB Receiver") {
           if (report_id == 0) {
             return;
@@ -59,14 +62,22 @@ private:
     }
   }
 
-  krbn::hid_manager hid_manager_;
+  std::unique_ptr<krbn::hid_manager> hid_manager_;
 };
 } // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
-  dump_hid_report d;
+  signal(SIGINT, [](int) {
+    CFRunLoopStop(CFRunLoopGetMain());
+  });
+
+  auto d = std::make_unique<dump_hid_report>();
+
   CFRunLoopRun();
+
+  d = nullptr;
+
   return 0;
 }
