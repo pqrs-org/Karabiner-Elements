@@ -130,7 +130,7 @@ public:
 
     ~queue(void) {
       if (worker_thread_.joinable()) {
-        logger::get_logger().error("Call `thread_utility::queue::terminate` before destroy ``thread_utility::queue`");
+        logger::get_logger().error("Call `thread_utility::queue::terminate` before destroy `thread_utility::queue`");
         terminate();
       }
     }
