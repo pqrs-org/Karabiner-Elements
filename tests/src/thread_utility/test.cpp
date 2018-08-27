@@ -260,6 +260,19 @@ TEST_CASE("queue") {
 
     REQUIRE(count == 10000);
   }
+
+  // Ignore `push_back` after `terminate`.
+
+  {
+    krbn::thread_utility::queue queue;
+
+    queue.terminate();
+
+    queue.push_back([&queue] {
+      queue.push_back([] {
+      });
+    });
+  }
 }
 
 namespace {
