@@ -266,11 +266,17 @@ void queue_recursive_function(krbn::thread_utility::queue& queue,
     queue.push_back([&queue, &count] {
       queue_recursive_function(queue, count);
     });
+  } else if (count == 5) {
+    queue.push_back([] {
+      std::cout << "queue_recursive_function finished" << std::endl;
+    });
   }
 }
 } // namespace
 
 TEST_CASE("queue.recursive") {
+  std::cout << "queue.recursive" << std::endl;
+
   // Call `push_back` in queue's thread.
 
   {
