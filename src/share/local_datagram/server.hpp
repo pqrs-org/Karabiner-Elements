@@ -16,7 +16,7 @@ public:
   boost::signals2::signal<void(void)> bound;
   boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
   boost::signals2::signal<void(void)> closed;
-  boost::signals2::signal<void(const boost::asio::mutable_buffer&)> received;
+  boost::signals2::signal<void(const std::shared_ptr<std::vector<uint8_t>>)> received;
 
   // Methods
 
@@ -119,7 +119,11 @@ private:
     socket_.async_receive(boost::asio::buffer(buffer_),
                           [this](auto&& error_code, auto&& bytes_transferred) {
                             if (!error_code) {
-                              received(boost::asio::buffer(buffer_, bytes_transferred));
+                              auto v = std::make_shared<std::vector<uint8_t>>(bytes_transferred);
+                              std::copy(std::begin(buffer_),
+                                        std::begin(buffer_) + bytes_transferred,
+                                        std::begin(*v));
+                              received(v);
                             }
 
                             // receive once if not closed

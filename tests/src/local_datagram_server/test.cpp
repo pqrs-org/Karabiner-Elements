@@ -41,8 +41,14 @@ public:
     });
 
     server_->received.connect([this](auto&& buffer) {
-      krbn::logger::get_logger().info("server received {0}", buffer.size());
-      received_count_ += buffer.size();
+      krbn::logger::get_logger().info("server received {0}", buffer->size());
+      received_count_ += buffer->size();
+
+      if (buffer->size() == 32) {
+        REQUIRE((*buffer)[0] == 10);
+        REQUIRE((*buffer)[1] == 20);
+        REQUIRE((*buffer)[2] == 30);
+      }
     });
 
     server_->bind(socket_path,
@@ -118,6 +124,9 @@ public:
 
   void async_send(void) {
     std::vector<uint8_t> client_buffer(32);
+    client_buffer[0] = 10;
+    client_buffer[1] = 20;
+    client_buffer[2] = 30;
     if (client_) {
       client_->async_send(client_buffer);
     }
