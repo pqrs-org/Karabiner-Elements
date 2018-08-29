@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::logger::unique_filter` can be used safely in a multi-threaded environment.
+
 class unique_filter final {
 public:
   unique_filter(const unique_filter&) = delete;
@@ -8,6 +10,8 @@ public:
   }
 
   void reset(void) {
+    std::lock_guard<std::mutex> lock(messages_mutex_);
+
     messages_.clear();
   }
 
@@ -37,6 +41,8 @@ public:
 
 private:
   bool is_ignore(spdlog::level::level_enum level, const std::string& message) {
+    std::lock_guard<std::mutex> lock(messages_mutex_);
+
     for (const auto& it : messages_) {
       if (it.first == level && it.second == message) {
         return true;
@@ -53,4 +59,5 @@ private:
   }
 
   std::deque<std::pair<spdlog::level::level_enum, std::string>> messages_;
+  std::mutex messages_mutex_;
 };
