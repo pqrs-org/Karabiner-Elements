@@ -91,7 +91,7 @@ public:
                 std::lock_guard<std::mutex> lock(device_grabber_mutex_);
 
                 if (device_grabber_) {
-                  device_grabber_->set_system_preferences(p->system_preferences);
+                  device_grabber_->async_set_system_preferences(p->system_preferences);
                   logger::get_logger().info("system_preferences_updated");
                 }
               });
@@ -112,8 +112,8 @@ public:
                 std::lock_guard<std::mutex> lock(device_grabber_mutex_);
 
                 if (device_grabber_) {
-                  device_grabber_->post_frontmost_application_changed_event(p->bundle_identifier,
-                                                                            p->file_path);
+                  device_grabber_->async_post_frontmost_application_changed_event(p->bundle_identifier,
+                                                                                  p->file_path);
                 }
               });
             }
@@ -134,9 +134,9 @@ public:
                 std::lock_guard<std::mutex> lock(device_grabber_mutex_);
 
                 if (device_grabber_) {
-                  device_grabber_->post_input_source_changed_event({std::string(p->language),
-                                                                    std::string(p->input_source_id),
-                                                                    std::string(p->input_mode_id)});
+                  device_grabber_->async_post_input_source_changed_event({std::string(p->language),
+                                                                          std::string(p->input_source_id),
+                                                                          std::string(p->input_mode_id)});
                 }
               });
             }
@@ -187,7 +187,7 @@ private:
 
     device_grabber_ = nullptr;
     device_grabber_ = std::make_unique<device_grabber>();
-    device_grabber_->start(configuration_file_path);
+    device_grabber_->async_start(configuration_file_path);
   }
 
   void stop_device_grabber(void) {
