@@ -109,9 +109,11 @@ public:
   }
 
   ~device_observer(void) {
-    hid_manager_ = nullptr;
+    queue_->push_back([this] {
+      hid_manager_ = nullptr;
 
-    hid_observers_.clear();
+      hid_observers_.clear();
+    });
 
     queue_->terminate();
     queue_ = nullptr;
