@@ -4,14 +4,13 @@
 #include "constants.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
-#include "shared_instance_provider.hpp"
 #include "types.hpp"
 #include <sstream>
 #include <unistd.h>
 #include <vector>
 
 namespace krbn {
-class console_user_server_client final : public shared_instance_provider<console_user_server_client> {
+class console_user_server_client final {
 public:
   // Signals
 
