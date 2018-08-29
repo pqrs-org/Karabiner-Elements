@@ -49,6 +49,7 @@ TEST_CASE("grabbable_state_queue") {
                                      krbn::grabbable_state::state::grabbable,
                                      krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                      1000ULL);
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
       REQUIRE(last_changed_grabbable_state == expected);
       REQUIRE(grabbable_state_changed_count == 1);
     }
@@ -62,6 +63,7 @@ TEST_CASE("grabbable_state_queue") {
     REQUIRE(*(queue.get_first_grabbed_event_time_stamp()) == 5000ULL);
     REQUIRE(queue.find_current_grabbable_state()->get_time_stamp() == 4000ULL);
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     REQUIRE(grabbable_state_changed_count == 1);
 
     // Ignore events after first_grabbed_event_time_stamp_.
@@ -82,6 +84,7 @@ TEST_CASE("grabbable_state_queue") {
       REQUIRE(queue.find_current_grabbable_state()->get_time_stamp() == 4500ULL);
 
       // Check `grabbable_state_changed` signal
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
       REQUIRE(last_changed_grabbable_state == state);
       REQUIRE(grabbable_state_changed_count == 2);
     }
@@ -100,6 +103,7 @@ TEST_CASE("grabbable_state_queue") {
                                      krbn::grabbable_state::state::grabbable,
                                      krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                      2000ULL);
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
       REQUIRE(last_changed_grabbable_state == expected);
       REQUIRE(grabbable_state_changed_count == 3);
     }
@@ -108,6 +112,7 @@ TEST_CASE("grabbable_state_queue") {
     queue.clear();
 
     // Check `grabbable_state_changed` signal
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     REQUIRE(last_changed_grabbable_state == boost::none);
     REQUIRE(grabbable_state_changed_count == 4);
   }

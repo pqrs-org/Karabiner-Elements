@@ -1,8 +1,11 @@
 #pragma once
 
+// `krbn::grabbable_state_queue` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include "event_queue.hpp"
+#include "thread_utility.hpp"
 #include "types.hpp"
 #include <boost/circular_buffer.hpp>
 #include <boost/optional.hpp>
@@ -14,51 +17,63 @@ class grabbable_state_queue final {
 public:
   // Signals
 
-  boost::signals2::signal<void(boost::optional<grabbable_state>)>
-      grabbable_state_changed;
+  boost::signals2::signal<void(boost::optional<grabbable_state>)> grabbable_state_changed;
 
   // Methods
 
   const int max_entries = 32;
 
   grabbable_state_queue(void) : grabbable_states_(max_entries) {
+    queue_ = std::make_unique<thread_utility::queue>();
+  }
+
+  ~grabbable_state_queue(void) {
+    queue_->terminate();
+    queue_ = nullptr;
   }
 
   boost::optional<uint64_t> get_first_grabbed_event_time_stamp(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     return first_grabbed_event_time_stamp_;
   }
 
   boost::optional<grabbable_state> find_current_grabbable_state(void) const {
-    if (grabbable_states_.empty()) {
-      return boost::none;
-    }
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    return grabbable_states_.back();
+    return find_current_grabbable_state_();
   }
 
   void clear(void) {
-    auto old_state = find_current_grabbable_state();
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    auto old_state = find_current_grabbable_state_();
 
     grabbable_states_.clear();
     first_grabbed_event_time_stamp_ = boost::none;
 
-    auto new_state = find_current_grabbable_state();
+    auto new_state = find_current_grabbable_state_();
 
     call_grabbable_state_changed_if_needed(old_state, new_state);
   }
 
   bool push_back_grabbable_state(const grabbable_state& state) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     // Ignore if the first grabbed event is already arrived.
+
     if (first_grabbed_event_time_stamp_ &&
         *first_grabbed_event_time_stamp_ <= state.get_time_stamp()) {
       return false;
     }
 
-    auto old_state = find_current_grabbable_state();
+    // push_back
+
+    auto old_state = find_current_grabbable_state_();
 
     grabbable_states_.push_back(state);
 
-    auto new_state = find_current_grabbable_state();
+    auto new_state = find_current_grabbable_state_();
 
     call_grabbable_state_changed_if_needed(old_state, new_state);
 
@@ -66,6 +81,8 @@ public:
   }
 
   bool update_first_grabbed_event_time_stamp(uint64_t time_stamp) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     if (first_grabbed_event_time_stamp_) {
       return false;
     }
@@ -75,7 +92,7 @@ public:
     logger::get_logger().info("first grabbed event: time_stamp:{0}",
                               time_stamp);
 
-    auto old_state = find_current_grabbable_state();
+    auto old_state = find_current_grabbable_state_();
 
     // Erase states after first_grabbed_event_time_stamp_.
     grabbable_states_.erase(std::remove_if(std::begin(grabbable_states_),
@@ -85,7 +102,7 @@ public:
                                            }),
                             std::end(grabbable_states_));
 
-    auto new_state = find_current_grabbable_state();
+    auto new_state = find_current_grabbable_state_();
 
     call_grabbable_state_changed_if_needed(old_state, new_state);
 
@@ -93,10 +110,20 @@ public:
   }
 
   void unset_first_grabbed_event_time_stamp(void) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     first_grabbed_event_time_stamp_ = boost::none;
   }
 
 private:
+  boost::optional<grabbable_state> find_current_grabbable_state_(void) const {
+    if (grabbable_states_.empty()) {
+      return boost::none;
+    }
+
+    return grabbable_states_.back();
+  }
+
   void call_grabbable_state_changed_if_needed(boost::optional<grabbable_state> old_state,
                                               boost::optional<grabbable_state> new_state) {
     if (!old_state &&
@@ -110,13 +137,19 @@ private:
       return;
     }
 
-    grabbable_state_changed(new_state);
+    queue_->push_back([this, new_state] {
+      grabbable_state_changed(new_state);
+    });
   }
+
+  std::unique_ptr<thread_utility::queue> queue_;
 
   // Keep multiple entries for when `push_back_entry` is called multiple times before `set_first_grabbed_event_time_stamp`.
   // (We should remove entries after first_grabbed_event_time_stamp_.)
   boost::circular_buffer<grabbable_state> grabbable_states_;
 
   boost::optional<uint64_t> first_grabbed_event_time_stamp_;
+
+  mutable std::mutex mutex_;
 };
 } // namespace krbn
