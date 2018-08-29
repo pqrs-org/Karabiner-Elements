@@ -5,9 +5,9 @@
 #include "boost_defs.hpp"
 
 #include "constants.hpp"
-#include "file_monitor.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
+#include "monitor/file_monitor.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/signals2.hpp>
 #include <fstream>

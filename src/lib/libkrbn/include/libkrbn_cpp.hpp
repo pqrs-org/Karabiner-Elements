@@ -1,7 +1,7 @@
 #pragma once
 
-#include "configuration_monitor.hpp"
 #include "libkrbn.h"
+#include "monitor/configuration_monitor.hpp"
 
 class libkrbn_cpp final {
 public:

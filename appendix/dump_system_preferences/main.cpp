@@ -1,7 +1,7 @@
-#include "configuration_monitor.hpp"
 #include "constants.hpp"
 #include "logger.hpp"
-#include "system_preferences_monitor.hpp"
+#include "monitor/configuration_monitor.hpp"
+#include "monitor/system_preferences_monitor.hpp"
 #include <iostream>
 
 int main(int argc, const char* argv[]) {

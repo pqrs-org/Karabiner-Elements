@@ -3,8 +3,8 @@
 // `krbn::connected_devices_monitor` can be used safely in a multi-threaded environment.
 
 #include "connected_devices.hpp"
-#include "file_monitor.hpp"
 #include "logger.hpp"
+#include "monitor/file_monitor.hpp"
 
 namespace krbn {
 class connected_devices_monitor final {

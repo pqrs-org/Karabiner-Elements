@@ -3,7 +3,7 @@
 
 #include "boost_defs.hpp"
 
-#include "file_monitor.hpp"
+#include "monitor/file_monitor.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 

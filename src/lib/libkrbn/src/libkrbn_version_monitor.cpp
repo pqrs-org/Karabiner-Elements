@@ -1,6 +1,6 @@
 #include "constants.hpp"
 #include "libkrbn.h"
-#include "version_monitor.hpp"
+#include "monitor/version_monitor.hpp"
 
 namespace {
 class libkrbn_version_monitor_class final {

@@ -1,7 +1,7 @@
 #include "constants.hpp"
-#include "file_monitor.hpp"
 #include "filesystem.hpp"
 #include "libkrbn.h"
+#include "monitor/file_monitor.hpp"
 
 namespace {
 class libkrbn_file_monitor_class final {

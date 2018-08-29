@@ -1,7 +1,7 @@
 #pragma once
 
-#include "configuration_monitor.hpp"
 #include "logger.hpp"
+#include "monitor/configuration_monitor.hpp"
 #include <cstdlib>
 #include <string>
 

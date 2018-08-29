@@ -2,12 +2,12 @@
 
 // `krbn::components_manager` can be used safely in a multi-threaded environment.
 
-#include "console_user_id_monitor.hpp"
 #include "constants.hpp"
 #include "device_observer.hpp"
 #include "grabber_client.hpp"
+#include "monitor/console_user_id_monitor.hpp"
+#include "monitor/version_monitor_utility.hpp"
 #include "thread_utility.hpp"
-#include "version_monitor_utility.hpp"
 
 namespace krbn {
 class components_manager final {

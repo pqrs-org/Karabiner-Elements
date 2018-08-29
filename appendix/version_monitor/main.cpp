@@ -1,6 +1,6 @@
 #include "boost_defs.hpp"
 
-#include "version_monitor.hpp"
+#include "monitor/version_monitor.hpp"
 
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();

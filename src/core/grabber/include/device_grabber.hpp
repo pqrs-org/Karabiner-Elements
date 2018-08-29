@@ -3,7 +3,6 @@
 #include "boost_defs.hpp"
 
 #include "apple_hid_usage_tables.hpp"
-#include "configuration_monitor.hpp"
 #include "constants.hpp"
 #include "device_detail.hpp"
 #include "event_tap_manager.hpp"
@@ -18,6 +17,7 @@
 #include "logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
+#include "monitor/configuration_monitor.hpp"
 #include "spdlog_utility.hpp"
 #include "system_preferences_utility.hpp"
 #include "types.hpp"

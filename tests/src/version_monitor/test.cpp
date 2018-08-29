@@ -1,8 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
+#include "monitor/version_monitor.hpp"
 #include "thread_utility.hpp"
-#include "version_monitor.hpp"
 
 TEST_CASE("initialize") {
   krbn::thread_utility::register_main_thread();

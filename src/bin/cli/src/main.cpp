@@ -3,9 +3,9 @@
 #include "cxxopts/cxxopts.hpp"
 #pragma clang diagnostic pop
 
-#include "configuration_monitor.hpp"
 #include "constants.hpp"
 #include "logger.hpp"
+#include "monitor/configuration_monitor.hpp"
 #include <iostream>
 
 namespace {

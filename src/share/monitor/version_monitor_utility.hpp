@@ -1,7 +1,9 @@
 #pragma once
 
+// `krbn::version_monitor_utility` can be used safely in a multi-threaded environment.
+
 #include "constants.hpp"
-#include "version_monitor.hpp"
+#include "monitor/version_monitor.hpp"
 
 namespace krbn {
 class version_monitor_utility final {

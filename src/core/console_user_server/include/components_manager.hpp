@@ -3,21 +3,21 @@
 // `krbn::components_manager` can be used safely in a multi-threaded environment.
 
 #include "application_launcher.hpp"
-#include "configuration_monitor.hpp"
-#include "console_user_id_monitor.hpp"
 #include "constants.hpp"
 #include "frontmost_application_observer.hpp"
-#include "grabber_alerts_monitor.hpp"
 #include "grabber_client.hpp"
 #include "input_source_observer.hpp"
 #include "logger.hpp"
 #include "menu_process_manager.hpp"
+#include "monitor/configuration_monitor.hpp"
+#include "monitor/console_user_id_monitor.hpp"
+#include "monitor/grabber_alerts_monitor.hpp"
+#include "monitor/system_preferences_monitor.hpp"
+#include "monitor/version_monitor.hpp"
+#include "monitor/version_monitor_utility.hpp"
 #include "receiver.hpp"
 #include "session.hpp"
-#include "system_preferences_monitor.hpp"
 #include "updater_process_manager.hpp"
-#include "version_monitor.hpp"
-#include "version_monitor_utility.hpp"
 #include <thread>
 
 namespace krbn {

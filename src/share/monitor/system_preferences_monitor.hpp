@@ -56,6 +56,8 @@ public:
 
     queue_->terminate();
     queue_ = nullptr;
+
+    logger::get_logger().info("system_preferences_monitor is stopped.");
   }
 
   void async_start(void) {
@@ -74,6 +76,8 @@ public:
               check_system_preferences();
             });
           });
+
+      logger::get_logger().info("system_preferences_monitor is started.");
     });
   }
 

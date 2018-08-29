@@ -4,7 +4,7 @@
 #include "device_grabber.hpp"
 #include "grabbable_state_queues_manager.hpp"
 #include "local_datagram/server_manager.hpp"
-#include "process_monitor.hpp"
+#include "monitor/process_monitor.hpp"
 #include "session.hpp"
 #include "types.hpp"
 #include <vector>

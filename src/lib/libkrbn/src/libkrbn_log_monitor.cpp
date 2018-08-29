@@ -1,6 +1,6 @@
 #include "constants.hpp"
 #include "libkrbn.h"
-#include "log_monitor.hpp"
+#include "monitor/log_monitor.hpp"
 #include "spdlog_utility.hpp"
 
 namespace {

@@ -1,7 +1,7 @@
 #include "constants.hpp"
 #include "libkrbn.h"
 #include "libkrbn_cpp.hpp"
-#include "system_preferences_monitor.hpp"
+#include "monitor/system_preferences_monitor.hpp"
 
 namespace {
 class libkrbn_system_preferences_monitor_class final {

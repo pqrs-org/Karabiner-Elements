@@ -1,7 +1,7 @@
 #pragma once
 
 #include "boost_utility.hpp"
-#include "configuration_monitor.hpp"
+#include "monitor/configuration_monitor.hpp"
 #include "update_utility.hpp"
 
 namespace krbn {

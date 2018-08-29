@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
-#include "configuration_monitor.hpp"
+#include "monitor/configuration_monitor.hpp"
 #include "thread_utility.hpp"
 
 namespace {

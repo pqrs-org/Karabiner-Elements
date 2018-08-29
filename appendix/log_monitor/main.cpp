@@ -1,6 +1,6 @@
 #include "boost_defs.hpp"
 
-#include "log_monitor.hpp"
+#include "monitor/log_monitor.hpp"
 #include <Carbon/Carbon.h>
 #include <iostream>
 
