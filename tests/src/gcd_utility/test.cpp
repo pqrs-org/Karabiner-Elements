@@ -112,20 +112,6 @@ TEST_CASE("main_queue_after_timer") {
       REQUIRE(value == 2);
     }
 
-    {
-      value = 0;
-      krbn::gcd_utility::fire_while_false_timer timer(100 * NSEC_PER_MSEC,
-                                                      ^{
-                                                        if (value < 5) {
-                                                          ++value;
-                                                          return false;
-                                                        }
-                                                        return true;
-                                                      });
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-      REQUIRE(value == 5);
-    }
-
     exit(0);
   });
 
