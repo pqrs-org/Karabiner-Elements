@@ -52,13 +52,13 @@ public:
     });
 
     server_manager_->received.connect([this](auto&& buffer) {
-      if (auto type = types::find_operation_type(buffer.data(), buffer.size())) {
+      if (auto type = types::find_operation_type(*buffer)) {
         switch (*type) {
           case operation_type::shell_command_execution:
-            if (buffer.size() != sizeof(operation_type_shell_command_execution_struct)) {
+            if (buffer->size() != sizeof(operation_type_shell_command_execution_struct)) {
               logger::get_logger().error("invalid size for operation_type::shell_command_execution");
             } else {
-              auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(buffer.data());
+              auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(&((*buffer)[0]));
 
               // Ensure shell_command is null-terminated string even if corrupted data is sent.
               p->shell_command[sizeof(p->shell_command) - 1] = '\0';
@@ -71,10 +71,10 @@ public:
             break;
 
           case operation_type::select_input_source:
-            if (buffer.size() != sizeof(operation_type_select_input_source_struct)) {
+            if (buffer->size() != sizeof(operation_type_select_input_source_struct)) {
               logger::get_logger().error("invalid size for operation_type::select_input_source");
             } else {
-              auto p = reinterpret_cast<operation_type_select_input_source_struct*>(buffer.data());
+              auto p = reinterpret_cast<operation_type_select_input_source_struct*>(&((*buffer)[0]));
 
               // Ensure input_source_selector's strings are null-terminated string even if corrupted data is sent.
               p->language[sizeof(p->language) - 1] = '\0';
