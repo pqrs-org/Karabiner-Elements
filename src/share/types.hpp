@@ -1178,12 +1178,11 @@ private:
 class types final {
 public:
   // Find operation_type from operation_type_*_struct .
-  static boost::optional<operation_type> find_operation_type(const void* buffer, size_t buffer_size) {
-    if (!buffer || buffer_size == 0) {
+  static boost::optional<operation_type> find_operation_type(const std::vector<uint8_t>& buffer) {
+    if (buffer.empty()) {
       return boost::none;
     }
-    auto p = reinterpret_cast<const uint8_t*>(buffer);
-    return operation_type(p[0]);
+    return operation_type(buffer[0]);
   }
 
   static device_id make_new_device_id(const std::shared_ptr<device_detail>& device_detail) {
