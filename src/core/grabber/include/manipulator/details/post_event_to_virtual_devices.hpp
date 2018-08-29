@@ -398,7 +398,8 @@ public:
       return events_.empty();
     }
 
-    void post_events(virtual_hid_device_client& virtual_hid_device_client) {
+    void post_events(virtual_hid_device_client& virtual_hid_device_client,
+                     std::weak_ptr<console_user_server_client> weak_console_user_server_client) {
       if (timer_ && timer_->fired()) {
         timer_ = nullptr;
       }
@@ -417,7 +418,8 @@ public:
           timer_ = std::make_unique<gcd_utility::main_queue_after_timer>(when,
                                                                          true,
                                                                          ^{
-                                                                           post_events(virtual_hid_device_client);
+                                                                           post_events(virtual_hid_device_client,
+                                                                                       weak_console_user_server_client);
                                                                          });
           return;
         }
@@ -439,8 +441,8 @@ public:
         }
         if (auto shell_command = e.get_shell_command()) {
           try {
-            if (auto current_console_user_id = session::get_current_console_user_id()) {
-              console_user_server_client::get_shared_instance()->shell_command_execution(*shell_command);
+            if (auto client = weak_console_user_server_client.lock()) {
+              client->async_shell_command_execution(*shell_command);
             }
           } catch (std::exception& e) {
             logger::get_logger().error("error in shell_command: {0}", e.what());
@@ -448,9 +450,9 @@ public:
         }
         if (auto input_source_selectors = e.get_input_source_selectors()) {
           try {
-            if (auto current_console_user_id = session::get_current_console_user_id()) {
+            if (auto client = weak_console_user_server_client.lock()) {
               for (const auto& s : *input_source_selectors) {
-                console_user_server_client::get_shared_instance()->select_input_source(s, now);
+                client->async_select_input_source(s, now);
               }
             }
           } catch (std::exception& e) {
@@ -847,9 +849,12 @@ public:
                                                                                 queue_(),
                                                                                 mouse_key_handler_(queue_,
                                                                                                    system_preferences) {
+    console_user_server_client_ = std::make_shared<console_user_server_client>();
+    console_user_server_client_->async_start();
   }
 
   virtual ~post_event_to_virtual_devices(void) {
+    console_user_server_client_ = nullptr;
   }
 
   virtual bool already_manipulated(const event_queue::queued_event& front_input_event) {
@@ -1182,7 +1187,8 @@ public:
   }
 
   void post_events(virtual_hid_device_client& virtual_hid_device_client) {
-    queue_.post_events(virtual_hid_device_client);
+    queue_.post_events(virtual_hid_device_client,
+                       console_user_server_client_);
   }
 
   const queue& get_queue(void) const {
@@ -1203,6 +1209,7 @@ private:
   mouse_key_handler mouse_key_handler_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   pqrs::karabiner_virtual_hid_device::hid_report::buttons pressed_buttons_;
+  std::shared_ptr<console_user_server_client> console_user_server_client_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const post_event_to_virtual_devices::queue::event& event) {

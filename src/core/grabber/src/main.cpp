@@ -1,5 +1,5 @@
 #include "apple_notification_center.hpp"
-#include "connection_manager.hpp"
+#include "components_manager.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "filesystem.hpp"
@@ -17,30 +17,19 @@ int main(int argc, const char* argv[]) {
     exit(1);
   }
 
-  // ----------------------------------------
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
   krbn::thread_utility::register_main_thread();
 
-  // ----------------------------------------
-  {
-    auto log_directory = "/var/log/karabiner";
-    mkdir(log_directory, 0755);
-    if (krbn::filesystem::is_directory(log_directory)) {
-      auto l = spdlog::rotating_logger_mt<spdlog::async_factory>("grabber",
-                                                                 "/var/log/karabiner/grabber.log",
-                                                                 256 * 1024,
-                                                                 3);
-      l->flush_on(spdlog::level::info);
-      l->set_pattern(krbn::spdlog_utility::get_pattern());
-      krbn::logger::set_logger(l);
-    }
-  }
+  // Setup logger
 
-  krbn::grabber_alerts_manager::enable_json_output(krbn::constants::get_grabber_alerts_json_file_path());
-  krbn::grabber_alerts_manager::async_save_to_file();
+  krbn::logger::set_async_rotating_logger("grabber",
+                                          "/var/log/karabiner/grabber.log",
+                                          0755);
 
   krbn::logger::get_logger().info("version {0}", karabiner_version);
+
+  // Check another process
 
   {
     std::string pid_file_path = krbn::constants::get_pid_directory() + "/karabiner_grabber.pid";
@@ -52,7 +41,11 @@ int main(int argc, const char* argv[]) {
     }
   }
 
-  // load kexts
+  // Load kexts
+
+  krbn::grabber_alerts_manager::enable_json_output(krbn::constants::get_grabber_alerts_json_file_path());
+  krbn::grabber_alerts_manager::async_save_to_file();
+
   while (true) {
     std::stringstream ss;
     ss << "/sbin/kextload '"
@@ -74,7 +67,8 @@ int main(int argc, const char* argv[]) {
   }
   krbn::grabber_alerts_manager::set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
 
-  // make socket directory.
+  // Make socket directory.
+
   mkdir(krbn::constants::get_tmp_directory(), 0755);
   chown(krbn::constants::get_tmp_directory(), 0, 0);
   chmod(krbn::constants::get_tmp_directory(), 0755);
@@ -82,7 +76,7 @@ int main(int argc, const char* argv[]) {
   unlink(krbn::constants::get_grabber_socket_file_path());
 
   {
-    // make console_user_server_socket_directory
+    // Make console_user_server_socket_directory
 
     std::stringstream ss;
     ss << "rm -r '" << krbn::constants::get_console_user_server_socket_directory() << "'";
@@ -94,7 +88,7 @@ int main(int argc, const char* argv[]) {
   }
 
   krbn::manipulator::manipulator_timer::get_instance().enable();
-  krbn::connection_manager connection_manager;
+  krbn::components_manager components_manager;
 
   krbn::apple_notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
 
