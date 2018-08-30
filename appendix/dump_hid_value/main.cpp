@@ -63,8 +63,10 @@ public:
   }
 
   ~dump_hid_value(void) {
-    hid_manager_ = nullptr;
-    hid_observers_.clear();
+    queue_->push_back([this] {
+      hid_manager_ = nullptr;
+      hid_observers_.clear();
+    });
 
     queue_->terminate();
     queue_ = nullptr;
