@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::grabbable_state_queues_manager` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include "device_detail.hpp"
@@ -8,6 +10,7 @@
 #include "shared_instance_provider.hpp"
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
+#include <mutex>
 #include <unordered_map>
 
 namespace krbn {
@@ -15,12 +18,13 @@ class grabbable_state_queues_manager final : public shared_instance_provider<gra
 public:
   // Signals
 
-  boost::signals2::signal<void(registry_entry_id, boost::optional<grabbable_state>)>
-      grabbable_state_changed;
+  boost::signals2::signal<void(registry_entry_id, boost::optional<grabbable_state>)> grabbable_state_changed;
 
   // Methods
 
   boost::optional<grabbable_state> find_current_grabbable_state(registry_entry_id registry_entry_id) const {
+    std::lock_guard<std::mutex> lock(queues_mutex_);
+
     auto it = queues_.find(registry_entry_id);
     if (it != std::end(queues_)) {
       return it->second->find_current_grabbable_state();
@@ -30,6 +34,8 @@ public:
   }
 
   void clear(void) {
+    std::lock_guard<std::mutex> lock(queues_mutex_);
+
     queues_.clear();
   }
 
@@ -62,11 +68,15 @@ public:
   }
 
   void erase_queue(registry_entry_id registry_entry_id) {
+    std::lock_guard<std::mutex> lock(queues_mutex_);
+
     queues_.erase(registry_entry_id);
   }
 
 private:
   std::shared_ptr<grabbable_state_queue> find_or_create_queue(registry_entry_id registry_entry_id) {
+    std::lock_guard<std::mutex> lock(queues_mutex_);
+
     auto it = queues_.find(registry_entry_id);
     if (it != std::end(queues_)) {
       return it->second;
@@ -82,5 +92,6 @@ private:
   }
 
   std::unordered_map<registry_entry_id, std::shared_ptr<grabbable_state_queue>> queues_;
+  mutable std::mutex queues_mutex_;
 };
 } // namespace krbn
