@@ -4,7 +4,6 @@
 
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "gcd_utility.hpp"
 #include "logger.hpp"
 #include "monitor/console_user_id_monitor.hpp"
 #include "monitor/version_monitor.hpp"
