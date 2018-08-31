@@ -24,14 +24,23 @@ TEST_CASE("set_alert") {
     unlink(tmp_file_path.c_str());
   }
 
-  krbn::grabber_alerts_manager::enable_json_output("tmp/grabber_alerts_manager0.json");
-  krbn::grabber_alerts_manager::save_to_file();
+  {
+    auto grabber_alerts_manager = std::make_unique<krbn::grabber_alerts_manager>(
+        "tmp/grabber_alerts_manager0.json");
+    grabber_alerts_manager->async_save_to_file();
+  }
 
-  krbn::grabber_alerts_manager::enable_json_output("tmp/grabber_alerts_manager1.json");
-  krbn::grabber_alerts_manager::set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
+  {
+    auto grabber_alerts_manager = std::make_unique<krbn::grabber_alerts_manager>(
+        "tmp/grabber_alerts_manager1.json");
+    grabber_alerts_manager->async_set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
+  }
 
-  krbn::grabber_alerts_manager::enable_json_output("tmp/grabber_alerts_manager2.json");
-  krbn::grabber_alerts_manager::set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
+  {
+    auto grabber_alerts_manager = std::make_unique<krbn::grabber_alerts_manager>(
+        "tmp/grabber_alerts_manager2.json");
+    grabber_alerts_manager->async_set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
+  }
 
   krbn::async_sequential_file_writer::get_instance().wait();
 
