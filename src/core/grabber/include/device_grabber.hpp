@@ -34,12 +34,12 @@ class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(void) : profile_(nlohmann::json()),
-                         merged_input_event_queue_(std::make_shared<event_queue>()),
-                         simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
-                         complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
-                         fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
-                         posted_event_queue_(std::make_shared<event_queue>()) {
+  device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : profile_(nlohmann::json()),
+                                                                                              merged_input_event_queue_(std::make_shared<event_queue>()),
+                                                                                              simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
+                                                                                              complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
+                                                                                              fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
+                                                                                              posted_event_queue_(std::make_shared<event_queue>()) {
     queue_ = std::make_unique<thread_utility::queue>();
 
     client_connected_connection_ = virtual_hid_device_client_.client_connected.connect([this] {
@@ -65,7 +65,7 @@ public:
       });
     });
 
-    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_);
+    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_, weak_console_user_server_client);
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
 
     complex_modifications_applied_event_queue_->enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());

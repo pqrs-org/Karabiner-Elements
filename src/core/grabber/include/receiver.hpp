@@ -197,7 +197,7 @@ private:
       return;
     }
 
-    device_grabber_ = std::make_unique<device_grabber>();
+    device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_);
     device_grabber_->async_start(configuration_file_path);
 
     logger::get_logger().info("device_grabber is started.");

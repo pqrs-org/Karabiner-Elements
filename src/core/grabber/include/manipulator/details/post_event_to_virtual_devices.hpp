@@ -845,16 +845,15 @@ public:
     count_converter horizontal_wheel_count_converter_;
   };
 
-  post_event_to_virtual_devices(const system_preferences& system_preferences) : base(),
-                                                                                queue_(),
-                                                                                mouse_key_handler_(queue_,
-                                                                                                   system_preferences) {
-    console_user_server_client_ = std::make_shared<console_user_server_client>();
-    console_user_server_client_->async_start();
+  post_event_to_virtual_devices(const system_preferences& system_preferences,
+                                std::weak_ptr<console_user_server_client> weak_console_user_server_client) : base(),
+                                                                                                             weak_console_user_server_client_(weak_console_user_server_client),
+                                                                                                             queue_(),
+                                                                                                             mouse_key_handler_(queue_,
+                                                                                                                                system_preferences) {
   }
 
   virtual ~post_event_to_virtual_devices(void) {
-    console_user_server_client_ = nullptr;
   }
 
   virtual bool already_manipulated(const event_queue::queued_event& front_input_event) {
@@ -1188,7 +1187,7 @@ public:
 
   void post_events(virtual_hid_device_client& virtual_hid_device_client) {
     queue_.post_events(virtual_hid_device_client,
-                       console_user_server_client_);
+                       weak_console_user_server_client_);
   }
 
   const queue& get_queue(void) const {
@@ -1204,12 +1203,13 @@ public:
   }
 
 private:
+  std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
+
   queue queue_;
   key_event_dispatcher key_event_dispatcher_;
   mouse_key_handler mouse_key_handler_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   pqrs::karabiner_virtual_hid_device::hid_report::buttons pressed_buttons_;
-  std::shared_ptr<console_user_server_client> console_user_server_client_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const post_event_to_virtual_devices::queue::event& event) {
