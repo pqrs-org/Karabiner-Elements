@@ -48,6 +48,7 @@ public:
           return;
         }
 
+        receiver_ = nullptr;
         receiver_ = std::make_unique<receiver>();
 
         receiver_->bound.connect([this] {
@@ -69,7 +70,7 @@ public:
           });
         });
 
-        receiver_->start();
+        receiver_->async_start();
       });
     });
 
