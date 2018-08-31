@@ -43,12 +43,13 @@ public:
             constants::get_user_configuration_directory(),
             0700);
 
+        receiver_ = nullptr;
+        stop_grabber_client();
+
         if (uid != getuid()) {
-          stop_grabber_client();
           return;
         }
 
-        receiver_ = nullptr;
         receiver_ = std::make_unique<receiver>();
 
         receiver_->bound.connect([this] {
