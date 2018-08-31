@@ -2,11 +2,11 @@
 
 // `krbn::receiver` can be used safely in a multi-threaded environment.
 
+#include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
 #include "grabbable_state_queues_manager.hpp"
 #include "local_datagram/server_manager.hpp"
-#include "monitor/process_monitor.hpp"
 #include "session.hpp"
 #include "types.hpp"
 #include <vector>
@@ -71,20 +71,39 @@ public:
 
                 // Ensure user_core_configuration_file_path is null-terminated string even if corrupted data is sent.
                 p->user_core_configuration_file_path[sizeof(p->user_core_configuration_file_path) - 1] = '\0';
+                std::string user_core_configuration_file_path(p->user_core_configuration_file_path);
 
                 logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
-                stop_device_grabber();
-                start_device_grabber(p->user_core_configuration_file_path);
+                console_user_server_client_ = nullptr;
+                console_user_server_client_ = std::make_shared<console_user_server_client>();
 
-                // monitor the last process
-                {
-                  std::lock_guard<std::mutex> lock(console_user_server_process_monitor_mutex_);
+                console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
+                  queue_->push_back([this, user_core_configuration_file_path] {
+                    stop_device_grabber();
+                    start_device_grabber(user_core_configuration_file_path);
+                  });
+                });
 
-                  console_user_server_process_monitor_ = nullptr;
-                  console_user_server_process_monitor_ = std::make_unique<process_monitor>(p->pid,
-                                                                                           std::bind(&receiver::console_user_server_exit_callback, this));
-                }
+                console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
+                  queue_->push_back([this] {
+                    console_user_server_client_ = nullptr;
+
+                    stop_device_grabber();
+                    start_grabbing_if_system_core_configuration_file_exists();
+                  });
+                });
+
+                console_user_server_client_->closed.connect([this] {
+                  queue_->push_back([this] {
+                    console_user_server_client_ = nullptr;
+
+                    stop_device_grabber();
+                    start_grabbing_if_system_core_configuration_file_exists();
+                  });
+                });
+
+                console_user_server_client_->async_start();
               }
               break;
 
@@ -154,12 +173,7 @@ public:
   ~receiver(void) {
     queue_->push_back([this] {
       server_manager_ = nullptr;
-
-      {
-        std::lock_guard<std::mutex> lock(console_user_server_process_monitor_mutex_);
-        console_user_server_process_monitor_ = nullptr;
-      }
-
+      console_user_server_client_ = nullptr;
       stop_device_grabber();
     });
 
@@ -170,12 +184,6 @@ public:
   }
 
 private:
-  void console_user_server_exit_callback(void) {
-    stop_device_grabber();
-
-    start_grabbing_if_system_core_configuration_file_exists();
-  }
-
   void start_grabbing_if_system_core_configuration_file_exists(void) {
     auto file_path = constants::get_system_core_configuration_file_path();
     if (filesystem::exists(file_path)) {
@@ -208,10 +216,7 @@ private:
   std::unique_ptr<thread_utility::queue> queue_;
 
   std::unique_ptr<local_datagram::server_manager> server_manager_;
-
-  std::unique_ptr<process_monitor> console_user_server_process_monitor_;
-  std::mutex console_user_server_process_monitor_mutex_;
-
+  std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<device_grabber> device_grabber_;
 };
 } // namespace krbn
