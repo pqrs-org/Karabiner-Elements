@@ -49,7 +49,6 @@ public:
 
         receiver_ = nullptr;
         receiver_ = std::make_unique<receiver>();
-        receiver_->start();
       });
     });
 

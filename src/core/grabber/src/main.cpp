@@ -43,8 +43,8 @@ int main(int argc, const char* argv[]) {
 
   // Load kexts
 
-  krbn::grabber_alerts_manager::enable_json_output(krbn::constants::get_grabber_alerts_json_file_path());
-  krbn::grabber_alerts_manager::async_save_to_file();
+  auto grabber_alerts_manager = std::make_unique<krbn::grabber_alerts_manager>(
+      krbn::constants::get_grabber_alerts_json_file_path());
 
   while (true) {
     std::stringstream ss;
@@ -59,13 +59,15 @@ int main(int argc, const char* argv[]) {
     if (exit_status == 27) {
       // kextload is blocked by macOS.
       // https://developer.apple.com/library/content/technotes/tn2459/_index.html
-      krbn::grabber_alerts_manager::set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
+      grabber_alerts_manager->async_set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
       std::this_thread::sleep_for(std::chrono::seconds(3));
       continue;
     }
     break;
   }
-  krbn::grabber_alerts_manager::set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
+
+  grabber_alerts_manager->async_set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
+  grabber_alerts_manager = nullptr;
 
   // Make socket directory.
 
