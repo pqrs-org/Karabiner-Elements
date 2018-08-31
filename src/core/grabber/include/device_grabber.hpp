@@ -105,11 +105,7 @@ public:
         true,
         [&] {
           queue_->push_back([this] {
-            if (event_tap_manager_) {
-              if (auto state = event_tap_manager_->get_caps_lock_state()) {
-                update_caps_lock_led(*state);
-              }
-            }
+            update_caps_lock_led();
           });
         });
 
@@ -154,7 +150,14 @@ public:
             queue_->push_back([this, weak_hid] {
               if (auto hid = weak_hid.lock()) {
                 logger::get_logger().info("{0} is grabbed", hid->get_name_for_log());
-                device_grabbed(hid);
+
+                set_grabbed(hid->get_registry_entry_id(), true);
+
+                update_caps_lock_led();
+
+                update_virtual_hid_pointing();
+
+                apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
               }
             });
           });
@@ -163,7 +166,16 @@ public:
             queue_->push_back([this, weak_hid] {
               if (auto hid = weak_hid.lock()) {
                 logger::get_logger().info("{0} is ungrabbed", hid->get_name_for_log());
-                device_ungrabbed(hid);
+
+                set_grabbed(hid->get_registry_entry_id(), false);
+
+                grabbable_state_queues_manager::get_shared_instance()->unset_first_grabbed_event_time_stamp(hid->get_registry_entry_id());
+
+                post_device_ungrabbed_event(hid->get_device_id());
+
+                update_virtual_hid_pointing();
+
+                apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
               }
             });
           });
@@ -244,13 +256,40 @@ public:
     queue_->push_back([this, user_core_configuration_file_path] {
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_manager here.
-      event_tap_manager_ = std::make_unique<event_tap_manager>(std::bind(&device_grabber::caps_lock_state_changed_callback,
-                                                                         this,
-                                                                         std::placeholders::_1),
-                                                               std::bind(&device_grabber::event_tap_pointing_device_event_callback,
-                                                                         this,
-                                                                         std::placeholders::_1,
-                                                                         std::placeholders::_2));
+      event_tap_manager_ = std::make_unique<event_tap_manager>();
+
+      event_tap_manager_->caps_lock_state_changed.connect([this](auto&& state) {
+        queue_->push_back([this, state] {
+          last_caps_lock_state_ = state;
+          post_caps_lock_state_changed_event(state);
+          update_caps_lock_led();
+        });
+      });
+
+      event_tap_manager_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
+        if (event) {
+          CFRetain(event);
+
+          queue_->push_back([this, event_type, event] {
+            if (auto pseudo_event = event_tap_utility::make_event(event_type, event)) {
+              auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
+              event_queue::queued_event queued_event(device_id(0),
+                                                     event_queue::queued_event::event_time_stamp(mach_absolute_time()),
+                                                     e,
+                                                     pseudo_event->first,
+                                                     pseudo_event->second);
+
+              merged_input_event_queue_->push_back_event(queued_event);
+
+              krbn_notification_center::get_instance().input_event_arrived();
+            }
+
+            CFRelease(event);
+          });
+        }
+      });
+
+      event_tap_manager_->async_start();
 
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path);
 
@@ -531,7 +570,7 @@ private:
     krbn_notification_center::get_instance().input_event_arrived();
   }
 
-  void post_caps_lock_state_changed_callback(bool caps_lock_state) {
+  void post_caps_lock_state_changed_event(bool caps_lock_state) {
     event_queue::queued_event::event event(event_queue::queued_event::event::type::caps_lock_state_changed, caps_lock_state);
     event_queue::queued_event queued_event(device_id(0),
                                            event_queue::queued_event::event_time_stamp(mach_absolute_time()),
@@ -641,69 +680,25 @@ private:
     return grabbable_state::state::grabbable;
   }
 
-  void device_grabbed(std::shared_ptr<human_interface_device> device) {
-    set_grabbed(device->get_registry_entry_id(), true);
-
-    // set keyboard led
-    if (event_tap_manager_) {
-      bool state = false;
-      if (auto s = event_tap_manager_->get_caps_lock_state()) {
-        state = *s;
-      }
-      update_caps_lock_led(state);
-    }
-
-    update_virtual_hid_pointing();
-
-    apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
-  }
-
-  void device_ungrabbed(std::shared_ptr<human_interface_device> device) {
-    set_grabbed(device->get_registry_entry_id(), false);
-
-    grabbable_state_queues_manager::get_shared_instance()->unset_first_grabbed_event_time_stamp(device->get_registry_entry_id());
-
-    post_device_ungrabbed_event(device->get_device_id());
-
-    update_virtual_hid_pointing();
-
-    apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
-  }
-
   void device_disabled(human_interface_device& device) {
     // Post device_ungrabbed event in order to release modifier_flags.
     post_device_ungrabbed_event(device.get_device_id());
   }
 
-  void caps_lock_state_changed_callback(bool caps_lock_state) {
-    post_caps_lock_state_changed_callback(caps_lock_state);
-    update_caps_lock_led(caps_lock_state);
-  }
-
   void event_tap_pointing_device_event_callback(CGEventType type, CGEventRef event) {
-    if (auto pseudo_event = event_tap_utility::make_event(type, event)) {
-      auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
-      event_queue::queued_event queued_event(device_id(0),
-                                             event_queue::queued_event::event_time_stamp(mach_absolute_time()),
-                                             e,
-                                             pseudo_event->first,
-                                             pseudo_event->second);
-
-      merged_input_event_queue_->push_back_event(queued_event);
-
-      krbn_notification_center::get_instance().input_event_arrived();
-    }
   }
 
-  void update_caps_lock_led(bool caps_lock_state) {
-    if (core_configuration_) {
-      for (const auto& pair : hid_grabbers_) {
-        if (auto hid = pair.second->get_weak_hid().lock()) {
-          auto& di = hid->get_connected_device()->get_identifiers();
-          bool manipulate_caps_lock_led = core_configuration_->get_selected_profile().get_device_manipulate_caps_lock_led(di);
-          if (grabbed(hid->get_registry_entry_id()) &&
-              manipulate_caps_lock_led) {
-            hid->async_set_caps_lock_led_state(caps_lock_state ? led_state::on : led_state::off);
+  void update_caps_lock_led(void) {
+    if (last_caps_lock_state_) {
+      if (core_configuration_) {
+        for (const auto& pair : hid_grabbers_) {
+          if (auto hid = pair.second->get_weak_hid().lock()) {
+            auto& di = hid->get_connected_device()->get_identifiers();
+            bool manipulate_caps_lock_led = core_configuration_->get_selected_profile().get_device_manipulate_caps_lock_led(di);
+            if (grabbed(hid->get_registry_entry_id()) &&
+                manipulate_caps_lock_led) {
+              hid->async_set_caps_lock_led_state(*last_caps_lock_state_ ? led_state::on : led_state::off);
+            }
           }
         }
       }
@@ -1036,6 +1031,7 @@ private:
   std::shared_ptr<const core_configuration> core_configuration_;
 
   std::unique_ptr<event_tap_manager> event_tap_manager_;
+  boost::optional<bool> last_caps_lock_state_;
   std::unique_ptr<hid_manager> hid_manager_;
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_grabber>> hid_grabbers_;
   std::unordered_map<registry_entry_id, std::shared_ptr<device_state>> device_states_;
