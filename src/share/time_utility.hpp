@@ -1,6 +1,7 @@
 #pragma once
 
 #include "logger.hpp"
+#include <chrono>
 #include <mach/mach_time.h>
 #include <time.h>
 
@@ -13,6 +14,11 @@ public:
       return absolute_time * t.numer / t.denom;
     }
     return absolute_time;
+  }
+
+  static std::chrono::milliseconds absolute_to_milliseconds(uint64_t absolute_time) {
+    auto ns = std::chrono::nanoseconds(absolute_to_nano(absolute_time));
+    return std::chrono::duration_cast<std::chrono::milliseconds>(ns);
   }
 
   static uint64_t nano_to_absolute(uint64_t absolute_time) {
