@@ -42,7 +42,9 @@ public:
                                                                                               posted_event_queue_(std::make_shared<event_queue>()) {
     queue_ = std::make_unique<thread_utility::queue>();
 
-    client_connected_connection_ = virtual_hid_device_client_.client_connected.connect([this] {
+    virtual_hid_device_client_ = std::make_shared<virtual_hid_device_client>();
+
+    client_connected_connection_ = virtual_hid_device_client_->client_connected.connect([this] {
       queue_->push_back([this] {
         logger::get_logger().info("virtual_hid_device_client_ is connected");
 
@@ -51,7 +53,7 @@ public:
       });
     });
 
-    client_disconnected_connection_ = virtual_hid_device_client_.client_disconnected.connect([this] {
+    client_disconnected_connection_ = virtual_hid_device_client_->client_disconnected.connect([this] {
       queue_->push_back([this] {
         logger::get_logger().info("virtual_hid_device_client_ is disconnected");
 
@@ -210,10 +212,10 @@ public:
 
           if (hid->is_keyboard() &&
               hid->is_karabiner_virtual_hid_device()) {
-            virtual_hid_device_client_.close();
+            virtual_hid_device_client_->close();
             async_ungrab_devices();
 
-            virtual_hid_device_client_.connect();
+            virtual_hid_device_client_->connect();
             async_grab_devices();
           }
 
@@ -307,7 +309,7 @@ public:
 
       configuration_monitor_->async_start();
 
-      virtual_hid_device_client_.connect();
+      virtual_hid_device_client_->connect();
     });
   }
 
@@ -319,7 +321,7 @@ public:
 
       event_tap_manager_ = nullptr;
 
-      virtual_hid_device_client_.close();
+      virtual_hid_device_client_->close();
     });
   }
 
@@ -522,7 +524,7 @@ private:
         manipulator_managers_connector_.manipulate(now);
 
         posted_event_queue_->clear_events();
-        post_event_to_virtual_devices_manipulator_->post_events(virtual_hid_device_client_);
+        post_event_to_virtual_devices_manipulator_->async_post_events(virtual_hid_device_client_);
       }
     }
 
@@ -598,13 +600,13 @@ private:
     // ----------------------------------------
     // Ungrabbable while virtual_hid_device_client_ is not ready.
 
-    if (!virtual_hid_device_client_.is_connected()) {
+    if (!virtual_hid_device_client_->is_connected()) {
       std::string message = "virtual_hid_device_client is not connected yet. Please wait for a while.";
       logger_unique_filter_.warn(message);
       return grabbable_state::state::ungrabbable_temporarily;
     }
 
-    if (!virtual_hid_device_client_.is_virtual_hid_keyboard_ready()) {
+    if (!virtual_hid_device_client_->is_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       logger_unique_filter_.warn(message);
       return grabbable_state::state::ungrabbable_temporarily;
@@ -718,23 +720,23 @@ private:
   }
 
   void update_virtual_hid_keyboard(void) {
-    if (virtual_hid_device_client_.is_connected()) {
+    if (virtual_hid_device_client_->is_connected()) {
       pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
       properties.country_code = profile_.get_virtual_hid_keyboard().get_country_code();
 
-      virtual_hid_device_client_.initialize_virtual_hid_keyboard(properties);
+      virtual_hid_device_client_->initialize_virtual_hid_keyboard(properties);
     }
   }
 
   void update_virtual_hid_pointing(void) {
-    if (virtual_hid_device_client_.is_connected()) {
+    if (virtual_hid_device_client_->is_connected()) {
       if (is_pointing_device_grabbed() ||
           manipulator_managers_connector_.needs_virtual_hid_pointing()) {
-        virtual_hid_device_client_.initialize_virtual_hid_pointing();
+        virtual_hid_device_client_->initialize_virtual_hid_pointing();
         return;
       }
 
-      virtual_hid_device_client_.terminate_virtual_hid_pointing();
+      virtual_hid_device_client_->terminate_virtual_hid_pointing();
     }
   }
 
@@ -1021,7 +1023,7 @@ private:
 
   std::unique_ptr<thread_utility::queue> queue_;
 
-  virtual_hid_device_client virtual_hid_device_client_;
+  std::shared_ptr<virtual_hid_device_client> virtual_hid_device_client_;
   boost::signals2::connection client_connected_connection_;
   boost::signals2::connection client_disconnected_connection_;
 

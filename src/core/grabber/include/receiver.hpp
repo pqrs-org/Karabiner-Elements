@@ -113,10 +113,13 @@ public:
               } else {
                 auto p = reinterpret_cast<operation_type_system_preferences_updated_struct*>(&((*buffer)[0]));
 
+                system_preferences_ = p->system_preferences;
+
                 if (device_grabber_) {
                   device_grabber_->async_set_system_preferences(p->system_preferences);
-                  logger::get_logger().info("system_preferences_updated");
                 }
+
+                logger::get_logger().info("`system_preferences` is updated.");
               }
               break;
 
@@ -130,9 +133,12 @@ public:
                 p->bundle_identifier[sizeof(p->bundle_identifier) - 1] = '\0';
                 p->file_path[sizeof(p->file_path) - 1] = '\0';
 
+                frontmost_application_bundle_identifier_ = p->bundle_identifier;
+                frontmost_application_file_path_ = p->file_path;
+
                 if (device_grabber_) {
-                  device_grabber_->async_post_frontmost_application_changed_event(p->bundle_identifier,
-                                                                                  p->file_path);
+                  device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_bundle_identifier_,
+                                                                                  frontmost_application_file_path_);
                 }
               }
               break;
@@ -148,10 +154,12 @@ public:
                 p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
                 p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
 
+                input_source_identifiers_ = input_source_identifiers(std::string(p->language),
+                                                                     std::string(p->input_source_id),
+                                                                     std::string(p->input_mode_id));
+
                 if (device_grabber_) {
-                  device_grabber_->async_post_input_source_changed_event({std::string(p->language),
-                                                                          std::string(p->input_source_id),
-                                                                          std::string(p->input_mode_id)});
+                  device_grabber_->async_post_input_source_changed_event(input_source_identifiers_);
                 }
               }
               break;
@@ -198,6 +206,12 @@ private:
     }
 
     device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_);
+
+    device_grabber_->async_set_system_preferences(system_preferences_);
+    device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_bundle_identifier_,
+                                                                    frontmost_application_file_path_);
+    device_grabber_->async_post_input_source_changed_event(input_source_identifiers_);
+
     device_grabber_->async_start(configuration_file_path);
 
     logger::get_logger().info("device_grabber is started.");
@@ -218,5 +232,10 @@ private:
   std::unique_ptr<local_datagram::server_manager> server_manager_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<device_grabber> device_grabber_;
+
+  system_preferences system_preferences_;
+  std::string frontmost_application_bundle_identifier_;
+  std::string frontmost_application_file_path_;
+  input_source_identifiers input_source_identifiers_;
 };
 } // namespace krbn
