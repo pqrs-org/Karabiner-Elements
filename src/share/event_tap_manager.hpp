@@ -46,6 +46,7 @@ public:
       logger::get_logger().info("event_tap_manager terminated");
     });
 
+    run_loop_thread_->terminate();
     run_loop_thread_ = nullptr;
   }
 
