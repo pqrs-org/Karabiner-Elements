@@ -22,11 +22,11 @@ public:
   receiver(const receiver&) = delete;
 
   receiver(void) : last_select_input_source_time_stamp_(0) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   void async_start(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (server_manager_) {
         return;
       }
@@ -46,25 +46,25 @@ public:
                                                                          reconnect_interval);
 
       server_manager_->bound.connect([this] {
-        queue_->push_back([this] {
+        dispatcher_->enqueue([this] {
           bound();
         });
       });
 
       server_manager_->bind_failed.connect([this](auto&& error_code) {
-        queue_->push_back([this, error_code] {
+        dispatcher_->enqueue([this, error_code] {
           bind_failed(error_code);
         });
       });
 
       server_manager_->closed.connect([this] {
-        queue_->push_back([this] {
+        dispatcher_->enqueue([this] {
           closed();
         });
       });
 
       server_manager_->received.connect([this](auto&& buffer) {
-        queue_->push_back([this, buffer] {
+        dispatcher_->enqueue([this, buffer] {
           if (auto type = types::find_operation_type(*buffer)) {
             switch (*type) {
               case operation_type::shell_command_execution:
@@ -133,18 +133,18 @@ public:
   }
 
   ~receiver(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       server_manager_ = nullptr;
     });
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
 
     logger::get_logger().info("receiver is terminated");
   }
 
 private:
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   std::unique_ptr<local_datagram::server_manager> server_manager_;
   input_source_manager input_source_manager_;

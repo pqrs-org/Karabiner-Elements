@@ -19,12 +19,12 @@ public:
   grabber_alerts_manager(const grabber_alerts_manager&) = delete;
 
   grabber_alerts_manager(const std::string& output_json_file_path) : output_json_file_path_(output_json_file_path) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~grabber_alerts_manager(void) {
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   static std::string to_string(alert alert) {
@@ -42,7 +42,7 @@ public:
   }
 
   void async_set_alert(alert alert, bool enabled) {
-    queue_->push_back([this, alert, enabled] {
+    dispatcher_->enqueue([this, alert, enabled] {
       if (enabled) {
         alerts_.insert(alert);
         logger::get_logger().warn("grabber_alert: {0}", to_string(alert));
@@ -55,7 +55,7 @@ public:
   }
 
   void async_save_to_file(void) const {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       async_save_to_file_();
     });
   }
@@ -73,7 +73,7 @@ private:
     }
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   std::string output_json_file_path_;
   std::unordered_set<alert> alerts_;
 };

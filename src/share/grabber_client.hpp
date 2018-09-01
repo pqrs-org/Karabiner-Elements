@@ -28,18 +28,18 @@ public:
   grabber_client(const grabber_client&) = delete;
 
   grabber_client(void) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~grabber_client(void) {
     async_stop();
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   void async_start(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (client_manager_) {
         logger::get_logger().warn("grabber_client is already started.");
         return;
@@ -76,7 +76,7 @@ public:
   }
 
   void async_stop(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (!client_manager_) {
         return;
       }
@@ -88,7 +88,7 @@ public:
   }
 
   void async_grabbable_state_changed(const grabbable_state& grabbable_state) const {
-    queue_->push_back([this, grabbable_state] {
+    dispatcher_->enqueue([this, grabbable_state] {
       operation_type_grabbable_state_changed_struct s;
       s.grabbable_state = grabbable_state;
 
@@ -97,7 +97,7 @@ public:
   }
 
   void async_connect_console_user_server(void) const {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       operation_type_connect_console_user_server_struct s;
       s.pid = getpid();
 
@@ -106,7 +106,7 @@ public:
   }
 
   void async_system_preferences_updated(const system_preferences& system_preferences) const {
-    queue_->push_back([this, system_preferences] {
+    dispatcher_->enqueue([this, system_preferences] {
       operation_type_system_preferences_updated_struct s;
       s.system_preferences = system_preferences;
 
@@ -116,7 +116,7 @@ public:
 
   void async_frontmost_application_changed(const std::string& bundle_identifier,
                                            const std::string& file_path) const {
-    queue_->push_back([this, bundle_identifier, file_path] {
+    dispatcher_->enqueue([this, bundle_identifier, file_path] {
       operation_type_frontmost_application_changed_struct s;
 
       strlcpy(s.bundle_identifier,
@@ -132,7 +132,7 @@ public:
   }
 
   void async_input_source_changed(const input_source_identifiers& input_source_identifiers) const {
-    queue_->push_back([this, input_source_identifiers] {
+    dispatcher_->enqueue([this, input_source_identifiers] {
       operation_type_input_source_changed_struct s;
 
       if (auto& v = input_source_identifiers.get_language()) {
@@ -166,7 +166,7 @@ private:
     }
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   std::unique_ptr<local_datagram::client_manager> client_manager_;
 };
 } // namespace krbn

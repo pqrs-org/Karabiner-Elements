@@ -240,11 +240,11 @@ public:
 
     queue(void) : last_event_type_(event_type::single),
                   last_event_time_stamp_(0) {
-      dispatcher_ = std::make_unique<thread_utility::queue>();
+      dispatcher_ = std::make_unique<thread_utility::dispatcher>();
     }
 
     ~queue(void) {
-      dispatcher_->push_back([this] {
+      dispatcher_->enqueue([this] {
         timer_->wait();
         timer_ = nullptr;
       });
@@ -411,7 +411,7 @@ public:
 
     void async_post_events(std::weak_ptr<virtual_hid_device_client> weak_virtual_hid_device_client,
                            std::weak_ptr<console_user_server_client> weak_console_user_server_client) {
-      dispatcher_->push_back([this, weak_virtual_hid_device_client, weak_console_user_server_client] {
+      dispatcher_->enqueue([this, weak_virtual_hid_device_client, weak_console_user_server_client] {
         if (timer_) {
           return;
         }
@@ -430,7 +430,7 @@ public:
                 ms,
                 false,
                 [this, weak_virtual_hid_device_client, weak_console_user_server_client] {
-                  dispatcher_->push_back([this, weak_virtual_hid_device_client, weak_console_user_server_client] {
+                  dispatcher_->enqueue([this, weak_virtual_hid_device_client, weak_console_user_server_client] {
                     timer_ = nullptr;
                     async_post_events(weak_virtual_hid_device_client,
                                       weak_console_user_server_client);
@@ -536,7 +536,7 @@ public:
       }
     }
 
-    std::unique_ptr<thread_utility::queue> dispatcher_;
+    std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
     std::vector<event> events_;
     std::unique_ptr<thread_utility::timer> timer_;
@@ -880,7 +880,7 @@ public:
                                                                                                              queue_(),
                                                                                                              mouse_key_handler_(queue_,
                                                                                                                                 system_preferences) {
-    dispatcher_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   virtual ~post_event_to_virtual_devices(void) {
@@ -1218,7 +1218,7 @@ public:
   }
 
   void async_post_events(std::weak_ptr<virtual_hid_device_client> weak_virtual_hid_device_client) {
-    dispatcher_->push_back([this, weak_virtual_hid_device_client] {
+    dispatcher_->enqueue([this, weak_virtual_hid_device_client] {
       queue_.async_post_events(weak_virtual_hid_device_client,
                                weak_console_user_server_client_);
     });
@@ -1239,7 +1239,7 @@ public:
 private:
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
 
-  std::unique_ptr<thread_utility::queue> dispatcher_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   queue queue_;
   key_event_dispatcher key_event_dispatcher_;
   mouse_key_handler mouse_key_handler_;

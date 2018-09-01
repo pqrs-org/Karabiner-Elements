@@ -19,18 +19,18 @@ public:
   // Methods
 
   frontmost_application_observer(void) : observer_(nullptr) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~frontmost_application_observer(void) {
     async_stop();
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   void async_start(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (observer_) {
         logger::get_logger().warn("frontmost_application_observer is already started.");
         return;
@@ -45,7 +45,7 @@ public:
   }
 
   void async_stop(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (!observer_) {
         return;
       }
@@ -79,12 +79,12 @@ private:
 
   void cpp_callback(const std::string& bundle_identifier,
                     const std::string& file_path) {
-    queue_->push_back([this, bundle_identifier, file_path] {
+    dispatcher_->enqueue([this, bundle_identifier, file_path] {
       frontmost_application_changed(bundle_identifier, file_path);
     });
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   krbn_frontmost_application_observer_objc* observer_;
 };
 } // namespace krbn

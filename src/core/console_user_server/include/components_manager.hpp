@@ -26,7 +26,7 @@ public:
   components_manager(const components_manager&) = delete;
 
   components_manager(void) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
     start_grabber_alerts_monitor();
@@ -34,7 +34,7 @@ public:
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
-      queue_->push_back([this, uid] {
+      dispatcher_->enqueue([this, uid] {
         if (version_monitor_) {
           version_monitor_->async_manual_check();
         }
@@ -53,20 +53,20 @@ public:
         receiver_ = std::make_unique<receiver>();
 
         receiver_->bound.connect([this] {
-          queue_->push_back([this] {
+          dispatcher_->enqueue([this] {
             stop_grabber_client();
             start_grabber_client();
           });
         });
 
         receiver_->bind_failed.connect([this](auto&& error_code) {
-          queue_->push_back([this] {
+          dispatcher_->enqueue([this] {
             stop_grabber_client();
           });
         });
 
         receiver_->closed.connect([this] {
-          queue_->push_back([this] {
+          dispatcher_->enqueue([this] {
             stop_grabber_client();
           });
         });
@@ -79,7 +79,7 @@ public:
   }
 
   ~components_manager(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       stop_grabber_client();
 
       console_user_id_monitor_ = nullptr;
@@ -88,8 +88,8 @@ public:
       version_monitor_ = nullptr;
     });
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
 private:
@@ -101,7 +101,7 @@ private:
     grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>(constants::get_grabber_alerts_json_file_path());
 
     grabber_alerts_monitor_->alerts_changed.connect([this](auto&& alerts) {
-      queue_->push_back([alerts] {
+      dispatcher_->enqueue([alerts] {
         logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
         if (!alerts.empty()) {
           application_launcher::launch_preferences();
@@ -120,7 +120,7 @@ private:
     grabber_client_ = std::make_shared<grabber_client>();
 
     grabber_client_->connected.connect([this] {
-      queue_->push_back([this] {
+      dispatcher_->enqueue([this] {
         if (version_monitor_) {
           version_monitor_->async_manual_check();
         }
@@ -135,7 +135,7 @@ private:
     });
 
     grabber_client_->connect_failed.connect([this](auto&& error_code) {
-      queue_->push_back([this] {
+      dispatcher_->enqueue([this] {
         if (version_monitor_) {
           version_monitor_->async_manual_check();
         }
@@ -145,7 +145,7 @@ private:
     });
 
     grabber_client_->closed.connect([this] {
-      queue_->push_back([this] {
+      dispatcher_->enqueue([this] {
         if (version_monitor_) {
           version_monitor_->async_manual_check();
         }
@@ -178,7 +178,7 @@ private:
     system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(configuration_monitor_);
 
     system_preferences_monitor_->system_preferences_changed.connect([this](auto&& system_preferences) {
-      queue_->push_back([this, system_preferences] {
+      dispatcher_->enqueue([this, system_preferences] {
         if (grabber_client_) {
           grabber_client_->async_system_preferences_updated(system_preferences);
         }
@@ -192,7 +192,7 @@ private:
     frontmost_application_observer_ = std::make_unique<frontmost_application_observer>();
 
     frontmost_application_observer_->frontmost_application_changed.connect([this](auto&& bundle_identifier, auto&& file_path) {
-      queue_->push_back([this, bundle_identifier, file_path] {
+      dispatcher_->enqueue([this, bundle_identifier, file_path] {
         if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
             bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
           return;
@@ -211,7 +211,7 @@ private:
     input_source_observer_ = std::make_unique<input_source_observer>();
 
     input_source_observer_->input_source_changed.connect([this](auto&& input_source_identifiers) {
-      queue_->push_back([this, input_source_identifiers] {
+      dispatcher_->enqueue([this, input_source_identifiers] {
         if (grabber_client_) {
           grabber_client_->async_input_source_changed(input_source_identifiers);
         }
@@ -235,7 +235,7 @@ private:
     configuration_monitor_ = nullptr;
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   // Core components
 

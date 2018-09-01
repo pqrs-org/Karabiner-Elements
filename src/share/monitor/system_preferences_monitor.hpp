@@ -18,13 +18,13 @@ public:
   // Methods
 
   system_preferences_monitor(std::weak_ptr<configuration_monitor> weak_configuration_monitor) : weak_configuration_monitor_(weak_configuration_monitor) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     if (auto configuration_monitor = weak_configuration_monitor_.lock()) {
       // core_configuration_updated
       {
         auto c = configuration_monitor->core_configuration_updated.connect([this](auto&&) {
-          queue_->push_back([this] {
+          dispatcher_->enqueue([this] {
             check_system_preferences();
           });
         });
@@ -48,20 +48,20 @@ public:
 
     // Destroy timer_
 
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       timer_ = nullptr;
     });
 
-    // Destroy queue_
+    // Destroy dispatcher_
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
 
     logger::get_logger().info("system_preferences_monitor is stopped.");
   }
 
   void async_start(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       timer_ = std::make_unique<thread_utility::timer>(
           [](auto&& count) {
             if (count == 0) {
@@ -72,7 +72,7 @@ public:
           },
           true,
           [this] {
-            queue_->push_back([this] {
+            dispatcher_->enqueue([this] {
               check_system_preferences();
             });
           });
@@ -112,7 +112,7 @@ private:
 
   std::weak_ptr<configuration_monitor> weak_configuration_monitor_;
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   boost_utility::signals2_connections configuration_monitor_connections_;
   std::unique_ptr<thread_utility::timer> timer_;
   boost::optional<system_preferences> last_system_preferences_;

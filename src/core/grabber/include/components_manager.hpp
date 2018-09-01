@@ -17,14 +17,14 @@ public:
   components_manager(const components_manager&) = delete;
 
   components_manager(void) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
 
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
-      queue_->push_back([this, uid] {
+      dispatcher_->enqueue([this, uid] {
         uid_t console_user_server_socket_uid = 0;
 
         if (uid) {
@@ -55,18 +55,18 @@ public:
   }
 
   ~components_manager(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       console_user_id_monitor_ = nullptr;
       receiver_ = nullptr;
       version_monitor_ = nullptr;
     });
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
 private:
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   std::shared_ptr<version_monitor> version_monitor_;
   std::unique_ptr<console_user_id_monitor> console_user_id_monitor_;

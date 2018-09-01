@@ -15,7 +15,7 @@ public:
   components_manager(const components_manager&) = delete;
 
   components_manager(void) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
 
@@ -26,17 +26,17 @@ public:
     async_stop_grabber_client();
     async_stop_device_observer();
 
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       version_monitor_ = nullptr;
     });
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
 private:
   void async_start_grabber_client(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (grabber_client_) {
         return;
       }
@@ -44,7 +44,7 @@ private:
       grabber_client_ = std::make_shared<grabber_client>();
 
       grabber_client_->connected.connect([this] {
-        queue_->push_back([this] {
+        dispatcher_->enqueue([this] {
           if (version_monitor_) {
             version_monitor_->async_manual_check();
           }
@@ -54,7 +54,7 @@ private:
       });
 
       grabber_client_->connect_failed.connect([this](auto&& error_code) {
-        queue_->push_back([this] {
+        dispatcher_->enqueue([this] {
           if (version_monitor_) {
             version_monitor_->async_manual_check();
           }
@@ -64,7 +64,7 @@ private:
       });
 
       grabber_client_->closed.connect([this] {
-        queue_->push_back([this] {
+        dispatcher_->enqueue([this] {
           if (version_monitor_) {
             version_monitor_->async_manual_check();
           }
@@ -78,7 +78,7 @@ private:
   }
 
   void async_stop_grabber_client(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (!grabber_client_) {
         return;
       }
@@ -88,7 +88,7 @@ private:
   }
 
   void async_start_device_observer(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (device_observer_) {
         return;
       }
@@ -98,7 +98,7 @@ private:
   }
 
   void async_stop_device_observer(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (!device_observer_) {
         return;
       }
@@ -107,7 +107,7 @@ private:
     });
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   std::shared_ptr<version_monitor> version_monitor_;
   std::shared_ptr<grabber_client> grabber_client_;

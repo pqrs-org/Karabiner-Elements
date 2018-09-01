@@ -24,18 +24,18 @@ public:
   input_source_observer(const input_source_observer&) = delete;
 
   input_source_observer(void) : started_(false) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~input_source_observer(void) {
     async_stop();
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   void async_start(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (started_) {
         logger::get_logger().warn("input_source_observer is already started.");
         return;
@@ -59,7 +59,7 @@ public:
   }
 
   void async_stop(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (!started_) {
         return;
       }
@@ -88,7 +88,7 @@ private:
   }
 
   void input_source_changed_callback(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (auto p = TISCopyCurrentKeyboardInputSource()) {
         input_source_changed(input_source_identifiers(p));
 
@@ -97,7 +97,7 @@ private:
     });
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   bool started_;
 };
 } // namespace krbn

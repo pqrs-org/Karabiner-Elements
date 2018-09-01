@@ -24,12 +24,12 @@ public:
   const int max_entries = 32;
 
   grabbable_state_queue(void) : grabbable_states_(max_entries) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~grabbable_state_queue(void) {
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   boost::optional<uint64_t> get_first_grabbed_event_time_stamp(void) const {
@@ -137,12 +137,12 @@ private:
       return;
     }
 
-    queue_->push_back([this, new_state] {
+    dispatcher_->enqueue([this, new_state] {
       grabbable_state_changed(new_state);
     });
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   // Keep multiple entries for when `push_back_entry` is called multiple times before `set_first_grabbed_event_time_stamp`.
   // (We should remove entries after first_grabbed_event_time_stamp_.)

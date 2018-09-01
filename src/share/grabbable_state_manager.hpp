@@ -24,12 +24,12 @@ public:
   grabbable_state_manager(const grabbable_state_manager&) = delete;
 
   grabbable_state_manager(void) {
-    call_slots_queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~grabbable_state_manager(void) {
-    call_slots_queue_->terminate();
-    call_slots_queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   void update(grabbable_state state) {
@@ -52,7 +52,7 @@ public:
       auto new_state = it->second.get_grabbable_state();
 
       if (!old_state.equals_except_time_stamp(new_state)) {
-        call_slots_queue_->push_back([this, new_state] {
+        dispatcher_->enqueue([this, new_state] {
           grabbable_state_changed(new_state);
         });
       }
@@ -85,7 +85,7 @@ public:
             auto new_state = it->second.get_grabbable_state();
 
             if (!old_state.equals_except_time_stamp(new_state)) {
-              call_slots_queue_->push_back([this, new_state] {
+              dispatcher_->enqueue([this, new_state] {
                 grabbable_state_changed(new_state);
               });
             }
@@ -112,7 +112,7 @@ public:
   }
 
 private:
-  std::unique_ptr<thread_utility::queue> call_slots_queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   std::unordered_map<registry_entry_id, entry> entries_;
   mutable std::mutex entries_mutex_;

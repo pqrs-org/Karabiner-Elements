@@ -22,18 +22,18 @@ public:
   console_user_id_monitor(const console_user_id_monitor&) = delete;
 
   console_user_id_monitor(void) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~console_user_id_monitor(void) {
     async_stop();
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   void async_start(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       timer_ = std::make_unique<thread_utility::timer>(
           [](auto&& count) {
             if (count == 0) {
@@ -44,7 +44,7 @@ public:
           },
           true,
           [this] {
-            queue_->push_back([this] {
+            dispatcher_->enqueue([this] {
               auto u = session::get_current_console_user_id();
               if (uid_ && *uid_ == u) {
                 return;
@@ -58,13 +58,13 @@ public:
   }
 
   void async_stop(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       timer_ = nullptr;
     });
   }
 
 private:
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   std::unique_ptr<thread_utility::timer> timer_;
   std::unique_ptr<boost::optional<uid_t>> uid_;
 };

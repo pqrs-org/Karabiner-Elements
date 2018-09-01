@@ -17,7 +17,7 @@ public:
   receiver(const receiver&) = delete;
 
   receiver(void) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     std::string socket_file_path(constants::get_grabber_socket_file_path());
 
@@ -33,7 +33,7 @@ public:
                                                                        reconnect_interval);
 
     server_manager_->bound.connect([this, socket_file_path] {
-      queue_->push_back([socket_file_path] {
+      dispatcher_->enqueue([socket_file_path] {
         if (auto uid = session::get_current_console_user_id()) {
           chown(socket_file_path.c_str(), *uid, 0);
         }
@@ -44,13 +44,13 @@ public:
     });
 
     server_manager_->bind_failed.connect([this](auto&& error_code) {
-      queue_->push_back([] {
+      dispatcher_->enqueue([] {
         logger::get_logger().error("receiver bind_failed");
       });
     });
 
     server_manager_->received.connect([this](auto&& buffer) {
-      queue_->push_back([this, buffer] {
+      dispatcher_->enqueue([this, buffer] {
         if (auto type = types::find_operation_type(*buffer)) {
           switch (*type) {
             case operation_type::grabbable_state_changed:
@@ -79,14 +79,14 @@ public:
                 console_user_server_client_ = std::make_shared<console_user_server_client>();
 
                 console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
-                  queue_->push_back([this, user_core_configuration_file_path] {
+                  dispatcher_->enqueue([this, user_core_configuration_file_path] {
                     stop_device_grabber();
                     start_device_grabber(user_core_configuration_file_path);
                   });
                 });
 
                 console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
-                  queue_->push_back([this] {
+                  dispatcher_->enqueue([this] {
                     console_user_server_client_ = nullptr;
 
                     stop_device_grabber();
@@ -95,7 +95,7 @@ public:
                 });
 
                 console_user_server_client_->closed.connect([this] {
-                  queue_->push_back([this] {
+                  dispatcher_->enqueue([this] {
                     console_user_server_client_ = nullptr;
 
                     stop_device_grabber();
@@ -179,14 +179,14 @@ public:
   }
 
   ~receiver(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       server_manager_ = nullptr;
       console_user_server_client_ = nullptr;
       stop_device_grabber();
     });
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
 
     logger::get_logger().info("receiver is terminated");
   }
@@ -227,7 +227,7 @@ private:
     logger::get_logger().info("device_grabber is stopped.");
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   std::unique_ptr<local_datagram::server_manager> server_manager_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;

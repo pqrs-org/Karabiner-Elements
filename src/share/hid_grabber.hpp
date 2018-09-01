@@ -38,13 +38,13 @@ public:
 
   hid_grabber(std::weak_ptr<human_interface_device> weak_hid) : weak_hid_(weak_hid),
                                                                 grabbed_(false) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     if (auto hid = weak_hid.lock()) {
       // opened
       {
         auto c = hid->opened.connect([this] {
-          queue_->push_back([this] {
+          dispatcher_->enqueue([this] {
             if (auto hid = weak_hid_.lock()) {
               grabbed_ = true;
 
@@ -61,7 +61,7 @@ public:
       // open_failed
       {
         auto c = hid->open_failed.connect([this](auto&& error) {
-          queue_->push_back([this, error] {
+          dispatcher_->enqueue([this, error] {
             if (auto hid = weak_hid_.lock()) {
               auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
                                          iokit_utility::get_error_name(error),
@@ -77,7 +77,7 @@ public:
       // closed
       {
         auto c = hid->closed.connect([this] {
-          queue_->push_back([this] {
+          dispatcher_->enqueue([this] {
             if (auto hid = weak_hid_.lock()) {
               device_ungrabbed();
             }
@@ -89,7 +89,7 @@ public:
       // close_failed
       {
         auto c = hid->close_failed.connect([this](auto&& error) {
-          queue_->push_back([this, error] {
+          dispatcher_->enqueue([this, error] {
             if (auto hid = weak_hid_.lock()) {
               auto message = fmt::format("IOHIDDeviceClose error: {0} ({1}) {2}",
                                          iokit_utility::get_error_name(error),
@@ -121,10 +121,10 @@ public:
 
     human_interface_device_connections_.wait_disconnect_all_connections();
 
-    // Release `queue_`
+    // Release `dispatcher_`
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   std::weak_ptr<human_interface_device> get_weak_hid(void) {
@@ -154,7 +154,7 @@ public:
         },
         true,
         [this] {
-          queue_->push_back([this] {
+          dispatcher_->enqueue([this] {
             if (!grabbed_) {
               if (auto hid = weak_hid_.lock()) {
                 if (!hid->get_removed()) {
@@ -192,7 +192,7 @@ public:
       timer_ = nullptr;
     }
 
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       if (grabbed_) {
         if (auto hid = weak_hid_.lock()) {
           hid->async_unschedule();
@@ -208,7 +208,7 @@ public:
 private:
   std::weak_ptr<human_interface_device> weak_hid_;
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   boost_utility::signals2_connections human_interface_device_connections_;
   bool grabbed_;
   logger::unique_filter logger_unique_filter_;

@@ -10,7 +10,7 @@ public:
   dump_hid_value(const dump_hid_value&) = delete;
 
   dump_hid_value(void) {
-    queue_ = std::make_unique<krbn::thread_utility::queue>();
+    dispatcher_ = std::make_unique<krbn::thread_utility::dispatcher>();
 
     std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
@@ -21,10 +21,10 @@ public:
     hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      queue_->push_back([this, weak_hid] {
+      dispatcher_->enqueue([this, weak_hid] {
         if (auto hid = weak_hid.lock()) {
           hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
-            queue_->push_back([this, weak_hid, shared_event_queue] {
+            dispatcher_->enqueue([this, weak_hid, shared_event_queue] {
               if (auto hid = weak_hid.lock()) {
                 values_arrived(hid, shared_event_queue);
               }
@@ -36,7 +36,7 @@ public:
           auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
 
           hid_observer->device_observed.connect([this, weak_hid] {
-            queue_->push_back([weak_hid] {
+            dispatcher_->enqueue([weak_hid] {
               if (auto hid = weak_hid.lock()) {
                 krbn::logger::get_logger().info("{0} is observed.", hid->get_name_for_log());
               }
@@ -44,7 +44,7 @@ public:
           });
 
           hid_observer->device_unobserved.connect([this, weak_hid] {
-            queue_->push_back([weak_hid] {
+            dispatcher_->enqueue([weak_hid] {
               if (auto hid = weak_hid.lock()) {
                 krbn::logger::get_logger().info("{0} is unobserved.", hid->get_name_for_log());
               }
@@ -59,7 +59,7 @@ public:
     });
 
     hid_manager_->device_removed.connect([this](auto&& weak_hid) {
-      queue_->push_back([this, weak_hid] {
+      dispatcher_->enqueue([this, weak_hid] {
         if (auto hid = weak_hid.lock()) {
           krbn::logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
           hid_observers_.erase(hid->get_registry_entry_id());
@@ -71,13 +71,13 @@ public:
   }
 
   ~dump_hid_value(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       hid_manager_ = nullptr;
       hid_observers_.clear();
     });
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
 private:
@@ -185,7 +185,7 @@ private:
     }
   }
 
-  std::unique_ptr<krbn::thread_utility::queue> queue_;
+  std::unique_ptr<krbn::thread_utility::dispatcher> dispatcher_;
   std::unique_ptr<krbn::hid_manager> hid_manager_;
   std::unordered_map<krbn::registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 };

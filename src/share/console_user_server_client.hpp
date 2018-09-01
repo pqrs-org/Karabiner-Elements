@@ -25,12 +25,12 @@ public:
   console_user_server_client(const console_user_server_client&) = delete;
 
   console_user_server_client(void) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
     console_user_id_monitor_->console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
-      queue_->push_back([this, uid] {
+      dispatcher_->enqueue([this, uid] {
         if (uid) {
           client_manager_ = nullptr;
 
@@ -65,24 +65,24 @@ public:
   }
 
   ~console_user_server_client(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       console_user_id_monitor_ = nullptr;
 
       client_manager_ = nullptr;
     });
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   void async_start(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       console_user_id_monitor_->async_start();
     });
   }
 
   void async_stop(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       console_user_id_monitor_->async_stop();
 
       client_manager_ = nullptr;
@@ -90,7 +90,7 @@ public:
   }
 
   void async_shell_command_execution(const std::string& shell_command) const {
-    queue_->push_back([this, shell_command] {
+    dispatcher_->enqueue([this, shell_command] {
       operation_type_shell_command_execution_struct s;
 
       if (shell_command.length() >= sizeof(s.shell_command)) {
@@ -107,7 +107,7 @@ public:
   }
 
   void async_select_input_source(const input_source_selector& input_source_selector, uint64_t time_stamp) {
-    queue_->push_back([this, input_source_selector, time_stamp] {
+    dispatcher_->enqueue([this, input_source_selector, time_stamp] {
       operation_type_select_input_source_struct s;
       s.time_stamp = time_stamp;
 
@@ -167,7 +167,7 @@ private:
     }
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   std::unique_ptr<console_user_id_monitor> console_user_id_monitor_;
   std::unique_ptr<local_datagram::client_manager> client_manager_;
 };

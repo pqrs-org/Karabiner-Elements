@@ -40,12 +40,12 @@ public:
                                                                                               complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                                                                                               fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
                                                                                               posted_event_queue_(std::make_shared<event_queue>()) {
-    queue_ = std::make_unique<thread_utility::queue>();
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     virtual_hid_device_client_ = std::make_shared<virtual_hid_device_client>();
 
     client_connected_connection_ = virtual_hid_device_client_->client_connected.connect([this] {
-      queue_->push_back([this] {
+      dispatcher_->enqueue([this] {
         logger::get_logger().info("virtual_hid_device_client_ is connected");
 
         update_virtual_hid_keyboard();
@@ -54,7 +54,7 @@ public:
     });
 
     client_disconnected_connection_ = virtual_hid_device_client_->client_disconnected.connect([this] {
-      queue_->push_back([this] {
+      dispatcher_->enqueue([this] {
         logger::get_logger().info("virtual_hid_device_client_ is disconnected");
 
         async_stop();
@@ -62,7 +62,7 @@ public:
     });
 
     grabbable_state_changed_connection_ = grabbable_state_queues_manager::get_shared_instance()->grabbable_state_changed.connect([this](auto&& registry_entry_id, auto&& grabbable_state) {
-      queue_->push_back([this, registry_entry_id, grabbable_state] {
+      dispatcher_->enqueue([this, registry_entry_id, grabbable_state] {
         retry_grab(registry_entry_id, grabbable_state);
       });
     });
@@ -85,13 +85,13 @@ public:
                                                             posted_event_queue_);
 
     input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this] {
-      queue_->push_back([this] {
+      dispatcher_->enqueue([this] {
         manipulate(mach_absolute_time());
       });
     });
 
     manipulator_timer_invoked_connection_ = manipulator::manipulator_timer::get_instance().timer_invoked.connect([this](auto timer_id, auto now) {
-      queue_->push_back([this, timer_id, now] {
+      dispatcher_->enqueue([this, timer_id, now] {
         if (manipulator_timer_id_ == timer_id) {
           manipulator_timer_id_ = boost::none;
           manipulate(now);
@@ -106,7 +106,7 @@ public:
         std::chrono::milliseconds(1000),
         true,
         [&] {
-          queue_->push_back([this] {
+          dispatcher_->enqueue([this] {
             update_caps_lock_led();
           });
         });
@@ -129,10 +129,10 @@ public:
     });
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      queue_->push_back([this, weak_hid] {
+      dispatcher_->enqueue([this, weak_hid] {
         if (auto hid = weak_hid.lock()) {
           hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
-            queue_->push_back([this, weak_hid, shared_event_queue] {
+            dispatcher_->enqueue([this, weak_hid, shared_event_queue] {
               if (auto hid = weak_hid.lock()) {
                 values_arrived(hid, shared_event_queue);
               }
@@ -149,7 +149,7 @@ public:
           });
 
           grabber->device_grabbed.connect([this, weak_hid] {
-            queue_->push_back([this, weak_hid] {
+            dispatcher_->enqueue([this, weak_hid] {
               if (auto hid = weak_hid.lock()) {
                 logger::get_logger().info("{0} is grabbed", hid->get_name_for_log());
 
@@ -165,7 +165,7 @@ public:
           });
 
           grabber->device_ungrabbed.connect([this, weak_hid] {
-            queue_->push_back([this, weak_hid] {
+            dispatcher_->enqueue([this, weak_hid] {
               if (auto hid = weak_hid.lock()) {
                 logger::get_logger().info("{0} is ungrabbed", hid->get_name_for_log());
 
@@ -196,7 +196,7 @@ public:
     });
 
     hid_manager_->device_removed.connect([this](auto&& weak_hid) {
-      queue_->push_back([this, weak_hid] {
+      dispatcher_->enqueue([this, weak_hid] {
         if (auto hid = weak_hid.lock()) {
           auto registry_entry_id = hid->get_registry_entry_id();
 
@@ -235,7 +235,7 @@ public:
   ~device_grabber(void) {
     async_stop();
 
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       hid_manager_ = nullptr;
       hid_grabbers_.clear();
 
@@ -250,18 +250,18 @@ public:
       client_disconnected_connection_.disconnect();
     });
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
   void async_start(const std::string& user_core_configuration_file_path) {
-    queue_->push_back([this, user_core_configuration_file_path] {
+    dispatcher_->enqueue([this, user_core_configuration_file_path] {
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_manager here.
       event_tap_manager_ = std::make_unique<event_tap_manager>();
 
       event_tap_manager_->caps_lock_state_changed.connect([this](auto&& state) {
-        queue_->push_back([this, state] {
+        dispatcher_->enqueue([this, state] {
           last_caps_lock_state_ = state;
           post_caps_lock_state_changed_event(state);
           update_caps_lock_led();
@@ -272,7 +272,7 @@ public:
         if (event) {
           CFRetain(event);
 
-          queue_->push_back([this, event_type, event] {
+          dispatcher_->enqueue([this, event_type, event] {
             if (auto pseudo_event = event_tap_utility::make_event(event_type, event)) {
               auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
               event_queue::queued_event queued_event(device_id(0),
@@ -296,7 +296,7 @@ public:
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path);
 
       configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
-        queue_->push_back([this, weak_core_configuration] {
+        dispatcher_->enqueue([this, weak_core_configuration] {
           if (auto core_configuration = weak_core_configuration.lock()) {
             core_configuration_ = core_configuration;
 
@@ -314,7 +314,7 @@ public:
   }
 
   void async_stop(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       configuration_monitor_ = nullptr;
 
       async_ungrab_devices();
@@ -326,7 +326,7 @@ public:
   }
 
   void async_grab_devices(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       for (auto& pair : hid_grabbers_) {
         if (pair.second->make_grabbable_state() == grabbable_state::state::ungrabbable_permanently) {
           pair.second->async_ungrab();
@@ -340,7 +340,7 @@ public:
   }
 
   void async_ungrab_devices(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       for (auto& pair : hid_grabbers_) {
         pair.second->async_ungrab();
       }
@@ -350,7 +350,7 @@ public:
   }
 
   void async_unset_profile(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       profile_ = core_configuration::profile(nlohmann::json());
 
       manipulator_managers_connector_.invalidate_manipulators();
@@ -358,7 +358,7 @@ public:
   }
 
   void async_set_system_preferences(const system_preferences& value) {
-    queue_->push_back([this, value] {
+    dispatcher_->enqueue([this, value] {
       system_preferences_ = value;
 
       update_fn_function_keys_manipulators();
@@ -368,7 +368,7 @@ public:
 
   void async_post_frontmost_application_changed_event(const std::string& bundle_identifier,
                                                       const std::string& file_path) {
-    queue_->push_back([this, bundle_identifier, file_path] {
+    dispatcher_->enqueue([this, bundle_identifier, file_path] {
       auto event = event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
                                                                                               file_path);
       event_queue::queued_event queued_event(device_id(0),
@@ -384,7 +384,7 @@ public:
   }
 
   void async_post_input_source_changed_event(const input_source_identifiers& input_source_identifiers) {
-    queue_->push_back([this, input_source_identifiers] {
+    dispatcher_->enqueue([this, input_source_identifiers] {
       auto event = event_queue::queued_event::event::make_input_source_changed_event(input_source_identifiers);
       event_queue::queued_event queued_event(device_id(0),
                                              event_queue::queued_event::event_time_stamp(mach_absolute_time()),
@@ -399,7 +399,7 @@ public:
   }
 
   void async_post_keyboard_type_changed_event(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       auto keyboard_type_string = system_preferences_utility::get_keyboard_type_string(system_preferences_.get_keyboard_type());
       auto event = event_queue::queued_event::event::make_keyboard_type_changed_event(keyboard_type_string);
       event_queue::queued_event queued_event(device_id(0),
@@ -1021,7 +1021,7 @@ private:
     return nullptr;
   }
 
-  std::unique_ptr<thread_utility::queue> queue_;
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   std::shared_ptr<virtual_hid_device_client> virtual_hid_device_client_;
   boost::signals2::connection client_connected_connection_;

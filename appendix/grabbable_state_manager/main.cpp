@@ -11,12 +11,12 @@ public:
   grabbable_state_manager_demo(const grabbable_state_manager_demo&) = delete;
 
   grabbable_state_manager_demo(void) {
-    queue_ = std::make_unique<krbn::thread_utility::queue>();
+    dispatcher_ = std::make_unique<krbn::thread_utility::dispatcher>();
 
     grabbable_state_manager_ = std::make_unique<krbn::grabbable_state_manager>();
 
     grabbable_state_manager_->grabbable_state_changed.connect([this](auto&& grabbable_state) {
-      queue_->push_back([grabbable_state] {
+      dispatcher_->enqueue([grabbable_state] {
         std::cout << "grabbable_state_changed "
                   << grabbable_state.get_registry_entry_id()
                   << " "
@@ -34,10 +34,10 @@ public:
     hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      queue_->push_back([this, weak_hid] {
+      dispatcher_->enqueue([this, weak_hid] {
         if (auto hid = weak_hid.lock()) {
           hid->values_arrived.connect([this](auto&& shared_event_queue) {
-            queue_->push_back([this, shared_event_queue] {
+            dispatcher_->enqueue([this, shared_event_queue] {
               if (grabbable_state_manager_) {
                 grabbable_state_manager_->update(*shared_event_queue);
               }
@@ -49,7 +49,7 @@ public:
           auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
 
           hid_observer->device_observed.connect([this, weak_hid] {
-            queue_->push_back([weak_hid] {
+            dispatcher_->enqueue([weak_hid] {
               if (auto hid = weak_hid.lock()) {
                 krbn::logger::get_logger().info("{0} is observed.", hid->get_name_for_log());
               }
@@ -57,7 +57,7 @@ public:
           });
 
           hid_observer->device_unobserved.connect([this, weak_hid] {
-            queue_->push_back([weak_hid] {
+            dispatcher_->enqueue([weak_hid] {
               if (auto hid = weak_hid.lock()) {
                 krbn::logger::get_logger().info("{0} is unobserved.", hid->get_name_for_log());
               }
@@ -72,7 +72,7 @@ public:
     });
 
     hid_manager_->device_removed.connect([this](auto&& weak_hid) {
-      queue_->push_back([this, weak_hid] {
+      dispatcher_->enqueue([this, weak_hid] {
         if (auto hid = weak_hid.lock()) {
           krbn::logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
           hid_observers_.erase(hid->get_registry_entry_id());
@@ -84,17 +84,17 @@ public:
   }
 
   ~grabbable_state_manager_demo(void) {
-    queue_->push_back([this] {
+    dispatcher_->enqueue([this] {
       hid_manager_ = nullptr;
       hid_observers_.clear();
     });
 
-    queue_->terminate();
-    queue_ = nullptr;
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
 private:
-  std::unique_ptr<krbn::thread_utility::queue> queue_;
+  std::unique_ptr<krbn::thread_utility::dispatcher> dispatcher_;
   std::unique_ptr<krbn::grabbable_state_manager> grabbable_state_manager_;
   std::unique_ptr<krbn::hid_manager> hid_manager_;
   std::unordered_map<krbn::registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
