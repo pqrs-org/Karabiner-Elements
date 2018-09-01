@@ -1,13 +1,13 @@
 #pragma once
 
 // `krbn::thread_utility::timer` can be used safely in a multi-threaded environment.
-// `krbn::thread_utility::queue` can be used safely in a multi-threaded environment.
+// `krbn::thread_utility::dispatcher` can be used safely in a multi-threaded environment.
 
 #include "logger.hpp"
 #include <chrono>
-#include <deque>
 #include <functional>
 #include <mutex>
+#include <queue>
 #include <thread>
 
 namespace krbn {
@@ -98,9 +98,9 @@ public:
     std::condition_variable timer_cv_;
   };
 
-  class queue final {
+  class dispatcher final {
   public:
-    queue(void) : exit_(false) {
+    dispatcher(void) : exit_(false) {
       worker_thread_ = std::thread([this] {
         while (true) {
           std::function<void(void)> function;
@@ -117,7 +117,7 @@ public:
 
             if (!queue_.empty()) {
               function = queue_.front();
-              queue_.pop_front();
+              queue_.pop();
             }
           }
 
@@ -128,23 +128,23 @@ public:
       });
     }
 
-    ~queue(void) {
+    ~dispatcher(void) {
       if (worker_thread_.joinable()) {
-        logger::get_logger().error("Call `thread_utility::queue::terminate` before destroy `thread_utility::queue`");
+        logger::get_logger().error("Call `thread_utility::dispatcher::terminate` before destroy `thread_utility::dispatcher`");
         terminate();
       }
     }
 
     void terminate(void) {
-      // We should separate `~queue` and `terminate` to ensure queue exists until all jobs are processed.
+      // We should separate `~dispatcher` and `terminate` to ensure dispatcher exists until all jobs are processed.
       //
       // Example:
       // ----------------------------------------
-      // auto q = std::unique_ptr<thread_utility::queue>();
+      // auto q = std::unique_ptr<thread_utility::dispatcher>();
       //
-      // q->push_back([q] {
+      // q->enqueue([q] {
       //   // `q` might be nullptr if we call `terminate` before `q = nullptr`.
-      //   q->push_back([] {
+      //   q->enqueue([] {
       //     std::cout << "hello" << std::endl;
       //   }
       // });
@@ -160,11 +160,11 @@ public:
       }
     }
 
-    void push_back(const std::function<void(void)>& function) {
+    void enqueue(const std::function<void(void)>& function) {
       {
         std::lock_guard<std::mutex> lock(queue_mutex_);
 
-        queue_.push_back(function);
+        queue_.push(function);
       }
 
       queue_cv_.notify_one();
@@ -174,7 +174,7 @@ public:
     std::thread worker_thread_;
     std::atomic<bool> exit_;
 
-    std::deque<std::function<void(void)>> queue_;
+    std::queue<std::function<void(void)>> queue_;
     std::mutex queue_mutex_;
     std::condition_variable queue_cv_;
   };

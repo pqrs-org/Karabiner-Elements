@@ -212,16 +212,16 @@ TEST_CASE("timer.repeats.interval") {
   }
 }
 
-TEST_CASE("queue") {
-  std::cout << "queue" << std::endl;
+TEST_CASE("dispatcher") {
+  std::cout << "dispatcher" << std::endl;
 
   {
     size_t count = 0;
 
-    krbn::thread_utility::queue queue;
+    krbn::thread_utility::dispatcher dispatcher;
 
     for (int i = 0; i < 10000; ++i) {
-      queue.push_back([&count, i] {
+      dispatcher.enqueue([&count, i] {
         ++count;
         if (i % 1000 == 0) {
           std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -235,19 +235,41 @@ TEST_CASE("queue") {
 
     REQUIRE(count == 10000);
 
-    queue.terminate();
+    dispatcher.terminate();
   }
 
-  // Run queued functions in the destructor.
+  // Preserve the order of entries.
+
+  {
+    std::string text;
+
+    krbn::thread_utility::dispatcher dispatcher;
+
+    dispatcher.enqueue([&] {
+      text += "a";
+    });
+    dispatcher.enqueue([&] {
+      text += "b";
+    });
+    dispatcher.enqueue([&] {
+      text += "c";
+    });
+
+    dispatcher.terminate();
+
+    REQUIRE(text == "abc");
+  }
+
+  // Run enqueued functions in the destructor.
 
   {
     size_t count = 0;
 
     {
-      krbn::thread_utility::queue queue;
+      krbn::thread_utility::dispatcher dispatcher;
 
       for (int i = 0; i < 10000; ++i) {
-        queue.push_back([&count, i] {
+        dispatcher.enqueue([&count, i] {
           ++count;
           if (i % 1000 == 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -255,57 +277,57 @@ TEST_CASE("queue") {
         });
       }
 
-      queue.terminate();
+      dispatcher.terminate();
     }
 
     REQUIRE(count == 10000);
   }
 
-  // Ignore `push_back` after `terminate`.
+  // Ignore `enqueue` after `terminate`.
 
   {
-    krbn::thread_utility::queue queue;
+    krbn::thread_utility::dispatcher dispatcher;
 
-    queue.terminate();
+    dispatcher.terminate();
 
-    queue.push_back([&queue] {
-      queue.push_back([] {
+    dispatcher.enqueue([&dispatcher] {
+      dispatcher.enqueue([] {
       });
     });
   }
 }
 
 namespace {
-void queue_recursive_function(krbn::thread_utility::queue& queue,
-                              size_t& count) {
+void dispatcher_recursive_function(krbn::thread_utility::dispatcher& dispatcher,
+                                   size_t& count) {
   ++count;
   if (count < 5) {
-    queue.push_back([&queue, &count] {
-      queue_recursive_function(queue, count);
+    dispatcher.enqueue([&dispatcher, &count] {
+      dispatcher_recursive_function(dispatcher, count);
     });
   } else if (count == 5) {
-    queue.push_back([] {
-      std::cout << "queue_recursive_function finished" << std::endl;
+    dispatcher.enqueue([] {
+      std::cout << "dispatcher_recursive_function finished" << std::endl;
     });
   }
 }
 
-class queue_recursive_class final {
+class dispatcher_recursive_class final {
 public:
-  queue_recursive_class(size_t& count) : count_(count) {
-    queue_ = std::make_unique<krbn::thread_utility::queue>();
+  dispatcher_recursive_class(size_t& count) : count_(count) {
+    dispatcher_ = std::make_unique<krbn::thread_utility::dispatcher>();
   }
 
-  ~queue_recursive_class(void) {
-    queue_->terminate();
-    queue_ = nullptr;
+  ~dispatcher_recursive_class(void) {
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
-  void push_back(void) {
-    queue_->push_back([this] {
-      queue_->push_back([this] {
+  void enqueue(void) {
+    dispatcher_->enqueue([this] {
+      dispatcher_->enqueue([this] {
         ++count_;
-        std::cout << "queue_recursive_class finished" << std::endl;
+        std::cout << "dispatcher_recursive_class finished" << std::endl;
       });
     });
   }
@@ -313,26 +335,26 @@ public:
 private:
   size_t& count_;
 
-  std::unique_ptr<krbn::thread_utility::queue> queue_;
+  std::unique_ptr<krbn::thread_utility::dispatcher> dispatcher_;
 };
 } // namespace
 
-TEST_CASE("queue.recursive") {
-  std::cout << "queue.recursive" << std::endl;
+TEST_CASE("dispatcher.recursive") {
+  std::cout << "dispatcher.recursive" << std::endl;
 
-  // Call `push_back` in queue's thread.
+  // Call `enqueue` in dispatcher's thread.
 
   {
     size_t count = 0;
 
     {
-      krbn::thread_utility::queue queue;
+      krbn::thread_utility::dispatcher dispatcher;
 
-      queue.push_back([&] {
-        queue_recursive_function(queue, count);
+      dispatcher.enqueue([&] {
+        dispatcher_recursive_function(dispatcher, count);
       });
 
-      queue.terminate();
+      dispatcher.terminate();
     }
 
     REQUIRE(count == 5);
@@ -342,9 +364,9 @@ TEST_CASE("queue.recursive") {
     size_t count = 0;
 
     {
-      queue_recursive_class queue_recursive_class(count);
+      dispatcher_recursive_class dispatcher_recursive_class(count);
 
-      queue_recursive_class.push_back();
+      dispatcher_recursive_class.enqueue();
     }
 
     REQUIRE(count == 1);
