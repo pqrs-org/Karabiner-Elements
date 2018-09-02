@@ -56,7 +56,7 @@ public:
     current_manipulated_original_event_ = current_manipulated_original_event;
     output_event_queue_ = output_event_queue;
 
-    auto when = front_input_event.get_event_time_stamp().get_time_stamp() + time_utility::nano_to_absolute(delay_milliseconds * NSEC_PER_MSEC);
+    auto when = front_input_event.get_event_time_stamp().get_time_stamp() + time_utility::nanoseconds_to_absolute(delay_milliseconds * NSEC_PER_MSEC);
     manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(when);
   }
 

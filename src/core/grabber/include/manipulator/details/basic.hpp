@@ -180,7 +180,7 @@ public:
                 std::vector<event_queue::queued_event::event> ordered_key_down_events;
                 std::vector<event_queue::queued_event::event> ordered_key_up_events;
                 uint64_t simultaneous_threshold_milliseconds = parameters_.get_basic_simultaneous_threshold_milliseconds();
-                uint64_t end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() + time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC);
+                uint64_t end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() + time_utility::nanoseconds_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC);
 
                 for (const auto& queued_event : input_event_queue.get_events()) {
                   if (!is_target) {
@@ -300,7 +300,7 @@ public:
                   auto found = all_from_events_found(from_events);
                   if (needs_wait_key_up || !found) {
                     auto t = std::max(front_input_event.get_event_time_stamp().get_input_delay_time_stamp(),
-                                      time_utility::nano_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC));
+                                      time_utility::nanoseconds_to_absolute(simultaneous_threshold_milliseconds * NSEC_PER_MSEC));
                     front_input_event.get_event_time_stamp().set_input_delay_time_stamp(t);
 
                     if (now < front_input_event.get_event_time_stamp().make_time_stamp_with_input_delay()) {
@@ -441,7 +441,7 @@ public:
                   // to_if_alone_
 
                   if (!to_if_alone_.empty()) {
-                    uint64_t nanoseconds = time_utility::absolute_to_nano(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
+                    uint64_t nanoseconds = time_utility::absolute_to_nanoseconds(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                     if (current_manipulated_original_event->get_alone() &&
                         nanoseconds < parameters_.get_basic_to_if_alone_timeout_milliseconds() * NSEC_PER_MSEC) {
                       post_from_mandatory_modifiers_key_up(front_input_event,

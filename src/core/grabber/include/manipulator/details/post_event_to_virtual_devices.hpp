@@ -36,37 +36,37 @@ public:
       };
 
       event(const pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& value,
-            uint64_t time_stamp) : type_(type::keyboard_input),
-                                   value_(value),
-                                   time_stamp_(time_stamp) {
+            absolute_time time_stamp) : type_(type::keyboard_input),
+                                        value_(value),
+                                        time_stamp_(time_stamp) {
       }
 
       event(const pqrs::karabiner_virtual_hid_device::hid_report::consumer_input& value,
-            uint64_t time_stamp) : type_(type::consumer_input),
-                                   value_(value),
-                                   time_stamp_(time_stamp) {
+            absolute_time time_stamp) : type_(type::consumer_input),
+                                        value_(value),
+                                        time_stamp_(time_stamp) {
       }
 
       event(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input& value,
-            uint64_t time_stamp) : type_(type::apple_vendor_top_case_input),
-                                   value_(value),
-                                   time_stamp_(time_stamp) {
+            absolute_time time_stamp) : type_(type::apple_vendor_top_case_input),
+                                        value_(value),
+                                        time_stamp_(time_stamp) {
       }
 
       event(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input& value,
-            uint64_t time_stamp) : type_(type::apple_vendor_keyboard_input),
-                                   value_(value),
-                                   time_stamp_(time_stamp) {
+            absolute_time time_stamp) : type_(type::apple_vendor_keyboard_input),
+                                        value_(value),
+                                        time_stamp_(time_stamp) {
       }
 
       event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& value,
-            uint64_t time_stamp) : type_(type::pointing_input),
-                                   value_(value),
-                                   time_stamp_(time_stamp) {
+            absolute_time time_stamp) : type_(type::pointing_input),
+                                        value_(value),
+                                        time_stamp_(time_stamp) {
       }
 
       static event make_shell_command_event(const std::string& shell_command,
-                                            uint64_t time_stamp) {
+                                            absolute_time time_stamp) {
         event e;
         e.type_ = type::shell_command;
         e.value_ = shell_command;
@@ -75,7 +75,7 @@ public:
       }
 
       static event make_select_input_source_event(const std::vector<input_source_selector>& input_source_selector,
-                                                  uint64_t time_stamp) {
+                                                  absolute_time time_stamp) {
         event e;
         e.type_ = type::select_input_source;
         e.value_ = input_source_selector;
@@ -193,7 +193,7 @@ public:
         return boost::none;
       }
 
-      uint64_t get_time_stamp(void) const {
+      absolute_time get_time_stamp(void) const {
         return time_stamp_;
       }
 
@@ -235,7 +235,7 @@ public:
                      std::vector<input_source_selector> // For select_input_source
                      >
           value_;
-      uint64_t time_stamp_;
+      absolute_time time_stamp_;
     };
 
     queue(void) : last_event_type_(event_type::single),
@@ -264,7 +264,7 @@ public:
     void emplace_back_key_event(hid_usage_page hid_usage_page,
                                 hid_usage hid_usage,
                                 event_type event_type,
-                                uint64_t time_stamp) {
+                                absolute_time time_stamp) {
       adjust_time_stamp(time_stamp,
                         event_type,
                         types::make_modifier_flag(hid_usage_page, hid_usage) != boost::none);
@@ -380,7 +380,7 @@ public:
 
     void emplace_back_pointing_input(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
                                      event_type event_type,
-                                     uint64_t time_stamp) {
+                                     absolute_time time_stamp) {
       adjust_time_stamp(time_stamp, event_type);
 
       events_.emplace_back(pointing_input,
@@ -388,7 +388,7 @@ public:
     }
 
     void push_back_shell_command_event(const std::string& shell_command,
-                                       uint64_t time_stamp) {
+                                       absolute_time time_stamp) {
       // Do not call adjust_time_stamp.
       auto e = event::make_shell_command_event(shell_command,
                                                time_stamp);
@@ -397,7 +397,7 @@ public:
     }
 
     void push_back_select_input_source_event(const std::vector<input_source_selector>& input_source_selectors,
-                                             uint64_t time_stamp) {
+                                             absolute_time time_stamp) {
       // Do not call adjust_time_stamp.
       auto e = event::make_select_input_source_event(input_source_selectors,
                                                      time_stamp);
@@ -497,7 +497,7 @@ public:
     }
 
   private:
-    void adjust_time_stamp(uint64_t& time_stamp,
+    void adjust_time_stamp(absolute_time& time_stamp,
                            event_type et,
                            bool is_modifier_key_event = false) {
       // Wait is 5 milliseconds
@@ -506,7 +506,7 @@ public:
       // * If wait is 1 millisecond, Google Chrome issue below is sometimes happen.
       //
 
-      auto wait = time_utility::nano_to_absolute(5 * NSEC_PER_MSEC);
+      auto wait = time_utility::nanoseconds_to_absolute(5 * NSEC_PER_MSEC);
 
       bool skip = false;
       switch (et) {
@@ -583,7 +583,7 @@ public:
     // Without wait, control-space (Select the previous input source) does not work properly.
 
     event_type last_event_type_;
-    uint64_t last_event_time_stamp_;
+    absolute_time last_event_time_stamp_;
 
     pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input keyboard_input_;
     pqrs::karabiner_virtual_hid_device::hid_report::consumer_input consumer_input_;
@@ -597,7 +597,7 @@ public:
                                  hid_usage_page hid_usage_page,
                                  hid_usage hid_usage,
                                  queue& queue,
-                                 uint64_t time_stamp) {
+                                 absolute_time time_stamp) {
       // Enqueue key_down event if it is not sent yet.
 
       if (!key_event_exists(hid_usage_page, hid_usage)) {
@@ -609,7 +609,7 @@ public:
     void dispatch_key_up_event(hid_usage_page hid_usage_page,
                                hid_usage hid_usage,
                                queue& queue,
-                               uint64_t time_stamp) {
+                               absolute_time time_stamp) {
       // Enqueue key_up event if it is already sent.
 
       if (key_event_exists(hid_usage_page, hid_usage)) {
@@ -626,7 +626,7 @@ public:
 
     void dispatch_modifier_key_event(const modifier_flag_manager& modifier_flag_manager,
                                      queue& queue,
-                                     uint64_t time_stamp) {
+                                     absolute_time time_stamp) {
       auto modifier_flags = {
           modifier_flag::left_control,
           modifier_flag::left_shift,
@@ -670,7 +670,7 @@ public:
 
     void dispatch_key_up_events_by_device_id(device_id device_id,
                                              queue& queue,
-                                             uint64_t time_stamp) {
+                                             absolute_time time_stamp) {
       while (true) {
         bool found = false;
         for (const auto& k : pressed_keys_) {
@@ -709,7 +709,7 @@ public:
                            hid_usage usage,
                            event_type event_type,
                            queue& queue,
-                           uint64_t time_stamp) {
+                           absolute_time time_stamp) {
       queue.emplace_back_key_event(usage_page, usage, event_type, time_stamp);
     }
 
@@ -760,7 +760,7 @@ public:
                                                                       horizontal_wheel_count_converter_(128) {
     }
 
-    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
+    void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, absolute_time now) {
       if (timer_id == manipulator_timer_id_) {
         manipulator_timer_id_ = boost::none;
         post_event(now);
@@ -771,7 +771,7 @@ public:
     void push_back_mouse_key(device_id device_id,
                              const mouse_key& mouse_key,
                              const std::shared_ptr<event_queue>& output_event_queue,
-                             uint64_t time_stamp) {
+                             absolute_time time_stamp) {
       erase_entry(device_id, mouse_key);
       entries_.emplace_back(device_id, mouse_key);
 
@@ -783,7 +783,7 @@ public:
     void erase_mouse_key(device_id device_id,
                          const mouse_key& mouse_key,
                          const std::shared_ptr<event_queue>& output_event_queue,
-                         uint64_t time_stamp) {
+                         absolute_time time_stamp) {
       erase_entry(device_id, mouse_key);
 
       output_event_queue_ = output_event_queue;
@@ -792,7 +792,7 @@ public:
     }
 
     void erase_mouse_keys_by_device_id(device_id device_id,
-                                       uint64_t time_stamp) {
+                                       absolute_time time_stamp) {
       entries_.erase(std::remove_if(std::begin(entries_),
                                     std::end(entries_),
                                     [&](const auto& pair) {
@@ -819,7 +819,7 @@ public:
                      std::end(entries_));
     }
 
-    void post_event(uint64_t time_stamp) {
+    void post_event(absolute_time time_stamp) {
       if (auto oeq = output_event_queue_.lock()) {
         mouse_key total;
         for (const auto& pair : entries_) {
@@ -855,8 +855,8 @@ public:
                                              event_type::single,
                                              time_stamp);
 
-          uint64_t delay_milliseconds = 20;
-          auto when = time_stamp + time_utility::nano_to_absolute(delay_milliseconds * NSEC_PER_MSEC);
+          absolute_time delay_milliseconds = 20;
+          auto when = time_stamp + time_utility::nanoseconds_to_absolute(delay_milliseconds * NSEC_PER_MSEC);
           manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(when);
         }
       }
@@ -895,7 +895,7 @@ public:
   virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
                                        const event_queue& input_event_queue,
                                        const std::shared_ptr<event_queue>& output_event_queue,
-                                       uint64_t now) {
+                                       absolute_time now) {
     if (output_event_queue) {
       if (!front_input_event.get_valid()) {
         return manipulate_result::passed;
@@ -1142,7 +1142,7 @@ public:
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
-                                             uint64_t time_stamp) {
+                                             absolute_time time_stamp) {
     // Release pressed keys
 
     key_event_dispatcher_.dispatch_key_up_events_by_device_id(device_id,
@@ -1209,7 +1209,7 @@ public:
     }
   }
 
-  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
+  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, absolute_time now) {
     mouse_key_handler_.manipulator_timer_invoked(timer_id, now);
   }
 
