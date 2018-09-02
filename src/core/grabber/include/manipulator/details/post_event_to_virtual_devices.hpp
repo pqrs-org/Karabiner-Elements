@@ -416,7 +416,7 @@ public:
           return;
         }
 
-        uint64_t now = mach_absolute_time();
+        auto now = time_utility::mach_absolute_time();
 
         while (!events_.empty()) {
           auto& e = events_.front();

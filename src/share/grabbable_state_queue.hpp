@@ -32,7 +32,7 @@ public:
     dispatcher_ = nullptr;
   }
 
-  boost::optional<uint64_t> get_first_grabbed_event_time_stamp(void) const {
+  boost::optional<absolute_time> get_first_grabbed_event_time_stamp(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return first_grabbed_event_time_stamp_;
@@ -80,7 +80,7 @@ public:
     return true;
   }
 
-  bool update_first_grabbed_event_time_stamp(uint64_t time_stamp) {
+  bool update_first_grabbed_event_time_stamp(absolute_time time_stamp) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (first_grabbed_event_time_stamp_) {
@@ -148,7 +148,7 @@ private:
   // (We should remove entries after first_grabbed_event_time_stamp_.)
   boost::circular_buffer<grabbable_state> grabbable_states_;
 
-  boost::optional<uint64_t> first_grabbed_event_time_stamp_;
+  boost::optional<absolute_time> first_grabbed_event_time_stamp_;
 
   mutable std::mutex mutex_;
 };
