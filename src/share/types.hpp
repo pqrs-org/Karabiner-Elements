@@ -24,6 +24,7 @@
 #include <regex>
 #include <string>
 #include <thread>
+#include <type_safe/strong_typedef.hpp>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -31,7 +32,11 @@
 namespace krbn {
 class device_detail;
 
-enum class absolute_time : uint64_t {
+struct absolute_time : type_safe::strong_typedef<absolute_time, uint64_t>,
+                       type_safe::strong_typedef_op::equality_comparison<absolute_time>,
+                       type_safe::strong_typedef_op::relational_comparison<absolute_time>,
+                       type_safe::strong_typedef_op::integer_arithmetic<absolute_time> {
+  using strong_typedef::strong_typedef;
 };
 
 enum class operation_type : uint8_t {
@@ -546,16 +551,16 @@ public:
   grabbable_state(void) : grabbable_state(registry_entry_id::zero,
                                           state::grabbable,
                                           ungrabbable_temporarily_reason::none,
-                                          0) {
+                                          absolute_time(0)) {
   }
 
   grabbable_state(registry_entry_id registry_entry_id,
                   state state,
                   ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
-                  uint64_t time_stamp) : registry_entry_id_(registry_entry_id),
-                                         state_(state),
-                                         ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
-                                         time_stamp_(time_stamp) {
+                  absolute_time time_stamp) : registry_entry_id_(registry_entry_id),
+                                              state_(state),
+                                              ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
+                                              time_stamp_(time_stamp) {
   }
 
   registry_entry_id get_registry_entry_id(void) const {
@@ -570,7 +575,7 @@ public:
     return ungrabbable_temporarily_reason_;
   }
 
-  uint64_t get_time_stamp(void) const {
+  absolute_time get_time_stamp(void) const {
     return time_stamp_;
   }
 
@@ -593,7 +598,7 @@ private:
   registry_entry_id registry_entry_id_;
   state state_;
   ungrabbable_temporarily_reason ungrabbable_temporarily_reason_;
-  uint64_t time_stamp_;
+  absolute_time time_stamp_;
 };
 
 class device_identifiers final {
@@ -2055,6 +2060,10 @@ struct operation_type_select_input_source_struct {
 };
 
 // stream output
+
+std::ostream& operator<<(std::ostream& stream, const absolute_time& value) {
+  return stream << static_cast<uint64_t>(value);
+}
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \
   inline std::ostream& operator<<(std::ostream& stream, const TYPE& value) {                                                                         \

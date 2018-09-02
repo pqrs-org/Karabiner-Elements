@@ -129,17 +129,17 @@ TEST_CASE("grabbable_state") {
     REQUIRE(grabbable_state.get_registry_entry_id() == krbn::registry_entry_id::zero);
     REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::grabbable);
     REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::none);
-    REQUIRE(grabbable_state.get_time_stamp() == 0);
+    REQUIRE(grabbable_state.get_time_stamp() == krbn::absolute_time(0));
   }
   {
     krbn::grabbable_state grabbable_state(krbn::registry_entry_id(1234),
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                          1000);
+                                          krbn::absolute_time(1000));
     REQUIRE(grabbable_state.get_registry_entry_id() == krbn::registry_entry_id(1234));
     REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::ungrabbable_temporarily);
     REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating);
-    REQUIRE(grabbable_state.get_time_stamp() == 1000);
+    REQUIRE(grabbable_state.get_time_stamp() == krbn::absolute_time(1000));
   }
 }
 
@@ -148,15 +148,15 @@ TEST_CASE("grabbable_state::equals_except_time_stamp") {
     krbn::grabbable_state grabbable_state1(krbn::registry_entry_id(1234),
                                            krbn::grabbable_state::state::ungrabbable_temporarily,
                                            krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                           1000);
+                                           krbn::absolute_time(1000));
     krbn::grabbable_state grabbable_state2(krbn::registry_entry_id(1234),
                                            krbn::grabbable_state::state::ungrabbable_temporarily,
                                            krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                           2000);
+                                           krbn::absolute_time(2000));
     krbn::grabbable_state grabbable_state3(krbn::registry_entry_id(1234),
                                            krbn::grabbable_state::state::device_error,
                                            krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                           3000);
+                                           krbn::absolute_time(3000));
     REQUIRE(grabbable_state1 != grabbable_state2);
     REQUIRE(grabbable_state1.equals_except_time_stamp(grabbable_state2));
     REQUIRE(!grabbable_state1.equals_except_time_stamp(grabbable_state3));
