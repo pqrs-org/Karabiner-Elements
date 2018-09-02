@@ -13,7 +13,7 @@ public:
     return absolute_time(::mach_absolute_time());
   }
 
-  static std::chrono::nanoseconds absolute_to_nano(absolute_time time) {
+  static std::chrono::nanoseconds absolute_to_nanoseconds(absolute_time time) {
     auto& t = get_mach_timebase_info_data();
     if (t.numer != t.denom && t.denom != 0) {
       return std::chrono::nanoseconds(type_safe::get(time) * t.numer / t.denom);
@@ -22,16 +22,20 @@ public:
   }
 
   static std::chrono::milliseconds absolute_to_milliseconds(absolute_time time) {
-    auto ns = std::chrono::nanoseconds(absolute_to_nano(time));
+    auto ns = std::chrono::nanoseconds(absolute_to_nanoseconds(time));
     return std::chrono::duration_cast<std::chrono::milliseconds>(ns);
   }
 
-  static absolute_time nano_to_absolute(std::chrono::nanoseconds time) {
+  static absolute_time nanoseconds_to_absolute(std::chrono::nanoseconds time) {
     auto& t = get_mach_timebase_info_data();
     if (t.numer != t.denom && t.numer != 0) {
       return absolute_time(time.count() * t.denom / t.numer);
     }
     return absolute_time(time.count());
+  }
+
+  static absolute_time milliseconds_to_absolute(std::chrono::nanoseconds time) {
+    return nanoseconds_to_absolute(std::chrono::duration_cast<std::chrono::nanoseconds>(time));
   }
 
   static std::string make_current_local_yyyymmdd_string(void) {
