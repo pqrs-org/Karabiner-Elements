@@ -9,6 +9,7 @@
 #include "hid_manager.hpp"
 #include "hid_observer.hpp"
 #include "logger.hpp"
+#include "time_utility.hpp"
 #include "types.hpp"
 
 namespace krbn {
@@ -57,7 +58,7 @@ public:
           grabbable_state_manager_.update(grabbable_state(hid->get_registry_entry_id(),
                                                           grabbable_state::state::device_error,
                                                           grabbable_state::ungrabbable_temporarily_reason::none,
-                                                          mach_absolute_time()));
+                                                          time_utility::mach_absolute_time()));
 
           hid->values_arrived.connect([this](auto&& shared_event_queue) {
             dispatcher_->enqueue([this, shared_event_queue] {
@@ -79,7 +80,7 @@ public:
                     grabbable_state_manager_.update(grabbable_state(hid->get_registry_entry_id(),
                                                                     grabbable_state::state::grabbable,
                                                                     grabbable_state::ungrabbable_temporarily_reason::none,
-                                                                    mach_absolute_time()));
+                                                                    time_utility::mach_absolute_time()));
                   }
                 }
               }

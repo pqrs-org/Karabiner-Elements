@@ -541,7 +541,7 @@ private:
   }
 
   void post_device_keys_and_pointing_buttons_are_released_event_if_needed(std::shared_ptr<event_queue> input_event_queue,
-                                                                          uint64_t time_stamp) {
+                                                                          absolute_time time_stamp) {
     if (pressed_keys_.empty()) {
       auto event = event_queue::queued_event::event::make_device_keys_and_pointing_buttons_are_released_event();
       input_event_queue->emplace_back_event(device_id_,
