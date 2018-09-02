@@ -16,9 +16,9 @@ public:
   static std::chrono::nanoseconds absolute_to_nano(absolute_time time) {
     auto& t = get_mach_timebase_info_data();
     if (t.numer != t.denom && t.denom != 0) {
-      return std::chrono::nanoseconds(static_cast<uint64_t>(time) * t.numer / t.denom);
+      return std::chrono::nanoseconds(type_safe::get(time) * t.numer / t.denom);
     }
-    return std::chrono::nanoseconds(static_cast<uint64_t>(time));
+    return std::chrono::nanoseconds(type_safe::get(time));
   }
 
   static std::chrono::milliseconds absolute_to_milliseconds(absolute_time time) {
