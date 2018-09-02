@@ -354,7 +354,7 @@ enum class location_id : uint32_t {
 
 class hid_value final {
 public:
-  hid_value(uint64_t time_stamp,
+  hid_value(absolute_time time_stamp,
             CFIndex integer_value,
             boost::optional<hid_usage_page> hid_usage_page,
             boost::optional<hid_usage> hid_usage) : time_stamp_(time_stamp),
@@ -364,7 +364,7 @@ public:
   }
 
   hid_value(IOHIDValueRef value) {
-    time_stamp_ = IOHIDValueGetTimeStamp(value);
+    time_stamp_ = absolute_time(IOHIDValueGetTimeStamp(value));
     integer_value_ = IOHIDValueGetIntegerValue(value);
     if (auto element = IOHIDValueGetElement(value)) {
       hid_usage_page_ = hid_usage_page(IOHIDElementGetUsagePage(element));
@@ -374,7 +374,7 @@ public:
 
   nlohmann::json to_json(void) const {
     nlohmann::json j;
-    j["time_stamp"] = time_stamp_;
+    j["time_stamp"] = type_safe::get(time_stamp_);
     j["integer_value"] = integer_value_;
     if (hid_usage_page_) {
       j["hid_usage_page"] = *hid_usage_page_;
@@ -385,7 +385,7 @@ public:
     return j;
   }
 
-  uint64_t get_time_stamp(void) const {
+  absolute_time get_time_stamp(void) const {
     return time_stamp_;
   }
 
@@ -415,7 +415,7 @@ public:
   }
 
 private:
-  uint64_t time_stamp_;
+  absolute_time time_stamp_;
   CFIndex integer_value_;
   boost::optional<hid_usage_page> hid_usage_page_;
   boost::optional<hid_usage> hid_usage_;
@@ -2062,7 +2062,7 @@ struct operation_type_select_input_source_struct {
 // stream output
 
 std::ostream& operator<<(std::ostream& stream, const absolute_time& value) {
-  return stream << static_cast<uint64_t>(value);
+  return stream << type_safe::get(value);
 }
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \
