@@ -1,6 +1,7 @@
 #pragma once
 
 #include "logger.hpp"
+#include "types.hpp"
 #include <chrono>
 #include <mach/mach_time.h>
 #include <time.h>
@@ -8,25 +9,29 @@
 namespace krbn {
 class time_utility final {
 public:
-  static uint64_t absolute_to_nano(uint64_t absolute_time) {
-    auto& t = get_mach_timebase_info_data();
-    if (t.numer != t.denom && t.denom != 0) {
-      return absolute_time * t.numer / t.denom;
-    }
-    return absolute_time;
+  static absolute_time mach_absolute_time(void) {
+    return absolute_time(::mach_absolute_time());
   }
 
-  static std::chrono::milliseconds absolute_to_milliseconds(uint64_t absolute_time) {
-    auto ns = std::chrono::nanoseconds(absolute_to_nano(absolute_time));
+  static std::chrono::nanoseconds absolute_to_nano(absolute_time time) {
+    auto& t = get_mach_timebase_info_data();
+    if (t.numer != t.denom && t.denom != 0) {
+      return std::chrono::nanoseconds(static_cast<uint64_t>(time) * t.numer / t.denom);
+    }
+    return std::chrono::nanoseconds(static_cast<uint64_t>(time));
+  }
+
+  static std::chrono::milliseconds absolute_to_milliseconds(absolute_time time) {
+    auto ns = std::chrono::nanoseconds(absolute_to_nano(time));
     return std::chrono::duration_cast<std::chrono::milliseconds>(ns);
   }
 
-  static uint64_t nano_to_absolute(uint64_t absolute_time) {
+  static absolute_time nano_to_absolute(std::chrono::nanoseconds time) {
     auto& t = get_mach_timebase_info_data();
     if (t.numer != t.denom && t.numer != 0) {
-      return absolute_time * t.denom / t.numer;
+      return absolute_time(time.count() * t.denom / t.numer);
     }
-    return absolute_time;
+    return absolute_time(time.count());
   }
 
   static std::string make_current_local_yyyymmdd_string(void) {

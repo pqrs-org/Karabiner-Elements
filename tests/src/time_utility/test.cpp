@@ -10,7 +10,7 @@ TEST_CASE("initialize") {
 
 TEST_CASE("absolute_to_milliseconds") {
   {
-    uint64_t ns = 256 * 1000000;
+    std::chrono::nanoseconds ns(256 * 1000000);
     auto absolute = krbn::time_utility::nano_to_absolute(ns);
     REQUIRE(krbn::time_utility::absolute_to_milliseconds(absolute) == std::chrono::milliseconds(256));
   }

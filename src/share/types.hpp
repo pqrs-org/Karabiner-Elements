@@ -31,6 +31,9 @@
 namespace krbn {
 class device_detail;
 
+enum class absolute_time : uint64_t {
+};
+
 enum class operation_type : uint8_t {
   none,
   // observer -> grabber
