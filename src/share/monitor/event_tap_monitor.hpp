@@ -1,33 +1,32 @@
 #pragma once
 
-// `krbn::event_tap_manager` can be used safely in a multi-threaded environment.
+// `krbn::event_tap_monitor` can be used safely in a multi-threaded environment.
 
 #include "boost_defs.hpp"
 
 #include "cf_utility.hpp"
+#include "event_tap_utility.hpp"
 #include "logger.hpp"
-#include <CoreGraphics/CoreGraphics.h>
-#include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 
 namespace krbn {
-class event_tap_manager final {
+class event_tap_monitor final {
 public:
   // Signals
 
   boost::signals2::signal<void(bool)> caps_lock_state_changed;
-  boost::signals2::signal<void(CGEventType, CGEventRef _Nullable)> pointing_device_event_arrived;
+  boost::signals2::signal<void(event_type, event_queue::queued_event::event)> pointing_device_event_arrived;
 
   // Methods
 
-  event_tap_manager(const event_tap_manager&) = delete;
+  event_tap_monitor(const event_tap_monitor&) = delete;
 
-  event_tap_manager(void) : event_tap_(nullptr),
+  event_tap_monitor(void) : event_tap_(nullptr),
                             run_loop_source_(nullptr) {
     run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
   }
 
-  ~event_tap_manager(void) {
+  ~event_tap_monitor(void) {
     run_loop_thread_->enqueue(^{
       if (event_tap_) {
         CGEventTapEnable(event_tap_, false);
@@ -43,7 +42,7 @@ public:
         CFRelease(event_tap_);
         event_tap_ = nullptr;
       }
-      logger::get_logger().info("event_tap_manager terminated");
+      logger::get_logger().info("event_tap_monitor terminated");
     });
 
     run_loop_thread_->terminate();
@@ -79,7 +78,7 @@ public:
                                     kCGTailAppendEventTap,
                                     kCGEventTapOptionListenOnly,
                                     mask,
-                                    event_tap_manager::static_callback,
+                                    event_tap_monitor::static_callback,
                                     this);
 
       if (event_tap_) {
@@ -90,7 +89,7 @@ public:
                              kCFRunLoopCommonModes);
           CGEventTapEnable(event_tap_, true);
 
-          logger::get_logger().info("event_tap_manager initialized");
+          logger::get_logger().info("event_tap_monitor initialized");
         }
       }
     });
@@ -98,7 +97,7 @@ public:
 
 private:
   static CGEventRef _Nullable static_callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event, void* _Nonnull refcon) {
-    auto self = static_cast<event_tap_manager*>(refcon);
+    auto self = static_cast<event_tap_monitor*>(refcon);
     if (self) {
       return self->callback(proxy, type, event);
     }
@@ -144,7 +143,9 @@ private:
       case kCGEventOtherMouseDown:
       case kCGEventOtherMouseUp:
       case kCGEventOtherMouseDragged:
-        pointing_device_event_arrived(type, event);
+        if (auto pair = event_tap_utility::make_event(type, event)) {
+          pointing_device_event_arrived(pair->first, pair->second);
+        }
         break;
 
       case kCGEventNull:

@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::event_tap_utility` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include "event_queue.hpp"

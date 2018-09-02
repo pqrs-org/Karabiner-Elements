@@ -5,7 +5,6 @@
 #include "apple_hid_usage_tables.hpp"
 #include "constants.hpp"
 #include "device_detail.hpp"
-#include "event_tap_manager.hpp"
 #include "event_tap_utility.hpp"
 #include "grabbable_state_queues_manager.hpp"
 #include "hid_grabber.hpp"
@@ -18,6 +17,7 @@
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "monitor/configuration_monitor.hpp"
+#include "monitor/event_tap_monitor.hpp"
 #include "spdlog_utility.hpp"
 #include "system_preferences_utility.hpp"
 #include "types.hpp"
@@ -257,10 +257,10 @@ public:
   void async_start(const std::string& user_core_configuration_file_path) {
     dispatcher_->enqueue([this, user_core_configuration_file_path] {
       // We should call CGEventTapCreate after user is logged in.
-      // So, we create event_tap_manager here.
-      event_tap_manager_ = std::make_unique<event_tap_manager>();
+      // So, we create event_tap_monitor here.
+      event_tap_monitor_ = std::make_unique<event_tap_monitor>();
 
-      event_tap_manager_->caps_lock_state_changed.connect([this](auto&& state) {
+      event_tap_monitor_->caps_lock_state_changed.connect([this](auto&& state) {
         dispatcher_->enqueue([this, state] {
           last_caps_lock_state_ = state;
           post_caps_lock_state_changed_event(state);
@@ -268,30 +268,22 @@ public:
         });
       });
 
-      event_tap_manager_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
-        if (event) {
-          CFRetain(event);
+      event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
+        dispatcher_->enqueue([this, event_type, event] {
+          auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
+          event_queue::queued_event queued_event(device_id(0),
+                                                 event_queue::queued_event::event_time_stamp(mach_absolute_time()),
+                                                 e,
+                                                 event_type,
+                                                 event);
 
-          dispatcher_->enqueue([this, event_type, event] {
-            if (auto pseudo_event = event_tap_utility::make_event(event_type, event)) {
-              auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
-              event_queue::queued_event queued_event(device_id(0),
-                                                     event_queue::queued_event::event_time_stamp(mach_absolute_time()),
-                                                     e,
-                                                     pseudo_event->first,
-                                                     pseudo_event->second);
+          merged_input_event_queue_->push_back_event(queued_event);
 
-              merged_input_event_queue_->push_back_event(queued_event);
-
-              krbn_notification_center::get_instance().input_event_arrived();
-            }
-
-            CFRelease(event);
-          });
-        }
+          krbn_notification_center::get_instance().input_event_arrived();
+        });
       });
 
-      event_tap_manager_->async_start();
+      event_tap_monitor_->async_start();
 
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path);
 
@@ -319,7 +311,7 @@ public:
 
       async_ungrab_devices();
 
-      event_tap_manager_ = nullptr;
+      event_tap_monitor_ = nullptr;
 
       virtual_hid_device_client_->close();
     });
@@ -1032,7 +1024,7 @@ private:
   std::unique_ptr<configuration_monitor> configuration_monitor_;
   std::shared_ptr<const core_configuration> core_configuration_;
 
-  std::unique_ptr<event_tap_manager> event_tap_manager_;
+  std::unique_ptr<event_tap_monitor> event_tap_monitor_;
   boost::optional<bool> last_caps_lock_state_;
   std::unique_ptr<hid_manager> hid_manager_;
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_grabber>> hid_grabbers_;
