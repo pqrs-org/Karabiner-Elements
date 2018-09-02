@@ -46,20 +46,21 @@ public:
                     value_(boost::blank()) {
       }
 
-      explicit event(const nlohmann::json& json) : type_(type::none),
-                                                   value_(boost::blank()) {
+      static event make_from_json(const nlohmann::json& json) {
+        event result;
+
         if (auto v = json_utility::find_optional<std::string>(json, "type")) {
-          type_ = to_type(*v);
+          result.type_ = to_type(*v);
         }
 
-        switch (type_) {
+        switch (result.type_) {
           case type::none:
             break;
 
           case type::key_code:
             if (auto s = json_utility::find_optional<std::string>(json, "key_code")) {
               if (auto v = types::make_key_code(*s)) {
-                value_ = *v;
+                result.value_ = *v;
               }
             }
             break;
@@ -67,7 +68,7 @@ public:
           case type::consumer_key_code:
             if (auto s = json_utility::find_optional<std::string>(json, "consumer_key_code")) {
               if (auto v = types::make_consumer_key_code(*s)) {
-                value_ = *v;
+                result.value_ = *v;
               }
             }
             break;
@@ -75,26 +76,26 @@ public:
           case type::pointing_button:
             if (auto s = json_utility::find_optional<std::string>(json, "pointing_button")) {
               if (auto v = types::make_pointing_button(*s)) {
-                value_ = *v;
+                result.value_ = *v;
               }
             }
             break;
 
           case type::pointing_motion:
             if (auto v = json_utility::find_object(json, "pointing_motion")) {
-              value_ = pointing_motion(*v);
+              result.value_ = pointing_motion(*v);
             }
             break;
 
           case type::caps_lock_state_changed:
             if (auto v = json_utility::find_optional<int>(json, "integer_value")) {
-              value_ = *v;
+              result.value_ = *v;
             }
             break;
 
           case type::shell_command:
             if (auto v = json_utility::find_optional<std::string>(json, "shell_command")) {
-              value_ = *v;
+              result.value_ = *v;
             }
             break;
 
@@ -104,7 +105,7 @@ public:
               for (const auto& j : *v) {
                 input_source_selectors.emplace_back(j);
               }
-              value_ = input_source_selectors;
+              result.value_ = input_source_selectors;
             }
             break;
 
@@ -117,31 +118,31 @@ public:
               if (auto v = json_utility::find_optional<int>(*o, "value")) {
                 pair.second = *v;
               }
-              value_ = pair;
+              result.value_ = pair;
             }
             break;
 
           case type::mouse_key:
             if (auto v = json_utility::find_json(json, "mouse_key")) {
-              value_ = mouse_key(*v);
+              result.value_ = mouse_key(*v);
             }
             break;
 
           case type::frontmost_application_changed:
             if (auto v = json_utility::find_json(json, "frontmost_application")) {
-              value_ = manipulator_environment::frontmost_application(*v);
+              result.value_ = manipulator_environment::frontmost_application(*v);
             }
             break;
 
           case type::input_source_changed:
             if (auto v = json_utility::find_json(json, "input_source_identifiers")) {
-              value_ = input_source_identifiers(*v);
+              result.value_ = input_source_identifiers(*v);
             }
             break;
 
           case type::keyboard_type_changed:
             if (auto v = json_utility::find_optional<std::string>(json, "keyboard_type")) {
-              value_ = *v;
+              result.value_ = *v;
             }
             break;
 
@@ -151,6 +152,8 @@ public:
           case type::pointing_device_event_from_event_tap:
             break;
         }
+
+        return result;
       }
 
       nlohmann::json to_json(void) const {
@@ -561,50 +564,54 @@ public:
 
     class event_time_stamp final {
     public:
-      explicit event_time_stamp(uint64_t time_stamp) : time_stamp_(time_stamp),
-                                                       input_delay_time_stamp_(0) {
+      event_time_stamp(absolute_time time_stamp) : time_stamp_(time_stamp),
+                                                   input_delay_time_stamp_(0) {
       }
 
-      explicit event_time_stamp(uint64_t time_stamp,
-                                uint64_t input_delay_time_stamp) : time_stamp_(time_stamp),
-                                                                   input_delay_time_stamp_(input_delay_time_stamp) {
+      event_time_stamp(absolute_time time_stamp,
+                       absolute_time input_delay_time_stamp) : time_stamp_(time_stamp),
+                                                               input_delay_time_stamp_(input_delay_time_stamp) {
       }
 
-      explicit event_time_stamp(const nlohmann::json& json) : time_stamp_(0),
-                                                              input_delay_time_stamp_(0) {
+      static event_time_stamp make_from_json(const nlohmann::json& json) {
+        event_time_stamp result(absolute_time(0),
+                                absolute_time(0));
+
         if (auto v = json_utility::find_optional<uint64_t>(json, "time_stamp")) {
-          time_stamp_ = *v;
+          result.time_stamp_ = absolute_time(*v);
         }
 
         if (auto v = json_utility::find_optional<uint64_t>(json, "input_delay_time_stamp")) {
-          input_delay_time_stamp_ = *v;
+          result.input_delay_time_stamp_ = absolute_time(*v);
         }
+
+        return result;
       }
 
       nlohmann::json to_json(void) const {
         return nlohmann::json::object({
-            {"time_stamp", time_stamp_},
-            {"input_delay_time_stamp", input_delay_time_stamp_},
+            {"time_stamp", type_safe::get(time_stamp_)},
+            {"input_delay_time_stamp", type_safe::get(input_delay_time_stamp_)},
         });
       }
 
-      uint64_t get_time_stamp(void) const {
+      absolute_time get_time_stamp(void) const {
         return time_stamp_;
       }
 
-      void set_time_stamp(uint64_t value) {
+      void set_time_stamp(absolute_time value) {
         time_stamp_ = value;
       }
 
-      uint64_t get_input_delay_time_stamp(void) const {
+      absolute_time get_input_delay_time_stamp(void) const {
         return input_delay_time_stamp_;
       }
 
-      void set_input_delay_time_stamp(uint64_t value) {
+      void set_input_delay_time_stamp(absolute_time value) {
         input_delay_time_stamp_ = value;
       }
 
-      uint64_t make_time_stamp_with_input_delay(void) const {
+      absolute_time make_time_stamp_with_input_delay(void) const {
         return time_stamp_ + input_delay_time_stamp_;
       }
 
@@ -615,64 +622,68 @@ public:
 
       friend size_t hash_value(const event_time_stamp& value) {
         size_t h = 0;
-        boost::hash_combine(h, value.time_stamp_);
-        boost::hash_combine(h, value.input_delay_time_stamp_);
+        boost::hash_combine(h, type_safe::get(value.time_stamp_));
+        boost::hash_combine(h, type_safe::get(value.input_delay_time_stamp_));
         return h;
       }
 
     private:
-      uint64_t time_stamp_;
-      uint64_t input_delay_time_stamp_;
+      absolute_time time_stamp_;
+      absolute_time input_delay_time_stamp_;
     };
 
-    explicit queued_event(device_id device_id,
-                          const event_time_stamp& event_time_stamp,
-                          const class event& event,
-                          event_type event_type,
-                          const class event& original_event,
-                          bool lazy = false) : device_id_(device_id),
-                                               event_time_stamp_(event_time_stamp),
-                                               valid_(true),
-                                               lazy_(lazy),
-                                               event_(event),
-                                               event_type_(event_type),
-                                               original_event_(original_event) {
+    queued_event(device_id device_id,
+                 const event_time_stamp& event_time_stamp,
+                 const class event& event,
+                 event_type event_type,
+                 const class event& original_event,
+                 bool lazy = false) : device_id_(device_id),
+                                      event_time_stamp_(event_time_stamp),
+                                      valid_(true),
+                                      lazy_(lazy),
+                                      event_(event),
+                                      event_type_(event_type),
+                                      original_event_(original_event) {
     }
 
-    explicit queued_event(const nlohmann::json& json) : device_id_(device_id::zero),
-                                                        event_time_stamp_(0),
-                                                        valid_(true),
-                                                        lazy_(false),
-                                                        event_type_(event_type::key_down) {
+    static queued_event make_from_json(const nlohmann::json& json) {
+      queued_event result(device_id::zero,
+                          event_time_stamp(absolute_time(0)),
+                          event(),
+                          event_type::key_down,
+                          event());
+
       if (json.is_object()) {
         if (auto v = json_utility::find_optional<uint32_t>(json, "device_id")) {
-          device_id_ = device_id(*v);
+          result.device_id_ = device_id(*v);
         }
 
         if (auto v = json_utility::find_json(json, "event_time_stamp")) {
-          event_time_stamp_ = event_time_stamp(*v);
+          result.event_time_stamp_ = event_time_stamp::make_from_json(*v);
         }
 
         if (auto v = json_utility::find_optional<bool>(json, "valid")) {
-          valid_ = *v;
+          result.valid_ = *v;
         }
 
         if (auto v = json_utility::find_optional<bool>(json, "lazy")) {
-          lazy_ = *v;
+          result.lazy_ = *v;
         }
 
         if (auto v = json_utility::find_json(json, "event")) {
-          event_ = event(*v);
+          result.event_ = event::make_from_json(*v);
         }
 
         if (auto v = json_utility::find_json(json, "event_type")) {
-          event_type_ = *v;
+          result.event_type_ = *v;
         }
 
         if (auto v = json_utility::find_json(json, "original_event")) {
-          original_event_ = event(*v);
+          result.original_event_ = event::make_from_json(*v);
         }
       }
+
+      return result;
     }
 
     nlohmann::json to_json(void) const {
@@ -834,7 +845,7 @@ public:
 
   void clear_events(void) {
     events_.clear();
-    time_stamp_delay_ = 0;
+    time_stamp_delay_ = absolute_time(0);
   }
 
   queued_event& get_front_event(void) {
@@ -844,7 +855,7 @@ public:
   void erase_front_event(void) {
     events_.erase(std::begin(events_));
     if (events_.empty()) {
-      time_stamp_delay_ = 0;
+      time_stamp_delay_ = absolute_time(0);
     }
   }
 
@@ -892,11 +903,11 @@ public:
     manipulator_environment_.disable_json_output();
   }
 
-  uint64_t get_time_stamp_delay(void) const {
+  absolute_time get_time_stamp_delay(void) const {
     return time_stamp_delay_;
   }
 
-  void increase_time_stamp_delay(uint64_t value) {
+  void increase_time_stamp_delay(absolute_time value) {
     time_stamp_delay_ += value;
   }
 
@@ -982,7 +993,7 @@ public:
     // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.
     // We have to join them into one pointing_motion event to avoid VMware Remote Console problem that VMRC ignores frequently events.
 
-    boost::optional<uint64_t> pointing_motion_time_stamp;
+    boost::optional<absolute_time> pointing_motion_time_stamp;
     boost::optional<int> pointing_motion_x;
     boost::optional<int> pointing_motion_y;
     boost::optional<int> pointing_motion_vertical_wheel;
@@ -1102,7 +1113,7 @@ private:
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
   manipulator_environment manipulator_environment_;
-  uint64_t time_stamp_delay_;
+  absolute_time time_stamp_delay_;
 }; // namespace krbn
 
 // For unit tests

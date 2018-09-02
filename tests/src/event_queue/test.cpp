@@ -5,18 +5,18 @@
 #include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
-#define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)    \
-  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                    \
-                           krbn::event_queue::queued_event::event_time_stamp(TIME_STAMP), \
-                           EVENT,                                                         \
-                           krbn::event_type::EVENT_TYPE,                                  \
+#define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)                         \
+  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                                         \
+                           krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(TIME_STAMP)), \
+                           EVENT,                                                                              \
+                           krbn::event_type::EVENT_TYPE,                                                       \
                            ORIGINAL_EVENT)
 
-#define PUSH_BACK_QUEUED_EVENT(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)                  \
-  VECTOR.push_back(krbn::event_queue::queued_event(krbn::device_id(DEVICE_ID),                                    \
-                                                   krbn::event_queue::queued_event::event_time_stamp(TIME_STAMP), \
-                                                   EVENT,                                                         \
-                                                   krbn::event_type::EVENT_TYPE,                                  \
+#define PUSH_BACK_QUEUED_EVENT(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)                                       \
+  VECTOR.push_back(krbn::event_queue::queued_event(krbn::device_id(DEVICE_ID),                                                         \
+                                                   krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(TIME_STAMP)), \
+                                                   EVENT,                                                                              \
+                                                   krbn::event_type::EVENT_TYPE,                                                       \
                                                    ORIGINAL_EVENT))
 
 namespace {
@@ -52,7 +52,7 @@ TEST_CASE("json") {
     expected["key_code"] = "a";
     auto json = a_event.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -61,7 +61,7 @@ TEST_CASE("json") {
     expected["consumer_key_code"] = "mute";
     auto json = mute_event.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -70,7 +70,7 @@ TEST_CASE("json") {
     expected["pointing_button"] = "button2";
     auto json = button2_event.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -92,7 +92,7 @@ TEST_CASE("json") {
 
     auto json = e.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -101,7 +101,7 @@ TEST_CASE("json") {
     expected["integer_value"] = 1;
     auto json = caps_lock_state_changed_1_event.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -110,7 +110,7 @@ TEST_CASE("json") {
     expected["shell_command"] = "open https://pqrs.org";
     auto json = krbn::event_queue::queued_event::event::make_shell_command_event("open https://pqrs.org").to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -124,7 +124,7 @@ TEST_CASE("json") {
                                                                                                                  boost::none)});
     auto json = e.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -134,7 +134,7 @@ TEST_CASE("json") {
     expected["set_variable"]["value"] = 100;
     auto json = krbn::event_queue::queued_event::event::make_set_variable_event(std::make_pair("example1", 100)).to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -146,7 +146,7 @@ TEST_CASE("json") {
                                                                                               "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
     auto json = e.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -159,7 +159,7 @@ TEST_CASE("json") {
                                                                                       boost::none});
     auto json = e.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -169,7 +169,7 @@ TEST_CASE("json") {
     auto e = krbn::event_queue::queued_event::event::make_keyboard_type_changed_event("iso");
     auto json = e.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
   {
@@ -177,7 +177,7 @@ TEST_CASE("json") {
     expected["type"] = "device_keys_and_pointing_buttons_are_released";
     auto json = device_keys_and_pointing_buttons_are_released_event.to_json();
     REQUIRE(json == expected);
-    krbn::event_queue::queued_event::event event_from_json(json);
+    auto event_from_json = krbn::event_queue::queued_event::event::make_from_json(json);
     REQUIRE(json == event_from_json.to_json());
   }
 }
@@ -356,27 +356,32 @@ TEST_CASE("emplace_back_event") {
 
 TEST_CASE("needs_swap") {
   krbn::event_queue::queued_event spacebar_down(krbn::device_id(1),
-                                                krbn::event_queue::queued_event::event_time_stamp(100),
+                                                krbn::event_queue::queued_event::event_time_stamp(
+                                                    krbn::absolute_time(100)),
                                                 spacebar_event,
                                                 krbn::event_type::key_down,
                                                 spacebar_event);
   krbn::event_queue::queued_event right_shift_down(krbn::device_id(1),
-                                                   krbn::event_queue::queued_event::event_time_stamp(100),
+                                                   krbn::event_queue::queued_event::event_time_stamp(
+                                                       krbn::absolute_time(100)),
                                                    right_shift_event,
                                                    krbn::event_type::key_down,
                                                    right_shift_event);
   krbn::event_queue::queued_event escape_down(krbn::device_id(1),
-                                              krbn::event_queue::queued_event::event_time_stamp(200),
+                                              krbn::event_queue::queued_event::event_time_stamp(
+                                                  krbn::absolute_time(200)),
                                               escape_event,
                                               krbn::event_type::key_down,
                                               escape_event);
   krbn::event_queue::queued_event spacebar_up(krbn::device_id(1),
-                                              krbn::event_queue::queued_event::event_time_stamp(300),
+                                              krbn::event_queue::queued_event::event_time_stamp(
+                                                  krbn::absolute_time(300)),
                                               spacebar_event,
                                               krbn::event_type::key_up,
                                               spacebar_event);
   krbn::event_queue::queued_event right_shift_up(krbn::device_id(1),
-                                                 krbn::event_queue::queued_event::event_time_stamp(300),
+                                                 krbn::event_queue::queued_event::event_time_stamp(
+                                                     krbn::absolute_time(300)),
                                                  right_shift_event,
                                                  krbn::event_type::key_up,
                                                  right_shift_event);
@@ -404,7 +409,7 @@ TEST_CASE("increase_time_stamp_delay") {
 
     ENQUEUE_EVENT(event_queue, 1, 100, tab_event, key_down, tab_event);
 
-    event_queue.increase_time_stamp_delay(10);
+    event_queue.increase_time_stamp_delay(krbn::absolute_time(10));
 
     ENQUEUE_EVENT(event_queue, 1, 200, tab_event, key_up, tab_event);
 
@@ -422,7 +427,7 @@ TEST_CASE("increase_time_stamp_delay") {
     while (!event_queue.empty()) {
       event_queue.erase_front_event();
     }
-    REQUIRE(event_queue.get_time_stamp_delay() == 0);
+    REQUIRE(event_queue.get_time_stamp_delay() == krbn::absolute_time(0));
   }
 }
 
@@ -458,64 +463,64 @@ TEST_CASE("caps_lock_state_changed") {
 TEST_CASE("make_queued_events") {
   std::vector<krbn::hid_value> hid_values;
 
-  hid_values.emplace_back(krbn::hid_value(1000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(1000),
                                           1,
                                           *krbn::types::make_hid_usage_page(krbn::key_code::spacebar),
                                           *krbn::types::make_hid_usage(krbn::key_code::spacebar)));
-  hid_values.emplace_back(krbn::hid_value(2000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(2000),
                                           0,
                                           *krbn::types::make_hid_usage_page(krbn::key_code::spacebar),
                                           *krbn::types::make_hid_usage(krbn::key_code::spacebar)));
 
-  hid_values.emplace_back(krbn::hid_value(3000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(3000),
                                           1,
                                           *krbn::types::make_hid_usage_page(krbn::consumer_key_code::mute),
                                           *krbn::types::make_hid_usage(krbn::consumer_key_code::mute)));
-  hid_values.emplace_back(krbn::hid_value(4000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(4000),
                                           0,
                                           *krbn::types::make_hid_usage_page(krbn::consumer_key_code::mute),
                                           *krbn::types::make_hid_usage(krbn::consumer_key_code::mute)));
 
-  hid_values.emplace_back(krbn::hid_value(5000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(5000),
                                           10,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
-  hid_values.emplace_back(krbn::hid_value(5000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(5000),
                                           20,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_y));
-  hid_values.emplace_back(krbn::hid_value(5000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(5000),
                                           30,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_wheel));
-  hid_values.emplace_back(krbn::hid_value(5000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(5000),
                                           40,
                                           krbn::hid_usage_page::consumer,
                                           krbn::hid_usage::csmr_acpan));
 
-  hid_values.emplace_back(krbn::hid_value(6000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(6000),
                                           -10,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
-  hid_values.emplace_back(krbn::hid_value(6000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(6000),
                                           -20,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_y));
-  hid_values.emplace_back(krbn::hid_value(6000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(6000),
                                           -30,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_wheel));
-  hid_values.emplace_back(krbn::hid_value(6000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(6000),
                                           -40,
                                           krbn::hid_usage_page::consumer,
                                           krbn::hid_usage::csmr_acpan));
 
-  hid_values.emplace_back(krbn::hid_value(7000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(7000),
                                           10,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
 
-  hid_values.emplace_back(krbn::hid_value(8000,
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(8000),
                                           0,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
@@ -533,42 +538,42 @@ TEST_CASE("make_queued_events") {
   REQUIRE(!queued_events[7].first);
 
   REQUIRE(queued_events[0].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[0].second.get_event_time_stamp().get_time_stamp() == 1000);
+  REQUIRE(queued_events[0].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(1000));
   REQUIRE(queued_events[0].second.get_event().get_key_code() == krbn::key_code::spacebar);
   REQUIRE(queued_events[0].second.get_event_type() == krbn::event_type::key_down);
 
   REQUIRE(queued_events[1].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[1].second.get_event_time_stamp().get_time_stamp() == 2000);
+  REQUIRE(queued_events[1].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(2000));
   REQUIRE(queued_events[1].second.get_event().get_key_code() == krbn::key_code::spacebar);
   REQUIRE(queued_events[1].second.get_event_type() == krbn::event_type::key_up);
 
   REQUIRE(queued_events[2].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[2].second.get_event_time_stamp().get_time_stamp() == 3000);
+  REQUIRE(queued_events[2].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(3000));
   REQUIRE(queued_events[2].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
   REQUIRE(queued_events[2].second.get_event_type() == krbn::event_type::key_down);
 
   REQUIRE(queued_events[3].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[3].second.get_event_time_stamp().get_time_stamp() == 4000);
+  REQUIRE(queued_events[3].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(4000));
   REQUIRE(queued_events[3].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
   REQUIRE(queued_events[3].second.get_event_type() == krbn::event_type::key_up);
 
   REQUIRE(queued_events[4].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[4].second.get_event_time_stamp().get_time_stamp() == 5000);
+  REQUIRE(queued_events[4].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(5000));
   REQUIRE(queued_events[4].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 20, 30, 40));
   REQUIRE(queued_events[4].second.get_event_type() == krbn::event_type::single);
 
   REQUIRE(queued_events[5].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[5].second.get_event_time_stamp().get_time_stamp() == 6000);
+  REQUIRE(queued_events[5].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(6000));
   REQUIRE(queued_events[5].second.get_event().get_pointing_motion() == krbn::pointing_motion(-10, -20, -30, -40));
   REQUIRE(queued_events[5].second.get_event_type() == krbn::event_type::single);
 
   REQUIRE(queued_events[6].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[6].second.get_event_time_stamp().get_time_stamp() == 7000);
+  REQUIRE(queued_events[6].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(7000));
   REQUIRE(queued_events[6].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 0, 0, 0));
   REQUIRE(queued_events[6].second.get_event_type() == krbn::event_type::single);
 
   REQUIRE(queued_events[7].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(queued_events[7].second.get_event_time_stamp().get_time_stamp() == 8000);
+  REQUIRE(queued_events[7].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(8000));
   REQUIRE(queued_events[7].second.get_event().get_pointing_motion() == krbn::pointing_motion(0, 0, 0, 0));
   REQUIRE(queued_events[7].second.get_event_type() == krbn::event_type::single);
 }
