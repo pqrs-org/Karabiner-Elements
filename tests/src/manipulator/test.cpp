@@ -148,32 +148,6 @@ TEST_CASE("min_input_event_time_stamp") {
   REQUIRE(connector.min_input_event_time_stamp() == 3000ull);
 }
 
-TEST_CASE("manipulator_timer") {
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries().empty());
-
-  std::vector<krbn::manipulator::manipulator_timer::timer_id> timer_ids;
-  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(1234));
-  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(1234));
-  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(5678));
-  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(5678));
-  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(2345));
-  timer_ids.push_back(krbn::manipulator::manipulator_timer::get_instance().add_entry(2345));
-
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries().size() == 6);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[0].get_when() == 1234);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[1].get_when() == 1234);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[2].get_when() == 2345);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[3].get_when() == 2345);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[4].get_when() == 5678);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[5].get_when() == 5678);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[0].get_timer_id() == timer_ids[0]);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[1].get_timer_id() == timer_ids[1]);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[2].get_timer_id() == timer_ids[4]);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[3].get_timer_id() == timer_ids[5]);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[4].get_timer_id() == timer_ids[2]);
-  REQUIRE(krbn::manipulator::manipulator_timer::get_instance().get_entries()[5].get_timer_id() == timer_ids[3]);
-}
-
 TEST_CASE("needs_virtual_hid_pointing") {
   for (const auto& file_name : {
            std::string("json/needs_virtual_hid_pointing_test1.json"),

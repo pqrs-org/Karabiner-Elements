@@ -12,10 +12,10 @@ int main(int argc, const char* argv[]) {
 
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>();
 
-  manipulator_timer->timer_invoked.connect([](auto&& timer_id, auto&& now) {
-    krbn::logger::get_logger().info("timer_id:{0}, now:{1}",
-                                    type_safe::get(timer_id),
-                                    type_safe::get(now));
+  manipulator_timer->timer_invoked.connect([](auto&& entry) {
+    krbn::logger::get_logger().info("timer_id:{0}, when:{1}",
+                                    type_safe::get(entry.get_timer_id()),
+                                    type_safe::get(entry.get_when()));
   });
 
   for (int i = -10; i < 10; ++i) {
