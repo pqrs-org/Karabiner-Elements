@@ -1,8 +1,12 @@
 #pragma once
 
+// `krbn::manipulator_timer` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
-#include "gcd_utility.hpp"
+#include "thread_utility.hpp"
+#include "time_utility.hpp"
+#include "types.hpp"
 #include <boost/signals2.hpp>
 #include <deque>
 #include <mach/mach_time.h>
@@ -11,26 +15,34 @@ namespace krbn {
 namespace manipulator {
 class manipulator_timer final {
 public:
-  enum class timer_id : uint64_t {
-    zero = 0,
+  struct timer_id : type_safe::strong_typedef<timer_id, uint64_t>,
+                    type_safe::strong_typedef_op::equality_comparison<timer_id>,
+                    type_safe::strong_typedef_op::relational_comparison<timer_id>,
+                    type_safe::strong_typedef_op::integer_arithmetic<timer_id> {
+    using strong_typedef::strong_typedef;
   };
+
+  // Signals
+
+  boost::signals2::signal<void(timer_id, absolute_time)> timer_invoked;
+
+  // Methods
 
   class entry final {
   public:
-    entry(uint64_t when) : when_(when) {
+    entry(absolute_time when) : when_(when) {
       static std::mutex mutex;
       std::lock_guard<std::mutex> guard(mutex);
 
-      static timer_id id;
-      id = timer_id(static_cast<uint64_t>(id) + 1);
-      timer_id_ = id;
+      static timer_id id(0);
+      timer_id_ = ++id;
     }
 
     timer_id get_timer_id(void) const {
       return timer_id_;
     }
 
-    uint64_t get_when(void) const {
+    absolute_time get_when(void) const {
       return when_;
     }
 
@@ -44,38 +56,22 @@ public:
 
   private:
     timer_id timer_id_;
-    uint64_t when_;
+    absolute_time when_;
   };
 
-  class core final {
-  public:
-    boost::signals2::signal<void(timer_id, uint64_t)> timer_invoked;
+  manipulator_timer(void) {
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+  }
 
-    core(void) : enabled_(false) {
-    }
+  ~manipulator_timer(void) {
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
+  }
 
-    // For unit testing
-    const std::deque<entry>& get_entries(void) const {
-      return entries_;
-    }
-
-    void enable(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      enabled_ = true;
-    }
-
-    void disable(void) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      enabled_ = false;
-    }
-
-    timer_id add_entry(uint64_t when) {
-      std::lock_guard<std::mutex> guard(mutex_);
-
-      entries_.emplace_back(when);
-      auto result = entries_.back().get_timer_id();
+  void enqueue(const entry& entry,
+               absolute_time now) {
+    dispatcher_->enqueue([this, now, entry] {
+      entries_.push_back(entry);
 
       std::sort(std::begin(entries_),
                 std::end(entries_),
@@ -83,71 +79,65 @@ public:
                   return a.compare(b);
                 });
 
-      set_timer();
-
-      return result;
-    }
-
-    void signal(uint64_t now) {
-      for (;;) {
-        boost::optional<timer_id> id;
-
-        {
-          std::lock_guard<std::mutex> guard(mutex_);
-
-          if (!entries_.empty() && entries_.front().get_when() <= now) {
-            id = entries_.front().get_timer_id();
-            entries_.pop_front();
-          }
-        }
-
-        if (id) {
-          timer_invoked(*id, now);
-        } else {
-          break;
-        }
-      }
-
-      set_timer();
-    }
-
-  private:
-    void set_timer(void) {
-      if (!enabled_) {
-        timer_ = nullptr;
-        return;
-      }
-
-      if (entries_.empty()) {
-        timer_ = nullptr;
-        return;
-      }
-
-      timer_ = std::make_unique<gcd_utility::main_queue_after_timer>(entries_.front().get_when(),
-                                                                     true,
-                                                                     ^{
-                                                                       uint64_t now = mach_absolute_time();
-                                                                       signal(now);
-                                                                     });
-    }
-
-    std::mutex mutex_;
-    bool enabled_;
-    std::deque<entry> entries_;
-    std::unique_ptr<gcd_utility::main_queue_after_timer> timer_;
-  };
-
-  static core& get_instance(void) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> guard(mutex);
-
-    static std::unique_ptr<core> core_;
-    if (!core_) {
-      core_ = std::make_unique<core>();
-    }
-
-    return *core_;
+      set_timer(now);
+    });
   }
+
+  void async_signal(absolute_time now) {
+    dispatcher_->enqueue([this, now] {
+      signal(now);
+    });
+  }
+
+private:
+  void set_timer(absolute_time now) {
+    timer_ = nullptr;
+
+    if (entries_.empty()) {
+      return;
+    }
+
+    auto e = entries_.front();
+
+    if (now < e.get_when()) {
+      timer_ = std::make_unique<thread_utility::timer>(
+          time_utility::absolute_to_milliseconds(e.get_when() - now),
+          false,
+          [this, e] {
+            dispatcher_->enqueue([this, e] {
+              signal(e.get_when());
+            });
+          });
+    } else {
+      signal(now);
+    }
+  }
+
+  void signal(absolute_time now) {
+    while (true) {
+      if (entries_.empty()) {
+        break;
+      }
+
+      auto e = entries_.front();
+
+      if (now < e.get_when()) {
+        break;
+      }
+
+      dispatcher_->enqueue([this, now, e] {
+        timer_invoked(e.get_timer_id(), now);
+      });
+
+      entries_.pop_front();
+    }
+
+    set_timer(now);
+  }
+
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
+  std::deque<entry> entries_;
+  std::unique_ptr<thread_utility::timer> timer_;
 };
 } // namespace manipulator
 } // namespace krbn
