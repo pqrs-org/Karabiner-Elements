@@ -15,13 +15,25 @@ namespace krbn {
 namespace manipulator {
 class manipulator_timer final {
 public:
-#include "manipulator_timer/types.hpp"
+  class entry final {
+  public:
+    entry(const std::function<void(void)>& function,
+          absolute_time when) : function_(function),
+                                when_(when) {
+    }
 
-  // Signals
+    absolute_time get_when(void) const {
+      return when_;
+    }
 
-  boost::signals2::signal<void(const entry&)> timer_invoked;
+    void call_function(void) const {
+      function_();
+    }
 
-  // Methods
+  private:
+    std::function<void(void)> function_;
+    absolute_time when_;
+  };
 
   manipulator_timer(void) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
@@ -37,11 +49,11 @@ public:
     dispatcher_->enqueue([this, now, entry] {
       entries_.push_back(entry);
 
-      std::sort(std::begin(entries_),
-                std::end(entries_),
-                [](auto& a, auto& b) {
-                  return a.compare(b);
-                });
+      std::stable_sort(std::begin(entries_),
+                       std::end(entries_),
+                       [](auto& a, auto& b) {
+                         return a.get_when() < b.get_when();
+                       });
 
       set_timer(now);
     });
@@ -89,8 +101,8 @@ private:
         break;
       }
 
-      dispatcher_->enqueue([this, e] {
-        timer_invoked(e);
+      dispatcher_->enqueue([e] {
+        e.call_function();
       });
 
       entries_.pop_front();
