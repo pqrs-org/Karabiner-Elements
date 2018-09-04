@@ -1,5 +1,6 @@
 #pragma once
 
+// `krbn::thread_utility::wait` can be used safely in a multi-threaded environment.
 // `krbn::thread_utility::timer` can be used safely in a multi-threaded environment.
 // `krbn::thread_utility::dispatcher` can be used safely in a multi-threaded environment.
 
@@ -28,6 +29,34 @@ public:
   static bool is_main_thread(void) {
     return get_main_thread_id() == std::this_thread::get_id();
   }
+
+  class wait final {
+  public:
+    wait(void) : notify_(false) {
+    }
+
+    void wait_notice(void) {
+      std::unique_lock<std::mutex> lock(mutex_);
+      cv_.wait(lock, [this] {
+        return notify_;
+      });
+    }
+
+    void notify(void) {
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        notify_ = true;
+      }
+
+      cv_.notify_one();
+    }
+
+  private:
+    bool notify_;
+    std::mutex mutex_;
+    std::condition_variable cv_;
+  };
 
   class timer final {
   public:
