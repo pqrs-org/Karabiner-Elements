@@ -58,3 +58,37 @@ TEST_CASE("manipulator_timer") {
   REQUIRE(result[8] == 6);
   REQUIRE(result[9] == 9);
 }
+
+namespace {
+bool check_thread_id(boost::optional<std::thread::id> thread_id) {
+  if (!thread_id) {
+    thread_id = std::this_thread::get_id();
+  }
+  return *thread_id == std::this_thread::get_id();
+}
+} // namespace
+
+TEST_CASE("manipulator_timer.thread_id") {
+  auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>();
+
+  boost::optional<std::thread::id> thread_id;
+
+  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
+                                 [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(0)),
+                             krbn::absolute_time(10));
+
+  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
+                                 [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(5)),
+                             krbn::absolute_time(10));
+
+  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
+                                 [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(10)),
+                             krbn::absolute_time(10));
+
+  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
+                                 [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(15)),
+                             krbn::absolute_time(10));
+
+  manipulator_timer->async_signal(krbn::absolute_time(10000));
+  manipulator_timer = nullptr;
+}
