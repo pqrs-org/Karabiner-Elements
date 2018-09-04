@@ -12,16 +12,20 @@ int main(int argc, const char* argv[]) {
 
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>();
 
-  manipulator_timer->timer_invoked.connect([](auto&& entry) {
-    krbn::logger::get_logger().info("timer_id:{0}, when:{1}",
-                                    type_safe::get(entry.get_timer_id()),
-                                    type_safe::get(entry.get_when()));
-  });
-
-  for (int i = -10; i < 10; ++i) {
+  for (int i = -10; i <= 10; ++i) {
     auto now = krbn::time_utility::mach_absolute_time();
     auto when = now + krbn::time_utility::milliseconds_to_absolute(std::chrono::milliseconds(1000 * i));
-    krbn::manipulator::manipulator_timer::entry entry(when);
+    krbn::manipulator::manipulator_timer::entry entry(
+        [i, when] {
+          krbn::logger::get_logger().info("i:{0} when:{1}",
+                                          i,
+                                          type_safe::get(when));
+
+          if (i == 10) {
+            CFRunLoopStop(CFRunLoopGetMain());
+          }
+        },
+        when);
     manipulator_timer->enqueue(entry, now);
   }
 
