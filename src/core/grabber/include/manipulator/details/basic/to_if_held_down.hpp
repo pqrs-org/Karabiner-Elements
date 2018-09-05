@@ -16,7 +16,7 @@ public:
   void setup(const event_queue::queued_event& front_input_event,
              const std::shared_ptr<manipulated_original_event>& current_manipulated_original_event,
              const std::shared_ptr<event_queue>& output_event_queue,
-             int threshold_milliseconds) {
+             std::chrono::milliseconds threshold_milliseconds) {
     if (front_input_event.get_event_type() != event_type::key_down) {
       manipulator_timer_id_ = boost::none;
       return;
@@ -30,7 +30,8 @@ public:
     current_manipulated_original_event_ = current_manipulated_original_event;
     output_event_queue_ = output_event_queue;
 
-    auto when = front_input_event.get_event_time_stamp().get_time_stamp() + time_utility::nanoseconds_to_absolute(threshold_milliseconds * NSEC_PER_MSEC);
+    auto when = front_input_event.get_event_time_stamp().get_time_stamp() +
+                time_utility::to_absolute_time(threshold_milliseconds);
     manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(when);
   }
 
