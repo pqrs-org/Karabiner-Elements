@@ -14,8 +14,11 @@ int main(int argc, const char* argv[]) {
 
   for (int i = -10; i <= 10; ++i) {
     auto now = krbn::time_utility::mach_absolute_time();
-    auto when = now + krbn::time_utility::milliseconds_to_absolute(std::chrono::milliseconds(1000 * i));
-    krbn::manipulator::manipulator_timer::entry entry(
+    auto now_ms = krbn::time_utility::to_milliseconds(now);
+    auto when_ms = std::chrono::milliseconds(now_ms.count() + 1000 * i);
+    auto when = krbn::time_utility::to_absolute_time(when_ms);
+
+    manipulator_timer->enqueue(
         [i, when] {
           krbn::logger::get_logger().info("i:{0} when:{1}",
                                           i,
@@ -26,7 +29,7 @@ int main(int argc, const char* argv[]) {
           }
         },
         when);
-    manipulator_timer->enqueue(entry, now);
+    manipulator_timer->async_invoke(now);
   }
 
   CFRunLoopRun();
