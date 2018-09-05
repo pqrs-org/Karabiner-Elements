@@ -15,11 +15,16 @@ namespace krbn {
 namespace manipulator {
 class manipulator_timer final {
 public:
-  manipulator_timer(void) {
+  manipulator_timer(bool timer_enabled = true) : timer_enabled_(timer_enabled) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~manipulator_timer(void) {
+    dispatcher_->enqueue([this] {
+      timer_ = nullptr;
+      timer_when_ = boost::none;
+    });
+
     dispatcher_->terminate();
     dispatcher_ = nullptr;
   }
@@ -27,12 +32,12 @@ public:
   void enqueue(const std::function<void(void)>& function,
                absolute_time when) {
     dispatcher_->enqueue([this, function, when] {
-      entries_.push_back(entry(function, when));
+      entries_.push_back(std::make_shared<entry>(function, when));
 
       std::stable_sort(std::begin(entries_),
                        std::end(entries_),
                        [](auto& a, auto& b) {
-                         return a.get_when() < b.get_when();
+                         return a->get_when() < b->get_when();
                        });
     });
   }
@@ -65,24 +70,40 @@ private:
   };
 
   void set_timer(absolute_time now) {
-    timer_ = nullptr;
-
     if (entries_.empty()) {
+      timer_ = nullptr;
       return;
     }
 
     auto e = entries_.front();
 
-    if (now < e.get_when()) {
-      timer_ = std::make_unique<thread_utility::timer>(
-          time_utility::to_milliseconds(e.get_when() - now),
-          false,
-          [this, e] {
-            dispatcher_->enqueue([this, e] {
-              invoke(e.get_when());
+    if (now < e->get_when()) {
+      if (timer_enabled_) {
+        // Skip if timer_ is active.
+
+        if (timer_ &&
+            timer_when_ &&
+            *timer_when_ == e->get_when()) {
+          return;
+        }
+
+        // Update timer_.
+
+        timer_ = nullptr;
+
+        timer_when_ = e->get_when();
+        timer_ = std::make_unique<thread_utility::timer>(
+            time_utility::to_milliseconds(e->get_when() - now),
+            false,
+            [this, e] {
+              dispatcher_->enqueue([this, e] {
+                timer_when_ = boost::none;
+                invoke(e->get_when());
+              });
             });
-          });
+      }
     } else {
+      timer_ = nullptr;
       invoke(now);
     }
   }
@@ -95,12 +116,12 @@ private:
 
       auto e = entries_.front();
 
-      if (now < e.get_when()) {
+      if (now < e->get_when()) {
         break;
       }
 
       dispatcher_->enqueue([e] {
-        e.call_function();
+        e->call_function();
       });
 
       entries_.pop_front();
@@ -110,8 +131,10 @@ private:
   }
 
   std::unique_ptr<thread_utility::dispatcher> dispatcher_;
-  std::deque<entry> entries_;
+  std::deque<std::shared_ptr<entry>> entries_;
+  bool timer_enabled_;
   std::unique_ptr<thread_utility::timer> timer_;
+  boost::optional<absolute_time> timer_when_;
 };
 } // namespace manipulator
 } // namespace krbn
