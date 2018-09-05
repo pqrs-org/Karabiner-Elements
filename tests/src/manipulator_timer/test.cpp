@@ -9,7 +9,9 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("manipulator_timer") {
-  auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>();
+  std::cout << "manipulator_timer" << std::endl;
+
+  auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(false);
   std::vector<int> result;
 
   manipulator_timer->enqueue([&] { result.push_back(1); }, krbn::absolute_time(3));
@@ -40,6 +42,45 @@ TEST_CASE("manipulator_timer") {
   REQUIRE(result[9] == 9);
 }
 
+TEST_CASE("manipulator_timer.enqueue_earlier") {
+  std::cout << "manipulator_timer.enqueue_earlier" << std::endl;
+
+  // Test with an actual timer.
+  bool timer_enabled = true;
+  auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(timer_enabled);
+  std::vector<int> result;
+  std::mutex m;
+
+  manipulator_timer->enqueue([&] { std::lock_guard<std::mutex> l(m); result.push_back(1); },
+                             krbn::time_utility::to_absolute_time(std::chrono::milliseconds(1000)));
+  manipulator_timer->async_invoke(krbn::time_utility::to_absolute_time(std::chrono::milliseconds(100)));
+
+  manipulator_timer->enqueue([&] { std::lock_guard<std::mutex> l(m); result.push_back(2); },
+                             krbn::time_utility::to_absolute_time(std::chrono::milliseconds(200)));
+  manipulator_timer->async_invoke(krbn::time_utility::to_absolute_time(std::chrono::milliseconds(100)));
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+  {
+    std::lock_guard<std::mutex> l(m);
+
+    REQUIRE(result.size() == 1);
+    REQUIRE(result[0] == 2);
+  }
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+  {
+    std::lock_guard<std::mutex> l(m);
+
+    REQUIRE(result.size() == 2);
+    REQUIRE(result[0] == 2);
+    REQUIRE(result[1] == 1);
+  }
+
+  manipulator_timer = nullptr;
+}
+
 namespace {
 bool check_thread_id(boost::optional<std::thread::id> thread_id) {
   if (!thread_id) {
@@ -50,7 +91,9 @@ bool check_thread_id(boost::optional<std::thread::id> thread_id) {
 } // namespace
 
 TEST_CASE("manipulator_timer.thread_id") {
-  auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>();
+  std::cout << "manipulator_timer.thread_id" << std::endl;
+
+  auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(false);
 
   boost::optional<std::thread::id> thread_id;
 
@@ -62,5 +105,6 @@ TEST_CASE("manipulator_timer.thread_id") {
   manipulator_timer->async_invoke(krbn::absolute_time(10));
   manipulator_timer->async_invoke(krbn::absolute_time(20));
   manipulator_timer->async_invoke(krbn::absolute_time(100));
+
   manipulator_timer = nullptr;
 }
