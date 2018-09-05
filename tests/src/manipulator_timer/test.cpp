@@ -12,38 +12,19 @@ TEST_CASE("manipulator_timer") {
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>();
   std::vector<int> result;
 
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(1); }, krbn::absolute_time(3)),
-                             krbn::absolute_time(0));
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(2); }, krbn::absolute_time(2)),
-                             krbn::absolute_time(0));
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(3); }, krbn::absolute_time(1)),
-                             krbn::absolute_time(0));
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(4); }, krbn::absolute_time(1)),
-                             krbn::absolute_time(0));
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(5); }, krbn::absolute_time(2)),
-                             krbn::absolute_time(0));
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(6); }, krbn::absolute_time(3)),
-                             krbn::absolute_time(0));
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(7); }, krbn::absolute_time(2)),
-                             krbn::absolute_time(0));
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(8); }, krbn::absolute_time(1)),
-                             krbn::absolute_time(0));
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(9); }, krbn::absolute_time(3)),
-                             krbn::absolute_time(0));
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { result.push_back(10); }, krbn::absolute_time(1)),
-                             krbn::absolute_time(0));
+  manipulator_timer->enqueue([&] { result.push_back(1); }, krbn::absolute_time(3));
+  manipulator_timer->enqueue([&] { result.push_back(2); }, krbn::absolute_time(2));
+  manipulator_timer->enqueue([&] { result.push_back(3); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue([&] { result.push_back(4); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue([&] { result.push_back(5); }, krbn::absolute_time(2));
+  manipulator_timer->enqueue([&] { result.push_back(6); }, krbn::absolute_time(3));
+  manipulator_timer->enqueue([&] { result.push_back(7); }, krbn::absolute_time(2));
+  manipulator_timer->enqueue([&] { result.push_back(8); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue([&] { result.push_back(9); }, krbn::absolute_time(3));
+  manipulator_timer->enqueue([&] { result.push_back(10); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue([&] { result.push_back(11); }, krbn::absolute_time(100));
 
-  manipulator_timer->async_signal(krbn::absolute_time(10000));
+  manipulator_timer->async_invoke(krbn::absolute_time(10));
   manipulator_timer = nullptr;
 
   REQUIRE(result.size() == 10);
@@ -73,22 +54,13 @@ TEST_CASE("manipulator_timer.thread_id") {
 
   boost::optional<std::thread::id> thread_id;
 
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(0)),
-                             krbn::absolute_time(10));
+  manipulator_timer->enqueue([&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(0));
+  manipulator_timer->enqueue([&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(5));
+  manipulator_timer->enqueue([&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(10));
+  manipulator_timer->enqueue([&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(15));
 
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(5)),
-                             krbn::absolute_time(10));
-
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(10)),
-                             krbn::absolute_time(10));
-
-  manipulator_timer->enqueue(krbn::manipulator::manipulator_timer::entry(
-                                 [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(15)),
-                             krbn::absolute_time(10));
-
-  manipulator_timer->async_signal(krbn::absolute_time(10000));
+  manipulator_timer->async_invoke(krbn::absolute_time(10));
+  manipulator_timer->async_invoke(krbn::absolute_time(20));
+  manipulator_timer->async_invoke(krbn::absolute_time(100));
   manipulator_timer = nullptr;
 }
