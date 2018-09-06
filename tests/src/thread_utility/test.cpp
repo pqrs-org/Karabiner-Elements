@@ -36,13 +36,14 @@ TEST_CASE("timer") {
 
     krbn::thread_utility::timer timer(
         std::chrono::milliseconds(100),
-        false,
+        krbn::thread_utility::timer::mode::once,
         [&] {
           ++count;
         });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
+    // `cancel` is ignored.
     timer.cancel();
 
     REQUIRE(count == 1);
@@ -56,7 +57,7 @@ TEST_CASE("timer") {
 
     krbn::thread_utility::timer timer(
         std::chrono::milliseconds(500),
-        false,
+        krbn::thread_utility::timer::mode::once,
         [&] {
           ++count;
         });
@@ -77,14 +78,31 @@ TEST_CASE("timer") {
     thread.join();
   }
 
-  // Cancel (1)
+  // Wait in destructor
+
+  {
+    size_t count = 0;
+
+    {
+      krbn::thread_utility::timer timer(
+          std::chrono::milliseconds(500),
+          krbn::thread_utility::timer::mode::once,
+          [&] {
+            ++count;
+          });
+    }
+
+    REQUIRE(count == 1);
+  }
+
+  // Cancel
 
   {
     size_t count = 0;
 
     krbn::thread_utility::timer timer(
         std::chrono::milliseconds(500),
-        false,
+        krbn::thread_utility::timer::mode::once,
         [&] {
           ++count;
         });
@@ -96,21 +114,6 @@ TEST_CASE("timer") {
     REQUIRE(count == 0);
   }
 
-  // Cancel (2)
-
-  {
-    size_t count = 0;
-
-    {
-      krbn::thread_utility::timer timer(
-          std::chrono::milliseconds(50000),
-          false,
-          [&] {
-            ++count;
-          });
-    }
-  }
-
   // Cancel while wait
 
   {
@@ -118,7 +121,7 @@ TEST_CASE("timer") {
 
     krbn::thread_utility::timer timer(
         std::chrono::milliseconds(500),
-        false,
+        krbn::thread_utility::timer::mode::once,
         [&] {
           ++count;
         });
@@ -147,7 +150,7 @@ TEST_CASE("timer.repeats") {
 
     krbn::thread_utility::timer timer(
         std::chrono::milliseconds(100),
-        true,
+        krbn::thread_utility::timer::mode::repeat,
         [&] {
           ++count;
         });
@@ -164,12 +167,12 @@ TEST_CASE("timer.repeats") {
   {
     size_t count = 0;
 
-    // Call `cancel` in `~timer`.
+    // Cancel repeat in `~timer`.
 
     {
       krbn::thread_utility::timer timer(
           std::chrono::milliseconds(100),
-          true,
+          krbn::thread_utility::timer::mode::repeat,
           [&] {
             ++count;
           });
@@ -184,16 +187,33 @@ TEST_CASE("timer.repeats") {
   {
     size_t count = 0;
 
-    // `unset_repeats`
+    // The callback is called in ~timer.
 
     {
       krbn::thread_utility::timer timer(
           std::chrono::milliseconds(100),
-          true,
+          krbn::thread_utility::timer::mode::repeat,
+          [&] {
+            ++count;
+          });
+    }
+
+    REQUIRE(count == 1);
+  }
+
+  {
+    size_t count = 0;
+
+    // `cancel`
+
+    {
+      krbn::thread_utility::timer timer(
+          std::chrono::milliseconds(100),
+          krbn::thread_utility::timer::mode::repeat,
           [&] {
             ++count;
             if (count == 2) {
-              timer.unset_repeats();
+              timer.cancel();
             }
           });
 
@@ -218,7 +238,7 @@ TEST_CASE("timer.repeats.interval") {
             return std::chrono::milliseconds(500);
           }
         },
-        true,
+        krbn::thread_utility::timer::mode::repeat,
         [&] {
           ++count;
         });

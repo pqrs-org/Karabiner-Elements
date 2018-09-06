@@ -60,44 +60,56 @@ public:
 
   class timer final {
   public:
+    enum class mode {
+      once,
+      repeat,
+    };
+
     timer(const std::function<std::chrono::milliseconds(size_t count)>& interval,
-          bool repeats,
-          const std::function<void(void)>& function) : cancel_flag_(false),
-                                                       repeats_(repeats),
+          mode mode,
+          const std::function<void(void)>& function) : mode_(mode),
+                                                       exit_(false),
+                                                       graceful_exit_(false),
                                                        count_(0) {
       thread_ = std::thread([this, interval, function] {
-        do {
+        while (true) {
           // Wait
           {
             std::unique_lock<std::mutex> lock(timer_mutex_);
             timer_cv_.wait_for(lock, interval(count_), [this] {
-              return cancel_flag_ == true;
+              return exit_ == true;
             });
           }
 
-          if (cancel_flag_) {
-            return;
+          if (exit_) {
+            break;
           }
 
           function();
           ++count_;
-        } while (repeats_);
+
+          if (mode_ == mode::once) {
+            break;
+          }
+
+          if (graceful_exit_) {
+            break;
+          }
+        }
       });
     }
 
     timer(std::chrono::milliseconds interval,
-          bool repeats,
+          mode mode,
           const std::function<void(void)>& function) : timer([interval](auto&& count) { return interval; },
-                                                             repeats,
+                                                             mode,
                                                              function) {
     }
 
     ~timer(void) {
-      if (thread_.joinable()) {
-        cancel();
+      graceful_exit_ = true;
 
-        thread_.join();
-      }
+      wait();
     }
 
     void wait(void) {
@@ -107,20 +119,17 @@ public:
     }
 
     void cancel(void) {
-      cancel_flag_ = true;
-      repeats_ = false;
+      exit_ = true;
 
       timer_cv_.notify_one();
     }
 
-    void unset_repeats(void) {
-      repeats_ = false;
-    }
-
   private:
+    mode mode_;
+
     std::thread thread_;
-    std::atomic<bool> cancel_flag_;
-    std::atomic<bool> repeats_;
+    std::atomic<bool> exit_;
+    std::atomic<bool> graceful_exit_;
     size_t count_;
 
     std::mutex timer_mutex_;
