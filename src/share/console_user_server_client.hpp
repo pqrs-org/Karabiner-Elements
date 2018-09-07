@@ -106,7 +106,7 @@ public:
     });
   }
 
-  void async_select_input_source(const input_source_selector& input_source_selector, uint64_t time_stamp) {
+  void async_select_input_source(const input_source_selector& input_source_selector, absolute_time time_stamp) {
     dispatcher_->enqueue([this, input_source_selector, time_stamp] {
       operation_type_select_input_source_struct s;
       s.time_stamp = time_stamp;

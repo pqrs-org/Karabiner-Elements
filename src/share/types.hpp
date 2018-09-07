@@ -2053,7 +2053,7 @@ struct operation_type_select_input_source_struct {
   }
 
   const operation_type operation_type;
-  uint64_t time_stamp;
+  absolute_time time_stamp;
   char language[256];
   char input_source_id[256];
   char input_mode_id[256];
