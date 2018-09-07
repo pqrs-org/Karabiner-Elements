@@ -11,8 +11,6 @@ class server_manager final {
 public:
   // Signals
 
-  // Note: These signals are fired on server's thread.
-
   boost::signals2::signal<void(void)> bound;
   boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
   boost::signals2::signal<void(void)> closed;
@@ -27,90 +25,111 @@ public:
                                                                  buffer_size_(buffer_size),
                                                                  server_check_interval_(server_check_interval),
                                                                  reconnect_interval_(reconnect_interval),
-                                                                 stopped_(true) {
+                                                                 reconnect_timer_enabled_(false) {
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~server_manager(void) {
-    stop();
+    async_stop();
+
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
   }
 
-  std::shared_ptr<server> get_server(void) {
-    std::lock_guard<std::mutex> lock(server_mutex_);
+  void async_start(void) {
+    dispatcher_->enqueue([this] {
+      reconnect_timer_enabled_ = true;
 
-    return server_;
+      connect();
+    });
   }
 
-  void start(void) {
-    stop();
+  void async_stop(void) {
+    dispatcher_->enqueue([this] {
+      // We have to unset reconnect_timer_enabled_ before `close` to prevent `start_reconnect_timer` by `closed` signal.
+      reconnect_timer_enabled_ = false;
 
-    stopped_ = false;
-
-    connect();
-  }
-
-  void stop(void) {
-    // We have to set stopped_ before `close` to prevent `start_reconnect_thread` by `closed` signal.
-    stopped_ = true;
-
-    stop_reconnect_thread();
-    close();
+      stop_reconnect_timer();
+      close();
+    });
   }
 
 private:
   void connect(void) {
-    std::lock_guard<std::mutex> lock(server_mutex_);
+    if (server_) {
+      return;
+    }
 
-    server_ = nullptr;
-    server_ = std::make_shared<server>();
+    server_ = std::make_unique<server>();
 
     server_->bound.connect([this] {
-      bound();
+      dispatcher_->enqueue([this] {
+        bound();
+      });
     });
 
     server_->bind_failed.connect([this](auto&& error_code) {
-      bind_failed(error_code);
+      dispatcher_->enqueue([this, error_code] {
+        bind_failed(error_code);
 
-      if (!stopped_) {
-        start_reconnect_thread();
-      }
+        close();
+        stop_reconnect_timer();
+        start_reconnect_timer();
+      });
     });
 
     server_->closed.connect([this] {
-      closed();
+      dispatcher_->enqueue([this] {
+        closed();
 
-      if (!stopped_) {
-        start_reconnect_thread();
-      }
+        close();
+        stop_reconnect_timer();
+        start_reconnect_timer();
+      });
     });
 
     server_->received.connect([this](auto&& buffer) {
-      received(buffer);
+      dispatcher_->enqueue([this, buffer] {
+        received(buffer);
+      });
     });
 
-    server_->bind(path_,
-                  buffer_size_,
-                  server_check_interval_);
+    server_->async_bind(path_,
+                        buffer_size_,
+                        server_check_interval_);
   }
 
   void close(void) {
-    std::lock_guard<std::mutex> lock(server_mutex_);
+    if (!server_) {
+      return;
+    }
 
     server_ = nullptr;
   }
 
-  void start_reconnect_thread(void) {
-    std::lock_guard<std::mutex> lock(reconnect_timer_mutex_);
+  void start_reconnect_timer(void) {
+    if (reconnect_timer_) {
+      return;
+    }
+
+    if (!reconnect_timer_enabled_) {
+      return;
+    }
 
     reconnect_timer_ = std::make_unique<thread_utility::timer>(
         reconnect_interval_,
-        false,
+        thread_utility::timer::mode::once,
         [this] {
-          connect();
+          dispatcher_->enqueue([this] {
+            connect();
+          });
         });
   }
 
-  void stop_reconnect_thread(void) {
-    std::lock_guard<std::mutex> lock(reconnect_timer_mutex_);
+  void stop_reconnect_timer(void) {
+    if (!reconnect_timer_) {
+      return;
+    }
 
     reconnect_timer_ = nullptr;
   }
@@ -120,13 +139,10 @@ private:
   boost::optional<std::chrono::milliseconds> server_check_interval_;
   std::chrono::milliseconds reconnect_interval_;
 
-  bool stopped_;
-
-  std::shared_ptr<server> server_;
-  std::mutex server_mutex_;
-
+  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
+  std::unique_ptr<server> server_;
   std::unique_ptr<thread_utility::timer> reconnect_timer_;
-  std::mutex reconnect_timer_mutex_;
+  bool reconnect_timer_enabled_;
 };
 } // namespace local_datagram
 } // namespace krbn
