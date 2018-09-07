@@ -21,6 +21,7 @@ public:
 
   ~manipulator_timer(void) {
     dispatcher_->enqueue([this] {
+      // Stop `timer_` gracefully without timer_->cancel().
       timer_ = nullptr;
       timer_when_ = boost::none;
     });
@@ -89,12 +90,15 @@ private:
 
         // Update timer_.
 
-        timer_ = nullptr;
+        if (timer_) {
+          timer_->cancel();
+          timer_ = nullptr;
+        }
 
         timer_when_ = e->get_when();
         timer_ = std::make_unique<thread_utility::timer>(
             time_utility::to_milliseconds(e->get_when() - now),
-            false,
+            thread_utility::timer::mode::once,
             [this, e] {
               dispatcher_->enqueue([this, e] {
                 timer_when_ = boost::none;
