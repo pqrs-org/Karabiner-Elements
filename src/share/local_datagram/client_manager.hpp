@@ -132,6 +132,7 @@ private:
       return;
     }
 
+    reconnect_timer_->cancel();
     reconnect_timer_ = nullptr;
   }
 
