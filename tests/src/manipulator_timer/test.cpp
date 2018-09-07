@@ -12,19 +12,20 @@ TEST_CASE("manipulator_timer") {
   std::cout << "manipulator_timer" << std::endl;
 
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(false);
+  auto client_id = krbn::manipulator::manipulator_timer::make_new_client_id();
   std::vector<int> result;
 
-  manipulator_timer->enqueue([&] { result.push_back(1); }, krbn::absolute_time(3));
-  manipulator_timer->enqueue([&] { result.push_back(2); }, krbn::absolute_time(2));
-  manipulator_timer->enqueue([&] { result.push_back(3); }, krbn::absolute_time(1));
-  manipulator_timer->enqueue([&] { result.push_back(4); }, krbn::absolute_time(1));
-  manipulator_timer->enqueue([&] { result.push_back(5); }, krbn::absolute_time(2));
-  manipulator_timer->enqueue([&] { result.push_back(6); }, krbn::absolute_time(3));
-  manipulator_timer->enqueue([&] { result.push_back(7); }, krbn::absolute_time(2));
-  manipulator_timer->enqueue([&] { result.push_back(8); }, krbn::absolute_time(1));
-  manipulator_timer->enqueue([&] { result.push_back(9); }, krbn::absolute_time(3));
-  manipulator_timer->enqueue([&] { result.push_back(10); }, krbn::absolute_time(1));
-  manipulator_timer->enqueue([&] { result.push_back(11); }, krbn::absolute_time(100));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(1); }, krbn::absolute_time(3));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(2); }, krbn::absolute_time(2));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(3); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(4); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(5); }, krbn::absolute_time(2));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(6); }, krbn::absolute_time(3));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(7); }, krbn::absolute_time(2));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(8); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(9); }, krbn::absolute_time(3));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(10); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue(client_id, [&] { result.push_back(11); }, krbn::absolute_time(100));
 
   manipulator_timer->async_invoke(krbn::absolute_time(10));
   manipulator_timer = nullptr;
@@ -48,14 +49,17 @@ TEST_CASE("manipulator_timer.enqueue_earlier") {
   // Test with an actual timer.
   bool timer_enabled = true;
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(timer_enabled);
+  auto client_id = krbn::manipulator::manipulator_timer::make_new_client_id();
   std::vector<int> result;
   std::mutex m;
 
-  manipulator_timer->enqueue([&] { std::lock_guard<std::mutex> l(m); result.push_back(1); },
+  manipulator_timer->enqueue(client_id,
+                             [&] { std::lock_guard<std::mutex> l(m); result.push_back(1); },
                              krbn::time_utility::to_absolute_time(std::chrono::milliseconds(1000)));
   manipulator_timer->async_invoke(krbn::time_utility::to_absolute_time(std::chrono::milliseconds(100)));
 
-  manipulator_timer->enqueue([&] { std::lock_guard<std::mutex> l(m); result.push_back(2); },
+  manipulator_timer->enqueue(client_id,
+                             [&] { std::lock_guard<std::mutex> l(m); result.push_back(2); },
                              krbn::time_utility::to_absolute_time(std::chrono::milliseconds(200)));
   manipulator_timer->async_invoke(krbn::time_utility::to_absolute_time(std::chrono::milliseconds(100)));
 
@@ -94,17 +98,56 @@ TEST_CASE("manipulator_timer.thread_id") {
   std::cout << "manipulator_timer.thread_id" << std::endl;
 
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(false);
+  auto client_id = krbn::manipulator::manipulator_timer::make_new_client_id();
 
   boost::optional<std::thread::id> thread_id;
 
-  manipulator_timer->enqueue([&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(0));
-  manipulator_timer->enqueue([&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(5));
-  manipulator_timer->enqueue([&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(10));
-  manipulator_timer->enqueue([&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(15));
+  manipulator_timer->enqueue(client_id, [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(0));
+  manipulator_timer->enqueue(client_id, [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(5));
+  manipulator_timer->enqueue(client_id, [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(10));
+  manipulator_timer->enqueue(client_id, [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(15));
 
   manipulator_timer->async_invoke(krbn::absolute_time(10));
   manipulator_timer->async_invoke(krbn::absolute_time(20));
   manipulator_timer->async_invoke(krbn::absolute_time(100));
+
+  manipulator_timer = nullptr;
+}
+
+TEST_CASE("manipulator_timer.async_erase") {
+  auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(false);
+  auto client_id1 = krbn::manipulator::manipulator_timer::make_new_client_id();
+  auto client_id2 = krbn::manipulator::manipulator_timer::make_new_client_id();
+  std::vector<int> result;
+
+  manipulator_timer->enqueue(client_id1, [&] { result.push_back(1); }, krbn::absolute_time(3));
+  manipulator_timer->enqueue(client_id1, [&] { result.push_back(2); }, krbn::absolute_time(2));
+  manipulator_timer->enqueue(client_id1, [&] { result.push_back(3); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue(client_id1, [&] { result.push_back(4); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue(client_id1, [&] { result.push_back(5); }, krbn::absolute_time(2));
+  manipulator_timer->enqueue(client_id2, [&] { result.push_back(6); }, krbn::absolute_time(3));
+  manipulator_timer->enqueue(client_id2, [&] { result.push_back(7); }, krbn::absolute_time(2));
+  manipulator_timer->enqueue(client_id2, [&] { result.push_back(8); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue(client_id2, [&] { result.push_back(9); }, krbn::absolute_time(3));
+  manipulator_timer->enqueue(client_id2, [&] { result.push_back(10); }, krbn::absolute_time(1));
+  manipulator_timer->enqueue(client_id2, [&] { result.push_back(11); }, krbn::absolute_time(100));
+
+  krbn::thread_utility::wait wait;
+  manipulator_timer->async_erase(client_id2);
+  manipulator_timer->enqueue(client_id2,
+                             [&] {
+                               wait.notify();
+                             },
+                             krbn::absolute_time(0));
+  manipulator_timer->async_invoke(krbn::absolute_time(10));
+  wait.wait_notice();
+
+  REQUIRE(result.size() == 5);
+  REQUIRE(result[0] == 3);
+  REQUIRE(result[1] == 4);
+  REQUIRE(result[2] == 2);
+  REQUIRE(result[3] == 5);
+  REQUIRE(result[4] == 1);
 
   manipulator_timer = nullptr;
 }

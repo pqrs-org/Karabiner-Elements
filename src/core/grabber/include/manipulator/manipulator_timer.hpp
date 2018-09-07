@@ -15,6 +15,20 @@ namespace krbn {
 namespace manipulator {
 class manipulator_timer final {
 public:
+  struct client_id : type_safe::strong_typedef<client_id, uint64_t>,
+                     type_safe::strong_typedef_op::equality_comparison<client_id>,
+                     type_safe::strong_typedef_op::integer_arithmetic<client_id> {
+    using strong_typedef::strong_typedef;
+  };
+
+  static client_id make_new_client_id(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
+    static client_id id(0);
+    return ++id;
+  }
+
   manipulator_timer(bool timer_enabled = true) : timer_enabled_(timer_enabled) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
@@ -30,16 +44,28 @@ public:
     dispatcher_ = nullptr;
   }
 
-  void enqueue(const std::function<void(void)>& function,
+  void enqueue(client_id client_id,
+               const std::function<void(void)>& function,
                absolute_time when) {
-    dispatcher_->enqueue([this, function, when] {
-      entries_.push_back(std::make_shared<entry>(function, when));
+    dispatcher_->enqueue([this, client_id, function, when] {
+      entries_.push_back(std::make_shared<entry>(client_id, function, when));
 
       std::stable_sort(std::begin(entries_),
                        std::end(entries_),
                        [](auto& a, auto& b) {
                          return a->get_when() < b->get_when();
                        });
+    });
+  }
+
+  void async_erase(client_id client_id) {
+    dispatcher_->enqueue([this, client_id] {
+      entries_.erase(std::remove_if(std::begin(entries_),
+                                    std::end(entries_),
+                                    [&](auto&& e) {
+                                      return e->get_client_id() == client_id;
+                                    }),
+                     std::end(entries_));
     });
   }
 
@@ -52,9 +78,15 @@ public:
 private:
   class entry final {
   public:
-    entry(const std::function<void(void)>& function,
-          absolute_time when) : function_(function),
+    entry(client_id client_id,
+          const std::function<void(void)>& function,
+          absolute_time when) : client_id_(client_id),
+                                function_(function),
                                 when_(when) {
+    }
+
+    client_id get_client_id(void) const {
+      return client_id_;
     }
 
     absolute_time get_when(void) const {
@@ -66,6 +98,7 @@ private:
     }
 
   private:
+    client_id client_id_;
     std::function<void(void)> function_;
     absolute_time when_;
   };
