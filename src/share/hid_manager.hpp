@@ -65,7 +65,7 @@ public:
 
       refresh_timer_ = std::make_unique<thread_utility::timer>(
           std::chrono::milliseconds(5000),
-          true,
+          thread_utility::timer::mode::repeat,
           [this] {
             run_loop_thread_->enqueue(^{
               refresh_if_needed();
@@ -84,6 +84,7 @@ public:
 
       // refresh_timer_
 
+      refresh_timer_->cancel();
       refresh_timer_ = nullptr;
 
       // manager_

@@ -115,51 +115,48 @@ public:
   }
 
   void async_observe(void) {
-    std::lock_guard<std::mutex> lock(timer_mutex_);
+    dispatcher_->enqueue([this] {
+      if (timer_) {
+        return;
+      }
 
-    if (timer_) {
-      return;
-    }
+      logger_unique_filter_.reset();
 
-    logger_unique_filter_.reset();
-
-    timer_ = std::make_unique<thread_utility::timer>(
-        [](auto&& count) {
-          if (count == 0) {
-            return std::chrono::milliseconds(0);
-          } else {
-            return std::chrono::milliseconds(3000);
-          }
-        },
-        true,
-        [this] {
-          dispatcher_->enqueue([this] {
-            if (!observed_) {
-              if (auto hid = weak_hid_.lock()) {
-                if (!hid->get_removed()) {
-                  hid->async_open();
-                  return;
+      timer_ = std::make_unique<thread_utility::timer>(
+          [](auto&& count) {
+            if (count == 0) {
+              return std::chrono::milliseconds(0);
+            } else {
+              return std::chrono::milliseconds(3000);
+            }
+          },
+          thread_utility::timer::mode::repeat,
+          [this] {
+            dispatcher_->enqueue([this] {
+              if (!observed_) {
+                if (auto hid = weak_hid_.lock()) {
+                  if (!hid->get_removed()) {
+                    hid->async_open();
+                    return;
+                  }
                 }
               }
-            }
 
-            timer_->unset_repeats();
+              timer_->cancel();
+            });
           });
-        });
+    });
   }
 
   void async_unobserve(void) {
-    {
-      std::lock_guard<std::mutex> lock(timer_mutex_);
-
+    dispatcher_->enqueue([this] {
       if (!timer_) {
         return;
       }
 
+      timer_->cancel();
       timer_ = nullptr;
-    }
 
-    dispatcher_->enqueue([this] {
       if (observed_) {
         if (auto hid = weak_hid_.lock()) {
           hid->async_unschedule();
@@ -179,8 +176,6 @@ private:
   boost_utility::signals2_connections human_interface_device_connections_;
   bool observed_;
   logger::unique_filter logger_unique_filter_;
-
   std::unique_ptr<thread_utility::timer> timer_;
-  mutable std::mutex timer_mutex_;
 };
 } // namespace krbn
