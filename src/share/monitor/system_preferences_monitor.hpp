@@ -49,6 +49,9 @@ public:
     // Destroy timer_
 
     dispatcher_->enqueue([this] {
+      if (timer_) {
+        timer_->cancel();
+      }
       timer_ = nullptr;
     });
 
@@ -62,6 +65,10 @@ public:
 
   void async_start(void) {
     dispatcher_->enqueue([this] {
+      if (timer_) {
+        return;
+      }
+
       timer_ = std::make_unique<thread_utility::timer>(
           [](auto&& count) {
             if (count == 0) {
@@ -70,7 +77,7 @@ public:
               return std::chrono::milliseconds(3000);
             }
           },
-          true,
+          thread_utility::timer::mode::repeat,
           [this] {
             dispatcher_->enqueue([this] {
               check_system_preferences();
