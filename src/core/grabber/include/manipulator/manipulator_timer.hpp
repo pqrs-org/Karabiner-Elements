@@ -58,14 +58,17 @@ public:
     });
   }
 
-  void async_erase(client_id client_id) {
-    dispatcher_->enqueue([this, client_id] {
+  void async_erase(client_id client_id,
+                   const std::function<void(void)>& erased) {
+    dispatcher_->enqueue([this, client_id, erased] {
       entries_.erase(std::remove_if(std::begin(entries_),
                                     std::end(entries_),
                                     [&](auto&& e) {
                                       return e->get_client_id() == client_id;
                                     }),
                      std::end(entries_));
+
+      erased();
     });
   }
 
@@ -105,7 +108,10 @@ private:
 
   void set_timer(absolute_time now) {
     if (entries_.empty()) {
-      timer_ = nullptr;
+      if (timer_) {
+        timer_->cancel();
+        timer_ = nullptr;
+      }
       return;
     }
 
@@ -140,7 +146,11 @@ private:
             });
       }
     } else {
-      timer_ = nullptr;
+      if (timer_) {
+        timer_->cancel();
+        timer_ = nullptr;
+      }
+
       invoke(now);
     }
   }

@@ -133,12 +133,10 @@ TEST_CASE("manipulator_timer.async_erase") {
   manipulator_timer->enqueue(client_id2, [&] { result.push_back(11); }, krbn::absolute_time(100));
 
   krbn::thread_utility::wait wait;
-  manipulator_timer->async_erase(client_id2);
-  manipulator_timer->enqueue(client_id2,
-                             [&] {
-                               wait.notify();
-                             },
-                             krbn::absolute_time(0));
+  manipulator_timer->async_erase(client_id2,
+                                 [&wait] {
+                                   wait.notify();
+                                 });
   manipulator_timer->async_invoke(krbn::absolute_time(10));
   wait.wait_notice();
 
