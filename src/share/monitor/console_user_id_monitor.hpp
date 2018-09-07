@@ -4,6 +4,7 @@
 
 #include "boost_defs.hpp"
 
+#include "logger.hpp"
 #include "session.hpp"
 #include "thread_utility.hpp"
 #include <boost/optional.hpp>
@@ -34,6 +35,10 @@ public:
 
   void async_start(void) {
     dispatcher_->enqueue([this] {
+      if (timer_) {
+        return;
+      }
+
       timer_ = std::make_unique<thread_utility::timer>(
           [](auto&& count) {
             if (count == 0) {
@@ -42,7 +47,7 @@ public:
               return std::chrono::milliseconds(1000);
             }
           },
-          true,
+          thread_utility::timer::mode::repeat,
           [this] {
             dispatcher_->enqueue([this] {
               auto u = session::get_current_console_user_id();
@@ -54,12 +59,21 @@ public:
               uid_ = std::make_unique<boost::optional<uid_t>>(u);
             });
           });
+
+      logger::get_logger().info("console_user_id_monitor is started.");
     });
   }
 
   void async_stop(void) {
     dispatcher_->enqueue([this] {
+      if (!timer_) {
+        return;
+      }
+
+      timer_->cancel();
       timer_ = nullptr;
+
+      logger::get_logger().info("console_user_id_monitor is stopped.");
     });
   }
 
