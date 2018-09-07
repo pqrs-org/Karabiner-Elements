@@ -8,6 +8,10 @@
 int main(int argc, const char* argv[]) {
   krbn::thread_utility::register_main_thread();
 
+  signal(SIGINT, [](int) {
+    CFRunLoopStop(CFRunLoopGetMain());
+  });
+
   krbn::console_user_id_monitor console_user_id_monitor;
 
   console_user_id_monitor.console_user_id_changed.connect([](auto&& uid) {
