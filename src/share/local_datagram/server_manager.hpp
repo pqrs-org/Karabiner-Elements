@@ -40,7 +40,7 @@ public:
     dispatcher_->enqueue([this] {
       reconnect_timer_enabled_ = true;
 
-      connect();
+      bind();
     });
   }
 
@@ -55,7 +55,7 @@ public:
   }
 
 private:
-  void connect(void) {
+  void bind(void) {
     if (server_) {
       return;
     }
@@ -121,7 +121,7 @@ private:
         thread_utility::timer::mode::once,
         [this] {
           dispatcher_->enqueue([this] {
-            connect();
+            bind();
           });
         });
   }
