@@ -126,7 +126,7 @@ public:
         });
       });
 
-      server_manager_->start();
+      server_manager_->async_start();
 
       logger::get_logger().info("receiver is initialized");
     });

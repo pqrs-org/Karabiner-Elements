@@ -69,7 +69,7 @@ public:
         closed();
       });
 
-      client_manager_->start();
+      client_manager_->async_start();
 
       logger::get_logger().info("grabber_client is started.");
     });
