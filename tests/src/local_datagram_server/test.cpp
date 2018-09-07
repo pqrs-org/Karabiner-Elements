@@ -51,9 +51,9 @@ public:
       }
     });
 
-    server_->bind(socket_path,
-                  server_buffer_size,
-                  server_check_interval);
+    server_->async_bind(socket_path,
+                        server_buffer_size,
+                        server_check_interval);
 
     // Wait server initialization roughly
 
@@ -102,8 +102,8 @@ public:
       closed_ = true;
     });
 
-    client_->connect(socket_path,
-                     server_check_interval);
+    client_->async_connect(socket_path,
+                           server_check_interval);
 
     // Wait client initialization roughly
 
@@ -150,9 +150,9 @@ TEST_CASE("socket file") {
   {
     krbn::local_datagram::server server;
 
-    server.bind(socket_path,
-                server_buffer_size,
-                server_check_interval);
+    server.async_bind(socket_path,
+                      server_buffer_size,
+                      server_check_interval);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -171,9 +171,9 @@ TEST_CASE("fail to create socket file") {
     failed = true;
   });
 
-  server.bind("/not_found/server.sock",
-              server_buffer_size,
-              server_check_interval);
+  server.async_bind("/not_found/server.sock",
+                    server_buffer_size,
+                    server_check_interval);
 
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -192,9 +192,9 @@ TEST_CASE("keep existing file in destructor") {
 
   {
     krbn::local_datagram::server server;
-    server.bind(regular_file_path,
-                server_buffer_size,
-                server_check_interval);
+    server.async_bind(regular_file_path,
+                      server_buffer_size,
+                      server_check_interval);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
@@ -368,7 +368,7 @@ TEST_CASE("local_datagram::client_manager") {
 
     // Create client before server
 
-    client_manager->start();
+    client_manager->async_start();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -430,7 +430,7 @@ TEST_CASE("local_datagram::server_manager") {
       krbn::logger::get_logger().info("server_manager closed: {0}", closed_count);
     });
 
-    server_manager->start();
+    server_manager->async_start();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
