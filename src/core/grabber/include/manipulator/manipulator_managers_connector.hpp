@@ -17,7 +17,7 @@ public:
                                                                          output_event_queue_(output_event_queue) {
     }
 
-    void manipulate(uint64_t now) {
+    void manipulate(absolute_time now) {
       manipulator_manager_.manipulate(input_event_queue_.lock(),
                                       output_event_queue_.lock(),
                                       now);
@@ -31,7 +31,7 @@ public:
       return manipulator_manager_.needs_virtual_hid_pointing();
     }
 
-    boost::optional<uint64_t> make_input_event_time_stamp_with_input_delay(void) const {
+    boost::optional<absolute_time> make_input_event_time_stamp_with_input_delay(void) const {
       if (auto ieq = input_event_queue_.lock()) {
         if (!ieq->get_events().empty()) {
           return ieq->get_events().front().get_event_time_stamp().make_time_stamp_with_input_delay();
@@ -80,7 +80,7 @@ public:
     }
   }
 
-  void manipulate(uint64_t now) {
+  void manipulate(absolute_time now) {
     for (auto&& c : connections_) {
       c.manipulate(now);
     }
@@ -100,8 +100,8 @@ public:
                        });
   }
 
-  boost::optional<uint64_t> min_input_event_time_stamp(void) const {
-    boost::optional<uint64_t> result;
+  boost::optional<absolute_time> min_input_event_time_stamp(void) const {
+    boost::optional<absolute_time> result;
 
     for (const auto& c : connections_) {
       if (auto t = c.make_input_event_time_stamp_with_input_delay()) {
