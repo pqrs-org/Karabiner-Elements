@@ -72,6 +72,10 @@ public:
     });
   }
 
+  void async_erase(client_id client_id) {
+    async_erase(client_id, [] {});
+  }
+
   void async_invoke(absolute_time now) {
     dispatcher_->enqueue([this, now] {
       invoke(now);
