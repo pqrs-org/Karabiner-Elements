@@ -555,7 +555,7 @@ public:
           continue;
         }
 
-        hold_down_milliseconds_ = value;
+        hold_down_milliseconds_ = std::chrono::milliseconds(value);
 
         continue;
       }
@@ -605,7 +605,7 @@ public:
     return halt_;
   }
 
-  int get_hold_down_milliseconds(void) const {
+  std::chrono::milliseconds get_hold_down_milliseconds(void) const {
     return hold_down_milliseconds_;
   }
 
@@ -643,7 +643,7 @@ private:
   bool lazy_;
   bool repeat_;
   bool halt_;
-  int hold_down_milliseconds_;
+  std::chrono::milliseconds hold_down_milliseconds_;
 };
 
 enum class manipulate_result {
