@@ -21,7 +21,7 @@ public:
   virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
                                        const event_queue& input_event_queue,
                                        const std::shared_ptr<event_queue>& output_event_queue,
-                                       uint64_t now) {
+                                       absolute_time now) {
     return manipulate_result::passed;
   }
 
@@ -39,14 +39,11 @@ public:
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
-                                             uint64_t time_stamp) {
+                                             absolute_time time_stamp) {
   }
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
                                                            event_queue& output_event_queue) {
-  }
-
-  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
   }
 };
 } // namespace details
