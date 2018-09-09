@@ -89,7 +89,6 @@ int main(int argc, const char* argv[]) {
     chmod(krbn::constants::get_console_user_server_socket_directory(), 0755);
   }
 
-  krbn::manipulator::manipulator_timer::get_instance().enable();
   krbn::components_manager components_manager;
 
   krbn::apple_notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());

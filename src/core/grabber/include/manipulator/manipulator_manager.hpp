@@ -9,20 +9,17 @@ public:
   manipulator_manager(const manipulator_manager&) = delete;
 
   manipulator_manager(void) {
-    manipulator_timer_connection_ = manipulator_timer::get_instance().timer_invoked.connect([this](auto timer_id, auto now) {
-      for (auto&& m : manipulators_) {
-        m->manipulator_timer_invoked(timer_id, now);
-      }
-    });
   }
 
   ~manipulator_manager(void) {
-    manipulator_timer_connection_.disconnect();
   }
 
   void push_back_manipulator(const nlohmann::json& json,
-                             const core_configuration::profile::complex_modifications::parameters& parameters) {
-    manipulators_.push_back(manipulator_factory::make_manipulator(json, parameters));
+                             const core_configuration::profile::complex_modifications::parameters& parameters,
+                             std::weak_ptr<manipulator_timer> weak_manipulator_timer) {
+    manipulators_.push_back(manipulator_factory::make_manipulator(json,
+                                                                  parameters,
+                                                                  weak_manipulator_timer));
   }
 
   void push_back_manipulator(std::shared_ptr<details::base> ptr) {
@@ -31,7 +28,7 @@ public:
 
   void manipulate(const std::shared_ptr<event_queue>& input_event_queue,
                   const std::shared_ptr<event_queue>& output_event_queue,
-                  uint64_t now) {
+                  absolute_time now) {
     if (input_event_queue &&
         output_event_queue) {
       while (!input_event_queue->empty()) {
@@ -162,7 +159,6 @@ private:
   }
 
   std::vector<std::shared_ptr<details::base>> manipulators_;
-  boost::signals2::connection manipulator_timer_connection_;
 };
 } // namespace manipulator
 } // namespace krbn

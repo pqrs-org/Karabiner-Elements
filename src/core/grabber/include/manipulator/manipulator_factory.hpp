@@ -19,12 +19,13 @@ namespace manipulator {
 class manipulator_factory final {
 public:
   static std::shared_ptr<details::base> make_manipulator(const nlohmann::json& json,
-                                                         const core_configuration::profile::complex_modifications::parameters& parameters) {
+                                                         const core_configuration::profile::complex_modifications::parameters& parameters,
+                                                         std::weak_ptr<manipulator_timer> weak_manipulator_timer) {
     try {
       {
         if (auto value = json_utility::find_optional<std::string>(json, "type")) {
           if (*value == "basic") {
-            return std::make_shared<details::basic>(json, parameters);
+            return std::make_shared<details::basic>(json, parameters, weak_manipulator_timer);
           } else {
             logger::get_logger().error("complex_modifications json error: Unknown `type` {0} in {1}", *value, json.dump());
             return std::make_shared<details::nop>();

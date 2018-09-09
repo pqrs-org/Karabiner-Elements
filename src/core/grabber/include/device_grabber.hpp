@@ -35,6 +35,7 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : profile_(nlohmann::json()),
+                                                                                              manipulator_timer_client_id_(manipulator::manipulator_timer::make_new_client_id()),
                                                                                               merged_input_event_queue_(std::make_shared<event_queue>()),
                                                                                               simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                                                                                               complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
@@ -67,7 +68,11 @@ public:
       });
     });
 
-    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_, weak_console_user_server_client);
+    manipulator_timer_ = std::make_shared<manipulator::manipulator_timer>();
+
+    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_,
+                                                                                                                       manipulator_timer_,
+                                                                                                                       weak_console_user_server_client);
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
 
     complex_modifications_applied_event_queue_->enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
@@ -86,16 +91,7 @@ public:
 
     input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this] {
       dispatcher_->enqueue([this] {
-        manipulate(mach_absolute_time());
-      });
-    });
-
-    manipulator_timer_invoked_connection_ = manipulator::manipulator_timer::get_instance().timer_invoked.connect([this](auto timer_id, auto now) {
-      dispatcher_->enqueue([this, timer_id, now] {
-        if (manipulator_timer_id_ == timer_id) {
-          manipulator_timer_id_ = boost::none;
-          manipulate(now);
-        }
+        manipulate(time_utility::mach_absolute_time());
       });
     });
 
@@ -104,7 +100,7 @@ public:
     // Thus, we monitor the LED state and update it if needed.
     led_monitor_timer_ = std::make_unique<thread_utility::timer>(
         std::chrono::milliseconds(1000),
-        true,
+        thread_utility::timer::mode::repeat,
         [&] {
           dispatcher_->enqueue([this] {
             update_caps_lock_led();
@@ -240,7 +236,8 @@ public:
       hid_grabbers_.clear();
 
       input_event_arrived_connection_.disconnect();
-      manipulator_timer_invoked_connection_.disconnect();
+
+      manipulator_timer_ = nullptr;
 
       led_monitor_timer_ = nullptr;
 
@@ -272,7 +269,7 @@ public:
         dispatcher_->enqueue([this, event_type, event] {
           auto e = event_queue::queued_event::event::make_pointing_device_event_from_event_tap_event();
           event_queue::queued_event queued_event(device_id(0),
-                                                 event_queue::queued_event::event_time_stamp(mach_absolute_time()),
+                                                 event_queue::queued_event::event_time_stamp(time_utility::mach_absolute_time()),
                                                  e,
                                                  event_type,
                                                  event);
@@ -364,7 +361,7 @@ public:
       auto event = event_queue::queued_event::event::make_frontmost_application_changed_event(bundle_identifier,
                                                                                               file_path);
       event_queue::queued_event queued_event(device_id(0),
-                                             event_queue::queued_event::event_time_stamp(mach_absolute_time()),
+                                             event_queue::queued_event::event_time_stamp(time_utility::mach_absolute_time()),
                                              event,
                                              event_type::single,
                                              event);
@@ -379,7 +376,7 @@ public:
     dispatcher_->enqueue([this, input_source_identifiers] {
       auto event = event_queue::queued_event::event::make_input_source_changed_event(input_source_identifiers);
       event_queue::queued_event queued_event(device_id(0),
-                                             event_queue::queued_event::event_time_stamp(mach_absolute_time()),
+                                             event_queue::queued_event::event_time_stamp(time_utility::mach_absolute_time()),
                                              event,
                                              event_type::single,
                                              event);
@@ -395,7 +392,7 @@ public:
       auto keyboard_type_string = system_preferences_utility::get_keyboard_type_string(system_preferences_.get_keyboard_type());
       auto event = event_queue::queued_event::event::make_keyboard_type_changed_event(keyboard_type_string);
       event_queue::queued_event queued_event(device_id(0),
-                                             event_queue::queued_event::event_time_stamp(mach_absolute_time()),
+                                             event_queue::queued_event::event_time_stamp(time_utility::mach_absolute_time()),
                                              event,
                                              event_type::single,
                                              event);
@@ -507,7 +504,7 @@ private:
     return nullptr;
   }
 
-  void manipulate(uint64_t now) {
+  void manipulate(absolute_time now) {
     {
       // Avoid recursive call
       std::unique_lock<std::mutex> lock(manipulate_mutex_, std::try_to_lock);
@@ -521,7 +518,15 @@ private:
     }
 
     if (auto min = manipulator_managers_connector_.min_input_event_time_stamp()) {
-      manipulator_timer_id_ = manipulator::manipulator_timer::get_instance().add_entry(*min);
+      manipulator_timer_->enqueue(
+          manipulator_timer_client_id_,
+          [this, min] {
+            dispatcher_->enqueue([this, min] {
+              manipulate(*min);
+            });
+          },
+          *min);
+      manipulator_timer_->async_invoke(now);
     }
   }
 
@@ -554,7 +559,7 @@ private:
   void post_device_ungrabbed_event(device_id device_id) {
     auto event = event_queue::queued_event::event::make_device_ungrabbed_event();
     event_queue::queued_event queued_event(device_id,
-                                           event_queue::queued_event::event_time_stamp(mach_absolute_time()),
+                                           event_queue::queued_event::event_time_stamp(time_utility::mach_absolute_time()),
                                            event,
                                            event_type::single,
                                            event);
@@ -567,7 +572,7 @@ private:
   void post_caps_lock_state_changed_event(bool caps_lock_state) {
     event_queue::queued_event::event event(event_queue::queued_event::event::type::caps_lock_state_changed, caps_lock_state);
     event_queue::queued_event queued_event(device_id(0),
-                                           event_queue::queued_event::event_time_stamp(mach_absolute_time()),
+                                           event_queue::queued_event::event_time_stamp(time_utility::mach_absolute_time()),
                                            event,
                                            event_type::single,
                                            event);
@@ -851,7 +856,8 @@ private:
         auto to_json = nlohmann::json::parse(pair.second);
 
         return std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
-                                                             manipulator::details::to_event_definition(to_json));
+                                                             manipulator::details::to_event_definition(to_json),
+                                                             manipulator_timer_);
       } catch (std::exception&) {
       }
     }
@@ -863,7 +869,9 @@ private:
 
     for (const auto& rule : profile_.get_complex_modifications().get_rules()) {
       for (const auto& manipulator : rule.get_manipulators()) {
-        auto m = manipulator::manipulator_factory::make_manipulator(manipulator.get_json(), manipulator.get_parameters());
+        auto m = manipulator::manipulator_factory::make_manipulator(manipulator.get_json(),
+                                                                    manipulator.get_parameters(),
+                                                                    manipulator_timer_);
         for (const auto& c : manipulator.get_conditions()) {
           m->push_back_condition(manipulator::manipulator_factory::make_condition(c.get_json()));
         }
@@ -910,7 +918,8 @@ private:
         });
 
         auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
-                                                                         manipulator::details::to_event_definition(to_json));
+                                                                         manipulator::details::to_event_definition(to_json),
+                                                                         manipulator_timer_);
         fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
     }
@@ -982,7 +991,8 @@ private:
         to_json["modifiers"] = nlohmann::json::array({"fn"});
 
         auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
-                                                                         manipulator::details::to_event_definition(to_json));
+                                                                         manipulator::details::to_event_definition(to_json),
+                                                                         manipulator_timer_);
         fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
     }
@@ -1007,7 +1017,8 @@ private:
       to_json["modifiers"] = to_modifiers;
 
       return std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
-                                                           manipulator::details::to_event_definition(to_json));
+                                                           manipulator::details::to_event_definition(to_json),
+                                                           manipulator_timer_);
     } catch (std::exception&) {
     }
     return nullptr;
@@ -1033,12 +1044,13 @@ private:
   core_configuration::profile profile_;
   system_preferences system_preferences_;
 
+  manipulator::manipulator_timer::client_id manipulator_timer_client_id_;
+  std::shared_ptr<manipulator::manipulator_timer> manipulator_timer_;
+
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
   boost::signals2::connection input_event_arrived_connection_;
-  boost::signals2::connection manipulator_timer_invoked_connection_;
 
   std::mutex manipulate_mutex_;
-  boost::optional<manipulator::manipulator_timer::timer_id> manipulator_timer_id_;
 
   std::shared_ptr<event_queue> merged_input_event_queue_;
 

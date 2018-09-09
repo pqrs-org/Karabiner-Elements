@@ -171,7 +171,7 @@ public:
       });
     });
 
-    server_manager_->start();
+    server_manager_->async_start();
 
     start_grabbing_if_system_core_configuration_file_exists();
 

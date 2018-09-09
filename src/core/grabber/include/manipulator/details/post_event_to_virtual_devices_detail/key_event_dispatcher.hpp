@@ -1,0 +1,137 @@
+#pragma once
+
+#include "queue.hpp"
+
+namespace krbn {
+namespace manipulator {
+namespace details {
+namespace post_event_to_virtual_devices_detail {
+class key_event_dispatcher final {
+public:
+  void dispatch_key_down_event(device_id device_id,
+                               hid_usage_page hid_usage_page,
+                               hid_usage hid_usage,
+                               queue& queue,
+                               absolute_time time_stamp) {
+    // Enqueue key_down event if it is not sent yet.
+
+    if (!key_event_exists(hid_usage_page, hid_usage)) {
+      pressed_keys_.emplace_back(device_id, std::make_pair(hid_usage_page, hid_usage));
+      enqueue_key_event(hid_usage_page, hid_usage, event_type::key_down, queue, time_stamp);
+    }
+  }
+
+  void dispatch_key_up_event(hid_usage_page hid_usage_page,
+                             hid_usage hid_usage,
+                             queue& queue,
+                             absolute_time time_stamp) {
+    // Enqueue key_up event if it is already sent.
+
+    if (key_event_exists(hid_usage_page, hid_usage)) {
+      pressed_keys_.erase(std::remove_if(std::begin(pressed_keys_),
+                                         std::end(pressed_keys_),
+                                         [&](auto& k) {
+                                           return k.second.first == hid_usage_page &&
+                                                  k.second.second == hid_usage;
+                                         }),
+                          std::end(pressed_keys_));
+      enqueue_key_event(hid_usage_page, hid_usage, event_type::key_up, queue, time_stamp);
+    }
+  }
+
+  void dispatch_modifier_key_event(const modifier_flag_manager& modifier_flag_manager,
+                                   queue& queue,
+                                   absolute_time time_stamp) {
+    auto modifier_flags = {
+        modifier_flag::left_control,
+        modifier_flag::left_shift,
+        modifier_flag::left_option,
+        modifier_flag::left_command,
+        modifier_flag::right_control,
+        modifier_flag::right_shift,
+        modifier_flag::right_option,
+        modifier_flag::right_command,
+        modifier_flag::fn,
+    };
+    for (const auto& m : modifier_flags) {
+      bool pressed = pressed_modifier_flags_.find(m) != std::end(pressed_modifier_flags_);
+
+      if (modifier_flag_manager.is_pressed(m)) {
+        if (!pressed) {
+          if (auto key_code = types::make_key_code(m)) {
+            if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
+              if (auto hid_usage = types::make_hid_usage(*key_code)) {
+                enqueue_key_event(*hid_usage_page, *hid_usage, event_type::key_down, queue, time_stamp);
+              }
+            }
+          }
+          pressed_modifier_flags_.insert(m);
+        }
+
+      } else {
+        if (pressed) {
+          if (auto key_code = types::make_key_code(m)) {
+            if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
+              if (auto hid_usage = types::make_hid_usage(*key_code)) {
+                enqueue_key_event(*hid_usage_page, *hid_usage, event_type::key_up, queue, time_stamp);
+              }
+            }
+          }
+          pressed_modifier_flags_.erase(m);
+        }
+      }
+    }
+  }
+
+  void dispatch_key_up_events_by_device_id(device_id device_id,
+                                           queue& queue,
+                                           absolute_time time_stamp) {
+    while (true) {
+      bool found = false;
+      for (const auto& k : pressed_keys_) {
+        if (k.first == device_id) {
+          found = true;
+          dispatch_key_up_event(k.second.first,
+                                k.second.second,
+                                queue,
+                                time_stamp);
+          break;
+        }
+      }
+      if (!found) {
+        break;
+      }
+    }
+  }
+
+  const std::vector<std::pair<device_id, std::pair<hid_usage_page, hid_usage>>>& get_pressed_keys(void) const {
+    return pressed_keys_;
+  }
+
+private:
+  bool key_event_exists(hid_usage_page usage_page,
+                        hid_usage usage) {
+    auto it = std::find_if(std::begin(pressed_keys_),
+                           std::end(pressed_keys_),
+                           [&](auto& k) {
+                             return k.second.first == usage_page &&
+                                    k.second.second == usage;
+                           });
+    return (it != std::end(pressed_keys_));
+  }
+
+  void enqueue_key_event(hid_usage_page usage_page,
+                         hid_usage usage,
+                         event_type event_type,
+                         queue& queue,
+                         absolute_time time_stamp) {
+    queue.emplace_back_key_event(usage_page, usage, event_type, time_stamp);
+  }
+
+  std::vector<std::pair<device_id, std::pair<hid_usage_page, hid_usage>>> pressed_keys_;
+  std::unordered_set<modifier_flag> pressed_modifier_flags_;
+};
+} // namespace post_event_to_virtual_devices_detail
+} // namespace details
+} // namespace manipulator
+} // namespace krbn

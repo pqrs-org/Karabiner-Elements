@@ -39,47 +39,59 @@ public:
     }
   }
 
+  ~to_delayed_action(void) {
+    if (auto manipulator_timer = basic_.get_weak_manipulator_timer().lock()) {
+      thread_utility::wait wait;
+
+      manipulator_timer->async_erase(manipulator_timer_client_id_, [&wait] {
+        wait.notify();
+      });
+
+      wait.wait_notice();
+    }
+  }
+
   void setup(const event_queue::queued_event& front_input_event,
              const std::shared_ptr<manipulated_original_event>& current_manipulated_original_event,
              const std::shared_ptr<event_queue>& output_event_queue,
              std::chrono::milliseconds delay_milliseconds) {
-    if (front_input_event.get_event_type() != event_type::key_down) {
-      return;
+    if (auto manipulator_timer = basic_.get_weak_manipulator_timer().lock()) {
+      if (front_input_event.get_event_type() != event_type::key_down) {
+        return;
+      }
+
+      if (to_if_invoked_.empty() &&
+          to_if_canceled_.empty()) {
+        return;
+      }
+
+      front_input_event_ = front_input_event;
+      current_manipulated_original_event_ = current_manipulated_original_event;
+      output_event_queue_ = output_event_queue;
+
+      auto time_stamp = front_input_event.get_event_time_stamp().get_time_stamp();
+      auto when = time_stamp +
+                  time_utility::to_absolute_time(delay_milliseconds);
+      manipulator_timer->enqueue(
+          manipulator_timer_client_id_,
+          [this] {
+            post_events(to_if_invoked_);
+            krbn_notification_center::get_instance().input_event_arrived();
+          },
+          when);
+      manipulator_timer->async_invoke(time_stamp);
     }
-
-    if (to_if_invoked_.empty() &&
-        to_if_canceled_.empty()) {
-      return;
-    }
-
-    front_input_event_ = front_input_event;
-    current_manipulated_original_event_ = current_manipulated_original_event;
-    output_event_queue_ = output_event_queue;
-
-    auto when = front_input_event.get_event_time_stamp().get_time_stamp() +
-                time_utility::to_absolute_time(delay_milliseconds);
-    manipulator_timer_id_ = manipulator_timer::get_instance().add_entry(when);
   }
 
   void cancel(const event_queue::queued_event& front_input_event) {
-    if (front_input_event.get_event_type() != event_type::key_down) {
-      return;
-    }
+    if (auto manipulator_timer = basic_.get_weak_manipulator_timer().lock()) {
+      if (front_input_event.get_event_type() != event_type::key_down) {
+        return;
+      }
 
-    if (!manipulator_timer_id_) {
-      return;
-    }
+      manipulator_timer->async_erase(manipulator_timer_client_id_);
 
-    manipulator_timer_id_ = boost::none;
-
-    post_events(to_if_canceled_);
-  }
-
-  void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
-    if (timer_id == manipulator_timer_id_) {
-      manipulator_timer_id_ = boost::none;
-      post_events(to_if_invoked_);
-      krbn_notification_center::get_instance().input_event_arrived();
+      post_events(to_if_canceled_);
     }
   }
 
@@ -102,7 +114,7 @@ private:
     if (front_input_event_) {
       if (current_manipulated_original_event_) {
         if (auto oeq = output_event_queue_.lock()) {
-          uint64_t time_stamp_delay = 0;
+          absolute_time time_stamp_delay(0);
 
           // Release from_mandatory_modifiers
 
@@ -135,9 +147,10 @@ private:
   }
 
   basic& basic_;
+
   std::vector<to_event_definition> to_if_invoked_;
   std::vector<to_event_definition> to_if_canceled_;
-  boost::optional<manipulator_timer::timer_id> manipulator_timer_id_;
+  manipulator_timer::client_id manipulator_timer_client_id_;
   boost::optional<event_queue::queued_event> front_input_event_;
   std::shared_ptr<manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue> output_event_queue_;

@@ -21,9 +21,11 @@ public:
 #include "basic/to_if_held_down.hpp"
 
   basic(const nlohmann::json& json,
-        const core_configuration::profile::complex_modifications::parameters& parameters) : base(),
-                                                                                            parameters_(parameters),
-                                                                                            from_(json_utility::find_copy(json, "from", nlohmann::json())) {
+        const core_configuration::profile::complex_modifications::parameters& parameters,
+        std::weak_ptr<manipulator_timer> weak_manipulator_timer) : base(),
+                                                                   parameters_(parameters),
+                                                                   weak_manipulator_timer_(weak_manipulator_timer),
+                                                                   from_(json_utility::find_copy(json, "from", nlohmann::json())) {
     for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
       // it.key() is always std::string.
       const auto& key = it.key();
@@ -78,8 +80,10 @@ public:
   }
 
   basic(const from_event_definition& from,
-        const to_event_definition& to) : from_(from),
-                                         to_({to}) {
+        const to_event_definition& to,
+        std::weak_ptr<manipulator_timer> weak_manipulator_timer) : base(),
+                                                                   from_(from),
+                                                                   to_({to}) {
   }
 
   virtual ~basic(void) {
@@ -113,7 +117,7 @@ public:
   virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
                                        const event_queue& input_event_queue,
                                        const std::shared_ptr<event_queue>& output_event_queue,
-                                       uint64_t now) {
+                                       absolute_time now) {
     if (output_event_queue) {
       unset_alone_if_needed(front_input_event.get_event(),
                             front_input_event.get_event_type());
@@ -301,7 +305,7 @@ public:
                   auto found = all_from_events_found(from_events);
                   if (needs_wait_key_up || !found) {
                     auto t = std::max(front_input_event.get_event_time_stamp().get_input_delay_time_stamp(),
-                                      time_utility::to_absolute(simultaneous_threshold_milliseconds));
+                                      time_utility::to_absolute_time(simultaneous_threshold_milliseconds));
                     front_input_event.get_event_time_stamp().set_input_delay_time_stamp(t);
 
                     if (now < front_input_event.get_event_time_stamp().make_time_stamp_with_input_delay()) {
@@ -381,7 +385,7 @@ public:
         if (current_manipulated_original_event) {
           front_input_event.set_valid(false);
 
-          uint64_t time_stamp_delay = 0;
+          absolute_time time_stamp_delay(0);
 
           // Send events
 
@@ -520,7 +524,7 @@ public:
             to_if_held_down_->setup(front_input_event,
                                     current_manipulated_original_event,
                                     output_event_queue,
-                                    parameters_.get_basic_to_if_held_down_threshold_milliseconds());
+                                    std::chrono::milliseconds(parameters_.get_basic_to_if_held_down_threshold_milliseconds()));
           }
 
           // to_delayed_action_
@@ -529,13 +533,13 @@ public:
             to_delayed_action_->setup(front_input_event,
                                       current_manipulated_original_event,
                                       output_event_queue,
-                                      parameters_.get_basic_to_delayed_action_delay_milliseconds());
+                                      std::chrono::milliseconds(parameters_.get_basic_to_delayed_action_delay_milliseconds()));
           }
 
           // increase_time_stamp_delay
 
-          if (time_stamp_delay > 0) {
-            output_event_queue->increase_time_stamp_delay(time_stamp_delay - 1);
+          if (time_stamp_delay > absolute_time(0)) {
+            output_event_queue->increase_time_stamp_delay(time_stamp_delay - absolute_time(1));
           }
 
           return manipulate_result::manipulated;
@@ -584,7 +588,7 @@ public:
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue& output_event_queue,
-                                             uint64_t time_stamp) {
+                                             absolute_time time_stamp) {
     for (auto&& e : manipulated_original_events_) {
       e->erase_from_events_by_device_id(device_id);
     }
@@ -603,14 +607,8 @@ public:
                           front_input_event.get_event_type());
   }
 
-  virtual void manipulator_timer_invoked(manipulator_timer::timer_id timer_id, uint64_t now) {
-    if (to_if_held_down_) {
-      to_if_held_down_->manipulator_timer_invoked(timer_id, now);
-    }
-
-    if (to_delayed_action_) {
-      to_delayed_action_->manipulator_timer_invoked(timer_id, now);
-    }
+  std::weak_ptr<manipulator_timer> get_weak_manipulator_timer(void) const {
+    return weak_manipulator_timer_;
   }
 
   const from_event_definition& get_from(void) const {
@@ -623,7 +621,7 @@ public:
 
   void post_from_mandatory_modifiers_key_up(const event_queue::queued_event& front_input_event,
                                             manipulated_original_event& current_manipulated_original_event,
-                                            uint64_t& time_stamp_delay,
+                                            absolute_time& time_stamp_delay,
                                             event_queue& output_event_queue) const {
     // ----------------------------------------
     // Make target modifiers
@@ -674,7 +672,7 @@ public:
 
   void post_from_mandatory_modifiers_key_down(const event_queue::queued_event& front_input_event,
                                               manipulated_original_event& current_manipulated_original_event,
-                                              uint64_t& time_stamp_delay,
+                                              absolute_time& time_stamp_delay,
                                               event_queue& output_event_queue) const {
     // ----------------------------------------
     // Make target modifiers
@@ -704,7 +702,7 @@ public:
   void post_events_at_key_down(const event_queue::queued_event& front_input_event,
                                std::vector<to_event_definition> to_events,
                                manipulated_original_event& current_manipulated_original_event,
-                               uint64_t& time_stamp_delay,
+                               absolute_time& time_stamp_delay,
                                event_queue& output_event_queue) const {
     if (current_manipulated_original_event.get_halted()) {
       return;
@@ -761,7 +759,7 @@ public:
         // Post key_up event
 
         if (it != std::end(to_events) - 1 || !it->get_repeat()) {
-          time_stamp_delay += it->get_hold_down_milliseconds() * NSEC_PER_MSEC;
+          time_stamp_delay += time_utility::to_absolute_time(it->get_hold_down_milliseconds());
 
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
@@ -807,7 +805,7 @@ public:
 
   void post_events_at_key_up(const event_queue::queued_event& front_input_event,
                              manipulated_original_event& current_manipulated_original_event,
-                             uint64_t& time_stamp_delay,
+                             absolute_time& time_stamp_delay,
                              event_queue& output_event_queue) const {
     for (const auto& e : current_manipulated_original_event.get_events_at_key_up().get_events()) {
       auto t = front_input_event.get_event_time_stamp();
@@ -851,7 +849,7 @@ private:
   void post_lazy_modifier_key_events(const event_queue::queued_event& front_input_event,
                                      const std::unordered_set<modifier_flag>& modifiers,
                                      event_type event_type,
-                                     uint64_t& time_stamp_delay,
+                                     absolute_time& time_stamp_delay,
                                      event_queue& output_event_queue) const {
     for (const auto& m : modifiers) {
       if (auto key_code = types::make_key_code(m)) {
@@ -872,7 +870,7 @@ private:
   void post_extra_to_events(const event_queue::queued_event& front_input_event,
                             const std::vector<to_event_definition>& to_events,
                             manipulated_original_event& current_manipulated_original_event,
-                            uint64_t& time_stamp_delay,
+                            absolute_time& time_stamp_delay,
                             event_queue& output_event_queue) const {
     if (current_manipulated_original_event.get_halted()) {
       return;
@@ -918,7 +916,7 @@ private:
         // Post key_up event
 
         {
-          time_stamp_delay += it->get_hold_down_milliseconds() * NSEC_PER_MSEC;
+          time_stamp_delay += time_utility::to_absolute_time(it->get_hold_down_milliseconds());
 
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
@@ -973,6 +971,7 @@ private:
   }
 
   core_configuration::profile::complex_modifications::parameters parameters_;
+  std::weak_ptr<manipulator_timer> weak_manipulator_timer_;
 
   from_event_definition from_;
   std::vector<to_event_definition> to_;
