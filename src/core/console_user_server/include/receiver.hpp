@@ -92,7 +92,7 @@ public:
                   p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
                   p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
 
-                  uint64_t time_stamp = p->time_stamp;
+                  auto time_stamp = p->time_stamp;
                   boost::optional<std::string> language(std::string(p->language));
                   boost::optional<std::string> input_source_id(std::string(p->input_source_id));
                   boost::optional<std::string> input_mode_id(std::string(p->input_mode_id));
@@ -148,6 +148,6 @@ private:
 
   std::unique_ptr<local_datagram::server_manager> server_manager_;
   input_source_manager input_source_manager_;
-  uint64_t last_select_input_source_time_stamp_;
+  absolute_time last_select_input_source_time_stamp_;
 };
 } // namespace krbn
