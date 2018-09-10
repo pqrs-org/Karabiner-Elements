@@ -18,7 +18,10 @@ TEST_CASE("manipulator.manipulator_factory") {
   {
     nlohmann::json json;
     krbn::core_configuration::profile::complex_modifications::parameters parameters;
-    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json, parameters);
+    auto manipulator_timer = std::make_shared<krbn::manipulator::manipulator_timer>();
+    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
+                                                                                parameters,
+                                                                                manipulator_timer);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) == nullptr);
     REQUIRE(manipulator->get_valid() == true);
@@ -61,7 +64,10 @@ TEST_CASE("manipulator.manipulator_factory") {
         },
     });
     krbn::core_configuration::profile::complex_modifications::parameters parameters;
-    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json, parameters);
+    auto manipulator_timer = std::make_shared<krbn::manipulator::manipulator_timer>();
+    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
+                                                                                parameters,
+                                                                                manipulator_timer);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) == nullptr);
     REQUIRE(manipulator->get_valid() == true);
@@ -114,38 +120,38 @@ TEST_CASE("min_input_event_time_stamp") {
   // ----------------------------------------
 
   event_queues[2]->emplace_back_event(krbn::device_id(1),
-                                      krbn::event_queue::queued_event::event_time_stamp(5000),
+                                      krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(5000)),
                                       krbn::event_queue::queued_event::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
                                       krbn::event_queue::queued_event::event(krbn::key_code::a));
 
-  REQUIRE(connector.min_input_event_time_stamp() == 5000ull);
+  REQUIRE(connector.min_input_event_time_stamp() == krbn::absolute_time(5000));
 
   // ----------------------------------------
 
   event_queues[0]->emplace_back_event(krbn::device_id(1),
-                                      krbn::event_queue::queued_event::event_time_stamp(4000),
+                                      krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(4000)),
                                       krbn::event_queue::queued_event::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
                                       krbn::event_queue::queued_event::event(krbn::key_code::a));
 
-  REQUIRE(connector.min_input_event_time_stamp() == 4000ull);
+  REQUIRE(connector.min_input_event_time_stamp() == krbn::absolute_time(4000));
 
   // ----------------------------------------
   // min_input_event_time_stamp uses only the front entry.
 
   event_queues[3]->emplace_back_event(krbn::device_id(1),
-                                      krbn::event_queue::queued_event::event_time_stamp(3000),
+                                      krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(3000)),
                                       krbn::event_queue::queued_event::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
                                       krbn::event_queue::queued_event::event(krbn::key_code::a));
   event_queues[0]->emplace_back_event(krbn::device_id(1),
-                                      krbn::event_queue::queued_event::event_time_stamp(2000),
+                                      krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(2000)),
                                       krbn::event_queue::queued_event::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
                                       krbn::event_queue::queued_event::event(krbn::key_code::a));
 
-  REQUIRE(connector.min_input_event_time_stamp() == 3000ull);
+  REQUIRE(connector.min_input_event_time_stamp() == krbn::absolute_time(3000));
 }
 
 TEST_CASE("needs_virtual_hid_pointing") {
@@ -161,7 +167,10 @@ TEST_CASE("needs_virtual_hid_pointing") {
     krbn::manipulator::manipulator_manager manager;
     for (const auto& j : json) {
       krbn::core_configuration::profile::complex_modifications::parameters parameters;
-      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j, parameters);
+      auto manipulator_timer = std::make_shared<krbn::manipulator::manipulator_timer>();
+      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j,
+                                                                        parameters,
+                                                                        manipulator_timer);
       manager.push_back_manipulator(m);
     }
 

@@ -20,6 +20,8 @@ public:
       logger::get_logger().info("{0}", test["description"].get<std::string>());
 
       system_preferences system_preferences;
+      auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
+      auto manipulator_timer = std::make_shared<manipulator::manipulator_timer>(false);
       manipulator::manipulator_managers_connector connector;
       std::vector<std::unique_ptr<manipulator::manipulator_manager>> manipulator_managers;
       std::vector<std::shared_ptr<event_queue>> event_queues;
@@ -33,7 +35,9 @@ public:
           std::ifstream ifs(rule.get<std::string>());
           REQUIRE(ifs);
           for (const auto& j : nlohmann::json::parse(ifs)) {
-            auto m = manipulator::manipulator_factory::make_manipulator(j, parameters);
+            auto m = manipulator::manipulator_factory::make_manipulator(j,
+                                                                        parameters,
+                                                                        manipulator_timer);
 
             if (auto conditions = json_utility::find_array(j, "conditions")) {
               for (const auto& c : *conditions) {
@@ -59,7 +63,9 @@ public:
       }
 
       if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
-        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(system_preferences);
+        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(system_preferences,
+                                                                                                                                manipulator_timer,
+                                                                                                                                console_user_server_client);
 
         manipulator_managers.push_back(std::make_unique<manipulator::manipulator_manager>());
         manipulator_managers.back()->push_back_manipulator(post_event_to_virtual_devices_manipulator);
@@ -72,7 +78,7 @@ public:
       REQUIRE(!manipulator_managers.empty());
       REQUIRE(!event_queues.empty());
 
-      uint64_t now = 0;
+      absolute_time now(0);
 
       auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([&] {
         connector.manipulate(now);
@@ -88,17 +94,24 @@ public:
             if (*s == "invalidate_manipulators") {
               connector.invalidate_manipulators();
             } else if (*s == "invoke_manipulator_timer") {
-              uint64_t time_stamp = 0;
+              absolute_time time_stamp(0);
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
-                time_stamp = *t;
+                time_stamp = absolute_time(*t);
               }
-              krbn::manipulator::manipulator_timer::get_instance().signal(time_stamp);
+              manipulator_timer->async_invoke(time_stamp);
+              std::this_thread::sleep_for(std::chrono::milliseconds(100));
             } else if (*s == "manipulate") {
-              uint64_t time_stamp = 0;
+              absolute_time time_stamp(0);
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
-                time_stamp = *t;
+                time_stamp = absolute_time(*t);
               }
               connector.manipulate(time_stamp);
+            } else if (*s == "sleep_milliseconds") {
+              std::chrono::milliseconds ms(0);
+              if (auto t = json_utility::find_optional<uint64_t>(j, "ms")) {
+                ms = std::chrono::milliseconds(*t);
+              }
+              std::this_thread::sleep_for(ms);
             }
 
           } else if (auto v = json_utility::find_optional<bool>(j, "pause_manipulation")) {
@@ -108,7 +121,7 @@ public:
             }
 
           } else {
-            auto e = event_queue::queued_event(j);
+            auto e = event_queue::queued_event::make_from_json(j);
             now = e.get_event_time_stamp().get_time_stamp();
             event_queues.front()->push_back_event(e);
             if (!pause_manipulation) {

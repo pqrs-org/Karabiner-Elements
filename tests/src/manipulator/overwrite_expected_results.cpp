@@ -10,5 +10,6 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("actual examples") {
-  krbn::unit_testing::manipulator_helper::run_tests(nlohmann::json::parse(std::ifstream("json/manipulator_manager/tests.json")), true);
+  krbn::unit_testing::manipulator_helper::run_tests(nlohmann::json::parse(std::ifstream("json/manipulator_manager/tests.json")),
+                                                    true);
 }
