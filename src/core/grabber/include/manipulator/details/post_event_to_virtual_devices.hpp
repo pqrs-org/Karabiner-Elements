@@ -290,8 +290,8 @@ public:
 
     // mouse keys
 
-    mouse_key_handler_.erase_mouse_keys_by_device_id(front_input_event.get_device_id(),
-                                                     front_input_event.get_event_time_stamp().get_time_stamp());
+    mouse_key_handler_.async_erase_mouse_keys_by_device_id(front_input_event.get_device_id(),
+                                                           front_input_event.get_event_time_stamp().get_time_stamp());
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
@@ -325,8 +325,8 @@ public:
 
     // Release mouse_key_handler_
 
-    mouse_key_handler_.erase_mouse_keys_by_device_id(device_id,
-                                                     time_stamp);
+    mouse_key_handler_.async_erase_mouse_keys_by_device_id(device_id,
+                                                           time_stamp);
   }
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,

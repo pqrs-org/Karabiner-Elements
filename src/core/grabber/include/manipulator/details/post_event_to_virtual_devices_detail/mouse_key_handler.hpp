@@ -46,6 +46,7 @@ public:
                                                                     weak_manipulator_timer_(weak_manipulator_timer),
                                                                     system_preferences_(system_preferences),
                                                                     manipulator_timer_client_id_(manipulator_timer::make_new_client_id()),
+                                                                    active_(false),
                                                                     x_count_converter_(128),
                                                                     y_count_converter_(128),
                                                                     vertical_wheel_count_converter_(128),
@@ -77,7 +78,9 @@ public:
                                  absolute_time time_stamp) {
     dispatcher_->enqueue([this, device_id, mouse_key, weak_output_event_queue, time_stamp] {
       erase_entry(device_id, mouse_key);
+
       entries_.emplace_back(device_id, mouse_key);
+      active_ = !entries_.empty();
 
       weak_output_event_queue_ = weak_output_event_queue;
 
@@ -98,20 +101,23 @@ public:
     });
   }
 
-  void erase_mouse_keys_by_device_id(device_id device_id,
-                                     absolute_time time_stamp) {
-    entries_.erase(std::remove_if(std::begin(entries_),
-                                  std::end(entries_),
-                                  [&](const auto& pair) {
-                                    return pair.first == device_id;
-                                  }),
-                   std::end(entries_));
+  void async_erase_mouse_keys_by_device_id(device_id device_id,
+                                           absolute_time time_stamp) {
+    dispatcher_->enqueue([this, device_id, time_stamp] {
+      entries_.erase(std::remove_if(std::begin(entries_),
+                                    std::end(entries_),
+                                    [&](const auto& pair) {
+                                      return pair.first == device_id;
+                                    }),
+                     std::end(entries_));
+      active_ = !entries_.empty();
 
-    post_event(time_stamp);
+      post_event(time_stamp);
+    });
   }
 
   bool active(void) const {
-    return !entries_.empty();
+    return active_;
   }
 
 private:
@@ -124,6 +130,7 @@ private:
                                            pair.second == mouse_key;
                                   }),
                    std::end(entries_));
+    active_ = !entries_.empty();
   }
 
   void post_event(absolute_time time_stamp) {
@@ -186,6 +193,7 @@ private:
   std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   manipulator_timer::client_id manipulator_timer_client_id_;
   std::vector<std::pair<device_id, mouse_key>> entries_;
+  std::atomic<bool> active_;
   std::weak_ptr<event_queue> weak_output_event_queue_;
   boost::optional<mouse_key> last_mouse_key_total_;
   count_converter x_count_converter_;
