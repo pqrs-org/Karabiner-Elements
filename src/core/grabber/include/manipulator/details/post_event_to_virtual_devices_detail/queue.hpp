@@ -72,7 +72,7 @@ public:
     nlohmann::json to_json(void) const {
       nlohmann::json json;
       json["type"] = to_c_string(type_);
-      json["time_stamp"] = time_stamp_;
+      json["time_stamp"] = type_safe::get(time_stamp_);
 
       switch (type_) {
         case type::keyboard_input:
@@ -231,7 +231,9 @@ public:
 
   ~queue(void) {
     dispatcher_->enqueue([this] {
-      timer_->wait();
+      if (timer_) {
+        timer_->wait();
+      }
       timer_ = nullptr;
     });
 

@@ -50,6 +50,7 @@ public:
                                                                     y_count_converter_(128),
                                                                     vertical_wheel_count_converter_(128),
                                                                     horizontal_wheel_count_converter_(128) {
+    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
   ~mouse_key_handler(void) {
