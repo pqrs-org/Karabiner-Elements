@@ -492,10 +492,10 @@ public:
 
 class to_event_definition final {
 public:
-  to_event_definition(const nlohmann::json& json) : lazy_(false),
-                                                    repeat_(true),
-                                                    halt_(false),
-                                                    hold_down_milliseconds_(0) {
+  explicit to_event_definition(const nlohmann::json& json) : lazy_(false),
+                                                             repeat_(true),
+                                                             halt_(false),
+                                                             hold_down_milliseconds_(0) {
     if (!json.is_object()) {
       logger::get_logger().error("complex_modifications json error: Invalid form of to_event_definition: {0}", json.dump());
       return;
