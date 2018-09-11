@@ -413,3 +413,58 @@ TEST_CASE("dispatcher.recursive") {
     REQUIRE(count == 1);
   }
 }
+
+namespace {
+class dispatcher_enqueue_and_wait final {
+public:
+  dispatcher_enqueue_and_wait(size_t& count) : count_(count) {
+    dispatcher_ = std::make_shared<krbn::thread_utility::dispatcher>();
+    weak_dispatcher_ = dispatcher_;
+  }
+
+  ~dispatcher_enqueue_and_wait(void) {
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
+  }
+
+  void enqueue(void) {
+    if (auto d = weak_dispatcher_.lock()) {
+      d->enqueue([this] {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        ++count_;
+        enqueue();
+      });
+    }
+  }
+
+  void enqueue_and_wait(void) {
+    if (auto d = weak_dispatcher_.lock()) {
+      weak_dispatcher_.reset();
+
+      d->enqueue_and_wait([] {});
+    }
+  }
+
+private:
+  size_t& count_;
+
+  std::shared_ptr<krbn::thread_utility::dispatcher> dispatcher_;
+  std::weak_ptr<krbn::thread_utility::dispatcher> weak_dispatcher_;
+};
+} // namespace
+
+TEST_CASE("dispatcher.enqueue_and_wait") {
+  std::cout << "dispatcher.enqueue_and_wait" << std::endl;
+
+  size_t count = 0;
+  {
+    dispatcher_enqueue_and_wait dispatcher_enqueue_and_wait(count);
+    dispatcher_enqueue_and_wait.enqueue();
+    dispatcher_enqueue_and_wait.enqueue_and_wait();
+    REQUIRE(count == 1);
+
+    // `enqueue` ignored after `weak_dispatcher.reset()`.
+    dispatcher_enqueue_and_wait.enqueue();
+  }
+  REQUIRE(count == 1);
+}
