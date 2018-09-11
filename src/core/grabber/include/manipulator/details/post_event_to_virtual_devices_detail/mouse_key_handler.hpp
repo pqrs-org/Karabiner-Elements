@@ -45,7 +45,7 @@ public:
                     const system_preferences& system_preferences) : queue_(queue),
                                                                     weak_manipulator_timer_(weak_manipulator_timer),
                                                                     system_preferences_(system_preferences),
-                                                                    manipulator_timer_client_id_(manipulator_timer::make_new_client_id()),
+                                                                    manipulator_timer_client_id_(manipulator_timer::make_client_id(this)),
                                                                     active_(false),
                                                                     x_count_converter_(128),
                                                                     y_count_converter_(128),

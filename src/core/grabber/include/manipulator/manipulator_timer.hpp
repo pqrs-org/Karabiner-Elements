@@ -15,18 +15,14 @@ namespace krbn {
 namespace manipulator {
 class manipulator_timer final {
 public:
-  struct client_id : type_safe::strong_typedef<client_id, uint64_t>,
+  struct client_id : type_safe::strong_typedef<client_id, std::intptr_t>,
                      type_safe::strong_typedef_op::equality_comparison<client_id>,
                      type_safe::strong_typedef_op::integer_arithmetic<client_id> {
     using strong_typedef::strong_typedef;
   };
 
-  static client_id make_new_client_id(void) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> guard(mutex);
-
-    static client_id id(0);
-    return ++id;
+  static client_id make_client_id(void* p) {
+    return client_id(reinterpret_cast<std::intptr_t>(p));
   }
 
   manipulator_timer(bool timer_enabled = true) : timer_enabled_(timer_enabled) {

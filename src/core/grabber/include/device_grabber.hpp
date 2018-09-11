@@ -35,7 +35,7 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : profile_(nlohmann::json()),
-                                                                                              manipulator_timer_client_id_(manipulator::manipulator_timer::make_new_client_id()),
+                                                                                              manipulator_timer_client_id_(manipulator::manipulator_timer::make_client_id(this)),
                                                                                               merged_input_event_queue_(std::make_shared<event_queue>()),
                                                                                               simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                                                                                               complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),

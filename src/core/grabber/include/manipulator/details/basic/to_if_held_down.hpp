@@ -4,7 +4,7 @@ class to_if_held_down final {
 public:
   to_if_held_down(basic& basic,
                   const nlohmann::json& json) : basic_(basic),
-                                                manipulator_timer_client_id_(manipulator_timer::make_new_client_id()) {
+                                                manipulator_timer_client_id_(manipulator_timer::make_client_id(this)) {
     if (json.is_array()) {
       for (const auto& j : json) {
         to_.emplace_back(j);
