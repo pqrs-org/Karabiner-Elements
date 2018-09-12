@@ -2,15 +2,11 @@
 
 // `krbn::manipulator_timer` can be used safely in a multi-threaded environment.
 
-#include "boost_defs.hpp"
-
 #include "manipulator_object_id.hpp"
 #include "thread_utility.hpp"
 #include "time_utility.hpp"
 #include "types.hpp"
-#include <boost/signals2.hpp>
 #include <deque>
-#include <mach/mach_time.h>
 
 namespace krbn {
 namespace manipulator {
