@@ -21,10 +21,32 @@ public:
       // Stop `timer_` gracefully without timer_->cancel().
       timer_ = nullptr;
       timer_when_ = boost::none;
+
+      if (!manipulator_object_ids_.empty()) {
+        logger::get_logger().error("manipulator_timer::manipulator_object_ids_ is not empty in ~manipulator_timer.");
+      }
     });
 
     dispatcher_->terminate();
     dispatcher_ = nullptr;
+  }
+
+  void async_attach(manipulator_object_id id) {
+    dispatcher_->enqueue([this, id] {
+      manipulator_object_ids_.insert(id);
+    });
+  }
+
+  void detach(manipulator_object_id id) {
+    thread_utility::wait wait;
+
+    dispatcher_->enqueue([this, id, &wait] {
+      manipulator_object_ids_.erase(id);
+
+      wait.notify();
+    });
+
+    wait.wait_notice();
   }
 
   void enqueue(manipulator_object_id id,
@@ -154,7 +176,12 @@ private:
         break;
       }
 
-      dispatcher_->enqueue([e] {
+      dispatcher_->enqueue([this, e] {
+        auto it = manipulator_object_ids_.find(e->get_manipulator_object_id());
+        if (it == std::end(manipulator_object_ids_)) {
+          return;
+        }
+
         e->call_function();
       });
 
@@ -165,6 +192,7 @@ private:
   }
 
   std::unique_ptr<thread_utility::dispatcher> dispatcher_;
+  std::unordered_set<manipulator_object_id> manipulator_object_ids_;
   std::deque<std::shared_ptr<entry>> entries_;
   bool timer_enabled_;
   std::unique_ptr<thread_utility::timer> timer_;

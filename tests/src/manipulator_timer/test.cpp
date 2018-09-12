@@ -16,6 +16,8 @@ TEST_CASE("manipulator_timer") {
   auto manipulator_object_id = krbn::manipulator::make_manipulator_object_id(&object);
   std::vector<int> result;
 
+  manipulator_timer->async_attach(manipulator_object_id);
+
   manipulator_timer->enqueue(manipulator_object_id, [&] { result.push_back(1); }, krbn::absolute_time(3));
   manipulator_timer->enqueue(manipulator_object_id, [&] { result.push_back(2); }, krbn::absolute_time(2));
   manipulator_timer->enqueue(manipulator_object_id, [&] { result.push_back(3); }, krbn::absolute_time(1));
@@ -29,6 +31,14 @@ TEST_CASE("manipulator_timer") {
   manipulator_timer->enqueue(manipulator_object_id, [&] { result.push_back(11); }, krbn::absolute_time(100));
 
   manipulator_timer->async_invoke(krbn::absolute_time(10));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  manipulator_timer->detach(manipulator_object_id);
+
+  // `enqueue` is ignored after `detach`.
+  manipulator_timer->enqueue(manipulator_object_id, [&] { result.push_back(1); }, krbn::absolute_time(3));
+  manipulator_timer->async_invoke(krbn::absolute_time(10));
+
   manipulator_timer = nullptr;
 
   REQUIRE(result.size() == 10);
@@ -54,6 +64,8 @@ TEST_CASE("manipulator_timer.enqueue_earlier") {
   auto manipulator_object_id = krbn::manipulator::make_manipulator_object_id(&object);
   std::vector<int> result;
   std::mutex m;
+
+  manipulator_timer->async_attach(manipulator_object_id);
 
   manipulator_timer->enqueue(manipulator_object_id,
                              [&] { std::lock_guard<std::mutex> l(m); result.push_back(1); },
@@ -84,6 +96,7 @@ TEST_CASE("manipulator_timer.enqueue_earlier") {
     REQUIRE(result[1] == 1);
   }
 
+  manipulator_timer->detach(manipulator_object_id);
   manipulator_timer = nullptr;
 }
 
@@ -105,6 +118,8 @@ TEST_CASE("manipulator_timer.thread_id") {
 
   boost::optional<std::thread::id> thread_id;
 
+  manipulator_timer->async_attach(manipulator_object_id);
+
   manipulator_timer->enqueue(manipulator_object_id, [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(0));
   manipulator_timer->enqueue(manipulator_object_id, [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(5));
   manipulator_timer->enqueue(manipulator_object_id, [&] { REQUIRE(check_thread_id(thread_id)); }, krbn::absolute_time(10));
@@ -113,7 +128,9 @@ TEST_CASE("manipulator_timer.thread_id") {
   manipulator_timer->async_invoke(krbn::absolute_time(10));
   manipulator_timer->async_invoke(krbn::absolute_time(20));
   manipulator_timer->async_invoke(krbn::absolute_time(100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
+  manipulator_timer->detach(manipulator_object_id);
   manipulator_timer = nullptr;
 }
 
@@ -124,6 +141,9 @@ TEST_CASE("manipulator_timer.async_erase") {
   int object2;
   auto manipulator_object_id2 = krbn::manipulator::make_manipulator_object_id(&object2);
   std::vector<int> result;
+
+  manipulator_timer->async_attach(manipulator_object_id1);
+  manipulator_timer->async_attach(manipulator_object_id2);
 
   manipulator_timer->enqueue(manipulator_object_id1, [&] { result.push_back(1); }, krbn::absolute_time(3));
   manipulator_timer->enqueue(manipulator_object_id1, [&] { result.push_back(2); }, krbn::absolute_time(2));
@@ -152,5 +172,7 @@ TEST_CASE("manipulator_timer.async_erase") {
   REQUIRE(result[3] == 5);
   REQUIRE(result[4] == 1);
 
+  manipulator_timer->detach(manipulator_object_id1);
+  manipulator_timer->detach(manipulator_object_id2);
   manipulator_timer = nullptr;
 }
