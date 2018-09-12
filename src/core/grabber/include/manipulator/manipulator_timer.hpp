@@ -4,6 +4,7 @@
 
 #include "boost_defs.hpp"
 
+#include "manipulator_object_id.hpp"
 #include "thread_utility.hpp"
 #include "time_utility.hpp"
 #include "types.hpp"
@@ -15,16 +16,6 @@ namespace krbn {
 namespace manipulator {
 class manipulator_timer final {
 public:
-  struct client_id : type_safe::strong_typedef<client_id, std::intptr_t>,
-                     type_safe::strong_typedef_op::equality_comparison<client_id>,
-                     type_safe::strong_typedef_op::integer_arithmetic<client_id> {
-    using strong_typedef::strong_typedef;
-  };
-
-  static client_id make_client_id(void* p) {
-    return client_id(reinterpret_cast<std::intptr_t>(p));
-  }
-
   manipulator_timer(bool timer_enabled = true) : timer_enabled_(timer_enabled) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
@@ -40,11 +31,11 @@ public:
     dispatcher_ = nullptr;
   }
 
-  void enqueue(client_id client_id,
+  void enqueue(manipulator_object_id id,
                const std::function<void(void)>& function,
                absolute_time when) {
-    dispatcher_->enqueue([this, client_id, function, when] {
-      entries_.push_back(std::make_shared<entry>(client_id, function, when));
+    dispatcher_->enqueue([this, id, function, when] {
+      entries_.push_back(std::make_shared<entry>(id, function, when));
 
       std::stable_sort(std::begin(entries_),
                        std::end(entries_),
@@ -54,13 +45,13 @@ public:
     });
   }
 
-  void async_erase(client_id client_id,
+  void async_erase(manipulator_object_id id,
                    const std::function<void(void)>& erased) {
-    dispatcher_->enqueue([this, client_id, erased] {
+    dispatcher_->enqueue([this, id, erased] {
       entries_.erase(std::remove_if(std::begin(entries_),
                                     std::end(entries_),
                                     [&](auto&& e) {
-                                      return e->get_client_id() == client_id;
+                                      return e->get_manipulator_object_id() == id;
                                     }),
                      std::end(entries_));
 
@@ -68,8 +59,8 @@ public:
     });
   }
 
-  void async_erase(client_id client_id) {
-    async_erase(client_id, [] {});
+  void async_erase(manipulator_object_id id) {
+    async_erase(id, [] {});
   }
 
   void async_invoke(absolute_time now) {
@@ -81,15 +72,15 @@ public:
 private:
   class entry final {
   public:
-    entry(client_id client_id,
+    entry(manipulator_object_id id,
           const std::function<void(void)>& function,
-          absolute_time when) : client_id_(client_id),
+          absolute_time when) : manipulator_object_id_(id),
                                 function_(function),
                                 when_(when) {
     }
 
-    client_id get_client_id(void) const {
-      return client_id_;
+    manipulator_object_id get_manipulator_object_id(void) const {
+      return manipulator_object_id_;
     }
 
     absolute_time get_when(void) const {
@@ -101,7 +92,7 @@ private:
     }
 
   private:
-    client_id client_id_;
+    manipulator_object_id manipulator_object_id_;
     std::function<void(void)> function_;
     absolute_time when_;
   };
