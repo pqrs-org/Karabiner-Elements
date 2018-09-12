@@ -208,18 +208,6 @@ public:
       queue_cv_.notify_one();
     }
 
-    void enqueue_and_wait(const std::function<void(void)>& function) {
-      wait w;
-
-      enqueue([function, &w] {
-        function();
-
-        w.notify();
-      });
-
-      w.wait_notice();
-    }
-
   private:
     std::thread worker_thread_;
     std::atomic<bool> exit_;
