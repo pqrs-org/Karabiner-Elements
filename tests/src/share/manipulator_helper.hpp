@@ -21,11 +21,16 @@ public:
 
       system_preferences system_preferences;
       auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
+      auto manipulator_dispatcher = std::make_shared<manipulator::manipulator_dispatcher>();
       auto manipulator_timer = std::make_shared<manipulator::manipulator_timer>(false);
+      auto manipulator_object_id = manipulator::make_new_manipulator_object_id();
       manipulator::manipulator_managers_connector connector;
       std::vector<std::unique_ptr<manipulator::manipulator_manager>> manipulator_managers;
       std::vector<std::shared_ptr<event_queue>> event_queues;
       std::shared_ptr<krbn::manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator;
+
+      manipulator_dispatcher->async_attach(manipulator_object_id);
+      manipulator_timer->async_attach(manipulator_object_id);
 
       core_configuration::profile::complex_modifications::parameters parameters;
       for (const auto& rule : test["rules"]) {
@@ -37,6 +42,7 @@ public:
           for (const auto& j : nlohmann::json::parse(ifs)) {
             auto m = manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters,
+                                                                        manipulator_dispatcher,
                                                                         manipulator_timer);
 
             if (auto conditions = json_utility::find_array(j, "conditions")) {
@@ -64,6 +70,7 @@ public:
 
       if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(system_preferences,
+                                                                                                                                manipulator_dispatcher,
                                                                                                                                 manipulator_timer,
                                                                                                                                 console_user_server_client);
 
@@ -98,7 +105,12 @@ public:
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
                 time_stamp = absolute_time(*t);
               }
-              manipulator_timer->async_invoke(time_stamp);
+              manipulator_dispatcher->enqueue(
+                  manipulator_object_id,
+                  [&] {
+                    manipulator_timer->async_invoke(time_stamp);
+                  });
+              // Wait after `async_invoke` to trigger manipulator_timer.
               std::this_thread::sleep_for(std::chrono::milliseconds(100));
             } else if (*s == "manipulate") {
               absolute_time time_stamp(0);
@@ -130,6 +142,8 @@ public:
           }
         }
       }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
       if (auto s = json_utility::find_optional<std::string>(test, "expected_event_queue")) {
         if (overwrite_expected_results) {
@@ -165,6 +179,12 @@ public:
       }
 
       input_event_arrived_connection.disconnect();
+
+      manipulator_dispatcher->detach(manipulator_object_id);
+      manipulator_timer->detach(manipulator_object_id);
+
+      manipulator_dispatcher = nullptr;
+      manipulator_timer = nullptr;
     }
 
     logger::get_logger().info("krbn::unit_testing::manipulator_helper::run_tests finished");

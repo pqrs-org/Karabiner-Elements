@@ -12,8 +12,7 @@ TEST_CASE("manipulator_dispatcher") {
   std::cout << "manipulator_dispatcher" << std::endl;
 
   auto manipulator_dispatcher = std::make_unique<krbn::manipulator::manipulator_dispatcher>();
-  int object;
-  auto manipulator_object_id = krbn::manipulator::make_manipulator_object_id(&object);
+  auto manipulator_object_id = krbn::manipulator::make_new_manipulator_object_id();
   std::vector<int> result;
 
   manipulator_dispatcher->async_attach(manipulator_object_id);

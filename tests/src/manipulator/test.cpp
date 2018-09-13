@@ -18,9 +18,11 @@ TEST_CASE("manipulator.manipulator_factory") {
   {
     nlohmann::json json;
     krbn::core_configuration::profile::complex_modifications::parameters parameters;
+    auto manipulator_dispatcher = std::make_shared<krbn::manipulator::manipulator_dispatcher>();
     auto manipulator_timer = std::make_shared<krbn::manipulator::manipulator_timer>();
     auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                 parameters,
+                                                                                manipulator_dispatcher,
                                                                                 manipulator_timer);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) == nullptr);
@@ -64,9 +66,11 @@ TEST_CASE("manipulator.manipulator_factory") {
         },
     });
     krbn::core_configuration::profile::complex_modifications::parameters parameters;
+    auto manipulator_dispatcher = std::make_shared<krbn::manipulator::manipulator_dispatcher>();
     auto manipulator_timer = std::make_shared<krbn::manipulator::manipulator_timer>();
     auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                 parameters,
+                                                                                manipulator_dispatcher,
                                                                                 manipulator_timer);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) == nullptr);
@@ -167,9 +171,11 @@ TEST_CASE("needs_virtual_hid_pointing") {
     krbn::manipulator::manipulator_manager manager;
     for (const auto& j : json) {
       krbn::core_configuration::profile::complex_modifications::parameters parameters;
+      auto manipulator_dispatcher = std::make_shared<krbn::manipulator::manipulator_dispatcher>();
       auto manipulator_timer = std::make_shared<krbn::manipulator::manipulator_timer>();
       auto m = krbn::manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters,
+                                                                        manipulator_dispatcher,
                                                                         manipulator_timer);
       manager.push_back_manipulator(m);
     }

@@ -12,8 +12,7 @@ TEST_CASE("manipulator_timer") {
   std::cout << "manipulator_timer" << std::endl;
 
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(false);
-  int object;
-  auto manipulator_object_id = krbn::manipulator::make_manipulator_object_id(&object);
+  auto manipulator_object_id = krbn::manipulator::make_new_manipulator_object_id();
   std::vector<int> result;
 
   manipulator_timer->async_attach(manipulator_object_id);
@@ -60,8 +59,7 @@ TEST_CASE("manipulator_timer.enqueue_earlier") {
   // Test with an actual timer.
   bool timer_enabled = true;
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(timer_enabled);
-  int object;
-  auto manipulator_object_id = krbn::manipulator::make_manipulator_object_id(&object);
+  auto manipulator_object_id = krbn::manipulator::make_new_manipulator_object_id();
   std::vector<int> result;
   std::mutex m;
 
@@ -113,8 +111,7 @@ TEST_CASE("manipulator_timer.thread_id") {
   std::cout << "manipulator_timer.thread_id" << std::endl;
 
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(false);
-  int object;
-  auto manipulator_object_id = krbn::manipulator::make_manipulator_object_id(&object);
+  auto manipulator_object_id = krbn::manipulator::make_new_manipulator_object_id();
 
   boost::optional<std::thread::id> thread_id;
 
@@ -136,10 +133,8 @@ TEST_CASE("manipulator_timer.thread_id") {
 
 TEST_CASE("manipulator_timer.async_erase") {
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>(false);
-  int object1;
-  auto manipulator_object_id1 = krbn::manipulator::make_manipulator_object_id(&object1);
-  int object2;
-  auto manipulator_object_id2 = krbn::manipulator::make_manipulator_object_id(&object2);
+  auto manipulator_object_id1 = krbn::manipulator::make_new_manipulator_object_id();
+  auto manipulator_object_id2 = krbn::manipulator::make_new_manipulator_object_id();
   std::vector<int> result;
 
   manipulator_timer->async_attach(manipulator_object_id1);
@@ -158,12 +153,9 @@ TEST_CASE("manipulator_timer.async_erase") {
   manipulator_timer->enqueue(manipulator_object_id2, [&] { result.push_back(11); }, krbn::absolute_time(100));
 
   krbn::thread_utility::wait wait;
-  manipulator_timer->async_erase(manipulator_object_id2,
-                                 [&wait] {
-                                   wait.notify();
-                                 });
+  manipulator_timer->async_erase(manipulator_object_id2);
   manipulator_timer->async_invoke(krbn::absolute_time(10));
-  wait.wait_notice();
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   REQUIRE(result.size() == 5);
   REQUIRE(result[0] == 3);
