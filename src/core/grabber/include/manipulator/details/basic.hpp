@@ -22,8 +22,11 @@ public:
 
   basic(const nlohmann::json& json,
         const core_configuration::profile::complex_modifications::parameters& parameters,
+        std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher,
         std::weak_ptr<manipulator_timer> weak_manipulator_timer) : base(),
                                                                    parameters_(parameters),
+                                                                   manipulator_object_id_(make_new_manipulator_object_id()),
+                                                                   weak_manipulator_dispatcher_(weak_manipulator_dispatcher),
                                                                    weak_manipulator_timer_(weak_manipulator_timer),
                                                                    from_(json_utility::find_copy(json, "from", nlohmann::json())) {
     for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
@@ -77,16 +80,41 @@ public:
         logger::get_logger().error("complex_modifications json error: Unknown key: {0} in {1}", key, json.dump());
       }
     }
+
+    initialize();
   }
 
   basic(const from_event_definition& from,
         const to_event_definition& to,
+        std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher,
         std::weak_ptr<manipulator_timer> weak_manipulator_timer) : base(),
+                                                                   manipulator_object_id_(make_new_manipulator_object_id()),
+                                                                   weak_manipulator_dispatcher_(weak_manipulator_dispatcher),
+                                                                   weak_manipulator_timer_(weak_manipulator_timer),
                                                                    from_(from),
                                                                    to_({to}) {
+    initialize();
   }
 
   virtual ~basic(void) {
+    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
+      manipulator_dispatcher->enqueue(
+          manipulator_object_id_,
+          [this] {
+            to_if_held_down_ = nullptr;
+            to_delayed_action_ = nullptr;
+          });
+    }
+
+    // detach
+
+    if (auto manipulator_timer = weak_manipulator_timer_.lock()) {
+      manipulator_timer->detach(manipulator_object_id_);
+    }
+
+    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
+      manipulator_dispatcher->detach(manipulator_object_id_);
+    }
   }
 
   virtual bool already_manipulated(const event_queue::queued_event& front_input_event) {
@@ -123,7 +151,7 @@ public:
                             front_input_event.get_event_type());
 
       if (to_if_held_down_) {
-        to_if_held_down_->cancel(front_input_event);
+        to_if_held_down_->async_cancel(front_input_event);
       }
 
       if (to_delayed_action_) {
@@ -521,10 +549,10 @@ public:
           // to_if_held_down_
 
           if (to_if_held_down_) {
-            to_if_held_down_->setup(front_input_event,
-                                    current_manipulated_original_event,
-                                    output_event_queue,
-                                    std::chrono::milliseconds(parameters_.get_basic_to_if_held_down_threshold_milliseconds()));
+            to_if_held_down_->async_setup(front_input_event,
+                                          current_manipulated_original_event,
+                                          output_event_queue,
+                                          std::chrono::milliseconds(parameters_.get_basic_to_if_held_down_threshold_milliseconds()));
           }
 
           // to_delayed_action_
@@ -605,6 +633,10 @@ public:
                                                            event_queue& output_event_queue) {
     unset_alone_if_needed(front_input_event.get_original_event(),
                           front_input_event.get_event_type());
+  }
+
+  std::weak_ptr<manipulator_dispatcher> get_weak_manipulator_dispatcher(void) const {
+    return weak_manipulator_dispatcher_;
   }
 
   std::weak_ptr<manipulator_timer> get_weak_manipulator_timer(void) const {
@@ -816,6 +848,16 @@ public:
   }
 
 private:
+  void initialize(void) {
+    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
+      manipulator_dispatcher->async_attach(manipulator_object_id_);
+    }
+
+    if (auto manipulator_timer = weak_manipulator_timer_.lock()) {
+      manipulator_timer->async_attach(manipulator_object_id_);
+    }
+  }
+
   bool all_from_events_found(const std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash>& from_events) const {
     for (const auto& d : from_.get_event_definitions()) {
       if (std::none_of(std::begin(from_events),
@@ -971,6 +1013,8 @@ private:
   }
 
   core_configuration::profile::complex_modifications::parameters parameters_;
+  manipulator_object_id manipulator_object_id_;
+  std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher_;
   std::weak_ptr<manipulator_timer> weak_manipulator_timer_;
 
   from_event_definition from_;

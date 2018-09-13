@@ -63,22 +63,15 @@ public:
     });
   }
 
-  void async_erase(manipulator_object_id id,
-                   const std::function<void(void)>& erased) {
-    dispatcher_->enqueue([this, id, erased] {
+  void async_erase(manipulator_object_id id) {
+    dispatcher_->enqueue([this, id] {
       entries_.erase(std::remove_if(std::begin(entries_),
                                     std::end(entries_),
                                     [&](auto&& e) {
                                       return e->get_manipulator_object_id() == id;
                                     }),
                      std::end(entries_));
-
-      erased();
     });
-  }
-
-  void async_erase(manipulator_object_id id) {
-    async_erase(id, [] {});
   }
 
   void async_invoke(absolute_time now) {

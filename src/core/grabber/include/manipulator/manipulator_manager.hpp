@@ -16,9 +16,11 @@ public:
 
   void push_back_manipulator(const nlohmann::json& json,
                              const core_configuration::profile::complex_modifications::parameters& parameters,
+                             std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher,
                              std::weak_ptr<manipulator_timer> weak_manipulator_timer) {
     manipulators_.push_back(manipulator_factory::make_manipulator(json,
                                                                   parameters,
+                                                                  weak_manipulator_dispatcher,
                                                                   weak_manipulator_timer));
   }
 

@@ -3,7 +3,8 @@
 class to_delayed_action final {
 public:
   to_delayed_action(basic& basic,
-                    const nlohmann::json& json) : basic_(basic) {
+                    const nlohmann::json& json) : basic_(basic),
+                                                  manipulator_object_id_(make_new_manipulator_object_id()) {
     if (json.is_object()) {
       for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
         // it.key() is always std::string.
@@ -37,17 +38,15 @@ public:
     } else {
       logger::get_logger().error("complex_modifications json error: `to_delayed_action` should be object: {0}", json.dump());
     }
+
+    if (auto manipulator_timer = basic_.get_weak_manipulator_timer().lock()) {
+      manipulator_timer->async_attach(manipulator_object_id_);
+    }
   }
 
   ~to_delayed_action(void) {
     if (auto manipulator_timer = basic_.get_weak_manipulator_timer().lock()) {
-      thread_utility::wait wait;
-
-      manipulator_timer->async_erase(manipulator_timer_client_id_, [&wait] {
-        wait.notify();
-      });
-
-      wait.wait_notice();
+      manipulator_timer->detach(manipulator_object_id_);
     }
   }
 
@@ -73,7 +72,7 @@ public:
       auto when = time_stamp +
                   time_utility::to_absolute_time(delay_milliseconds);
       manipulator_timer->enqueue(
-          manipulator_timer_client_id_,
+          manipulator_object_id_,
           [this] {
             post_events(to_if_invoked_);
             krbn_notification_center::get_instance().input_event_arrived();
@@ -89,7 +88,7 @@ public:
         return;
       }
 
-      manipulator_timer->async_erase(manipulator_timer_client_id_);
+      manipulator_timer->async_erase(manipulator_object_id_);
 
       post_events(to_if_canceled_);
     }
@@ -150,7 +149,7 @@ private:
 
   std::vector<to_event_definition> to_if_invoked_;
   std::vector<to_event_definition> to_if_canceled_;
-  manipulator_timer::client_id manipulator_timer_client_id_;
+  manipulator_object_id manipulator_object_id_;
   boost::optional<event_queue::queued_event> front_input_event_;
   std::shared_ptr<manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue> output_event_queue_;

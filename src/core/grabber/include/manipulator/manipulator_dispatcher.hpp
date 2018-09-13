@@ -15,6 +15,12 @@ public:
   }
 
   ~manipulator_dispatcher(void) {
+    dispatcher_->enqueue([this] {
+      if (!manipulator_object_ids_.empty()) {
+        logger::get_logger().error("manipulator_dispatcher::manipulator_object_ids_ is not empty in ~manipulator_dispatcher.");
+      }
+    });
+
     dispatcher_->terminate();
     dispatcher_ = nullptr;
   }

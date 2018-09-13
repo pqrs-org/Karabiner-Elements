@@ -34,14 +34,16 @@ class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : profile_(nlohmann::json()),
-                                                                                              manipulator_timer_client_id_(manipulator::manipulator_timer::make_client_id(this)),
+  device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : manipulator_object_id_(manipulator::make_new_manipulator_object_id()),
+                                                                                              profile_(nlohmann::json()),
                                                                                               merged_input_event_queue_(std::make_shared<event_queue>()),
                                                                                               simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                                                                                               complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
                                                                                               fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
                                                                                               posted_event_queue_(std::make_shared<event_queue>()) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+    manipulator_dispatcher_ = std::make_shared<manipulator::manipulator_dispatcher>();
+    manipulator_timer_ = std::make_shared<manipulator::manipulator_timer>();
 
     virtual_hid_device_client_ = std::make_shared<virtual_hid_device_client>();
 
@@ -68,9 +70,8 @@ public:
       });
     });
 
-    manipulator_timer_ = std::make_shared<manipulator::manipulator_timer>();
-
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_,
+                                                                                                                       manipulator_dispatcher_,
                                                                                                                        manipulator_timer_,
                                                                                                                        weak_console_user_server_client);
     post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
@@ -237,14 +238,17 @@ public:
 
       input_event_arrived_connection_.disconnect();
 
-      manipulator_timer_ = nullptr;
-
       led_monitor_timer_ = nullptr;
 
       grabbable_state_changed_connection_.disconnect();
 
       client_connected_connection_.disconnect();
       client_disconnected_connection_.disconnect();
+
+      post_event_to_virtual_devices_manipulator_ = nullptr;
+
+      manipulator_timer_ = nullptr;
+      manipulator_dispatcher_ = nullptr;
     });
 
     dispatcher_->terminate();
@@ -519,7 +523,7 @@ private:
 
     if (auto min = manipulator_managers_connector_.min_input_event_time_stamp()) {
       manipulator_timer_->enqueue(
-          manipulator_timer_client_id_,
+          manipulator_object_id_,
           [this, min] {
             dispatcher_->enqueue([this, min] {
               manipulate(*min);
@@ -857,6 +861,7 @@ private:
 
         return std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
                                                              manipulator::details::to_event_definition(to_json),
+                                                             manipulator_dispatcher_,
                                                              manipulator_timer_);
       } catch (std::exception&) {
       }
@@ -871,6 +876,7 @@ private:
       for (const auto& manipulator : rule.get_manipulators()) {
         auto m = manipulator::manipulator_factory::make_manipulator(manipulator.get_json(),
                                                                     manipulator.get_parameters(),
+                                                                    manipulator_dispatcher_,
                                                                     manipulator_timer_);
         for (const auto& c : manipulator.get_conditions()) {
           m->push_back_condition(manipulator::manipulator_factory::make_condition(c.get_json()));
@@ -919,6 +925,7 @@ private:
 
         auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
                                                                          manipulator::details::to_event_definition(to_json),
+                                                                         manipulator_dispatcher_,
                                                                          manipulator_timer_);
         fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
@@ -992,6 +999,7 @@ private:
 
         auto manipulator = std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
                                                                          manipulator::details::to_event_definition(to_json),
+                                                                         manipulator_dispatcher_,
                                                                          manipulator_timer_);
         fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
@@ -1018,6 +1026,7 @@ private:
 
       return std::make_shared<manipulator::details::basic>(manipulator::details::basic::from_event_definition(from_json),
                                                            manipulator::details::to_event_definition(to_json),
+                                                           manipulator_dispatcher_,
                                                            manipulator_timer_);
     } catch (std::exception&) {
     }
@@ -1025,6 +1034,10 @@ private:
   }
 
   std::unique_ptr<thread_utility::dispatcher> dispatcher_;
+
+  manipulator::manipulator_object_id manipulator_object_id_;
+  std::shared_ptr<manipulator::manipulator_dispatcher> manipulator_dispatcher_;
+  std::shared_ptr<manipulator::manipulator_timer> manipulator_timer_;
 
   std::shared_ptr<virtual_hid_device_client> virtual_hid_device_client_;
   boost::signals2::connection client_connected_connection_;
@@ -1043,9 +1056,6 @@ private:
 
   core_configuration::profile profile_;
   system_preferences system_preferences_;
-
-  manipulator::manipulator_timer::client_id manipulator_timer_client_id_;
-  std::shared_ptr<manipulator::manipulator_timer> manipulator_timer_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
   boost::signals2::connection input_event_arrived_connection_;

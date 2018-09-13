@@ -27,17 +27,25 @@ namespace details {
 class post_event_to_virtual_devices final : public base {
 public:
   post_event_to_virtual_devices(const system_preferences& system_preferences,
+                                std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher,
                                 std::weak_ptr<manipulator_timer> weak_manipulator_timer,
                                 std::weak_ptr<console_user_server_client> weak_console_user_server_client) : base(),
                                                                                                              weak_console_user_server_client_(weak_console_user_server_client),
-                                                                                                             queue_(),
-                                                                                                             mouse_key_handler_(queue_,
-                                                                                                                                weak_manipulator_timer,
-                                                                                                                                system_preferences) {
+                                                                                                             queue_() {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+
+    mouse_key_handler_ = std::make_unique<post_event_to_virtual_devices_detail::mouse_key_handler>(
+        queue_,
+        weak_manipulator_dispatcher,
+        weak_manipulator_timer,
+        system_preferences);
   }
 
   virtual ~post_event_to_virtual_devices(void) {
+    dispatcher_->enqueue([this] {
+      mouse_key_handler_ = nullptr;
+    });
+
     dispatcher_->terminate();
     dispatcher_ = nullptr;
   }
@@ -80,7 +88,7 @@ public:
             if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
               if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
                   pressed_buttons_.empty() &&
-                  !mouse_key_handler_.active()) {
+                  !mouse_key_handler_->active()) {
                 dispatch_modifier_key_event = true;
                 dispatch_modifier_key_event_before = true;
               }
@@ -93,7 +101,7 @@ public:
           } else if (front_input_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_motion) {
             if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
                 pressed_buttons_.empty() &&
-                !mouse_key_handler_.active()) {
+                !mouse_key_handler_->active()) {
               dispatch_modifier_key_event = true;
               dispatch_modifier_key_event_before = true;
             }
@@ -210,15 +218,15 @@ public:
         case event_queue::queued_event::event::type::mouse_key:
           if (auto mouse_key = front_input_event.get_event().get_mouse_key()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
-              mouse_key_handler_.async_push_back_mouse_key(front_input_event.get_device_id(),
-                                                           *mouse_key,
-                                                           output_event_queue,
-                                                           front_input_event.get_event_time_stamp().get_time_stamp());
+              mouse_key_handler_->async_push_back_mouse_key(front_input_event.get_device_id(),
+                                                            *mouse_key,
+                                                            output_event_queue,
+                                                            front_input_event.get_event_time_stamp().get_time_stamp());
             } else {
-              mouse_key_handler_.async_erase_mouse_key(front_input_event.get_device_id(),
-                                                       *mouse_key,
-                                                       output_event_queue,
-                                                       front_input_event.get_event_time_stamp().get_time_stamp());
+              mouse_key_handler_->async_erase_mouse_key(front_input_event.get_device_id(),
+                                                        *mouse_key,
+                                                        output_event_queue,
+                                                        front_input_event.get_event_time_stamp().get_time_stamp());
             }
           }
           break;
@@ -290,8 +298,8 @@ public:
 
     // mouse keys
 
-    mouse_key_handler_.async_erase_mouse_keys_by_device_id(front_input_event.get_device_id(),
-                                                           front_input_event.get_event_time_stamp().get_time_stamp());
+    mouse_key_handler_->async_erase_mouse_keys_by_device_id(front_input_event.get_device_id(),
+                                                            front_input_event.get_event_time_stamp().get_time_stamp());
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
@@ -325,8 +333,8 @@ public:
 
     // Release mouse_key_handler_
 
-    mouse_key_handler_.async_erase_mouse_keys_by_device_id(device_id,
-                                                           time_stamp);
+    mouse_key_handler_->async_erase_mouse_keys_by_device_id(device_id,
+                                                            time_stamp);
   }
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
@@ -351,7 +359,7 @@ public:
       case event_type::single:
         if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
             pressed_buttons_.empty() &&
-            !mouse_key_handler_.active()) {
+            !mouse_key_handler_->active()) {
           key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
                                                             queue_,
                                                             front_input_event.get_event_time_stamp().get_time_stamp());
@@ -392,7 +400,7 @@ private:
   std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   post_event_to_virtual_devices_detail::queue queue_;
   post_event_to_virtual_devices_detail::key_event_dispatcher key_event_dispatcher_;
-  post_event_to_virtual_devices_detail::mouse_key_handler mouse_key_handler_;
+  std::unique_ptr<post_event_to_virtual_devices_detail::mouse_key_handler> mouse_key_handler_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
   pqrs::karabiner_virtual_hid_device::hid_report::buttons pressed_buttons_;
 };
