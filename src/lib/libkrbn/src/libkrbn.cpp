@@ -82,10 +82,6 @@ void libkrbn_check_for_updates_with_beta_version(void) {
   krbn::update_utility::check_for_updates_with_beta_version();
 }
 
-void libkrbn_check_for_updates_on_startup(void) {
-  krbn::update_utility::check_for_updates_on_startup();
-}
-
 void libkrbn_launch_event_viewer(void) {
   krbn::application_launcher::launch_event_viewer();
 }

@@ -17,12 +17,14 @@ public:
       };
       file_monitor_ = std::make_unique<krbn::file_monitor>(targets);
 
-      file_monitor_->file_changed.connect([this, callback, refcon](auto&& changed_file_path,
-                                                                   auto&& changed_file_body) {
+      file_monitor_->file_changed.connect([callback, refcon](auto&& changed_file_path,
+                                                             auto&& changed_file_body) {
         if (callback) {
           callback(refcon);
         }
       });
+
+      file_monitor_->async_start();
     }
   }
 

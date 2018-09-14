@@ -30,25 +30,27 @@ public:
   public:
     libkrbn_configuration_monitor_class(const libkrbn_configuration_monitor_class&) = delete;
 
-    libkrbn_configuration_monitor_class(libkrbn_configuration_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
+    libkrbn_configuration_monitor_class(libkrbn_configuration_monitor_callback callback, void* refcon) {
       configuration_monitor_ = std::make_shared<krbn::configuration_monitor>(
-          krbn::constants::get_user_core_configuration_file_path(),
-          [this](const std::shared_ptr<krbn::core_configuration> core_configuration) {
-            if (callback_) {
-              auto* p = new libkrbn_core_configuration_class(core_configuration);
-              callback_(p, refcon_);
-            }
-          });
+          krbn::constants::get_user_core_configuration_file_path());
+
+      configuration_monitor_->core_configuration_updated.connect([callback, refcon](auto&& weak_core_configuration) {
+        if (auto core_configuration = weak_core_configuration.lock()) {
+          if (callback) {
+            auto* p = new libkrbn_core_configuration_class(core_configuration);
+            callback(p, refcon);
+          }
+        }
+      });
+
+      configuration_monitor_->async_start();
     }
 
-    std::weak_ptr<krbn::configuration_monitor> get_configuration_monitor(void) const {
+    std::shared_ptr<krbn::configuration_monitor> get_configuration_monitor(void) const {
       return configuration_monitor_;
     }
 
   private:
-    libkrbn_configuration_monitor_callback callback_;
-    void* refcon_;
-
     std::shared_ptr<krbn::configuration_monitor> configuration_monitor_;
   };
 };

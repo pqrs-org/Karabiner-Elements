@@ -10,27 +10,25 @@ public:
 
   libkrbn_system_preferences_monitor_class(libkrbn_system_preferences_monitor_callback callback,
                                            void* refcon,
-                                           std::weak_ptr<krbn::configuration_monitor> configuration_monitor) : callback_(callback),
-                                                                                                               refcon_(refcon) {
-    system_preferences_monitor_ = std::make_unique<krbn::system_preferences_monitor>(
-        [this](const krbn::system_preferences& system_preferences) {
-          cpp_callback(system_preferences);
-        },
-        configuration_monitor);
+                                           std::weak_ptr<krbn::configuration_monitor> weak_configuration_monitor) {
+    system_preferences_monitor_ = std::make_unique<krbn::system_preferences_monitor>(weak_configuration_monitor);
+
+    system_preferences_monitor_->system_preferences_changed.connect([callback, refcon](auto&& system_preferences) {
+      if (callback) {
+        libkrbn_system_preferences v;
+        v.keyboard_fn_state = system_preferences.get_keyboard_fn_state();
+        callback(&v, refcon);
+      }
+    });
+
+    system_preferences_monitor_->async_start();
+  }
+
+  ~libkrbn_system_preferences_monitor_class(void) {
+    system_preferences_monitor_ = nullptr;
   }
 
 private:
-  void cpp_callback(const krbn::system_preferences& system_preferences) {
-    if (callback_) {
-      libkrbn_system_preferences v;
-      v.keyboard_fn_state = system_preferences.get_keyboard_fn_state();
-      callback_(&v, refcon_);
-    }
-  }
-
-  libkrbn_system_preferences_monitor_callback callback_;
-  void* refcon_;
-
   std::unique_ptr<krbn::system_preferences_monitor> system_preferences_monitor_;
 };
 } // namespace

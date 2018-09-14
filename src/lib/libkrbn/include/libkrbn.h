@@ -37,7 +37,6 @@ void libkrbn_launchctl_restart_console_user_server(void);
 void libkrbn_check_for_updates_in_background(void);
 void libkrbn_check_for_updates_stable_only(void);
 void libkrbn_check_for_updates_with_beta_version(void);
-void libkrbn_check_for_updates_on_startup(void);
 
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_menu(void);

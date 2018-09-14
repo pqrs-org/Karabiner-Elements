@@ -2,6 +2,7 @@
 #include "hid_observer.hpp"
 #include "libkrbn.h"
 #include <mutex>
+#include <unordered_set>
 
 namespace {
 class libkrbn_hid_value_observer_class final {
@@ -10,51 +11,73 @@ public:
 
   libkrbn_hid_value_observer_class(libkrbn_hid_value_observer_callback callback,
                                    void* refcon) : callback_(callback),
-                                                   refcon_(refcon),
-                                                   hid_manager_({
-                                                       std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-                                                   }) {
-    hid_manager_.device_detected.connect([this](auto&& human_interface_device) {
-      human_interface_device->values_arrived.connect([this](auto&& human_interface_device,
-                                                            auto&& event_queue) {
-        values_arrived(human_interface_device, event_queue);
-      });
-
-      auto hid_observer = std::make_shared<krbn::hid_observer>(human_interface_device);
-      hid_observer->async_observe();
-      hid_observers_[human_interface_device->get_registry_entry_id()] = hid_observer;
+                                                   refcon_(refcon) {
+    std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
+        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
     });
 
-    hid_manager_.device_removed.connect([this](auto&& human_interface_device) {
-      hid_observers_.erase(human_interface_device->get_registry_entry_id());
+    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
+
+    hid_manager_->device_detected.connect([this](auto&& weak_hid) {
+      if (auto hid = weak_hid.lock()) {
+        hid->values_arrived.connect([this](auto&& event_queue) {
+          values_arrived(event_queue);
+        });
+
+        auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
+
+        hid_observer->device_observed.connect([this, weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            std::lock_guard<std::mutex> lock(observed_devices_mutex_);
+
+            observed_devices_.insert(hid->get_registry_entry_id());
+          }
+        });
+
+        hid_observer->device_unobserved.connect([this, weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            std::lock_guard<std::mutex> lock(observed_devices_mutex_);
+
+            observed_devices_.erase(hid->get_registry_entry_id());
+          }
+        });
+
+        hid_observer->async_observe();
+
+        hid_observers_[hid->get_registry_entry_id()] = hid_observer;
+      }
     });
 
-    hid_manager_.start();
-  }
+    hid_manager_->device_removed.connect([this](auto&& weak_hid) {
+      if (auto hid = weak_hid.lock()) {
+        hid_observers_.erase(hid->get_registry_entry_id());
 
-  ~libkrbn_hid_value_observer_class(void) {
-    hid_observers_.clear();
-    hid_manager_.stop();
-  }
+        {
+          std::lock_guard<std::mutex> lock(observed_devices_mutex_);
 
-  size_t calculate_observed_device_count(void) const {
-    size_t __block count = 0;
-
-    krbn::gcd_utility::dispatch_sync_in_main_queue(^{
-      for (const auto& pair : hid_observers_) {
-        if (pair.second->get_observed()) {
-          ++count;
+          observed_devices_.erase(hid->get_registry_entry_id());
         }
       }
     });
 
-    return count;
+    hid_manager_->async_start();
+  }
+
+  ~libkrbn_hid_value_observer_class(void) {
+    hid_manager_ = nullptr;
+
+    hid_observers_.clear();
+  }
+
+  size_t calculate_observed_device_count(void) const {
+    std::lock_guard<std::mutex> lock(observed_devices_mutex_);
+
+    return observed_devices_.size();
   }
 
 private:
-  void values_arrived(krbn::human_interface_device& device,
-                      krbn::event_queue& event_queue) {
-    for (const auto& queued_event : event_queue.get_events()) {
+  void values_arrived(std::shared_ptr<krbn::event_queue> event_queue) {
+    for (const auto& queued_event : event_queue->get_events()) {
       libkrbn_hid_value_event_type event_type = libkrbn_hid_value_event_type_key_down;
       switch (queued_event.get_event_type()) {
         case krbn::event_type::key_down:
@@ -105,15 +128,16 @@ private:
           break;
       }
     }
-
-    event_queue.clear_events();
   }
 
   libkrbn_hid_value_observer_callback callback_;
   void* refcon_;
 
-  krbn::hid_manager hid_manager_;
+  std::unique_ptr<krbn::hid_manager> hid_manager_;
   std::unordered_map<krbn::registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
+
+  std::unordered_set<krbn::registry_entry_id> observed_devices_;
+  mutable std::mutex observed_devices_mutex_;
 };
 } // namespace
 

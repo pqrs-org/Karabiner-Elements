@@ -5,35 +5,42 @@
 namespace {
 class libkrbn_connected_devices_class final {
 public:
-  libkrbn_connected_devices_class(std::shared_ptr<krbn::connected_devices> connected_devices) : connected_devices_(connected_devices) {
+  libkrbn_connected_devices_class(const krbn::connected_devices& connected_devices) : connected_devices_(connected_devices) {
   }
 
   krbn::connected_devices& get_connected_devices(void) {
-    return *connected_devices_;
+    return connected_devices_;
   }
 
 private:
-  std::shared_ptr<krbn::connected_devices> connected_devices_;
+  krbn::connected_devices connected_devices_;
 };
 
 class libkrbn_connected_devices_monitor_class final {
 public:
   libkrbn_connected_devices_monitor_class(const libkrbn_connected_devices_monitor_class&) = delete;
 
-  libkrbn_connected_devices_monitor_class(libkrbn_connected_devices_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
+  libkrbn_connected_devices_monitor_class(libkrbn_connected_devices_monitor_callback callback, void* refcon) {
     connected_devices_monitor_ = std::make_unique<krbn::connected_devices_monitor>(
-        [this](const std::shared_ptr<krbn::connected_devices> connected_devices) {
-          if (callback_) {
-            auto* p = new libkrbn_connected_devices_class(connected_devices);
-            callback_(p, refcon_);
-          }
-        });
+        krbn::constants::get_devices_json_file_path());
+
+    connected_devices_monitor_->connected_devices_updated.connect([callback, refcon](auto&& weak_connected_devices) {
+      if (auto connected_devices = weak_connected_devices.lock()) {
+        if (callback) {
+          auto* p = new libkrbn_connected_devices_class(*connected_devices);
+          callback(p, refcon);
+        }
+      }
+    });
+
+    connected_devices_monitor_->async_start();
+  }
+
+  ~libkrbn_connected_devices_monitor_class(void) {
+    connected_devices_monitor_ = nullptr;
   }
 
 private:
-  libkrbn_configuration_monitor_callback callback_;
-  void* refcon_;
-
   std::unique_ptr<krbn::connected_devices_monitor> connected_devices_monitor_;
 };
 } // namespace

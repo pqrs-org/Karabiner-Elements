@@ -7,33 +7,25 @@ class libkrbn_version_monitor_class final {
 public:
   libkrbn_version_monitor_class(const libkrbn_version_monitor_class&) = delete;
 
-  libkrbn_version_monitor_class(libkrbn_version_monitor_callback callback, void* refcon) : callback_(callback), refcon_(refcon) {
-    auto version_monitor = krbn::version_monitor::get_shared_instance();
+  libkrbn_version_monitor_class(libkrbn_version_monitor_callback callback,
+                                void* refcon) {
+    version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
-    connections_.push_back(version_monitor->changed.connect([this] {
-      cpp_callback();
-    }));
+    version_monitor_->changed.connect([callback, refcon](auto&& version) {
+      if (callback) {
+        callback(refcon);
+      }
+    });
 
-    version_monitor->start();
+    version_monitor_->async_start();
   }
 
   ~libkrbn_version_monitor_class(void) {
-    for (auto&& c : connections_) {
-      c.disconnect();
-    }
+    version_monitor_ = nullptr;
   }
 
 private:
-  void cpp_callback(void) {
-    if (callback_) {
-      callback_(refcon_);
-    }
-  }
-
-  libkrbn_version_monitor_callback callback_;
-  void* refcon_;
-
-  std::vector<boost::signals2::connection> connections_;
+  std::unique_ptr<krbn::version_monitor> version_monitor_;
 };
 } // namespace
 
