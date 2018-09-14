@@ -12,7 +12,7 @@ class configuration_monitor final {
 public:
   // Signals
 
-  boost::signals2::signal<void(std::weak_ptr<const core_configuration>)> core_configuration_updated;
+  boost::signals2::signal<void(std::weak_ptr<core_configuration>)> core_configuration_updated;
 
   // Methods
 
@@ -77,7 +77,7 @@ public:
     file_monitor_->async_start();
   }
 
-  std::shared_ptr<const core_configuration> get_core_configuration(void) const {
+  std::shared_ptr<core_configuration> get_core_configuration(void) const {
     std::lock_guard<std::mutex> lock(core_configuration_mutex_);
 
     return core_configuration_;
@@ -90,7 +90,7 @@ public:
 private:
   std::unique_ptr<file_monitor> file_monitor_;
 
-  std::shared_ptr<const core_configuration> core_configuration_;
+  std::shared_ptr<core_configuration> core_configuration_;
   mutable std::mutex core_configuration_mutex_;
 };
 } // namespace krbn
