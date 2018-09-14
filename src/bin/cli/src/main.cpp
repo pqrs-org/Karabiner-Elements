@@ -6,22 +6,35 @@
 #include "constants.hpp"
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
+#include "thread_utility.hpp"
 #include <iostream>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace {
 void select_profile(const std::string& name) {
-  krbn::configuration_monitor monitor(krbn::constants::get_user_core_configuration_file_path(),
-                                      [&name](std::shared_ptr<krbn::core_configuration> core_configuration) {
-                                        auto& profiles = core_configuration->get_profiles();
-                                        for (size_t i = 0; i < profiles.size(); ++i) {
-                                          if (profiles[i].get_name() == name) {
-                                            core_configuration->select_profile(i);
-                                            core_configuration->sync_save_to_file();
-                                            return;
-                                          }
-                                        }
-                                        krbn::logger::get_logger().error("`{0}` is not found.", name);
-                                      });
+  krbn::thread_utility::wait wait;
+  krbn::configuration_monitor monitor(krbn::constants::get_user_core_configuration_file_path());
+
+  monitor.core_configuration_updated.connect([name, &wait](auto&& weak_core_configuration) {
+    if (auto core_configuration = weak_core_configuration.lock()) {
+      auto& profiles = core_configuration->get_profiles();
+      for (size_t i = 0; i < profiles.size(); ++i) {
+        if (profiles[i].get_name() == name) {
+          core_configuration->select_profile(i);
+          core_configuration->sync_save_to_file();
+          goto finish;
+        }
+      }
+      krbn::logger::get_logger().error("`{0}` is not found.", name);
+    }
+
+  finish:
+    wait.notify();
+  });
+
+  monitor.async_start();
+
+  wait.wait_notice();
 }
 
 int copy_current_profile_to_system_default_profile(void) {
