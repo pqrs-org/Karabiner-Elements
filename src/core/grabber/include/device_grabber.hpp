@@ -35,15 +35,21 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : manipulator_object_id_(manipulator::make_new_manipulator_object_id()),
-                                                                                              profile_(nlohmann::json()),
-                                                                                              merged_input_event_queue_(std::make_shared<event_queue>()),
-                                                                                              simple_modifications_applied_event_queue_(std::make_shared<event_queue>()),
-                                                                                              complex_modifications_applied_event_queue_(std::make_shared<event_queue>()),
-                                                                                              fn_function_keys_applied_event_queue_(std::make_shared<event_queue>()),
-                                                                                              posted_event_queue_(std::make_shared<event_queue>()) {
+                                                                                              profile_(nlohmann::json()) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
     manipulator_dispatcher_ = std::make_shared<manipulator::manipulator_dispatcher>();
     manipulator_timer_ = std::make_shared<manipulator::manipulator_timer>();
+
+    simple_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
+    complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
+    fn_function_keys_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
+    post_event_to_virtual_devices_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
+
+    merged_input_event_queue_ = std::make_shared<event_queue>();
+    simple_modifications_applied_event_queue_ = std::make_shared<event_queue>();
+    complex_modifications_applied_event_queue_ = std::make_shared<event_queue>();
+    fn_function_keys_applied_event_queue_ = std::make_shared<event_queue>();
+    posted_event_queue_ = std::make_shared<event_queue>();
 
     virtual_hid_device_client_ = std::make_shared<virtual_hid_device_client>();
 
@@ -74,7 +80,7 @@ public:
                                                                                                                        manipulator_dispatcher_,
                                                                                                                        manipulator_timer_,
                                                                                                                        weak_console_user_server_client);
-    post_event_to_virtual_devices_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
+    post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::details::base>(post_event_to_virtual_devices_manipulator_));
 
     complex_modifications_applied_event_queue_->enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
 
@@ -246,6 +252,11 @@ public:
       client_disconnected_connection_.disconnect();
 
       post_event_to_virtual_devices_manipulator_ = nullptr;
+
+      simple_modifications_manipulator_manager_ = nullptr;
+      complex_modifications_manipulator_manager_ = nullptr;
+      fn_function_keys_manipulator_manager_ = nullptr;
+      post_event_to_virtual_devices_manipulator_manager_ = nullptr;
 
       manipulator_timer_ = nullptr;
       manipulator_dispatcher_ = nullptr;
@@ -819,21 +830,21 @@ private:
   }
 
   void update_simple_modifications_manipulators(void) {
-    simple_modifications_manipulator_manager_.invalidate_manipulators();
+    simple_modifications_manipulator_manager_->invalidate_manipulators();
 
     for (const auto& device : profile_.get_devices()) {
       for (const auto& pair : device.get_simple_modifications().get_pairs()) {
         if (auto m = make_simple_modifications_manipulator(pair)) {
           auto c = make_device_if_condition(device);
           m->push_back_condition(c);
-          simple_modifications_manipulator_manager_.push_back_manipulator(m);
+          simple_modifications_manipulator_manager_->push_back_manipulator(m);
         }
       }
     }
 
     for (const auto& pair : profile_.get_simple_modifications().get_pairs()) {
       if (auto m = make_simple_modifications_manipulator(pair)) {
-        simple_modifications_manipulator_manager_.push_back_manipulator(m);
+        simple_modifications_manipulator_manager_->push_back_manipulator(m);
       }
     }
   }
@@ -870,7 +881,7 @@ private:
   }
 
   void update_complex_modifications_manipulators(void) {
-    complex_modifications_manipulator_manager_.invalidate_manipulators();
+    complex_modifications_manipulator_manager_->invalidate_manipulators();
 
     for (const auto& rule : profile_.get_complex_modifications().get_rules()) {
       for (const auto& manipulator : rule.get_manipulators()) {
@@ -881,13 +892,13 @@ private:
         for (const auto& c : manipulator.get_conditions()) {
           m->push_back_condition(manipulator::manipulator_factory::make_condition(c.get_json()));
         }
-        complex_modifications_manipulator_manager_.push_back_manipulator(m);
+        complex_modifications_manipulator_manager_->push_back_manipulator(m);
       }
     }
   }
 
   void update_fn_function_keys_manipulators(void) {
-    fn_function_keys_manipulator_manager_.invalidate_manipulators();
+    fn_function_keys_manipulator_manager_->invalidate_manipulators();
 
     auto from_mandatory_modifiers = nlohmann::json::array();
 
@@ -927,7 +938,7 @@ private:
                                                                          manipulator::details::to_event_definition(to_json),
                                                                          manipulator_dispatcher_,
                                                                          manipulator_timer_);
-        fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+        fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
     }
 
@@ -941,7 +952,7 @@ private:
                                                        to_modifiers)) {
           auto c = make_device_if_condition(device);
           m->push_back_condition(c);
-          fn_function_keys_manipulator_manager_.push_back_manipulator(m);
+          fn_function_keys_manipulator_manager_->push_back_manipulator(m);
         }
       }
     }
@@ -951,7 +962,7 @@ private:
                                                      from_mandatory_modifiers,
                                                      from_optional_modifiers,
                                                      to_modifiers)) {
-        fn_function_keys_manipulator_manager_.push_back_manipulator(m);
+        fn_function_keys_manipulator_manager_->push_back_manipulator(m);
       }
     }
 
@@ -1001,7 +1012,7 @@ private:
                                                                          manipulator::details::to_event_definition(to_json),
                                                                          manipulator_dispatcher_,
                                                                          manipulator_timer_);
-        fn_function_keys_manipulator_manager_.push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
+        fn_function_keys_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::details::base>(manipulator));
       }
     }
   }
@@ -1064,17 +1075,17 @@ private:
 
   std::shared_ptr<event_queue> merged_input_event_queue_;
 
-  manipulator::manipulator_manager simple_modifications_manipulator_manager_;
+  std::shared_ptr<manipulator::manipulator_manager> simple_modifications_manipulator_manager_;
   std::shared_ptr<event_queue> simple_modifications_applied_event_queue_;
 
-  manipulator::manipulator_manager complex_modifications_manipulator_manager_;
+  std::shared_ptr<manipulator::manipulator_manager> complex_modifications_manipulator_manager_;
   std::shared_ptr<event_queue> complex_modifications_applied_event_queue_;
 
-  manipulator::manipulator_manager fn_function_keys_manipulator_manager_;
+  std::shared_ptr<manipulator::manipulator_manager> fn_function_keys_manipulator_manager_;
   std::shared_ptr<event_queue> fn_function_keys_applied_event_queue_;
 
   std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
-  manipulator::manipulator_manager post_event_to_virtual_devices_manipulator_manager_;
+  std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue> posted_event_queue_;
 
   std::unique_ptr<thread_utility::timer> led_monitor_timer_;
