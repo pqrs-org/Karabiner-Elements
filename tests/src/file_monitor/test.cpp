@@ -23,7 +23,8 @@ public:
 
     file_monitor_ = std::make_unique<krbn::file_monitor>(targets);
 
-    file_monitor_->file_changed.connect([&](auto&& changed_file_path, auto&& weak_changed_file_body) {
+    file_monitor_->file_changed.connect([&](auto&& changed_file_path,
+                                            auto&& changed_file_body) {
       if (!file_monitor_thread_id_) {
         file_monitor_thread_id_ = std::this_thread::get_id();
       }
@@ -35,25 +36,25 @@ public:
       last_file_path_ = changed_file_path;
 
       if (changed_file_path == file_path_1_1) {
-        if (auto file_body = weak_changed_file_body.lock()) {
-          last_file_body1_1_ = std::string(std::begin(*file_body),
-                                           std::end(*file_body));
+        if (changed_file_body) {
+          last_file_body1_1_ = std::string(std::begin(*changed_file_body),
+                                           std::end(*changed_file_body));
         } else {
           last_file_body1_1_ = boost::none;
         }
       }
       if (changed_file_path == file_path_1_2) {
-        if (auto file_body = weak_changed_file_body.lock()) {
-          last_file_body1_2_ = std::string(std::begin(*file_body),
-                                           std::end(*file_body));
+        if (changed_file_body) {
+          last_file_body1_2_ = std::string(std::begin(*changed_file_body),
+                                           std::end(*changed_file_body));
         } else {
           last_file_body1_2_ = boost::none;
         }
       }
       if (changed_file_path == file_path_2_1) {
-        if (auto file_body = weak_changed_file_body.lock()) {
-          last_file_body2_1_ = std::string(std::begin(*file_body),
-                                           std::end(*file_body));
+        if (changed_file_body) {
+          last_file_body2_1_ = std::string(std::begin(*changed_file_body),
+                                           std::end(*changed_file_body));
         } else {
           last_file_body2_1_ = boost::none;
         }

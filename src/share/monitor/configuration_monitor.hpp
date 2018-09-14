@@ -25,7 +25,8 @@ public:
 
     file_monitor_ = std::make_unique<file_monitor>(targets);
 
-    file_monitor_->file_changed.connect([this, user_core_configuration_file_path, system_core_configuration_file_path](auto&& changed_file_path, auto&& weak_changed_file_body) {
+    file_monitor_->file_changed.connect([this, user_core_configuration_file_path, system_core_configuration_file_path](auto&& changed_file_path,
+                                                                                                                       auto&& changed_file_body) {
       auto file_path = changed_file_path;
 
       if (filesystem::exists(user_core_configuration_file_path)) {

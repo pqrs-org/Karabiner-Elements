@@ -23,7 +23,7 @@ public:
     file_monitor_ = std::make_unique<file_monitor>(targets);
 
     file_monitor_->file_changed.connect([this](auto&& changed_file_path,
-                                               auto&& file_body) {
+                                               auto&& changed_file_body) {
       if (filesystem::exists(changed_file_path)) {
         logger::get_logger().info("Load {0}...", changed_file_path);
       }

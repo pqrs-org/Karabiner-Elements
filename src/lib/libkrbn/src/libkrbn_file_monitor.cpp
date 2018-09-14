@@ -10,27 +10,27 @@ public:
 
   libkrbn_file_monitor_class(const char* file_path,
                              libkrbn_file_monitor_callback callback,
-                             void* refcon) : callback_(callback),
-                                             refcon_(refcon) {
+                             void* refcon) {
     if (file_path) {
-      auto directory = krbn::filesystem::dirname(file_path);
-
-      std::vector<std::pair<std::string, std::vector<std::string>>> targets = {
-          {directory, {file_path}},
+      std::vector<std::string> targets = {
+          file_path,
       };
-      file_monitor_ = std::make_unique<krbn::file_monitor>(targets,
-                                                           [this](const std::string&) {
-                                                             if (callback_) {
-                                                               callback_(refcon_);
-                                                             }
-                                                           });
+      file_monitor_ = std::make_unique<krbn::file_monitor>(targets);
+
+      file_monitor_->file_changed.connect([this, callback, refcon](auto&& changed_file_path,
+                                                                   auto&& changed_file_body) {
+        if (callback) {
+          callback(refcon);
+        }
+      });
     }
   }
 
-private:
-  libkrbn_file_monitor_callback callback_;
-  void* refcon_;
+  ~libkrbn_file_monitor_class(void) {
+    file_monitor_ = nullptr;
+  }
 
+private:
   std::unique_ptr<krbn::file_monitor> file_monitor_;
 };
 } // namespace

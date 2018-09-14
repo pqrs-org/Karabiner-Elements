@@ -32,27 +32,26 @@ public:
 
     file_monitor_ = std::make_unique<file_monitor>(targets);
 
-    file_monitor_->file_changed.connect([this](auto&& changed_file_path, auto&& weak_changed_file_body) {
-      if (auto changed_file_body = weak_changed_file_body.lock()) {
-        if (changed_file_body) {
-          if (version_) {
-            if (*version_ == *changed_file_body) {
-              return;
-            }
-          } else if (!version_ && !changed_file_body) {
+    file_monitor_->file_changed.connect([this](auto&& changed_file_path,
+                                               auto&& changed_file_body) {
+      if (changed_file_body) {
+        if (version_) {
+          if (*version_ == *changed_file_body) {
             return;
           }
-
-          std::string version_string(std::begin(*changed_file_body),
-                                     std::end(*changed_file_body));
-          boost::trim(version_string);
-
-          logger::get_logger().info("Version is changed to {0}", version_string);
-
-          version_ = changed_file_body;
-
-          changed(version_string);
+        } else if (!version_ && !changed_file_body) {
+          return;
         }
+
+        std::string version_string(std::begin(*changed_file_body),
+                                   std::end(*changed_file_body));
+        boost::trim(version_string);
+
+        logger::get_logger().info("Version is changed to {0}", version_string);
+
+        version_ = changed_file_body;
+
+        changed(version_string);
       }
     });
   }
