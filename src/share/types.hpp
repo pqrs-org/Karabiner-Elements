@@ -2061,7 +2061,7 @@ struct operation_type_select_input_source_struct {
 
 // stream output
 
-std::ostream& operator<<(std::ostream& stream, const absolute_time& value) {
+inline std::ostream& operator<<(std::ostream& stream, const absolute_time& value) {
   return stream << type_safe::get(value);
 }
 
