@@ -1,98 +1,122 @@
 #pragma once
 
+// `krbn::manipulator::manipulator_managers_connector` can be used safely in a multi-threaded environment.
+
 #include "event_queue.hpp"
 #include "logger.hpp"
 #include "manipulator/manipulator_manager.hpp"
+#include <mutex>
 
 namespace krbn {
 namespace manipulator {
 class manipulator_managers_connector final {
 public:
   class connection final {
+    friend class manipulator_managers_connector;
+
   public:
-    connection(manipulator_manager& manipulator_manager,
-               const std::shared_ptr<event_queue>& input_event_queue,
-               const std::shared_ptr<event_queue>& output_event_queue) : manipulator_manager_(manipulator_manager),
-                                                                         input_event_queue_(input_event_queue),
-                                                                         output_event_queue_(output_event_queue) {
+    connection(std::weak_ptr<manipulator_manager> weak_manipulator_manager,
+               std::weak_ptr<event_queue> weak_input_event_queue,
+               std::weak_ptr<event_queue> weak_output_event_queue) : weak_manipulator_manager_(weak_manipulator_manager),
+                                                                     weak_input_event_queue_(weak_input_event_queue),
+                                                                     weak_output_event_queue_(weak_output_event_queue) {
     }
 
-    void manipulate(absolute_time now) {
-      manipulator_manager_.manipulate(input_event_queue_.lock(),
-                                      output_event_queue_.lock(),
-                                      now);
+  private:
+    std::weak_ptr<event_queue> get_weak_output_event_queue(void) const {
+      return weak_output_event_queue_;
     }
 
-    void invalidate_manipulators(void) {
-      manipulator_manager_.invalidate_manipulators();
+    void manipulate(absolute_time now) const {
+      if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
+        manipulator_manager->manipulate(weak_input_event_queue_,
+                                        weak_output_event_queue_,
+                                        now);
+      }
+    }
+
+    void invalidate_manipulators(void) const {
+      if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
+        manipulator_manager->invalidate_manipulators();
+      }
     }
 
     bool needs_virtual_hid_pointing(void) const {
-      return manipulator_manager_.needs_virtual_hid_pointing();
+      if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
+        return manipulator_manager->needs_virtual_hid_pointing();
+      }
+      return false;
     }
 
     boost::optional<absolute_time> make_input_event_time_stamp_with_input_delay(void) const {
-      if (auto ieq = input_event_queue_.lock()) {
-        if (!ieq->get_events().empty()) {
-          return ieq->get_events().front().get_event_time_stamp().make_time_stamp_with_input_delay();
+      if (auto input_event_queue = weak_input_event_queue_.lock()) {
+        if (!input_event_queue->get_events().empty()) {
+          return input_event_queue->get_events().front().get_event_time_stamp().make_time_stamp_with_input_delay();
         }
       }
       return boost::none;
     }
 
     void log_events_sizes(void) const {
-      if (auto ieq = input_event_queue_.lock()) {
-        if (auto oeq = output_event_queue_.lock()) {
+      if (auto input_event_queue = weak_input_event_queue_.lock()) {
+        if (auto output_event_queue = weak_output_event_queue_.lock()) {
           logger::get_logger().info("connection events sizes: {0} -> {1}",
-                                    ieq->get_events().size(),
-                                    oeq->get_events().size());
+                                    input_event_queue->get_events().size(),
+                                    output_event_queue->get_events().size());
         }
       }
     }
 
-  private:
-    manipulator_manager& manipulator_manager_;
-    std::weak_ptr<event_queue> input_event_queue_;
-    std::weak_ptr<event_queue> output_event_queue_;
+    std::weak_ptr<manipulator_manager> weak_manipulator_manager_;
+    std::weak_ptr<event_queue> weak_input_event_queue_;
+    std::weak_ptr<event_queue> weak_output_event_queue_;
   };
 
   manipulator_managers_connector(void) {
   }
 
-  void emplace_back_connection(manipulator_manager& manipulator_manager,
-                               const std::shared_ptr<event_queue>& input_event_queue,
-                               const std::shared_ptr<event_queue>& output_event_queue) {
-    connections_.emplace_back(manipulator_manager,
-                              input_event_queue,
-                              output_event_queue);
-    last_output_event_queue_ = output_event_queue;
+  void emplace_back_connection(std::weak_ptr<manipulator_manager> weak_manipulator_manager,
+                               std::weak_ptr<event_queue> weak_input_event_queue,
+                               std::weak_ptr<event_queue> weak_output_event_queue) {
+    std::lock_guard<std::mutex> lock(connections_mutex_);
+
+    connections_.emplace_back(weak_manipulator_manager,
+                              weak_input_event_queue,
+                              weak_output_event_queue);
   }
 
-  void emplace_back_connection(manipulator_manager& manipulator_manager,
-                               const std::shared_ptr<event_queue>& output_event_queue) {
-    if (auto ieq = last_output_event_queue_.lock()) {
-      connections_.emplace_back(manipulator_manager,
-                                ieq,
-                                output_event_queue);
-      last_output_event_queue_ = output_event_queue;
-    } else {
-      throw std::runtime_error("last_output_event_queue_ is invalid");
+  void emplace_back_connection(std::weak_ptr<manipulator_manager> weak_manipulator_manager,
+                               std::weak_ptr<event_queue> weak_output_event_queue) {
+    std::lock_guard<std::mutex> lock(connections_mutex_);
+
+    if (connections_.empty()) {
+      throw std::runtime_error("manipulator_managers_connector::connections_ is empty");
     }
+
+    connections_.emplace_back(weak_manipulator_manager,
+                              connections_.back().get_weak_output_event_queue(),
+                              weak_output_event_queue);
   }
 
-  void manipulate(absolute_time now) {
+  void manipulate(absolute_time now) const {
+    std::lock_guard<std::mutex> lock(connections_mutex_);
+
     for (auto&& c : connections_) {
       c.manipulate(now);
     }
   }
 
-  void invalidate_manipulators(void) {
+  void invalidate_manipulators(void) const {
+    std::lock_guard<std::mutex> lock(connections_mutex_);
+
     for (auto&& c : connections_) {
       c.invalidate_manipulators();
     }
   }
 
   bool needs_virtual_hid_pointing(void) const {
+    std::lock_guard<std::mutex> lock(connections_mutex_);
+
     return std::any_of(std::begin(connections_),
                        std::end(connections_),
                        [](auto& c) {
@@ -101,6 +125,8 @@ public:
   }
 
   boost::optional<absolute_time> min_input_event_time_stamp(void) const {
+    std::lock_guard<std::mutex> lock(connections_mutex_);
+
     boost::optional<absolute_time> result;
 
     for (const auto& c : connections_) {
@@ -115,6 +141,8 @@ public:
   }
 
   void log_events_sizes(void) const {
+    std::lock_guard<std::mutex> lock(connections_mutex_);
+
     for (auto&& c : connections_) {
       c.log_events_sizes();
     }
@@ -122,7 +150,7 @@ public:
 
 private:
   std::vector<connection> connections_;
-  std::weak_ptr<event_queue> last_output_event_queue_;
+  mutable std::mutex connections_mutex_;
 };
 } // namespace manipulator
 } // namespace krbn

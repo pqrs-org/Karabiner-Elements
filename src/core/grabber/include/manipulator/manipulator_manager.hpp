@@ -28,104 +28,105 @@ public:
     manipulators_.push_back(ptr);
   }
 
-  void manipulate(const std::shared_ptr<event_queue>& input_event_queue,
-                  const std::shared_ptr<event_queue>& output_event_queue,
+  void manipulate(std::weak_ptr<event_queue> weak_input_event_queue,
+                  std::weak_ptr<event_queue> weak_output_event_queue,
                   absolute_time now) {
-    if (input_event_queue &&
-        output_event_queue) {
-      while (!input_event_queue->empty()) {
-        auto& front_input_event = input_event_queue->get_front_event();
+    if (auto input_event_queue = weak_input_event_queue.lock()) {
+      if (auto output_event_queue = weak_output_event_queue.lock()) {
+        while (!input_event_queue->empty()) {
+          auto& front_input_event = input_event_queue->get_front_event();
 
-        switch (front_input_event.get_event().get_type()) {
-          case event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
-            output_event_queue->erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());
-            output_event_queue->erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
+          switch (front_input_event.get_event().get_type()) {
+            case event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
+              output_event_queue->erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());
+              output_event_queue->erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
 
-            for (auto&& m : manipulators_) {
-              m->handle_device_keys_and_pointing_buttons_are_released_event(front_input_event,
-                                                                            *output_event_queue);
-            }
-            break;
-
-          case event_queue::queued_event::event::type::device_ungrabbed:
-            // Reset modifier_flags and pointing_buttons before `handle_device_ungrabbed_event`
-            // in order to send key_up events in `post_event_to_virtual_devices::handle_device_ungrabbed_event`.
-            output_event_queue->erase_all_active_modifier_flags(front_input_event.get_device_id());
-            output_event_queue->erase_all_active_pointing_buttons(front_input_event.get_device_id());
-            for (auto&& m : manipulators_) {
-              m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
-                                               *output_event_queue,
-                                               front_input_event.get_event_time_stamp().get_time_stamp());
-            }
-            break;
-
-          case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
-            for (auto&& m : manipulators_) {
-              m->handle_pointing_device_event_from_event_tap(front_input_event,
-                                                             *output_event_queue);
-            }
-            break;
-
-          case event_queue::queued_event::event::type::none:
-          case event_queue::queued_event::event::type::caps_lock_state_changed:
-          case event_queue::queued_event::event::type::frontmost_application_changed:
-          case event_queue::queued_event::event::type::input_source_changed:
-          case event_queue::queued_event::event::type::keyboard_type_changed:
-          case event_queue::queued_event::event::type::set_variable:
-            // Do nothing
-            break;
-
-          case event_queue::queued_event::event::type::key_code:
-          case event_queue::queued_event::event::type::consumer_key_code:
-          case event_queue::queued_event::event::type::pointing_button:
-          case event_queue::queued_event::event::type::pointing_motion:
-          case event_queue::queued_event::event::type::shell_command:
-          case event_queue::queued_event::event::type::select_input_source:
-          case event_queue::queued_event::event::type::mouse_key:
-          case event_queue::queued_event::event::type::stop_keyboard_repeat: {
-            bool skip = false;
-
-            if (front_input_event.get_valid()) {
               for (auto&& m : manipulators_) {
-                if (m->already_manipulated(front_input_event)) {
-                  front_input_event.set_valid(false);
-                  skip = true;
-                  break;
-                }
+                m->handle_device_keys_and_pointing_buttons_are_released_event(front_input_event,
+                                                                              *output_event_queue);
               }
-            }
+              break;
 
-            if (!skip) {
+            case event_queue::queued_event::event::type::device_ungrabbed:
+              // Reset modifier_flags and pointing_buttons before `handle_device_ungrabbed_event`
+              // in order to send key_up events in `post_event_to_virtual_devices::handle_device_ungrabbed_event`.
+              output_event_queue->erase_all_active_modifier_flags(front_input_event.get_device_id());
+              output_event_queue->erase_all_active_pointing_buttons(front_input_event.get_device_id());
               for (auto&& m : manipulators_) {
-                auto r = m->manipulate(front_input_event,
-                                       *input_event_queue,
-                                       output_event_queue,
-                                       now);
+                m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
+                                                 *output_event_queue,
+                                                 front_input_event.get_event_time_stamp().get_time_stamp());
+              }
+              break;
 
-                switch (r) {
-                  case details::manipulate_result::passed:
-                  case details::manipulate_result::manipulated:
-                    // Do nothing
+            case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
+              for (auto&& m : manipulators_) {
+                m->handle_pointing_device_event_from_event_tap(front_input_event,
+                                                               *output_event_queue);
+              }
+              break;
+
+            case event_queue::queued_event::event::type::none:
+            case event_queue::queued_event::event::type::caps_lock_state_changed:
+            case event_queue::queued_event::event::type::frontmost_application_changed:
+            case event_queue::queued_event::event::type::input_source_changed:
+            case event_queue::queued_event::event::type::keyboard_type_changed:
+            case event_queue::queued_event::event::type::set_variable:
+              // Do nothing
+              break;
+
+            case event_queue::queued_event::event::type::key_code:
+            case event_queue::queued_event::event::type::consumer_key_code:
+            case event_queue::queued_event::event::type::pointing_button:
+            case event_queue::queued_event::event::type::pointing_motion:
+            case event_queue::queued_event::event::type::shell_command:
+            case event_queue::queued_event::event::type::select_input_source:
+            case event_queue::queued_event::event::type::mouse_key:
+            case event_queue::queued_event::event::type::stop_keyboard_repeat: {
+              bool skip = false;
+
+              if (front_input_event.get_valid()) {
+                for (auto&& m : manipulators_) {
+                  if (m->already_manipulated(front_input_event)) {
+                    front_input_event.set_valid(false);
+                    skip = true;
                     break;
-
-                  case details::manipulate_result::needs_wait_until_time_stamp:
-                    goto finish;
+                  }
                 }
               }
+
+              if (!skip) {
+                for (auto&& m : manipulators_) {
+                  auto r = m->manipulate(front_input_event,
+                                         *input_event_queue,
+                                         output_event_queue,
+                                         now);
+
+                  switch (r) {
+                    case details::manipulate_result::passed:
+                    case details::manipulate_result::manipulated:
+                      // Do nothing
+                      break;
+
+                    case details::manipulate_result::needs_wait_until_time_stamp:
+                      goto finish;
+                  }
+                }
+              }
+              break;
             }
-            break;
           }
+
+          if (input_event_queue->get_front_event().get_valid()) {
+            output_event_queue->push_back_event(input_event_queue->get_front_event());
+          }
+
+          input_event_queue->erase_front_event();
         }
 
-        if (input_event_queue->get_front_event().get_valid()) {
-          output_event_queue->push_back_event(input_event_queue->get_front_event());
-        }
-
-        input_event_queue->erase_front_event();
+      finish:
+        remove_invalid_manipulators();
       }
-
-    finish:
-      remove_invalid_manipulators();
     }
   }
 

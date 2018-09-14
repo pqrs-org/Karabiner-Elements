@@ -111,7 +111,10 @@ TEST_CASE("min_input_event_time_stamp") {
 
   krbn::manipulator::manipulator_managers_connector connector;
 
-  std::vector<krbn::manipulator::manipulator_manager> manipulator_managers(event_queues.size() - 1);
+  std::vector<std::shared_ptr<krbn::manipulator::manipulator_manager>> manipulator_managers;
+  for (size_t i = 0; i < event_queues.size() - 1; ++i) {
+    manipulator_managers.push_back(std::make_shared<krbn::manipulator::manipulator_manager>());
+  }
 
   for (size_t i = 0; i < manipulator_managers.size(); ++i) {
     connector.emplace_back_connection(manipulator_managers[i],
@@ -156,6 +159,9 @@ TEST_CASE("min_input_event_time_stamp") {
                                       krbn::event_queue::queued_event::event(krbn::key_code::a));
 
   REQUIRE(connector.min_input_event_time_stamp() == krbn::absolute_time(3000));
+
+  // ----------------------------------------
+  manipulator_managers.clear();
 }
 
 TEST_CASE("needs_virtual_hid_pointing") {
@@ -168,26 +174,30 @@ TEST_CASE("needs_virtual_hid_pointing") {
        }) {
     std::ifstream json_file(file_name);
     auto json = nlohmann::json::parse(json_file);
-    krbn::manipulator::manipulator_manager manager;
+    auto manager = std::make_shared<krbn::manipulator::manipulator_manager>();
+    auto manipulator_dispatcher = std::make_shared<krbn::manipulator::manipulator_dispatcher>();
+    auto manipulator_timer = std::make_shared<krbn::manipulator::manipulator_timer>();
     for (const auto& j : json) {
       krbn::core_configuration::profile::complex_modifications::parameters parameters;
-      auto manipulator_dispatcher = std::make_shared<krbn::manipulator::manipulator_dispatcher>();
-      auto manipulator_timer = std::make_shared<krbn::manipulator::manipulator_timer>();
       auto m = krbn::manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters,
                                                                         manipulator_dispatcher,
                                                                         manipulator_timer);
-      manager.push_back_manipulator(m);
+      manager->push_back_manipulator(m);
     }
 
     if (file_name == "json/needs_virtual_hid_pointing_test1.json") {
-      REQUIRE(!manager.needs_virtual_hid_pointing());
+      REQUIRE(!manager->needs_virtual_hid_pointing());
     }
     if (file_name == "json/needs_virtual_hid_pointing_test2.json" ||
         file_name == "json/needs_virtual_hid_pointing_test3.json" ||
         file_name == "json/needs_virtual_hid_pointing_test4.json" ||
         file_name == "json/needs_virtual_hid_pointing_test5.json") {
-      REQUIRE(manager.needs_virtual_hid_pointing());
+      REQUIRE(manager->needs_virtual_hid_pointing());
     }
+
+    manager = nullptr;
+    manipulator_dispatcher = nullptr;
+    manipulator_timer = nullptr;
   }
 }

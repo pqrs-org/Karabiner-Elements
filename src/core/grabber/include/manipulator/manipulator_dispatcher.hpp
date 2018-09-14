@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::manipulator_dispatcher` can be used safely in a multi-threaded environment.
+// `krbn::manipulator::manipulator_dispatcher` can be used safely in a multi-threaded environment.
 
 #include "manipulator_object_id.hpp"
 #include "thread_utility.hpp"

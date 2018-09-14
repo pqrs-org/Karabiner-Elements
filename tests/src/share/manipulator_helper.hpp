@@ -25,7 +25,7 @@ public:
       auto manipulator_timer = std::make_shared<manipulator::manipulator_timer>(false);
       auto manipulator_object_id = manipulator::make_new_manipulator_object_id();
       manipulator::manipulator_managers_connector connector;
-      std::vector<std::unique_ptr<manipulator::manipulator_manager>> manipulator_managers;
+      std::vector<std::shared_ptr<manipulator::manipulator_manager>> manipulator_managers;
       std::vector<std::shared_ptr<event_queue>> event_queues;
       std::shared_ptr<krbn::manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator;
 
@@ -34,7 +34,7 @@ public:
 
       core_configuration::profile::complex_modifications::parameters parameters;
       for (const auto& rule : test["rules"]) {
-        manipulator_managers.push_back(std::make_unique<manipulator::manipulator_manager>());
+        manipulator_managers.push_back(std::make_shared<manipulator::manipulator_manager>());
 
         {
           std::ifstream ifs(rule.get<std::string>());
@@ -58,12 +58,12 @@ public:
         if (event_queues.empty()) {
           event_queues.push_back(std::make_shared<event_queue>());
           event_queues.push_back(std::make_shared<event_queue>());
-          connector.emplace_back_connection(*(manipulator_managers.back()),
+          connector.emplace_back_connection(manipulator_managers.back(),
                                             event_queues[0],
                                             event_queues[1]);
         } else {
           event_queues.push_back(std::make_shared<event_queue>());
-          connector.emplace_back_connection(*(manipulator_managers.back()),
+          connector.emplace_back_connection(manipulator_managers.back(),
                                             event_queues.back());
         }
       }
@@ -78,7 +78,7 @@ public:
         manipulator_managers.back()->push_back_manipulator(post_event_to_virtual_devices_manipulator);
 
         event_queues.push_back(std::make_shared<event_queue>());
-        connector.emplace_back_connection(*(manipulator_managers.back()),
+        connector.emplace_back_connection(manipulator_managers.back(),
                                           event_queues.back());
       }
 
@@ -182,6 +182,8 @@ public:
 
       manipulator_dispatcher->detach(manipulator_object_id);
       manipulator_timer->detach(manipulator_object_id);
+
+      manipulator_managers.clear();
 
       manipulator_dispatcher = nullptr;
       manipulator_timer = nullptr;
