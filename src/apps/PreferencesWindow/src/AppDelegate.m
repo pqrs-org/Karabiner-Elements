@@ -39,8 +39,6 @@
   [self.preferencesWindowController setup];
 
   [self.alertWindowController setup];
-
-  libkrbn_check_for_updates_on_startup();
 }
 
 - (void)handleGetURLEvent:(NSAppleEventDescriptor*)event withReplyEvent:(NSAppleEventDescriptor*)replyEvent {
