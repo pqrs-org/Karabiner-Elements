@@ -10,7 +10,9 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
+  auto manipulator_object_id = krbn::manipulator::make_new_manipulator_object_id();
   auto manipulator_timer = std::make_unique<krbn::manipulator::manipulator_timer>();
+  manipulator_timer->async_attach(manipulator_object_id);
 
   for (int i = -10; i <= 10; ++i) {
     auto now = krbn::time_utility::mach_absolute_time();
@@ -19,6 +21,7 @@ int main(int argc, const char* argv[]) {
     auto when = krbn::time_utility::to_absolute_time(when_ms);
 
     manipulator_timer->enqueue(
+        manipulator_object_id,
         [i, when] {
           krbn::logger::get_logger().info("i:{0} when:{1}",
                                           i,
@@ -34,6 +37,7 @@ int main(int argc, const char* argv[]) {
 
   CFRunLoopRun();
 
+  manipulator_timer->detach(manipulator_object_id);
   manipulator_timer = nullptr;
 
   return 0;
