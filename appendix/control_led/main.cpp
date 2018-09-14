@@ -21,8 +21,10 @@ public:
           }
         });
 
-        hid->open_failed.connect([](auto&& error_code) {
-          krbn::logger::get_logger().error("failed to open");
+        hid->open_failed.connect([weak_hid](auto&& error_code) {
+          if (auto hid = weak_hid.lock()) {
+            krbn::logger::get_logger().error("failed to open {0}", hid->get_name_for_log());
+          }
         });
 
         hid->async_open();
