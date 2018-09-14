@@ -30,9 +30,13 @@ public:
                                 std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher,
                                 std::weak_ptr<manipulator_timer> weak_manipulator_timer,
                                 std::weak_ptr<console_user_server_client> weak_console_user_server_client) : base(),
+                                                                                                             weak_manipulator_dispatcher_(weak_manipulator_dispatcher),
                                                                                                              weak_console_user_server_client_(weak_console_user_server_client),
+                                                                                                             manipulator_object_id_(make_new_manipulator_object_id()),
                                                                                                              queue_() {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
+      manipulator_dispatcher->async_attach(manipulator_object_id_);
+    }
 
     mouse_key_handler_ = std::make_unique<post_event_to_virtual_devices_detail::mouse_key_handler>(
         queue_,
@@ -42,12 +46,15 @@ public:
   }
 
   virtual ~post_event_to_virtual_devices(void) {
-    dispatcher_->enqueue([this] {
-      mouse_key_handler_ = nullptr;
-    });
+    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
+      manipulator_dispatcher->enqueue(
+          manipulator_object_id_,
+          [this] {
+            mouse_key_handler_ = nullptr;
+          });
 
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
+      manipulator_dispatcher->detach(manipulator_object_id_);
+    }
   }
 
   virtual bool already_manipulated(const event_queue::queued_event& front_input_event) {
@@ -376,10 +383,14 @@ public:
   }
 
   void async_post_events(std::weak_ptr<virtual_hid_device_client> weak_virtual_hid_device_client) {
-    dispatcher_->enqueue([this, weak_virtual_hid_device_client] {
-      queue_.async_post_events(weak_virtual_hid_device_client,
-                               weak_console_user_server_client_);
-    });
+    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
+      manipulator_dispatcher->enqueue(
+          manipulator_object_id_,
+          [this, weak_virtual_hid_device_client] {
+            queue_.async_post_events(weak_virtual_hid_device_client,
+                                     weak_console_user_server_client_);
+          });
+    }
   }
 
   const post_event_to_virtual_devices_detail::queue& get_queue(void) const {
@@ -395,9 +406,10 @@ public:
   }
 
 private:
+  std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher_;
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
 
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
+  manipulator_object_id manipulator_object_id_;
   post_event_to_virtual_devices_detail::queue queue_;
   post_event_to_virtual_devices_detail::key_event_dispatcher key_event_dispatcher_;
   std::unique_ptr<post_event_to_virtual_devices_detail::mouse_key_handler> mouse_key_handler_;

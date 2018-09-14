@@ -18,13 +18,21 @@ public:
                              const core_configuration::profile::complex_modifications::parameters& parameters,
                              std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher,
                              std::weak_ptr<manipulator_timer> weak_manipulator_timer) {
-    manipulators_.push_back(manipulator_factory::make_manipulator(json,
-                                                                  parameters,
-                                                                  weak_manipulator_dispatcher,
-                                                                  weak_manipulator_timer));
+    auto m = manipulator_factory::make_manipulator(json,
+                                                   parameters,
+                                                   weak_manipulator_dispatcher,
+                                                   weak_manipulator_timer);
+
+    {
+      std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
+      manipulators_.push_back(m);
+    }
   }
 
   void push_back_manipulator(std::shared_ptr<details::base> ptr) {
+    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
     manipulators_.push_back(ptr);
   }
 
@@ -41,9 +49,13 @@ public:
               output_event_queue->erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());
               output_event_queue->erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
 
-              for (auto&& m : manipulators_) {
-                m->handle_device_keys_and_pointing_buttons_are_released_event(front_input_event,
-                                                                              *output_event_queue);
+              {
+                std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
+                for (auto&& m : manipulators_) {
+                  m->handle_device_keys_and_pointing_buttons_are_released_event(front_input_event,
+                                                                                *output_event_queue);
+                }
               }
               break;
 
@@ -52,19 +64,26 @@ public:
               // in order to send key_up events in `post_event_to_virtual_devices::handle_device_ungrabbed_event`.
               output_event_queue->erase_all_active_modifier_flags(front_input_event.get_device_id());
               output_event_queue->erase_all_active_pointing_buttons(front_input_event.get_device_id());
-              for (auto&& m : manipulators_) {
-                m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
-                                                 *output_event_queue,
-                                                 front_input_event.get_event_time_stamp().get_time_stamp());
+
+              {
+                std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
+                for (auto&& m : manipulators_) {
+                  m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
+                                                   *output_event_queue,
+                                                   front_input_event.get_event_time_stamp().get_time_stamp());
+                }
               }
               break;
 
-            case event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
+            case event_queue::queued_event::event::type::pointing_device_event_from_event_tap: {
+              std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
               for (auto&& m : manipulators_) {
                 m->handle_pointing_device_event_from_event_tap(front_input_event,
                                                                *output_event_queue);
               }
-              break;
+            } break;
 
             case event_queue::queued_event::event::type::none:
             case event_queue::queued_event::event::type::caps_lock_state_changed:
@@ -86,6 +105,8 @@ public:
               bool skip = false;
 
               if (front_input_event.get_valid()) {
+                std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
                 for (auto&& m : manipulators_) {
                   if (m->already_manipulated(front_input_event)) {
                     front_input_event.set_valid(false);
@@ -96,6 +117,8 @@ public:
               }
 
               if (!skip) {
+                std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
                 for (auto&& m : manipulators_) {
                   auto r = m->manipulate(front_input_event,
                                          *input_event_queue,
@@ -131,18 +154,26 @@ public:
   }
 
   void invalidate_manipulators(void) {
-    for (auto&& m : manipulators_) {
-      m->set_valid(false);
+    {
+      std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
+      for (auto&& m : manipulators_) {
+        m->set_valid(false);
+      }
     }
 
     remove_invalid_manipulators();
   }
 
   size_t get_manipulators_size(void) {
+    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
     return manipulators_.size();
   }
 
   bool needs_virtual_hid_pointing(void) const {
+    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
     return std::any_of(std::begin(manipulators_),
                        std::end(manipulators_),
                        [](auto& m) {
@@ -152,6 +183,8 @@ public:
 
 private:
   void remove_invalid_manipulators(void) {
+    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
     manipulators_.erase(std::remove_if(std::begin(manipulators_),
                                        std::end(manipulators_),
                                        [](const auto& it) {
@@ -162,6 +195,7 @@ private:
   }
 
   std::vector<std::shared_ptr<details::base>> manipulators_;
+  mutable std::mutex manipulators_mutex_;
 };
 } // namespace manipulator
 } // namespace krbn
