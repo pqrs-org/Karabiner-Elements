@@ -11,8 +11,8 @@ TEST_CASE("initialize") {
 TEST_CASE("manipulator_dispatcher") {
   std::cout << "manipulator_dispatcher" << std::endl;
 
-  auto manipulator_dispatcher = std::make_unique<krbn::manipulator::manipulator_dispatcher>();
   auto manipulator_object_id = krbn::manipulator::make_new_manipulator_object_id();
+  auto manipulator_dispatcher = std::make_unique<krbn::manipulator::manipulator_dispatcher>();
   std::vector<int> result;
 
   manipulator_dispatcher->async_attach(manipulator_object_id);
@@ -46,12 +46,32 @@ TEST_CASE("manipulator_dispatcher") {
 
   // Ignored after `detach`
 
-  manipulator_dispatcher->enqueue(manipulator_object_id, [&] {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    result.push_back(6);
-  });
+  manipulator_dispatcher->enqueue(
+      manipulator_object_id,
+      [&] {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        result.push_back(6);
+      });
 
   manipulator_dispatcher = nullptr;
 
   REQUIRE(result.size() == 5);
+}
+
+TEST_CASE("manipulator_dispatcher.detach") {
+  auto manipulator_object_id = krbn::manipulator::make_new_manipulator_object_id();
+  auto manipulator_dispatcher = std::make_unique<krbn::manipulator::manipulator_dispatcher>();
+
+  manipulator_dispatcher->async_attach(manipulator_object_id);
+
+  krbn::thread_utility::wait wait;
+
+  manipulator_dispatcher->enqueue(
+      manipulator_object_id,
+      [&] {
+        manipulator_dispatcher->detach(manipulator_object_id);
+        wait.notify();
+      });
+
+  wait.wait_notice();
 }
