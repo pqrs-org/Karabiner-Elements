@@ -4,6 +4,8 @@
 #include "krbn_notification_center.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
+#include "manipulator/manipulator_dispatcher.hpp"
+#include "manipulator/manipulator_timer.hpp"
 #include "time_utility.hpp"
 #include <json/json.hpp>
 #include <unordered_set>
