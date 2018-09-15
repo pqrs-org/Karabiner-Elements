@@ -87,12 +87,13 @@ TEST_CASE("grabbable_state_queues_manager") {
     }
 
     // `update_grabbable_state`
-    for (auto time_stamp = 1000ULL; time_stamp < 10000ULL; time_stamp += 1000ULL) {
+    for (krbn::absolute_time time_stamp(1000); time_stamp < krbn::absolute_time(10000); time_stamp += krbn::absolute_time(1000)) {
       krbn::grabbable_state state(registry_entry_id1,
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                   time_stamp);
       REQUIRE(manager.update_grabbable_state(state));
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
       REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == time_stamp);
       REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
     }
@@ -102,7 +103,7 @@ TEST_CASE("grabbable_state_queues_manager") {
       krbn::grabbable_state state(registry_entry_id1,
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                  1000ULL);
+                                  krbn::absolute_time(1000));
       REQUIRE(last_changed_grabbable_states[registry_entry_id1] == state);
       REQUIRE(changed_counts[registry_entry_id1] == 1);
 
@@ -114,12 +115,12 @@ TEST_CASE("grabbable_state_queues_manager") {
     {
       krbn::event_queue event_queue;
       event_queue.emplace_back_event(device_id1,
-                                     krbn::event_queue::queued_event::event_time_stamp(5000),
+                                     krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(5000)),
                                      krbn::event_queue::queued_event::event(krbn::key_code::a),
                                      krbn::event_type::key_down,
                                      krbn::event_queue::queued_event::event(krbn::key_code::a));
       REQUIRE(manager.update_first_grabbed_event_time_stamp(event_queue));
-      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == 4000ULL);
+      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
       REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
     }
 
@@ -128,9 +129,10 @@ TEST_CASE("grabbable_state_queues_manager") {
       krbn::grabbable_state state(registry_entry_id1,
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                  6000ULL);
+                                  krbn::absolute_time(6000));
       REQUIRE(!manager.update_grabbable_state(state));
-      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == 4000ULL);
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
       REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
     }
 
@@ -138,12 +140,12 @@ TEST_CASE("grabbable_state_queues_manager") {
     {
       krbn::event_queue event_queue;
       event_queue.emplace_back_event(device_id1,
-                                     krbn::event_queue::queued_event::event_time_stamp(4000),
+                                     krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(4000)),
                                      krbn::event_queue::queued_event::event(krbn::key_code::a),
                                      krbn::event_type::key_down,
                                      krbn::event_queue::queued_event::event(krbn::key_code::a));
       REQUIRE(!manager.update_first_grabbed_event_time_stamp(event_queue));
-      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == 4000ULL);
+      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
       REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
     }
   }
