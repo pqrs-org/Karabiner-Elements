@@ -32,15 +32,20 @@ public:
   }
 
   void detach(manipulator_object_id id) {
-    thread_utility::wait wait;
-
-    dispatcher_->enqueue([this, id, &wait] {
+    if (dispatcher_->is_worker_thread()) {
       manipulator_object_ids_.erase(id);
 
-      wait.notify();
-    });
+    } else {
+      thread_utility::wait wait;
 
-    wait.wait_notice();
+      dispatcher_->enqueue([this, id, &wait] {
+        detach(id);
+
+        wait.notify();
+      });
+
+      wait.wait_notice();
+    }
   }
 
   void enqueue(manipulator_object_id id,
