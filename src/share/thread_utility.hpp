@@ -139,7 +139,12 @@ public:
   class dispatcher final {
   public:
     dispatcher(void) : exit_(false) {
-      worker_thread_ = std::thread([this] {
+      wait w;
+
+      worker_thread_ = std::thread([this, &w] {
+        worker_thread_id_ = std::this_thread::get_id();
+        w.notify();
+
         while (true) {
           std::function<void(void)> function;
 
@@ -164,6 +169,8 @@ public:
           }
         }
       });
+
+      w.wait_notice();
     }
 
     ~dispatcher(void) {
@@ -171,6 +178,10 @@ public:
         logger::get_logger().error("Call `thread_utility::dispatcher::terminate` before destroy `thread_utility::dispatcher`");
         terminate();
       }
+    }
+
+    bool is_worker_thread(void) const {
+      return std::this_thread::get_id() == worker_thread_id_;
     }
 
     void terminate(void) {
@@ -210,6 +221,7 @@ public:
 
   private:
     std::thread worker_thread_;
+    std::thread::id worker_thread_id_;
     std::atomic<bool> exit_;
 
     std::queue<std::function<void(void)>> queue_;

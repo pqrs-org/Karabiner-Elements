@@ -261,12 +261,16 @@ TEST_CASE("dispatcher") {
 
     krbn::thread_utility::dispatcher dispatcher;
 
+    REQUIRE(dispatcher.is_worker_thread() == false);
+
     for (int i = 0; i < 10000; ++i) {
-      dispatcher.enqueue([&count, i] {
+      dispatcher.enqueue([&dispatcher, &count, i] {
         ++count;
         if (i % 1000 == 0) {
           std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
+
+        REQUIRE(dispatcher.is_worker_thread() == true);
       });
     }
 
