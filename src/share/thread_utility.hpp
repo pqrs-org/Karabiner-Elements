@@ -202,10 +202,17 @@ public:
       // q = nullptr;
       // ----------------------------------------
 
-      if (worker_thread_.joinable()) {
+      if (is_worker_thread()) {
         exit_ = true;
-        queue_cv_.notify_one();
-        worker_thread_.join();
+        queue_.empty();
+        worker_thread_.detach();
+
+      } else {
+        if (worker_thread_.joinable()) {
+          exit_ = true;
+          queue_cv_.notify_one();
+          worker_thread_.join();
+        }
       }
     }
 

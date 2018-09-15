@@ -342,6 +342,21 @@ TEST_CASE("dispatcher") {
   }
 }
 
+TEST_CASE("dispatcher.terminate") {
+  std::cout << "dispatcher.terminate" << std::endl;
+
+  krbn::thread_utility::wait wait;
+  krbn::thread_utility::dispatcher dispatcher;
+
+  dispatcher.enqueue([&] {
+    // Call terminate in worker_thread_
+    dispatcher.terminate();
+    wait.notify();
+  });
+
+  wait.wait_notice();
+}
+
 namespace {
 void dispatcher_recursive_function(krbn::thread_utility::dispatcher& dispatcher,
                                    size_t& count) {
