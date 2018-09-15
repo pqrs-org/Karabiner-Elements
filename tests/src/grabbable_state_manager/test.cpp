@@ -71,12 +71,12 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(1000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(1000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::queued_event::event(krbn::key_code::a));
   event_queue.emplace_back_event(device_id2,
-                                 krbn::event_queue::queued_event::event_time_stamp(1010),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(1010)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::queued_event::event(krbn::key_code::a));
@@ -87,18 +87,18 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::grabbable,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                        1000);
+                                                        krbn::absolute_time(1000));
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id2,
                                                         krbn::grabbable_state::state::grabbable,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                        1010);
+                                                        krbn::absolute_time(1010));
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          1000);
+                                          krbn::absolute_time(1000));
     REQUIRE(*actual == expected);
   }
   {
@@ -106,7 +106,7 @@ TEST_CASE("grabbable_state_manager") {
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          1010);
+                                          krbn::absolute_time(1010));
     REQUIRE(*actual == expected);
   }
 
@@ -114,7 +114,7 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(2000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(2000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
                                  krbn::event_queue::queued_event::event(krbn::key_code::a));
@@ -125,14 +125,14 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::ungrabbable_temporarily,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                                        2000);
+                                                        krbn::absolute_time(2000));
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                          2000);
+                                          krbn::absolute_time(2000));
     REQUIRE(*actual == expected);
   }
   {
@@ -140,7 +140,7 @@ TEST_CASE("grabbable_state_manager") {
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          1010);
+                                          krbn::absolute_time(1010));
     REQUIRE(*actual == expected);
   }
 
@@ -148,7 +148,7 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(3000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(3000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::queued_event::event(krbn::key_code::a));
@@ -159,14 +159,14 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::grabbable,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                        3000);
+                                                        krbn::absolute_time(3000));
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          3000);
+                                          krbn::absolute_time(3000));
     REQUIRE(*actual == expected);
   }
   {
@@ -174,7 +174,7 @@ TEST_CASE("grabbable_state_manager") {
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          1010);
+                                          krbn::absolute_time(1010));
     REQUIRE(*actual == expected);
   }
 
@@ -182,7 +182,7 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(4000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(4000)),
                                  krbn::event_queue::queued_event::event(krbn::consumer_key_code::volume_increment),
                                  krbn::event_type::key_down,
                                  krbn::event_queue::queued_event::event(krbn::consumer_key_code::volume_increment));
@@ -193,14 +193,14 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::ungrabbable_temporarily,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                                        4000);
+                                                        krbn::absolute_time(4000));
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                          4000);
+                                          krbn::absolute_time(4000));
     REQUIRE(*actual == expected);
   }
   {
@@ -208,7 +208,7 @@ TEST_CASE("grabbable_state_manager") {
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          1010);
+                                          krbn::absolute_time(1010));
     REQUIRE(*actual == expected);
   }
 
@@ -216,7 +216,7 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(5000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(5000)),
                                  krbn::event_queue::queued_event::event(krbn::consumer_key_code::volume_increment),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::queued_event::event(krbn::consumer_key_code::volume_increment));
@@ -227,14 +227,14 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::grabbable,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                        5000);
+                                                        krbn::absolute_time(5000));
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          5000);
+                                          krbn::absolute_time(5000));
     REQUIRE(*actual == expected);
   }
   {
@@ -242,7 +242,7 @@ TEST_CASE("grabbable_state_manager") {
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          1010);
+                                          krbn::absolute_time(1010));
     REQUIRE(*actual == expected);
   }
 
@@ -250,7 +250,7 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(6000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(6000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_down,
                                  krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
@@ -261,14 +261,14 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::ungrabbable_temporarily,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed,
-                                                        6000);
+                                                        krbn::absolute_time(6000));
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed,
-                                          6000);
+                                          krbn::absolute_time(6000));
     REQUIRE(*actual == expected);
   }
   {
@@ -276,7 +276,7 @@ TEST_CASE("grabbable_state_manager") {
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          1010);
+                                          krbn::absolute_time(1010));
     REQUIRE(*actual == expected);
   }
 
@@ -284,7 +284,7 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(7000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(7000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
@@ -295,14 +295,14 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::grabbable,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                        7000);
+                                                        krbn::absolute_time(7000));
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          7000);
+                                          krbn::absolute_time(7000));
     REQUIRE(*actual == expected);
   }
   {
@@ -310,7 +310,7 @@ TEST_CASE("grabbable_state_manager") {
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          1010);
+                                          krbn::absolute_time(1010));
     REQUIRE(*actual == expected);
   }
 
@@ -318,7 +318,7 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id2,
-                                 krbn::event_queue::queued_event::event_time_stamp(8000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(8000)),
                                  krbn::event_queue::queued_event::event(krbn::pointing_button::button1),
                                  krbn::event_type::key_down,
                                  krbn::event_queue::queued_event::event(krbn::pointing_button::button1));
@@ -329,14 +329,14 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id2,
                                                         krbn::grabbable_state::state::ungrabbable_temporarily,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::pointing_button_pressed,
-                                                        8000);
+                                                        krbn::absolute_time(8000));
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          7000);
+                                          krbn::absolute_time(7000));
     REQUIRE(*actual == expected);
   }
   {
@@ -344,7 +344,7 @@ TEST_CASE("grabbable_state_manager") {
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::pointing_button_pressed,
-                                          8000);
+                                          krbn::absolute_time(8000));
     REQUIRE(*actual == expected);
   }
 
@@ -352,7 +352,7 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id2,
-                                 krbn::event_queue::queued_event::event_time_stamp(9000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(9000)),
                                  krbn::event_queue::queued_event::event(krbn::pointing_button::button1),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::queued_event::event(krbn::pointing_button::button1));
@@ -363,14 +363,14 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id2,
                                                         krbn::grabbable_state::state::grabbable,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                        9000);
+                                                        krbn::absolute_time(9000));
 
   {
     auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          7000);
+                                          krbn::absolute_time(7000));
     REQUIRE(*actual == expected);
   }
   {
@@ -378,7 +378,7 @@ TEST_CASE("grabbable_state_manager") {
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                          9000);
+                                          krbn::absolute_time(9000));
     REQUIRE(*actual == expected);
   }
 
@@ -386,22 +386,22 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(10000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(10000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_down,
                                  krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(11000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(11000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
                                  krbn::event_queue::queued_event::event(krbn::key_code::a));
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(12000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(12000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::queued_event::event(krbn::key_code::a));
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(13000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(13000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_up,
                                  krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
@@ -412,19 +412,19 @@ TEST_CASE("grabbable_state_manager") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::ungrabbable_temporarily,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed,
-                                                        10000);
+                                                        krbn::absolute_time(10000));
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::ungrabbable_temporarily,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                                        11000);
+                                                        krbn::absolute_time(11000));
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::ungrabbable_temporarily,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed,
-                                                        12000);
+                                                        krbn::absolute_time(12000));
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::grabbable,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                        13000);
+                                                        krbn::absolute_time(13000));
 
   // Test actual_grabbable_state_changed_history
 
@@ -452,19 +452,19 @@ TEST_CASE("device_error") {
   grabbable_state_manager.update(krbn::grabbable_state(registry_entry_id1,
                                                        krbn::grabbable_state::state::device_error,
                                                        krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                       1000));
+                                                       krbn::absolute_time(1000)));
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::device_error,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                        1000);
+                                                        krbn::absolute_time(1000));
 
   // key repeating (device_error will be canceled by `grabbable_state_manager::update`.)
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(2000),
+                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(2000)),
                                  krbn::event_queue::queued_event::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
                                  krbn::event_queue::queued_event::event(krbn::key_code::a));
@@ -472,7 +472,7 @@ TEST_CASE("device_error") {
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::ungrabbable_temporarily,
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                                        2000);
+                                                        krbn::absolute_time(2000));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -482,7 +482,7 @@ TEST_CASE("device_error") {
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                          2000);
+                                          krbn::absolute_time(2000));
     REQUIRE(*actual == expected);
   }
 
