@@ -15,6 +15,7 @@
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include "types/key_code.hpp"
+#include "types/pointing_button.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDElement.h>
@@ -54,48 +55,6 @@ enum class operation_type : uint8_t {
 
 enum class device_id : uint32_t {
   zero = 0,
-};
-
-enum class pointing_button : uint32_t {
-  zero,
-
-  button1,
-  button2,
-  button3,
-  button4,
-  button5,
-  button6,
-  button7,
-  button8,
-
-  button9,
-  button10,
-  button11,
-  button12,
-  button13,
-  button14,
-  button15,
-  button16,
-
-  button17,
-  button18,
-  button19,
-  button20,
-  button21,
-  button22,
-  button23,
-  button24,
-
-  button25,
-  button26,
-  button27,
-  button28,
-  button29,
-  button30,
-  button31,
-  button32,
-
-  end_,
 };
 
 enum class pointing_event : uint32_t {
@@ -1867,7 +1826,6 @@ struct operation_type_select_input_source_struct {
 
 KRBN_TYPES_STREAM_OUTPUT(operation_type);
 KRBN_TYPES_STREAM_OUTPUT(device_id);
-KRBN_TYPES_STREAM_OUTPUT(pointing_button);
 KRBN_TYPES_STREAM_OUTPUT(registry_entry_id);
 KRBN_TYPES_STREAM_OUTPUT(vendor_id);
 KRBN_TYPES_STREAM_OUTPUT(product_id);
