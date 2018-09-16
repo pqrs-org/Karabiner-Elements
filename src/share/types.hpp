@@ -10,6 +10,7 @@
 #include "logger.hpp"
 #include "stream_utility.hpp"
 #include "types/absolute_time.hpp"
+#include "types/consumer_key_code.hpp"
 #include "types/key_code.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
@@ -113,21 +114,6 @@ enum class event_type : uint32_t {
   key_down,
   key_up,
   single,
-};
-
-enum class consumer_key_code : uint32_t {
-  power = kHIDUsage_Csmr_Power,
-  display_brightness_increment = kHIDUsage_Csmr_DisplayBrightnessIncrement,
-  display_brightness_decrement = kHIDUsage_Csmr_DisplayBrightnessDecrement,
-  fastforward = kHIDUsage_Csmr_FastForward,
-  rewind = kHIDUsage_Csmr_Rewind,
-  scan_next_track = kHIDUsage_Csmr_ScanNextTrack,
-  scan_previous_track = kHIDUsage_Csmr_ScanPreviousTrack,
-  eject = kHIDUsage_Csmr_Eject,
-  play_or_pause = kHIDUsage_Csmr_PlayOrPause,
-  mute = kHIDUsage_Csmr_Mute,
-  volume_increment = kHIDUsage_Csmr_VolumeIncrement,
-  volume_decrement = kHIDUsage_Csmr_VolumeDecrement,
 };
 
 enum class pointing_button : uint32_t {
@@ -1943,7 +1929,6 @@ KRBN_TYPES_STREAM_OUTPUT(operation_type);
 KRBN_TYPES_STREAM_OUTPUT(device_id);
 KRBN_TYPES_STREAM_OUTPUT(hid_usage_page);
 KRBN_TYPES_STREAM_OUTPUT(hid_usage);
-KRBN_TYPES_STREAM_OUTPUT(consumer_key_code);
 KRBN_TYPES_STREAM_OUTPUT(pointing_button);
 KRBN_TYPES_STREAM_OUTPUT(registry_entry_id);
 KRBN_TYPES_STREAM_OUTPUT(vendor_id);
