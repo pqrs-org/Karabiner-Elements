@@ -9,6 +9,7 @@
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "stream_utility.hpp"
+#include "types/absolute_time.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDElement.h>
@@ -31,13 +32,6 @@
 
 namespace krbn {
 class device_detail;
-
-struct absolute_time : type_safe::strong_typedef<absolute_time, uint64_t>,
-                       type_safe::strong_typedef_op::equality_comparison<absolute_time>,
-                       type_safe::strong_typedef_op::relational_comparison<absolute_time>,
-                       type_safe::strong_typedef_op::integer_arithmetic<absolute_time> {
-  using strong_typedef::strong_typedef;
-};
 
 enum class operation_type : uint8_t {
   none,
@@ -2060,10 +2054,6 @@ struct operation_type_select_input_source_struct {
 };
 
 // stream output
-
-inline std::ostream& operator<<(std::ostream& stream, const absolute_time& value) {
-  return stream << type_safe::get(value);
-}
 
 #define KRBN_TYPES_STREAM_OUTPUT(TYPE)                                                                                                               \
   inline std::ostream& operator<<(std::ostream& stream, const TYPE& value) {                                                                         \
