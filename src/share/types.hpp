@@ -16,6 +16,7 @@
 #include "types/hid_usage_page.hpp"
 #include "types/key_code.hpp"
 #include "types/led_state.hpp"
+#include "types/location_id.hpp"
 #include "types/modifier_flag.hpp"
 #include "types/pointing_button.hpp"
 #include "types/product_id.hpp"
@@ -68,9 +69,6 @@ enum class pointing_event : uint32_t {
   y,
   vertical_wheel,
   horizontal_wheel,
-};
-
-enum class location_id : uint32_t {
 };
 
 class hid_value final {
@@ -1799,7 +1797,6 @@ struct operation_type_select_input_source_struct {
 
 KRBN_TYPES_STREAM_OUTPUT(operation_type);
 KRBN_TYPES_STREAM_OUTPUT(device_id);
-KRBN_TYPES_STREAM_OUTPUT(location_id);
 
 #undef KRBN_TYPES_STREAM_OUTPUT
 

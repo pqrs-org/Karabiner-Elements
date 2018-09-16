@@ -86,7 +86,7 @@ public:
       json["product_id"] = type_safe::get(*product_id_);
     }
     if (location_id_) {
-      json["location_id"] = static_cast<int>(*location_id_);
+      json["location_id"] = type_safe::get(*location_id_);
     }
     if (manufacturer_) {
       json["manufacturer"] = *manufacturer_;
