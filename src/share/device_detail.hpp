@@ -80,7 +80,7 @@ public:
     nlohmann::json json;
 
     if (vendor_id_) {
-      json["vendor_id"] = static_cast<int>(*vendor_id_);
+      json["vendor_id"] = type_safe::get(*vendor_id_);
     }
     if (product_id_) {
       json["product_id"] = static_cast<int>(*product_id_);

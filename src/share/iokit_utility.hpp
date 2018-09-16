@@ -218,7 +218,7 @@ public:
     if (auto value = find_long_property(device, CFSTR(kIOHIDVendorIDKey))) {
       return static_cast<vendor_id>(*value);
     }
-    return vendor_id::zero;
+    return vendor_id(0);
   }
 
   static product_id find_product_id(IOHIDDeviceRef _Nonnull device) {

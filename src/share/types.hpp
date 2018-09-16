@@ -19,6 +19,7 @@
 #include "types/modifier_flag.hpp"
 #include "types/pointing_button.hpp"
 #include "types/registry_entry_id.hpp"
+#include "types/vendor_id.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDElement.h>
@@ -66,10 +67,6 @@ enum class pointing_event : uint32_t {
   y,
   vertical_wheel,
   horizontal_wheel,
-};
-
-enum class vendor_id : uint32_t {
-  zero = 0,
 };
 
 enum class product_id : uint32_t {
@@ -330,7 +327,7 @@ private:
 
 class device_identifiers final {
 public:
-  device_identifiers(void) : vendor_id_(vendor_id::zero),
+  device_identifiers(void) : vendor_id_(vendor_id(0)),
                              product_id_(product_id::zero),
                              is_keyboard_(false),
                              is_pointing_device_(false) {
@@ -1805,7 +1802,6 @@ struct operation_type_select_input_source_struct {
 
 KRBN_TYPES_STREAM_OUTPUT(operation_type);
 KRBN_TYPES_STREAM_OUTPUT(device_id);
-KRBN_TYPES_STREAM_OUTPUT(vendor_id);
 KRBN_TYPES_STREAM_OUTPUT(product_id);
 KRBN_TYPES_STREAM_OUTPUT(location_id);
 
