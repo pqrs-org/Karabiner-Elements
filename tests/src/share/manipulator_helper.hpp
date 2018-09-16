@@ -184,6 +184,7 @@ public:
       manipulator_timer->detach(manipulator_object_id);
 
       manipulator_managers.clear();
+      post_event_to_virtual_devices_manipulator = nullptr;
 
       manipulator_dispatcher = nullptr;
       manipulator_timer = nullptr;
