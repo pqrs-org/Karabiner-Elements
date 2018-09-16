@@ -2,6 +2,7 @@
 
 #include "stream_utility.hpp"
 #include <cstdint>
+#include <type_safe/strong_typedef.hpp>
 
 namespace krbn {
 struct registry_entry_id : type_safe::strong_typedef<registry_entry_id, uint64_t>,
