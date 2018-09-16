@@ -32,6 +32,15 @@ TEST_CASE("timer") {
   std::cout << "timer" << std::endl;
 
   {
+    for (int i = 0; i < 10000; ++i) {
+      krbn::thread_utility::timer timer(
+          std::chrono::milliseconds(0),
+          krbn::thread_utility::timer::mode::once,
+          [] {});
+    }
+  }
+
+  {
     size_t count = 0;
 
     krbn::thread_utility::timer timer(

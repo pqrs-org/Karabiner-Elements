@@ -69,31 +69,37 @@ public:
           mode mode,
           const std::function<void(void)>& function) : mode_(mode),
                                                        exit_(false),
-                                                       graceful_exit_(false),
-                                                       count_(0) {
+                                                       graceful_exit_(false) {
       thread_ = std::thread([this, interval, function] {
+        int count = 0;
+
         while (true) {
           // Wait
           {
-            std::unique_lock<std::mutex> lock(timer_mutex_);
-            timer_cv_.wait_for(lock, interval(count_), [this] {
+            std::unique_lock<std::mutex> lock(mutex_);
+
+            cv_.wait_for(lock, interval(count), [this] {
               return exit_ == true;
             });
-          }
 
-          if (exit_) {
-            break;
+            if (exit_) {
+              break;
+            }
           }
 
           function();
-          ++count_;
+          ++count;
 
           if (mode_ == mode::once) {
             break;
           }
 
-          if (graceful_exit_) {
-            break;
+          {
+            std::lock_guard<std::mutex> lock(mutex_);
+
+            if (graceful_exit_) {
+              break;
+            }
           }
         }
       });
@@ -107,7 +113,11 @@ public:
     }
 
     ~timer(void) {
-      graceful_exit_ = true;
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        graceful_exit_ = true;
+      }
 
       wait();
     }
@@ -119,21 +129,23 @@ public:
     }
 
     void cancel(void) {
-      exit_ = true;
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
 
-      timer_cv_.notify_one();
+        exit_ = true;
+      }
+
+      cv_.notify_one();
     }
 
   private:
     mode mode_;
 
     std::thread thread_;
-    std::atomic<bool> exit_;
-    std::atomic<bool> graceful_exit_;
-    size_t count_;
-
-    std::mutex timer_mutex_;
-    std::condition_variable timer_cv_;
+    bool exit_;
+    bool graceful_exit_;
+    std::mutex mutex_;
+    std::condition_variable cv_;
   };
 
   class dispatcher final {
