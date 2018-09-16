@@ -15,6 +15,7 @@
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include "types/key_code.hpp"
+#include "types/led_state.hpp"
 #include "types/modifier_flag.hpp"
 #include "types/pointing_button.hpp"
 #include "types/registry_entry_id.hpp"
@@ -65,11 +66,6 @@ enum class pointing_event : uint32_t {
   y,
   vertical_wheel,
   horizontal_wheel,
-};
-
-enum class led_state : uint32_t {
-  on,
-  off,
 };
 
 enum class vendor_id : uint32_t {
