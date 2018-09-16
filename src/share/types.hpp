@@ -11,6 +11,7 @@
 #include "stream_utility.hpp"
 #include "types/absolute_time.hpp"
 #include "types/consumer_key_code.hpp"
+#include "types/hid_usage_page.hpp"
 #include "types/key_code.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
@@ -51,17 +52,6 @@ enum class operation_type : uint8_t {
 
 enum class device_id : uint32_t {
   zero = 0,
-};
-
-enum class hid_usage_page : uint32_t {
-  zero = 0,
-  generic_desktop = kHIDPage_GenericDesktop,
-  keyboard_or_keypad = kHIDPage_KeyboardOrKeypad,
-  leds = kHIDPage_LEDs,
-  button = kHIDPage_Button,
-  consumer = kHIDPage_Consumer,
-  apple_vendor_keyboard = kHIDPage_AppleVendorKeyboard,
-  apple_vendor_top_case = kHIDPage_AppleVendorTopCase,
 };
 
 enum class hid_usage : uint32_t {
@@ -1927,7 +1917,6 @@ struct operation_type_select_input_source_struct {
 
 KRBN_TYPES_STREAM_OUTPUT(operation_type);
 KRBN_TYPES_STREAM_OUTPUT(device_id);
-KRBN_TYPES_STREAM_OUTPUT(hid_usage_page);
 KRBN_TYPES_STREAM_OUTPUT(hid_usage);
 KRBN_TYPES_STREAM_OUTPUT(pointing_button);
 KRBN_TYPES_STREAM_OUTPUT(registry_entry_id);
