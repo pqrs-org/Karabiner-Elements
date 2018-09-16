@@ -126,7 +126,7 @@ TEST_CASE("pointing_motion::clear") {
 TEST_CASE("grabbable_state") {
   {
     krbn::grabbable_state grabbable_state;
-    REQUIRE(grabbable_state.get_registry_entry_id() == krbn::registry_entry_id::zero);
+    REQUIRE(grabbable_state.get_registry_entry_id() == krbn::registry_entry_id(0));
     REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::grabbable);
     REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::none);
     REQUIRE(grabbable_state.get_time_stamp() == krbn::absolute_time(0));

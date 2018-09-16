@@ -101,7 +101,7 @@ public:
       json["transport"] = *transport_;
     }
     if (registry_entry_id_) {
-      json["registry_entry_id"] = *registry_entry_id_;
+      json["registry_entry_id"] = type_safe::get(*registry_entry_id_);
     }
     if (is_keyboard_) {
       json["is_keyboard"] = *is_keyboard_;
@@ -235,7 +235,7 @@ private:
     if (registry_entry_id_) {
       return *registry_entry_id_;
     }
-    return registry_entry_id::zero;
+    return registry_entry_id(0);
   }
 
   boost::optional<vendor_id> vendor_id_;

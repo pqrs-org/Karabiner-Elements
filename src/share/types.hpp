@@ -17,6 +17,7 @@
 #include "types/key_code.hpp"
 #include "types/modifier_flag.hpp"
 #include "types/pointing_button.hpp"
+#include "types/registry_entry_id.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDElement.h>
@@ -69,10 +70,6 @@ enum class pointing_event : uint32_t {
 enum class led_state : uint32_t {
   on,
   off,
-};
-
-enum class registry_entry_id : uint64_t {
-  zero = 0,
 };
 
 enum class vendor_id : uint32_t {
@@ -282,7 +279,7 @@ public:
     pointing_button_pressed,
   };
 
-  grabbable_state(void) : grabbable_state(registry_entry_id::zero,
+  grabbable_state(void) : grabbable_state(registry_entry_id(0),
                                           state::grabbable,
                                           ungrabbable_temporarily_reason::none,
                                           absolute_time(0)) {
@@ -1812,7 +1809,6 @@ struct operation_type_select_input_source_struct {
 
 KRBN_TYPES_STREAM_OUTPUT(operation_type);
 KRBN_TYPES_STREAM_OUTPUT(device_id);
-KRBN_TYPES_STREAM_OUTPUT(registry_entry_id);
 KRBN_TYPES_STREAM_OUTPUT(vendor_id);
 KRBN_TYPES_STREAM_OUTPUT(product_id);
 KRBN_TYPES_STREAM_OUTPUT(location_id);
