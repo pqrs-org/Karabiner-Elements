@@ -139,18 +139,17 @@ public:
   class dispatcher final {
   public:
     dispatcher(void) : exit_(false) {
-      wait w;
-
-      worker_thread_ = std::thread([this, &w] {
+      worker_thread_ = std::thread([this] {
         worker_thread_id_ = std::this_thread::get_id();
-        w.notify();
+        worker_thread_id_wait_.notify();
 
         while (true) {
           std::function<void(void)> function;
 
           {
-            std::unique_lock<std::mutex> queue_lock(queue_mutex_);
-            queue_cv_.wait(queue_lock, [this] {
+            std::unique_lock<std::mutex> lock(mutex_);
+
+            cv_.wait(lock, [this] {
               return exit_ || !queue_.empty();
             });
 
@@ -170,7 +169,7 @@ public:
         }
       });
 
-      w.wait_notice();
+      worker_thread_id_wait_.wait_notice();
     }
 
     ~dispatcher(void) {
@@ -203,14 +202,24 @@ public:
       // ----------------------------------------
 
       if (is_worker_thread()) {
-        exit_ = true;
-        queue_.empty();
+        {
+          std::lock_guard<std::mutex> lock(mutex_);
+
+          exit_ = true;
+          queue_.empty();
+        }
+
         worker_thread_.detach();
 
       } else {
         if (worker_thread_.joinable()) {
-          exit_ = true;
-          queue_cv_.notify_one();
+          {
+            std::lock_guard<std::mutex> lock(mutex_);
+
+            exit_ = true;
+          }
+
+          cv_.notify_one();
           worker_thread_.join();
         }
       }
@@ -218,22 +227,22 @@ public:
 
     void enqueue(const std::function<void(void)>& function) {
       {
-        std::lock_guard<std::mutex> lock(queue_mutex_);
+        std::lock_guard<std::mutex> lock(mutex_);
 
         queue_.push(function);
       }
 
-      queue_cv_.notify_one();
+      cv_.notify_one();
     }
 
   private:
     std::thread worker_thread_;
     std::thread::id worker_thread_id_;
-    std::atomic<bool> exit_;
-
+    wait worker_thread_id_wait_;
+    bool exit_;
     std::queue<std::function<void(void)>> queue_;
-    std::mutex queue_mutex_;
-    std::condition_variable queue_cv_;
+    std::mutex mutex_;
+    std::condition_variable cv_;
   };
 };
 } // namespace krbn

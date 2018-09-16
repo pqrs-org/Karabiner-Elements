@@ -257,6 +257,13 @@ TEST_CASE("dispatcher") {
   std::cout << "dispatcher" << std::endl;
 
   {
+    for (int i = 0; i < 10000; ++i) {
+      krbn::thread_utility::dispatcher dispatcher;
+      dispatcher.terminate();
+    }
+  }
+
+  {
     size_t count = 0;
 
     krbn::thread_utility::dispatcher dispatcher;
