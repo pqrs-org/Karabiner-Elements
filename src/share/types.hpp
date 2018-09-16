@@ -11,6 +11,7 @@
 #include "stream_utility.hpp"
 #include "types/absolute_time.hpp"
 #include "types/consumer_key_code.hpp"
+#include "types/event_type.hpp"
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include "types/key_code.hpp"
@@ -53,12 +54,6 @@ enum class operation_type : uint8_t {
 
 enum class device_id : uint32_t {
   zero = 0,
-};
-
-enum class event_type : uint32_t {
-  key_down,
-  key_up,
-  single,
 };
 
 enum class pointing_button : uint32_t {
@@ -1880,22 +1875,6 @@ KRBN_TYPES_STREAM_OUTPUT(location_id);
 
 #undef KRBN_TYPES_STREAM_OUTPUT
 
-inline std::ostream& operator<<(std::ostream& stream, const event_type& value) {
-  switch (value) {
-    case event_type::key_down:
-      stream << "key_down";
-      break;
-    case event_type::key_up:
-      stream << "key_up";
-      break;
-    case event_type::single:
-      stream << "single";
-      break;
-  }
-
-  return stream;
-}
-
 inline std::ostream& operator<<(std::ostream& stream, const modifier_flag& value) {
 #define KRBN_MODIFIER_FLAG_STREAM_OUTPUT(NAME) \
   case modifier_flag::NAME:                    \
@@ -2056,32 +2035,6 @@ inline std::ostream& operator<<(std::ostream& stream, const container<input_sour
   }
   stream << "]";
   return stream;
-}
-
-inline void to_json(nlohmann::json& json, const event_type& value) {
-  switch (value) {
-    case event_type::key_down:
-      json = "key_down";
-      break;
-    case event_type::key_up:
-      json = "key_up";
-      break;
-    case event_type::single:
-      json = "single";
-      break;
-  }
-}
-
-inline void from_json(const nlohmann::json& json, event_type& value) {
-  auto s = json.get<std::string>();
-
-  if (s == "key_up") {
-    value = event_type::key_up;
-  } else if (s == "single") {
-    value = event_type::single;
-  } else {
-    value = event_type::key_down;
-  }
 }
 
 inline void to_json(nlohmann::json& json, const pointing_motion& pointing_motion) {
