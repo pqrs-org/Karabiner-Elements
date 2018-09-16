@@ -10,6 +10,13 @@ TEST_CASE("initialize") {
   krbn::thread_utility::register_main_thread();
 }
 
+TEST_CASE("sizeof") {
+  REQUIRE(sizeof(krbn::absolute_time) == 8);
+  REQUIRE(sizeof(krbn::registry_entry_id) == 8);
+  REQUIRE(sizeof(krbn::vendor_id) == 4);
+  REQUIRE(sizeof(krbn::product_id) == 4);
+}
+
 TEST_CASE("operation_type") {
   krbn::operation_type_connect_console_user_server_struct s;
   std::vector<uint8_t> buffer(sizeof(s));

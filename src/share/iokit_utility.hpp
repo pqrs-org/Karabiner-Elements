@@ -225,7 +225,7 @@ public:
     if (auto value = find_long_property(device, CFSTR(kIOHIDProductIDKey))) {
       return static_cast<product_id>(*value);
     }
-    return product_id::zero;
+    return product_id(0);
   }
 
   static boost::optional<location_id> find_location_id(IOHIDDeviceRef _Nonnull device) {
