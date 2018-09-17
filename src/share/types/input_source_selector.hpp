@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <ostream>
+#include <regex>
 #include <type_safe/strong_typedef.hpp>
 
 namespace krbn {

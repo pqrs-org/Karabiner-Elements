@@ -38,7 +38,6 @@
 #include <cstring>
 #include <iostream>
 #include <json/json.hpp>
-#include <regex>
 #include <string>
 #include <thread>
 #include <type_safe/strong_typedef.hpp>
