@@ -92,7 +92,7 @@ private:
       }
 
       switch (entry.get_event().get_type()) {
-        case krbn::event_queue::entry::event::type::key_code:
+        case krbn::event_queue::event::type::key_code:
           if (auto key_code = entry.get_event().get_key_code()) {
             callback_(libkrbn_hid_value_type_key_code,
                       static_cast<uint32_t>(*key_code),
@@ -101,7 +101,7 @@ private:
           }
           break;
 
-        case krbn::event_queue::entry::event::type::consumer_key_code:
+        case krbn::event_queue::event::type::consumer_key_code:
           if (auto consumer_key_code = entry.get_event().get_consumer_key_code()) {
             callback_(libkrbn_hid_value_type_consumer_key_code,
                       static_cast<uint32_t>(*consumer_key_code),
@@ -110,21 +110,21 @@ private:
           }
           break;
 
-        case krbn::event_queue::entry::event::type::none:
-        case krbn::event_queue::entry::event::type::pointing_button:
-        case krbn::event_queue::entry::event::type::pointing_motion:
-        case krbn::event_queue::entry::event::type::shell_command:
-        case krbn::event_queue::entry::event::type::select_input_source:
-        case krbn::event_queue::entry::event::type::set_variable:
-        case krbn::event_queue::entry::event::type::mouse_key:
-        case krbn::event_queue::entry::event::type::stop_keyboard_repeat:
-        case krbn::event_queue::entry::event::type::device_keys_and_pointing_buttons_are_released:
-        case krbn::event_queue::entry::event::type::device_ungrabbed:
-        case krbn::event_queue::entry::event::type::caps_lock_state_changed:
-        case krbn::event_queue::entry::event::type::pointing_device_event_from_event_tap:
-        case krbn::event_queue::entry::event::type::frontmost_application_changed:
-        case krbn::event_queue::entry::event::type::input_source_changed:
-        case krbn::event_queue::entry::event::type::keyboard_type_changed:
+        case krbn::event_queue::event::type::none:
+        case krbn::event_queue::event::type::pointing_button:
+        case krbn::event_queue::event::type::pointing_motion:
+        case krbn::event_queue::event::type::shell_command:
+        case krbn::event_queue::event::type::select_input_source:
+        case krbn::event_queue::event::type::set_variable:
+        case krbn::event_queue::event::type::mouse_key:
+        case krbn::event_queue::event::type::stop_keyboard_repeat:
+        case krbn::event_queue::event::type::device_keys_and_pointing_buttons_are_released:
+        case krbn::event_queue::event::type::device_ungrabbed:
+        case krbn::event_queue::event::type::caps_lock_state_changed:
+        case krbn::event_queue::event::type::pointing_device_event_from_event_tap:
+        case krbn::event_queue::event::type::frontmost_application_changed:
+        case krbn::event_queue::event::type::input_source_changed:
+        case krbn::event_queue::event::type::keyboard_type_changed:
           break;
       }
     }

@@ -516,9 +516,9 @@ private:
       if (hid_value) {
         if (auto hid_usage_page = hid_value->get_hid_usage_page()) {
           if (auto hid_usage = hid_value->get_hid_usage()) {
-            if (entry.get_event().get_type() == event_queue::entry::event::type::key_code ||
-                entry.get_event().get_type() == event_queue::entry::event::type::consumer_key_code ||
-                entry.get_event().get_type() == event_queue::entry::event::type::pointing_button) {
+            if (entry.get_event().get_type() == event_queue::event::type::key_code ||
+                entry.get_event().get_type() == event_queue::event::type::consumer_key_code ||
+                entry.get_event().get_type() == event_queue::event::type::pointing_button) {
               // Send `device_keys_and_pointing_buttons_are_released` event if needed.
 
               if (entry.get_event_type() == event_type::key_down) {
@@ -543,9 +543,9 @@ private:
   void post_device_keys_and_pointing_buttons_are_released_event_if_needed(std::shared_ptr<event_queue::queue> input_event_queue,
                                                                           absolute_time time_stamp) {
     if (pressed_keys_.empty()) {
-      auto event = event_queue::entry::event::make_device_keys_and_pointing_buttons_are_released_event();
+      auto event = event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
       input_event_queue->emplace_back_event(device_id_,
-                                            event_queue::entry::event_time_stamp(time_stamp),
+                                            event_queue::event_time_stamp(time_stamp),
                                             event,
                                             event_type::single,
                                             event);

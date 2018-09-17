@@ -45,7 +45,7 @@ public:
           auto& front_input_event = input_event_queue->get_front_event();
 
           switch (front_input_event.get_event().get_type()) {
-            case event_queue::entry::event::type::device_keys_and_pointing_buttons_are_released:
+            case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
               output_event_queue->erase_all_active_modifier_flags_except_lock(front_input_event.get_device_id());
               output_event_queue->erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
 
@@ -59,7 +59,7 @@ public:
               }
               break;
 
-            case event_queue::entry::event::type::device_ungrabbed:
+            case event_queue::event::type::device_ungrabbed:
               // Reset modifier_flags and pointing_buttons before `handle_device_ungrabbed_event`
               // in order to send key_up events in `post_event_to_virtual_devices::handle_device_ungrabbed_event`.
               output_event_queue->erase_all_active_modifier_flags(front_input_event.get_device_id());
@@ -76,7 +76,7 @@ public:
               }
               break;
 
-            case event_queue::entry::event::type::pointing_device_event_from_event_tap: {
+            case event_queue::event::type::pointing_device_event_from_event_tap: {
               std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
               for (auto&& m : manipulators_) {
@@ -85,23 +85,23 @@ public:
               }
             } break;
 
-            case event_queue::entry::event::type::none:
-            case event_queue::entry::event::type::caps_lock_state_changed:
-            case event_queue::entry::event::type::frontmost_application_changed:
-            case event_queue::entry::event::type::input_source_changed:
-            case event_queue::entry::event::type::keyboard_type_changed:
-            case event_queue::entry::event::type::set_variable:
+            case event_queue::event::type::none:
+            case event_queue::event::type::caps_lock_state_changed:
+            case event_queue::event::type::frontmost_application_changed:
+            case event_queue::event::type::input_source_changed:
+            case event_queue::event::type::keyboard_type_changed:
+            case event_queue::event::type::set_variable:
               // Do nothing
               break;
 
-            case event_queue::entry::event::type::key_code:
-            case event_queue::entry::event::type::consumer_key_code:
-            case event_queue::entry::event::type::pointing_button:
-            case event_queue::entry::event::type::pointing_motion:
-            case event_queue::entry::event::type::shell_command:
-            case event_queue::entry::event::type::select_input_source:
-            case event_queue::entry::event::type::mouse_key:
-            case event_queue::entry::event::type::stop_keyboard_repeat: {
+            case event_queue::event::type::key_code:
+            case event_queue::event::type::consumer_key_code:
+            case event_queue::event::type::pointing_button:
+            case event_queue::event::type::pointing_motion:
+            case event_queue::event::type::shell_command:
+            case event_queue::event::type::select_input_source:
+            case event_queue::event::type::mouse_key:
+            case event_queue::event::type::stop_keyboard_repeat: {
               bool skip = false;
 
               if (front_input_event.get_valid()) {

@@ -211,8 +211,8 @@ public:
               std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events;
 
               {
-                std::vector<event_queue::entry::event> ordered_key_down_events;
-                std::vector<event_queue::entry::event> ordered_key_up_events;
+                std::vector<event_queue::event> ordered_key_down_events;
+                std::vector<event_queue::event> ordered_key_up_events;
                 std::chrono::milliseconds simultaneous_threshold_milliseconds(parameters_.get_basic_simultaneous_threshold_milliseconds());
                 auto end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() +
                                       time_utility::to_absolute_time(simultaneous_threshold_milliseconds);
@@ -356,7 +356,7 @@ public:
 
                       output_event_queue->emplace_back_event(front_input_event.get_device_id(),
                                                              front_input_event.get_event_time_stamp(),
-                                                             event_queue::entry::event::make_stop_keyboard_repeat_event(),
+                                                             event_queue::event::make_stop_keyboard_repeat_event(),
                                                              event_type::single,
                                                              front_input_event.get_original_event(),
                                                              true);
@@ -902,7 +902,7 @@ private:
 
         event_queue::entry event(front_input_event.get_device_id(),
                                  t,
-                                 event_queue::entry::event(*key_code),
+                                 event_queue::event(*key_code),
                                  event_type,
                                  front_input_event.get_original_event(),
                                  true);
@@ -990,11 +990,11 @@ private:
     }
   }
 
-  void unset_alone_if_needed(const event_queue::entry::event& event,
+  void unset_alone_if_needed(const event_queue::event& event,
                              event_type event_type) {
-    if (event.get_type() == event_queue::entry::event::type::key_code ||
-        event.get_type() == event_queue::entry::event::type::consumer_key_code ||
-        event.get_type() == event_queue::entry::event::type::pointing_button) {
+    if (event.get_type() == event_queue::event::type::key_code ||
+        event.get_type() == event_queue::event::type::consumer_key_code ||
+        event.get_type() == event_queue::event::type::pointing_button) {
       if (event_type == event_type::key_down) {
         goto run;
       }

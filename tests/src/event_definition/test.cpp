@@ -98,7 +98,7 @@ TEST_CASE("manipulator.details.to_event_definition") {
     REQUIRE(event_definition.get_lazy() == false);
     REQUIRE(event_definition.get_repeat() == true);
     REQUIRE(!(event_definition.get_event_definition().to_event()));
-    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::entry::event>());
+    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>());
   }
   {
     nlohmann::json json({
@@ -116,10 +116,10 @@ TEST_CASE("manipulator.details.to_event_definition") {
                                                     krbn::manipulator::details::modifier_definition::modifier::shift,
                                                     krbn::manipulator::details::modifier_definition::modifier::left_command,
                                                 }));
-    REQUIRE(event_definition.get_event_definition().to_event() == krbn::event_queue::entry::event(krbn::key_code::spacebar));
-    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::entry::event>({
-                                                           krbn::event_queue::entry::event(krbn::key_code::left_command),
-                                                           krbn::event_queue::entry::event(krbn::key_code::left_shift),
+    REQUIRE(event_definition.get_event_definition().to_event() == krbn::event_queue::event(krbn::key_code::spacebar));
+    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>({
+                                                           krbn::event_queue::event(krbn::key_code::left_command),
+                                                           krbn::event_queue::event(krbn::key_code::left_shift),
                                                        }));
   }
   {
@@ -141,9 +141,9 @@ TEST_CASE("manipulator.details.to_event_definition") {
                                                     krbn::manipulator::details::modifier_definition::modifier::shift,
                                                     krbn::manipulator::details::modifier_definition::modifier::left_command,
                                                 }));
-    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::entry::event>({
-                                                           krbn::event_queue::entry::event(krbn::key_code::left_command),
-                                                           krbn::event_queue::entry::event(krbn::key_code::left_shift),
+    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>({
+                                                           krbn::event_queue::event(krbn::key_code::left_command),
+                                                           krbn::event_queue::event(krbn::key_code::left_shift),
                                                        }));
   }
   {
@@ -158,7 +158,7 @@ TEST_CASE("manipulator.details.to_event_definition") {
     REQUIRE(event_definition.get_event_definition().get_key_code() == boost::none);
     REQUIRE(event_definition.get_event_definition().get_pointing_button() == boost::none);
     REQUIRE(event_definition.get_modifiers().size() == 0);
-    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::entry::event>({}));
+    REQUIRE(event_definition.make_modifier_events() == std::vector<krbn::event_queue::event>({}));
   }
   {
     std::string shell_command = "open /Applications/Safari.app";

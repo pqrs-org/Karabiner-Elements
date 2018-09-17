@@ -92,7 +92,7 @@ public:
 
         } else {
           if (front_input_event.get_event_type() == event_type::key_down) {
-            if (front_input_event.get_event().get_type() == event_queue::entry::event::type::pointing_button) {
+            if (front_input_event.get_event().get_type() == event_queue::event::type::pointing_button) {
               if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
                   pressed_buttons_.empty() &&
                   !mouse_key_handler_->active()) {
@@ -105,7 +105,7 @@ public:
               dispatch_modifier_key_event_before = true;
             }
 
-          } else if (front_input_event.get_event().get_type() == event_queue::entry::event::type::pointing_motion) {
+          } else if (front_input_event.get_event().get_type() == event_queue::event::type::pointing_motion) {
             if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
                 pressed_buttons_.empty() &&
                 !mouse_key_handler_->active()) {
@@ -124,7 +124,7 @@ public:
       }
 
       switch (front_input_event.get_event().get_type()) {
-        case event_queue::entry::event::type::key_code:
+        case event_queue::event::type::key_code:
           if (auto key_code = front_input_event.get_event().get_key_code()) {
             if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
               if (auto hid_usage = types::make_hid_usage(*key_code)) {
@@ -154,7 +154,7 @@ public:
           }
           break;
 
-        case event_queue::entry::event::type::consumer_key_code:
+        case event_queue::event::type::consumer_key_code:
           if (auto consumer_key_code = front_input_event.get_event().get_consumer_key_code()) {
             if (auto hid_usage_page = types::make_hid_usage_page(*consumer_key_code)) {
               if (auto hid_usage = types::make_hid_usage(*consumer_key_code)) {
@@ -182,8 +182,8 @@ public:
           }
           break;
 
-        case event_queue::entry::event::type::pointing_button:
-        case event_queue::entry::event::type::pointing_motion: {
+        case event_queue::event::type::pointing_button:
+        case event_queue::event::type::pointing_motion: {
           pqrs::karabiner_virtual_hid_device::hid_report::pointing_input report;
           report.buttons = output_event_queue->get_pointing_button_manager().make_hid_report_buttons();
 
@@ -204,7 +204,7 @@ public:
           break;
         }
 
-        case event_queue::entry::event::type::shell_command:
+        case event_queue::event::type::shell_command:
           if (auto shell_command = front_input_event.get_event().get_shell_command()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
               queue_.push_back_shell_command_event(*shell_command,
@@ -213,7 +213,7 @@ public:
           }
           break;
 
-        case event_queue::entry::event::type::select_input_source:
+        case event_queue::event::type::select_input_source:
           if (auto input_source_selectors = front_input_event.get_event().get_input_source_selectors()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
               queue_.push_back_select_input_source_event(*input_source_selectors,
@@ -222,7 +222,7 @@ public:
           }
           break;
 
-        case event_queue::entry::event::type::mouse_key:
+        case event_queue::event::type::mouse_key:
           if (auto mouse_key = front_input_event.get_event().get_mouse_key()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
               mouse_key_handler_->async_push_back_mouse_key(front_input_event.get_device_id(),
@@ -238,7 +238,7 @@ public:
           }
           break;
 
-        case event_queue::entry::event::type::stop_keyboard_repeat:
+        case event_queue::event::type::stop_keyboard_repeat:
           if (auto key = queue_.get_keyboard_repeat_detector().get_repeating_key()) {
             key_event_dispatcher_.dispatch_key_up_event(key->first,
                                                         key->second,
@@ -247,15 +247,15 @@ public:
           }
           break;
 
-        case event_queue::entry::event::type::none:
-        case event_queue::entry::event::type::set_variable:
-        case event_queue::entry::event::type::device_keys_and_pointing_buttons_are_released:
-        case event_queue::entry::event::type::device_ungrabbed:
-        case event_queue::entry::event::type::caps_lock_state_changed:
-        case event_queue::entry::event::type::pointing_device_event_from_event_tap:
-        case event_queue::entry::event::type::frontmost_application_changed:
-        case event_queue::entry::event::type::input_source_changed:
-        case event_queue::entry::event::type::keyboard_type_changed:
+        case event_queue::event::type::none:
+        case event_queue::event::type::set_variable:
+        case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
+        case event_queue::event::type::device_ungrabbed:
+        case event_queue::event::type::caps_lock_state_changed:
+        case event_queue::event::type::pointing_device_event_from_event_tap:
+        case event_queue::event::type::frontmost_application_changed:
+        case event_queue::event::type::input_source_changed:
+        case event_queue::event::type::keyboard_type_changed:
           // Do nothing
           break;
       }

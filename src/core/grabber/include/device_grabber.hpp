@@ -282,9 +282,9 @@ public:
 
       event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
         dispatcher_->enqueue([this, event_type, event] {
-          auto e = event_queue::entry::event::make_pointing_device_event_from_event_tap_event();
+          auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
           event_queue::entry entry(device_id(0),
-                                   event_queue::entry::event_time_stamp(time_utility::mach_absolute_time()),
+                                   event_queue::event_time_stamp(time_utility::mach_absolute_time()),
                                    e,
                                    event_type,
                                    event);
@@ -373,10 +373,10 @@ public:
   void async_post_frontmost_application_changed_event(const std::string& bundle_identifier,
                                                       const std::string& file_path) {
     dispatcher_->enqueue([this, bundle_identifier, file_path] {
-      auto event = event_queue::entry::event::make_frontmost_application_changed_event(bundle_identifier,
-                                                                                       file_path);
+      auto event = event_queue::event::make_frontmost_application_changed_event(bundle_identifier,
+                                                                                file_path);
       event_queue::entry entry(device_id(0),
-                               event_queue::entry::event_time_stamp(time_utility::mach_absolute_time()),
+                               event_queue::event_time_stamp(time_utility::mach_absolute_time()),
                                event,
                                event_type::single,
                                event);
@@ -389,9 +389,9 @@ public:
 
   void async_post_input_source_changed_event(const input_source_identifiers& input_source_identifiers) {
     dispatcher_->enqueue([this, input_source_identifiers] {
-      auto event = event_queue::entry::event::make_input_source_changed_event(input_source_identifiers);
+      auto event = event_queue::event::make_input_source_changed_event(input_source_identifiers);
       event_queue::entry entry(device_id(0),
-                               event_queue::entry::event_time_stamp(time_utility::mach_absolute_time()),
+                               event_queue::event_time_stamp(time_utility::mach_absolute_time()),
                                event,
                                event_type::single,
                                event);
@@ -405,9 +405,9 @@ public:
   void async_post_keyboard_type_changed_event(void) {
     dispatcher_->enqueue([this] {
       auto keyboard_type_string = system_preferences_utility::get_keyboard_type_string(system_preferences_.get_keyboard_type());
-      auto event = event_queue::entry::event::make_keyboard_type_changed_event(keyboard_type_string);
+      auto event = event_queue::event::make_keyboard_type_changed_event(keyboard_type_string);
       event_queue::entry entry(device_id(0),
-                               event_queue::entry::event_time_stamp(time_utility::mach_absolute_time()),
+                               event_queue::event_time_stamp(time_utility::mach_absolute_time()),
                                event,
                                event_type::single,
                                event);
@@ -572,9 +572,9 @@ private:
   }
 
   void post_device_ungrabbed_event(device_id device_id) {
-    auto event = event_queue::entry::event::make_device_ungrabbed_event();
+    auto event = event_queue::event::make_device_ungrabbed_event();
     event_queue::entry entry(device_id,
-                             event_queue::entry::event_time_stamp(time_utility::mach_absolute_time()),
+                             event_queue::event_time_stamp(time_utility::mach_absolute_time()),
                              event,
                              event_type::single,
                              event);
@@ -585,9 +585,9 @@ private:
   }
 
   void post_caps_lock_state_changed_event(bool caps_lock_state) {
-    event_queue::entry::event event(event_queue::entry::event::type::caps_lock_state_changed, caps_lock_state);
+    event_queue::event event(event_queue::event::type::caps_lock_state_changed, caps_lock_state);
     event_queue::entry entry(device_id(0),
-                             event_queue::entry::event_time_stamp(time_utility::mach_absolute_time()),
+                             event_queue::event_time_stamp(time_utility::mach_absolute_time()),
                              event,
                              event_type::single,
                              event);

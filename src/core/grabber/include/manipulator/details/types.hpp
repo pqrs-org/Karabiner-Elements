@@ -94,26 +94,26 @@ public:
     return boost::none;
   }
 
-  boost::optional<event_queue::entry::event> to_event(void) const {
+  boost::optional<event_queue::event> to_event(void) const {
     switch (type_) {
       case type::none:
         return boost::none;
       case type::key_code:
-        return event_queue::entry::event(boost::get<key_code>(value_));
+        return event_queue::event(boost::get<key_code>(value_));
       case type::consumer_key_code:
-        return event_queue::entry::event(boost::get<consumer_key_code>(value_));
+        return event_queue::event(boost::get<consumer_key_code>(value_));
       case type::pointing_button:
-        return event_queue::entry::event(boost::get<pointing_button>(value_));
+        return event_queue::event(boost::get<pointing_button>(value_));
       case type::any:
         return boost::none;
       case type::shell_command:
-        return event_queue::entry::event::make_shell_command_event(boost::get<std::string>(value_));
+        return event_queue::event::make_shell_command_event(boost::get<std::string>(value_));
       case type::select_input_source:
-        return event_queue::entry::event::make_select_input_source_event(boost::get<std::vector<input_source_selector>>(value_));
+        return event_queue::event::make_select_input_source_event(boost::get<std::vector<input_source_selector>>(value_));
       case type::set_variable:
-        return event_queue::entry::event::make_set_variable_event(boost::get<std::pair<std::string, int>>(value_));
+        return event_queue::event::make_set_variable_event(boost::get<std::pair<std::string, int>>(value_));
       case type::mouse_key:
-        return event_queue::entry::event::make_mouse_key_event(boost::get<mouse_key>(value_));
+        return event_queue::event::make_mouse_key_event(boost::get<mouse_key>(value_));
     }
   }
 
@@ -617,8 +617,8 @@ public:
     return false;
   }
 
-  std::vector<event_queue::entry::event> make_modifier_events(void) const {
-    std::vector<event_queue::entry::event> events;
+  std::vector<event_queue::event> make_modifier_events(void) const {
+    std::vector<event_queue::event> events;
 
     for (const auto& modifier : modifiers_) {
       // `event_definition::get_modifiers` might return two modifier_flags.

@@ -115,10 +115,10 @@ TEST_CASE("grabbable_state_queues_manager") {
     {
       krbn::event_queue::queue event_queue;
       event_queue.emplace_back_event(device_id1,
-                                     krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(5000)),
-                                     krbn::event_queue::entry::event(krbn::key_code::a),
+                                     krbn::event_queue::event_time_stamp(krbn::absolute_time(5000)),
+                                     krbn::event_queue::event(krbn::key_code::a),
                                      krbn::event_type::key_down,
-                                     krbn::event_queue::entry::event(krbn::key_code::a));
+                                     krbn::event_queue::event(krbn::key_code::a));
       REQUIRE(manager.update_first_grabbed_event_time_stamp(event_queue));
       REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
       REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
@@ -140,10 +140,10 @@ TEST_CASE("grabbable_state_queues_manager") {
     {
       krbn::event_queue::queue event_queue;
       event_queue.emplace_back_event(device_id1,
-                                     krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(4000)),
-                                     krbn::event_queue::entry::event(krbn::key_code::a),
+                                     krbn::event_queue::event_time_stamp(krbn::absolute_time(4000)),
+                                     krbn::event_queue::event(krbn::key_code::a),
                                      krbn::event_type::key_down,
-                                     krbn::event_queue::entry::event(krbn::key_code::a));
+                                     krbn::event_queue::event(krbn::key_code::a));
       REQUIRE(!manager.update_first_grabbed_event_time_stamp(event_queue));
       REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
       REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));

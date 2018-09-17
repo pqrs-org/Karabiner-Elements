@@ -2,8 +2,10 @@
 
 #include "boost_defs.hpp"
 
+#include "event_queue/entry.hpp"
+#include "event_queue/event.hpp"
+#include "event_queue/event_time_stamp.hpp"
 #include "hash_utility.hpp"
-#include "json_utility.hpp"
 #include "manipulator_environment.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
@@ -15,8 +17,6 @@
 
 namespace krbn {
 namespace event_queue {
-#include "event_queue/entry.hpp"
-
 class queue {
 public:
   queue(const queue&) = delete;
@@ -25,10 +25,10 @@ public:
   }
 
   void emplace_back_event(device_id device_id,
-                          const entry::event_time_stamp& event_time_stamp,
-                          const entry::event& event,
+                          const event_time_stamp& event_time_stamp,
+                          const class event& event,
                           event_type event_type,
-                          const entry::event& original_event,
+                          const class event& original_event,
                           bool lazy = false) {
     auto t = event_time_stamp;
     t.set_time_stamp(t.get_time_stamp() + time_stamp_delay_);
@@ -55,7 +55,7 @@ public:
       }
     }
 
-    if (event.get_type() == entry::event::type::caps_lock_state_changed) {
+    if (event.get_type() == event::type::caps_lock_state_changed) {
       if (auto integer_value = event.get_integer_value()) {
         auto type = (*integer_value ? modifier_flag_manager::active_modifier_flag::type::increase_lock
                                     : modifier_flag_manager::active_modifier_flag::type::decrease_lock);
@@ -271,11 +271,11 @@ public:
             pointing_motion_vertical_wheel ? *pointing_motion_vertical_wheel : 0,
             pointing_motion_horizontal_wheel ? *pointing_motion_horizontal_wheel : 0);
 
-        event_queue::entry::event event(pointing_motion);
+        event_queue::event event(pointing_motion);
 
         result.emplace_back(boost::none,
                             entry(device_id,
-                                  entry::event_time_stamp(*pointing_motion_time_stamp),
+                                  event_time_stamp(*pointing_motion_time_stamp),
                                   event,
                                   event_type::single,
                                   event));
@@ -292,28 +292,28 @@ public:
       if (auto usage_page = v.get_hid_usage_page()) {
         if (auto usage = v.get_hid_usage()) {
           if (auto key_code = types::make_key_code(*usage_page, *usage)) {
-            event_queue::entry::event event(*key_code);
+            event_queue::event event(*key_code);
             result.emplace_back(v,
                                 entry(device_id,
-                                      entry::event_time_stamp(v.get_time_stamp()),
+                                      event_time_stamp(v.get_time_stamp()),
                                       event,
                                       v.get_integer_value() ? event_type::key_down : event_type::key_up,
                                       event));
 
           } else if (auto consumer_key_code = types::make_consumer_key_code(*usage_page, *usage)) {
-            event_queue::entry::event event(*consumer_key_code);
+            event_queue::event event(*consumer_key_code);
             result.emplace_back(v,
                                 entry(device_id,
-                                      entry::event_time_stamp(v.get_time_stamp()),
+                                      event_time_stamp(v.get_time_stamp()),
                                       event,
                                       v.get_integer_value() ? event_type::key_down : event_type::key_up,
                                       event));
 
           } else if (auto pointing_button = types::make_pointing_button(*usage_page, *usage)) {
-            event_queue::entry::event event(*pointing_button);
+            event_queue::event event(*pointing_button);
             result.emplace_back(v,
                                 entry(device_id,
-                                      entry::event_time_stamp(v.get_time_stamp()),
+                                      event_time_stamp(v.get_time_stamp()),
                                       event,
                                       v.get_integer_value() ? event_type::key_down : event_type::key_up,
                                       event));
@@ -379,84 +379,5 @@ private:
   manipulator_environment manipulator_environment_;
   absolute_time time_stamp_delay_;
 };
-
-inline void to_json(nlohmann::json& json, const entry::event& value) {
-  json = value.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const entry::event_time_stamp& value) {
-  json = value.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const entry& value) {
-  json = value.to_json();
-}
 } // namespace event_queue
-
-// For unit tests
-
-inline std::ostream& operator<<(std::ostream& stream, const event_queue::entry::event::type& value) {
-  return stream_utility::output_enum(stream, value);
-}
-
-inline std::ostream& operator<<(std::ostream& stream, const event_queue::entry::event& event) {
-  stream << "{"
-         << "\"type\":";
-  stream_utility::output_enum(stream, event.get_type());
-
-  if (auto key_code = event.get_key_code()) {
-    stream << ",\"key_code\":" << *key_code;
-  }
-
-  if (auto pointing_button = event.get_pointing_button()) {
-    stream << ",\"pointing_button\":" << *pointing_button;
-  }
-
-  if (auto pointing_motion = event.get_pointing_motion()) {
-    stream << ",\"pointing_motion\":" << pointing_motion->to_json();
-  }
-
-  stream << "}";
-
-  return stream;
-}
-
-inline std::ostream& operator<<(std::ostream& stream, const event_queue::entry::event_time_stamp& value) {
-  stream << std::endl
-         << "{"
-         << "\"time_stamp\":" << value.get_time_stamp()
-         << ",\"input_delay_time_stamp\":" << value.get_input_delay_time_stamp()
-         << "}";
-  return stream;
-}
-
-inline std::ostream& operator<<(std::ostream& stream, const event_queue::entry& value) {
-  stream << std::endl
-         << "{"
-         << "\"device_id\":" << value.get_device_id()
-         << ",\"event_time_stamp\":" << value.get_event_time_stamp()
-         << ",\"valid\":" << value.get_valid()
-         << ",\"lazy\":" << value.get_lazy()
-         << ",\"event\":" << value.get_event()
-         << ",\"event_type\":" << value.get_event_type()
-         << ",\"original_event\":" << value.get_original_event()
-         << "}";
-  return stream;
-}
 } // namespace krbn
-
-namespace std {
-template <>
-struct hash<krbn::event_queue::entry::event> final {
-  std::size_t operator()(const krbn::event_queue::entry::event& v) const {
-    return hash_value(v);
-  }
-};
-
-template <>
-struct hash<krbn::event_queue::entry::event_time_stamp> final {
-  std::size_t operator()(const krbn::event_queue::entry::event_time_stamp& v) const {
-    return hash_value(v);
-  }
-};
-} // namespace std
