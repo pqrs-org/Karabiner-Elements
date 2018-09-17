@@ -69,8 +69,8 @@ public:
     if (auto value = copy_dictionary_property(CFSTR("keyboardtype"), CFSTR("com.apple.keyboardtype"))) {
       if (auto key = CFStringCreateWithCString(kCFAllocatorDefault,
                                                fmt::format("{0}-{1}-{2}",
-                                                           static_cast<uint16_t>(product_id),
-                                                           static_cast<uint16_t>(vendor_id),
+                                                           type_safe::get(product_id),
+                                                           type_safe::get(vendor_id),
                                                            country_code)
                                                    .c_str(),
                                                kCFStringEncodingUTF8)) {
