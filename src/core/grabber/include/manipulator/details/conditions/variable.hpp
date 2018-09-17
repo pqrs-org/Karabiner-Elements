@@ -54,7 +54,7 @@ public:
   virtual ~variable(void) {
   }
 
-  virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
+  virtual bool is_fulfilled(const event_queue::entry& entry,
                             const manipulator_environment& manipulator_environment) const {
     switch (type_) {
       case type::variable_if:

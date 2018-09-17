@@ -77,9 +77,9 @@ public:
 
 private:
   void values_arrived(std::shared_ptr<krbn::event_queue> event_queue) {
-    for (const auto& queued_event : event_queue->get_events()) {
+    for (const auto& entry : event_queue->get_entries()) {
       libkrbn_hid_value_event_type event_type = libkrbn_hid_value_event_type_key_down;
-      switch (queued_event.get_event_type()) {
+      switch (entry.get_event_type()) {
         case krbn::event_type::key_down:
           event_type = libkrbn_hid_value_event_type_key_down;
           break;
@@ -91,9 +91,9 @@ private:
           break;
       }
 
-      switch (queued_event.get_event().get_type()) {
-        case krbn::event_queue::queued_event::event::type::key_code:
-          if (auto key_code = queued_event.get_event().get_key_code()) {
+      switch (entry.get_event().get_type()) {
+        case krbn::event_queue::entry::event::type::key_code:
+          if (auto key_code = entry.get_event().get_key_code()) {
             callback_(libkrbn_hid_value_type_key_code,
                       static_cast<uint32_t>(*key_code),
                       event_type,
@@ -101,8 +101,8 @@ private:
           }
           break;
 
-        case krbn::event_queue::queued_event::event::type::consumer_key_code:
-          if (auto consumer_key_code = queued_event.get_event().get_consumer_key_code()) {
+        case krbn::event_queue::entry::event::type::consumer_key_code:
+          if (auto consumer_key_code = entry.get_event().get_consumer_key_code()) {
             callback_(libkrbn_hid_value_type_consumer_key_code,
                       static_cast<uint32_t>(*consumer_key_code),
                       event_type,
@@ -110,21 +110,21 @@ private:
           }
           break;
 
-        case krbn::event_queue::queued_event::event::type::none:
-        case krbn::event_queue::queued_event::event::type::pointing_button:
-        case krbn::event_queue::queued_event::event::type::pointing_motion:
-        case krbn::event_queue::queued_event::event::type::shell_command:
-        case krbn::event_queue::queued_event::event::type::select_input_source:
-        case krbn::event_queue::queued_event::event::type::set_variable:
-        case krbn::event_queue::queued_event::event::type::mouse_key:
-        case krbn::event_queue::queued_event::event::type::stop_keyboard_repeat:
-        case krbn::event_queue::queued_event::event::type::device_keys_and_pointing_buttons_are_released:
-        case krbn::event_queue::queued_event::event::type::device_ungrabbed:
-        case krbn::event_queue::queued_event::event::type::caps_lock_state_changed:
-        case krbn::event_queue::queued_event::event::type::pointing_device_event_from_event_tap:
-        case krbn::event_queue::queued_event::event::type::frontmost_application_changed:
-        case krbn::event_queue::queued_event::event::type::input_source_changed:
-        case krbn::event_queue::queued_event::event::type::keyboard_type_changed:
+        case krbn::event_queue::entry::event::type::none:
+        case krbn::event_queue::entry::event::type::pointing_button:
+        case krbn::event_queue::entry::event::type::pointing_motion:
+        case krbn::event_queue::entry::event::type::shell_command:
+        case krbn::event_queue::entry::event::type::select_input_source:
+        case krbn::event_queue::entry::event::type::set_variable:
+        case krbn::event_queue::entry::event::type::mouse_key:
+        case krbn::event_queue::entry::event::type::stop_keyboard_repeat:
+        case krbn::event_queue::entry::event::type::device_keys_and_pointing_buttons_are_released:
+        case krbn::event_queue::entry::event::type::device_ungrabbed:
+        case krbn::event_queue::entry::event::type::caps_lock_state_changed:
+        case krbn::event_queue::entry::event::type::pointing_device_event_from_event_tap:
+        case krbn::event_queue::entry::event::type::frontmost_application_changed:
+        case krbn::event_queue::entry::event::type::input_source_changed:
+        case krbn::event_queue::entry::event::type::keyboard_type_changed:
           break;
       }
     }

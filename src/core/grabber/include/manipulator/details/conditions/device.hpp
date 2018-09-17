@@ -52,10 +52,10 @@ public:
   virtual ~device(void) {
   }
 
-  virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
+  virtual bool is_fulfilled(const event_queue::entry& entry,
                             const manipulator_environment& manipulator_environment) const {
     if (!definitions_.empty()) {
-      if (auto dd = types::find_device_detail(queued_event.get_device_id())) {
+      if (auto dd = types::find_device_detail(entry.get_device_id())) {
         for (const auto& d : definitions_) {
           bool fulfilled = true;
 

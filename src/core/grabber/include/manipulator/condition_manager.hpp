@@ -15,12 +15,12 @@ public:
     conditions_.push_back(condition);
   }
 
-  bool is_fulfilled(const event_queue::queued_event& queued_event,
+  bool is_fulfilled(const event_queue::entry& entry,
                     const manipulator_environment& manipulator_environment) const {
     bool result = true;
 
     for (const auto& c : conditions_) {
-      if (!c->is_fulfilled(queued_event,
+      if (!c->is_fulfilled(entry,
                            manipulator_environment)) {
         result = false;
       }

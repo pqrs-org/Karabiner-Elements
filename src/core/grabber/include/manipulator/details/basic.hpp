@@ -119,7 +119,7 @@ public:
     }
   }
 
-  virtual bool already_manipulated(const event_queue::queued_event& front_input_event) {
+  virtual bool already_manipulated(const event_queue::entry& front_input_event) {
     // Skip if the key_down event is already manipulated by `simultaneous`.
 
     manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
@@ -144,7 +144,7 @@ public:
     return false;
   }
 
-  virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
+  virtual manipulate_result manipulate(event_queue::entry& front_input_event,
                                        const event_queue& input_event_queue,
                                        const std::shared_ptr<event_queue>& output_event_queue,
                                        absolute_time now) {
@@ -211,32 +211,32 @@ public:
               std::unordered_set<manipulated_original_event::from_event, manipulated_original_event::from_event_hash> from_events;
 
               {
-                std::vector<event_queue::queued_event::event> ordered_key_down_events;
-                std::vector<event_queue::queued_event::event> ordered_key_up_events;
+                std::vector<event_queue::entry::event> ordered_key_down_events;
+                std::vector<event_queue::entry::event> ordered_key_up_events;
                 std::chrono::milliseconds simultaneous_threshold_milliseconds(parameters_.get_basic_simultaneous_threshold_milliseconds());
                 auto end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() +
                                       time_utility::to_absolute_time(simultaneous_threshold_milliseconds);
 
-                for (const auto& queued_event : input_event_queue.get_events()) {
+                for (const auto& entry : input_event_queue.get_entries()) {
                   if (!is_target) {
                     break;
                   }
 
-                  if (!queued_event.get_valid()) {
+                  if (!entry.get_valid()) {
                     continue;
                   }
 
-                  if (end_time_stamp < queued_event.get_event_time_stamp().get_time_stamp()) {
+                  if (end_time_stamp < entry.get_event_time_stamp().get_time_stamp()) {
                     break;
                   }
 
-                  manipulated_original_event::from_event fe(queued_event.get_device_id(),
-                                                            queued_event.get_event(),
-                                                            queued_event.get_original_event());
+                  manipulated_original_event::from_event fe(entry.get_device_id(),
+                                                            entry.get_event(),
+                                                            entry.get_original_event());
 
-                  switch (queued_event.get_event_type()) {
+                  switch (entry.get_event_type()) {
                     case event_type::key_down:
-                      if (from_event_definition::test_event(queued_event.get_event(), from_)) {
+                      if (from_event_definition::test_event(entry.get_event(), from_)) {
                         // Insert the first event if the same events are arrived from different device.
 
                         if (std::none_of(std::begin(from_events),
@@ -245,7 +245,7 @@ public:
                                            return fe.get_event() == e.get_event();
                                          })) {
                           from_events.insert(fe);
-                          ordered_key_down_events.push_back(queued_event.get_event());
+                          ordered_key_down_events.push_back(entry.get_event());
                         }
 
                       } else {
@@ -272,9 +272,9 @@ public:
                           if (std::none_of(std::begin(ordered_key_up_events),
                                            std::end(ordered_key_up_events),
                                            [&](auto& e) {
-                                             return e == queued_event.get_event();
+                                             return e == entry.get_event();
                                            })) {
-                            ordered_key_up_events.push_back(queued_event.get_event());
+                            ordered_key_up_events.push_back(entry.get_event());
                           }
                         }
                       }
@@ -356,7 +356,7 @@ public:
 
                       output_event_queue->emplace_back_event(front_input_event.get_device_id(),
                                                              front_input_event.get_event_time_stamp(),
-                                                             event_queue::queued_event::event::make_stop_keyboard_repeat_event(),
+                                                             event_queue::entry::event::make_stop_keyboard_repeat_event(),
                                                              event_type::single,
                                                              front_input_event.get_original_event(),
                                                              true);
@@ -612,7 +612,7 @@ public:
     return false;
   }
 
-  virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::queued_event& front_input_event,
+  virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
                                                                           event_queue& output_event_queue) {
   }
 
@@ -631,7 +631,7 @@ public:
                                        std::end(manipulated_original_events_));
   }
 
-  virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
+  virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
                                                            event_queue& output_event_queue) {
     unset_alone_if_needed(front_input_event.get_original_event(),
                           front_input_event.get_event_type());
@@ -653,7 +653,7 @@ public:
     return to_;
   }
 
-  void post_from_mandatory_modifiers_key_up(const event_queue::queued_event& front_input_event,
+  void post_from_mandatory_modifiers_key_up(const event_queue::entry& front_input_event,
                                             manipulated_original_event& current_manipulated_original_event,
                                             absolute_time& time_stamp_delay,
                                             event_queue& output_event_queue) const {
@@ -704,7 +704,7 @@ public:
                                   output_event_queue);
   }
 
-  void post_from_mandatory_modifiers_key_down(const event_queue::queued_event& front_input_event,
+  void post_from_mandatory_modifiers_key_down(const event_queue::entry& front_input_event,
                                               manipulated_original_event& current_manipulated_original_event,
                                               absolute_time& time_stamp_delay,
                                               event_queue& output_event_queue) const {
@@ -733,7 +733,7 @@ public:
                                   output_event_queue);
   }
 
-  void post_events_at_key_down(const event_queue::queued_event& front_input_event,
+  void post_events_at_key_down(const event_queue::entry& front_input_event,
                                std::vector<to_event_definition> to_events,
                                manipulated_original_event& current_manipulated_original_event,
                                absolute_time& time_stamp_delay,
@@ -837,14 +837,14 @@ public:
     }
   }
 
-  void post_events_at_key_up(const event_queue::queued_event& front_input_event,
+  void post_events_at_key_up(const event_queue::entry& front_input_event,
                              manipulated_original_event& current_manipulated_original_event,
                              absolute_time& time_stamp_delay,
                              event_queue& output_event_queue) const {
     for (const auto& e : current_manipulated_original_event.get_events_at_key_up().get_events()) {
       auto t = front_input_event.get_event_time_stamp();
       t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-      output_event_queue.push_back_event(e.make_queued_event(t));
+      output_event_queue.push_back_event(e.make_entry(t));
     }
     current_manipulated_original_event.get_events_at_key_up().clear_events();
   }
@@ -890,7 +890,7 @@ private:
     return false;
   }
 
-  void post_lazy_modifier_key_events(const event_queue::queued_event& front_input_event,
+  void post_lazy_modifier_key_events(const event_queue::entry& front_input_event,
                                      const std::unordered_set<modifier_flag>& modifiers,
                                      event_type event_type,
                                      absolute_time& time_stamp_delay,
@@ -900,18 +900,18 @@ private:
         auto t = front_input_event.get_event_time_stamp();
         t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-        event_queue::queued_event event(front_input_event.get_device_id(),
-                                        t,
-                                        event_queue::queued_event::event(*key_code),
-                                        event_type,
-                                        front_input_event.get_original_event(),
-                                        true);
+        event_queue::entry event(front_input_event.get_device_id(),
+                                 t,
+                                 event_queue::entry::event(*key_code),
+                                 event_type,
+                                 front_input_event.get_original_event(),
+                                 true);
         output_event_queue.push_back_event(event);
       }
     }
   }
 
-  void post_extra_to_events(const event_queue::queued_event& front_input_event,
+  void post_extra_to_events(const event_queue::entry& front_input_event,
                             const std::vector<to_event_definition>& to_events,
                             manipulated_original_event& current_manipulated_original_event,
                             absolute_time& time_stamp_delay,
@@ -990,11 +990,11 @@ private:
     }
   }
 
-  void unset_alone_if_needed(const event_queue::queued_event::event& event,
+  void unset_alone_if_needed(const event_queue::entry::event& event,
                              event_type event_type) {
-    if (event.get_type() == event_queue::queued_event::event::type::key_code ||
-        event.get_type() == event_queue::queued_event::event::type::consumer_key_code ||
-        event.get_type() == event_queue::queued_event::event::type::pointing_button) {
+    if (event.get_type() == event_queue::entry::event::type::key_code ||
+        event.get_type() == event_queue::entry::event::type::consumer_key_code ||
+        event.get_type() == event_queue::entry::event::type::pointing_button) {
       if (event_type == event_type::key_down) {
         goto run;
       }

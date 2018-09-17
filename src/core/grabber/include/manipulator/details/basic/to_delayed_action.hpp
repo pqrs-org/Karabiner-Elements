@@ -50,7 +50,7 @@ public:
     }
   }
 
-  void setup(const event_queue::queued_event& front_input_event,
+  void setup(const event_queue::entry& front_input_event,
              const std::shared_ptr<manipulated_original_event>& current_manipulated_original_event,
              const std::shared_ptr<event_queue>& output_event_queue,
              std::chrono::milliseconds delay_milliseconds) {
@@ -82,7 +82,7 @@ public:
     }
   }
 
-  void cancel(const event_queue::queued_event& front_input_event) {
+  void cancel(const event_queue::entry& front_input_event) {
     if (auto manipulator_timer = basic_.get_weak_manipulator_timer().lock()) {
       if (front_input_event.get_event_type() != event_type::key_down) {
         return;
@@ -150,7 +150,7 @@ private:
   std::vector<to_event_definition> to_if_invoked_;
   std::vector<to_event_definition> to_if_canceled_;
   manipulator_object_id manipulator_object_id_;
-  boost::optional<event_queue::queued_event> front_input_event_;
+  boost::optional<event_queue::entry> front_input_event_;
   std::shared_ptr<manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue> output_event_queue_;
 };

@@ -507,21 +507,21 @@ private:
       CFRelease(value);
     }
 
-    for (const auto& pair : event_queue::make_queued_events(hid_values, device_id_)) {
+    for (const auto& pair : event_queue::make_entrys(hid_values, device_id_)) {
       auto& hid_value = pair.first;
-      auto& queued_event = pair.second;
+      auto& entry = pair.second;
 
-      input_event_queue->push_back_event(queued_event);
+      input_event_queue->push_back_event(entry);
 
       if (hid_value) {
         if (auto hid_usage_page = hid_value->get_hid_usage_page()) {
           if (auto hid_usage = hid_value->get_hid_usage()) {
-            if (queued_event.get_event().get_type() == event_queue::queued_event::event::type::key_code ||
-                queued_event.get_event().get_type() == event_queue::queued_event::event::type::consumer_key_code ||
-                queued_event.get_event().get_type() == event_queue::queued_event::event::type::pointing_button) {
+            if (entry.get_event().get_type() == event_queue::entry::event::type::key_code ||
+                entry.get_event().get_type() == event_queue::entry::event::type::consumer_key_code ||
+                entry.get_event().get_type() == event_queue::entry::event::type::pointing_button) {
               // Send `device_keys_and_pointing_buttons_are_released` event if needed.
 
-              if (queued_event.get_event_type() == event_type::key_down) {
+              if (entry.get_event_type() == event_type::key_down) {
                 pressed_keys_.insert(elements_key(*hid_usage_page, *hid_usage));
               } else {
                 size_t size = pressed_keys_.size();
@@ -543,9 +543,9 @@ private:
   void post_device_keys_and_pointing_buttons_are_released_event_if_needed(std::shared_ptr<event_queue> input_event_queue,
                                                                           absolute_time time_stamp) {
     if (pressed_keys_.empty()) {
-      auto event = event_queue::queued_event::event::make_device_keys_and_pointing_buttons_are_released_event();
+      auto event = event_queue::entry::event::make_device_keys_and_pointing_buttons_are_released_event();
       input_event_queue->emplace_back_event(device_id_,
-                                            event_queue::queued_event::event_time_stamp(time_stamp),
+                                            event_queue::entry::event_time_stamp(time_stamp),
                                             event,
                                             event_type::single,
                                             event);

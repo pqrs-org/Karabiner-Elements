@@ -16,7 +16,7 @@
 namespace krbn {
 class event_queue final {
 public:
-  class queued_event final {
+  class entry final {
   public:
     class event {
     public:
@@ -632,26 +632,26 @@ public:
       absolute_time input_delay_time_stamp_;
     };
 
-    queued_event(device_id device_id,
-                 const event_time_stamp& event_time_stamp,
-                 const class event& event,
-                 event_type event_type,
-                 const class event& original_event,
-                 bool lazy = false) : device_id_(device_id),
-                                      event_time_stamp_(event_time_stamp),
-                                      valid_(true),
-                                      lazy_(lazy),
-                                      event_(event),
-                                      event_type_(event_type),
-                                      original_event_(original_event) {
+    entry(device_id device_id,
+          const event_time_stamp& event_time_stamp,
+          const class event& event,
+          event_type event_type,
+          const class event& original_event,
+          bool lazy = false) : device_id_(device_id),
+                               event_time_stamp_(event_time_stamp),
+                               valid_(true),
+                               lazy_(lazy),
+                               event_(event),
+                               event_type_(event_type),
+                               original_event_(original_event) {
     }
 
-    static queued_event make_from_json(const nlohmann::json& json) {
-      queued_event result(device_id::zero,
-                          event_time_stamp(absolute_time(0)),
-                          event(),
-                          event_type::key_down,
-                          event());
+    static entry make_from_json(const nlohmann::json& json) {
+      entry result(device_id::zero,
+                   event_time_stamp(absolute_time(0)),
+                   event(),
+                   event_type::key_down,
+                   event());
 
       if (json.is_object()) {
         if (auto v = json_utility::find_optional<uint32_t>(json, "device_id")) {
@@ -735,7 +735,7 @@ public:
       return original_event_;
     }
 
-    bool operator==(const queued_event& other) const {
+    bool operator==(const entry& other) const {
       return get_device_id() == other.get_device_id() &&
              get_event_time_stamp() == other.get_event_time_stamp() &&
              get_valid() == other.get_valid() &&
@@ -761,10 +761,10 @@ public:
   }
 
   void emplace_back_event(device_id device_id,
-                          const queued_event::event_time_stamp& event_time_stamp,
-                          const queued_event::event& event,
+                          const entry::event_time_stamp& event_time_stamp,
+                          const entry::event& event,
                           event_type event_type,
-                          const queued_event::event& original_event,
+                          const entry::event& original_event,
                           bool lazy = false) {
     auto t = event_time_stamp;
     t.set_time_stamp(t.get_time_stamp() + time_stamp_delay_);
@@ -791,7 +791,7 @@ public:
       }
     }
 
-    if (event.get_type() == queued_event::event::type::caps_lock_state_changed) {
+    if (event.get_type() == entry::event::type::caps_lock_state_changed) {
       if (auto integer_value = event.get_integer_value()) {
         auto type = (*integer_value ? modifier_flag_manager::active_modifier_flag::type::increase_lock
                                     : modifier_flag_manager::active_modifier_flag::type::decrease_lock);
@@ -833,14 +833,14 @@ public:
     }
   }
 
-  void push_back_event(const queued_event& queued_event) {
-    emplace_back_event(queued_event.get_device_id(),
-                       queued_event.get_event_time_stamp(),
-                       queued_event.get_event(),
-                       queued_event.get_event_type(),
-                       queued_event.get_original_event(),
-                       queued_event.get_lazy());
-    events_.back().set_valid(queued_event.get_valid());
+  void push_back_event(const entry& entry) {
+    emplace_back_event(entry.get_device_id(),
+                       entry.get_event_time_stamp(),
+                       entry.get_event(),
+                       entry.get_event_type(),
+                       entry.get_original_event(),
+                       entry.get_lazy());
+    events_.back().set_valid(entry.get_valid());
   }
 
   void clear_events(void) {
@@ -848,7 +848,7 @@ public:
     time_stamp_delay_ = absolute_time(0);
   }
 
-  queued_event& get_front_event(void) {
+  entry& get_front_event(void) {
     return events_.front();
   }
 
@@ -863,7 +863,7 @@ public:
     return events_.empty();
   }
 
-  const std::vector<queued_event>& get_events(void) const {
+  const std::vector<entry>& get_entries(void) const {
     return events_;
   }
 
@@ -911,7 +911,7 @@ public:
     time_stamp_delay_ += value;
   }
 
-  static bool needs_swap(const queued_event& v1, const queued_event& v2) {
+  static bool needs_swap(const entry& v1, const entry& v2) {
     // Some devices are send modifier flag and key at the same HID report.
     // For example, a key sends control+up-arrow by this reports.
     //
@@ -986,9 +986,9 @@ public:
     return false;
   }
 
-  static std::vector<std::pair<boost::optional<hid_value>, queued_event>> make_queued_events(const std::vector<hid_value>& hid_values,
-                                                                                             device_id device_id) {
-    std::vector<std::pair<boost::optional<hid_value>, queued_event>> result;
+  static std::vector<std::pair<boost::optional<hid_value>, entry>> make_entrys(const std::vector<hid_value>& hid_values,
+                                                                               device_id device_id) {
+    std::vector<std::pair<boost::optional<hid_value>, entry>> result;
 
     // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.
     // We have to join them into one pointing_motion event to avoid VMware Remote Console problem that VMRC ignores frequently events.
@@ -1007,14 +1007,14 @@ public:
             pointing_motion_vertical_wheel ? *pointing_motion_vertical_wheel : 0,
             pointing_motion_horizontal_wheel ? *pointing_motion_horizontal_wheel : 0);
 
-        event_queue::queued_event::event event(pointing_motion);
+        event_queue::entry::event event(pointing_motion);
 
         result.emplace_back(boost::none,
-                            queued_event(device_id,
-                                         queued_event::event_time_stamp(*pointing_motion_time_stamp),
-                                         event,
-                                         event_type::single,
-                                         event));
+                            entry(device_id,
+                                  entry::event_time_stamp(*pointing_motion_time_stamp),
+                                  event,
+                                  event_type::single,
+                                  event));
 
         pointing_motion_time_stamp = boost::none;
         pointing_motion_x = boost::none;
@@ -1028,31 +1028,31 @@ public:
       if (auto usage_page = v.get_hid_usage_page()) {
         if (auto usage = v.get_hid_usage()) {
           if (auto key_code = types::make_key_code(*usage_page, *usage)) {
-            event_queue::queued_event::event event(*key_code);
+            event_queue::entry::event event(*key_code);
             result.emplace_back(v,
-                                queued_event(device_id,
-                                             queued_event::event_time_stamp(v.get_time_stamp()),
-                                             event,
-                                             v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                             event));
+                                entry(device_id,
+                                      entry::event_time_stamp(v.get_time_stamp()),
+                                      event,
+                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
+                                      event));
 
           } else if (auto consumer_key_code = types::make_consumer_key_code(*usage_page, *usage)) {
-            event_queue::queued_event::event event(*consumer_key_code);
+            event_queue::entry::event event(*consumer_key_code);
             result.emplace_back(v,
-                                queued_event(device_id,
-                                             queued_event::event_time_stamp(v.get_time_stamp()),
-                                             event,
-                                             v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                             event));
+                                entry(device_id,
+                                      entry::event_time_stamp(v.get_time_stamp()),
+                                      event,
+                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
+                                      event));
 
           } else if (auto pointing_button = types::make_pointing_button(*usage_page, *usage)) {
-            event_queue::queued_event::event event(*pointing_button);
+            event_queue::entry::event event(*pointing_button);
             result.emplace_back(v,
-                                queued_event(device_id,
-                                             queued_event::event_time_stamp(v.get_time_stamp()),
-                                             event,
-                                             v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                             event));
+                                entry(device_id,
+                                      entry::event_time_stamp(v.get_time_stamp()),
+                                      event,
+                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
+                                      event));
 
           } else if (*usage_page == hid_usage_page::generic_desktop &&
                      *usage == hid_usage::gd_x) {
@@ -1109,7 +1109,7 @@ private:
     }
   }
 
-  std::vector<queued_event> events_;
+  std::vector<entry> events_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
   manipulator_environment manipulator_environment_;
@@ -1118,11 +1118,11 @@ private:
 
 // For unit tests
 
-inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event::type& value) {
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::entry::event::type& value) {
   return stream_utility::output_enum(stream, value);
 }
 
-inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event& event) {
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::entry::event& event) {
   stream << "{"
          << "\"type\":";
   stream_utility::output_enum(stream, event.get_type());
@@ -1144,7 +1144,7 @@ inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_
   return stream;
 }
 
-inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event::event_time_stamp& value) {
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::entry::event_time_stamp& value) {
   stream << std::endl
          << "{"
          << "\"time_stamp\":" << value.get_time_stamp()
@@ -1153,7 +1153,7 @@ inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_
   return stream;
 }
 
-inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_event& value) {
+inline std::ostream& operator<<(std::ostream& stream, const event_queue::entry& value) {
   stream << std::endl
          << "{"
          << "\"device_id\":" << value.get_device_id()
@@ -1167,30 +1167,30 @@ inline std::ostream& operator<<(std::ostream& stream, const event_queue::queued_
   return stream;
 }
 
-inline void to_json(nlohmann::json& json, const event_queue::queued_event::event& value) {
+inline void to_json(nlohmann::json& json, const event_queue::entry::event& value) {
   json = value.to_json();
 }
 
-inline void to_json(nlohmann::json& json, const event_queue::queued_event::event_time_stamp& value) {
+inline void to_json(nlohmann::json& json, const event_queue::entry::event_time_stamp& value) {
   json = value.to_json();
 }
 
-inline void to_json(nlohmann::json& json, const event_queue::queued_event& value) {
+inline void to_json(nlohmann::json& json, const event_queue::entry& value) {
   json = value.to_json();
 }
 } // namespace krbn
 
 namespace std {
 template <>
-struct hash<krbn::event_queue::queued_event::event> final {
-  std::size_t operator()(const krbn::event_queue::queued_event::event& v) const {
+struct hash<krbn::event_queue::entry::event> final {
+  std::size_t operator()(const krbn::event_queue::entry::event& v) const {
     return hash_value(v);
   }
 };
 
 template <>
-struct hash<krbn::event_queue::queued_event::event_time_stamp> final {
-  std::size_t operator()(const krbn::event_queue::queued_event::event_time_stamp& v) const {
+struct hash<krbn::event_queue::entry::event_time_stamp> final {
+  std::size_t operator()(const krbn::event_queue::entry::event_time_stamp& v) const {
     return hash_value(v);
   }
 };

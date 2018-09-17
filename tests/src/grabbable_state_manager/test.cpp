@@ -71,15 +71,15 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(1000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(1000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                 krbn::event_queue::entry::event(krbn::key_code::a));
   event_queue.emplace_back_event(device_id2,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(1010)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(1010)),
+                                 krbn::event_queue::entry::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                 krbn::event_queue::entry::event(krbn::key_code::a));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -114,10 +114,10 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(2000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(2000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                 krbn::event_queue::entry::event(krbn::key_code::a));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -148,10 +148,10 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(3000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(3000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                 krbn::event_queue::entry::event(krbn::key_code::a));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -182,10 +182,10 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(4000)),
-                                 krbn::event_queue::queued_event::event(krbn::consumer_key_code::volume_increment),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(4000)),
+                                 krbn::event_queue::entry::event(krbn::consumer_key_code::volume_increment),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::queued_event::event(krbn::consumer_key_code::volume_increment));
+                                 krbn::event_queue::entry::event(krbn::consumer_key_code::volume_increment));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -216,10 +216,10 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(5000)),
-                                 krbn::event_queue::queued_event::event(krbn::consumer_key_code::volume_increment),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(5000)),
+                                 krbn::event_queue::entry::event(krbn::consumer_key_code::volume_increment),
                                  krbn::event_type::key_up,
-                                 krbn::event_queue::queued_event::event(krbn::consumer_key_code::volume_increment));
+                                 krbn::event_queue::entry::event(krbn::consumer_key_code::volume_increment));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -250,10 +250,10 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(6000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(6000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
+                                 krbn::event_queue::entry::event(krbn::key_code::left_shift));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -284,10 +284,10 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(7000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(7000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_up,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
+                                 krbn::event_queue::entry::event(krbn::key_code::left_shift));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -318,10 +318,10 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id2,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(8000)),
-                                 krbn::event_queue::queued_event::event(krbn::pointing_button::button1),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(8000)),
+                                 krbn::event_queue::entry::event(krbn::pointing_button::button1),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::queued_event::event(krbn::pointing_button::button1));
+                                 krbn::event_queue::entry::event(krbn::pointing_button::button1));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -352,10 +352,10 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id2,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(9000)),
-                                 krbn::event_queue::queued_event::event(krbn::pointing_button::button1),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(9000)),
+                                 krbn::event_queue::entry::event(krbn::pointing_button::button1),
                                  krbn::event_type::key_up,
-                                 krbn::event_queue::queued_event::event(krbn::pointing_button::button1));
+                                 krbn::event_queue::entry::event(krbn::pointing_button::button1));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -386,25 +386,25 @@ TEST_CASE("grabbable_state_manager") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(10000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(10000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
+                                 krbn::event_queue::entry::event(krbn::key_code::left_shift));
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(11000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(11000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                 krbn::event_queue::entry::event(krbn::key_code::a));
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(12000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(12000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::a),
                                  krbn::event_type::key_up,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                 krbn::event_queue::entry::event(krbn::key_code::a));
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(13000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(13000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::left_shift),
                                  krbn::event_type::key_up,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::left_shift));
+                                 krbn::event_queue::entry::event(krbn::key_code::left_shift));
 
   grabbable_state_manager.update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -464,10 +464,10 @@ TEST_CASE("device_error") {
 
   event_queue.clear_events();
   event_queue.emplace_back_event(device_id1,
-                                 krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(2000)),
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                 krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(2000)),
+                                 krbn::event_queue::entry::event(krbn::key_code::a),
                                  krbn::event_type::key_down,
-                                 krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                 krbn::event_queue::entry::event(krbn::key_code::a));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
                                                         krbn::grabbable_state::state::ungrabbable_temporarily,

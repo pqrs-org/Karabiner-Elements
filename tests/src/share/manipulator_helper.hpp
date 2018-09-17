@@ -133,7 +133,7 @@ public:
             }
 
           } else {
-            auto e = event_queue::queued_event::make_from_json(j);
+            auto e = event_queue::entry::make_from_json(j);
             now = e.get_event_time_stamp().get_time_stamp();
             event_queues.front()->push_back_event(e);
             if (!pause_manipulation) {
@@ -149,15 +149,15 @@ public:
         if (overwrite_expected_results) {
           std::ofstream ofs(*s);
           REQUIRE(ofs);
-          ofs << nlohmann::json(event_queues.back()->get_events()).dump(4) << std::endl;
+          ofs << nlohmann::json(event_queues.back()->get_entries()).dump(4) << std::endl;
         }
 
         std::ifstream ifs(*s);
         REQUIRE(ifs);
         auto expected = nlohmann::json::parse(ifs);
 
-        REQUIRE(event_queues.front()->get_events().empty());
-        REQUIRE(nlohmann::json(event_queues.back()->get_events()).dump() == expected.dump());
+        REQUIRE(event_queues.front()->get_entries().empty());
+        REQUIRE(nlohmann::json(event_queues.back()->get_entries()).dump() == expected.dump());
 
       } else if (auto s = json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         if (overwrite_expected_results) {

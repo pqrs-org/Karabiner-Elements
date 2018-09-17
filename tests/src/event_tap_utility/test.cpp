@@ -12,11 +12,11 @@ TEST_CASE("make_event") {
   {
     auto actual = krbn::event_tap_utility::make_event(kCGEventLeftMouseDown, nullptr);
     REQUIRE(actual->first == krbn::event_type::key_down);
-    REQUIRE(actual->second == krbn::event_queue::queued_event::event(krbn::pointing_button::button1));
+    REQUIRE(actual->second == krbn::event_queue::entry::event(krbn::pointing_button::button1));
   }
   {
     auto actual = krbn::event_tap_utility::make_event(kCGEventOtherMouseUp, nullptr);
     REQUIRE(actual->first == krbn::event_type::key_up);
-    REQUIRE(actual->second == krbn::event_queue::queued_event::event(krbn::pointing_button::button3));
+    REQUIRE(actual->second == krbn::event_queue::entry::event(krbn::pointing_button::button3));
   }
 }

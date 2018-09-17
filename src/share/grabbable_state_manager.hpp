@@ -62,14 +62,13 @@ public:
   void update(const event_queue& event_queue) {
     std::lock_guard<std::mutex> lock(entries_mutex_);
 
-    for (const auto& queued_event : event_queue.get_events()) {
-      if (auto device_detail = types::find_device_detail(queued_event.get_device_id())) {
+    for (const auto& event_queue_entry : event_queue.get_entries()) {
+      if (auto device_detail = types::find_device_detail(event_queue_entry.get_device_id())) {
         if (auto registry_entry_id = device_detail->get_registry_entry_id()) {
-          auto time_stamp = queued_event.get_event_time_stamp().get_time_stamp();
+          auto time_stamp = event_queue_entry.get_event_time_stamp().get_time_stamp();
 
           auto it = entries_.find(*registry_entry_id);
           if (it == std::end(entries_)) {
-
             entries_.emplace(*registry_entry_id,
                              entry(*registry_entry_id));
             it = entries_.find(*registry_entry_id);
@@ -80,7 +79,7 @@ public:
 
             it->second.update(*registry_entry_id,
                               time_stamp,
-                              queued_event);
+                              event_queue_entry);
 
             auto new_state = it->second.get_grabbable_state();
 

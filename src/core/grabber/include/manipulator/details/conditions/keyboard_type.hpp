@@ -46,7 +46,7 @@ public:
   virtual ~keyboard_type(void) {
   }
 
-  virtual bool is_fulfilled(const event_queue::queued_event& queued_event,
+  virtual bool is_fulfilled(const event_queue::entry& entry,
                             const manipulator_environment& manipulator_environment) const {
     for (const auto& t : keyboard_types_) {
       if (t == manipulator_environment.get_keyboard_type()) {

@@ -8,21 +8,21 @@ public:
     }
 
     from_event(device_id device_id,
-               const event_queue::queued_event::event& event,
-               const event_queue::queued_event::event& original_event) : device_id_(device_id),
-                                                                         event_(event),
-                                                                         original_event_(original_event) {
+               const event_queue::entry::event& event,
+               const event_queue::entry::event& original_event) : device_id_(device_id),
+                                                                  event_(event),
+                                                                  original_event_(original_event) {
     }
 
     device_id get_device_id(void) const {
       return device_id_;
     }
 
-    const event_queue::queued_event::event& get_event(void) const {
+    const event_queue::entry::event& get_event(void) const {
       return event_;
     }
 
-    const event_queue::queued_event::event& get_original_event(void) const {
+    const event_queue::entry::event& get_original_event(void) const {
       return original_event_;
     }
 
@@ -42,8 +42,8 @@ public:
 
   private:
     device_id device_id_;
-    event_queue::queued_event::event event_;
-    event_queue::queued_event::event original_event_;
+    event_queue::entry::event event_;
+    event_queue::entry::event original_event_;
   };
 
   struct from_event_hash final {
@@ -57,9 +57,9 @@ public:
     class entry {
     public:
       entry(device_id device_id,
-            const event_queue::queued_event::event& event,
+            const event_queue::entry::event& event,
             event_type event_type,
-            const event_queue::queued_event::event& original_event,
+            const event_queue::entry::event& original_event,
             bool lazy) : device_id_(device_id),
                          event_(event),
                          event_type_(event_type),
@@ -67,20 +67,20 @@ public:
                          lazy_(lazy) {
       }
 
-      event_queue::queued_event make_queued_event(const event_queue::queued_event::event_time_stamp& event_time_stamp) const {
-        return event_queue::queued_event(device_id_,
-                                         event_time_stamp,
-                                         event_,
-                                         event_type_,
-                                         original_event_,
-                                         lazy_);
+      event_queue::entry make_entry(const event_queue::entry::event_time_stamp& event_time_stamp) const {
+        return event_queue::entry(device_id_,
+                                  event_time_stamp,
+                                  event_,
+                                  event_type_,
+                                  original_event_,
+                                  lazy_);
       }
 
     private:
       device_id device_id_;
-      event_queue::queued_event::event event_;
+      event_queue::entry::event event_;
       event_type event_type_;
-      event_queue::queued_event::event original_event_;
+      event_queue::entry::event original_event_;
       bool lazy_;
     };
 
@@ -89,9 +89,9 @@ public:
     }
 
     void emplace_back_event(device_id device_id,
-                            const event_queue::queued_event::event& event,
+                            const event_queue::entry::event& event,
                             event_type event_type,
-                            const event_queue::queued_event::event& original_event,
+                            const event_queue::entry::event& original_event,
                             bool lazy) {
       events_.emplace_back(device_id,
                            event,
@@ -183,7 +183,7 @@ public:
     }
   }
 
-  void erase_from_events_by_event(const event_queue::queued_event::event& event) {
+  void erase_from_events_by_event(const event_queue::entry::event& event) {
     for (auto it = std::begin(from_events_); it != std::end(from_events_);) {
       if (it->get_event() == event) {
         it = from_events_.erase(it);

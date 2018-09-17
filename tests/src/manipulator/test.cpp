@@ -126,20 +126,20 @@ TEST_CASE("min_input_event_time_stamp") {
   // ----------------------------------------
 
   event_queues[2]->emplace_back_event(krbn::device_id(1),
-                                      krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(5000)),
-                                      krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                      krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(5000)),
+                                      krbn::event_queue::entry::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
-                                      krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                      krbn::event_queue::entry::event(krbn::key_code::a));
 
   REQUIRE(connector.min_input_event_time_stamp() == krbn::absolute_time(5000));
 
   // ----------------------------------------
 
   event_queues[0]->emplace_back_event(krbn::device_id(1),
-                                      krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(4000)),
-                                      krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                      krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(4000)),
+                                      krbn::event_queue::entry::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
-                                      krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                      krbn::event_queue::entry::event(krbn::key_code::a));
 
   REQUIRE(connector.min_input_event_time_stamp() == krbn::absolute_time(4000));
 
@@ -147,15 +147,15 @@ TEST_CASE("min_input_event_time_stamp") {
   // min_input_event_time_stamp uses only the front entry.
 
   event_queues[3]->emplace_back_event(krbn::device_id(1),
-                                      krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(3000)),
-                                      krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                      krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(3000)),
+                                      krbn::event_queue::entry::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
-                                      krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                      krbn::event_queue::entry::event(krbn::key_code::a));
   event_queues[0]->emplace_back_event(krbn::device_id(1),
-                                      krbn::event_queue::queued_event::event_time_stamp(krbn::absolute_time(2000)),
-                                      krbn::event_queue::queued_event::event(krbn::key_code::a),
+                                      krbn::event_queue::entry::event_time_stamp(krbn::absolute_time(2000)),
+                                      krbn::event_queue::entry::event(krbn::key_code::a),
                                       krbn::event_type::key_down,
-                                      krbn::event_queue::queued_event::event(krbn::key_code::a));
+                                      krbn::event_queue::entry::event(krbn::key_code::a));
 
   REQUIRE(connector.min_input_event_time_stamp() == krbn::absolute_time(3000));
 

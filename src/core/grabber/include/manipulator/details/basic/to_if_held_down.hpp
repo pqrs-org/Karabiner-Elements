@@ -31,7 +31,7 @@ public:
     }
   }
 
-  void async_setup(const event_queue::queued_event& front_input_event,
+  void async_setup(const event_queue::entry& front_input_event,
                    std::weak_ptr<manipulated_original_event> current_manipulated_original_event,
                    std::weak_ptr<event_queue> output_event_queue,
                    std::chrono::milliseconds threshold_milliseconds) {
@@ -112,7 +112,7 @@ public:
     }
   }
 
-  void async_cancel(const event_queue::queued_event& front_input_event) {
+  void async_cancel(const event_queue::entry& front_input_event) {
     if (auto manipulator_dispatcher = basic_.get_weak_manipulator_dispatcher().lock()) {
       manipulator_dispatcher->enqueue(
           manipulator_object_id_,
@@ -141,7 +141,7 @@ private:
 
   std::vector<to_event_definition> to_;
   manipulator_object_id manipulator_object_id_;
-  boost::optional<event_queue::queued_event> front_input_event_;
+  boost::optional<event_queue::entry> front_input_event_;
   std::weak_ptr<manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue> output_event_queue_;
 };

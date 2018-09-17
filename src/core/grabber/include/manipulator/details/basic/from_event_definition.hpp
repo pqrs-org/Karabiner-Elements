@@ -318,7 +318,7 @@ public:
     return std::make_pair(false, modifier_flag::zero);
   }
 
-  static bool test_event(const event_queue::queued_event::event& event,
+  static bool test_event(const event_queue::entry::event& event,
                          const event_definition& event_definition) {
     if (auto key_code = event.get_key_code()) {
       if (event_definition.get_key_code() == key_code ||
@@ -344,7 +344,7 @@ public:
     return false;
   }
 
-  static bool test_event(const event_queue::queued_event::event& event,
+  static bool test_event(const event_queue::entry::event& event,
                          const from_event_definition& from_event_definition) {
     for (const auto& d : from_event_definition.get_event_definitions()) {
       if (test_event(event, d)) {
@@ -355,7 +355,7 @@ public:
     return false;
   }
 
-  static bool test_key_order(const std::vector<event_queue::queued_event::event>& events,
+  static bool test_key_order(const std::vector<event_queue::entry::event>& events,
                              simultaneous_options::key_order key_order,
                              const std::vector<event_definition>& event_definitions) {
     switch (key_order) {

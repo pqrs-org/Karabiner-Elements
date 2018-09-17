@@ -18,19 +18,19 @@ public:
 
   void update(registry_entry_id registry_entry_id,
               absolute_time time_stamp,
-              const event_queue::queued_event& queued_event) {
-    if (auto key_code = queued_event.get_event().get_key_code()) {
+              const event_queue::entry& entry) {
+    if (auto key_code = entry.get_event().get_key_code()) {
       if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
         if (auto hid_usage = types::make_hid_usage(*key_code)) {
           keyboard_repeat_detector_.set(*hid_usage_page,
                                         *hid_usage,
-                                        queued_event.get_event_type());
+                                        entry.get_event_type());
 
           if (auto m = types::make_modifier_flag(*hid_usage_page,
                                                  *hid_usage)) {
-            if (queued_event.get_event_type() == event_type::key_down) {
+            if (entry.get_event_type() == event_type::key_down) {
               pressed_modifier_flags_.insert(*m);
-            } else if (queued_event.get_event_type() == event_type::key_up) {
+            } else if (entry.get_event_type() == event_type::key_up) {
               pressed_modifier_flags_.erase(*m);
             }
           }
@@ -38,20 +38,20 @@ public:
       }
     }
 
-    if (auto consumer_key_code = queued_event.get_event().get_consumer_key_code()) {
+    if (auto consumer_key_code = entry.get_event().get_consumer_key_code()) {
       if (auto hid_usage_page = types::make_hid_usage_page(*consumer_key_code)) {
         if (auto hid_usage = types::make_hid_usage(*consumer_key_code)) {
           keyboard_repeat_detector_.set(*hid_usage_page,
                                         *hid_usage,
-                                        queued_event.get_event_type());
+                                        entry.get_event_type());
         }
       }
     }
 
-    if (auto pointing_button = queued_event.get_event().get_pointing_button()) {
-      if (queued_event.get_event_type() == event_type::key_down) {
+    if (auto pointing_button = entry.get_event().get_pointing_button()) {
+      if (entry.get_event_type() == event_type::key_down) {
         pressed_pointing_buttons_.insert(*pointing_button);
-      } else if (queued_event.get_event_type() == event_type::key_up) {
+      } else if (entry.get_event_type() == event_type::key_up) {
         pressed_pointing_buttons_.erase(*pointing_button);
       }
     }

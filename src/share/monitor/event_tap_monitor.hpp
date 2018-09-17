@@ -15,7 +15,7 @@ public:
   // Signals
 
   boost::signals2::signal<void(bool)> caps_lock_state_changed;
-  boost::signals2::signal<void(event_type, event_queue::queued_event::event)> pointing_device_event_arrived;
+  boost::signals2::signal<void(event_type, event_queue::entry::event)> pointing_device_event_arrived;
 
   // Methods
 

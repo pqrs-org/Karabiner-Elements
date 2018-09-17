@@ -14,11 +14,11 @@ public:
   virtual ~nop(void) {
   }
 
-  virtual bool already_manipulated(const event_queue::queued_event& front_input_event) {
+  virtual bool already_manipulated(const event_queue::entry& front_input_event) {
     return false;
   }
 
-  virtual manipulate_result manipulate(event_queue::queued_event& front_input_event,
+  virtual manipulate_result manipulate(event_queue::entry& front_input_event,
                                        const event_queue& input_event_queue,
                                        const std::shared_ptr<event_queue>& output_event_queue,
                                        absolute_time now) {
@@ -33,7 +33,7 @@ public:
     return false;
   }
 
-  virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::queued_event& front_input_event,
+  virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
                                                                           event_queue& output_event_queue) {
   }
 
@@ -42,7 +42,7 @@ public:
                                              absolute_time time_stamp) {
   }
 
-  virtual void handle_pointing_device_event_from_event_tap(const event_queue::queued_event& front_input_event,
+  virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
                                                            event_queue& output_event_queue) {
   }
 };

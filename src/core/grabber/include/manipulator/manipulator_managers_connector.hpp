@@ -50,8 +50,8 @@ public:
 
     boost::optional<absolute_time> make_input_event_time_stamp_with_input_delay(void) const {
       if (auto input_event_queue = weak_input_event_queue_.lock()) {
-        if (!input_event_queue->get_events().empty()) {
-          return input_event_queue->get_events().front().get_event_time_stamp().make_time_stamp_with_input_delay();
+        if (!input_event_queue->get_entries().empty()) {
+          return input_event_queue->get_entries().front().get_event_time_stamp().make_time_stamp_with_input_delay();
         }
       }
       return boost::none;
@@ -61,8 +61,8 @@ public:
       if (auto input_event_queue = weak_input_event_queue_.lock()) {
         if (auto output_event_queue = weak_output_event_queue_.lock()) {
           logger::get_logger().info("connection events sizes: {0} -> {1}",
-                                    input_event_queue->get_events().size(),
-                                    output_event_queue->get_events().size());
+                                    input_event_queue->get_entries().size(),
+                                    output_event_queue->get_entries().size());
         }
       }
     }
