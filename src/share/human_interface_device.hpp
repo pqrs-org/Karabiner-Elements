@@ -41,7 +41,7 @@ public:
   boost::signals2::signal<void(IOReturn error)> close_failed;
 
   // `event_queue` is not owned by `human_interface_device`.
-  boost::signals2::signal<void(std::shared_ptr<event_queue>)> values_arrived;
+  boost::signals2::signal<void(std::shared_ptr<event_queue::queue>)> values_arrived;
 
   boost::signals2::signal<void(IOHIDReportType type, uint32_t report_id, uint8_t* _Nonnull report, CFIndex report_length)> report_arrived;
 
@@ -498,7 +498,7 @@ private:
   }
 
   void queue_value_available_callback(void) {
-    auto input_event_queue = std::make_shared<event_queue>();
+    auto input_event_queue = std::make_shared<event_queue::queue>();
     std::vector<hid_value> hid_values;
 
     while (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
@@ -507,7 +507,7 @@ private:
       CFRelease(value);
     }
 
-    for (const auto& pair : event_queue::make_entrys(hid_values, device_id_)) {
+    for (const auto& pair : event_queue::queue::make_entries(hid_values, device_id_)) {
       auto& hid_value = pair.first;
       auto& entry = pair.second;
 
@@ -540,7 +540,7 @@ private:
     values_arrived(input_event_queue);
   }
 
-  void post_device_keys_and_pointing_buttons_are_released_event_if_needed(std::shared_ptr<event_queue> input_event_queue,
+  void post_device_keys_and_pointing_buttons_are_released_event_if_needed(std::shared_ptr<event_queue::queue> input_event_queue,
                                                                           absolute_time time_stamp) {
     if (pressed_keys_.empty()) {
       auto event = event_queue::entry::event::make_device_keys_and_pointing_buttons_are_released_event();

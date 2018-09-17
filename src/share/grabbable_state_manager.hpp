@@ -32,7 +32,7 @@ public:
     dispatcher_ = nullptr;
   }
 
-  void update(grabbable_state state) {
+  void update(const grabbable_state& state) {
     std::lock_guard<std::mutex> lock(entries_mutex_);
 
     auto registry_entry_id = state.get_registry_entry_id();
@@ -59,7 +59,7 @@ public:
     }
   }
 
-  void update(const event_queue& event_queue) {
+  void update(const event_queue::queue& event_queue) {
     std::lock_guard<std::mutex> lock(entries_mutex_);
 
     for (const auto& event_queue_entry : event_queue.get_entries()) {

@@ -82,7 +82,7 @@ public:
 
 private:
   void values_arrived(std::shared_ptr<krbn::human_interface_device> hid,
-                      std::shared_ptr<krbn::event_queue> event_queue) const {
+                      std::shared_ptr<krbn::event_queue::queue> event_queue) const {
     for (const auto& entry : event_queue->get_entries()) {
       std::cout << entry.get_event_time_stamp().get_time_stamp() << " ";
 

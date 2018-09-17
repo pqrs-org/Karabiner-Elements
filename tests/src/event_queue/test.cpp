@@ -212,7 +212,7 @@ TEST_CASE("get_frontmost_application_bundle_identifier") {
 TEST_CASE("emplace_back_event") {
   // Normal order
   {
-    krbn::event_queue event_queue;
+    krbn::event_queue::queue event_queue;
 
     ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
 
@@ -253,7 +253,7 @@ TEST_CASE("emplace_back_event") {
 
   // Reorder events
   {
-    krbn::event_queue event_queue;
+    krbn::event_queue::queue event_queue;
 
     // Push `a, left_control, left_shift (key_down)` at the same time.
 
@@ -291,7 +291,7 @@ TEST_CASE("emplace_back_event") {
     REQUIRE(event_queue.get_entries() == expected);
   }
   {
-    krbn::event_queue event_queue;
+    krbn::event_queue::queue event_queue;
 
     ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
     ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
@@ -306,7 +306,7 @@ TEST_CASE("emplace_back_event") {
     REQUIRE(event_queue.get_entries() == expected);
   }
   {
-    krbn::event_queue event_queue;
+    krbn::event_queue::queue event_queue;
 
     ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_down, b_event);
     ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
@@ -321,7 +321,7 @@ TEST_CASE("emplace_back_event") {
     REQUIRE(event_queue.get_entries() == expected);
   }
   {
-    krbn::event_queue event_queue;
+    krbn::event_queue::queue event_queue;
 
     ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_up, b_event);
     ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_up, a_event);
@@ -336,7 +336,7 @@ TEST_CASE("emplace_back_event") {
     REQUIRE(event_queue.get_entries() == expected);
   }
   {
-    krbn::event_queue event_queue;
+    krbn::event_queue::queue event_queue;
 
     ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_up, b_event);
     ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_up, a_event);
@@ -386,26 +386,26 @@ TEST_CASE("needs_swap") {
                                           krbn::event_type::key_up,
                                           right_shift_event);
 
-  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, spacebar_down) == false);
-  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, escape_down) == false);
-  REQUIRE(krbn::event_queue::needs_swap(escape_down, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::queue::needs_swap(spacebar_down, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::queue::needs_swap(spacebar_down, escape_down) == false);
+  REQUIRE(krbn::event_queue::queue::needs_swap(escape_down, spacebar_down) == false);
 
-  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, right_shift_down) == true);
-  REQUIRE(krbn::event_queue::needs_swap(right_shift_down, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::queue::needs_swap(spacebar_down, right_shift_down) == true);
+  REQUIRE(krbn::event_queue::queue::needs_swap(right_shift_down, spacebar_down) == false);
 
-  REQUIRE(krbn::event_queue::needs_swap(spacebar_down, right_shift_up) == false);
-  REQUIRE(krbn::event_queue::needs_swap(right_shift_up, spacebar_down) == false);
+  REQUIRE(krbn::event_queue::queue::needs_swap(spacebar_down, right_shift_up) == false);
+  REQUIRE(krbn::event_queue::queue::needs_swap(right_shift_up, spacebar_down) == false);
 
-  REQUIRE(krbn::event_queue::needs_swap(spacebar_up, right_shift_up) == false);
-  REQUIRE(krbn::event_queue::needs_swap(right_shift_up, spacebar_up) == true);
+  REQUIRE(krbn::event_queue::queue::needs_swap(spacebar_up, right_shift_up) == false);
+  REQUIRE(krbn::event_queue::queue::needs_swap(right_shift_up, spacebar_up) == true);
 
-  REQUIRE(krbn::event_queue::needs_swap(spacebar_up, right_shift_down) == false);
-  REQUIRE(krbn::event_queue::needs_swap(right_shift_down, spacebar_up) == false);
+  REQUIRE(krbn::event_queue::queue::needs_swap(spacebar_up, right_shift_down) == false);
+  REQUIRE(krbn::event_queue::queue::needs_swap(right_shift_down, spacebar_up) == false);
 }
 
 TEST_CASE("increase_time_stamp_delay") {
   {
-    krbn::event_queue event_queue;
+    krbn::event_queue::queue event_queue;
 
     ENQUEUE_EVENT(event_queue, 1, 100, tab_event, key_down, tab_event);
 
@@ -433,7 +433,7 @@ TEST_CASE("increase_time_stamp_delay") {
 
 TEST_CASE("caps_lock_state_changed") {
   {
-    krbn::event_queue event_queue;
+    krbn::event_queue::queue event_queue;
 
     // modifier_flag_manager's caps lock state will not be changed by key_down event.
     ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event, key_down, caps_lock_event);
@@ -460,7 +460,7 @@ TEST_CASE("caps_lock_state_changed") {
   }
 }
 
-TEST_CASE("make_entrys") {
+TEST_CASE("make_entries") {
   std::vector<krbn::hid_value> hid_values;
 
   hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(1000),
@@ -525,8 +525,8 @@ TEST_CASE("make_entrys") {
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
 
-  auto entrys = krbn::event_queue::make_entrys(hid_values,
-                                               krbn::device_id(1));
+  auto entrys = krbn::event_queue::queue::make_entries(hid_values,
+                                                       krbn::device_id(1));
   REQUIRE(entrys.size() == 8);
   REQUIRE(*(entrys[0].first) == hid_values[0]);
   REQUIRE(*(entrys[1].first) == hid_values[1]);

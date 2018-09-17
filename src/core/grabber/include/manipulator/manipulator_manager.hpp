@@ -36,8 +36,8 @@ public:
     manipulators_.push_back(ptr);
   }
 
-  void manipulate(std::weak_ptr<event_queue> weak_input_event_queue,
-                  std::weak_ptr<event_queue> weak_output_event_queue,
+  void manipulate(std::weak_ptr<event_queue::queue> weak_input_event_queue,
+                  std::weak_ptr<event_queue::queue> weak_output_event_queue,
                   absolute_time now) {
     if (auto input_event_queue = weak_input_event_queue.lock()) {
       if (auto output_event_queue = weak_output_event_queue.lock()) {

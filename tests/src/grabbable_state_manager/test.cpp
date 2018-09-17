@@ -55,7 +55,7 @@ TEST_CASE("initialize") {
 
 TEST_CASE("grabbable_state_manager") {
   krbn::grabbable_state_manager grabbable_state_manager;
-  krbn::event_queue event_queue;
+  krbn::event_queue::queue event_queue;
 
   std::vector<krbn::grabbable_state> actual_grabbable_state_changed_history;
   std::vector<krbn::grabbable_state> expected_grabbable_state_changed_history;
@@ -433,7 +433,7 @@ TEST_CASE("grabbable_state_manager") {
 
 TEST_CASE("device_error") {
   krbn::grabbable_state_manager grabbable_state_manager;
-  krbn::event_queue event_queue;
+  krbn::event_queue::queue event_queue;
 
   std::vector<krbn::grabbable_state> actual_grabbable_state_changed_history;
   std::vector<krbn::grabbable_state> expected_grabbable_state_changed_history;

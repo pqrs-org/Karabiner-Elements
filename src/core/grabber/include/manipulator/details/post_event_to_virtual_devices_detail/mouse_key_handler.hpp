@@ -75,7 +75,7 @@ public:
 
   void async_push_back_mouse_key(device_id device_id,
                                  const mouse_key& mouse_key,
-                                 const std::weak_ptr<event_queue>& weak_output_event_queue,
+                                 const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
                                  absolute_time time_stamp) {
     if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
       manipulator_dispatcher->enqueue(
@@ -95,7 +95,7 @@ public:
 
   void async_erase_mouse_key(device_id device_id,
                              const mouse_key& mouse_key,
-                             const std::weak_ptr<event_queue>& weak_output_event_queue,
+                             const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
                              absolute_time time_stamp) {
     if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
       manipulator_dispatcher->enqueue(
@@ -211,7 +211,7 @@ private:
   manipulator_object_id manipulator_object_id_;
   std::vector<std::pair<device_id, mouse_key>> entries_;
   std::atomic<bool> active_;
-  std::weak_ptr<event_queue> weak_output_event_queue_;
+  std::weak_ptr<event_queue::queue> weak_output_event_queue_;
   boost::optional<mouse_key> last_mouse_key_total_;
   count_converter x_count_converter_;
   count_converter y_count_converter_;

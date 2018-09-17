@@ -44,7 +44,7 @@ public:
     return queue->push_back_grabbable_state(state);
   }
 
-  bool update_first_grabbed_event_time_stamp(const event_queue& event_queue) {
+  bool update_first_grabbed_event_time_stamp(const event_queue::queue& event_queue) {
     bool result = false;
 
     for (const auto& entry : event_queue.get_entries()) {

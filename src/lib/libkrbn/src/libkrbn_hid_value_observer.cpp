@@ -76,7 +76,7 @@ public:
   }
 
 private:
-  void values_arrived(std::shared_ptr<krbn::event_queue> event_queue) {
+  void values_arrived(std::shared_ptr<krbn::event_queue::queue> event_queue) {
     for (const auto& entry : event_queue->get_entries()) {
       libkrbn_hid_value_event_type event_type = libkrbn_hid_value_event_type_key_down;
       switch (entry.get_event_type()) {

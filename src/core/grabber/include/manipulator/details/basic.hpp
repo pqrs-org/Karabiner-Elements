@@ -145,8 +145,8 @@ public:
   }
 
   virtual manipulate_result manipulate(event_queue::entry& front_input_event,
-                                       const event_queue& input_event_queue,
-                                       const std::shared_ptr<event_queue>& output_event_queue,
+                                       const event_queue::queue& input_event_queue,
+                                       const std::shared_ptr<event_queue::queue>& output_event_queue,
                                        absolute_time now) {
     if (output_event_queue) {
       unset_alone_if_needed(front_input_event.get_event(),
@@ -613,11 +613,11 @@ public:
   }
 
   virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
-                                                                          event_queue& output_event_queue) {
+                                                                          event_queue::queue& output_event_queue) {
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
-                                             const event_queue& output_event_queue,
+                                             const event_queue::queue& output_event_queue,
                                              absolute_time time_stamp) {
     for (auto&& e : manipulated_original_events_) {
       e->erase_from_events_by_device_id(device_id);
@@ -632,7 +632,7 @@ public:
   }
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
-                                                           event_queue& output_event_queue) {
+                                                           event_queue::queue& output_event_queue) {
     unset_alone_if_needed(front_input_event.get_original_event(),
                           front_input_event.get_event_type());
   }
@@ -656,7 +656,7 @@ public:
   void post_from_mandatory_modifiers_key_up(const event_queue::entry& front_input_event,
                                             manipulated_original_event& current_manipulated_original_event,
                                             absolute_time& time_stamp_delay,
-                                            event_queue& output_event_queue) const {
+                                            event_queue::queue& output_event_queue) const {
     // ----------------------------------------
     // Make target modifiers
 
@@ -707,7 +707,7 @@ public:
   void post_from_mandatory_modifiers_key_down(const event_queue::entry& front_input_event,
                                               manipulated_original_event& current_manipulated_original_event,
                                               absolute_time& time_stamp_delay,
-                                              event_queue& output_event_queue) const {
+                                              event_queue::queue& output_event_queue) const {
     // ----------------------------------------
     // Make target modifiers
 
@@ -737,7 +737,7 @@ public:
                                std::vector<to_event_definition> to_events,
                                manipulated_original_event& current_manipulated_original_event,
                                absolute_time& time_stamp_delay,
-                               event_queue& output_event_queue) const {
+                               event_queue::queue& output_event_queue) const {
     if (current_manipulated_original_event.get_halted()) {
       return;
     }
@@ -840,7 +840,7 @@ public:
   void post_events_at_key_up(const event_queue::entry& front_input_event,
                              manipulated_original_event& current_manipulated_original_event,
                              absolute_time& time_stamp_delay,
-                             event_queue& output_event_queue) const {
+                             event_queue::queue& output_event_queue) const {
     for (const auto& e : current_manipulated_original_event.get_events_at_key_up().get_events()) {
       auto t = front_input_event.get_event_time_stamp();
       t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
@@ -894,7 +894,7 @@ private:
                                      const std::unordered_set<modifier_flag>& modifiers,
                                      event_type event_type,
                                      absolute_time& time_stamp_delay,
-                                     event_queue& output_event_queue) const {
+                                     event_queue::queue& output_event_queue) const {
     for (const auto& m : modifiers) {
       if (auto key_code = types::make_key_code(m)) {
         auto t = front_input_event.get_event_time_stamp();
@@ -915,7 +915,7 @@ private:
                             const std::vector<to_event_definition>& to_events,
                             manipulated_original_event& current_manipulated_original_event,
                             absolute_time& time_stamp_delay,
-                            event_queue& output_event_queue) const {
+                            event_queue::queue& output_event_queue) const {
     if (current_manipulated_original_event.get_halted()) {
       return;
     }

@@ -33,7 +33,7 @@ public:
 
   void async_setup(const event_queue::entry& front_input_event,
                    std::weak_ptr<manipulated_original_event> current_manipulated_original_event,
-                   std::weak_ptr<event_queue> output_event_queue,
+                   std::weak_ptr<event_queue::queue> output_event_queue,
                    std::chrono::milliseconds threshold_milliseconds) {
     if (auto manipulator_dispatcher = basic_.get_weak_manipulator_dispatcher().lock()) {
       manipulator_dispatcher->enqueue(
@@ -143,5 +143,5 @@ private:
   manipulator_object_id manipulator_object_id_;
   boost::optional<event_queue::entry> front_input_event_;
   std::weak_ptr<manipulated_original_event> current_manipulated_original_event_;
-  std::weak_ptr<event_queue> output_event_queue_;
+  std::weak_ptr<event_queue::queue> output_event_queue_;
 };

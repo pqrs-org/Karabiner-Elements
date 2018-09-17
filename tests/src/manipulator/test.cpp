@@ -101,12 +101,12 @@ TEST_CASE("manipulator.manipulator_manager") {
 }
 
 TEST_CASE("min_input_event_time_stamp") {
-  std::vector<std::shared_ptr<krbn::event_queue>> event_queues;
-  event_queues.push_back(std::make_shared<krbn::event_queue>());
-  event_queues.push_back(std::make_shared<krbn::event_queue>());
-  event_queues.push_back(std::make_shared<krbn::event_queue>());
-  event_queues.push_back(std::make_shared<krbn::event_queue>());
-  event_queues.push_back(std::make_shared<krbn::event_queue>());
+  std::vector<std::shared_ptr<krbn::event_queue::queue>> event_queues;
+  event_queues.push_back(std::make_shared<krbn::event_queue::queue>());
+  event_queues.push_back(std::make_shared<krbn::event_queue::queue>());
+  event_queues.push_back(std::make_shared<krbn::event_queue::queue>());
+  event_queues.push_back(std::make_shared<krbn::event_queue::queue>());
+  event_queues.push_back(std::make_shared<krbn::event_queue::queue>());
 
   krbn::manipulator::manipulator_managers_connector connector;
 

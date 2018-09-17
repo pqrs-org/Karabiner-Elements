@@ -52,7 +52,7 @@ public:
 
   void setup(const event_queue::entry& front_input_event,
              const std::shared_ptr<manipulated_original_event>& current_manipulated_original_event,
-             const std::shared_ptr<event_queue>& output_event_queue,
+             const std::shared_ptr<event_queue::queue>& output_event_queue,
              std::chrono::milliseconds delay_milliseconds) {
     if (auto manipulator_timer = basic_.get_weak_manipulator_timer().lock()) {
       if (front_input_event.get_event_type() != event_type::key_down) {
@@ -152,5 +152,5 @@ private:
   manipulator_object_id manipulator_object_id_;
   boost::optional<event_queue::entry> front_input_event_;
   std::shared_ptr<manipulated_original_event> current_manipulated_original_event_;
-  std::weak_ptr<event_queue> output_event_queue_;
+  std::weak_ptr<event_queue::queue> output_event_queue_;
 };

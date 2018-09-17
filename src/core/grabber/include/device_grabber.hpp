@@ -45,11 +45,11 @@ public:
     fn_function_keys_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     post_event_to_virtual_devices_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
 
-    merged_input_event_queue_ = std::make_shared<event_queue>();
-    simple_modifications_applied_event_queue_ = std::make_shared<event_queue>();
-    complex_modifications_applied_event_queue_ = std::make_shared<event_queue>();
-    fn_function_keys_applied_event_queue_ = std::make_shared<event_queue>();
-    posted_event_queue_ = std::make_shared<event_queue>();
+    merged_input_event_queue_ = std::make_shared<event_queue::queue>();
+    simple_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
+    complex_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
+    fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>();
+    posted_event_queue_ = std::make_shared<event_queue::queue>();
 
     virtual_hid_device_client_ = std::make_shared<virtual_hid_device_client>();
 
@@ -546,7 +546,7 @@ private:
   }
 
   void values_arrived(std::shared_ptr<human_interface_device> hid,
-                      std::shared_ptr<event_queue> event_queue) {
+                      std::shared_ptr<event_queue::queue> event_queue) {
     // Update grabbable_state_queue
 
     grabbable_state_queues_manager::get_shared_instance()->update_first_grabbed_event_time_stamp(*event_queue);
@@ -1073,20 +1073,20 @@ private:
 
   std::mutex manipulate_mutex_;
 
-  std::shared_ptr<event_queue> merged_input_event_queue_;
+  std::shared_ptr<event_queue::queue> merged_input_event_queue_;
 
   std::shared_ptr<manipulator::manipulator_manager> simple_modifications_manipulator_manager_;
-  std::shared_ptr<event_queue> simple_modifications_applied_event_queue_;
+  std::shared_ptr<event_queue::queue> simple_modifications_applied_event_queue_;
 
   std::shared_ptr<manipulator::manipulator_manager> complex_modifications_manipulator_manager_;
-  std::shared_ptr<event_queue> complex_modifications_applied_event_queue_;
+  std::shared_ptr<event_queue::queue> complex_modifications_applied_event_queue_;
 
   std::shared_ptr<manipulator::manipulator_manager> fn_function_keys_manipulator_manager_;
-  std::shared_ptr<event_queue> fn_function_keys_applied_event_queue_;
+  std::shared_ptr<event_queue::queue> fn_function_keys_applied_event_queue_;
 
   std::shared_ptr<manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
-  std::shared_ptr<event_queue> posted_event_queue_;
+  std::shared_ptr<event_queue::queue> posted_event_queue_;
 
   std::unique_ptr<thread_utility::timer> led_monitor_timer_;
 

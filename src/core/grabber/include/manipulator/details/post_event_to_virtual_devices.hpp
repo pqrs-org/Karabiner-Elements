@@ -62,8 +62,8 @@ public:
   }
 
   virtual manipulate_result manipulate(event_queue::entry& front_input_event,
-                                       const event_queue& input_event_queue,
-                                       const std::shared_ptr<event_queue>& output_event_queue,
+                                       const event_queue::queue& input_event_queue,
+                                       const std::shared_ptr<event_queue::queue>& output_event_queue,
                                        absolute_time now) {
     if (output_event_queue) {
       if (!front_input_event.get_valid()) {
@@ -280,7 +280,7 @@ public:
   }
 
   virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
-                                                                          event_queue& output_event_queue) {
+                                                                          event_queue::queue& output_event_queue) {
     // modifier flags
 
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
@@ -310,7 +310,7 @@ public:
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
-                                             const event_queue& output_event_queue,
+                                             const event_queue::queue& output_event_queue,
                                              absolute_time time_stamp) {
     // Release pressed keys
 
@@ -345,7 +345,7 @@ public:
   }
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
-                                                           event_queue& output_event_queue) {
+                                                           event_queue::queue& output_event_queue) {
     // We should not dispatch modifier key events while key repeating.
     //
     // macOS does not ignore the modifier state change while key repeating.

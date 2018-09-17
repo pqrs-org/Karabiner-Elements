@@ -16,14 +16,14 @@ public:
 
   public:
     connection(std::weak_ptr<manipulator_manager> weak_manipulator_manager,
-               std::weak_ptr<event_queue> weak_input_event_queue,
-               std::weak_ptr<event_queue> weak_output_event_queue) : weak_manipulator_manager_(weak_manipulator_manager),
-                                                                     weak_input_event_queue_(weak_input_event_queue),
-                                                                     weak_output_event_queue_(weak_output_event_queue) {
+               std::weak_ptr<event_queue::queue> weak_input_event_queue,
+               std::weak_ptr<event_queue::queue> weak_output_event_queue) : weak_manipulator_manager_(weak_manipulator_manager),
+                                                                            weak_input_event_queue_(weak_input_event_queue),
+                                                                            weak_output_event_queue_(weak_output_event_queue) {
     }
 
   private:
-    std::weak_ptr<event_queue> get_weak_output_event_queue(void) const {
+    std::weak_ptr<event_queue::queue> get_weak_output_event_queue(void) const {
       return weak_output_event_queue_;
     }
 
@@ -68,16 +68,16 @@ public:
     }
 
     std::weak_ptr<manipulator_manager> weak_manipulator_manager_;
-    std::weak_ptr<event_queue> weak_input_event_queue_;
-    std::weak_ptr<event_queue> weak_output_event_queue_;
+    std::weak_ptr<event_queue::queue> weak_input_event_queue_;
+    std::weak_ptr<event_queue::queue> weak_output_event_queue_;
   };
 
   manipulator_managers_connector(void) {
   }
 
   void emplace_back_connection(std::weak_ptr<manipulator_manager> weak_manipulator_manager,
-                               std::weak_ptr<event_queue> weak_input_event_queue,
-                               std::weak_ptr<event_queue> weak_output_event_queue) {
+                               std::weak_ptr<event_queue::queue> weak_input_event_queue,
+                               std::weak_ptr<event_queue::queue> weak_output_event_queue) {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     connections_.emplace_back(weak_manipulator_manager,
@@ -86,7 +86,7 @@ public:
   }
 
   void emplace_back_connection(std::weak_ptr<manipulator_manager> weak_manipulator_manager,
-                               std::weak_ptr<event_queue> weak_output_event_queue) {
+                               std::weak_ptr<event_queue::queue> weak_output_event_queue) {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     if (connections_.empty()) {
