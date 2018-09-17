@@ -17,6 +17,7 @@
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include "types/hid_value.hpp"
+#include "types/input_source_identifiers.hpp"
 #include "types/key_code.hpp"
 #include "types/led_state.hpp"
 #include "types/location_id.hpp"
@@ -71,113 +72,6 @@ enum class pointing_event : uint32_t {
   y,
   vertical_wheel,
   horizontal_wheel,
-};
-
-class input_source_identifiers final {
-public:
-  input_source_identifiers(void) {
-  }
-
-  input_source_identifiers(TISInputSourceRef p) : language_(input_source_utility::get_language(p)),
-                                                  input_source_id_(input_source_utility::get_input_source_id(p)),
-                                                  input_mode_id_(input_source_utility::get_input_mode_id(p)) {
-  }
-
-  input_source_identifiers(const boost::optional<std::string>& language,
-                           const boost::optional<std::string>& input_source_id,
-                           const boost::optional<std::string>& input_mode_id) : language_(language),
-                                                                                input_source_id_(input_source_id),
-                                                                                input_mode_id_(input_mode_id) {
-  }
-
-  input_source_identifiers(const nlohmann::json& json) {
-    if (json.is_object()) {
-      for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
-        // it.key() is always std::string.
-        const auto& key = it.key();
-        const auto& value = it.value();
-
-        if (key == "language") {
-          if (value.is_string()) {
-            language_ = value.get<std::string>();
-          } else {
-            logger::get_logger().error("language should be string: {0}", json.dump());
-          }
-        } else if (key == "input_source_id") {
-          if (value.is_string()) {
-            input_source_id_ = value.get<std::string>();
-          } else {
-            logger::get_logger().error("input_source_id should be string: {0}", json.dump());
-          }
-        } else if (key == "input_mode_id") {
-          if (value.is_string()) {
-            input_mode_id_ = value.get<std::string>();
-          } else {
-            logger::get_logger().error("input_mode_id should be string: {0}", json.dump());
-          }
-        } else {
-          logger::get_logger().error("json error: Unknown key: {0} in {1}", key, json.dump());
-        }
-      }
-    } else {
-      logger::get_logger().error("input_source_identifiers should be object: {0}", json.dump());
-    }
-  }
-
-  nlohmann::json to_json(void) const {
-    auto json = nlohmann::json::object();
-
-    if (language_) {
-      json["language"] = *language_;
-    }
-
-    if (input_source_id_) {
-      json["input_source_id"] = *input_source_id_;
-    }
-
-    if (input_mode_id_) {
-      json["input_mode_id"] = *input_mode_id_;
-    }
-
-    return json;
-  }
-
-  const boost::optional<std::string>& get_language(void) const {
-    return language_;
-  }
-
-  const boost::optional<std::string>& get_input_source_id(void) const {
-    return input_source_id_;
-  }
-
-  const boost::optional<std::string>& get_input_mode_id(void) const {
-    return input_mode_id_;
-  }
-
-  bool operator==(const input_source_identifiers& other) const {
-    return language_ == other.language_ &&
-           input_source_id_ == other.input_source_id_ &&
-           input_mode_id_ == other.input_mode_id_;
-  }
-
-  friend size_t hash_value(const input_source_identifiers& value) {
-    size_t h = 0;
-    if (value.language_) {
-      boost::hash_combine(h, *(value.language_));
-    }
-    if (value.input_source_id_) {
-      boost::hash_combine(h, *(value.input_source_id_));
-    }
-    if (value.input_mode_id_) {
-      boost::hash_combine(h, *(value.input_mode_id_));
-    }
-    return h;
-  }
-
-private:
-  boost::optional<std::string> language_;
-  boost::optional<std::string> input_source_id_;
-  boost::optional<std::string> input_mode_id_;
 };
 
 class input_source_selector final {
@@ -1447,34 +1341,6 @@ KRBN_TYPES_STREAM_OUTPUT(device_id);
 
 #undef KRBN_TYPES_STREAM_OUTPUT
 
-inline std::ostream& operator<<(std::ostream& stream, const input_source_identifiers& value) {
-  stream << "language:";
-
-  if (auto& v = value.get_language()) {
-    stream << *v;
-  } else {
-    stream << "---";
-  }
-
-  stream << ",input_source_id:";
-
-  if (auto& v = value.get_input_source_id()) {
-    stream << *v;
-  } else {
-    stream << "---";
-  }
-
-  stream << ",input_mode_id:";
-
-  if (auto& v = value.get_input_mode_id()) {
-    stream << *v;
-  } else {
-    stream << "---";
-  }
-
-  return stream;
-}
-
 inline std::ostream& operator<<(std::ostream& stream, const input_source_selector& value) {
   stream << "language:";
 
@@ -1525,13 +1391,6 @@ inline void to_json(nlohmann::json& json, const input_source_selector& input_sou
 } // namespace krbn
 
 namespace std {
-template <>
-struct hash<krbn::input_source_identifiers> final {
-  std::size_t operator()(const krbn::input_source_identifiers& v) const {
-    return hash_value(v);
-  }
-};
-
 template <>
 struct hash<krbn::input_source_selector> final {
   std::size_t operator()(const krbn::input_source_selector& v) const {
