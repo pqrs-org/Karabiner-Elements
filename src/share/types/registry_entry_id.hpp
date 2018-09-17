@@ -15,3 +15,9 @@ inline std::ostream& operator<<(std::ostream& stream, const registry_entry_id& v
   return stream << type_safe::get(value);
 }
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::registry_entry_id> : type_safe::hashable<krbn::registry_entry_id> {
+};
+} // namespace std
