@@ -68,14 +68,6 @@ enum class device_id : uint32_t {
   zero = 0,
 };
 
-enum class pointing_event : uint32_t {
-  button,
-  x,
-  y,
-  vertical_wheel,
-  horizontal_wheel,
-};
-
 class types final {
 public:
   // Find operation_type from operation_type_*_struct .
