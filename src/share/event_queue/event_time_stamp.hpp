@@ -12,8 +12,11 @@ class event_time_stamp final {
 public:
   // Constructors
 
-  explicit event_time_stamp(absolute_time time_stamp) : time_stamp_(time_stamp),
-                                                        input_delay_time_stamp_(0) {
+  event_time_stamp(void) : event_time_stamp(absolute_time(0)) {
+  }
+
+  event_time_stamp(absolute_time time_stamp) : time_stamp_(time_stamp),
+                                               input_delay_time_stamp_(0) {
   }
 
   event_time_stamp(absolute_time time_stamp,
