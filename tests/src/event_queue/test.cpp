@@ -81,6 +81,21 @@ TEST_CASE("event_time_stamp") {
   }
 }
 
+TEST_CASE("entry") {
+  krbn::event_queue::entry entry1(krbn::device_id(1),
+                                  krbn::event_queue::event_time_stamp(krbn::absolute_time(100),
+                                                                      krbn::absolute_time(10)),
+                                  krbn::event_queue::event(krbn::key_code::a),
+                                  krbn::event_type::key_down,
+                                  krbn::event_queue::event(krbn::key_code::a),
+                                  false);
+  auto entry2 = entry1;
+  REQUIRE(entry1 == entry2);
+
+  entry2.set_lazy(true);
+  REQUIRE(entry1 != entry2);
+}
+
 TEST_CASE("json") {
   {
     nlohmann::json expected;

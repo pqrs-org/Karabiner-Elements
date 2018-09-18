@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::event_queue::entry` can be used safely in a multi-threaded environment.
+
 #include "event_queue/event.hpp"
 #include "event_queue/event_time_stamp.hpp"
 #include "json_utility.hpp"
@@ -9,6 +11,8 @@ namespace krbn {
 namespace event_queue {
 class entry final {
 public:
+  // Constructors
+
   entry(device_id device_id,
         const event_time_stamp& event_time_stamp,
         const class event& event,
@@ -21,6 +25,21 @@ public:
                              event_(event),
                              event_type_(event_type),
                              original_event_(original_event) {
+  }
+
+  entry& operator=(const entry& other) {
+    device_id_ = other.device_id_;
+    event_time_stamp_ = other.event_time_stamp_;
+    valid_ = other.valid_;
+    lazy_ = other.lazy_;
+    event_ = other.event_;
+    event_type_ = other.event_type_;
+    original_event_ = other.original_event_;
+    return *this;
+  }
+
+  entry(const entry& other) {
+    *this = other;
   }
 
   static entry make_from_json(const nlohmann::json& json) {
@@ -63,53 +82,76 @@ public:
     return result;
   }
 
-  nlohmann::json to_json(void) const {
-    return nlohmann::json({
-        {"device_id", static_cast<uint32_t>(device_id_)},
-        {"event_time_stamp", event_time_stamp_},
-        {"valid", valid_},
-        {"lazy", lazy_},
-        {"event", event_},
-        {"event_type", event_type_},
-        {"original_event", original_event_},
-    });
-  }
+  // Methods
 
   device_id get_device_id(void) const {
+    // We don't have to use mutex since there is not setter.
+
     return device_id_;
   }
 
   const event_time_stamp& get_event_time_stamp(void) const {
-    return event_time_stamp_;
-  }
-  event_time_stamp& get_event_time_stamp(void) {
+    // We don't have to use mutex since there is not setter.
+
     return event_time_stamp_;
   }
 
+  event_time_stamp& get_event_time_stamp(void) {
+    return const_cast<event_time_stamp&>(static_cast<const entry&>(*this).get_event_time_stamp());
+  }
+
   bool get_valid(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     return valid_;
   }
+
   void set_valid(bool value) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     valid_ = value;
   }
 
   bool get_lazy(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     return lazy_;
   }
+
   void set_lazy(bool value) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     lazy_ = value;
   }
 
   const event& get_event(void) const {
+    // We don't have to use mutex since there is not setter.
+
     return event_;
   }
 
   event_type get_event_type(void) const {
+    // We don't have to use mutex since there is not setter.
+
     return event_type_;
   }
 
   const event& get_original_event(void) const {
+    // We don't have to use mutex since there is not setter.
+
     return original_event_;
+  }
+
+  nlohmann::json to_json(void) const {
+    return nlohmann::json({
+        {"device_id", static_cast<uint32_t>(get_device_id())},
+        {"event_time_stamp", get_event_time_stamp()},
+        {"valid", get_valid()},
+        {"lazy", get_lazy()},
+        {"event", get_event()},
+        {"event_type", get_event_type()},
+        {"original_event", get_original_event()},
+    });
   }
 
   bool operator==(const entry& other) const {
@@ -122,6 +164,10 @@ public:
            get_original_event() == other.get_original_event();
   }
 
+  bool operator!=(const entry& other) const {
+    return !(*this == other);
+  }
+
 private:
   device_id device_id_;
   event_time_stamp event_time_stamp_;
@@ -130,6 +176,7 @@ private:
   event event_;
   event_type event_type_;
   event original_event_;
+  mutable std::mutex mutex_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const entry& value) {
