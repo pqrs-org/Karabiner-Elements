@@ -45,6 +45,42 @@ TEST_CASE("initialize") {
   krbn::thread_utility::register_main_thread();
 }
 
+TEST_CASE("event_time_stamp") {
+  {
+    krbn::event_queue::event_time_stamp event_time_stamp1(krbn::absolute_time(100),
+                                                          krbn::absolute_time(10));
+    krbn::event_queue::event_time_stamp event_time_stamp2(krbn::absolute_time(200),
+                                                          krbn::absolute_time(10));
+    krbn::event_queue::event_time_stamp event_time_stamp3(krbn::absolute_time(100),
+                                                          krbn::absolute_time(20));
+    krbn::event_queue::event_time_stamp event_time_stamp4(krbn::absolute_time(200),
+                                                          krbn::absolute_time(20));
+
+    REQUIRE(event_time_stamp1.get_time_stamp() == krbn::absolute_time(100));
+    REQUIRE(event_time_stamp1.get_input_delay_time_stamp() == krbn::absolute_time(10));
+
+    REQUIRE(event_time_stamp2.get_time_stamp() == krbn::absolute_time(200));
+    REQUIRE(event_time_stamp2.get_input_delay_time_stamp() == krbn::absolute_time(10));
+
+    REQUIRE(event_time_stamp3.get_time_stamp() == krbn::absolute_time(100));
+    REQUIRE(event_time_stamp3.get_input_delay_time_stamp() == krbn::absolute_time(20));
+
+    REQUIRE(event_time_stamp4.get_time_stamp() == krbn::absolute_time(200));
+    REQUIRE(event_time_stamp4.get_input_delay_time_stamp() == krbn::absolute_time(20));
+
+    REQUIRE(event_time_stamp1 == event_time_stamp1);
+    REQUIRE(event_time_stamp1 != event_time_stamp2);
+    REQUIRE(event_time_stamp1 != event_time_stamp3);
+    REQUIRE(event_time_stamp1 != event_time_stamp4);
+
+    krbn::event_queue::event_time_stamp copy1(event_time_stamp1);
+    auto copy2 = event_time_stamp1;
+
+    REQUIRE(event_time_stamp1 == copy1);
+    REQUIRE(event_time_stamp1 == copy2);
+  }
+}
+
 TEST_CASE("json") {
   {
     nlohmann::json expected;
@@ -120,8 +156,8 @@ TEST_CASE("json") {
     expected["input_source_selectors"].push_back(nlohmann::json::object());
     expected["input_source_selectors"].back()["language"] = "en";
     auto e = krbn::event_queue::event::make_select_input_source_event({krbn::input_source_selector(std::string("en"),
-                                                                                                          boost::none,
-                                                                                                          boost::none)});
+                                                                                                   boost::none,
+                                                                                                   boost::none)});
     auto json = e.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -143,7 +179,7 @@ TEST_CASE("json") {
     expected["frontmost_application"]["bundle_identifier"] = "com.apple.Terminal";
     expected["frontmost_application"]["file_path"] = "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
     auto e = krbn::event_queue::event::make_frontmost_application_changed_event("com.apple.Terminal",
-                                                                                       "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+                                                                                "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
     auto json = e.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -155,8 +191,8 @@ TEST_CASE("json") {
     expected["input_source_identifiers"]["language"] = "en";
     expected["input_source_identifiers"]["input_source_id"] = "com.apple.keylayout.US";
     auto e = krbn::event_queue::event::make_input_source_changed_event({std::string("en"),
-                                                                               std::string("com.apple.keylayout.US"),
-                                                                               boost::none});
+                                                                        std::string("com.apple.keylayout.US"),
+                                                                        boost::none});
     auto json = e.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -202,7 +238,7 @@ TEST_CASE("get_frontmost_application_bundle_identifier") {
     std::string bundle_identifier = "org.pqrs.example";
     std::string file_path = "/opt/bin/examle";
     auto e = krbn::event_queue::event::make_frontmost_application_changed_event(bundle_identifier,
-                                                                                       file_path);
+                                                                                file_path);
     REQUIRE(e.get_frontmost_application() != boost::none);
     REQUIRE(e.get_frontmost_application()->get_bundle_identifier() == bundle_identifier);
     REQUIRE(e.get_frontmost_application()->get_file_path() == file_path);
