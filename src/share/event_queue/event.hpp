@@ -1,5 +1,7 @@
 #pragma once
 
+// `krbn::event_queue::event` can be used safely in a multi-threaded environment.
+
 #include "boost_defs.hpp"
 
 #include "json_utility.hpp"
