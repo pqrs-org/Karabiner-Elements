@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <mutex>
 #include <unordered_set>
 
 namespace krbn {
