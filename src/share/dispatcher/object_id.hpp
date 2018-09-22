@@ -18,7 +18,7 @@ public:
     manager::erase(value_);
   }
 
-  static object_id make_object_id(void) {
+  static object_id make_new_object_id(void) {
     return object_id(manager::make());
   }
 
@@ -37,7 +37,7 @@ private:
       std::lock_guard<std::mutex> lock(mutex());
 
       if (set().size() >= std::numeric_limits<uint64_t>::max()) {
-        throw std::runtime_error("krbn::dispatcher::object_id::manager::make_object_id fails to allocate new object_id.");
+        throw std::runtime_error("krbn::dispatcher::object_id::manager::make_new_object_id fails to allocate new object_id.");
       }
 
       while (true) {
@@ -85,6 +85,10 @@ private:
 
   uint64_t value_;
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const object_id& value) {
+  return stream << value.get();
+}
 } // namespace dispatcher
 } // namespace krbn
 #pragma once
