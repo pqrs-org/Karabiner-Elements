@@ -265,3 +265,97 @@ TEST_CASE("dispatcher.terminate") {
     w.wait_notice();
   }
 }
+
+namespace {
+void dispatcher_recursive_function(krbn::dispatcher::dispatcher& d,
+                                   const krbn::dispatcher::object_id& id,
+                                   size_t& count) {
+  ++count;
+  if (count < 5) {
+    d.enqueue(
+        id,
+        [&d, &id, &count] {
+          dispatcher_recursive_function(d, id, count);
+        });
+  } else if (count == 5) {
+    d.enqueue(
+        id,
+        [] {
+          std::cout << "dispatcher_recursive_function finished" << std::endl;
+        });
+  }
+}
+
+class dispatcher_recursive_class final {
+public:
+  dispatcher_recursive_class(size_t& count) : count_(count),
+                                              object_id_(krbn::dispatcher::object_id::make_new_object_id()) {
+    dispatcher_ = std::make_unique<krbn::dispatcher::dispatcher>();
+
+    dispatcher_->attach(object_id_);
+  }
+
+  ~dispatcher_recursive_class(void) {
+    dispatcher_->terminate();
+    dispatcher_ = nullptr;
+  }
+
+  void enqueue(void) {
+    dispatcher_->enqueue(
+        object_id_,
+        [this] {
+          dispatcher_->enqueue(
+              object_id_,
+              [this] {
+                ++count_;
+                std::cout << "dispatcher_recursive_class finished" << std::endl;
+              });
+        });
+  }
+
+private:
+  size_t& count_;
+
+  std::unique_ptr<krbn::dispatcher::dispatcher> dispatcher_;
+  krbn::dispatcher::object_id object_id_;
+};
+} // namespace
+
+TEST_CASE("dispatcher.recursive") {
+  std::cout << "dispatcher.recursive" << std::endl;
+
+  // Call `enqueue` in dispatcher's thread.
+
+  {
+    size_t count = 0;
+
+    {
+      krbn::dispatcher::dispatcher d;
+
+      auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+      d.attach(object_id);
+
+      d.enqueue(
+          object_id,
+          [&] {
+            dispatcher_recursive_function(d, object_id, count);
+          });
+
+      d.terminate();
+    }
+
+    REQUIRE(count == 5);
+  }
+
+  {
+    size_t count = 0;
+
+    {
+      dispatcher_recursive_class dispatcher_recursive_class(count);
+
+      dispatcher_recursive_class.enqueue();
+    }
+
+    REQUIRE(count == 1);
+  }
+}
