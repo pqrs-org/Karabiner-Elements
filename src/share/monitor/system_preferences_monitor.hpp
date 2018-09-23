@@ -4,12 +4,13 @@
 
 #include "boost_utility.hpp"
 #include "configuration_monitor.hpp"
+#include "dispatcher.hpp"
 #include "logger.hpp"
 #include "system_preferences_utility.hpp"
 #include "thread_utility.hpp"
 
 namespace krbn {
-class system_preferences_monitor final {
+class system_preferences_monitor final : public dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -17,14 +18,14 @@ public:
 
   // Methods
 
-  system_preferences_monitor(std::weak_ptr<configuration_monitor> weak_configuration_monitor) : weak_configuration_monitor_(weak_configuration_monitor) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
-
+  system_preferences_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+                             std::weak_ptr<configuration_monitor> weak_configuration_monitor) : dispatcher_client(weak_dispatcher),
+                                                                                                weak_configuration_monitor_(weak_configuration_monitor) {
     if (auto configuration_monitor = weak_configuration_monitor_.lock()) {
       // core_configuration_updated
       {
         auto c = configuration_monitor->core_configuration_updated.connect([this](auto&&) {
-          dispatcher_->enqueue([this] {
+          enqueue_to_dispatcher([this] {
             check_system_preferences();
           });
         });
@@ -48,7 +49,7 @@ public:
 
     // Destroy timer_
 
-    dispatcher_->enqueue([this] {
+    detach_from_dispatcher([this] {
       if (timer_) {
         timer_->cancel();
       }
@@ -57,14 +58,11 @@ public:
 
     // Destroy dispatcher_
 
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
-
     logger::get_logger().info("system_preferences_monitor is stopped.");
   }
 
   void async_start(void) {
-    dispatcher_->enqueue([this] {
+    enqueue_to_dispatcher([this] {
       if (timer_) {
         return;
       }
@@ -79,7 +77,7 @@ public:
           },
           thread_utility::timer::mode::repeat,
           [this] {
-            dispatcher_->enqueue([this] {
+            enqueue_to_dispatcher([this] {
               check_system_preferences();
             });
           });
@@ -119,7 +117,6 @@ private:
 
   std::weak_ptr<configuration_monitor> weak_configuration_monitor_;
 
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   boost_utility::signals2_connections configuration_monitor_connections_;
   std::unique_ptr<thread_utility::timer> timer_;
   boost::optional<system_preferences> last_system_preferences_;

@@ -11,9 +11,11 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
+  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
   auto configuration_monitor = std::make_shared<krbn::configuration_monitor>(krbn::constants::get_user_core_configuration_file_path());
 
-  krbn::system_preferences_monitor monitor(configuration_monitor);
+  krbn::system_preferences_monitor monitor(dispatcher, configuration_monitor);
 
   monitor.system_preferences_changed.connect([](auto&& system_preferences) {
     std::cout << "system_preferences_updated_callback:" << std::endl;
@@ -29,6 +31,9 @@ int main(int argc, const char* argv[]) {
   CFRunLoopRun();
 
   configuration_monitor = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 
   return 0;
 }

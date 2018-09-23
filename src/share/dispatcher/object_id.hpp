@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <limits>
 #include <mutex>
+#include <ostream>
 #include <unordered_set>
 
 namespace krbn {
@@ -95,7 +96,8 @@ inline size_t active_object_id_count(void) {
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const object_id& value) {
-  return stream << value.get();
+  stream << value.get();
+  return stream;
 }
 } // namespace dispatcher
 } // namespace krbn

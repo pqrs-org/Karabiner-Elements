@@ -1,5 +1,6 @@
 #include "components_manager.hpp"
 #include "constants.hpp"
+#include "dispatcher.hpp"
 #include "filesystem.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -40,11 +41,16 @@ int main(int argc, const char* argv[]) {
 
   // Run components_manager
 
-  auto components_manager = std::make_unique<krbn::components_manager>();
+  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
+  auto components_manager = std::make_unique<krbn::components_manager>(dispatcher);
 
   CFRunLoopRun();
 
   components_manager = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 
   krbn::logger::get_logger().info("karabiner_console_user_server is terminated.");
 

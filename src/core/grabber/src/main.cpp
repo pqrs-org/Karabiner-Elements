@@ -89,11 +89,22 @@ int main(int argc, const char* argv[]) {
     chmod(krbn::constants::get_console_user_server_socket_directory(), 0755);
   }
 
-  krbn::components_manager components_manager;
+  // Run components_manager
+
+  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
+  auto components_manager = std::make_unique<krbn::components_manager>(dispatcher);
 
   krbn::apple_notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
 
   CFRunLoopRun();
+
+  components_manager = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
+
+  krbn::logger::get_logger().info("karabiner_grabber is terminated.");
 
   return 0;
 }
