@@ -12,7 +12,9 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto console_user_id_monitor = std::make_unique<krbn::console_user_id_monitor>();
+  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
+  auto console_user_id_monitor = std::make_unique<krbn::console_user_id_monitor>(dispatcher);
 
   console_user_id_monitor->console_user_id_changed.connect([](auto&& uid) {
     if (uid) {
@@ -27,6 +29,9 @@ int main(int argc, const char* argv[]) {
   CFRunLoopRun();
 
   console_user_id_monitor = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 
   return 0;
 }

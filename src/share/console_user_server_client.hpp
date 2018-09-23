@@ -27,7 +27,7 @@ public:
   console_user_server_client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
-    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
+    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>(weak_dispatcher_);
 
     console_user_id_monitor_->console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
       dispatcher_->enqueue([this, uid] {

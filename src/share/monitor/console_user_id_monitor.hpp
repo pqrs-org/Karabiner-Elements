@@ -4,6 +4,7 @@
 
 #include "boost_defs.hpp"
 
+#include "dispatcher.hpp"
 #include "logger.hpp"
 #include "session.hpp"
 #include "thread_utility.hpp"
@@ -12,7 +13,7 @@
 #include <memory>
 
 namespace krbn {
-class console_user_id_monitor final {
+class console_user_id_monitor final : public dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -22,19 +23,17 @@ public:
 
   console_user_id_monitor(const console_user_id_monitor&) = delete;
 
-  console_user_id_monitor(void) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+  console_user_id_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
   }
 
   ~console_user_id_monitor(void) {
-    async_stop();
-
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
+    detach_from_dispatcher([this] {
+      stop();
+    });
   }
 
   void async_start(void) {
-    dispatcher_->enqueue([this] {
+    enqueue_to_dispatcher([this] {
       if (timer_) {
         return;
       }
@@ -49,7 +48,7 @@ public:
           },
           thread_utility::timer::mode::repeat,
           [this] {
-            dispatcher_->enqueue([this] {
+            enqueue_to_dispatcher([this] {
               auto u = session::get_current_console_user_id();
               if (uid_ && *uid_ == u) {
                 return;
@@ -65,20 +64,23 @@ public:
   }
 
   void async_stop(void) {
-    dispatcher_->enqueue([this] {
-      if (!timer_) {
-        return;
-      }
-
-      timer_->cancel();
-      timer_ = nullptr;
-
-      logger::get_logger().info("console_user_id_monitor is stopped.");
+    enqueue_to_dispatcher([this] {
+      stop();
     });
   }
 
 private:
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
+  void stop(void) {
+    if (!timer_) {
+      return;
+    }
+
+    timer_->cancel();
+    timer_ = nullptr;
+
+    logger::get_logger().info("console_user_id_monitor is stopped.");
+  }
+
   std::unique_ptr<thread_utility::timer> timer_;
   std::unique_ptr<boost::optional<uid_t>> uid_;
 };

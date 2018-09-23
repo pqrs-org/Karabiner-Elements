@@ -1,10 +1,11 @@
 #pragma once
 
-// `krbn::input_source_observer` can be used safely in a multi-threaded environment.
+// `krbn::input_source_monitor` can be used safely in a multi-threaded environment.
 
 #include "boost_defs.hpp"
 
 #include "cf_utility.hpp"
+#include "dispatcher.hpp"
 #include "input_source_utility.hpp"
 #include "logger.hpp"
 #include "thread_utility.hpp"
@@ -13,7 +14,7 @@
 #include <boost/signals2.hpp>
 
 namespace krbn {
-class input_source_observer final {
+class input_source_monitor final : public dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -21,23 +22,22 @@ public:
 
   // Methods
 
-  input_source_observer(const input_source_observer&) = delete;
+  input_source_monitor(const input_source_monitor&) = delete;
 
-  input_source_observer(void) : started_(false) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+  input_source_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                                started_(false) {
   }
 
-  ~input_source_observer(void) {
-    async_stop();
-
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
+  ~input_source_monitor(void) {
+    detach_from_dispatcher([this] {
+      stop();
+    });
   }
 
   void async_start(void) {
-    dispatcher_->enqueue([this] {
+    enqueue_to_dispatcher([this] {
       if (started_) {
-        logger::get_logger().warn("input_source_observer is already started.");
+        logger::get_logger().warn("input_source_monitor is already started.");
         return;
       }
 
@@ -50,7 +50,7 @@ public:
                                       nullptr,
                                       CFNotificationSuspensionBehaviorDeliverImmediately);
 
-      logger::get_logger().info("input_source_observer is started.");
+      logger::get_logger().info("input_source_monitor is started.");
 
       // Call `input_source_changed` slots for the current input source.
 
@@ -59,36 +59,40 @@ public:
   }
 
   void async_stop(void) {
-    dispatcher_->enqueue([this] {
-      if (!started_) {
-        return;
-      }
-
-      CFNotificationCenterRemoveObserver(CFNotificationCenterGetDistributedCenter(),
-                                         this,
-                                         kTISNotifySelectedKeyboardInputSourceChanged,
-                                         nullptr);
-
-      started_ = false;
-
-      logger::get_logger().info("input_source_observer is stopped.");
+    enqueue_to_dispatcher([this] {
+      stop();
     });
   }
 
 private:
+  void stop(void) {
+    if (!started_) {
+      return;
+    }
+
+    CFNotificationCenterRemoveObserver(CFNotificationCenterGetDistributedCenter(),
+                                       this,
+                                       kTISNotifySelectedKeyboardInputSourceChanged,
+                                       nullptr);
+
+    started_ = false;
+
+    logger::get_logger().info("input_source_monitor is stopped.");
+  }
+
   static void static_input_source_changed_callback(CFNotificationCenterRef center,
                                                    void* observer,
                                                    CFStringRef notification_name,
                                                    const void* observed_object,
                                                    CFDictionaryRef user_info) {
-    auto self = static_cast<input_source_observer*>(observer);
+    auto self = static_cast<input_source_monitor*>(observer);
     if (self) {
       self->input_source_changed_callback();
     }
   }
 
   void input_source_changed_callback(void) {
-    dispatcher_->enqueue([this] {
+    enqueue_to_dispatcher([this] {
       if (auto p = TISCopyCurrentKeyboardInputSource()) {
         input_source_changed(input_source_identifiers(p));
 
@@ -97,7 +101,6 @@ private:
     });
   }
 
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   bool started_;
 };
 } // namespace krbn

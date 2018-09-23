@@ -7,12 +7,12 @@
 #include "dispatcher.hpp"
 #include "frontmost_application_observer.hpp"
 #include "grabber_client.hpp"
-#include "input_source_observer.hpp"
 #include "logger.hpp"
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/console_user_id_monitor.hpp"
 #include "monitor/grabber_alerts_monitor.hpp"
+#include "monitor/input_source_monitor.hpp"
 #include "monitor/system_preferences_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "monitor/version_monitor_utility.hpp"
@@ -30,7 +30,7 @@ public:
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
     start_grabber_alerts_monitor();
 
-    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
+    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>(weak_dispatcher_);
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
       enqueue_to_dispatcher([this, uid] {
@@ -203,11 +203,11 @@ private:
 
     frontmost_application_observer_->async_start();
 
-    // input_source_observer_
+    // input_source_monitor_
 
-    input_source_observer_ = std::make_unique<input_source_observer>();
+    input_source_monitor_ = std::make_unique<input_source_monitor>(weak_dispatcher_);
 
-    input_source_observer_->input_source_changed.connect([this](auto&& input_source_identifiers) {
+    input_source_monitor_->input_source_changed.connect([this](auto&& input_source_identifiers) {
       enqueue_to_dispatcher([this, input_source_identifiers] {
         if (grabber_client_) {
           grabber_client_->async_input_source_changed(input_source_identifiers);
@@ -215,7 +215,7 @@ private:
       });
     });
 
-    input_source_observer_->async_start();
+    input_source_monitor_->async_start();
 
     // Start configuration_monitor_
 
@@ -227,7 +227,7 @@ private:
     updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     frontmost_application_observer_ = nullptr;
-    input_source_observer_ = nullptr;
+    input_source_monitor_ = nullptr;
 
     configuration_monitor_ = nullptr;
   }
@@ -250,6 +250,6 @@ private:
   // `frontmost_application_observer` does not work properly in karabiner_grabber after fast user switching.
   // Therefore, we have to use `frontmost_application_observer` in `console_user_server`.
   std::unique_ptr<frontmost_application_observer> frontmost_application_observer_;
-  std::unique_ptr<input_source_observer> input_source_observer_;
+  std::unique_ptr<input_source_monitor> input_source_monitor_;
 };
 } // namespace krbn

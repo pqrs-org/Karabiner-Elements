@@ -20,7 +20,7 @@ public:
   components_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
 
-    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
+    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>(weak_dispatcher_);
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
       enqueue_to_dispatcher([this, uid] {

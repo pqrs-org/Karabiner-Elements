@@ -1,5 +1,5 @@
-#include "input_source_observer.hpp"
 #include "logger.hpp"
+#include "monitor/input_source_monitor.hpp"
 #include "thread_utility.hpp"
 #include <Carbon/Carbon.h>
 
@@ -10,19 +10,21 @@ int main(int argc, char** argv) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
+  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
   krbn::logger::get_logger().set_level(spdlog::level::off);
 
   for (int i = 0; i < 100; ++i) {
     // Check destructor working properly.
-    krbn::input_source_observer observer;
-    observer.async_start();
+    krbn::input_source_monitor m(dispatcher);
+    m.async_start();
   }
 
   krbn::logger::get_logger().set_level(spdlog::level::info);
 
-  krbn::input_source_observer observer;
+  krbn::input_source_monitor m(dispatcher);
 
-  observer.input_source_changed.connect([](auto&& input_source_identifiers) {
+  m.input_source_changed.connect([](auto&& input_source_identifiers) {
     krbn::logger::get_logger().info("callback");
     if (auto& v = input_source_identifiers.get_language()) {
       krbn::logger::get_logger().info("  language: {0}", *v);
@@ -35,9 +37,12 @@ int main(int argc, char** argv) {
     }
   });
 
-  observer.async_start();
+  m.async_start();
 
   CFRunLoopRun();
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 
   return 0;
 }
