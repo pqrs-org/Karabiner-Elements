@@ -197,6 +197,65 @@ TEST_CASE("dispatcher.detach") {
   }
 }
 
+TEST_CASE("dispatcher.detach_with_function") {
+  std::cout << "dispatcher.detach_with_function" << std::endl;
+
+  {
+    size_t count = 0;
+
+    krbn::dispatcher::dispatcher d;
+
+    auto object_id = krbn::dispatcher::make_new_object_id();
+    d.attach(object_id);
+
+    REQUIRE(count == 0);
+
+    d.detach(
+        object_id,
+        [&] {
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          ++count;
+        });
+
+    REQUIRE(count == 1);
+
+    d.terminate();
+  }
+
+  // Call `detach` in the dispatcher thread.
+
+  {
+    size_t count = 0;
+
+    krbn::dispatcher::dispatcher d;
+
+    auto object_id = krbn::dispatcher::make_new_object_id();
+    d.attach(object_id);
+
+    krbn::thread_utility::wait w;
+
+    d.enqueue(
+        object_id,
+        [&] {
+          d.detach(
+              object_id,
+              [&] {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                ++count;
+              });
+          w.notify();
+        });
+
+    REQUIRE(count == 0);
+
+    w.wait_notice();
+
+    REQUIRE(count == 1);
+
+    d.terminate();
+  }
+}
+
 TEST_CASE("dispatcher.wait_current_running_function_in_detach") {
   std::cout << "dispatcher.wait_current_running_function_in_detach" << std::endl;
 

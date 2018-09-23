@@ -63,8 +63,7 @@ public:
   void detach(const object_id& object_id) {
     std::lock_guard<std::mutex> lock(object_ids_mutex_);
 
-    auto it = object_ids_.find(object_id.get());
-    if (it == std::end(object_ids_)) {
+    if (!attached(object_id.get())) {
       return;
     }
 
@@ -74,6 +73,33 @@ public:
       // Wait until current running function is finised.
       std::lock_guard<std::mutex> lock(function_mutex_);
     }
+  }
+
+  void detach(const object_id& object_id,
+              const std::function<void(void)>& function) {
+    {
+      std::lock_guard<std::mutex> lock(object_ids_mutex_);
+
+      if (!attached(object_id.get())) {
+        return;
+      }
+    }
+
+    if (is_dispatcher_thread()) {
+      function();
+    } else {
+      thread_utility::wait w;
+
+      enqueue(object_id,
+              [&w, &function] {
+                function();
+                w.notify();
+              });
+
+      w.wait_notice();
+    }
+
+    detach(object_id);
   }
 
   bool is_dispatcher_thread(void) const {
@@ -146,8 +172,7 @@ public:
         {
           std::lock_guard<std::mutex> lock(object_ids_mutex_);
 
-          auto it = object_ids_.find(id);
-          if (it == std::end(object_ids_)) {
+          if (!attached(id)) {
             return;
           }
         }
@@ -160,6 +185,11 @@ public:
   }
 
 private:
+  bool attached(const uint64_t object_id_value) {
+    auto it = object_ids_.find(object_id_value);
+    return it != std::end(object_ids_);
+  }
+
   std::thread worker_thread_;
   std::thread::id worker_thread_id_;
   thread_utility::wait worker_thread_id_wait_;
