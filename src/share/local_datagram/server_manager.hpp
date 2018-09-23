@@ -8,7 +8,7 @@
 
 namespace krbn {
 namespace local_datagram {
-class server_manager final {
+class server_manager final : public dispatcher::client {
 public:
   // Signals
 
@@ -23,24 +23,18 @@ public:
                  const std::string& path,
                  size_t buffer_size,
                  boost::optional<std::chrono::milliseconds> server_check_interval,
-                 std::chrono::milliseconds reconnect_interval) : weak_dispatcher_(weak_dispatcher),
+                 std::chrono::milliseconds reconnect_interval) : dispatcher::client(weak_dispatcher),
                                                                  path_(path),
                                                                  buffer_size_(buffer_size),
                                                                  server_check_interval_(server_check_interval),
                                                                  reconnect_interval_(reconnect_interval),
-                                                                 object_id_(dispatcher::make_new_object_id()),
                                                                  reconnect_timer_enabled_(false) {
-    if (auto d = weak_dispatcher_.lock()) {
-      d->attach(object_id_);
-    }
   }
 
   ~server_manager(void) {
-    if (auto d = weak_dispatcher_.lock()) {
-      d->detach(object_id_, [this] {
-        stop();
-      });
-    }
+    detach_from_dispatcher([this] {
+      stop();
+    });
   }
 
   void async_start(void) {
@@ -146,19 +140,11 @@ private:
     reconnect_timer_ = nullptr;
   }
 
-  void enqueue_to_dispatcher(const std::function<void(void)>& function) {
-    if (auto d = weak_dispatcher_.lock()) {
-      d->enqueue(object_id_, function);
-    }
-  }
-
-  std::weak_ptr<dispatcher::dispatcher> weak_dispatcher_;
   std::string path_;
   size_t buffer_size_;
   boost::optional<std::chrono::milliseconds> server_check_interval_;
   std::chrono::milliseconds reconnect_interval_;
 
-  dispatcher::object_id object_id_;
   std::unique_ptr<server> server_;
   std::unique_ptr<thread_utility::timer> reconnect_timer_;
   bool reconnect_timer_enabled_;
