@@ -20,7 +20,8 @@ public:
       logger::get_logger().info("{0}", test["description"].get<std::string>());
 
       system_preferences system_preferences;
-      auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
+      auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+      auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(dispatcher);
       auto manipulator_dispatcher = std::make_shared<manipulator::manipulator_dispatcher>();
       auto manipulator_timer = std::make_shared<manipulator::manipulator_timer>(false);
       auto manipulator_object_id = manipulator::make_new_manipulator_object_id();
@@ -188,6 +189,9 @@ public:
 
       manipulator_dispatcher = nullptr;
       manipulator_timer = nullptr;
+
+      dispatcher->terminate();
+      dispatcher = nullptr;
     }
 
     logger::get_logger().info("krbn::unit_testing::manipulator_helper::run_tests finished");

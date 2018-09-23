@@ -3,6 +3,7 @@
 // `krbn::grabber_client` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
+#include "dispatcher.hpp"
 #include "filesystem.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
@@ -27,7 +28,7 @@ public:
 
   grabber_client(const grabber_client&) = delete;
 
-  grabber_client(void) {
+  grabber_client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : weak_dispatcher_(weak_dispatcher) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
@@ -49,7 +50,8 @@ public:
       std::chrono::milliseconds server_check_interval(3000);
       std::chrono::milliseconds reconnect_interval(1000);
 
-      client_manager_ = std::make_unique<local_datagram::client_manager>(socket_file_path,
+      client_manager_ = std::make_unique<local_datagram::client_manager>(weak_dispatcher_,
+                                                                         socket_file_path,
                                                                          server_check_interval,
                                                                          reconnect_interval);
 
@@ -166,6 +168,7 @@ private:
     }
   }
 
+  std::weak_ptr<dispatcher::dispatcher> weak_dispatcher_;
   std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   std::unique_ptr<local_datagram::client_manager> client_manager_;
 };

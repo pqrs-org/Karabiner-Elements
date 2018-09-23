@@ -5,10 +5,10 @@
 
 namespace krbn {
 namespace dispatcher {
-class client {
+class dispatcher_client {
 public:
-  client(std::weak_ptr<dispatcher> weak_dispatcher) : weak_dispatcher_(weak_dispatcher),
-                                                      object_id_(make_new_object_id()) {
+  dispatcher_client(std::weak_ptr<dispatcher> weak_dispatcher) : weak_dispatcher_(weak_dispatcher),
+                                                                 object_id_(make_new_object_id()) {
     if (auto d = weak_dispatcher_.lock()) {
       d->attach(object_id_);
     }
@@ -26,7 +26,7 @@ public:
     }
   }
 
-private:
+protected:
   std::weak_ptr<dispatcher> weak_dispatcher_;
   object_id object_id_;
 };

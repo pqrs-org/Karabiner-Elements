@@ -3,7 +3,7 @@ build_make:
 	mkdir -p build \
 		&& cd build \
 		&& cmake .. \
-		&& make
+		&& make -j4
 
 .PHONY: build_xcode
 build_xcode:

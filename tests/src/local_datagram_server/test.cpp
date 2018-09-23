@@ -347,7 +347,9 @@ TEST_CASE("local_datagram::client_manager") {
 
     std::chrono::milliseconds reconnect_interval(100);
 
-    auto client_manager = std::make_unique<krbn::local_datagram::client_manager>(socket_path,
+    auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+    auto client_manager = std::make_unique<krbn::local_datagram::client_manager>(dispatcher,
+                                                                                 socket_path,
                                                                                  server_check_interval,
                                                                                  reconnect_interval);
 

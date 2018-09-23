@@ -8,7 +8,7 @@
 
 namespace krbn {
 namespace local_datagram {
-class server_manager final : public dispatcher::client {
+class server_manager final : public dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -23,7 +23,7 @@ public:
                  const std::string& path,
                  size_t buffer_size,
                  boost::optional<std::chrono::milliseconds> server_check_interval,
-                 std::chrono::milliseconds reconnect_interval) : dispatcher::client(weak_dispatcher),
+                 std::chrono::milliseconds reconnect_interval) : dispatcher_client(weak_dispatcher),
                                                                  path_(path),
                                                                  buffer_size_(buffer_size),
                                                                  server_check_interval_(server_check_interval),

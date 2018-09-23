@@ -11,7 +11,9 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto client = std::make_shared<krbn::console_user_server_client>();
+  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
+  auto client = std::make_shared<krbn::console_user_server_client>(dispatcher);
 
   client->connected.connect([client] {
     std::string shell_command = "open /Applications/Safari.app";
@@ -24,9 +26,16 @@ int main(int argc, const char* argv[]) {
 
   client->async_start();
 
+  // ------------------------------------------------------------
+
   CFRunLoopRun();
 
+  // ------------------------------------------------------------
+
   client = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 
   return 0;
 }

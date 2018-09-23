@@ -13,11 +13,11 @@
 #include <vector>
 
 namespace krbn {
-class receiver final {
+class receiver final : public dispatcher::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) {
+  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     std::string socket_file_path(constants::get_grabber_socket_file_path());
@@ -28,7 +28,7 @@ public:
     std::chrono::milliseconds server_check_interval(3000);
     std::chrono::milliseconds reconnect_interval(1000);
 
-    server_manager_ = std::make_unique<local_datagram::server_manager>(weak_dispatcher,
+    server_manager_ = std::make_unique<local_datagram::server_manager>(weak_dispatcher_,
                                                                        socket_file_path,
                                                                        buffer_size,
                                                                        server_check_interval,
@@ -78,7 +78,7 @@ public:
                 logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
                 console_user_server_client_ = nullptr;
-                console_user_server_client_ = std::make_shared<console_user_server_client>();
+                console_user_server_client_ = std::make_shared<console_user_server_client>(weak_dispatcher_);
 
                 console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
                   dispatcher_->enqueue([this, user_core_configuration_file_path] {

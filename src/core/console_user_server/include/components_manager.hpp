@@ -130,7 +130,7 @@ private:
       return;
     }
 
-    grabber_client_ = std::make_shared<grabber_client>();
+    grabber_client_ = std::make_shared<grabber_client>(dispatcher_);
 
     grabber_client_->connected.connect([this] {
       dispatcher_->enqueue(

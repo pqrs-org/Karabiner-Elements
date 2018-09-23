@@ -15,7 +15,9 @@ int main(int argc, const char* argv[]) {
     krbn::logger::get_logger().error("virtual_device_client requires root privilege.");
   }
 
-  auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
+  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
+  auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(dispatcher);
 
   auto virtual_hid_device_client = std::make_shared<krbn::virtual_hid_device_client>();
   krbn::manipulator::details::post_event_to_virtual_devices_detail::queue queue;
@@ -154,10 +156,17 @@ int main(int argc, const char* argv[]) {
 
   virtual_hid_device_client->connect();
 
+  // ------------------------------------------------------------
+
   CFRunLoopRun();
+
+  // ------------------------------------------------------------
 
   virtual_hid_device_client = nullptr;
   console_user_server_client = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 
   return 0;
 }

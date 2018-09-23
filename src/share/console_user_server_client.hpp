@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace krbn {
-class console_user_server_client final {
+class console_user_server_client final : public dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -24,7 +24,7 @@ public:
 
   console_user_server_client(const console_user_server_client&) = delete;
 
-  console_user_server_client(void) {
+  console_user_server_client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
@@ -38,7 +38,8 @@ public:
           std::chrono::milliseconds server_check_interval(3000);
           std::chrono::milliseconds reconnect_interval(1000);
 
-          client_manager_ = std::make_unique<local_datagram::client_manager>(socket_file_path,
+          client_manager_ = std::make_unique<local_datagram::client_manager>(weak_dispatcher_,
+                                                                             socket_file_path,
                                                                              server_check_interval,
                                                                              reconnect_interval);
 
