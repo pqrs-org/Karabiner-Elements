@@ -5,23 +5,23 @@
 
 TEST_CASE("object_id") {
   {
-    krbn::dispatcher::object_id object_id1(krbn::dispatcher::object_id::make_new_object_id());
-    krbn::dispatcher::object_id object_id2(krbn::dispatcher::object_id::make_new_object_id());
+    krbn::dispatcher::object_id object_id1(krbn::dispatcher::make_new_object_id());
+    krbn::dispatcher::object_id object_id2(krbn::dispatcher::make_new_object_id());
 
     REQUIRE(object_id1.get() == 1);
     REQUIRE(object_id2.get() == 2);
-    REQUIRE(krbn::dispatcher::object_id::active_object_id_count() == 2);
+    REQUIRE(krbn::dispatcher::active_object_id_count() == 2);
   }
 
-  REQUIRE(krbn::dispatcher::object_id::active_object_id_count() == 0);
+  REQUIRE(krbn::dispatcher::active_object_id_count() == 0);
 
   {
-    krbn::dispatcher::object_id object_id3(krbn::dispatcher::object_id::make_new_object_id());
-    krbn::dispatcher::object_id object_id4(krbn::dispatcher::object_id::make_new_object_id());
+    krbn::dispatcher::object_id object_id3(krbn::dispatcher::make_new_object_id());
+    krbn::dispatcher::object_id object_id4(krbn::dispatcher::make_new_object_id());
 
     REQUIRE(object_id3.get() == 3);
     REQUIRE(object_id4.get() == 4);
-    REQUIRE(krbn::dispatcher::object_id::active_object_id_count() == 2);
+    REQUIRE(krbn::dispatcher::active_object_id_count() == 2);
   }
 }
 
@@ -40,7 +40,7 @@ TEST_CASE("dispatcher") {
 
     krbn::dispatcher::dispatcher d;
 
-    auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+    auto object_id = krbn::dispatcher::make_new_object_id();
     d.attach(object_id);
 
     REQUIRE(d.is_dispatcher_thread() == false);
@@ -77,7 +77,7 @@ TEST_CASE("dispatcher.preserve_the_order_of_entries") {
 
     krbn::dispatcher::dispatcher d;
 
-    auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+    auto object_id = krbn::dispatcher::make_new_object_id();
     d.attach(object_id);
 
     d.enqueue(
@@ -120,7 +120,7 @@ TEST_CASE("dispatcher.run_enqueued_functions_in_the_destructor") {
     {
       krbn::dispatcher::dispatcher d;
 
-      auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+      auto object_id = krbn::dispatcher::make_new_object_id();
       d.attach(object_id);
 
       for (int i = 0; i < 10000; ++i) {
@@ -147,7 +147,7 @@ TEST_CASE("dispatcher.run_enqueued_functions_in_the_destructor") {
 
     krbn::dispatcher::dispatcher d;
 
-    auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+    auto object_id = krbn::dispatcher::make_new_object_id();
     d.attach(object_id);
 
     d.terminate();
@@ -172,7 +172,7 @@ TEST_CASE("dispatcher.detach") {
 
     krbn::dispatcher::dispatcher d;
 
-    auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+    auto object_id = krbn::dispatcher::make_new_object_id();
     d.attach(object_id);
 
     d.enqueue(
@@ -205,7 +205,7 @@ TEST_CASE("dispatcher.wait_current_running_function_in_detach") {
 
     krbn::dispatcher::dispatcher d;
 
-    auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+    auto object_id = krbn::dispatcher::make_new_object_id();
     d.attach(object_id);
 
     d.enqueue(
@@ -229,7 +229,7 @@ TEST_CASE("dispatcher.wait_current_running_function_in_detach") {
   {
     krbn::dispatcher::dispatcher d;
 
-    auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+    auto object_id = krbn::dispatcher::make_new_object_id();
     d.attach(object_id);
 
     d.enqueue(
@@ -250,7 +250,7 @@ TEST_CASE("dispatcher.terminate") {
   {
     krbn::dispatcher::dispatcher d;
 
-    auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+    auto object_id = krbn::dispatcher::make_new_object_id();
     d.attach(object_id);
 
     krbn::thread_utility::wait w;
@@ -289,7 +289,7 @@ void dispatcher_recursive_function(krbn::dispatcher::dispatcher& d,
 class dispatcher_recursive_class final {
 public:
   dispatcher_recursive_class(size_t& count) : count_(count),
-                                              object_id_(krbn::dispatcher::object_id::make_new_object_id()) {
+                                              object_id_(krbn::dispatcher::make_new_object_id()) {
     dispatcher_ = std::make_unique<krbn::dispatcher::dispatcher>();
 
     dispatcher_->attach(object_id_);
@@ -332,7 +332,7 @@ TEST_CASE("dispatcher.recursive") {
     {
       krbn::dispatcher::dispatcher d;
 
-      auto object_id = krbn::dispatcher::object_id::make_new_object_id();
+      auto object_id = krbn::dispatcher::make_new_object_id();
       d.attach(object_id);
 
       d.enqueue(

@@ -87,7 +87,7 @@ public:
     // ----------------------------------------
     // class example final {
     // public:
-    //   example(void) : object_id_(krbn::dispatcher::object_id::make_new_object_id()) {
+    //   example(void) : object_id_(krbn::dispatcher::make_new_object_id()) {
     //     dispatcher_ = std::make_unique<krbn::dispatcher::dispatcher>();
     //     dispatcher_->attach(object_id_);
     //

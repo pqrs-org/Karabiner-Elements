@@ -86,10 +86,16 @@ private:
   uint64_t value_;
 };
 
+inline object_id make_new_object_id(void) {
+  return object_id::make_new_object_id();
+}
+
+inline size_t active_object_id_count(void) {
+  return object_id::active_object_id_count();
+}
+
 inline std::ostream& operator<<(std::ostream& stream, const object_id& value) {
   return stream << value.get();
 }
 } // namespace dispatcher
 } // namespace krbn
-#pragma once
-#pragma once
