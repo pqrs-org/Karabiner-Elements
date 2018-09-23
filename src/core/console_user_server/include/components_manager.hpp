@@ -25,8 +25,9 @@ class components_manager final {
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(void) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+  components_manager(void) : object_id_(dispatcher::make_new_object_id()) {
+    dispatcher_ = std::make_shared<dispatcher::dispatcher>();
+    dispatcher_->attach(object_id_);
 
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
     start_grabber_alerts_monitor();
@@ -34,59 +35,69 @@ public:
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
-      dispatcher_->enqueue([this, uid] {
-        if (version_monitor_) {
-          version_monitor_->async_manual_check();
-        }
+      dispatcher_->enqueue(
+          object_id_,
+          [this, uid] {
+            if (version_monitor_) {
+              version_monitor_->async_manual_check();
+            }
 
-        filesystem::create_directory_with_intermediate_directories(
-            constants::get_user_configuration_directory(),
-            0700);
+            filesystem::create_directory_with_intermediate_directories(
+                constants::get_user_configuration_directory(),
+                0700);
 
-        receiver_ = nullptr;
-        stop_grabber_client();
-
-        if (uid != getuid()) {
-          return;
-        }
-
-        receiver_ = std::make_unique<receiver>();
-
-        receiver_->bound.connect([this] {
-          dispatcher_->enqueue([this] {
+            receiver_ = nullptr;
             stop_grabber_client();
-            start_grabber_client();
-          });
-        });
 
-        receiver_->bind_failed.connect([this](auto&& error_code) {
-          dispatcher_->enqueue([this] {
-            stop_grabber_client();
-          });
-        });
+            if (uid != getuid()) {
+              return;
+            }
 
-        receiver_->closed.connect([this] {
-          dispatcher_->enqueue([this] {
-            stop_grabber_client();
-          });
-        });
+            receiver_ = std::make_unique<receiver>(dispatcher_);
 
-        receiver_->async_start();
-      });
+            receiver_->bound.connect([this] {
+              dispatcher_->enqueue(
+                  object_id_,
+                  [this] {
+                    stop_grabber_client();
+                    start_grabber_client();
+                  });
+            });
+
+            receiver_->bind_failed.connect([this](auto&& error_code) {
+              dispatcher_->enqueue(
+                  object_id_,
+                  [this] {
+                    stop_grabber_client();
+                  });
+            });
+
+            receiver_->closed.connect([this] {
+              dispatcher_->enqueue(
+                  object_id_,
+                  [this] {
+                    stop_grabber_client();
+                  });
+            });
+
+            receiver_->async_start();
+          });
     });
 
     console_user_id_monitor_->async_start();
   }
 
   ~components_manager(void) {
-    dispatcher_->enqueue([this] {
-      stop_grabber_client();
+    dispatcher_->detach(
+        object_id_,
+        [this] {
+          stop_grabber_client();
 
-      console_user_id_monitor_ = nullptr;
-      receiver_ = nullptr;
-      grabber_alerts_monitor_ = nullptr;
-      version_monitor_ = nullptr;
-    });
+          console_user_id_monitor_ = nullptr;
+          receiver_ = nullptr;
+          grabber_alerts_monitor_ = nullptr;
+          version_monitor_ = nullptr;
+        });
 
     dispatcher_->terminate();
     dispatcher_ = nullptr;
@@ -101,12 +112,14 @@ private:
     grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>(constants::get_grabber_alerts_json_file_path());
 
     grabber_alerts_monitor_->alerts_changed.connect([this](auto&& alerts) {
-      dispatcher_->enqueue([alerts] {
-        logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
-        if (!alerts.empty()) {
-          application_launcher::launch_preferences();
-        }
-      });
+      dispatcher_->enqueue(
+          object_id_,
+          [alerts] {
+            logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
+            if (!alerts.empty()) {
+              application_launcher::launch_preferences();
+            }
+          });
     });
 
     grabber_alerts_monitor_->async_start();
@@ -120,38 +133,44 @@ private:
     grabber_client_ = std::make_shared<grabber_client>();
 
     grabber_client_->connected.connect([this] {
-      dispatcher_->enqueue([this] {
-        if (version_monitor_) {
-          version_monitor_->async_manual_check();
-        }
+      dispatcher_->enqueue(
+          object_id_,
+          [this] {
+            if (version_monitor_) {
+              version_monitor_->async_manual_check();
+            }
 
-        if (grabber_client_) {
-          grabber_client_->async_connect_console_user_server();
-        }
+            if (grabber_client_) {
+              grabber_client_->async_connect_console_user_server();
+            }
 
-        stop_child_components();
-        start_child_components();
-      });
+            stop_child_components();
+            start_child_components();
+          });
     });
 
     grabber_client_->connect_failed.connect([this](auto&& error_code) {
-      dispatcher_->enqueue([this] {
-        if (version_monitor_) {
-          version_monitor_->async_manual_check();
-        }
+      dispatcher_->enqueue(
+          object_id_,
+          [this] {
+            if (version_monitor_) {
+              version_monitor_->async_manual_check();
+            }
 
-        stop_child_components();
-      });
+            stop_child_components();
+          });
     });
 
     grabber_client_->closed.connect([this] {
-      dispatcher_->enqueue([this] {
-        if (version_monitor_) {
-          version_monitor_->async_manual_check();
-        }
+      dispatcher_->enqueue(
+          object_id_,
+          [this] {
+            if (version_monitor_) {
+              version_monitor_->async_manual_check();
+            }
 
-        stop_child_components();
-      });
+            stop_child_components();
+          });
     });
 
     grabber_client_->async_start();
@@ -178,11 +197,13 @@ private:
     system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(configuration_monitor_);
 
     system_preferences_monitor_->system_preferences_changed.connect([this](auto&& system_preferences) {
-      dispatcher_->enqueue([this, system_preferences] {
-        if (grabber_client_) {
-          grabber_client_->async_system_preferences_updated(system_preferences);
-        }
-      });
+      dispatcher_->enqueue(
+          object_id_,
+          [this, system_preferences] {
+            if (grabber_client_) {
+              grabber_client_->async_system_preferences_updated(system_preferences);
+            }
+          });
     });
 
     system_preferences_monitor_->async_start();
@@ -192,16 +213,18 @@ private:
     frontmost_application_observer_ = std::make_unique<frontmost_application_observer>();
 
     frontmost_application_observer_->frontmost_application_changed.connect([this](auto&& bundle_identifier, auto&& file_path) {
-      dispatcher_->enqueue([this, bundle_identifier, file_path] {
-        if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
-            bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
-          return;
-        }
+      dispatcher_->enqueue(
+          object_id_,
+          [this, bundle_identifier, file_path] {
+            if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
+                bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
+              return;
+            }
 
-        if (grabber_client_) {
-          grabber_client_->async_frontmost_application_changed(bundle_identifier, file_path);
-        }
-      });
+            if (grabber_client_) {
+              grabber_client_->async_frontmost_application_changed(bundle_identifier, file_path);
+            }
+          });
     });
 
     frontmost_application_observer_->async_start();
@@ -211,11 +234,13 @@ private:
     input_source_observer_ = std::make_unique<input_source_observer>();
 
     input_source_observer_->input_source_changed.connect([this](auto&& input_source_identifiers) {
-      dispatcher_->enqueue([this, input_source_identifiers] {
-        if (grabber_client_) {
-          grabber_client_->async_input_source_changed(input_source_identifiers);
-        }
-      });
+      dispatcher_->enqueue(
+          object_id_,
+          [this, input_source_identifiers] {
+            if (grabber_client_) {
+              grabber_client_->async_input_source_changed(input_source_identifiers);
+            }
+          });
     });
 
     input_source_observer_->async_start();
@@ -235,7 +260,8 @@ private:
     configuration_monitor_ = nullptr;
   }
 
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
+  std::shared_ptr<dispatcher::dispatcher> dispatcher_;
+  dispatcher::object_id object_id_;
 
   // Core components
 

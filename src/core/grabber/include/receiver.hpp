@@ -5,6 +5,7 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
+#include "dispatcher.hpp"
 #include "grabbable_state_queues_manager.hpp"
 #include "local_datagram/server_manager.hpp"
 #include "session.hpp"
@@ -16,7 +17,7 @@ class receiver final {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(void) {
+  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
 
     std::string socket_file_path(constants::get_grabber_socket_file_path());
@@ -27,7 +28,8 @@ public:
     std::chrono::milliseconds server_check_interval(3000);
     std::chrono::milliseconds reconnect_interval(1000);
 
-    server_manager_ = std::make_unique<local_datagram::server_manager>(socket_file_path,
+    server_manager_ = std::make_unique<local_datagram::server_manager>(weak_dispatcher,
+                                                                       socket_file_path,
                                                                        buffer_size,
                                                                        server_check_interval,
                                                                        reconnect_interval);

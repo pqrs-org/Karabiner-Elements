@@ -2,6 +2,7 @@
 
 // `krbn::local_datagram::server_manager` can be used safely in a multi-threaded environment.
 
+#include "dispatcher.hpp"
 #include "local_datagram/server.hpp"
 #include "thread_utility.hpp"
 
@@ -18,26 +19,32 @@ public:
 
   // Methods
 
-  server_manager(const std::string& path,
+  server_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+                 const std::string& path,
                  size_t buffer_size,
                  boost::optional<std::chrono::milliseconds> server_check_interval,
-                 std::chrono::milliseconds reconnect_interval) : path_(path),
+                 std::chrono::milliseconds reconnect_interval) : weak_dispatcher_(weak_dispatcher),
+                                                                 path_(path),
                                                                  buffer_size_(buffer_size),
                                                                  server_check_interval_(server_check_interval),
                                                                  reconnect_interval_(reconnect_interval),
+                                                                 object_id_(dispatcher::make_new_object_id()),
                                                                  reconnect_timer_enabled_(false) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+    if (auto d = weak_dispatcher_.lock()) {
+      d->attach(object_id_);
+    }
   }
 
   ~server_manager(void) {
-    async_stop();
-
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
+    if (auto d = weak_dispatcher_.lock()) {
+      d->detach(object_id_, [this] {
+        stop();
+      });
+    }
   }
 
   void async_start(void) {
-    dispatcher_->enqueue([this] {
+    enqueue_to_dispatcher([this] {
       reconnect_timer_enabled_ = true;
 
       bind();
@@ -45,16 +52,20 @@ public:
   }
 
   void async_stop(void) {
-    dispatcher_->enqueue([this] {
-      // We have to unset reconnect_timer_enabled_ before `close` to prevent `start_reconnect_timer` by `closed` signal.
-      reconnect_timer_enabled_ = false;
-
-      stop_reconnect_timer();
-      close();
+    enqueue_to_dispatcher([this] {
+      stop();
     });
   }
 
 private:
+  void stop(void) {
+    // We have to unset reconnect_timer_enabled_ before `close` to prevent `start_reconnect_timer` by `closed` signal.
+    reconnect_timer_enabled_ = false;
+
+    stop_reconnect_timer();
+    close();
+  }
+
   void bind(void) {
     if (server_) {
       return;
@@ -63,13 +74,13 @@ private:
     server_ = std::make_unique<server>();
 
     server_->bound.connect([this] {
-      dispatcher_->enqueue([this] {
+      enqueue_to_dispatcher([this] {
         bound();
       });
     });
 
     server_->bind_failed.connect([this](auto&& error_code) {
-      dispatcher_->enqueue([this, error_code] {
+      enqueue_to_dispatcher([this, error_code] {
         bind_failed(error_code);
 
         close();
@@ -79,7 +90,7 @@ private:
     });
 
     server_->closed.connect([this] {
-      dispatcher_->enqueue([this] {
+      enqueue_to_dispatcher([this] {
         closed();
 
         close();
@@ -89,7 +100,7 @@ private:
     });
 
     server_->received.connect([this](auto&& buffer) {
-      dispatcher_->enqueue([this, buffer] {
+      enqueue_to_dispatcher([this, buffer] {
         received(buffer);
       });
     });
@@ -120,7 +131,7 @@ private:
         reconnect_interval_,
         thread_utility::timer::mode::once,
         [this] {
-          dispatcher_->enqueue([this] {
+          enqueue_to_dispatcher([this] {
             bind();
           });
         });
@@ -135,12 +146,19 @@ private:
     reconnect_timer_ = nullptr;
   }
 
+  void enqueue_to_dispatcher(const std::function<void(void)>& function) {
+    if (auto d = weak_dispatcher_.lock()) {
+      d->enqueue(object_id_, function);
+    }
+  }
+
+  std::weak_ptr<dispatcher::dispatcher> weak_dispatcher_;
   std::string path_;
   size_t buffer_size_;
   boost::optional<std::chrono::milliseconds> server_check_interval_;
   std::chrono::milliseconds reconnect_interval_;
 
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
+  dispatcher::object_id object_id_;
   std::unique_ptr<server> server_;
   std::unique_ptr<thread_utility::timer> reconnect_timer_;
   bool reconnect_timer_enabled_;

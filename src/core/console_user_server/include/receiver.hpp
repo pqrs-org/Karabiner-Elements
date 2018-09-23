@@ -2,6 +2,7 @@
 
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
+#include "dispatcher.hpp"
 #include "input_source_manager.hpp"
 #include "local_datagram/server_manager.hpp"
 #include "shell_utility.hpp"
@@ -21,7 +22,8 @@ public:
 
   receiver(const receiver&) = delete;
 
-  receiver(void) : last_select_input_source_time_stamp_(0) {
+  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : weak_dispatcher_(weak_dispatcher),
+                                                                    last_select_input_source_time_stamp_(0) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
   }
 
@@ -40,7 +42,8 @@ public:
       std::chrono::milliseconds server_check_interval(3000);
       std::chrono::milliseconds reconnect_interval(1000);
 
-      server_manager_ = std::make_unique<local_datagram::server_manager>(socket_file_path,
+      server_manager_ = std::make_unique<local_datagram::server_manager>(weak_dispatcher_,
+                                                                         socket_file_path,
                                                                          buffer_size,
                                                                          server_check_interval,
                                                                          reconnect_interval);
@@ -144,6 +147,7 @@ public:
   }
 
 private:
+  std::weak_ptr<dispatcher::dispatcher> weak_dispatcher_;
   std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   std::unique_ptr<local_datagram::server_manager> server_manager_;
