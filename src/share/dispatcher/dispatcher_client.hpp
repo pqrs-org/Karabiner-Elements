@@ -14,13 +14,13 @@ public:
     }
   }
 
-  void detach_from_dispatcher(const std::function<void(void)>& function) {
+  void detach_from_dispatcher(const std::function<void(void)>& function) const {
     if (auto d = weak_dispatcher_.lock()) {
       d->detach(object_id_, function);
     }
   }
 
-  void enqueue_to_dispatcher(const std::function<void(void)>& function) {
+  void enqueue_to_dispatcher(const std::function<void(void)>& function) const {
     if (auto d = weak_dispatcher_.lock()) {
       d->enqueue(object_id_, function);
     }
