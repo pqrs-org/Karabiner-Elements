@@ -44,7 +44,8 @@ public:
 
           // Observe
 
-          auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
+          auto hid_observer = std::make_shared<krbn::hid_observer>(weak_dispatcher_,
+                                                                   hid);
 
           hid_observer->device_observed.connect([this, weak_hid] {
             enqueue_to_dispatcher([weak_hid] {

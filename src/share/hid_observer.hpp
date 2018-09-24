@@ -3,12 +3,13 @@
 // `krbn::hid_observer` can be used safely in a multi-threaded environment.
 
 #include "boost_utility.hpp"
+#include "dispatcher.hpp"
 #include "human_interface_device.hpp"
 #include "logger.hpp"
 #include "thread_utility.hpp"
 
 namespace krbn {
-class hid_observer final {
+class hid_observer final : public dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -19,15 +20,15 @@ public:
 
   hid_observer(const hid_observer&) = delete;
 
-  hid_observer(std::weak_ptr<human_interface_device> weak_hid) : weak_hid_(weak_hid),
+  hid_observer(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+               std::weak_ptr<human_interface_device> weak_hid) : dispatcher_client(weak_dispatcher),
+                                                                 weak_hid_(weak_hid),
                                                                  observed_(false) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
-
     if (auto hid = weak_hid.lock()) {
       // opened
       {
         auto c = hid->opened.connect([this] {
-          dispatcher_->enqueue([this] {
+          enqueue_to_dispatcher([this] {
             if (auto hid = weak_hid_.lock()) {
               observed_ = true;
 
@@ -44,7 +45,7 @@ public:
       // open_failed
       {
         auto c = hid->open_failed.connect([this](auto&& error) {
-          dispatcher_->enqueue([this, error] {
+          enqueue_to_dispatcher([this, error] {
             if (auto hid = weak_hid_.lock()) {
               auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
                                          iokit_utility::get_error_name(error),
@@ -60,7 +61,7 @@ public:
       // closed
       {
         auto c = hid->closed.connect([this] {
-          dispatcher_->enqueue([this] {
+          enqueue_to_dispatcher([this] {
             if (auto hid = weak_hid_.lock()) {
               device_unobserved();
             }
@@ -72,7 +73,7 @@ public:
       // close_failed
       {
         auto c = hid->close_failed.connect([this](auto&& error) {
-          dispatcher_->enqueue([this, error] {
+          enqueue_to_dispatcher([this, error] {
             if (auto hid = weak_hid_.lock()) {
               auto message = fmt::format("IOHIDDeviceClose error: {0} ({1}) {2}",
                                          iokit_utility::get_error_name(error),
@@ -90,7 +91,9 @@ public:
   }
 
   ~hid_observer(void) {
-    async_unobserve();
+    detach_from_dispatcher([this] {
+      unobserve();
+    });
 
     // Disconnect `human_interface_device_connections_`
 
@@ -103,11 +106,6 @@ public:
     }
 
     human_interface_device_connections_.wait_disconnect_all_connections();
-
-    // Release `dispatcher_`
-
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
   }
 
   std::weak_ptr<human_interface_device> get_weak_hid(void) {
@@ -115,7 +113,7 @@ public:
   }
 
   void async_observe(void) {
-    dispatcher_->enqueue([this] {
+    enqueue_to_dispatcher([this] {
       if (timer_) {
         return;
       }
@@ -132,7 +130,7 @@ public:
           },
           thread_utility::timer::mode::repeat,
           [this] {
-            dispatcher_->enqueue([this] {
+            enqueue_to_dispatcher([this] {
               if (!observed_) {
                 if (auto hid = weak_hid_.lock()) {
                   if (!hid->get_removed()) {
@@ -149,30 +147,33 @@ public:
   }
 
   void async_unobserve(void) {
-    dispatcher_->enqueue([this] {
-      if (!timer_) {
-        return;
-      }
-
-      timer_->cancel();
-      timer_ = nullptr;
-
-      if (observed_) {
-        if (auto hid = weak_hid_.lock()) {
-          hid->async_unschedule();
-          hid->async_queue_stop();
-          hid->async_close();
-        }
-
-        observed_ = false;
-      }
+    enqueue_to_dispatcher([this] {
+      unobserve();
     });
   }
 
 private:
+  void unobserve(void) {
+    if (!timer_) {
+      return;
+    }
+
+    timer_->cancel();
+    timer_ = nullptr;
+
+    if (observed_) {
+      if (auto hid = weak_hid_.lock()) {
+        hid->async_unschedule();
+        hid->async_queue_stop();
+        hid->async_close();
+      }
+
+      observed_ = false;
+    }
+  }
+
   std::weak_ptr<human_interface_device> weak_hid_;
 
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   boost_utility::signals2_connections human_interface_device_connections_;
   bool observed_;
   logger::unique_filter logger_unique_filter_;

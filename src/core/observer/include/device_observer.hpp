@@ -69,7 +69,8 @@ public:
             });
           });
 
-          auto observer = std::make_shared<hid_observer>(hid);
+          auto observer = std::make_shared<hid_observer>(weak_dispatcher_,
+                                                         hid);
 
           observer->device_observed.connect([this, weak_hid] {
             enqueue_to_dispatcher([this, weak_hid] {
