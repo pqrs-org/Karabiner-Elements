@@ -208,7 +208,8 @@ private:
       return;
     }
 
-    device_grabber_ = std::make_unique<device_grabber>(weak_grabbable_state_queues_manager_,
+    device_grabber_ = std::make_unique<device_grabber>(weak_dispatcher_,
+                                                       weak_grabbable_state_queues_manager_,
                                                        console_user_server_client_);
 
     device_grabber_->async_set_system_preferences(system_preferences_);
