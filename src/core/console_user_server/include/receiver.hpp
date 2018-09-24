@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace krbn {
-class receiver final {
+class receiver final : public dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -22,13 +22,20 @@ public:
 
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : weak_dispatcher_(weak_dispatcher),
+  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
                                                                     last_select_input_source_time_stamp_(0) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+  }
+
+  ~receiver(void) {
+    detach_from_dispatcher([this] {
+      server_manager_ = nullptr;
+    });
+
+    logger::get_logger().info("receiver is terminated");
   }
 
   void async_start(void) {
-    dispatcher_->enqueue([this] {
+    enqueue_to_dispatcher([this] {
       if (server_manager_) {
         return;
       }
@@ -49,25 +56,25 @@ public:
                                                                          reconnect_interval);
 
       server_manager_->bound.connect([this] {
-        dispatcher_->enqueue([this] {
+        enqueue_to_dispatcher([this] {
           bound();
         });
       });
 
       server_manager_->bind_failed.connect([this](auto&& error_code) {
-        dispatcher_->enqueue([this, error_code] {
+        enqueue_to_dispatcher([this, error_code] {
           bind_failed(error_code);
         });
       });
 
       server_manager_->closed.connect([this] {
-        dispatcher_->enqueue([this] {
+        enqueue_to_dispatcher([this] {
           closed();
         });
       });
 
       server_manager_->received.connect([this](auto&& buffer) {
-        dispatcher_->enqueue([this, buffer] {
+        enqueue_to_dispatcher([this, buffer] {
           if (auto type = types::find_operation_type(*buffer)) {
             switch (*type) {
               case operation_type::shell_command_execution:
@@ -135,21 +142,7 @@ public:
     });
   }
 
-  ~receiver(void) {
-    dispatcher_->enqueue([this] {
-      server_manager_ = nullptr;
-    });
-
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
-
-    logger::get_logger().info("receiver is terminated");
-  }
-
 private:
-  std::weak_ptr<dispatcher::dispatcher> weak_dispatcher_;
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
-
   std::unique_ptr<local_datagram::server_manager> server_manager_;
   input_source_manager input_source_manager_;
   absolute_time last_select_input_source_time_stamp_;
