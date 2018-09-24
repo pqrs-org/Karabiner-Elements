@@ -61,13 +61,15 @@ public:
   }
 
   void detach(const object_id& object_id) {
-    std::lock_guard<std::mutex> lock(object_ids_mutex_);
+    {
+      std::lock_guard<std::mutex> lock(object_ids_mutex_);
 
-    if (!attached(object_id.get())) {
-      return;
+      if (!attached(object_id.get())) {
+        return;
+      }
+
+      object_ids_.erase(object_id.get());
     }
-
-    object_ids_.erase(object_id.get());
 
     if (!is_dispatcher_thread()) {
       // Wait until current running function is finised.

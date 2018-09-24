@@ -301,6 +301,55 @@ TEST_CASE("dispatcher.wait_current_running_function_in_detach") {
   }
 }
 
+TEST_CASE("dispatcher.detach_recursive") {
+  std::cout << "dispatcher.detach_recursive" << std::endl;
+
+  {
+    krbn::dispatcher::dispatcher d;
+
+    auto object_id1 = krbn::dispatcher::make_new_object_id();
+    auto object_id2 = krbn::dispatcher::make_new_object_id();
+    d.attach(object_id1);
+    d.attach(object_id2);
+
+    d.detach(object_id1, [&] {
+      d.detach(object_id2);
+    });
+
+    d.terminate();
+  }
+
+  // Call `detach` in the enqueued function.
+
+  {
+    krbn::dispatcher::dispatcher d;
+
+    auto object_id1 = krbn::dispatcher::make_new_object_id();
+    auto object_id2 = krbn::dispatcher::make_new_object_id();
+    auto object_id3 = krbn::dispatcher::make_new_object_id();
+    d.attach(object_id1);
+    d.attach(object_id2);
+    d.attach(object_id3);
+
+    krbn::thread_utility::wait w;
+
+    d.enqueue(
+        object_id3,
+        [&] {
+          w.notify();
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+          d.detach(object_id2);
+        });
+
+    w.wait_notice();
+
+    d.detach(object_id1);
+
+    d.terminate();
+  }
+}
+
 TEST_CASE("dispatcher.terminate") {
   std::cout << "dispatcher.terminate" << std::endl;
 
