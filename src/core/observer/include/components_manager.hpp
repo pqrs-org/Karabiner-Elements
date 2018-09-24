@@ -92,7 +92,8 @@ private:
         return;
       }
 
-      device_observer_ = std::make_shared<device_observer>(grabber_client_);
+      device_observer_ = std::make_shared<device_observer>(weak_dispatcher_,
+                                                           grabber_client_);
     });
   }
 

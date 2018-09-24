@@ -4,6 +4,7 @@
 
 #include "boost_defs.hpp"
 
+#include "dispatcher.hpp"
 #include "grabbable_state_manager.hpp"
 #include "grabber_client.hpp"
 #include "hid_manager.hpp"
@@ -13,17 +14,17 @@
 #include "types.hpp"
 
 namespace krbn {
-class device_observer final {
+class device_observer final : public dispatcher::dispatcher_client {
 public:
   device_observer(const device_observer&) = delete;
 
-  device_observer(std::weak_ptr<grabber_client> grabber_client) : grabber_client_(grabber_client) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
-
+  device_observer(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+                  std::weak_ptr<grabber_client> grabber_client) : dispatcher_client(weak_dispatcher),
+                                                                  grabber_client_(grabber_client) {
     // grabbable_state_manager_
 
     grabbable_state_manager_.grabbable_state_changed.connect([this](auto&& grabbable_state) {
-      dispatcher_->enqueue([this, grabbable_state] {
+      enqueue_to_dispatcher([this, grabbable_state] {
         if (auto client = grabber_client_.lock()) {
           client->async_grabbable_state_changed(grabbable_state);
         }
@@ -51,7 +52,7 @@ public:
     });
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      dispatcher_->enqueue([this, weak_hid] {
+      enqueue_to_dispatcher([this, weak_hid] {
         if (auto hid = weak_hid.lock()) {
           logger::get_logger().info("{0} is detected.", hid->get_name_for_log());
 
@@ -61,7 +62,7 @@ public:
                                                           time_utility::mach_absolute_time()));
 
           hid->values_arrived.connect([this](auto&& shared_event_queue) {
-            dispatcher_->enqueue([this, shared_event_queue] {
+            enqueue_to_dispatcher([this, shared_event_queue] {
               grabbable_state_manager_.update(*shared_event_queue);
             });
           });
@@ -69,7 +70,7 @@ public:
           auto observer = std::make_shared<hid_observer>(hid);
 
           observer->device_observed.connect([this, weak_hid] {
-            dispatcher_->enqueue([this, weak_hid] {
+            enqueue_to_dispatcher([this, weak_hid] {
               if (auto hid = weak_hid.lock()) {
                 logger::get_logger().info("{0} is observed.",
                                           hid->get_name_for_log());
@@ -95,7 +96,7 @@ public:
     });
 
     hid_manager_->device_removed.connect([this](auto&& weak_hid) {
-      dispatcher_->enqueue([this, weak_hid] {
+      enqueue_to_dispatcher([this, weak_hid] {
         if (auto hid = weak_hid.lock()) {
           logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
 
@@ -110,14 +111,11 @@ public:
   }
 
   ~device_observer(void) {
-    dispatcher_->enqueue([this] {
+    detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
 
       hid_observers_.clear();
     });
-
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
 
     logger::get_logger().info("device_observer is stopped.");
   }
@@ -125,7 +123,6 @@ public:
 private:
   std::weak_ptr<grabber_client> grabber_client_;
 
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   std::unique_ptr<hid_manager> hid_manager_;
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_observer>> hid_observers_;
   grabbable_state_manager grabbable_state_manager_;
