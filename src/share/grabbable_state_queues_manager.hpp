@@ -7,20 +7,29 @@
 #include "device_detail.hpp"
 #include "event_queue.hpp"
 #include "grabbable_state_queue.hpp"
-#include "shared_instance_provider.hpp"
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <mutex>
 #include <unordered_map>
 
 namespace krbn {
-class grabbable_state_queues_manager final : public shared_instance_provider<grabbable_state_queues_manager> {
+class grabbable_state_queues_manager final : public dispatcher::dispatcher_client {
 public:
   // Signals
 
   boost::signals2::signal<void(registry_entry_id, boost::optional<grabbable_state>)> grabbable_state_changed;
 
   // Methods
+
+  grabbable_state_queues_manager(const grabbable_state_queues_manager&) = delete;
+
+  grabbable_state_queues_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  }
+
+  ~grabbable_state_queues_manager(void) {
+    detach_from_dispatcher([] {
+    });
+  }
 
   boost::optional<grabbable_state> find_current_grabbable_state(registry_entry_id registry_entry_id) const {
     std::lock_guard<std::mutex> lock(queues_mutex_);
@@ -82,7 +91,7 @@ private:
       return it->second;
     }
 
-    auto queue = std::make_shared<grabbable_state_queue>();
+    auto queue = std::make_shared<grabbable_state_queue>(weak_dispatcher_);
     queue->grabbable_state_changed.connect([this, registry_entry_id](auto&& grabbable_state) {
       grabbable_state_changed(registry_entry_id, grabbable_state);
     });

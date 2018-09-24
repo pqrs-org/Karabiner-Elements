@@ -17,7 +17,9 @@ class receiver final : public dispatcher::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+           std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager) : dispatcher_client(weak_dispatcher),
+                                                                                                weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager) {
     std::string socket_file_path(constants::get_grabber_socket_file_path());
 
     unlink(socket_file_path.c_str());
@@ -33,13 +35,15 @@ public:
                                                                        reconnect_interval);
 
     server_manager_->bound.connect([this, socket_file_path] {
-      enqueue_to_dispatcher([socket_file_path] {
+      enqueue_to_dispatcher([this, socket_file_path] {
         if (auto uid = session::get_current_console_user_id()) {
           chown(socket_file_path.c_str(), *uid, 0);
         }
         chmod(socket_file_path.c_str(), 0600);
 
-        grabbable_state_queues_manager::get_shared_instance()->clear();
+        if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+          m->clear();
+        }
       });
     });
 
@@ -59,7 +63,9 @@ public:
               } else {
                 auto p = reinterpret_cast<operation_type_grabbable_state_changed_struct*>(&((*buffer)[0]));
 
-                grabbable_state_queues_manager::get_shared_instance()->update_grabbable_state(p->grabbable_state);
+                if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+                  m->update_grabbable_state(p->grabbable_state);
+                }
               }
               break;
 
@@ -202,7 +208,8 @@ private:
       return;
     }
 
-    device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_);
+    device_grabber_ = std::make_unique<device_grabber>(weak_grabbable_state_queues_manager_,
+                                                       console_user_server_client_);
 
     device_grabber_->async_set_system_preferences(system_preferences_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_bundle_identifier_,
@@ -223,6 +230,8 @@ private:
 
     logger::get_logger().info("device_grabber is stopped.");
   }
+
+  std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager_;
 
   std::unique_ptr<local_datagram::server_manager> server_manager_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;

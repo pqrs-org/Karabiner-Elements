@@ -20,6 +20,8 @@ public:
   components_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
 
+    grabbable_state_queues_manager_ = std::make_shared<grabbable_state_queues_manager>(weak_dispatcher_);
+
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>(weak_dispatcher_);
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
@@ -46,7 +48,8 @@ public:
         }
 
         receiver_ = nullptr;
-        receiver_ = std::make_unique<receiver>(weak_dispatcher_);
+        receiver_ = std::make_unique<receiver>(weak_dispatcher_,
+                                               grabbable_state_queues_manager_);
       });
     });
 
@@ -57,12 +60,14 @@ public:
     detach_from_dispatcher([this] {
       console_user_id_monitor_ = nullptr;
       receiver_ = nullptr;
+      grabbable_state_queues_manager_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
 
 private:
   std::shared_ptr<version_monitor> version_monitor_;
+  std::shared_ptr<grabbable_state_queues_manager> grabbable_state_queues_manager_;
   std::unique_ptr<console_user_id_monitor> console_user_id_monitor_;
   std::unique_ptr<receiver> receiver_;
 };

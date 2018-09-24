@@ -56,7 +56,9 @@ TEST_CASE("initialize") {
 
 TEST_CASE("grabbable_state_queues_manager") {
   {
-    krbn::grabbable_state_queues_manager manager;
+    auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
+    auto manager = std::make_unique<krbn::grabbable_state_queues_manager>(dispatcher);
 
     std::unordered_map<krbn::registry_entry_id, boost::optional<krbn::grabbable_state>> last_changed_grabbable_states;
     last_changed_grabbable_states[registry_entry_id1] = boost::none;
@@ -66,16 +68,16 @@ TEST_CASE("grabbable_state_queues_manager") {
     changed_counts[registry_entry_id1] = 0;
     changed_counts[registry_entry_id2] = 0;
 
-    manager.grabbable_state_changed.connect([&](auto&& registry_entry_id, auto&& grabbable_state) {
+    manager->grabbable_state_changed.connect([&](auto&& registry_entry_id, auto&& grabbable_state) {
       last_changed_grabbable_states[registry_entry_id] = grabbable_state;
       ++(changed_counts[registry_entry_id]);
     });
 
-    REQUIRE(!manager.find_current_grabbable_state(registry_entry_id1));
-    REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
+    REQUIRE(!manager->find_current_grabbable_state(registry_entry_id1));
+    REQUIRE(!manager->find_current_grabbable_state(registry_entry_id2));
 
     // Clear
-    manager.clear();
+    manager->clear();
 
     // Check last_changed_grabbable_states
     {
@@ -92,10 +94,10 @@ TEST_CASE("grabbable_state_queues_manager") {
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                   time_stamp);
-      REQUIRE(manager.update_grabbable_state(state));
+      REQUIRE(manager->update_grabbable_state(state));
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == time_stamp);
-      REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
+      REQUIRE(manager->find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == time_stamp);
+      REQUIRE(!manager->find_current_grabbable_state(registry_entry_id2));
     }
 
     // Check last_changed_grabbable_states
@@ -119,9 +121,9 @@ TEST_CASE("grabbable_state_queues_manager") {
                                      krbn::event_queue::event(krbn::key_code::a),
                                      krbn::event_type::key_down,
                                      krbn::event_queue::event(krbn::key_code::a));
-      REQUIRE(manager.update_first_grabbed_event_time_stamp(event_queue));
-      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
-      REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
+      REQUIRE(manager->update_first_grabbed_event_time_stamp(event_queue));
+      REQUIRE(manager->find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
+      REQUIRE(!manager->find_current_grabbable_state(registry_entry_id2));
     }
 
     // Ignore events after first_grabbed_event_time_stamp_.
@@ -130,10 +132,10 @@ TEST_CASE("grabbable_state_queues_manager") {
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                   krbn::absolute_time(6000));
-      REQUIRE(!manager.update_grabbable_state(state));
+      REQUIRE(!manager->update_grabbable_state(state));
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
-      REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
+      REQUIRE(manager->find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
+      REQUIRE(!manager->find_current_grabbable_state(registry_entry_id2));
     }
 
     // Ignore events after first_grabbed_event_time_stamp_.
@@ -144,9 +146,14 @@ TEST_CASE("grabbable_state_queues_manager") {
                                      krbn::event_queue::event(krbn::key_code::a),
                                      krbn::event_type::key_down,
                                      krbn::event_queue::event(krbn::key_code::a));
-      REQUIRE(!manager.update_first_grabbed_event_time_stamp(event_queue));
-      REQUIRE(manager.find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
-      REQUIRE(!manager.find_current_grabbable_state(registry_entry_id2));
+      REQUIRE(!manager->update_first_grabbed_event_time_stamp(event_queue));
+      REQUIRE(manager->find_current_grabbable_state(registry_entry_id1)->get_time_stamp() == krbn::absolute_time(4000));
+      REQUIRE(!manager->find_current_grabbable_state(registry_entry_id2));
     }
+
+    manager = nullptr;
+
+    dispatcher->terminate();
+    dispatcher = nullptr;
   }
 }

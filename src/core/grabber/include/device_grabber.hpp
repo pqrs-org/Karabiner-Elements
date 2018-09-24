@@ -34,7 +34,9 @@ class device_grabber final {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client) : manipulator_object_id_(manipulator::make_new_manipulator_object_id()),
+  device_grabber(std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager,
+                 std::weak_ptr<console_user_server_client> weak_console_user_server_client) : weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager),
+                                                                                              manipulator_object_id_(manipulator::make_new_manipulator_object_id()),
                                                                                               profile_(nlohmann::json()) {
     dispatcher_ = std::make_unique<thread_utility::dispatcher>();
     manipulator_dispatcher_ = std::make_shared<manipulator::manipulator_dispatcher>();
@@ -70,11 +72,13 @@ public:
       });
     });
 
-    grabbable_state_changed_connection_ = grabbable_state_queues_manager::get_shared_instance()->grabbable_state_changed.connect([this](auto&& registry_entry_id, auto&& grabbable_state) {
-      dispatcher_->enqueue([this, registry_entry_id, grabbable_state] {
-        retry_grab(registry_entry_id, grabbable_state);
+    if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+      grabbable_state_changed_connection_ = m->grabbable_state_changed.connect([this](auto&& registry_entry_id, auto&& grabbable_state) {
+        dispatcher_->enqueue([this, registry_entry_id, grabbable_state] {
+          retry_grab(registry_entry_id, grabbable_state);
+        });
       });
-    });
+    }
 
     post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_,
                                                                                                                        manipulator_dispatcher_,
@@ -174,7 +178,9 @@ public:
 
                 set_grabbed(hid->get_registry_entry_id(), false);
 
-                grabbable_state_queues_manager::get_shared_instance()->unset_first_grabbed_event_time_stamp(hid->get_registry_entry_id());
+                if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+                  m->unset_first_grabbed_event_time_stamp(hid->get_registry_entry_id());
+                }
 
                 post_device_ungrabbed_event(hid->get_device_id());
 
@@ -206,7 +212,9 @@ public:
           hid_grabbers_.erase(registry_entry_id);
           device_states_.erase(registry_entry_id);
 
-          grabbable_state_queues_manager::get_shared_instance()->erase_queue(registry_entry_id);
+          if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+            m->erase_queue(registry_entry_id);
+          }
 
           output_devices_json();
           output_device_details_json();
@@ -485,8 +493,6 @@ private:
   }
 
   void retry_grab(registry_entry_id registry_entry_id, boost::optional<grabbable_state> grabbable_state) {
-    auto manager = grabbable_state_queues_manager::get_shared_instance();
-
     if (auto grabber = find_hid_grabber(registry_entry_id)) {
       // Check grabbable state
 
@@ -549,7 +555,9 @@ private:
                       std::shared_ptr<event_queue::queue> event_queue) {
     // Update grabbable_state_queue
 
-    grabbable_state_queues_manager::get_shared_instance()->update_first_grabbed_event_time_stamp(*event_queue);
+    if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+      m->update_first_grabbed_event_time_stamp(*event_queue);
+    }
 
     // Manipulate events
 
@@ -627,8 +635,8 @@ private:
     // ----------------------------------------
     // Check observer state
 
-    {
-      auto state = grabbable_state_queues_manager::get_shared_instance()->find_current_grabbable_state(device->get_registry_entry_id());
+    if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+      auto state = m->find_current_grabbable_state(device->get_registry_entry_id());
 
       if (!state) {
         std::string message = fmt::format("{0} is not observed yet. Please wait for a while.",
@@ -1043,6 +1051,8 @@ private:
     }
     return nullptr;
   }
+
+  std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager_;
 
   std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 

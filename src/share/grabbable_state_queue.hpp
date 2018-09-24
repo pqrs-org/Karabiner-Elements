@@ -4,6 +4,7 @@
 
 #include "boost_defs.hpp"
 
+#include "dispatcher.hpp"
 #include "event_queue.hpp"
 #include "thread_utility.hpp"
 #include "types.hpp"
@@ -13,7 +14,7 @@
 #include <memory>
 
 namespace krbn {
-class grabbable_state_queue final {
+class grabbable_state_queue final : public dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -23,13 +24,15 @@ public:
 
   const int max_entries = 32;
 
-  grabbable_state_queue(void) : grabbable_states_(max_entries) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+  grabbable_state_queue(const grabbable_state_queue&) = delete;
+
+  grabbable_state_queue(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                                 grabbable_states_(max_entries) {
   }
 
   ~grabbable_state_queue(void) {
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
+    detach_from_dispatcher([] {
+    });
   }
 
   boost::optional<absolute_time> get_first_grabbed_event_time_stamp(void) const {
@@ -137,12 +140,10 @@ private:
       return;
     }
 
-    dispatcher_->enqueue([this, new_state] {
+    enqueue_to_dispatcher([this, new_state] {
       grabbable_state_changed(new_state);
     });
   }
-
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
 
   // Keep multiple entries for when `push_back_entry` is called multiple times before `set_first_grabbed_event_time_stamp`.
   // (We should remove entries after first_grabbed_event_time_stamp_.)
