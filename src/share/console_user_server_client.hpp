@@ -25,12 +25,10 @@ public:
   console_user_server_client(const console_user_server_client&) = delete;
 
   console_user_server_client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
-
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>(weak_dispatcher_);
 
     console_user_id_monitor_->console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
-      dispatcher_->enqueue([this, uid] {
+      enqueue_to_dispatcher([this, uid] {
         if (uid) {
           client_manager_ = nullptr;
 
@@ -44,19 +42,25 @@ public:
                                                                              reconnect_interval);
 
           client_manager_->connected.connect([this, uid] {
-            logger::get_logger().info("console_user_server_client is connected. (uid:{0})", *uid);
+            enqueue_to_dispatcher([this, uid] {
+              logger::get_logger().info("console_user_server_client is connected. (uid:{0})", *uid);
 
-            connected();
+              connected();
+            });
           });
 
           client_manager_->connect_failed.connect([this](auto&& error_code) {
-            connect_failed(error_code);
+            enqueue_to_dispatcher([this, error_code] {
+              connect_failed(error_code);
+            });
           });
 
           client_manager_->closed.connect([this, uid] {
-            logger::get_logger().info("console_user_server_client is closed. (uid:{0})", *uid);
+            enqueue_to_dispatcher([this, uid] {
+              logger::get_logger().info("console_user_server_client is closed. (uid:{0})", *uid);
 
-            closed();
+              closed();
+            });
           });
 
           client_manager_->async_start();
@@ -66,24 +70,21 @@ public:
   }
 
   ~console_user_server_client(void) {
-    dispatcher_->enqueue([this] {
+    detach_from_dispatcher([this] {
       console_user_id_monitor_ = nullptr;
 
       client_manager_ = nullptr;
     });
-
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
   }
 
   void async_start(void) {
-    dispatcher_->enqueue([this] {
+    enqueue_to_dispatcher([this] {
       console_user_id_monitor_->async_start();
     });
   }
 
   void async_stop(void) {
-    dispatcher_->enqueue([this] {
+    enqueue_to_dispatcher([this] {
       console_user_id_monitor_->async_stop();
 
       client_manager_ = nullptr;
@@ -91,7 +92,7 @@ public:
   }
 
   void async_shell_command_execution(const std::string& shell_command) const {
-    dispatcher_->enqueue([this, shell_command] {
+    enqueue_to_dispatcher([this, shell_command] {
       operation_type_shell_command_execution_struct s;
 
       if (shell_command.length() >= sizeof(s.shell_command)) {
@@ -108,7 +109,7 @@ public:
   }
 
   void async_select_input_source(const input_source_selector& input_source_selector, absolute_time time_stamp) {
-    dispatcher_->enqueue([this, input_source_selector, time_stamp] {
+    enqueue_to_dispatcher([this, input_source_selector, time_stamp] {
       operation_type_select_input_source_struct s;
       s.time_stamp = time_stamp;
 
@@ -168,7 +169,6 @@ private:
     }
   }
 
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
   std::unique_ptr<console_user_id_monitor> console_user_id_monitor_;
   std::unique_ptr<local_datagram::client_manager> client_manager_;
 };
