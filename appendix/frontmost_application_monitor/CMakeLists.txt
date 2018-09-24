@@ -7,7 +7,7 @@ project (a.out)
 add_executable(
   a.out
   main.cpp
-  ../../src/share/frontmost_application_observer_objc.m
+  ../../src/share/monitor/frontmost_application_monitor_objc.m
 )
 
 target_link_libraries(

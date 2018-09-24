@@ -5,12 +5,12 @@
 #include "application_launcher.hpp"
 #include "constants.hpp"
 #include "dispatcher.hpp"
-#include "frontmost_application_observer.hpp"
 #include "grabber_client.hpp"
 #include "logger.hpp"
 #include "menu_process_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/console_user_id_monitor.hpp"
+#include "monitor/frontmost_application_monitor.hpp"
 #include "monitor/grabber_alerts_monitor.hpp"
 #include "monitor/input_source_monitor.hpp"
 #include "monitor/system_preferences_monitor.hpp"
@@ -184,11 +184,11 @@ private:
 
     system_preferences_monitor_->async_start();
 
-    // frontmost_application_observer_
+    // frontmost_application_monitor_
 
-    frontmost_application_observer_ = std::make_unique<frontmost_application_observer>();
+    frontmost_application_monitor_ = std::make_unique<frontmost_application_monitor>(weak_dispatcher_);
 
-    frontmost_application_observer_->frontmost_application_changed.connect([this](auto&& bundle_identifier, auto&& file_path) {
+    frontmost_application_monitor_->frontmost_application_changed.connect([this](auto&& bundle_identifier, auto&& file_path) {
       enqueue_to_dispatcher([this, bundle_identifier, file_path] {
         if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
             bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
@@ -201,7 +201,7 @@ private:
       });
     });
 
-    frontmost_application_observer_->async_start();
+    frontmost_application_monitor_->async_start();
 
     // input_source_monitor_
 
@@ -226,7 +226,7 @@ private:
     menu_process_manager_ = nullptr;
     updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
-    frontmost_application_observer_ = nullptr;
+    frontmost_application_monitor_ = nullptr;
     input_source_monitor_ = nullptr;
 
     configuration_monitor_ = nullptr;
@@ -247,9 +247,9 @@ private:
   std::unique_ptr<menu_process_manager> menu_process_manager_;
   std::unique_ptr<updater_process_manager> updater_process_manager_;
   std::unique_ptr<system_preferences_monitor> system_preferences_monitor_;
-  // `frontmost_application_observer` does not work properly in karabiner_grabber after fast user switching.
-  // Therefore, we have to use `frontmost_application_observer` in `console_user_server`.
-  std::unique_ptr<frontmost_application_observer> frontmost_application_observer_;
+  // `frontmost_application_monitor` does not work properly in karabiner_grabber after fast user switching.
+  // Therefore, we have to use `frontmost_application_monitor` in `console_user_server`.
+  std::unique_ptr<frontmost_application_monitor> frontmost_application_monitor_;
   std::unique_ptr<input_source_monitor> input_source_monitor_;
 };
 } // namespace krbn

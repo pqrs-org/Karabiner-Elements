@@ -1,10 +1,10 @@
 #import "FrontmostApplicationController.h"
-#import "frontmost_application_observer_objc.h"
+#import "monitor/frontmost_application_monitor_objc.h"
 
 @interface FrontmostApplicationController ()
 
 @property(unsafe_unretained) IBOutlet NSTextView* textView;
-@property krbn_frontmost_application_observer_objc* observer;
+@property krbn_frontmost_application_monitor_objc* monitor;
 
 - (void)callback:(NSString*)bundleIdentifier
         filePath:(NSString*)filePath;
@@ -22,17 +22,17 @@ static void staticCallback(const char* bundle_identifier,
 @implementation FrontmostApplicationController
 
 - (void)setup {
-  krbn_frontmost_application_observer_objc* p = nil;
-  krbn_frontmost_application_observer_initialize(&p,
-                                                 staticCallback,
-                                                 (__bridge void*)(self));
-  self.observer = p;
+  krbn_frontmost_application_monitor_objc* p = nil;
+  krbn_frontmost_application_monitor_initialize(&p,
+                                                staticCallback,
+                                                (__bridge void*)(self));
+  self.monitor = p;
 }
 
 - (void)dealloc {
-  krbn_frontmost_application_observer_objc* p = self.observer;
-  krbn_frontmost_application_observer_terminate(&p);
-  self.observer = nil;
+  krbn_frontmost_application_monitor_objc* p = self.monitor;
+  krbn_frontmost_application_monitor_terminate(&p);
+  self.monitor = nil;
 }
 
 - (void)callback:(NSString*)bundleIdentifier filePath:(NSString*)filePath {

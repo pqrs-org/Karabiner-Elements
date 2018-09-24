@@ -1,17 +1,17 @@
-#import "frontmost_application_observer_objc.h"
+#import "frontmost_application_monitor_objc.h"
 #import "weakify.h"
 #import <Cocoa/Cocoa.h>
 
-@interface KrbnFrontmostApplicationObserver : NSObject
+@interface KrbnFrontmostApplicationMonitor : NSObject
 
-@property krbn_frontmost_application_observer_callback callback;
+@property krbn_frontmost_application_monitor_callback callback;
 @property void* context;
 
 @end
 
-@implementation KrbnFrontmostApplicationObserver
+@implementation KrbnFrontmostApplicationMonitor
 
-- (instancetype)initWithCallback:(krbn_frontmost_application_observer_callback)callback
+- (instancetype)initWithCallback:(krbn_frontmost_application_monitor_callback)callback
                          context:(void*)context {
   self = [super init];
 
@@ -73,28 +73,28 @@
 
 @end
 
-void krbn_frontmost_application_observer_initialize(krbn_frontmost_application_observer_objc** observer,
-                                                    krbn_frontmost_application_observer_callback callback,
-                                                    void* context) {
-  if (!observer) {
-    NSLog(@"krbn_frontmost_application_observer_initialize invalid arguments");
+void krbn_frontmost_application_monitor_initialize(krbn_frontmost_application_monitor_objc** monitor,
+                                                   krbn_frontmost_application_monitor_callback callback,
+                                                   void* context) {
+  if (!monitor) {
+    NSLog(@"krbn_frontmost_application_monitor_initialize invalid arguments");
     return;
   }
-  if (*observer) {
-    // observer is already initialized.
+  if (*monitor) {
+    // monitor is already initialized.
     return;
   }
 
-  KrbnFrontmostApplicationObserver* o = [[KrbnFrontmostApplicationObserver alloc] initWithCallback:callback context:context];
+  KrbnFrontmostApplicationMonitor* o = [[KrbnFrontmostApplicationMonitor alloc] initWithCallback:callback context:context];
   [o runCallbackWithFrontmostApplication];
 
-  *observer = (__bridge_retained void*)(o);
+  *monitor = (__bridge_retained void*)(o);
 }
 
-void krbn_frontmost_application_observer_terminate(krbn_frontmost_application_observer_objc** observer) {
-  if (observer) {
+void krbn_frontmost_application_monitor_terminate(krbn_frontmost_application_monitor_objc** monitor) {
+  if (monitor) {
 #ifndef __clang_analyzer__
-    KrbnFrontmostApplicationObserver* o = (__bridge_transfer KrbnFrontmostApplicationObserver*)(*observer);
+    KrbnFrontmostApplicationMonitor* o = (__bridge_transfer KrbnFrontmostApplicationMonitor*)(*monitor);
     o = nil;
 #endif
   }
