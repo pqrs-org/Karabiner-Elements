@@ -5,13 +5,14 @@
 #include "boost_defs.hpp"
 
 #include "device_detail.hpp"
+#include "dispatcher.hpp"
 #include "event_queue.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "thread_utility.hpp"
 #include <boost/signals2.hpp>
 
 namespace krbn {
-class grabbable_state_manager final {
+class grabbable_state_manager final : public dispatcher::dispatcher_client {
 public:
 #include "grabbable_state_manager/entry.hpp"
 
@@ -23,13 +24,12 @@ public:
 
   grabbable_state_manager(const grabbable_state_manager&) = delete;
 
-  grabbable_state_manager(void) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+  grabbable_state_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
   }
 
   ~grabbable_state_manager(void) {
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
+    detach_from_dispatcher([] {
+    });
   }
 
   void update(const grabbable_state& state) {
@@ -52,7 +52,7 @@ public:
       auto new_state = it->second.get_grabbable_state();
 
       if (!old_state.equals_except_time_stamp(new_state)) {
-        dispatcher_->enqueue([this, new_state] {
+        enqueue_to_dispatcher([this, new_state] {
           grabbable_state_changed(new_state);
         });
       }
@@ -84,7 +84,7 @@ public:
             auto new_state = it->second.get_grabbable_state();
 
             if (!old_state.equals_except_time_stamp(new_state)) {
-              dispatcher_->enqueue([this, new_state] {
+              enqueue_to_dispatcher([this, new_state] {
                 grabbable_state_changed(new_state);
               });
             }
@@ -111,8 +111,6 @@ public:
   }
 
 private:
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
-
   std::unordered_map<registry_entry_id, entry> entries_;
   mutable std::mutex entries_mutex_;
 };

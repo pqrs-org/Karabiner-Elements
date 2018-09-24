@@ -23,7 +23,9 @@ public:
                                                                   grabber_client_(grabber_client) {
     // grabbable_state_manager_
 
-    grabbable_state_manager_.grabbable_state_changed.connect([this](auto&& grabbable_state) {
+    grabbable_state_manager_ = std::make_unique<grabbable_state_manager>(weak_dispatcher);
+
+    grabbable_state_manager_->grabbable_state_changed.connect([this](auto&& grabbable_state) {
       enqueue_to_dispatcher([this, grabbable_state] {
         if (auto client = grabber_client_.lock()) {
           client->async_grabbable_state_changed(grabbable_state);
@@ -56,14 +58,14 @@ public:
         if (auto hid = weak_hid.lock()) {
           logger::get_logger().info("{0} is detected.", hid->get_name_for_log());
 
-          grabbable_state_manager_.update(grabbable_state(hid->get_registry_entry_id(),
-                                                          grabbable_state::state::device_error,
-                                                          grabbable_state::ungrabbable_temporarily_reason::none,
-                                                          time_utility::mach_absolute_time()));
+          grabbable_state_manager_->update(grabbable_state(hid->get_registry_entry_id(),
+                                                           grabbable_state::state::device_error,
+                                                           grabbable_state::ungrabbable_temporarily_reason::none,
+                                                           time_utility::mach_absolute_time()));
 
           hid->values_arrived.connect([this](auto&& shared_event_queue) {
             enqueue_to_dispatcher([this, shared_event_queue] {
-              grabbable_state_manager_.update(*shared_event_queue);
+              grabbable_state_manager_->update(*shared_event_queue);
             });
           });
 
@@ -75,13 +77,13 @@ public:
                 logger::get_logger().info("{0} is observed.",
                                           hid->get_name_for_log());
 
-                if (auto state = grabbable_state_manager_.get_grabbable_state(hid->get_registry_entry_id())) {
+                if (auto state = grabbable_state_manager_->get_grabbable_state(hid->get_registry_entry_id())) {
                   // Keep grabbable_state if the state is already changed by value_callback.
                   if (state->get_state() == grabbable_state::state::device_error) {
-                    grabbable_state_manager_.update(grabbable_state(hid->get_registry_entry_id(),
-                                                                    grabbable_state::state::grabbable,
-                                                                    grabbable_state::ungrabbable_temporarily_reason::none,
-                                                                    time_utility::mach_absolute_time()));
+                    grabbable_state_manager_->update(grabbable_state(hid->get_registry_entry_id(),
+                                                                     grabbable_state::state::grabbable,
+                                                                     grabbable_state::ungrabbable_temporarily_reason::none,
+                                                                     time_utility::mach_absolute_time()));
                   }
                 }
               }
@@ -115,6 +117,8 @@ public:
       hid_manager_ = nullptr;
 
       hid_observers_.clear();
+
+      grabbable_state_manager_ = nullptr;
     });
 
     logger::get_logger().info("device_observer is stopped.");
@@ -125,6 +129,6 @@ private:
 
   std::unique_ptr<hid_manager> hid_manager_;
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_observer>> hid_observers_;
-  grabbable_state_manager grabbable_state_manager_;
+  std::unique_ptr<grabbable_state_manager> grabbable_state_manager_;
 };
 } // namespace krbn

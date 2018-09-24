@@ -54,18 +54,21 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("grabbable_state_manager") {
-  krbn::grabbable_state_manager grabbable_state_manager;
+  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
+  auto grabbable_state_manager = std::make_unique<krbn::grabbable_state_manager>(dispatcher);
+
   krbn::event_queue::queue event_queue;
 
   std::vector<krbn::grabbable_state> actual_grabbable_state_changed_history;
   std::vector<krbn::grabbable_state> expected_grabbable_state_changed_history;
 
-  grabbable_state_manager.grabbable_state_changed.connect([&](auto&& grabbable_state) {
+  grabbable_state_manager->grabbable_state_changed.connect([&](auto&& grabbable_state) {
     actual_grabbable_state_changed_history.emplace_back(grabbable_state);
   });
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     REQUIRE(!actual);
   }
 
@@ -81,7 +84,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_up,
                                  krbn::event_queue::event(krbn::key_code::a));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
@@ -94,7 +97,7 @@ TEST_CASE("grabbable_state_manager") {
                                                         krbn::absolute_time(1010));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -102,7 +105,7 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id2);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id2);
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -119,7 +122,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::key_code::a));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
@@ -128,7 +131,7 @@ TEST_CASE("grabbable_state_manager") {
                                                         krbn::absolute_time(2000));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
@@ -136,7 +139,7 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id2);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id2);
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -153,7 +156,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_up,
                                  krbn::event_queue::event(krbn::key_code::a));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
@@ -162,7 +165,7 @@ TEST_CASE("grabbable_state_manager") {
                                                         krbn::absolute_time(3000));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -170,7 +173,7 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id2);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id2);
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -187,7 +190,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::consumer_key_code::volume_increment));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
@@ -196,7 +199,7 @@ TEST_CASE("grabbable_state_manager") {
                                                         krbn::absolute_time(4000));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
@@ -204,7 +207,7 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id2);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id2);
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -221,7 +224,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_up,
                                  krbn::event_queue::event(krbn::consumer_key_code::volume_increment));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
@@ -230,7 +233,7 @@ TEST_CASE("grabbable_state_manager") {
                                                         krbn::absolute_time(5000));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -238,7 +241,7 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id2);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id2);
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -255,7 +258,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::key_code::left_shift));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
@@ -264,7 +267,7 @@ TEST_CASE("grabbable_state_manager") {
                                                         krbn::absolute_time(6000));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::modifier_key_pressed,
@@ -272,7 +275,7 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id2);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id2);
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -289,7 +292,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_up,
                                  krbn::event_queue::event(krbn::key_code::left_shift));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
@@ -298,7 +301,7 @@ TEST_CASE("grabbable_state_manager") {
                                                         krbn::absolute_time(7000));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -306,7 +309,7 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id2);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id2);
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -323,7 +326,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_down,
                                  krbn::event_queue::event(krbn::pointing_button::button1));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id2,
@@ -332,7 +335,7 @@ TEST_CASE("grabbable_state_manager") {
                                                         krbn::absolute_time(8000));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -340,7 +343,7 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id2);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id2);
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::pointing_button_pressed,
@@ -357,7 +360,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_up,
                                  krbn::event_queue::event(krbn::pointing_button::button1));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id2,
@@ -366,7 +369,7 @@ TEST_CASE("grabbable_state_manager") {
                                                         krbn::absolute_time(9000));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -374,7 +377,7 @@ TEST_CASE("grabbable_state_manager") {
     REQUIRE(*actual == expected);
   }
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id2);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id2);
     auto expected = krbn::grabbable_state(registry_entry_id2,
                                           krbn::grabbable_state::state::grabbable,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -406,7 +409,7 @@ TEST_CASE("grabbable_state_manager") {
                                  krbn::event_type::key_up,
                                  krbn::event_queue::event(krbn::key_code::left_shift));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
@@ -429,30 +432,38 @@ TEST_CASE("grabbable_state_manager") {
   // Test actual_grabbable_state_changed_history
 
   REQUIRE(actual_grabbable_state_changed_history == expected_grabbable_state_changed_history);
+
+  grabbable_state_manager = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 }
 
 TEST_CASE("device_error") {
-  krbn::grabbable_state_manager grabbable_state_manager;
+  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+
+  auto grabbable_state_manager = std::make_unique<krbn::grabbable_state_manager>(dispatcher);
+
   krbn::event_queue::queue event_queue;
 
   std::vector<krbn::grabbable_state> actual_grabbable_state_changed_history;
   std::vector<krbn::grabbable_state> expected_grabbable_state_changed_history;
 
-  grabbable_state_manager.grabbable_state_changed.connect([&](auto&& grabbable_state) {
+  grabbable_state_manager->grabbable_state_changed.connect([&](auto&& grabbable_state) {
     actual_grabbable_state_changed_history.emplace_back(grabbable_state);
   });
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     REQUIRE(!actual);
   }
 
   // set device_error
 
-  grabbable_state_manager.update(krbn::grabbable_state(registry_entry_id1,
-                                                       krbn::grabbable_state::state::device_error,
-                                                       krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                       krbn::absolute_time(1000)));
+  grabbable_state_manager->update(krbn::grabbable_state(registry_entry_id1,
+                                                        krbn::grabbable_state::state::device_error,
+                                                        krbn::grabbable_state::ungrabbable_temporarily_reason::none,
+                                                        krbn::absolute_time(1000)));
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   expected_grabbable_state_changed_history.emplace_back(registry_entry_id1,
@@ -474,11 +485,11 @@ TEST_CASE("device_error") {
                                                         krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
                                                         krbn::absolute_time(2000));
 
-  grabbable_state_manager.update(event_queue);
+  grabbable_state_manager->update(event_queue);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   {
-    auto actual = grabbable_state_manager.get_grabbable_state(registry_entry_id1);
+    auto actual = grabbable_state_manager->get_grabbable_state(registry_entry_id1);
     auto expected = krbn::grabbable_state(registry_entry_id1,
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
@@ -489,4 +500,9 @@ TEST_CASE("device_error") {
   // Test actual_grabbable_state_changed_history
 
   REQUIRE(actual_grabbable_state_changed_history == expected_grabbable_state_changed_history);
+
+  grabbable_state_manager = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 }
