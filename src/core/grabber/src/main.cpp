@@ -59,14 +59,14 @@ int main(int argc, const char* argv[]) {
     if (exit_status == 27) {
       // kextload is blocked by macOS.
       // https://developer.apple.com/library/content/technotes/tn2459/_index.html
-      grabber_alerts_manager->async_set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
+      grabber_alerts_manager->set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
       std::this_thread::sleep_for(std::chrono::seconds(3));
       continue;
     }
     break;
   }
 
-  grabber_alerts_manager->async_set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
+  grabber_alerts_manager->set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
   grabber_alerts_manager = nullptr;
 
   // Make socket directory.
