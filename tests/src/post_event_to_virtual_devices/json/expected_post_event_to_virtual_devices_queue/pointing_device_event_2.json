@@ -6,7 +6,7 @@
                 "left_control"
             ]
         },
-        "time_stamp": 5000000,
+        "time_stamp": 5,
         "type": "keyboard_input"
     },
     {
@@ -14,7 +14,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 10000000,
+        "time_stamp": 10,
         "type": "keyboard_input"
     },
     {
@@ -24,7 +24,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 15000000,
+        "time_stamp": 15,
         "type": "keyboard_input"
     },
     {
@@ -35,7 +35,7 @@
             "x": 246,
             "y": 0
         },
-        "time_stamp": 6000000,
+        "time_stamp": 6,
         "type": "pointing_input"
     }
 ]

@@ -6,7 +6,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 5000000,
+        "time_stamp": 5,
         "type": "keyboard_input"
     },
     {
@@ -17,7 +17,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1002000000,
+        "time_stamp": 1002,
         "type": "keyboard_input"
     },
     {
@@ -27,7 +27,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1007000000,
+        "time_stamp": 1007,
         "type": "keyboard_input"
     },
     {
@@ -38,7 +38,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1012000000,
+        "time_stamp": 1012,
         "type": "keyboard_input"
     },
     {
@@ -48,7 +48,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1017000000,
+        "time_stamp": 1017,
         "type": "keyboard_input"
     }
 ]

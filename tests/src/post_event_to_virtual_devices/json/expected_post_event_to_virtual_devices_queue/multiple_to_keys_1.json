@@ -6,7 +6,7 @@
                 "left_control"
             ]
         },
-        "time_stamp": 5000000,
+        "time_stamp": 5,
         "type": "keyboard_input"
     },
     {
@@ -17,7 +17,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 10000000,
+        "time_stamp": 10,
         "type": "keyboard_input"
     },
     {
@@ -30,7 +30,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 15000000,
+        "time_stamp": 15,
         "type": "keyboard_input"
     },
     {
@@ -41,7 +41,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 20000000,
+        "time_stamp": 20,
         "type": "keyboard_input"
     },
     {
@@ -51,7 +51,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 25000000,
+        "time_stamp": 25,
         "type": "keyboard_input"
     },
     {
@@ -59,7 +59,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 30000000,
+        "time_stamp": 30,
         "type": "keyboard_input"
     },
     {
@@ -69,7 +69,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 35000000,
+        "time_stamp": 35,
         "type": "keyboard_input"
     },
     {
@@ -77,7 +77,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 40000000,
+        "time_stamp": 40,
         "type": "keyboard_input"
     },
     {
@@ -87,7 +87,7 @@
                 "left_control"
             ]
         },
-        "time_stamp": 45000000,
+        "time_stamp": 45,
         "type": "keyboard_input"
     },
     {
@@ -98,7 +98,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 50000000,
+        "time_stamp": 50,
         "type": "keyboard_input"
     },
     {
@@ -111,7 +111,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 55000000,
+        "time_stamp": 55,
         "type": "keyboard_input"
     },
     {
@@ -122,7 +122,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 60000000,
+        "time_stamp": 60,
         "type": "keyboard_input"
     },
     {
@@ -132,7 +132,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 65000000,
+        "time_stamp": 65,
         "type": "keyboard_input"
     },
     {
@@ -140,7 +140,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 70000000,
+        "time_stamp": 70,
         "type": "keyboard_input"
     },
     {
@@ -150,7 +150,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 75000000,
+        "time_stamp": 75,
         "type": "keyboard_input"
     },
     {
@@ -162,7 +162,7 @@
                 "left_control"
             ]
         },
-        "time_stamp": 80000000,
+        "time_stamp": 80,
         "type": "keyboard_input"
     },
     {
@@ -175,7 +175,7 @@
                 "left_control"
             ]
         },
-        "time_stamp": 85000000,
+        "time_stamp": 85,
         "type": "keyboard_input"
     },
     {
@@ -187,7 +187,7 @@
                 "left_control"
             ]
         },
-        "time_stamp": 90000000,
+        "time_stamp": 90,
         "type": "keyboard_input"
     },
     {
@@ -197,7 +197,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 95000000,
+        "time_stamp": 95,
         "type": "keyboard_input"
     },
     {
@@ -205,7 +205,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 16000000,
+        "time_stamp": 16,
         "type": "keyboard_input"
     }
 ]

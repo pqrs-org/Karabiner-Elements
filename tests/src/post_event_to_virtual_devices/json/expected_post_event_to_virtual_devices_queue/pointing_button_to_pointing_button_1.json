@@ -9,7 +9,7 @@
             "x": 0,
             "y": 0
         },
-        "time_stamp": 5000000,
+        "time_stamp": 5,
         "type": "pointing_input"
     },
     {
@@ -22,7 +22,7 @@
             "x": 246,
             "y": 0
         },
-        "time_stamp": 6000000,
+        "time_stamp": 6,
         "type": "pointing_input"
     },
     {
@@ -33,7 +33,7 @@
             "x": 0,
             "y": 0
         },
-        "time_stamp": 11000000,
+        "time_stamp": 11,
         "type": "pointing_input"
     }
 ]

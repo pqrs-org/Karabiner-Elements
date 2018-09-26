@@ -5,7 +5,7 @@
                 "fn"
             ]
         },
-        "time_stamp": 5000000,
+        "time_stamp": 5,
         "type": "apple_vendor_top_case_input"
     },
     {
@@ -15,7 +15,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 10000000,
+        "time_stamp": 10,
         "type": "keyboard_input"
     },
     {
@@ -23,14 +23,14 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 15000000,
+        "time_stamp": 15,
         "type": "keyboard_input"
     },
     {
         "apple_vendor_top_case_input": {
             "keys": []
         },
-        "time_stamp": 20000000,
+        "time_stamp": 20,
         "type": "apple_vendor_top_case_input"
     }
 ]

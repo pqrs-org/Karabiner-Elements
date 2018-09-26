@@ -6,7 +6,7 @@
                 "left_command"
             ]
         },
-        "time_stamp": 5000000,
+        "time_stamp": 5,
         "type": "keyboard_input"
     },
     {
@@ -19,7 +19,7 @@
             "x": 0,
             "y": 0
         },
-        "time_stamp": 10000000,
+        "time_stamp": 10,
         "type": "pointing_input"
     },
     {
@@ -32,7 +32,7 @@
             "x": 246,
             "y": 0
         },
-        "time_stamp": 6000000,
+        "time_stamp": 6,
         "type": "pointing_input"
     },
     {
@@ -40,7 +40,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 15000000,
+        "time_stamp": 15,
         "type": "keyboard_input"
     },
     {
@@ -50,7 +50,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 20000000,
+        "time_stamp": 20,
         "type": "keyboard_input"
     },
     {
@@ -58,7 +58,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 25000000,
+        "time_stamp": 25,
         "type": "keyboard_input"
     },
     {
@@ -71,7 +71,7 @@
             "x": 246,
             "y": 0
         },
-        "time_stamp": 14000000,
+        "time_stamp": 14,
         "type": "pointing_input"
     },
     {
@@ -82,7 +82,7 @@
             "x": 0,
             "y": 0
         },
-        "time_stamp": 18000000,
+        "time_stamp": 18,
         "type": "pointing_input"
     }
 ]

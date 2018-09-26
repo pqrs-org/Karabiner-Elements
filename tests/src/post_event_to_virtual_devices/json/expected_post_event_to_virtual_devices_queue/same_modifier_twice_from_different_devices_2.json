@@ -6,7 +6,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 1000000000,
+        "time_stamp": 1000,
         "type": "keyboard_input"
     },
     {
@@ -14,7 +14,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 4000000000,
+        "time_stamp": 4000,
         "type": "keyboard_input"
     },
     {
@@ -24,7 +24,7 @@
                 "left_shift"
             ]
         },
-        "time_stamp": 5000000000,
+        "time_stamp": 5000,
         "type": "keyboard_input"
     }
 ]

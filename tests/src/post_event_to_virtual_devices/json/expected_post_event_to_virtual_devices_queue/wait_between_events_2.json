@@ -6,7 +6,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1000000000,
+        "time_stamp": 1000,
         "type": "keyboard_input"
     },
     {
@@ -17,7 +17,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1005000000,
+        "time_stamp": 1005,
         "type": "keyboard_input"
     },
     {
@@ -29,7 +29,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1010000000,
+        "time_stamp": 1010,
         "type": "keyboard_input"
     },
     {
@@ -40,7 +40,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1015000000,
+        "time_stamp": 1015,
         "type": "keyboard_input"
     },
     {
@@ -50,7 +50,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1000000004,
+        "time_stamp": 1000,
         "type": "keyboard_input"
     },
     {
@@ -61,7 +61,7 @@
             "x": 246,
             "y": 0
         },
-        "time_stamp": 1000000005,
+        "time_stamp": 1000,
         "type": "pointing_input"
     },
     {
@@ -69,7 +69,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 1000000006,
+        "time_stamp": 1000,
         "type": "keyboard_input"
     },
     {
@@ -80,7 +80,7 @@
             "x": 246,
             "y": 0
         },
-        "time_stamp": 1000000007,
+        "time_stamp": 1000,
         "type": "pointing_input"
     }
 ]
