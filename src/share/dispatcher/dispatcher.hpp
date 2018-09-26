@@ -4,6 +4,8 @@
 
 #include "dispatcher/object_id.hpp"
 #include "thread_utility.hpp"
+#include "types/absolute_time.hpp"
+#include <deque>
 
 namespace krbn {
 namespace dispatcher {
@@ -17,7 +19,7 @@ public:
       worker_thread_id_wait_.notify();
 
       while (true) {
-        std::function<void(void)> function;
+        std::shared_ptr<entry> e;
 
         {
           std::unique_lock<std::mutex> lock(mutex_);
@@ -31,15 +33,15 @@ public:
           }
 
           if (!queue_.empty()) {
-            function = queue_.front();
-            queue_.pop();
+            e = queue_.front();
+            queue_.pop_front();
           }
         }
 
-        if (function) {
+        if (e) {
           std::lock_guard<std::mutex> lock(function_mutex_);
 
-          function();
+          e->call_function();
         }
       }
     });
@@ -165,28 +167,57 @@ public:
   }
 
   void enqueue(const object_id& object_id,
-               const std::function<void(void)>& function) {
+               const std::function<void(void)>& function,
+               absolute_time when = absolute_time(0)) {
     {
       std::lock_guard<std::mutex> lock(mutex_);
 
       auto id = object_id.get();
-      queue_.push([this, id, function] {
-        {
-          std::lock_guard<std::mutex> lock(object_ids_mutex_);
+      queue_.push_back(std::make_shared<entry>(
+          [this, id, function] {
+            {
+              std::lock_guard<std::mutex> lock(object_ids_mutex_);
 
-          if (!attached(id)) {
-            return;
-          }
-        }
+              if (!attached(id)) {
+                return;
+              }
+            }
 
-        function();
-      });
+            function();
+          },
+          when));
+
+      std::stable_sort(std::begin(queue_),
+                       std::end(queue_),
+                       [](auto& a, auto& b) {
+                         return a->get_when() < b->get_when();
+                       });
     }
 
     cv_.notify_one();
   }
 
 private:
+  class entry final {
+  public:
+    entry(const std::function<void(void)>& function,
+          absolute_time when) : function_(function),
+                                when_(when) {
+    }
+
+    absolute_time get_when(void) const {
+      return when_;
+    }
+
+    void call_function(void) const {
+      function_();
+    }
+
+  private:
+    std::function<void(void)> function_;
+    absolute_time when_;
+  };
+
   bool attached(const uint64_t object_id_value) {
     auto it = object_ids_.find(object_id_value);
     return it != std::end(object_ids_);
@@ -196,7 +227,7 @@ private:
   std::thread::id worker_thread_id_;
   thread_utility::wait worker_thread_id_wait_;
 
-  std::queue<std::function<void(void)>> queue_;
+  std::deque<std::shared_ptr<entry>> queue_;
   bool exit_;
   std::mutex mutex_;
   std::condition_variable cv_;
