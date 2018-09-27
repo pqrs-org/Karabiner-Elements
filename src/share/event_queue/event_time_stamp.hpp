@@ -84,8 +84,8 @@ public:
 
   nlohmann::json to_json(void) const {
     return nlohmann::json::object({
-        {"time_stamp", type_safe::get(get_time_stamp())},
-        {"input_delay_time_stamp", type_safe::get(get_input_delay_time_stamp())},
+        {"time_stamp", time_utility::to_milliseconds(get_time_stamp()).count()},
+        {"input_delay_time_stamp", time_utility::to_milliseconds(get_input_delay_time_stamp()).count()},
     });
   }
 

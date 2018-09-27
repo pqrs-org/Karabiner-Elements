@@ -79,7 +79,7 @@
         },
         "event_time_stamp": {
             "input_delay_time_stamp": 0,
-            "time_stamp": 401
+            "time_stamp": 400
         },
         "event_type": "key_down",
         "lazy": true,
@@ -97,7 +97,7 @@
         },
         "event_time_stamp": {
             "input_delay_time_stamp": 0,
-            "time_stamp": 402
+            "time_stamp": 400
         },
         "event_type": "key_down",
         "lazy": false,
@@ -115,7 +115,7 @@
         },
         "event_time_stamp": {
             "input_delay_time_stamp": 0,
-            "time_stamp": 403
+            "time_stamp": 400
         },
         "event_type": "key_up",
         "lazy": true,
@@ -133,7 +133,7 @@
         },
         "event_time_stamp": {
             "input_delay_time_stamp": 0,
-            "time_stamp": 404
+            "time_stamp": 400
         },
         "event_type": "key_down",
         "lazy": true,
@@ -151,7 +151,7 @@
         },
         "event_time_stamp": {
             "input_delay_time_stamp": 0,
-            "time_stamp": 504
+            "time_stamp": 500
         },
         "event_type": "key_up",
         "lazy": false,
@@ -169,7 +169,7 @@
         },
         "event_time_stamp": {
             "input_delay_time_stamp": 0,
-            "time_stamp": 604
+            "time_stamp": 600
         },
         "event_type": "key_up",
         "lazy": false,
