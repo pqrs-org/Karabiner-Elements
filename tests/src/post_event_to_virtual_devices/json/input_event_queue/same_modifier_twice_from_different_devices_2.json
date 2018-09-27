@@ -12,7 +12,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 1000000000
+            "time_stamp": 1000
         },
         "valid": true
     },
@@ -29,7 +29,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 2000000000
+            "time_stamp": 2000
         },
         "valid": true
     },
@@ -46,7 +46,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 3000000000
+            "time_stamp": 3000
         },
         "valid": true
     },
@@ -63,7 +63,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 4000000000
+            "time_stamp": 4000
         },
         "valid": true
     },
@@ -80,7 +80,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 5000000000
+            "time_stamp": 5000
         },
         "valid": true
     }

@@ -104,7 +104,7 @@ public:
             } else if (*s == "invoke_manipulator_timer") {
               absolute_time time_stamp(0);
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
-                time_stamp = absolute_time(*t);
+                time_stamp = time_utility::to_absolute_time(std::chrono::milliseconds(*t));
               }
               manipulator_dispatcher->enqueue(
                   manipulator_object_id,
@@ -116,7 +116,7 @@ public:
             } else if (*s == "manipulate") {
               absolute_time time_stamp(0);
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
-                time_stamp = absolute_time(*t);
+                time_stamp = time_utility::to_absolute_time(std::chrono::milliseconds(*t));
               }
               connector.manipulate(time_stamp);
             } else if (*s == "sleep_milliseconds") {

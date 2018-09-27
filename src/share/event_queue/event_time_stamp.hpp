@@ -2,6 +2,7 @@
 
 // `krbn::event_queue::event_time_stamp` can be used safely in a multi-threaded environment.
 
+#include "time_utility.hpp"
 #include "types.hpp"
 #include <json/json.hpp>
 #include <ostream>
@@ -39,11 +40,11 @@ public:
                             absolute_time(0));
 
     if (auto v = json_utility::find_optional<uint64_t>(json, "time_stamp")) {
-      result.time_stamp_ = absolute_time(*v);
+      result.time_stamp_ = time_utility::to_absolute_time(std::chrono::milliseconds(*v));
     }
 
     if (auto v = json_utility::find_optional<uint64_t>(json, "input_delay_time_stamp")) {
-      result.input_delay_time_stamp_ = absolute_time(*v);
+      result.input_delay_time_stamp_ = time_utility::to_absolute_time(std::chrono::milliseconds(*v));
     }
 
     return result;

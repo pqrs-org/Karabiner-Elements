@@ -12,7 +12,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 1000000000
+            "time_stamp": 1000
         },
         "valid": true
     },
@@ -29,7 +29,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 1001000000
+            "time_stamp": 1001
         },
         "valid": true
     },
@@ -46,7 +46,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 1002000000
+            "time_stamp": 1002
         },
         "valid": true
     },
@@ -63,7 +63,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 1003000000
+            "time_stamp": 1003
         },
         "valid": true
     },
@@ -80,7 +80,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 1004000000
+            "time_stamp": 1004
         },
         "valid": true
     },
@@ -101,7 +101,7 @@
             "type": "pointing_motion"
         },
         "event_time_stamp": {
-            "time_stamp": 1005000000
+            "time_stamp": 1005
         },
         "valid": true
     },
@@ -118,7 +118,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 1006000000
+            "time_stamp": 1006
         },
         "valid": true
     },
@@ -139,7 +139,7 @@
             "type": "pointing_motion"
         },
         "event_time_stamp": {
-            "time_stamp": 1007000000
+            "time_stamp": 1007
         },
         "valid": true
     }

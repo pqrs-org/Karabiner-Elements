@@ -12,7 +12,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 2000000
+            "time_stamp": 2
         },
         "valid": true
     },
@@ -29,7 +29,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 4000000
+            "time_stamp": 4
         },
         "valid": true
     },
@@ -46,7 +46,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 6000000
+            "time_stamp": 6
         },
         "valid": true
     },
@@ -63,7 +63,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 8000000
+            "time_stamp": 8
         },
         "valid": true
     },
@@ -80,7 +80,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10000000
+            "time_stamp": 10
         },
         "valid": true
     },
@@ -97,13 +97,13 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 12000000
+            "time_stamp": 12
         },
         "valid": true
     },
     {
         "action": "invoke_manipulator_timer",
-        "time_stamp": 10000000000
+        "time_stamp": 10000
     },
     {
         "device_id": 1,
@@ -118,7 +118,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10002000000
+            "time_stamp": 10002
         },
         "valid": true
     },
@@ -135,7 +135,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10002000000
+            "time_stamp": 10002
         },
         "valid": true
     },
@@ -152,7 +152,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10004000000
+            "time_stamp": 10004
         },
         "valid": true
     },
@@ -169,7 +169,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10006000000
+            "time_stamp": 10006
         },
         "valid": true
     }

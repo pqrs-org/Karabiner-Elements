@@ -12,7 +12,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 2000000
+            "time_stamp": 2
         },
         "valid": true
     },
@@ -29,12 +29,12 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 4000000
+            "time_stamp": 4
         },
         "valid": true
     },
     {
         "action": "invoke_manipulator_timer",
-        "time_stamp": 10000000000
+        "time_stamp": 10000
     }
 ]

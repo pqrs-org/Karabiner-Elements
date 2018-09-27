@@ -13,13 +13,13 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 2000000
+            "time_stamp": 2
         },
         "valid": true
     },
     {
         "action": "invoke_manipulator_timer",
-        "time_stamp": 10000000000
+        "time_stamp": 10000
     },
     {
         "device_id": 1,
@@ -34,7 +34,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10002000000
+            "time_stamp": 10002
         },
         "valid": true
     },
@@ -52,7 +52,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10004000000
+            "time_stamp": 10004
         },
         "valid": true
     },
@@ -69,7 +69,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10006000000
+            "time_stamp": 10006
         },
         "valid": true
     },
@@ -86,13 +86,13 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10008000000
+            "time_stamp": 10008
         },
         "valid": true
     },
     {
         "action": "invoke_manipulator_timer",
-        "time_stamp": 20000000000
+        "time_stamp": 20000
     },
     {
         "device_id": 1,
@@ -107,7 +107,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 20002000000
+            "time_stamp": 20002
         },
         "valid": true
     }

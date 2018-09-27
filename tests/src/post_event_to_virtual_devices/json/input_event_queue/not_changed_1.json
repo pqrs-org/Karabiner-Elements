@@ -12,7 +12,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 2000000
+            "time_stamp": 2
         },
         "valid": true
     },
@@ -29,7 +29,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 4000000
+            "time_stamp": 4
         },
         "valid": true
     }

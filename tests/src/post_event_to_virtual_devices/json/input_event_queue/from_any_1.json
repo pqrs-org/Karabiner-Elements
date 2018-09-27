@@ -12,7 +12,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 2000000
+            "time_stamp": 2
         },
         "valid": true
     },
@@ -29,7 +29,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 4000000
+            "time_stamp": 4
         },
         "valid": true
     },
@@ -46,7 +46,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 8000000
+            "time_stamp": 8
         },
         "valid": true
     },
@@ -63,7 +63,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10000000
+            "time_stamp": 10
         },
         "valid": true
     },
@@ -80,7 +80,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 12000000
+            "time_stamp": 12
         },
         "valid": true
     },
@@ -97,7 +97,7 @@
             "type": "pointing_button"
         },
         "event_time_stamp": {
-            "time_stamp": 14000000
+            "time_stamp": 14
         },
         "valid": true
     },
@@ -114,7 +114,7 @@
             "type": "pointing_button"
         },
         "event_time_stamp": {
-            "time_stamp": 16000000
+            "time_stamp": 16
         },
         "valid": true
     },
@@ -131,7 +131,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 18000000
+            "time_stamp": 18
         },
         "valid": true
     },
@@ -148,7 +148,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 20000000
+            "time_stamp": 20
         },
         "valid": true
     },
@@ -165,7 +165,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 22000000
+            "time_stamp": 22
         },
         "valid": true
     },
@@ -182,7 +182,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 24000000
+            "time_stamp": 24
         },
         "valid": true
     },
@@ -199,7 +199,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 26000000
+            "time_stamp": 26
         },
         "valid": true
     },
@@ -216,7 +216,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 28000000
+            "time_stamp": 28
         },
         "valid": true
     },
@@ -233,7 +233,7 @@
             "type": "pointing_button"
         },
         "event_time_stamp": {
-            "time_stamp": 30000000
+            "time_stamp": 30
         },
         "valid": true
     },
@@ -250,7 +250,7 @@
             "type": "pointing_button"
         },
         "event_time_stamp": {
-            "time_stamp": 32000000
+            "time_stamp": 32
         },
         "valid": true
     },
@@ -267,7 +267,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 34000000
+            "time_stamp": 34
         },
         "valid": true
     },
@@ -284,7 +284,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 20000000
+            "time_stamp": 20
         },
         "valid": true
     },
@@ -301,7 +301,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 22000000
+            "time_stamp": 22
         },
         "valid": true
     },
@@ -318,7 +318,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 24000000
+            "time_stamp": 24
         },
         "valid": true
     },
@@ -335,7 +335,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 26000000
+            "time_stamp": 26
         },
         "valid": true
     },
@@ -352,7 +352,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 28000000
+            "time_stamp": 28
         },
         "valid": true
     },
@@ -369,7 +369,7 @@
             "type": "pointing_button"
         },
         "event_time_stamp": {
-            "time_stamp": 30000000
+            "time_stamp": 30
         },
         "valid": true
     },
@@ -386,7 +386,7 @@
             "type": "pointing_button"
         },
         "event_time_stamp": {
-            "time_stamp": 32000000
+            "time_stamp": 32
         },
         "valid": true
     },
@@ -403,7 +403,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 34000000
+            "time_stamp": 34
         },
         "valid": true
     }

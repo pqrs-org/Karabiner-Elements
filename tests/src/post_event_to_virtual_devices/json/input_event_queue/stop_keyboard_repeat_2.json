@@ -12,7 +12,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 2000000
+            "time_stamp": 2
         },
         "valid": true
     },
@@ -27,7 +27,7 @@
             "type": "stop_keyboard_repeat"
         },
         "event_time_stamp": {
-            "time_stamp": 4000000
+            "time_stamp": 4
         },
         "valid": true
     },
@@ -42,7 +42,7 @@
             "type": "stop_keyboard_repeat"
         },
         "event_time_stamp": {
-            "time_stamp": 8000000
+            "time_stamp": 8
         },
         "valid": true
     },
@@ -59,7 +59,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "time_stamp": 10000000
+            "time_stamp": 10
         },
         "valid": true
     }
