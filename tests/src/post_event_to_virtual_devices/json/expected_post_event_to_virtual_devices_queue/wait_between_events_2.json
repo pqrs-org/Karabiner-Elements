@@ -50,7 +50,7 @@
             ],
             "modifiers": []
         },
-        "time_stamp": 1000,
+        "time_stamp": 1004,
         "type": "keyboard_input"
     },
     {
@@ -61,7 +61,7 @@
             "x": 246,
             "y": 0
         },
-        "time_stamp": 1000,
+        "time_stamp": 1005,
         "type": "pointing_input"
     },
     {
@@ -69,7 +69,7 @@
             "keys": [],
             "modifiers": []
         },
-        "time_stamp": 1000,
+        "time_stamp": 1006,
         "type": "keyboard_input"
     },
     {
@@ -80,7 +80,7 @@
             "x": 246,
             "y": 0
         },
-        "time_stamp": 1000,
+        "time_stamp": 1007,
         "type": "pointing_input"
     }
 ]
