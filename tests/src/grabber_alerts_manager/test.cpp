@@ -33,13 +33,13 @@ TEST_CASE("set_alert") {
   {
     auto grabber_alerts_manager = std::make_unique<krbn::grabber_alerts_manager>(
         "tmp/grabber_alerts_manager1.json");
-    grabber_alerts_manager->async_set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
+    grabber_alerts_manager->set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
   }
 
   {
     auto grabber_alerts_manager = std::make_unique<krbn::grabber_alerts_manager>(
         "tmp/grabber_alerts_manager2.json");
-    grabber_alerts_manager->async_set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
+    grabber_alerts_manager->set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
   }
 
   krbn::async_sequential_file_writer::get_instance().wait();
