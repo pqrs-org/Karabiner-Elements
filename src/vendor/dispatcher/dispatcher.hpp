@@ -124,6 +124,8 @@ public:
   }
 
   bool detach(const object_id& object_id) {
+    // Erase `object_id` from object_ids_ if exists.
+
     {
       std::lock_guard<std::mutex> lock(object_ids_mutex_);
 
@@ -147,6 +149,18 @@ public:
     if (!detach(object_id)) {
       return;
     }
+
+    // Skip `function` if dispatcher is terminating or already terminated.
+
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+
+      if (exit_) {
+        return;
+      }
+    }
+
+    // Execute function
 
     if (is_dispatcher_thread()) {
       function();

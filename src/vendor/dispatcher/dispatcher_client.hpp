@@ -39,6 +39,16 @@ public:
     }
   }
 
+  std::chrono::milliseconds when_now(void) const {
+    if (auto d = weak_dispatcher_.lock()) {
+      if (auto s = d->get_weak_time_source().lock()) {
+        return s->now();
+      }
+    }
+
+    return dispatcher::when_immediately();
+  }
+
 protected:
   std::weak_ptr<dispatcher> weak_dispatcher_;
   object_id object_id_;
