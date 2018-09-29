@@ -9,6 +9,7 @@
 #include "dispatcher/object_id.hpp"
 #include "time_source.hpp"
 #include <deque>
+#include <exception>
 #include <mutex>
 #include <thread>
 
@@ -165,19 +166,28 @@ public:
     if (is_dispatcher_thread()) {
       function();
     } else {
-      wait w;
+      // We have to use shared_ptr to ensure `w` is alive in the queued function.
+      // Note:
+      //   wait::notify rarely causes SEGV unless we use shared_ptr in the following case.
+      //
+      //   1. `wait::notify` set notify_ = true.
+      //   2. `wait::wait_notice` exits by spuriously wake.
+      //   3. `w` is destructed.
+      //   4. `wait::notify` calls `cv_.notify_one` with released `cv_`. (SEGV)
+
+      auto w = std::make_shared<wait>();
 
       // Run detached function with dispatcher's object_id.
       // (`object_id` in arguments is already detached.)
 
       enqueue(object_id_,
-              [&w, &function] {
+              [w, &function] {
                 function();
-                w.notify();
+                w->notify();
               },
               when_internal_detached());
 
-      w.wait_notice();
+      w->wait_notice();
     }
   }
 
@@ -218,26 +228,18 @@ public:
     // ----------------------------------------
 
     if (is_dispatcher_thread()) {
+      throw std::logic_error("Do not call pqrs::dispatcher::terminate in the dispatcher thread.");
+    }
+
+    if (worker_thread_.joinable()) {
       {
         std::lock_guard<std::mutex> lock(mutex_);
 
         exit_ = true;
-        queue_.empty();
       }
 
-      worker_thread_.detach();
-
-    } else {
-      if (worker_thread_.joinable()) {
-        {
-          std::lock_guard<std::mutex> lock(mutex_);
-
-          exit_ = true;
-        }
-
-        cv_.notify_one();
-        worker_thread_.join();
-      }
+      cv_.notify_one();
+      worker_thread_.join();
     }
   }
 
@@ -312,6 +314,7 @@ private:
 
     void wait_notice(void) {
       std::unique_lock<std::mutex> lock(mutex_);
+
       cv_.wait(lock, [this] {
         return notify_;
       });
