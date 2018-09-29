@@ -8,7 +8,7 @@
 
 namespace krbn {
 namespace local_datagram {
-class server_manager final : public dispatcher::dispatcher_client {
+class server_manager final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -19,7 +19,7 @@ public:
 
   // Methods
 
-  server_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+  server_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                  const std::string& path,
                  size_t buffer_size,
                  boost::optional<std::chrono::milliseconds> server_check_interval,
@@ -31,7 +31,7 @@ public:
                                                                  reconnect_timer_enabled_(false) {
   }
 
-  ~server_manager(void) {
+  virtual ~server_manager(void) {
     detach_from_dispatcher([this] {
       stop();
     });
@@ -65,7 +65,7 @@ private:
       return;
     }
 
-    server_ = std::make_unique<server>();
+    server_ = std::make_unique<server>(weak_dispatcher_);
 
     server_->bound.connect([this] {
       enqueue_to_dispatcher([this] {
