@@ -25,7 +25,7 @@ public:
                                                                  path_(path),
                                                                  server_check_interval_(server_check_interval),
                                                                  reconnect_interval_(reconnect_interval),
-                                                                 reconnect_timer_enabled_(true) {
+                                                                 reconnect_enabled_(false) {
   }
 
   virtual ~client_manager(void) {
@@ -42,7 +42,7 @@ public:
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      reconnect_timer_enabled_ = true;
+      reconnect_enabled_ = true;
 
       connect();
     });
@@ -56,10 +56,9 @@ public:
 
 private:
   void stop(void) {
-    // We have to unset reconnect_timer_enabled_ before `close` to prevent `start_reconnect_timer` by `closed` signal.
-    reconnect_timer_enabled_ = false;
+    // We have to unset reconnect_enabled_ before `close` to prevent `enqueue_reconnect` by `closed` signal.
+    reconnect_enabled_ = false;
 
-    stop_reconnect_timer();
     close();
   }
 
@@ -85,8 +84,7 @@ private:
           connect_failed(error_code);
 
           close();
-          stop_reconnect_timer();
-          start_reconnect_timer();
+          enqueue_reconnect();
         });
       });
 
@@ -95,8 +93,7 @@ private:
           closed();
 
           close();
-          stop_reconnect_timer();
-          start_reconnect_timer();
+          enqueue_reconnect();
         });
       });
 
@@ -113,32 +110,16 @@ private:
     client_ = nullptr;
   }
 
-  void start_reconnect_timer(void) {
-    if (reconnect_timer_) {
-      return;
-    }
-
-    if (!reconnect_timer_enabled_) {
-      return;
-    }
-
-    reconnect_timer_ = std::make_unique<thread_utility::timer>(
-        reconnect_interval_,
-        thread_utility::timer::mode::once,
+  void enqueue_reconnect(void) {
+    enqueue_to_dispatcher(
         [this] {
-          enqueue_to_dispatcher([this] {
-            connect();
-          });
-        });
-  }
+          if (!reconnect_enabled_) {
+            return;
+          }
 
-  void stop_reconnect_timer(void) {
-    if (!reconnect_timer_) {
-      return;
-    }
-
-    reconnect_timer_->cancel();
-    reconnect_timer_ = nullptr;
+          connect();
+        },
+        when_now() + reconnect_interval_);
   }
 
   std::string path_;
@@ -148,8 +129,7 @@ private:
   std::shared_ptr<client> client_;
   std::mutex client_mutex_;
 
-  std::unique_ptr<thread_utility::timer> reconnect_timer_;
-  bool reconnect_timer_enabled_;
+  bool reconnect_enabled_;
 };
 } // namespace local_datagram
 } // namespace krbn
