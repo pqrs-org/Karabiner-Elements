@@ -9,12 +9,13 @@ BEGIN_BOOST_INCLUDE
 #include <boost/signals2.hpp>
 END_BOOST_INCLUDE
 
+#include "dispatcher.hpp"
 #include "logger.hpp"
 #include "thread_utility.hpp"
 
 namespace krbn {
 namespace local_datagram {
-class client final {
+class client final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -26,22 +27,26 @@ public:
 
   client(const client&) = delete;
 
-  client(void) : io_service_(),
-                 work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
-                 socket_(io_service_),
-                 connected_(false) {
+  client(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                        io_service_(),
+                                                                        work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
+                                                                        socket_(io_service_),
+                                                                        connected_(false) {
     io_service_thread_ = std::thread([this] {
       (this->io_service_).run();
     });
   }
 
-  ~client(void) {
+  virtual ~client(void) {
     async_close();
 
     if (io_service_thread_.joinable()) {
       work_ = nullptr;
       io_service_thread_.join();
     }
+
+    detach_from_dispatcher([] {
+    });
   }
 
   void async_connect(const std::string& path,
@@ -58,7 +63,9 @@ public:
         socket_.open(boost::asio::local::datagram_protocol::socket::protocol_type(),
                      error_code);
         if (error_code) {
-          connect_failed(error_code);
+          enqueue_to_dispatcher([this, error_code] {
+            connect_failed(error_code);
+          });
           return;
         }
       }
@@ -68,14 +75,18 @@ public:
       socket_.async_connect(boost::asio::local::datagram_protocol::endpoint(path),
                             [this, server_check_interval](auto&& error_code) {
                               if (error_code) {
-                                connect_failed(error_code);
+                                enqueue_to_dispatcher([this, error_code] {
+                                  connect_failed(error_code);
+                                });
                               } else {
                                 connected_ = true;
 
-                                stop_server_check_timer();
-                                start_server_check_timer(server_check_interval);
+                                stop_server_check();
+                                start_server_check(server_check_interval);
 
-                                connected();
+                                enqueue_to_dispatcher([this] {
+                                  connected();
+                                });
                               }
                             });
     });
@@ -83,7 +94,7 @@ public:
 
   void async_close(void) {
     io_service_.post([this] {
-      stop_server_check_timer();
+      stop_server_check();
 
       // Close socket
 
@@ -96,7 +107,10 @@ public:
 
       if (connected_) {
         connected_ = false;
-        closed();
+
+        enqueue_to_dispatcher([this] {
+          closed();
+        });
       }
     });
   }
@@ -143,33 +157,39 @@ private:
                        });
   }
 
-  void start_server_check_timer(boost::optional<std::chrono::milliseconds> server_check_interval) {
-    if (!server_check_interval) {
-      return;
-    }
+  void start_server_check(boost::optional<std::chrono::milliseconds> server_check_interval) {
+    io_service_.post([this, server_check_interval] {
+      if (server_check_interval) {
+        server_check_enabled_ = true;
 
-    if (server_check_timer_) {
-      return;
-    }
-
-    server_check_timer_ = std::make_unique<thread_utility::timer>(
-        *server_check_interval,
-        thread_utility::timer::mode::repeat,
-        [this] {
-          io_service_.post([this] {
-            std::vector<uint8_t> data;
-            async_send(data);
-          });
-        });
+        check_server(*server_check_interval);
+      }
+    });
   }
 
-  void stop_server_check_timer(void) {
-    if (!server_check_timer_) {
-      return;
-    }
+  void stop_server_check(void) {
+    io_service_.post([this] {
+      server_check_enabled_ = false;
+    });
+  }
 
-    server_check_timer_->cancel();
-    server_check_timer_ = nullptr;
+  void check_server(std::chrono::milliseconds server_check_interval) {
+    io_service_.post([this, server_check_interval] {
+      if (!server_check_enabled_) {
+        return;
+      }
+
+      std::vector<uint8_t> data;
+      async_send(data);
+
+      // Enqueue next check
+
+      enqueue_to_dispatcher(
+          [this, server_check_interval] {
+            check_server(server_check_interval);
+          },
+          when_now() + server_check_interval);
+    });
   }
 
   boost::asio::io_service io_service_;
@@ -178,7 +198,7 @@ private:
   std::thread io_service_thread_;
   bool connected_;
 
-  std::unique_ptr<thread_utility::timer> server_check_timer_;
+  bool server_check_enabled_;
 };
 } // namespace local_datagram
 } // namespace krbn
