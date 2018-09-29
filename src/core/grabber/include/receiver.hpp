@@ -13,11 +13,11 @@
 #include <vector>
 
 namespace krbn {
-class receiver final : public dispatcher::dispatcher_client {
+class receiver final : public pqrs::dispatcher::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+  receiver(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
            std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager) : dispatcher_client(weak_dispatcher),
                                                                                                 weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager) {
     std::string socket_file_path(constants::get_grabber_socket_file_path());
@@ -184,7 +184,7 @@ public:
     logger::get_logger().info("receiver is initialized");
   }
 
-  ~receiver(void) {
+  virtual ~receiver(void) {
     detach_from_dispatcher([this] {
       server_manager_ = nullptr;
       console_user_server_client_ = nullptr;

@@ -132,10 +132,6 @@ public:
     }
   }
 
-  void destroy_client(void) {
-    client_ = nullptr;
-  }
-
 private:
   boost::optional<bool> connected_;
   bool closed_;
@@ -329,31 +325,6 @@ TEST_CASE("local_datagram::server") {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     REQUIRE(server.get_received_count() == 0);
-  }
-
-  // `closed` is called in destructor.
-  {
-    test_server server(dispatcher);
-    test_client client(dispatcher);
-
-    REQUIRE(client.get_connected() == true);
-
-    client.destroy_client();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-    REQUIRE(client.get_closed());
-  }
-
-  // `closed` is not called in destructor if not connected.
-  {
-    test_client client(dispatcher);
-
-    client.destroy_client();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-    REQUIRE(!client.get_closed());
   }
 }
 

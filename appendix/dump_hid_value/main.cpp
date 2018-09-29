@@ -5,11 +5,11 @@
 #include <boost/optional/optional_io.hpp>
 
 namespace {
-class dump_hid_value final : public krbn::dispatcher::dispatcher_client {
+class dump_hid_value final : public pqrs::dispatcher::dispatcher_client {
 public:
   dump_hid_value(const dump_hid_value&) = delete;
 
-  dump_hid_value(std::weak_ptr<krbn::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  dump_hid_value(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
@@ -193,7 +193,8 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
   auto d = std::make_unique<dump_hid_value>(dispatcher);
 

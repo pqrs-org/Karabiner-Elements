@@ -54,7 +54,8 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("grabbable_state_manager") {
-  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
   auto grabbable_state_manager = std::make_unique<krbn::grabbable_state_manager>(dispatcher);
 
@@ -440,7 +441,8 @@ TEST_CASE("grabbable_state_manager") {
 }
 
 TEST_CASE("device_error") {
-  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
   auto grabbable_state_manager = std::make_unique<krbn::grabbable_state_manager>(dispatcher);
 

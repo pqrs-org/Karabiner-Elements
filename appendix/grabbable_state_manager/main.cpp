@@ -6,11 +6,11 @@
 #include <boost/optional/optional_io.hpp>
 
 namespace {
-class grabbable_state_manager_demo final : public krbn::dispatcher::dispatcher_client {
+class grabbable_state_manager_demo final : public pqrs::dispatcher::dispatcher_client {
 public:
   grabbable_state_manager_demo(const grabbable_state_manager_demo&) = delete;
 
-  grabbable_state_manager_demo(std::weak_ptr<krbn::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  grabbable_state_manager_demo(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     grabbable_state_manager_ = std::make_unique<krbn::grabbable_state_manager>(weak_dispatcher);
 
     grabbable_state_manager_->grabbable_state_changed.connect([this](auto&& grabbable_state) {
@@ -103,7 +103,8 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
   auto d = std::make_unique<grabbable_state_manager_demo>(dispatcher);
 

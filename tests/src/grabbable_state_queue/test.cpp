@@ -17,7 +17,8 @@ TEST_CASE("initialize") {
 
 TEST_CASE("grabbable_state_queue") {
   {
-    auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+    auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+    auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
     auto queue = std::make_unique<krbn::grabbable_state_queue>(dispatcher);
 
@@ -126,7 +127,8 @@ TEST_CASE("grabbable_state_queue") {
 }
 
 TEST_CASE("grabbable_state_queue.circular_buffer") {
-  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
   auto queue = std::make_unique<krbn::grabbable_state_queue>(dispatcher);
 

@@ -10,7 +10,8 @@ int main(int argc, char** argv) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
   krbn::logger::get_logger().set_level(spdlog::level::off);
 

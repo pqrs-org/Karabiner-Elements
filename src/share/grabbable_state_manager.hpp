@@ -12,7 +12,7 @@
 #include <boost/signals2.hpp>
 
 namespace krbn {
-class grabbable_state_manager final : public dispatcher::dispatcher_client {
+class grabbable_state_manager final : public pqrs::dispatcher::dispatcher_client {
 public:
 #include "grabbable_state_manager/entry.hpp"
 
@@ -24,10 +24,10 @@ public:
 
   grabbable_state_manager(const grabbable_state_manager&) = delete;
 
-  grabbable_state_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  grabbable_state_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
   }
 
-  ~grabbable_state_manager(void) {
+  virtual ~grabbable_state_manager(void) {
     detach_from_dispatcher([] {
     });
   }

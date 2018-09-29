@@ -14,11 +14,11 @@
 #include "types.hpp"
 
 namespace krbn {
-class device_observer final : public dispatcher::dispatcher_client {
+class device_observer final : public pqrs::dispatcher::dispatcher_client {
 public:
   device_observer(const device_observer&) = delete;
 
-  device_observer(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+  device_observer(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                   std::weak_ptr<grabber_client> grabber_client) : dispatcher_client(weak_dispatcher),
                                                                   grabber_client_(grabber_client) {
     // grabbable_state_manager_
@@ -113,7 +113,7 @@ public:
     logger::get_logger().info("device_observer is started.");
   }
 
-  ~device_observer(void) {
+  virtual ~device_observer(void) {
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
 

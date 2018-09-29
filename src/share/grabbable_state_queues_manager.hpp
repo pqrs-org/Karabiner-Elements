@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 namespace krbn {
-class grabbable_state_queues_manager final : public dispatcher::dispatcher_client {
+class grabbable_state_queues_manager final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -23,10 +23,10 @@ public:
 
   grabbable_state_queues_manager(const grabbable_state_queues_manager&) = delete;
 
-  grabbable_state_queues_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  grabbable_state_queues_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
   }
 
-  ~grabbable_state_queues_manager(void) {
+  virtual ~grabbable_state_queues_manager(void) {
     detach_from_dispatcher([] {
     });
   }

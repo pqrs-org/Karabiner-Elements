@@ -120,19 +120,23 @@ bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
 }
 
 namespace {
-std::shared_ptr<krbn::dispatcher::dispatcher> get_dispatcher(void) {
+std::shared_ptr<pqrs::dispatcher::dispatcher> get_dispatcher(void) {
   static std::mutex mutex;
   std::lock_guard<std::mutex> lock(mutex);
 
-  static std::shared_ptr<krbn::dispatcher::dispatcher> dispatcher;
+  static std::shared_ptr<pqrs::dispatcher::time_source> time_source;
+  static std::shared_ptr<pqrs::dispatcher::dispatcher> dispatcher;
+  if (!time_source) {
+    time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+  }
   if (!dispatcher) {
-    dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+    dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
   }
 
   return dispatcher;
 }
 } // namespace
 
-std::weak_ptr<krbn::dispatcher::dispatcher> libkrbn_cpp::get_weak_dispatcher(void) {
+std::weak_ptr<pqrs::dispatcher::dispatcher> libkrbn_cpp::get_weak_dispatcher(void) {
   return get_dispatcher();
 }

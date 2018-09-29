@@ -20,7 +20,8 @@ public:
       logger::get_logger().info("{0}", test["description"].get<std::string>());
 
       system_preferences system_preferences;
-      auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+      auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+      auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
       auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(dispatcher);
       auto manipulator_dispatcher = std::make_shared<manipulator::manipulator_dispatcher>();
       auto manipulator_timer = std::make_shared<manipulator::manipulator_timer>(false);

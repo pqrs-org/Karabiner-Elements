@@ -14,7 +14,7 @@
 #include <vector>
 
 namespace krbn {
-class grabber_client final : public dispatcher::dispatcher_client {
+class grabber_client final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -28,10 +28,10 @@ public:
 
   grabber_client(const grabber_client&) = delete;
 
-  grabber_client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  grabber_client(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
   }
 
-  ~grabber_client(void) {
+  virtual ~grabber_client(void) {
     detach_from_dispatcher([this] {
       stop();
     });
@@ -170,7 +170,6 @@ private:
     }
   }
 
-  std::weak_ptr<dispatcher::dispatcher> weak_dispatcher_;
   std::unique_ptr<local_datagram::client_manager> client_manager_;
 };
 } // namespace krbn

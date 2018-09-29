@@ -14,7 +14,7 @@
 #include <boost/signals2.hpp>
 
 namespace krbn {
-class input_source_monitor final : public dispatcher::dispatcher_client {
+class input_source_monitor final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -24,11 +24,11 @@ public:
 
   input_source_monitor(const input_source_monitor&) = delete;
 
-  input_source_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                                started_(false) {
+  input_source_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                                      started_(false) {
   }
 
-  ~input_source_monitor(void) {
+  virtual ~input_source_monitor(void) {
     detach_from_dispatcher([this] {
       stop();
     });

@@ -42,8 +42,8 @@ int main(int argc, const char* argv[]) {
 
   // Run components_manager
 
-  auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
-
+  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
   auto components_manager = std::make_unique<krbn::components_manager>(dispatcher);
 
   CFRunLoopRun();
@@ -52,6 +52,8 @@ int main(int argc, const char* argv[]) {
 
   dispatcher->terminate();
   dispatcher = nullptr;
+
+  time_source = nullptr;
 
   krbn::logger::get_logger().info("karabiner_observer is terminated.");
 

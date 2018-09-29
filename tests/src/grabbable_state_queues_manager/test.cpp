@@ -56,7 +56,8 @@ TEST_CASE("initialize") {
 
 TEST_CASE("grabbable_state_queues_manager") {
   {
-    auto dispatcher = std::make_shared<krbn::dispatcher::dispatcher>();
+    auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+    auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
     auto manager = std::make_unique<krbn::grabbable_state_queues_manager>(dispatcher);
 

@@ -9,7 +9,7 @@
 #include "thread_utility.hpp"
 
 namespace krbn {
-class hid_observer final : public dispatcher::dispatcher_client {
+class hid_observer final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -20,7 +20,7 @@ public:
 
   hid_observer(const hid_observer&) = delete;
 
-  hid_observer(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+  hid_observer(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                std::weak_ptr<human_interface_device> weak_hid) : dispatcher_client(weak_dispatcher),
                                                                  weak_hid_(weak_hid),
                                                                  observed_(false) {
@@ -90,7 +90,7 @@ public:
     }
   }
 
-  ~hid_observer(void) {
+  virtual ~hid_observer(void) {
     detach_from_dispatcher([this] {
       unobserve();
     });

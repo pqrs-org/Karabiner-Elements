@@ -22,11 +22,11 @@
 #include <thread>
 
 namespace krbn {
-class components_manager final : public dispatcher::dispatcher_client {
+class components_manager final : public pqrs::dispatcher::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  components_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
     start_grabber_alerts_monitor();
 
@@ -77,7 +77,7 @@ public:
     console_user_id_monitor_->async_start();
   }
 
-  ~components_manager(void) {
+  virtual ~components_manager(void) {
     detach_from_dispatcher([this] {
       stop_grabber_client();
 

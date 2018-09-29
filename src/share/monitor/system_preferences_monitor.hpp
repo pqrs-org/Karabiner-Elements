@@ -10,7 +10,7 @@
 #include "thread_utility.hpp"
 
 namespace krbn {
-class system_preferences_monitor final : public dispatcher::dispatcher_client {
+class system_preferences_monitor final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -18,7 +18,7 @@ public:
 
   // Methods
 
-  system_preferences_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+  system_preferences_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                              std::weak_ptr<configuration_monitor> weak_configuration_monitor) : dispatcher_client(weak_dispatcher),
                                                                                                 weak_configuration_monitor_(weak_configuration_monitor) {
     if (auto configuration_monitor = weak_configuration_monitor_.lock()) {
@@ -34,7 +34,7 @@ public:
     }
   }
 
-  ~system_preferences_monitor(void) {
+  virtual ~system_preferences_monitor(void) {
     // Disconnect `configuration_monitor_connections_`.
 
     if (auto configuration_monitor = weak_configuration_monitor_.lock()) {

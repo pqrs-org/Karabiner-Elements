@@ -30,11 +30,11 @@
 #include <time.h>
 
 namespace krbn {
-class device_grabber final : public dispatcher::dispatcher_client {
+class device_grabber final : public pqrs::dispatcher::dispatcher_client {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+  device_grabber(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                  std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager,
                  std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(weak_dispatcher),
                                                                                               weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager),
@@ -245,7 +245,7 @@ public:
     hid_manager_->async_start();
   }
 
-  ~device_grabber(void) {
+  virtual ~device_grabber(void) {
     detach_from_dispatcher([this] {
       stop();
 

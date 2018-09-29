@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace krbn {
-class receiver final : public dispatcher::dispatcher_client {
+class receiver final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -22,11 +22,11 @@ public:
 
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                    last_select_input_source_time_stamp_(0) {
+  receiver(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                          last_select_input_source_time_stamp_(0) {
   }
 
-  ~receiver(void) {
+  virtual ~receiver(void) {
     detach_from_dispatcher([this] {
       server_manager_ = nullptr;
     });

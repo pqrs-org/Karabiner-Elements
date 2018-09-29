@@ -1,6 +1,7 @@
 #include "hid_manager.hpp"
 #include "hid_observer.hpp"
 #include "libkrbn.h"
+#include "libkrbn_cpp.hpp"
 #include <mutex>
 #include <unordered_set>
 
@@ -24,7 +25,8 @@ public:
           values_arrived(event_queue);
         });
 
-        auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
+        auto hid_observer = std::make_shared<krbn::hid_observer>(libkrbn_cpp::get_weak_dispatcher(),
+                                                                 hid);
 
         hid_observer->device_observed.connect([this, weak_hid] {
           if (auto hid = weak_hid.lock()) {

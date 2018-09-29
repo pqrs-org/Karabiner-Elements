@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace krbn {
-class console_user_server_client final : public dispatcher::dispatcher_client {
+class console_user_server_client final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -24,7 +24,7 @@ public:
 
   console_user_server_client(const console_user_server_client&) = delete;
 
-  console_user_server_client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  console_user_server_client(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>(weak_dispatcher_);
 
     console_user_id_monitor_->console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
@@ -69,7 +69,7 @@ public:
     });
   }
 
-  ~console_user_server_client(void) {
+  virtual ~console_user_server_client(void) {
     detach_from_dispatcher([this] {
       console_user_id_monitor_ = nullptr;
 

@@ -14,7 +14,7 @@
 #include <memory>
 
 namespace krbn {
-class grabbable_state_queue final : public dispatcher::dispatcher_client {
+class grabbable_state_queue final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -26,11 +26,11 @@ public:
 
   grabbable_state_queue(const grabbable_state_queue&) = delete;
 
-  grabbable_state_queue(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                                 grabbable_states_(max_entries) {
+  grabbable_state_queue(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                                       grabbable_states_(max_entries) {
   }
 
-  ~grabbable_state_queue(void) {
+  virtual ~grabbable_state_queue(void) {
     detach_from_dispatcher([] {
     });
   }

@@ -13,7 +13,7 @@
 #include <memory>
 
 namespace krbn {
-class console_user_id_monitor final : public dispatcher::dispatcher_client {
+class console_user_id_monitor final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -23,10 +23,10 @@ public:
 
   console_user_id_monitor(const console_user_id_monitor&) = delete;
 
-  console_user_id_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  console_user_id_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
   }
 
-  ~console_user_id_monitor(void) {
+  virtual ~console_user_id_monitor(void) {
     detach_from_dispatcher([this] {
       stop();
     });
