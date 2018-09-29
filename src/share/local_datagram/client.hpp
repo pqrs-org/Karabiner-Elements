@@ -157,39 +157,38 @@ private:
                        });
   }
 
+  // This method is executed in `io_service_thread_`.
   void start_server_check(boost::optional<std::chrono::milliseconds> server_check_interval) {
-    io_service_.post([this, server_check_interval] {
-      if (server_check_interval) {
-        server_check_enabled_ = true;
+    if (server_check_interval) {
+      server_check_enabled_ = true;
 
-        check_server(*server_check_interval);
-      }
-    });
+      check_server(*server_check_interval);
+    }
   }
 
+  // This method is executed in `io_service_thread_`.
   void stop_server_check(void) {
-    io_service_.post([this] {
-      server_check_enabled_ = false;
-    });
+    server_check_enabled_ = false;
   }
 
+  // This method is executed in `io_service_thread_`.
   void check_server(std::chrono::milliseconds server_check_interval) {
-    io_service_.post([this, server_check_interval] {
-      if (!server_check_enabled_) {
-        return;
-      }
+    if (!server_check_enabled_) {
+      return;
+    }
 
-      std::vector<uint8_t> data;
-      async_send(data);
+    std::vector<uint8_t> data;
+    async_send(data);
 
-      // Enqueue next check
+    // Enqueue next check
 
-      enqueue_to_dispatcher(
-          [this, server_check_interval] {
+    enqueue_to_dispatcher(
+        [this, server_check_interval] {
+          io_service_.post([this, server_check_interval] {
             check_server(server_check_interval);
-          },
-          when_now() + server_check_interval);
-    });
+          });
+        },
+        when_now() + server_check_interval);
   }
 
   boost::asio::io_service io_service_;

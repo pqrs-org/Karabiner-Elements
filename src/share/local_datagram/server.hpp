@@ -37,6 +37,7 @@ public:
 
     if (io_service_thread_.joinable()) {
       work_ = nullptr;
+
       io_service_thread_.join();
     }
 
@@ -108,6 +109,7 @@ public:
   }
 
 private:
+  // This method is executed in `io_service_thread_`.
   void close(void) {
     stop_server_check();
 
@@ -151,60 +153,59 @@ private:
                           });
   }
 
+  // This method is executed in `io_service_thread_`.
   void start_server_check(const std::string& path,
                           boost::optional<std::chrono::milliseconds> server_check_interval) {
-    io_service_.post([this, path, server_check_interval] {
-      if (server_check_interval) {
-        server_check_enabled_ = true;
+    if (server_check_interval) {
+      server_check_enabled_ = true;
 
-        check_server(path,
-                     *server_check_interval);
-      }
-    });
+      check_server(path,
+                   *server_check_interval);
+    }
   }
 
+  // This method is executed in `io_service_thread_`.
   void stop_server_check(void) {
-    io_service_.post([this] {
-      server_check_enabled_ = false;
+    server_check_enabled_ = false;
 
-      server_check_client_ = nullptr;
-    });
+    server_check_client_ = nullptr;
   }
 
+  // This method is executed in `io_service_thread_`.
   void check_server(const std::string& path,
                     std::chrono::milliseconds server_check_interval) {
-    io_service_.post([this, path, server_check_interval] {
-      if (!server_check_enabled_) {
-        return;
-      }
+    if (!server_check_enabled_) {
+      return;
+    }
 
-      if (!server_check_client_) {
-        server_check_client_ = std::make_unique<client>(weak_dispatcher_);
+    if (!server_check_client_) {
+      server_check_client_ = std::make_unique<client>(weak_dispatcher_);
 
-        server_check_client_->connected.connect([this] {
-          io_service_.post([this] {
-            server_check_client_ = nullptr;
-          });
+      server_check_client_->connected.connect([this] {
+        io_service_.post([this] {
+          server_check_client_ = nullptr;
         });
+      });
 
-        server_check_client_->connect_failed.connect([this](auto&& error_code) {
-          io_service_.post([this] {
-            close();
-          });
+      server_check_client_->connect_failed.connect([this](auto&& error_code) {
+        io_service_.post([this] {
+          close();
         });
+      });
 
-        server_check_client_->async_connect(path, boost::none);
-      }
+      server_check_client_->async_connect(path, boost::none);
+    }
 
-      // Enqueue next check
+    // Enqueue next check
 
-      enqueue_to_dispatcher(
-          [this, path, server_check_interval] {
+    enqueue_to_dispatcher(
+        [this, path, server_check_interval] {
+          io_service_.post([this, path, server_check_interval] {
             check_server(path,
                          server_check_interval);
-          },
-          when_now() + server_check_interval);
-    });
+          });
+        },
+        when_now() + server_check_interval);
   }
 
   boost::asio::io_service io_service_;
