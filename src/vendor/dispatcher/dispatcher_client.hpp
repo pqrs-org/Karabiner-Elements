@@ -39,6 +39,13 @@ public:
     }
   }
 
+  void enqueue_to_dispatcher_and_wait(const std::function<void(void)>& function,
+                                      std::chrono::milliseconds when = dispatcher::when_immediately()) const {
+    if (auto d = weak_dispatcher_.lock()) {
+      d->enqueue_and_wait(object_id_, function, when);
+    }
+  }
+
   std::chrono::milliseconds when_now(void) const {
     if (auto d = weak_dispatcher_.lock()) {
       if (auto s = d->get_weak_time_source().lock()) {

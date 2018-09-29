@@ -7,6 +7,7 @@
 // `pqrs::dispatcher::dispatcher` can be used safely in a multi-threaded environment.
 
 #include "dispatcher/object_id.hpp"
+#include "dispatcher/wait.hpp"
 #include "time_source.hpp"
 #include <deque>
 #include <exception>
@@ -20,11 +21,12 @@ public:
   dispatcher(const dispatcher&) = delete;
 
   dispatcher(std::weak_ptr<time_source> weak_time_source) : weak_time_source_(weak_time_source),
+                                                            worker_thread_id_wait_(make_wait()),
                                                             exit_(false),
                                                             object_id_(make_new_object_id()) {
     worker_thread_ = std::thread([this] {
       worker_thread_id_ = std::this_thread::get_id();
-      worker_thread_id_wait_.notify();
+      worker_thread_id_wait_->notify();
 
       while (true) {
         std::shared_ptr<entry> e;
@@ -103,7 +105,7 @@ public:
       }
     });
 
-    worker_thread_id_wait_.wait_notice();
+    worker_thread_id_wait_->wait_notice();
 
     attach(object_id_);
   }
@@ -166,16 +168,7 @@ public:
     if (is_dispatcher_thread()) {
       function();
     } else {
-      // We have to use shared_ptr to ensure `w` is alive in the queued function.
-      // Note:
-      //   wait::notify rarely causes SEGV unless we use shared_ptr in the following case.
-      //
-      //   1. `wait::notify` set notify_ = true.
-      //   2. `wait::wait_notice` exits by spuriously wake.
-      //   3. `w` is destructed.
-      //   4. `wait::notify` calls `cv_.notify_one` with released `cv_`. (SEGV)
-
-      auto w = std::make_shared<wait>();
+      auto w = make_wait();
 
       // Run detached function with dispatcher's object_id.
       // (`object_id` in arguments is already detached.)
@@ -274,6 +267,24 @@ public:
     cv_.notify_one();
   }
 
+  void enqueue_and_wait(const object_id& object_id,
+                        const std::function<void(void)>& function,
+                        std::chrono::milliseconds when = when_immediately()) {
+    enqueue(object_id, function, when);
+
+    // Wait
+
+    auto w = make_wait();
+
+    enqueue(object_id,
+            [&] {
+              w->notify();
+            },
+            when);
+
+    w->wait_notice();
+  }
+
   void invoke(void) {
     cv_.notify_one();
   }
@@ -307,35 +318,6 @@ private:
     std::chrono::milliseconds when_;
   };
 
-  class wait final {
-  public:
-    wait(void) : notify_(false) {
-    }
-
-    void wait_notice(void) {
-      std::unique_lock<std::mutex> lock(mutex_);
-
-      cv_.wait(lock, [this] {
-        return notify_;
-      });
-    }
-
-    void notify(void) {
-      {
-        std::lock_guard<std::mutex> lock(mutex_);
-
-        notify_ = true;
-      }
-
-      cv_.notify_one();
-    }
-
-  private:
-    bool notify_;
-    std::mutex mutex_;
-    std::condition_variable cv_;
-  };
-
   bool attached(const uint64_t object_id_value) {
     auto it = object_ids_.find(object_id_value);
     return it != std::end(object_ids_);
@@ -345,7 +327,7 @@ private:
 
   std::thread worker_thread_;
   std::thread::id worker_thread_id_;
-  wait worker_thread_id_wait_;
+  std::shared_ptr<wait> worker_thread_id_wait_;
 
   std::deque<std::shared_ptr<entry>> queue_;
   bool exit_;
