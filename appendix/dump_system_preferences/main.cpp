@@ -16,22 +16,24 @@ int main(int argc, const char* argv[]) {
 
   auto configuration_monitor = std::make_shared<krbn::configuration_monitor>(krbn::constants::get_user_core_configuration_file_path());
 
-  krbn::system_preferences_monitor monitor(dispatcher, configuration_monitor);
+  auto monitor = std::make_unique<krbn::system_preferences_monitor>(dispatcher, configuration_monitor);
 
-  monitor.system_preferences_changed.connect([](auto&& system_preferences) {
+  monitor->system_preferences_changed.connect([](auto&& system_preferences) {
     std::cout << "system_preferences_updated_callback:" << std::endl;
     std::cout << "  com.apple.keyboard.fnState: " << system_preferences.get_keyboard_fn_state() << std::endl;
     std::cout << "  com.apple.swipescrolldirection: " << system_preferences.get_swipe_scroll_direction() << std::endl;
     std::cout << "  keyboard_type: " << static_cast<int>(system_preferences.get_keyboard_type()) << std::endl;
   });
 
-  monitor.async_start();
+  monitor->async_start();
 
   configuration_monitor->async_start();
 
   CFRunLoopRun();
 
   configuration_monitor = nullptr;
+
+  monitor = nullptr;
 
   dispatcher->terminate();
   dispatcher = nullptr;

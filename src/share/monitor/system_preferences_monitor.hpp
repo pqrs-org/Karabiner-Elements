@@ -20,7 +20,8 @@ public:
 
   system_preferences_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                              std::weak_ptr<configuration_monitor> weak_configuration_monitor) : dispatcher_client(weak_dispatcher),
-                                                                                                weak_configuration_monitor_(weak_configuration_monitor) {
+                                                                                                weak_configuration_monitor_(weak_configuration_monitor),
+                                                                                                enabled_(false) {
     if (auto configuration_monitor = weak_configuration_monitor_.lock()) {
       // core_configuration_updated
       {
@@ -47,42 +48,25 @@ public:
 
     configuration_monitor_connections_.wait_disconnect_all_connections();
 
-    // Destroy timer_
+    // dispatcher
 
-    detach_from_dispatcher([this] {
-      if (timer_) {
-        timer_->cancel();
-      }
-      timer_ = nullptr;
+    detach_from_dispatcher([] {
     });
-
-    // Destroy dispatcher_
 
     logger::get_logger().info("system_preferences_monitor is stopped.");
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      if (timer_) {
+      if (enabled_) {
         return;
       }
 
-      timer_ = std::make_unique<thread_utility::timer>(
-          [](auto&& count) {
-            if (count == 0) {
-              return std::chrono::milliseconds(0);
-            } else {
-              return std::chrono::milliseconds(3000);
-            }
-          },
-          thread_utility::timer::mode::repeat,
-          [this] {
-            enqueue_to_dispatcher([this] {
-              check_system_preferences();
-            });
-          });
+      enabled_ = true;
 
       logger::get_logger().info("system_preferences_monitor is started.");
+
+      check_system_preferences();
     });
   }
 
@@ -106,6 +90,10 @@ private:
   }
 
   void check_system_preferences(void) {
+    if (!enabled_) {
+      return;
+    }
+
     auto v = make_system_preferences();
     if (!last_system_preferences_ || *last_system_preferences_ != v) {
       logger::get_logger().info("system_preferences is updated.");
@@ -113,12 +101,20 @@ private:
       last_system_preferences_ = v;
       system_preferences_changed(v);
     }
+
+    // Enqueue next check
+
+    enqueue_to_dispatcher(
+        [this] {
+          check_system_preferences();
+        },
+        when_now() + std::chrono::milliseconds(3000));
   }
 
   std::weak_ptr<configuration_monitor> weak_configuration_monitor_;
 
   boost_utility::signals2_connections configuration_monitor_connections_;
-  std::unique_ptr<thread_utility::timer> timer_;
+  bool enabled_;
   boost::optional<system_preferences> last_system_preferences_;
 };
 } // namespace krbn
