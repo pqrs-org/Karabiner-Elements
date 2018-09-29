@@ -139,6 +139,19 @@ public:
       object_ids_.erase(object_id.get());
     }
 
+    // Erase entries
+
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+
+      queue_.erase(std::remove_if(std::begin(queue_),
+                                  std::end(queue_),
+                                  [&](auto&& e) {
+                                    return e->get_object_id_value() == object_id.get();
+                                  }),
+                   std::end(queue_));
+    }
+
     if (!is_dispatcher_thread()) {
       // Wait until current running function is finised.
       std::lock_guard<std::mutex> lock(function_mutex_);
@@ -244,6 +257,7 @@ public:
 
       auto id = object_id.get();
       queue_.push_back(std::make_shared<entry>(
+          id,
           [this, id, function] {
             {
               std::lock_guard<std::mutex> lock(object_ids_mutex_);
@@ -282,9 +296,15 @@ public:
 private:
   class entry final {
   public:
-    entry(const std::function<void(void)>& function,
-          std::chrono::milliseconds when) : function_(function),
+    entry(uint64_t object_id_value,
+          const std::function<void(void)>& function,
+          std::chrono::milliseconds when) : object_id_value_(object_id_value),
+                                            function_(function),
                                             when_(when) {
+    }
+
+    uint64_t get_object_id_value(void) const {
+      return object_id_value_;
     }
 
     std::chrono::milliseconds get_when(void) const {
@@ -296,6 +316,7 @@ private:
     }
 
   private:
+    uint64_t object_id_value_;
     std::function<void(void)> function_;
     std::chrono::milliseconds when_;
   };
