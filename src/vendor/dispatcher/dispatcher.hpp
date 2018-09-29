@@ -267,24 +267,6 @@ public:
     cv_.notify_one();
   }
 
-  void enqueue_and_wait(const object_id& object_id,
-                        const std::function<void(void)>& function,
-                        std::chrono::milliseconds when = when_immediately()) {
-    enqueue(object_id, function, when);
-
-    // Wait
-
-    auto w = make_wait();
-
-    enqueue(object_id,
-            [&] {
-              w->notify();
-            },
-            when);
-
-    w->wait_notice();
-  }
-
   void invoke(void) {
     cv_.notify_one();
   }
