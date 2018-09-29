@@ -2,12 +2,13 @@
 
 // `krbn::local_datagram::server` can be used safely in a multi-threaded environment.
 
+#include "dispatcher.hpp"
 #include "local_datagram/client.hpp"
 #include <unistd.h>
 
 namespace krbn {
 namespace local_datagram {
-class server final {
+class server final : public pqrs::dispatcher::dispatcher_client {
 public:
   // Signals
 
@@ -20,22 +21,27 @@ public:
 
   server(const server&) = delete;
 
-  server(void) : io_service_(),
-                 work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
-                 socket_(io_service_),
-                 bound_(false) {
+  server(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                        io_service_(),
+                                                                        work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
+                                                                        socket_(io_service_),
+                                                                        bound_(false),
+                                                                        server_check_enabled_(false) {
     io_service_thread_ = std::thread([this] {
       (this->io_service_).run();
     });
   }
 
-  ~server(void) {
+  virtual ~server(void) {
     async_close();
 
     if (io_service_thread_.joinable()) {
       work_ = nullptr;
       io_service_thread_.join();
     }
+
+    detach_from_dispatcher([] {
+    });
   }
 
   void async_bind(const std::string& path,
@@ -54,7 +60,9 @@ public:
         socket_.open(boost::asio::local::datagram_protocol::socket::protocol_type(),
                      error_code);
         if (error_code) {
-          bind_failed(error_code);
+          enqueue_to_dispatcher([this, error_code] {
+            bind_failed(error_code);
+          });
           return;
         }
       }
@@ -67,7 +75,9 @@ public:
                      error_code);
 
         if (error_code) {
-          bind_failed(error_code);
+          enqueue_to_dispatcher([this, error_code] {
+            bind_failed(error_code);
+          });
           return;
         }
       }
@@ -77,10 +87,12 @@ public:
       bound_ = true;
       bound_path_ = path;
 
-      start_server_check_timer(path,
-                               server_check_interval);
+      start_server_check(path,
+                         server_check_interval);
 
-      bound();
+      enqueue_to_dispatcher([this] {
+        bound();
+      });
 
       // Receive
 
@@ -97,7 +109,7 @@ public:
 
 private:
   void close(void) {
-    stop_server_check_timer();
+    stop_server_check();
 
     // Close socket
 
@@ -112,7 +124,9 @@ private:
       bound_ = false;
       unlink(bound_path_.c_str());
 
-      closed();
+      enqueue_to_dispatcher([this] {
+        closed();
+      });
     }
   }
 
@@ -124,7 +138,9 @@ private:
                               std::copy(std::begin(buffer_),
                                         std::begin(buffer_) + bytes_transferred,
                                         std::begin(*v));
-                              received(v);
+                              enqueue_to_dispatcher([this, v] {
+                                received(v);
+                              });
                             }
 
                             // receive once if not closed
@@ -135,54 +151,60 @@ private:
                           });
   }
 
-  void start_server_check_timer(const std::string& path,
-                                boost::optional<std::chrono::milliseconds> server_check_interval) {
-    if (!server_check_interval) {
-      return;
-    }
+  void start_server_check(const std::string& path,
+                          boost::optional<std::chrono::milliseconds> server_check_interval) {
+    io_service_.post([this, path, server_check_interval] {
+      if (server_check_interval) {
+        server_check_enabled_ = true;
 
-    if (server_check_timer_) {
-      return;
-    }
-
-    server_check_timer_ = std::make_unique<thread_utility::timer>(
-        *server_check_interval,
-        thread_utility::timer::mode::repeat,
-        [this, path] {
-          io_service_.post([this, path] {
-            // Skip if client is connecting
-            if (server_check_client_) {
-              return;
-            }
-
-            server_check_client_ = std::make_unique<client>();
-
-            server_check_client_->connected.connect([this] {
-              io_service_.post([this] {
-                server_check_client_ = nullptr;
-              });
-            });
-
-            server_check_client_->connect_failed.connect([this](auto&& error_code) {
-              io_service_.post([this] {
-                close();
-              });
-            });
-
-            server_check_client_->async_connect(path, boost::none);
-          });
-        });
+        check_server(path,
+                     *server_check_interval);
+      }
+    });
   }
 
-  void stop_server_check_timer(void) {
-    if (!server_check_timer_) {
-      return;
-    }
+  void stop_server_check(void) {
+    io_service_.post([this] {
+      server_check_enabled_ = false;
 
-    server_check_timer_->cancel();
-    server_check_timer_ = nullptr;
+      server_check_client_ = nullptr;
+    });
+  }
 
-    server_check_client_ = nullptr;
+  void check_server(const std::string& path,
+                    std::chrono::milliseconds server_check_interval) {
+    io_service_.post([this, path, server_check_interval] {
+      if (!server_check_enabled_) {
+        return;
+      }
+
+      if (!server_check_client_) {
+        server_check_client_ = std::make_unique<client>(weak_dispatcher_);
+
+        server_check_client_->connected.connect([this] {
+          io_service_.post([this] {
+            server_check_client_ = nullptr;
+          });
+        });
+
+        server_check_client_->connect_failed.connect([this](auto&& error_code) {
+          io_service_.post([this] {
+            close();
+          });
+        });
+
+        server_check_client_->async_connect(path, boost::none);
+      }
+
+      // Enqueue next check
+
+      enqueue_to_dispatcher(
+          [this, path, server_check_interval] {
+            check_server(path,
+                         server_check_interval);
+          },
+          when_now() + server_check_interval);
+    });
   }
 
   boost::asio::io_service io_service_;
@@ -194,7 +216,7 @@ private:
 
   std::vector<uint8_t> buffer_;
 
-  std::unique_ptr<thread_utility::timer> server_check_timer_;
+  bool server_check_enabled_;
   std::unique_ptr<client> server_check_client_;
 };
 } // namespace local_datagram
