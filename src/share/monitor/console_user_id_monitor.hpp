@@ -23,65 +23,54 @@ public:
 
   console_user_id_monitor(const console_user_id_monitor&) = delete;
 
-  console_user_id_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  console_user_id_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                                         enabled_(false) {
   }
 
   virtual ~console_user_id_monitor(void) {
-    detach_from_dispatcher([this] {
-      stop();
+    detach_from_dispatcher([] {
     });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      if (timer_) {
-        return;
-      }
-
-      timer_ = std::make_unique<thread_utility::timer>(
-          [](auto&& count) {
-            if (count == 0) {
-              return std::chrono::milliseconds(0);
-            } else {
-              return std::chrono::milliseconds(1000);
-            }
-          },
-          thread_utility::timer::mode::repeat,
-          [this] {
-            enqueue_to_dispatcher([this] {
-              auto u = session::get_current_console_user_id();
-              if (uid_ && *uid_ == u) {
-                return;
-              }
-
-              console_user_id_changed(u);
-              uid_ = std::make_unique<boost::optional<uid_t>>(u);
-            });
-          });
+      enabled_ = true;
 
       logger::get_logger().info("console_user_id_monitor is started.");
+
+      check();
     });
   }
 
   void async_stop(void) {
     enqueue_to_dispatcher([this] {
-      stop();
+      enabled_ = false;
+      uid_ = nullptr;
+
+      logger::get_logger().info("console_user_id_monitor is stopped.");
     });
   }
 
 private:
-  void stop(void) {
-    if (!timer_) {
+  void check(void) {
+    if (!enabled_) {
       return;
     }
 
-    timer_->cancel();
-    timer_ = nullptr;
+    auto u = session::get_current_console_user_id();
+    if (!uid_ || *uid_ != u) {
+      uid_ = std::make_unique<boost::optional<uid_t>>(u);
+      console_user_id_changed(u);
+    }
 
-    logger::get_logger().info("console_user_id_monitor is stopped.");
+    enqueue_to_dispatcher(
+        [this] {
+          check();
+        },
+        when_now() + std::chrono::milliseconds(1000));
   }
 
-  std::unique_ptr<thread_utility::timer> timer_;
+  bool enabled_;
   std::unique_ptr<boost::optional<uid_t>> uid_;
 };
 } // namespace krbn
