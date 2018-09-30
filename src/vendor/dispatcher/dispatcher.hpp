@@ -69,8 +69,20 @@ public:
             });
           } else {
             // when > now
-            cv_.wait_for(lock, duration, [this] {
-              return exit_ || !queue_.empty();
+            cv_.wait_for(lock, duration, [this, &calculate_duration] {
+              if (exit_) {
+                return true;
+              }
+
+              if (queue_.empty()) {
+                return false;
+              }
+
+              if (calculate_duration() == std::chrono::milliseconds(0)) {
+                return true;
+              }
+
+              return false;
             });
           }
 
