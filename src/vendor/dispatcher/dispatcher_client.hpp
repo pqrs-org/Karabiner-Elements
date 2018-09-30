@@ -22,7 +22,10 @@ public:
 
   virtual ~dispatcher_client(void) {
     if (auto d = weak_dispatcher_.lock()) {
-      d->detach(object_id_);
+      if (d->attached(object_id_)) {
+        // You must use detach_from_dispatcher explicitly.
+        abort();
+      }
     }
   }
 

@@ -132,7 +132,7 @@ public:
     {
       std::lock_guard<std::mutex> lock(object_ids_mutex_);
 
-      if (!attached(object_id.get())) {
+      if (object_ids_.find(object_id.get()) == std::end(object_ids_)) {
         return false;
       }
 
@@ -152,7 +152,7 @@ public:
                    std::end(queue_));
     }
 
-    if (!is_dispatcher_thread()) {
+    if (!dispatcher_thread()) {
       // Wait until current running function is finised.
       std::lock_guard<std::mutex> lock(function_mutex_);
     }
@@ -178,7 +178,7 @@ public:
 
     // Execute function
 
-    if (is_dispatcher_thread()) {
+    if (dispatcher_thread()) {
       function();
     } else {
       auto w = make_wait();
@@ -197,7 +197,13 @@ public:
     }
   }
 
-  bool is_dispatcher_thread(void) const {
+  bool attached(const object_id& object_id) {
+    std::lock_guard<std::mutex> lock(object_ids_mutex_);
+
+    return object_ids_.find(object_id.get()) != std::end(object_ids_);
+  }
+
+  bool dispatcher_thread(void) const {
     return std::this_thread::get_id() == worker_thread_id_;
   }
 
@@ -233,7 +239,7 @@ public:
     // };
     // ----------------------------------------
 
-    if (is_dispatcher_thread()) {
+    if (dispatcher_thread()) {
       throw std::logic_error("Do not call pqrs::dispatcher::terminate in the dispatcher thread.");
     }
 
@@ -259,13 +265,17 @@ public:
       queue_.push_back(std::make_shared<entry>(
           id,
           [this, id, function] {
+            // Check `id` is attached.
+
             {
               std::lock_guard<std::mutex> lock(object_ids_mutex_);
 
-              if (!attached(id)) {
+              if (object_ids_.find(id) == std::end(object_ids_)) {
                 return;
               }
             }
+
+            // Execute `function`.
 
             function();
           },
@@ -320,11 +330,6 @@ private:
     std::function<void(void)> function_;
     std::chrono::milliseconds when_;
   };
-
-  bool attached(const uint64_t object_id_value) {
-    auto it = object_ids_.find(object_id_value);
-    return it != std::end(object_ids_);
-  }
 
   std::weak_ptr<time_source> weak_time_source_;
 
