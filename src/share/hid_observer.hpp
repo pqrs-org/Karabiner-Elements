@@ -23,6 +23,7 @@ public:
   hid_observer(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                std::weak_ptr<human_interface_device> weak_hid) : dispatcher_client(weak_dispatcher),
                                                                  weak_hid_(weak_hid),
+                                                                 enabled_(false),
                                                                  observed_(false) {
     if (auto hid = weak_hid.lock()) {
       // opened
@@ -114,53 +115,46 @@ public:
 
   void async_observe(void) {
     enqueue_to_dispatcher([this] {
-      if (timer_) {
-        return;
-      }
+      enabled_ = true;
 
       logger_unique_filter_.reset();
 
-      timer_ = std::make_unique<thread_utility::timer>(
-          [](auto&& count) {
-            if (count == 0) {
-              return std::chrono::milliseconds(0);
-            } else {
-              return std::chrono::milliseconds(3000);
-            }
-          },
-          thread_utility::timer::mode::repeat,
-          [this] {
-            enqueue_to_dispatcher([this] {
-              if (!observed_) {
-                if (auto hid = weak_hid_.lock()) {
-                  if (!hid->get_removed()) {
-                    hid->async_open();
-                    return;
-                  }
-                }
-              }
-
-              timer_->cancel();
-            });
-          });
+      observe();
     });
   }
 
   void async_unobserve(void) {
     enqueue_to_dispatcher([this] {
+      enabled_ = false;
+
       unobserve();
     });
   }
 
 private:
-  void unobserve(void) {
-    if (!timer_) {
+  void observe(void) {
+    if (!enabled_) {
       return;
     }
 
-    timer_->cancel();
-    timer_ = nullptr;
+    if (observed_) {
+      return;
+    }
 
+    if (auto hid = weak_hid_.lock()) {
+      if (!hid->get_removed()) {
+        hid->async_open();
+      }
+    }
+
+    enqueue_to_dispatcher(
+        [this] {
+          observe();
+        },
+        when_now() + std::chrono::milliseconds(3000));
+  }
+
+  void unobserve(void) {
     if (observed_) {
       if (auto hid = weak_hid_.lock()) {
         hid->async_unschedule();
@@ -175,8 +169,8 @@ private:
   std::weak_ptr<human_interface_device> weak_hid_;
 
   boost_utility::signals2_connections human_interface_device_connections_;
+  bool enabled_;
   bool observed_;
   logger::unique_filter logger_unique_filter_;
-  std::unique_ptr<thread_utility::timer> timer_;
 };
 } // namespace krbn
