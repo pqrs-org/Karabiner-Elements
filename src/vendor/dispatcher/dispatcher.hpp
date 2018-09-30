@@ -252,7 +252,8 @@ public:
     // ----------------------------------------
 
     if (dispatcher_thread()) {
-      throw std::logic_error("Do not call pqrs::dispatcher::terminate in the dispatcher thread.");
+      // Do not call pqrs::dispatcher::terminate in the dispatcher thread.
+      abort();
     }
 
     if (worker_thread_.joinable()) {
