@@ -25,6 +25,10 @@ int main(int argc, const char* argv[]) {
     }
   });
 
+  for (int i = 0; i < 10; ++i) {
+    console_user_id_monitor->async_start();
+    console_user_id_monitor->async_stop();
+  }
   console_user_id_monitor->async_start();
 
   CFRunLoopRun();
