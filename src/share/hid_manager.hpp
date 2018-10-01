@@ -35,15 +35,18 @@ public:
     run_loop_thread_ = std::make_shared<cf_utility::run_loop_thread>();
   }
 
-  ~hid_manager(void) {
+  virtual ~hid_manager(void) {
     async_stop();
 
     run_loop_thread_->terminate();
     run_loop_thread_ = nullptr;
+
+    detach_from_dispatcher([] {
+    });
   }
 
   void async_start(void) {
-    run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this] {
       if (manager_) {
         logger::get_logger().warn("hid_manager is already started.");
         return;
@@ -69,9 +72,7 @@ public:
 
       refresh_timer_.start(
           [this] {
-            run_loop_thread_->enqueue(^{
-              refresh_if_needed();
-            });
+            refresh_if_needed();
           },
           std::chrono::milliseconds(5000));
 
@@ -80,7 +81,7 @@ public:
   }
 
   void async_stop(void) {
-    run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this] {
       if (!manager_) {
         return;
       }
@@ -139,9 +140,9 @@ private:
   void device_matching_callback(IOHIDDeviceRef _Nonnull device) {
     // `static_device_matching_callback` is called by multiple threads.
     // (It is not called from `run_loop_thread_`.)
-    // Thus, we have to synchronize by using `run_loop_thread_`.
+    // Thus, we have to synchronize by using `dispatcher`.
 
-    run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this, device] {
       if (!device) {
         return;
       }
@@ -200,9 +201,9 @@ private:
   void device_removal_callback(IOHIDDeviceRef _Nonnull device) {
     // `static_device_removal_callback` is called by multiple threads.
     // (It is not called from `run_loop_thread_`.)
-    // Thus, we have to synchronize by using `run_loop_thread_`.
+    // Thus, we have to synchronize by using `dispatcher`.
 
-    run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this, device] {
       if (!device) {
         return;
       }
@@ -299,7 +300,7 @@ private:
   pqrs::dispatcher::extra::timer refresh_timer_;
 
   std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
-  // We do not need to use registry_entry_ids_mutex_ since it is modified only in run_loop_thread_.
+
   std::vector<std::shared_ptr<human_interface_device>> hids_;
   mutable std::mutex hids_mutex_;
 };
