@@ -31,7 +31,8 @@ public:
                                                                         io_service_(),
                                                                         work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
                                                                         socket_(io_service_),
-                                                                        connected_(false) {
+                                                                        connected_(false),
+                                                                        server_check_timer_(*this) {
     io_service_thread_ = std::thread([this] {
       (this->io_service_).run();
     });
@@ -160,35 +161,25 @@ private:
   // This method is executed in `io_service_thread_`.
   void start_server_check(boost::optional<std::chrono::milliseconds> server_check_interval) {
     if (server_check_interval) {
-      server_check_enabled_ = true;
-
-      check_server(*server_check_interval);
+      server_check_timer_.start(
+          [this] {
+            io_service_.post([this] {
+              check_server();
+            });
+          },
+          *server_check_interval);
     }
   }
 
   // This method is executed in `io_service_thread_`.
   void stop_server_check(void) {
-    server_check_enabled_ = false;
+    server_check_timer_.stop();
   }
 
   // This method is executed in `io_service_thread_`.
-  void check_server(std::chrono::milliseconds server_check_interval) {
-    if (!server_check_enabled_) {
-      return;
-    }
-
+  void check_server(void) {
     std::vector<uint8_t> data;
     async_send(data);
-
-    // Enqueue next check
-
-    enqueue_to_dispatcher(
-        [this, server_check_interval] {
-          io_service_.post([this, server_check_interval] {
-            check_server(server_check_interval);
-          });
-        },
-        when_now() + server_check_interval);
   }
 
   boost::asio::io_service io_service_;
@@ -197,7 +188,7 @@ private:
   std::thread io_service_thread_;
   bool connected_;
 
-  bool server_check_enabled_;
+  pqrs::dispatcher::extra::timer server_check_timer_;
 };
 } // namespace local_datagram
 } // namespace krbn
