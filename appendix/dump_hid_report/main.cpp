@@ -1,18 +1,19 @@
 #include "hid_manager.hpp"
 
 namespace {
-class dump_hid_report final {
+class dump_hid_report final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   dump_hid_report(const dump_hid_report&) = delete;
 
-  dump_hid_report(void) {
+  dump_hid_report(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
     });
 
-    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
+    hid_manager_ = std::make_unique<krbn::hid_manager>(weak_dispatcher,
+                                                       targets);
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
       if (auto hid = weak_hid.lock()) {
@@ -73,7 +74,10 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto d = std::make_unique<dump_hid_report>();
+  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
+
+  auto d = std::make_unique<dump_hid_report>(dispatcher);
 
   CFRunLoopRun();
 

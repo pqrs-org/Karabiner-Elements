@@ -5,6 +5,7 @@
 #include "boost_utility.hpp"
 #include "cf_utility.hpp"
 #include "device_detail.hpp"
+#include "dispatcher.hpp"
 #include "human_interface_device.hpp"
 #include "logger.hpp"
 #include "thread_utility.hpp"
@@ -13,7 +14,7 @@
 #include <unordered_map>
 
 namespace krbn {
-class hid_manager final {
+class hid_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 
@@ -26,8 +27,11 @@ public:
 
   hid_manager(const hid_manager&) = delete;
 
-  hid_manager(const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) : usage_pairs_(usage_pairs),
-                                                                                      manager_(nullptr) {
+  hid_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
+              const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) : dispatcher_client(weak_dispatcher),
+                                                                                      usage_pairs_(usage_pairs),
+                                                                                      manager_(nullptr),
+                                                                                      refresh_timer_(*this) {
     run_loop_thread_ = std::make_shared<cf_utility::run_loop_thread>();
   }
 
@@ -63,14 +67,13 @@ public:
                                       run_loop_thread_->get_run_loop(),
                                       kCFRunLoopDefaultMode);
 
-      refresh_timer_ = std::make_unique<thread_utility::timer>(
-          std::chrono::milliseconds(5000),
-          thread_utility::timer::mode::repeat,
+      refresh_timer_.start(
           [this] {
             run_loop_thread_->enqueue(^{
               refresh_if_needed();
             });
-          });
+          },
+          std::chrono::milliseconds(5000));
 
       logger::get_logger().info("hid_manager is started.");
     });
@@ -84,8 +87,7 @@ public:
 
       // refresh_timer_
 
-      refresh_timer_->cancel();
-      refresh_timer_ = nullptr;
+      refresh_timer_.stop();
 
       // manager_
 
@@ -294,7 +296,7 @@ private:
   std::vector<std::pair<hid_usage_page, hid_usage>> usage_pairs_;
 
   IOHIDManagerRef _Nullable manager_;
-  std::unique_ptr<thread_utility::timer> refresh_timer_;
+  pqrs::dispatcher::extra::timer refresh_timer_;
 
   std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
   // We do not need to use registry_entry_ids_mutex_ since it is modified only in run_loop_thread_.

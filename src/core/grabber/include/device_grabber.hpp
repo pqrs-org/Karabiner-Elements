@@ -127,7 +127,8 @@ public:
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
     });
 
-    hid_manager_ = std::make_unique<hid_manager>(targets);
+    hid_manager_ = std::make_unique<hid_manager>(weak_dispatcher_,
+                                                 targets);
 
     hid_manager_->device_detecting.connect([](auto&& device) {
       if (iokit_utility::is_karabiner_virtual_hid_device(device)) {

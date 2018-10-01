@@ -29,7 +29,8 @@ public:
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
     });
 
-    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
+    hid_manager_ = std::make_unique<krbn::hid_manager>(weak_dispatcher,
+                                                       targets);
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
       enqueue_to_dispatcher([this, weak_hid] {
