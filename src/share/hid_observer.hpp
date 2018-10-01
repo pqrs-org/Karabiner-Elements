@@ -23,7 +23,7 @@ public:
   hid_observer(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                std::weak_ptr<human_interface_device> weak_hid) : dispatcher_client(weak_dispatcher),
                                                                  weak_hid_(weak_hid),
-                                                                 enabled_(false),
+                                                                 timer_(*this),
                                                                  observed_(false) {
     if (auto hid = weak_hid.lock()) {
       // opened
@@ -115,29 +115,28 @@ public:
 
   void async_observe(void) {
     enqueue_to_dispatcher([this] {
-      enabled_ = true;
-
       logger_unique_filter_.reset();
-
-      observe();
     });
+
+    timer_.start(
+        [this] {
+          observe();
+        },
+        std::chrono::milliseconds(3000));
   }
 
   void async_unobserve(void) {
-    enqueue_to_dispatcher([this] {
-      enabled_ = false;
+    timer_.stop();
 
+    enqueue_to_dispatcher([this] {
       unobserve();
     });
   }
 
 private:
   void observe(void) {
-    if (!enabled_) {
-      return;
-    }
-
     if (observed_) {
+      timer_.stop();
       return;
     }
 
@@ -146,12 +145,6 @@ private:
         hid->async_open();
       }
     }
-
-    enqueue_to_dispatcher(
-        [this] {
-          observe();
-        },
-        when_now() + std::chrono::milliseconds(3000));
   }
 
   void unobserve(void) {
@@ -169,7 +162,7 @@ private:
   std::weak_ptr<human_interface_device> weak_hid_;
 
   boost_utility::signals2_connections human_interface_device_connections_;
-  bool enabled_;
+  pqrs::dispatcher::extra::timer timer_;
   bool observed_;
   logger::unique_filter logger_unique_filter_;
 };
