@@ -14,7 +14,7 @@
 #include <memory>
 
 namespace krbn {
-class grabbable_state_queue final : public pqrs::dispatcher::dispatcher_client {
+class grabbable_state_queue final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

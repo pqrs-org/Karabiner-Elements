@@ -15,7 +15,7 @@ END_BOOST_INCLUDE
 
 namespace krbn {
 namespace local_datagram {
-class client final : public pqrs::dispatcher::dispatcher_client {
+class client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

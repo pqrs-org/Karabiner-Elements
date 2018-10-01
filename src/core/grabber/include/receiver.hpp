@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace krbn {
-class receiver final : public pqrs::dispatcher::dispatcher_client {
+class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 

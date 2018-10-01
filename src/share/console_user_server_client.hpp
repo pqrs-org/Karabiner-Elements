@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace krbn {
-class console_user_server_client final : public pqrs::dispatcher::dispatcher_client {
+class console_user_server_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

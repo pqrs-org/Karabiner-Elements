@@ -8,7 +8,7 @@
 
 namespace krbn {
 namespace local_datagram {
-class client_manager final : public pqrs::dispatcher::dispatcher_client {
+class client_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

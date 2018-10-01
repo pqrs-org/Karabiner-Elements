@@ -5,7 +5,7 @@
 #include <boost/optional/optional_io.hpp>
 
 namespace {
-class dump_hid_value final : public pqrs::dispatcher::dispatcher_client {
+class dump_hid_value final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   dump_hid_value(const dump_hid_value&) = delete;
 

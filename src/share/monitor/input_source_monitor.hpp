@@ -14,7 +14,7 @@
 #include <boost/signals2.hpp>
 
 namespace krbn {
-class input_source_monitor final : public pqrs::dispatcher::dispatcher_client {
+class input_source_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

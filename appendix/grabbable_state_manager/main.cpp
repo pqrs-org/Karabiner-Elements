@@ -6,7 +6,7 @@
 #include <boost/optional/optional_io.hpp>
 
 namespace {
-class grabbable_state_manager_demo final : public pqrs::dispatcher::dispatcher_client {
+class grabbable_state_manager_demo final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   grabbable_state_manager_demo(const grabbable_state_manager_demo&) = delete;
 

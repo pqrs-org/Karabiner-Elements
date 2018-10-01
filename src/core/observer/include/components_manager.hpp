@@ -10,7 +10,7 @@
 #include "thread_utility.hpp"
 
 namespace krbn {
-class components_manager final : public pqrs::dispatcher::dispatcher_client {
+class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
 

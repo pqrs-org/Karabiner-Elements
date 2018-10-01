@@ -14,7 +14,7 @@
 #include <vector>
 
 namespace krbn {
-class grabber_client final : public pqrs::dispatcher::dispatcher_client {
+class grabber_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

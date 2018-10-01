@@ -30,7 +30,7 @@
 #include <time.h>
 
 namespace krbn {
-class device_grabber final : public pqrs::dispatcher::dispatcher_client {
+class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_grabber(const device_grabber&) = delete;
 

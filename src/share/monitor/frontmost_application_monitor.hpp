@@ -11,7 +11,7 @@
 #include <boost/signals2.hpp>
 
 namespace krbn {
-class frontmost_application_monitor final : public pqrs::dispatcher::dispatcher_client {
+class frontmost_application_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

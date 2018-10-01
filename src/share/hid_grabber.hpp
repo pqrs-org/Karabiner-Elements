@@ -9,7 +9,7 @@
 #include "thread_utility.hpp"
 
 namespace krbn {
-class hid_grabber final : public pqrs::dispatcher::dispatcher_client {
+class hid_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   struct signal2_combiner_call_while_grabbable {
     typedef grabbable_state::state result_type;

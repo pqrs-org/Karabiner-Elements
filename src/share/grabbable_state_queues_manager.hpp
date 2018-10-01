@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 namespace krbn {
-class grabbable_state_queues_manager final : public pqrs::dispatcher::dispatcher_client {
+class grabbable_state_queues_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

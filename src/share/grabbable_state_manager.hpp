@@ -12,7 +12,7 @@
 #include <boost/signals2.hpp>
 
 namespace krbn {
-class grabbable_state_manager final : public pqrs::dispatcher::dispatcher_client {
+class grabbable_state_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
 #include "grabbable_state_manager/entry.hpp"
 

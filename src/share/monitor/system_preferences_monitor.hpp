@@ -10,7 +10,7 @@
 #include "thread_utility.hpp"
 
 namespace krbn {
-class system_preferences_monitor final : public pqrs::dispatcher::dispatcher_client {
+class system_preferences_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

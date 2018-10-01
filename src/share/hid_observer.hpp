@@ -9,7 +9,7 @@
 #include "thread_utility.hpp"
 
 namespace krbn {
-class hid_observer final : public pqrs::dispatcher::dispatcher_client {
+class hid_observer final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 

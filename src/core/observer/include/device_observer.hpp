@@ -14,7 +14,7 @@
 #include "types.hpp"
 
 namespace krbn {
-class device_observer final : public pqrs::dispatcher::dispatcher_client {
+class device_observer final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_observer(const device_observer&) = delete;
 
