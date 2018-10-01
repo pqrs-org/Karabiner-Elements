@@ -40,7 +40,7 @@ public:
   hid_grabber(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
               std::weak_ptr<human_interface_device> weak_hid) : dispatcher_client(weak_dispatcher),
                                                                 weak_hid_(weak_hid),
-                                                                enabled_(false),
+                                                                timer_(*this),
                                                                 grabbed_(false) {
     if (auto hid = weak_hid.lock()) {
       // opened
@@ -136,29 +136,28 @@ public:
 
   void async_grab(void) {
     enqueue_to_dispatcher([this] {
-      enabled_ = true;
-
       logger_unique_filter_.reset();
-
-      grab();
     });
+
+    timer_.start(
+        [this] {
+          grab();
+        },
+        std::chrono::milliseconds(1000));
   }
 
   void async_ungrab(void) {
-    enqueue_to_dispatcher([this] {
-      enabled_ = false;
+    timer_.stop();
 
+    enqueue_to_dispatcher([this] {
       ungrab();
     });
   }
 
 private:
   void grab(void) {
-    if (!enabled_) {
-      return;
-    }
-
     if (grabbed_) {
+      timer_.stop();
       return;
     }
 
@@ -182,12 +181,6 @@ private:
         }
       }
     }
-
-    enqueue_to_dispatcher(
-        [this] {
-          grab();
-        },
-        when_now() + std::chrono::milliseconds(1000));
   }
 
   void ungrab(void) {
@@ -205,7 +198,7 @@ private:
   std::weak_ptr<human_interface_device> weak_hid_;
 
   boost_utility::signals2_connections human_interface_device_connections_;
-  bool enabled_;
+  pqrs::dispatcher::extra::timer timer_;
   bool grabbed_;
   logger::unique_filter logger_unique_filter_;
 };
