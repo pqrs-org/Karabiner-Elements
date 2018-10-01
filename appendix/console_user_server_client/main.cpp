@@ -15,10 +15,13 @@ int main(int argc, const char* argv[]) {
   auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
   auto client = std::make_shared<krbn::console_user_server_client>(dispatcher);
+  std::weak_ptr<krbn::console_user_server_client> weak_client = client;
 
-  client->connected.connect([client] {
+  client->connected.connect([weak_client] {
     std::string shell_command = "open /Applications/Safari.app";
-    client->async_shell_command_execution(shell_command);
+    if (auto c = weak_client.lock()) {
+      c->async_shell_command_execution(shell_command);
+    }
   });
 
   client->connect_failed.connect([](auto&& error_code) {
