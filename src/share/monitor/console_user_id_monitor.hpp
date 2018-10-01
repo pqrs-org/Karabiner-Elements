@@ -13,7 +13,7 @@
 #include <memory>
 
 namespace krbn {
-class console_user_id_monitor final : public pqrs::dispatcher::dispatcher_client {
+class console_user_id_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 
@@ -24,7 +24,7 @@ public:
   console_user_id_monitor(const console_user_id_monitor&) = delete;
 
   console_user_id_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                                         enabled_(false) {
+                                                                                         timer_(*this) {
   }
 
   virtual ~console_user_id_monitor(void) {
@@ -33,44 +33,31 @@ public:
   }
 
   void async_start(void) {
-    enqueue_to_dispatcher([this] {
-      enabled_ = true;
+    timer_.start(
+        [this] {
+          check();
+        },
+        std::chrono::milliseconds(1000));
 
-      logger::get_logger().info("console_user_id_monitor is started.");
-
-      check();
-    });
+    logger::get_logger().info("console_user_id_monitor is started.");
   }
 
   void async_stop(void) {
-    enqueue_to_dispatcher([this] {
-      enabled_ = false;
-      uid_ = nullptr;
+    timer_.stop();
 
-      logger::get_logger().info("console_user_id_monitor is stopped.");
-    });
+    logger::get_logger().info("console_user_id_monitor is stopped.");
   }
 
 private:
   void check(void) {
-    if (!enabled_) {
-      return;
-    }
-
     auto u = session::get_current_console_user_id();
     if (!uid_ || *uid_ != u) {
       uid_ = std::make_unique<boost::optional<uid_t>>(u);
       console_user_id_changed(u);
     }
-
-    enqueue_to_dispatcher(
-        [this] {
-          check();
-        },
-        when_now() + std::chrono::milliseconds(1000));
   }
 
-  bool enabled_;
+  pqrs::dispatcher::extra::timer timer_;
   std::unique_ptr<boost::optional<uid_t>> uid_;
 };
 } // namespace krbn
