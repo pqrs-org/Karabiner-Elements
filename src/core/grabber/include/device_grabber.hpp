@@ -39,7 +39,8 @@ public:
                  std::weak_ptr<console_user_server_client> weak_console_user_server_client) : dispatcher_client(weak_dispatcher),
                                                                                               weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager),
                                                                                               manipulator_object_id_(manipulator::make_new_manipulator_object_id()),
-                                                                                              profile_(nlohmann::json()) {
+                                                                                              profile_(nlohmann::json()),
+                                                                                              led_monitor_timer_(*this) {
     manipulator_dispatcher_ = std::make_shared<manipulator::manipulator_dispatcher>();
     manipulator_timer_ = std::make_shared<manipulator::manipulator_timer>();
 
@@ -111,14 +112,11 @@ public:
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
     // The behavior causes LED state mismatch because device_grabber does not change the caps lock state of physical keyboards.
     // Thus, we monitor the LED state and update it if needed.
-    led_monitor_timer_ = std::make_unique<thread_utility::timer>(
-        std::chrono::milliseconds(1000),
-        thread_utility::timer::mode::repeat,
-        [&] {
-          enqueue_to_dispatcher([this] {
-            update_caps_lock_led();
-          });
-        });
+    led_monitor_timer_.start(
+        [this] {
+          update_caps_lock_led();
+        },
+        std::chrono::milliseconds(1000));
 
     // hid_manager_
 
@@ -255,8 +253,6 @@ public:
       hid_grabbers_.clear();
 
       input_event_arrived_connection_.disconnect();
-
-      led_monitor_timer_ = nullptr;
 
       grabbable_state_changed_connection_.disconnect();
 
@@ -1101,7 +1097,7 @@ private:
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
 
-  std::unique_ptr<thread_utility::timer> led_monitor_timer_;
+  pqrs::dispatcher::extra::timer led_monitor_timer_;
 
   mutable logger::unique_filter logger_unique_filter_;
 };
