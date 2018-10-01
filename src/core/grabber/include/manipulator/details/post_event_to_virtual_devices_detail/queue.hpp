@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dispatcher.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
 
@@ -7,7 +8,7 @@ namespace krbn {
 namespace manipulator {
 namespace details {
 namespace post_event_to_virtual_devices_detail {
-class queue final {
+class queue final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   class event final {
   public:
@@ -224,21 +225,14 @@ public:
     absolute_time time_stamp_;
   };
 
-  queue(void) : last_event_type_(event_type::single),
-                last_event_time_stamp_(0) {
-    dispatcher_ = std::make_unique<thread_utility::dispatcher>();
+  queue(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                       last_event_type_(event_type::single),
+                                                                       last_event_time_stamp_(0) {
   }
 
-  ~queue(void) {
-    dispatcher_->enqueue([this] {
-      if (timer_) {
-        timer_->wait();
-      }
-      timer_ = nullptr;
+  virtual ~queue(void) {
+    detach_from_dispatcher([] {
     });
-
-    dispatcher_->terminate();
-    dispatcher_ = nullptr;
   }
 
   const std::vector<event>& get_events(void) const {
@@ -399,84 +393,77 @@ public:
 
   void async_post_events(std::weak_ptr<virtual_hid_device_client> weak_virtual_hid_device_client,
                          std::weak_ptr<console_user_server_client> weak_console_user_server_client) {
-    dispatcher_->enqueue([this, weak_virtual_hid_device_client, weak_console_user_server_client] {
-      if (timer_) {
-        return;
-      }
+    enqueue_to_dispatcher(
+        [this, weak_virtual_hid_device_client, weak_console_user_server_client] {
+          auto now = time_utility::mach_absolute_time();
 
-      auto now = time_utility::mach_absolute_time();
+          while (!events_.empty()) {
+            auto& e = events_.front();
+            if (e.get_time_stamp() > now) {
+              // If e.get_time_stamp() is too large, we reduce the delay to 3 seconds.
 
-      while (!events_.empty()) {
-        auto& e = events_.front();
-        if (e.get_time_stamp() > now) {
-          // If e.get_time_stamp() is too large, we reduce the delay to 3 seconds.
+              auto when = std::min(time_utility::to_milliseconds(e.get_time_stamp()),
+                                   time_utility::to_milliseconds(now) + std::chrono::milliseconds(3000));
 
-          auto ms = std::min(time_utility::to_milliseconds(e.get_time_stamp() - now),
-                             std::chrono::milliseconds(3000));
+              enqueue_to_dispatcher(
+                  [this, weak_virtual_hid_device_client, weak_console_user_server_client] {
+                    async_post_events(weak_virtual_hid_device_client,
+                                      weak_console_user_server_client);
+                  },
+                  when);
 
-          timer_ = std::make_unique<thread_utility::timer>(
-              ms,
-              thread_utility::timer::mode::once,
-              [this, weak_virtual_hid_device_client, weak_console_user_server_client] {
-                dispatcher_->enqueue([this, weak_virtual_hid_device_client, weak_console_user_server_client] {
-                  timer_ = nullptr;
-                  async_post_events(weak_virtual_hid_device_client,
-                                    weak_console_user_server_client);
-                });
-              });
-
-          return;
-        }
-
-        if (auto input = e.get_keyboard_input()) {
-          if (auto client = weak_virtual_hid_device_client.lock()) {
-            client->post_keyboard_input_report(*input);
-          }
-        }
-        if (auto input = e.get_consumer_input()) {
-          if (auto client = weak_virtual_hid_device_client.lock()) {
-            client->post_keyboard_input_report(*input);
-          }
-        }
-        if (auto input = e.get_apple_vendor_top_case_input()) {
-          if (auto client = weak_virtual_hid_device_client.lock()) {
-            client->post_keyboard_input_report(*input);
-          }
-        }
-        if (auto input = e.get_apple_vendor_keyboard_input()) {
-          if (auto client = weak_virtual_hid_device_client.lock()) {
-            client->post_keyboard_input_report(*input);
-          }
-        }
-        if (auto pointing_input = e.get_pointing_input()) {
-          if (auto client = weak_virtual_hid_device_client.lock()) {
-            client->post_pointing_input_report(*pointing_input);
-          }
-        }
-        if (auto shell_command = e.get_shell_command()) {
-          try {
-            if (auto client = weak_console_user_server_client.lock()) {
-              client->async_shell_command_execution(*shell_command);
+              return;
             }
-          } catch (std::exception& e) {
-            logger::get_logger().error("error in shell_command: {0}", e.what());
-          }
-        }
-        if (auto input_source_selectors = e.get_input_source_selectors()) {
-          try {
-            if (auto client = weak_console_user_server_client.lock()) {
-              for (const auto& s : *input_source_selectors) {
-                client->async_select_input_source(s, now);
+
+            if (auto input = e.get_keyboard_input()) {
+              if (auto client = weak_virtual_hid_device_client.lock()) {
+                client->post_keyboard_input_report(*input);
               }
             }
-          } catch (std::exception& e) {
-            logger::get_logger().error("error in select_input_source: {0}", e.what());
-          }
-        }
+            if (auto input = e.get_consumer_input()) {
+              if (auto client = weak_virtual_hid_device_client.lock()) {
+                client->post_keyboard_input_report(*input);
+              }
+            }
+            if (auto input = e.get_apple_vendor_top_case_input()) {
+              if (auto client = weak_virtual_hid_device_client.lock()) {
+                client->post_keyboard_input_report(*input);
+              }
+            }
+            if (auto input = e.get_apple_vendor_keyboard_input()) {
+              if (auto client = weak_virtual_hid_device_client.lock()) {
+                client->post_keyboard_input_report(*input);
+              }
+            }
+            if (auto pointing_input = e.get_pointing_input()) {
+              if (auto client = weak_virtual_hid_device_client.lock()) {
+                client->post_pointing_input_report(*pointing_input);
+              }
+            }
+            if (auto shell_command = e.get_shell_command()) {
+              try {
+                if (auto client = weak_console_user_server_client.lock()) {
+                  client->async_shell_command_execution(*shell_command);
+                }
+              } catch (std::exception& e) {
+                logger::get_logger().error("error in shell_command: {0}", e.what());
+              }
+            }
+            if (auto input_source_selectors = e.get_input_source_selectors()) {
+              try {
+                if (auto client = weak_console_user_server_client.lock()) {
+                  for (const auto& s : *input_source_selectors) {
+                    client->async_select_input_source(s, now);
+                  }
+                }
+              } catch (std::exception& e) {
+                logger::get_logger().error("error in select_input_source: {0}", e.what());
+              }
+            }
 
-        events_.erase(std::begin(events_));
-      }
-    });
+            events_.erase(std::begin(events_));
+          }
+        });
   }
 
   void clear(void) {
@@ -524,10 +511,7 @@ private:
     }
   }
 
-  std::unique_ptr<thread_utility::dispatcher> dispatcher_;
-
   std::vector<event> events_;
-  std::unique_ptr<thread_utility::timer> timer_;
 
   keyboard_repeat_detector keyboard_repeat_detector_;
 

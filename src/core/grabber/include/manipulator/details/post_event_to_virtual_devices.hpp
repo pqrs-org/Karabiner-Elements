@@ -24,16 +24,18 @@
 namespace krbn {
 namespace manipulator {
 namespace details {
-class post_event_to_virtual_devices final : public base {
+class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  post_event_to_virtual_devices(const system_preferences& system_preferences,
+  post_event_to_virtual_devices(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
+                                const system_preferences& system_preferences,
                                 std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher,
                                 std::weak_ptr<manipulator_timer> weak_manipulator_timer,
                                 std::weak_ptr<console_user_server_client> weak_console_user_server_client) : base(),
+                                                                                                             dispatcher_client(weak_dispatcher),
                                                                                                              weak_manipulator_dispatcher_(weak_manipulator_dispatcher),
                                                                                                              weak_console_user_server_client_(weak_console_user_server_client),
                                                                                                              manipulator_object_id_(make_new_manipulator_object_id()),
-                                                                                                             queue_() {
+                                                                                                             queue_(weak_dispatcher) {
     if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
       manipulator_dispatcher->async_attach(manipulator_object_id_);
     }
@@ -55,6 +57,9 @@ public:
 
       manipulator_dispatcher->detach(manipulator_object_id_);
     }
+
+    detach_from_dispatcher([] {
+    });
   }
 
   virtual bool already_manipulated(const event_queue::entry& front_input_event) {

@@ -71,7 +71,8 @@ public:
       }
 
       if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
-        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(system_preferences,
+        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(dispatcher,
+                                                                                                                                system_preferences,
                                                                                                                                 manipulator_dispatcher,
                                                                                                                                 manipulator_timer,
                                                                                                                                 console_user_server_client);

@@ -81,7 +81,8 @@ public:
       });
     }
 
-    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(system_preferences_,
+    post_event_to_virtual_devices_manipulator_ = std::make_shared<manipulator::details::post_event_to_virtual_devices>(weak_dispatcher_,
+                                                                                                                       system_preferences_,
                                                                                                                        manipulator_dispatcher_,
                                                                                                                        manipulator_timer_,
                                                                                                                        weak_console_user_server_client);
