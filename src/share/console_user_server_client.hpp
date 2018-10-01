@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "dispatcher.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
 #include "monitor/console_user_id_monitor.hpp"
