@@ -26,7 +26,7 @@ public:
                                                                         work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
                                                                         socket_(io_service_),
                                                                         bound_(false),
-                                                                        server_check_enabled_(false) {
+                                                                        server_check_timer_(*this) {
     io_service_thread_ = std::thread([this] {
       (this->io_service_).run();
     });
@@ -157,27 +157,24 @@ private:
   void start_server_check(const std::string& path,
                           boost::optional<std::chrono::milliseconds> server_check_interval) {
     if (server_check_interval) {
-      server_check_enabled_ = true;
-
-      check_server(path,
-                   *server_check_interval);
+      server_check_timer_.start(
+          [this, path] {
+            io_service_.post([this, path] {
+              check_server(path);
+            });
+          },
+          *server_check_interval);
     }
   }
 
   // This method is executed in `io_service_thread_`.
   void stop_server_check(void) {
-    server_check_enabled_ = false;
-
+    server_check_timer_.stop();
     server_check_client_ = nullptr;
   }
 
   // This method is executed in `io_service_thread_`.
-  void check_server(const std::string& path,
-                    std::chrono::milliseconds server_check_interval) {
-    if (!server_check_enabled_) {
-      return;
-    }
-
+  void check_server(const std::string& path) {
     if (!server_check_client_) {
       server_check_client_ = std::make_unique<client>(weak_dispatcher_);
 
@@ -195,17 +192,6 @@ private:
 
       server_check_client_->async_connect(path, boost::none);
     }
-
-    // Enqueue next check
-
-    enqueue_to_dispatcher(
-        [this, path, server_check_interval] {
-          io_service_.post([this, path, server_check_interval] {
-            check_server(path,
-                         server_check_interval);
-          });
-        },
-        when_now() + server_check_interval);
   }
 
   boost::asio::io_service io_service_;
@@ -217,7 +203,7 @@ private:
 
   std::vector<uint8_t> buffer_;
 
-  bool server_check_enabled_;
+  pqrs::dispatcher::extra::timer server_check_timer_;
   std::unique_ptr<client> server_check_client_;
 };
 } // namespace local_datagram
