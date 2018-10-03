@@ -98,15 +98,13 @@ public:
                                                             posted_event_queue_);
 
     input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this] {
-      std::cout << "enqueue_to_dispatcher" << std::endl;
       enqueue_to_dispatcher([this] {
         if (auto d = weak_dispatcher_.lock()) {
-          if (auto s = d->get_weak_time_source()) {
-            manipulate(s->now());
+          if (auto s = d->get_weak_time_source().lock()) {
+            manipulate(time_utility::to_absolute_time(s->now()));
           }
         }
       });
-      std::cout << "enqueue_to_dispatcher done" << std::endl;
     });
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
