@@ -38,7 +38,7 @@ public:
     hid_manager_->async_start();
   }
 
-  ~control_led(void) {
+  virtual ~control_led(void) {
     hid_manager_ = nullptr;
   }
 

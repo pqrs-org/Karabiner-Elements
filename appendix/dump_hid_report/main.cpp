@@ -35,7 +35,7 @@ public:
     hid_manager_->async_start();
   }
 
-  ~dump_hid_report(void) {
+  virtual ~dump_hid_report(void) {
     hid_manager_ = nullptr;
   }
 

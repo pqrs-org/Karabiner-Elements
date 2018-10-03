@@ -42,7 +42,7 @@ public:
     hid_manager_->async_start();
   }
 
-  ~hid_set_report(void) {
+  virtual ~hid_set_report(void) {
     hid_manager_ = nullptr;
   }
 

@@ -70,7 +70,7 @@ public:
     hid_manager_->async_start();
   }
 
-  ~dump_hid_value(void) {
+  virtual ~dump_hid_value(void) {
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
       hid_observers_.clear();

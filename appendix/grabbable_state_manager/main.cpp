@@ -83,7 +83,7 @@ public:
     hid_manager_->async_start();
   }
 
-  ~grabbable_state_manager_demo(void) {
+  virtual ~grabbable_state_manager_demo(void) {
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
       hid_observers_.clear();
