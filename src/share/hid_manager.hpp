@@ -142,13 +142,15 @@ private:
     // (It is not called from `run_loop_thread_`.)
     // Thus, we have to synchronize by using `dispatcher`.
 
-    enqueue_to_dispatcher([this, device] {
-      if (!device) {
-        return;
-      }
+    if (!device) {
+      return;
+    }
 
+    CFRetain(device);
+
+    enqueue_to_dispatcher([this, device] {
       if (!device_detecting(device)) {
-        return;
+        goto finish;
       }
 
       if (auto registry_entry_id = iokit_utility::find_registry_entry_id(device)) {
@@ -170,7 +172,7 @@ private:
                             return *registry_entry_id == h->get_registry_entry_id();
                           })) {
             // logger::get_logger().info("registry_entry_id:{0} already exists", static_cast<uint64_t>(*registry_entry_id));
-            return;
+            goto finish;
           }
 
           hid = std::make_shared<human_interface_device>(device, *registry_entry_id);
@@ -179,6 +181,9 @@ private:
 
         device_detected(hid);
       }
+
+    finish:
+      CFRelease(device);
     });
   }
 
@@ -203,13 +208,13 @@ private:
     // (It is not called from `run_loop_thread_`.)
     // Thus, we have to synchronize by using `dispatcher`.
 
+    if (!device) {
+      return;
+    }
+
+    CFRetain(device);
+
     enqueue_to_dispatcher([this, device] {
-      if (!device) {
-        return;
-      }
-
-      // ----------------------------------------
-
       if (auto registry_entry_id = find_registry_entry_id(device)) {
         std::shared_ptr<human_interface_device> hid;
 
@@ -252,6 +257,8 @@ private:
           }
         }
       }
+
+      CFRelease(device);
     });
   }
 
