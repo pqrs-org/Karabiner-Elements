@@ -16,6 +16,8 @@ public:
 
     hid_manager_->device_detected.connect([led_state](auto&& weak_hid) {
       if (auto hid = weak_hid.lock()) {
+        krbn::logger::get_logger().info("{0} is detected.", hid->get_name_for_log());
+
         hid->opened.connect([led_state, weak_hid] {
           if (auto hid = weak_hid.lock()) {
             hid->async_set_caps_lock_led_state(led_state ? krbn::led_state::on : krbn::led_state::off);
