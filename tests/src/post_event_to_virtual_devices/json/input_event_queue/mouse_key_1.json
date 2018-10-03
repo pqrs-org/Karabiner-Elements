@@ -34,10 +34,6 @@
         "valid": true
     },
     {
-        "action": "sleep_milliseconds",
-        "ms": 200
-    },
-    {
         "device_id": 0,
         "event": {
             "type": "pointing_device_event_from_event_tap"

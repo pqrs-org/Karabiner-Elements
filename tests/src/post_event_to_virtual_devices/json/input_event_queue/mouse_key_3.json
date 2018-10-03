@@ -34,10 +34,6 @@
         "valid": true
     },
     {
-        "action": "sleep_milliseconds",
-        "ms": 200
-    },
-    {
         "device_id": 1,
         "event": {
             "key_code": "d",
@@ -53,10 +49,6 @@
             "time_stamp": 6
         },
         "valid": true
-    },
-    {
-        "action": "sleep_milliseconds",
-        "ms": 200
     },
     {
         "device_id": 0,

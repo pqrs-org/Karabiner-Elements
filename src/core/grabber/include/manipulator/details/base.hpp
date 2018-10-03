@@ -3,7 +3,6 @@
 #include "event_queue.hpp"
 #include "manipulator/condition_manager.hpp"
 #include "manipulator/details/types.hpp"
-#include "manipulator/manipulator_timer.hpp"
 #include "modifier_flag_manager.hpp"
 
 namespace krbn {

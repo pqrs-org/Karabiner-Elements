@@ -6,33 +6,38 @@
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
-#include "manipulator/manipulator_timer.hpp"
 
 namespace krbn {
 namespace unit_testing {
-class manipulator_helper final {
+class manipulator_helper final : pqrs::dispatcher::extra::dispatcher_client {
 public:
-  static void run_tests(const nlohmann::json& json,
-                        bool overwrite_expected_results = false) {
+  manipulator_helper(std::weak_ptr<pqrs::dispatcher::pseudo_time_source> weak_time_source,
+                     std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                                    weak_time_source_(weak_time_source) {
+  }
+
+  virtual ~manipulator_helper(void) {
+    detach_from_dispatcher([] {
+    });
+  }
+
+  void run_tests(const nlohmann::json& json,
+                 bool overwrite_expected_results = false) {
     logger::get_logger().info("krbn::unit_testing::manipulator_helper::run_tests");
 
     for (const auto& test : json) {
       logger::get_logger().info("{0}", test["description"].get<std::string>());
 
+      if (auto s = weak_time_source_.lock()) {
+        s->set_now(std::chrono::milliseconds(0));
+      }
+
       system_preferences system_preferences;
-      auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-      auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-      auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(dispatcher);
-      auto manipulator_dispatcher = std::make_shared<manipulator::manipulator_dispatcher>();
-      auto manipulator_timer = std::make_shared<manipulator::manipulator_timer>(false);
-      auto manipulator_object_id = manipulator::make_new_manipulator_object_id();
+      auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(weak_dispatcher_);
       manipulator::manipulator_managers_connector connector;
       std::vector<std::shared_ptr<manipulator::manipulator_manager>> manipulator_managers;
       std::vector<std::shared_ptr<event_queue::queue>> event_queues;
       std::shared_ptr<krbn::manipulator::details::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator;
-
-      manipulator_dispatcher->async_attach(manipulator_object_id);
-      manipulator_timer->async_attach(manipulator_object_id);
 
       core_configuration::profile::complex_modifications::parameters parameters;
       for (const auto& rule : test["rules"]) {
@@ -42,10 +47,9 @@ public:
           std::ifstream ifs(rule.get<std::string>());
           REQUIRE(ifs);
           for (const auto& j : nlohmann::json::parse(ifs)) {
-            auto m = manipulator::manipulator_factory::make_manipulator(j,
-                                                                        parameters,
-                                                                        manipulator_dispatcher,
-                                                                        manipulator_timer);
+            auto m = manipulator::manipulator_factory::make_manipulator(weak_dispatcher_,
+                                                                        j,
+                                                                        parameters);
 
             if (auto conditions = json_utility::find_array(j, "conditions")) {
               for (const auto& c : *conditions) {
@@ -71,10 +75,8 @@ public:
       }
 
       if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
-        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(dispatcher,
+        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(weak_dispatcher_,
                                                                                                                                 system_preferences,
-                                                                                                                                manipulator_dispatcher,
-                                                                                                                                manipulator_timer,
                                                                                                                                 console_user_server_client);
 
         manipulator_managers.push_back(std::make_unique<manipulator::manipulator_manager>());
@@ -103,30 +105,33 @@ public:
           if (auto s = json_utility::find_optional<std::string>(j, "action")) {
             if (*s == "invalidate_manipulators") {
               connector.invalidate_manipulators();
-            } else if (*s == "invoke_manipulator_timer") {
+            } else if (*s == "invoke_dispatcher") {
               absolute_time time_stamp(0);
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
                 time_stamp = time_utility::to_absolute_time(std::chrono::milliseconds(*t));
+
+                if (auto s = weak_time_source_.lock()) {
+                  s->set_now(time_utility::to_milliseconds(time_stamp));
+                }
+
+                if (auto d = weak_dispatcher_.lock()) {
+                  d->invoke();
+                }
+
+                // Wait after `invoke` to trigger dispatcher.
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
               }
-              manipulator_dispatcher->enqueue(
-                  manipulator_object_id,
-                  [&] {
-                    manipulator_timer->async_invoke(time_stamp);
-                  });
-              // Wait after `async_invoke` to trigger manipulator_timer.
-              std::this_thread::sleep_for(std::chrono::milliseconds(100));
             } else if (*s == "manipulate") {
               absolute_time time_stamp(0);
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
-                time_stamp = time_utility::to_absolute_time(std::chrono::milliseconds(*t));
+                auto ms = std::chrono::milliseconds(*t);
+                time_stamp = time_utility::to_absolute_time(ms);
+                if (auto s = weak_time_source_.lock()) {
+                  s->set_now(ms);
+                }
               }
+
               connector.manipulate(time_stamp);
-            } else if (*s == "sleep_milliseconds") {
-              std::chrono::milliseconds ms(0);
-              if (auto t = json_utility::find_optional<uint64_t>(j, "ms")) {
-                ms = std::chrono::milliseconds(*t);
-              }
-              std::this_thread::sleep_for(ms);
             }
 
           } else if (auto v = json_utility::find_optional<bool>(j, "pause_manipulation")) {
@@ -139,14 +144,34 @@ public:
             auto e = event_queue::entry::make_from_json(j);
             now = e.get_event_time_stamp().get_time_stamp();
             event_queues.front()->push_back_event(e);
+
+            if (auto s = weak_time_source_.lock()) {
+              s->set_now(time_utility::to_milliseconds(now));
+            }
+
             if (!pause_manipulation) {
               connector.manipulate(now);
             }
           }
+
+          // Wait
+
+          {
+            auto now = std::chrono::milliseconds(0);
+            if (auto s = weak_time_source_.lock()) {
+              now = s->now();
+            }
+
+            auto wait = pqrs::dispatcher::make_wait();
+            enqueue_to_dispatcher(
+                [wait] {
+                  wait->notify();
+                },
+                now);
+            wait->wait_notice();
+          }
         }
       }
-
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
       if (auto s = json_utility::find_optional<std::string>(test, "expected_event_queue")) {
         if (overwrite_expected_results) {
@@ -183,21 +208,15 @@ public:
 
       input_event_arrived_connection.disconnect();
 
-      manipulator_dispatcher->detach(manipulator_object_id);
-      manipulator_timer->detach(manipulator_object_id);
-
       manipulator_managers.clear();
       post_event_to_virtual_devices_manipulator = nullptr;
-
-      manipulator_dispatcher = nullptr;
-      manipulator_timer = nullptr;
-
-      dispatcher->terminate();
-      dispatcher = nullptr;
     }
 
     logger::get_logger().info("krbn::unit_testing::manipulator_helper::run_tests finished");
   }
+
+private:
+  std::weak_ptr<pqrs::dispatcher::pseudo_time_source> weak_time_source_;
 };
 } // namespace unit_testing
 } // namespace krbn

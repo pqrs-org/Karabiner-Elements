@@ -14,14 +14,12 @@ public:
   ~manipulator_manager(void) {
   }
 
-  void push_back_manipulator(const nlohmann::json& json,
-                             const core_configuration::profile::complex_modifications::parameters& parameters,
-                             std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher,
-                             std::weak_ptr<manipulator_timer> weak_manipulator_timer) {
-    auto m = manipulator_factory::make_manipulator(json,
-                                                   parameters,
-                                                   weak_manipulator_dispatcher,
-                                                   weak_manipulator_timer);
+  void push_back_manipulator(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
+                             const nlohmann::json& json,
+                             const core_configuration::profile::complex_modifications::parameters& parameters) {
+    auto m = manipulator_factory::make_manipulator(weak_dispatcher,
+                                                   json,
+                                                   parameters);
 
     {
       std::lock_guard<std::mutex> lock(manipulators_mutex_);

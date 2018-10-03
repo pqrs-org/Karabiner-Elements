@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dispatcher.hpp"
 #include <boost/signals2.hpp>
 
 namespace krbn {
@@ -8,6 +9,12 @@ public:
   class core final {
   public:
     boost::signals2::signal<void(void)> input_event_arrived;
+
+    void enqueue_input_event_arrived(pqrs::dispatcher::extra::dispatcher_client& client) {
+      client.enqueue_to_dispatcher([this] {
+        input_event_arrived();
+      });
+    }
   };
 
   static core& get_instance(void) {

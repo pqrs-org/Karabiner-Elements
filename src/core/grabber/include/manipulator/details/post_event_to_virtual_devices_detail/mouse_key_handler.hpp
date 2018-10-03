@@ -1,14 +1,12 @@
 #pragma once
 
-#include "manipulator/manipulator_dispatcher.hpp"
-#include "manipulator/manipulator_timer.hpp"
 #include "queue.hpp"
 
 namespace krbn {
 namespace manipulator {
 namespace details {
 namespace post_event_to_virtual_devices_detail {
-class mouse_key_handler final {
+class mouse_key_handler final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   class count_converter final {
   public:
@@ -42,91 +40,66 @@ public:
     int count_;
   };
 
-  mouse_key_handler(queue& queue,
-                    std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher,
-                    std::weak_ptr<manipulator_timer> weak_manipulator_timer,
-                    const system_preferences& system_preferences) : queue_(queue),
-                                                                    weak_manipulator_dispatcher_(weak_manipulator_dispatcher),
-                                                                    weak_manipulator_timer_(weak_manipulator_timer),
+  mouse_key_handler(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
+                    queue& queue,
+                    const system_preferences& system_preferences) : dispatcher_client(weak_dispatcher),
+                                                                    queue_(queue),
                                                                     system_preferences_(system_preferences),
-                                                                    manipulator_object_id_(make_new_manipulator_object_id()),
                                                                     active_(false),
                                                                     x_count_converter_(128),
                                                                     y_count_converter_(128),
                                                                     vertical_wheel_count_converter_(128),
                                                                     horizontal_wheel_count_converter_(128) {
-    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
-      manipulator_dispatcher->async_attach(manipulator_object_id_);
-    }
-    if (auto manipulator_timer = weak_manipulator_timer_.lock()) {
-      manipulator_timer->async_attach(manipulator_object_id_);
-    }
   }
 
-  ~mouse_key_handler(void) {
-    if (auto manipulator_timer = weak_manipulator_timer_.lock()) {
-      manipulator_timer->detach(manipulator_object_id_);
-    }
-
-    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
-      manipulator_dispatcher->detach(manipulator_object_id_);
-    }
+  virtual ~mouse_key_handler(void) {
+    detach_from_dispatcher([] {
+    });
   }
 
   void async_push_back_mouse_key(device_id device_id,
                                  const mouse_key& mouse_key,
                                  const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
                                  absolute_time time_stamp) {
-    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
-      manipulator_dispatcher->enqueue(
-          manipulator_object_id_,
-          [this, device_id, mouse_key, weak_output_event_queue, time_stamp] {
-            erase_entry(device_id, mouse_key);
+    enqueue_to_dispatcher(
+        [this, device_id, mouse_key, weak_output_event_queue, time_stamp] {
+          erase_entry(device_id, mouse_key);
 
-            entries_.emplace_back(device_id, mouse_key);
-            active_ = !entries_.empty();
+          entries_.emplace_back(device_id, mouse_key);
+          active_ = !entries_.empty();
 
-            weak_output_event_queue_ = weak_output_event_queue;
+          weak_output_event_queue_ = weak_output_event_queue;
 
-            post_event(time_stamp);
-          });
-    }
+          post_event(time_stamp);
+        });
   }
 
   void async_erase_mouse_key(device_id device_id,
                              const mouse_key& mouse_key,
                              const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
                              absolute_time time_stamp) {
-    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
-      manipulator_dispatcher->enqueue(
-          manipulator_object_id_,
-          [this, device_id, mouse_key, weak_output_event_queue, time_stamp] {
-            erase_entry(device_id, mouse_key);
+    enqueue_to_dispatcher([this, device_id, mouse_key, weak_output_event_queue, time_stamp] {
+      erase_entry(device_id, mouse_key);
 
-            weak_output_event_queue_ = weak_output_event_queue;
+      weak_output_event_queue_ = weak_output_event_queue;
 
-            post_event(time_stamp);
-          });
-    }
+      post_event(time_stamp);
+    });
   }
 
   void async_erase_mouse_keys_by_device_id(device_id device_id,
                                            absolute_time time_stamp) {
-    if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
-      manipulator_dispatcher->enqueue(
-          manipulator_object_id_,
-          [this, device_id, time_stamp] {
-            entries_.erase(std::remove_if(std::begin(entries_),
-                                          std::end(entries_),
-                                          [&](const auto& pair) {
-                                            return pair.first == device_id;
-                                          }),
-                           std::end(entries_));
-            active_ = !entries_.empty();
+    enqueue_to_dispatcher([this, device_id, time_stamp] {
+      entries_.erase(std::remove_if(std::begin(entries_),
+                                    std::end(entries_),
+                                    [&](const auto& pair) {
+                                      return pair.first == device_id;
+                                    }),
+                     std::end(entries_));
+      active_ = !entries_.empty();
 
-            post_event(time_stamp);
-          });
-    }
+      post_event(time_stamp);
+    });
   }
 
   bool active(void) const {
@@ -181,34 +154,20 @@ private:
                                            event_type::single,
                                            time_stamp);
 
-        if (auto manipulator_timer = weak_manipulator_timer_.lock()) {
-          auto when = time_stamp + time_utility::to_absolute_time(std::chrono::milliseconds(20));
-
-          manipulator_timer->enqueue(
-              manipulator_object_id_,
-              [this, when] {
-                if (auto manipulator_dispatcher = weak_manipulator_dispatcher_.lock()) {
-                  manipulator_dispatcher->enqueue(
-                      manipulator_object_id_,
-                      [this, when] {
-                        post_event(when);
-                        krbn_notification_center::get_instance().input_event_arrived();
-                      });
-                }
-              },
-              when);
-          manipulator_timer->async_invoke(time_stamp);
-        }
+        auto when = time_utility::to_milliseconds(time_stamp) + std::chrono::milliseconds(20);
+        enqueue_to_dispatcher(
+            [this, when] {
+              post_event(time_utility::to_absolute_time(when));
+              krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+            },
+            when);
       }
     }
   }
 
   queue& queue_;
-  std::weak_ptr<manipulator_dispatcher> weak_manipulator_dispatcher_;
-  std::weak_ptr<manipulator_timer> weak_manipulator_timer_;
   const system_preferences& system_preferences_;
 
-  manipulator_object_id manipulator_object_id_;
   std::vector<std::pair<device_id, mouse_key>> entries_;
   std::atomic<bool> active_;
   std::weak_ptr<event_queue::queue> weak_output_event_queue_;

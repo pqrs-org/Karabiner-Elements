@@ -10,6 +10,15 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("actual examples") {
-  krbn::unit_testing::manipulator_helper::run_tests(nlohmann::json::parse(std::ifstream("json/manipulator_manager/tests.json")),
-                                                    true);
+  auto time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
+  auto helper = std::make_unique<krbn::unit_testing::manipulator_helper>(time_source,
+                                                                         dispatcher);
+  helper->run_tests(nlohmann::json::parse(std::ifstream("json/manipulator_manager/tests.json")),
+                    true);
+
+  helper = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 }

@@ -11,7 +11,17 @@ TEST_CASE("initialize") {
 }
 
 TEST_CASE("actual examples") {
-  krbn::unit_testing::manipulator_helper::run_tests(nlohmann::json::parse(std::ifstream("json/tests.json")));
+  auto time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
+  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
+  auto helper = std::make_unique<krbn::unit_testing::manipulator_helper>(time_source,
+                                                                         dispatcher);
+
+  helper->run_tests(nlohmann::json::parse(std::ifstream("json/tests.json")));
+
+  helper = nullptr;
+
+  dispatcher->terminate();
+  dispatcher = nullptr;
 }
 
 TEST_CASE("mouse_key_handler.count_converter") {

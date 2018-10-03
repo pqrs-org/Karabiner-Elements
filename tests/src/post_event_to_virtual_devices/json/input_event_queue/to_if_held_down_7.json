@@ -102,7 +102,7 @@
         "valid": true
     },
     {
-        "action": "invoke_manipulator_timer",
+        "action": "invoke_dispatcher",
         "time_stamp": 10000
     },
     {
