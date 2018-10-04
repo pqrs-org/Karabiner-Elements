@@ -5,24 +5,22 @@ class dump_hid_report final : public pqrs::dispatcher::extra::dispatcher_client 
 public:
   dump_hid_report(const dump_hid_report&) = delete;
 
-  dump_hid_report(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  dump_hid_report(void) : dispatcher_client() {
     std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
     });
 
-    hid_manager_ = std::make_unique<krbn::hid_manager>(weak_dispatcher,
-                                                       targets);
+    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
       if (auto hid = weak_hid.lock()) {
         hid->report_arrived.connect([this, weak_hid](auto&& type,
                                                      auto&& report_id,
-                                                     auto&& report,
-                                                     auto&& report_length) {
+                                                     auto&& report) {
           if (auto hid = weak_hid.lock()) {
-            report_arrived(hid, type, report_id, report, report_length);
+            report_arrived(hid, type, report_id, report);
           }
         });
 
@@ -36,15 +34,16 @@ public:
   }
 
   virtual ~dump_hid_report(void) {
-    hid_manager_ = nullptr;
+    detach_from_dispatcher([this] {
+      hid_manager_ = nullptr;
+    });
   }
 
 private:
   void report_arrived(std::shared_ptr<krbn::human_interface_device> hid,
                       IOHIDReportType type,
                       uint32_t report_id,
-                      uint8_t* report,
-                      CFIndex report_length) const {
+                      std::shared_ptr<std::vector<uint8_t>> report) const {
     // Logitech Unifying Receiver sends a lot of null report. We ignore them.
     if (auto manufacturer = hid->find_manufacturer()) {
       if (auto product = hid->find_product()) {
@@ -56,10 +55,10 @@ private:
       }
     }
 
-    krbn::logger::get_logger().info("report_length: {0}", report_length);
+    krbn::logger::get_logger().info("report_length: {0}", report->size());
     std::cout << "  report_id: " << std::dec << report_id << std::endl;
-    for (CFIndex i = 0; i < report_length; ++i) {
-      std::cout << "  key[" << i << "]: 0x" << std::hex << static_cast<int>(report[i]) << std::dec << std::endl;
+    for (CFIndex i = 0; i < report->size(); ++i) {
+      std::cout << "  key[" << i << "]: 0x" << std::hex << static_cast<int>((*report)[i]) << std::dec << std::endl;
     }
   }
 
@@ -68,20 +67,19 @@ private:
 } // namespace
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
-  auto d = std::make_unique<dump_hid_report>(dispatcher);
+  auto d = std::make_unique<dump_hid_report>();
 
   CFRunLoopRun();
 
   d = nullptr;
+
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }
