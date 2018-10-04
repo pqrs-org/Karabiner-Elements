@@ -37,8 +37,7 @@ public:
 
   hid_grabber(const hid_grabber&) = delete;
 
-  hid_grabber(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-              std::weak_ptr<human_interface_device> weak_hid) : dispatcher_client(weak_dispatcher),
+  hid_grabber(std::weak_ptr<human_interface_device> weak_hid) : dispatcher_client(),
                                                                 weak_hid_(weak_hid),
                                                                 timer_(*this),
                                                                 grabbed_(false) {
@@ -111,19 +110,8 @@ public:
   virtual ~hid_grabber(void) {
     detach_from_dispatcher([this] {
       ungrab();
-    });
-
-    // Disconnect `human_interface_device_connections_`
-
-    if (auto hid = weak_hid_.lock()) {
-      hid->get_run_loop_thread()->enqueue(^{
-        human_interface_device_connections_.disconnect_all_connections();
-      });
-    } else {
       human_interface_device_connections_.disconnect_all_connections();
-    }
-
-    human_interface_device_connections_.wait_disconnect_all_connections();
+    });
   }
 
   std::weak_ptr<human_interface_device> get_weak_hid(void) {

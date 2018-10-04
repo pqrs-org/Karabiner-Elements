@@ -27,90 +27,31 @@ public:
 
   hid_manager(const hid_manager&) = delete;
 
-  hid_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-              const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) : dispatcher_client(weak_dispatcher),
+  hid_manager(const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) : dispatcher_client(),
                                                                                       usage_pairs_(usage_pairs),
                                                                                       manager_(nullptr),
                                                                                       refresh_timer_(*this) {
-    run_loop_thread_ = std::make_shared<cf_utility::run_loop_thread>();
+    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
   }
 
   virtual ~hid_manager(void) {
-    async_stop();
+    detach_from_dispatcher([this] {
+      stop();
+    });
 
     run_loop_thread_->terminate();
     run_loop_thread_ = nullptr;
-
-    detach_from_dispatcher([] {
-    });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      if (manager_) {
-        logger::get_logger().warn("hid_manager is already started.");
-        return;
-      }
-
-      manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-      if (!manager_) {
-        logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
-        return;
-      }
-
-      if (auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries(usage_pairs_)) {
-        IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
-        CFRelease(device_matching_dictionaries);
-      }
-
-      IOHIDManagerRegisterDeviceMatchingCallback(manager_, static_device_matching_callback, this);
-      IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
-
-      IOHIDManagerScheduleWithRunLoop(manager_,
-                                      run_loop_thread_->get_run_loop(),
-                                      kCFRunLoopDefaultMode);
-
-      refresh_timer_.start(
-          [this] {
-            refresh_if_needed();
-          },
-          std::chrono::milliseconds(5000));
-
-      logger::get_logger().info("hid_manager is started.");
+      start();
     });
   }
 
   void async_stop(void) {
     enqueue_to_dispatcher([this] {
-      if (!manager_) {
-        return;
-      }
-
-      // refresh_timer_
-
-      refresh_timer_.stop();
-
-      // manager_
-
-      if (manager_) {
-        IOHIDManagerUnscheduleFromRunLoop(manager_,
-                                          run_loop_thread_->get_run_loop(),
-                                          kCFRunLoopDefaultMode);
-        CFRelease(manager_);
-        manager_ = nullptr;
-      }
-
-      // Other variables
-
-      registry_entry_ids_.clear();
-
-      {
-        std::lock_guard<std::mutex> lock(hids_mutex_);
-
-        hids_.clear();
-      }
-
-      logger::get_logger().info("hid_manager is stopped.");
+      stop();
     });
   }
 
@@ -121,6 +62,113 @@ public:
   }
 
 private:
+  // This method is executed in the dispatcher thread.
+  void start(void) {
+    if (manager_) {
+      logger::get_logger().warn("hid_manager is already started.");
+      return;
+    }
+
+    manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
+    if (!manager_) {
+      logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
+      return;
+    }
+
+    if (auto device_matching_dictionaries = iokit_utility::create_device_matching_dictionaries(usage_pairs_)) {
+      IOHIDManagerSetDeviceMatchingMultiple(manager_, device_matching_dictionaries);
+      CFRelease(device_matching_dictionaries);
+    }
+
+    IOHIDManagerRegisterDeviceMatchingCallback(manager_, static_device_matching_callback, this);
+    IOHIDManagerRegisterDeviceRemovalCallback(manager_, static_device_removal_callback, this);
+
+    IOHIDManagerScheduleWithRunLoop(manager_,
+                                    run_loop_thread_->get_run_loop(),
+                                    kCFRunLoopDefaultMode);
+
+    // We need to call `wake` after `IOHIDManagerScheduleWithRunLoop`.
+
+    run_loop_thread_->wake();
+
+    refresh_timer_.start(
+        [this] {
+          refresh_if_needed();
+        },
+        std::chrono::milliseconds(5000));
+
+    logger::get_logger().info("hid_manager is started.");
+  }
+
+  // This method is executed in the dispatcher thread.
+  void stop(void) {
+    if (!manager_) {
+      return;
+    }
+
+    // refresh_timer_
+
+    refresh_timer_.stop();
+
+    // manager_
+
+    IOHIDManagerUnscheduleFromRunLoop(manager_,
+                                      run_loop_thread_->get_run_loop(),
+                                      kCFRunLoopDefaultMode);
+    CFRelease(manager_);
+    manager_ = nullptr;
+
+    // Other variables
+
+    registry_entry_ids_.clear();
+
+    {
+      std::lock_guard<std::mutex> lock(hids_mutex_);
+
+      hids_.clear();
+    }
+
+    logger::get_logger().info("hid_manager is stopped.");
+  }
+
+  // This method is executed in the dispatcher thread.
+  void refresh_if_needed(void) {
+    // `device_removal_callback` is sometimes missed
+    // and invalid human_interface_devices are remained into hids_.
+    // (The problem is likely occur just after wake up from sleep.)
+    //
+    // We validate the human_interface_device,
+    // and then reload devices if there is an invalid human_interface_device.
+
+    bool needs_refresh = false;
+
+    {
+      std::lock_guard<std::mutex> lock(hids_mutex_);
+
+      for (const auto& hid : hids_) {
+        if (!hid->validate()) {
+          logger::get_logger().warn("Refreshing hid_manager since a dangling human_interface_device is found. ({0})",
+                                    hid->get_name_for_log());
+          needs_refresh = true;
+          break;
+        }
+      }
+    }
+
+    if (needs_refresh) {
+      stop();
+      start();
+    }
+  }
+
+  boost::optional<registry_entry_id> find_registry_entry_id(IOHIDDeviceRef _Nonnull device) {
+    auto it = registry_entry_ids_.find(device);
+    if (it != std::end(registry_entry_ids_)) {
+      return it->second;
+    }
+    return boost::none;
+  }
+
   static void static_device_matching_callback(void* _Nullable context,
                                               IOReturn result,
                                               void* _Nullable sender,
@@ -262,44 +310,7 @@ private:
     });
   }
 
-  void refresh_if_needed(void) {
-    // `device_removal_callback` is sometimes missed
-    // and invalid human_interface_devices are remained into hids_.
-    // (The problem is likely occur just after wake up from sleep.)
-    //
-    // We validate the human_interface_device,
-    // and then reload devices if there is an invalid human_interface_device.
-
-    bool needs_refresh = false;
-
-    {
-      std::lock_guard<std::mutex> lock(hids_mutex_);
-
-      for (const auto& hid : hids_) {
-        if (!hid->validate()) {
-          logger::get_logger().warn("Refreshing hid_manager since a dangling human_interface_device is found. ({0})",
-                                    hid->get_name_for_log());
-          needs_refresh = true;
-          break;
-        }
-      }
-    }
-
-    if (needs_refresh) {
-      async_stop();
-      async_start();
-    }
-  }
-
-  boost::optional<registry_entry_id> find_registry_entry_id(IOHIDDeviceRef _Nonnull device) {
-    auto it = registry_entry_ids_.find(device);
-    if (it != std::end(registry_entry_ids_)) {
-      return it->second;
-    }
-    return boost::none;
-  }
-
-  std::shared_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
 
   std::vector<std::pair<hid_usage_page, hid_usage>> usage_pairs_;
 

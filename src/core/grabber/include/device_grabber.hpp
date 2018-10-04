@@ -145,8 +145,7 @@ public:
             });
           });
 
-          auto grabber = std::make_shared<hid_grabber>(weak_dispatcher_,
-                                                       weak_hid);
+          auto grabber = std::make_shared<hid_grabber>(weak_hid);
 
           grabber->device_grabbing.connect([this, weak_hid] {
             if (auto hid = weak_hid.lock()) {

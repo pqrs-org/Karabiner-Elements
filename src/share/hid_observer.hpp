@@ -20,8 +20,7 @@ public:
 
   hid_observer(const hid_observer&) = delete;
 
-  hid_observer(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-               std::weak_ptr<human_interface_device> weak_hid) : dispatcher_client(weak_dispatcher),
+  hid_observer(std::weak_ptr<human_interface_device> weak_hid) : dispatcher_client(),
                                                                  weak_hid_(weak_hid),
                                                                  timer_(*this),
                                                                  observed_(false) {
@@ -29,16 +28,14 @@ public:
       // opened
       {
         auto c = hid->opened.connect([this] {
-          enqueue_to_dispatcher([this] {
-            if (auto hid = weak_hid_.lock()) {
-              observed_ = true;
+          if (auto hid = weak_hid_.lock()) {
+            observed_ = true;
 
-              device_observed();
+            device_observed();
 
-              hid->async_queue_start();
-              hid->async_schedule();
-            }
-          });
+            hid->async_queue_start();
+            hid->async_schedule();
+          }
         });
         human_interface_device_connections_.push_back(c);
       }
@@ -46,15 +43,13 @@ public:
       // open_failed
       {
         auto c = hid->open_failed.connect([this](auto&& error) {
-          enqueue_to_dispatcher([this, error] {
-            if (auto hid = weak_hid_.lock()) {
-              auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
-                                         iokit_utility::get_error_name(error),
-                                         error,
-                                         hid->get_name_for_log());
-              logger_unique_filter_.error(message);
-            }
-          });
+          if (auto hid = weak_hid_.lock()) {
+            auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
+                                       iokit_utility::get_error_name(error),
+                                       error,
+                                       hid->get_name_for_log());
+            logger_unique_filter_.error(message);
+          }
         });
         human_interface_device_connections_.push_back(c);
       }
@@ -62,11 +57,9 @@ public:
       // closed
       {
         auto c = hid->closed.connect([this] {
-          enqueue_to_dispatcher([this] {
-            if (auto hid = weak_hid_.lock()) {
-              device_unobserved();
-            }
-          });
+          if (auto hid = weak_hid_.lock()) {
+            device_unobserved();
+          }
         });
         human_interface_device_connections_.push_back(c);
       }
@@ -74,17 +67,15 @@ public:
       // close_failed
       {
         auto c = hid->close_failed.connect([this](auto&& error) {
-          enqueue_to_dispatcher([this, error] {
-            if (auto hid = weak_hid_.lock()) {
-              auto message = fmt::format("IOHIDDeviceClose error: {0} ({1}) {2}",
-                                         iokit_utility::get_error_name(error),
-                                         error,
-                                         hid->get_name_for_log());
-              logger_unique_filter_.error(message);
+          if (auto hid = weak_hid_.lock()) {
+            auto message = fmt::format("IOHIDDeviceClose error: {0} ({1}) {2}",
+                                       iokit_utility::get_error_name(error),
+                                       error,
+                                       hid->get_name_for_log());
+            logger_unique_filter_.error(message);
 
-              device_unobserved();
-            }
-          });
+            device_unobserved();
+          }
         });
         human_interface_device_connections_.push_back(c);
       }
@@ -94,19 +85,8 @@ public:
   virtual ~hid_observer(void) {
     detach_from_dispatcher([this] {
       unobserve();
-    });
-
-    // Disconnect `human_interface_device_connections_`
-
-    if (auto hid = weak_hid_.lock()) {
-      hid->get_run_loop_thread()->enqueue(^{
-        human_interface_device_connections_.disconnect_all_connections();
-      });
-    } else {
       human_interface_device_connections_.disconnect_all_connections();
-    }
-
-    human_interface_device_connections_.wait_disconnect_all_connections();
+    });
   }
 
   std::weak_ptr<human_interface_device> get_weak_hid(void) {

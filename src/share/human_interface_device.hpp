@@ -30,7 +30,7 @@
 #include <vector>
 
 namespace krbn {
-class human_interface_device final {
+class human_interface_device final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals
 
@@ -43,14 +43,15 @@ public:
   // `event_queue` is not owned by `human_interface_device`.
   boost::signals2::signal<void(std::shared_ptr<event_queue::queue>)> values_arrived;
 
-  boost::signals2::signal<void(IOHIDReportType type, uint32_t report_id, uint8_t* _Nonnull report, CFIndex report_length)> report_arrived;
+  boost::signals2::signal<void(IOHIDReportType type, uint32_t report_id, std::shared_ptr<std::vector<uint8_t>>)> report_arrived;
 
   // Methods
 
   human_interface_device(const human_interface_device&) = delete;
 
   human_interface_device(IOHIDDeviceRef _Nonnull device,
-                         registry_entry_id registry_entry_id) : device_(device),
+                         registry_entry_id registry_entry_id) : dispatcher_client(),
+                                                                device_(device),
                                                                 registry_entry_id_(registry_entry_id),
                                                                 device_id_(types::make_new_device_id(std::make_shared<device_detail>(device))),
                                                                 removed_(false),
@@ -188,13 +189,15 @@ public:
     }
   }
 
-  ~human_interface_device(void) {
-    async_unschedule();
-    async_disable_report_callback();
-    async_queue_stop();
-    async_close();
+  virtual ~human_interface_device(void) {
+    detach_from_dispatcher([this] {
+      unschedule();
+      disable_report_callback();
+      queue_stop();
+      close();
 
-    run_loop_thread_->enqueue(^{
+      // ----------------------------------------
+
       types::detach_device_id(device_id_);
 
       // ----------------------------------------
@@ -284,135 +287,60 @@ public:
   }
 
   void async_open(IOOptionBits options = kIOHIDOptionsTypeNone) {
-    run_loop_thread_->enqueue(^{
-      if (removed_) {
-        return;
-      }
-
-      if (!opened_) {
-        auto r = IOHIDDeviceOpen(device_, options);
-        if (r == kIOReturnSuccess) {
-          opened_ = true;
-          opened();
-        } else {
-          open_failed(r);
-        }
-      }
+    enqueue_to_dispatcher([this, options] {
+      open(options);
     });
   }
 
   void async_close(void) {
-    run_loop_thread_->enqueue(^{
-      if (removed_) {
-        return;
-      }
-
-      if (opened_) {
-        auto r = IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
-        if (r == kIOReturnSuccess) {
-          closed();
-        } else {
-          close_failed(r);
-        }
-        opened_ = false;
-      }
+    enqueue_to_dispatcher([this] {
+      close();
     });
   }
 
   void async_schedule(void) {
-    run_loop_thread_->enqueue(^{
-      if (removed_) {
-        return;
-      }
-
-      IOHIDDeviceScheduleWithRunLoop(device_,
-                                     run_loop_thread_->get_run_loop(),
-                                     kCFRunLoopDefaultMode);
-      if (queue_) {
-        IOHIDQueueScheduleWithRunLoop(queue_,
-                                      run_loop_thread_->get_run_loop(),
-                                      kCFRunLoopDefaultMode);
-      }
+    enqueue_to_dispatcher([this] {
+      schedule();
     });
   }
 
   void async_unschedule(void) {
-    run_loop_thread_->enqueue(^{
-      if (removed_) {
-        return;
-      }
-
-      if (queue_) {
-        IOHIDQueueUnscheduleFromRunLoop(queue_,
-                                        run_loop_thread_->get_run_loop(),
-                                        kCFRunLoopDefaultMode);
-      }
-      IOHIDDeviceUnscheduleFromRunLoop(device_,
-                                       run_loop_thread_->get_run_loop(),
-                                       kCFRunLoopDefaultMode);
+    enqueue_to_dispatcher([this] {
+      unschedule();
     });
   }
 
   void async_enable_report_callback(void) {
-    run_loop_thread_->enqueue(^{
-      if (removed_) {
-        return;
-      }
-
-      resize_report_buffer();
-      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
+    enqueue_to_dispatcher([this] {
+      enable_report_callback();
     });
   }
 
   void async_disable_report_callback(void) {
-    run_loop_thread_->enqueue(^{
-      if (removed_) {
-        return;
-      }
-
-      resize_report_buffer();
-      IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
+    enqueue_to_dispatcher([this] {
+      disable_report_callback();
     });
   }
 
   void async_queue_start(void) {
-    run_loop_thread_->enqueue(^{
-      if (removed_) {
-        return;
-      }
-
-      if (queue_) {
-        IOHIDQueueStart(queue_);
-      }
+    enqueue_to_dispatcher([this] {
+      queue_start();
     });
   }
 
   void async_queue_stop(void) {
-    run_loop_thread_->enqueue(^{
-      if (removed_) {
-        return;
-      }
-
-      if (queue_) {
-        IOHIDQueueStop(queue_);
-      }
+    enqueue_to_dispatcher([this] {
+      queue_stop();
     });
   }
 
   void async_set_report(IOHIDReportType report_type,
                         CFIndex report_id,
-                        const uint8_t* _Nonnull report,
-                        CFIndex report_length) {
-    run_loop_thread_->enqueue(^{
-      if (removed_) {
-        return;
-      }
-
-      IOHIDDeviceSetReport(device_,
-                           report_type,
-                           report_id,
-                           report,
-                           report_length);
+                        std::shared_ptr<std::vector<uint8_t>> report) {
+    enqueue_to_dispatcher([this, report_type, report_id, report] {
+      set_report(report_type,
+                 report_id,
+                 report);
     });
   }
 
@@ -456,7 +384,7 @@ public:
 
   // This method requires root privilege to use IOHIDDeviceSetValue for kHIDPage_LEDs usage.
   void async_set_caps_lock_led_state(led_state state) {
-    run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this, state] {
       for (const auto& e : elements_) {
         auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(e));
         auto usage = hid_usage(IOHIDElementGetUsage(e));
@@ -484,6 +412,134 @@ public:
   }
 
 private:
+  // This method is executed in the dispatcher thread.
+  void open(IOOptionBits options) {
+    if (removed_) {
+      return;
+    }
+
+    if (!opened_) {
+      auto r = IOHIDDeviceOpen(device_, options);
+      if (r == kIOReturnSuccess) {
+        opened_ = true;
+
+        opened();
+      } else {
+        open_failed(r);
+      }
+    }
+  }
+
+  // This method is executed in the dispatcher thread.
+  void close(void) {
+    if (removed_) {
+      return;
+    }
+
+    if (opened_) {
+      auto r = IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
+      if (r == kIOReturnSuccess) {
+        closed();
+      } else {
+        close_failed(r);
+      }
+      opened_ = false;
+    }
+  }
+
+  // This method is executed in the dispatcher thread.
+  void schedule(void) {
+    if (removed_) {
+      return;
+    }
+
+    IOHIDDeviceScheduleWithRunLoop(device_,
+                                   run_loop_thread_->get_run_loop(),
+                                   kCFRunLoopDefaultMode);
+    if (queue_) {
+      IOHIDQueueScheduleWithRunLoop(queue_,
+                                    run_loop_thread_->get_run_loop(),
+                                    kCFRunLoopDefaultMode);
+    }
+
+    run_loop_thread_->wake();
+  }
+
+  // This method is executed in the dispatcher thread.
+  void unschedule(void) {
+    if (removed_) {
+      return;
+    }
+
+    if (queue_) {
+      IOHIDQueueUnscheduleFromRunLoop(queue_,
+                                      run_loop_thread_->get_run_loop(),
+                                      kCFRunLoopDefaultMode);
+    }
+    IOHIDDeviceUnscheduleFromRunLoop(device_,
+                                     run_loop_thread_->get_run_loop(),
+                                     kCFRunLoopDefaultMode);
+  }
+
+  // This method is executed in the dispatcher thread.
+  void enable_report_callback(void) {
+    if (removed_) {
+      return;
+    }
+
+    resize_report_buffer();
+    IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
+  }
+
+  // This method is executed in the dispatcher thread.
+  void disable_report_callback(void) {
+    if (removed_) {
+      return;
+    }
+
+    resize_report_buffer();
+    IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
+  }
+
+  // This method is executed in the dispatcher thread.
+  void queue_start(void) {
+    if (removed_) {
+      return;
+    }
+
+    if (queue_) {
+      IOHIDQueueStart(queue_);
+    }
+  }
+
+  // This method is executed in the dispatcher thread.
+  void queue_stop(void) {
+    if (removed_) {
+      return;
+    }
+
+    if (queue_) {
+      IOHIDQueueStop(queue_);
+    }
+  }
+
+  // This method is executed in the dispatcher thread.
+  void set_report(IOHIDReportType report_type,
+                  CFIndex report_id,
+                  std::shared_ptr<std::vector<uint8_t>> report) {
+    if (removed_) {
+      return;
+    }
+
+    if (report) {
+      IOHIDDeviceSetReport(device_,
+                           report_type,
+                           report_id,
+                           &((*report)[0]),
+                           report->size());
+    }
+  }
+
   static void static_queue_value_available_callback(void* _Nullable context, IOReturn result, void* _Nullable sender) {
     if (result != kIOReturnSuccess) {
       return;
@@ -498,46 +554,48 @@ private:
   }
 
   void queue_value_available_callback(void) {
-    auto input_event_queue = std::make_shared<event_queue::queue>();
-    std::vector<hid_value> hid_values;
+    enqueue_to_dispatcher([this] {
+      auto input_event_queue = std::make_shared<event_queue::queue>();
+      std::vector<hid_value> hid_values;
 
-    while (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
-      hid_values.emplace_back(value);
+      while (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
+        hid_values.emplace_back(value);
 
-      CFRelease(value);
-    }
+        CFRelease(value);
+      }
 
-    for (const auto& pair : event_queue::queue::make_entries(hid_values, device_id_)) {
-      auto& hid_value = pair.first;
-      auto& entry = pair.second;
+      for (const auto& pair : event_queue::queue::make_entries(hid_values, device_id_)) {
+        auto& hid_value = pair.first;
+        auto& entry = pair.second;
 
-      input_event_queue->push_back_event(entry);
+        input_event_queue->push_back_event(entry);
 
-      if (hid_value) {
-        if (auto hid_usage_page = hid_value->get_hid_usage_page()) {
-          if (auto hid_usage = hid_value->get_hid_usage()) {
-            if (entry.get_event().get_type() == event_queue::event::type::key_code ||
-                entry.get_event().get_type() == event_queue::event::type::consumer_key_code ||
-                entry.get_event().get_type() == event_queue::event::type::pointing_button) {
-              // Send `device_keys_and_pointing_buttons_are_released` event if needed.
+        if (hid_value) {
+          if (auto hid_usage_page = hid_value->get_hid_usage_page()) {
+            if (auto hid_usage = hid_value->get_hid_usage()) {
+              if (entry.get_event().get_type() == event_queue::event::type::key_code ||
+                  entry.get_event().get_type() == event_queue::event::type::consumer_key_code ||
+                  entry.get_event().get_type() == event_queue::event::type::pointing_button) {
+                // Send `device_keys_and_pointing_buttons_are_released` event if needed.
 
-              if (entry.get_event_type() == event_type::key_down) {
-                pressed_keys_.insert(elements_key(*hid_usage_page, *hid_usage));
-              } else {
-                size_t size = pressed_keys_.size();
-                pressed_keys_.erase(elements_key(*hid_usage_page, *hid_usage));
-                if (size > 0) {
-                  post_device_keys_and_pointing_buttons_are_released_event_if_needed(input_event_queue,
-                                                                                     hid_value->get_time_stamp());
+                if (entry.get_event_type() == event_type::key_down) {
+                  pressed_keys_.insert(elements_key(*hid_usage_page, *hid_usage));
+                } else {
+                  size_t size = pressed_keys_.size();
+                  pressed_keys_.erase(elements_key(*hid_usage_page, *hid_usage));
+                  if (size > 0) {
+                    post_device_keys_and_pointing_buttons_are_released_event_if_needed(input_event_queue,
+                                                                                       hid_value->get_time_stamp());
+                  }
                 }
               }
             }
           }
         }
       }
-    }
 
-    values_arrived(input_event_queue);
+      values_arrived(input_event_queue);
+    });
   }
 
   void post_device_keys_and_pointing_buttons_are_released_event_if_needed(std::shared_ptr<event_queue::queue> input_event_queue,
@@ -575,7 +633,12 @@ private:
                              uint32_t report_id,
                              uint8_t* _Nullable report,
                              CFIndex report_length) {
-    report_arrived(type, report_id, report, report_length);
+    auto r = std::make_shared<std::vector<uint8_t>>(report_length);
+    memcpy(&((*r)[0]), report, report_length);
+
+    enqueue_to_dispatcher([this, type, report_id, r] {
+      report_arrived(type, report_id, r);
+    });
   }
 
   uint64_t elements_key(hid_usage_page usage_page, hid_usage usage) const {

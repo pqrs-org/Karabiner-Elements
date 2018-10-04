@@ -9,15 +9,14 @@ class dump_hid_value final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   dump_hid_value(const dump_hid_value&) = delete;
 
-  dump_hid_value(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  dump_hid_value(void) : dispatcher_client() {
     std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
     });
 
-    hid_manager_ = std::make_unique<krbn::hid_manager>(weak_dispatcher,
-                                                       targets);
+    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
       enqueue_to_dispatcher([this, weak_hid] {
@@ -32,8 +31,7 @@ public:
 
           // Observe
 
-          auto hid_observer = std::make_shared<krbn::hid_observer>(weak_dispatcher_,
-                                                                   hid);
+          auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
 
           hid_observer->device_observed.connect([this, weak_hid] {
             enqueue_to_dispatcher([weak_hid] {
@@ -188,23 +186,19 @@ private:
 } // namespace
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
-  auto d = std::make_unique<dump_hid_value>(dispatcher);
+  auto d = std::make_unique<dump_hid_value>();
 
   CFRunLoopRun();
 
   d = nullptr;
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }
