@@ -7,6 +7,7 @@
 // `pqrs::dispatcher::extra::dispatcher_client` can be used safely in a multi-threaded environment.
 
 #include "dispatcher/dispatcher.hpp"
+#include "dispatcher/extra/shared_dispatcher.hpp"
 #include <memory>
 
 namespace pqrs {
@@ -14,8 +15,8 @@ namespace dispatcher {
 namespace extra {
 class dispatcher_client {
 public:
-  dispatcher_client(std::weak_ptr<dispatcher> weak_dispatcher) : weak_dispatcher_(weak_dispatcher),
-                                                                 object_id_(make_new_object_id()) {
+  dispatcher_client(std::weak_ptr<dispatcher> weak_dispatcher = get_shared_dispatcher()) : weak_dispatcher_(weak_dispatcher),
+                                                                                           object_id_(make_new_object_id()) {
     if (auto d = weak_dispatcher_.lock()) {
       d->attach(object_id_);
     }
@@ -45,7 +46,7 @@ public:
 
   std::chrono::milliseconds when_now(void) const {
     if (auto d = weak_dispatcher_.lock()) {
-      if (auto s = d->get_weak_time_source().lock()) {
+      if (auto s = d->lock_weak_time_source()) {
         return s->now();
       }
     }

@@ -4,7 +4,7 @@
   - version: v6.8.0
   - url: <https://github.com/tekezo/Karabiner-VirtualHIDDevice/releases>
 - dispatcher:
-  - version: version_1.9.0
+  - version: version_1.10.0
   - url: <https://github.com/tekezo/dispatcher/releases>
 - spdlog:
   - version: v1.0.0
