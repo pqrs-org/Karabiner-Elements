@@ -114,7 +114,7 @@ private:
 } // namespace
 
 TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 }
 
 TEST_CASE("file_monitor") {
@@ -407,4 +407,8 @@ TEST_CASE("file_monitor") {
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
     REQUIRE(monitor.get_last_file_body2_1() == boost::none);
   }
+}
+
+TEST_CASE("terminate") {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }

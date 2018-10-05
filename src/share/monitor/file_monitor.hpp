@@ -5,6 +5,7 @@
 #include "boost_defs.hpp"
 
 #include "cf_utility.hpp"
+#include "dispatcher.hpp"
 #include "file_utility.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
@@ -14,15 +15,16 @@
 #include <vector>
 
 namespace krbn {
-class file_monitor final {
+class file_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(const std::string& changed_file_path, std::shared_ptr<std::vector<uint8_t>> changed_file_body)> file_changed;
 
   // Methods
 
-  file_monitor(const std::vector<std::string>& files) : files_(files),
+  file_monitor(const std::vector<std::string>& files) : dispatcher_client(),
+                                                        files_(files),
                                                         directories_(cf_utility::create_cfmutablearray()),
                                                         stream_(nullptr) {
     run_loop_thread_ = std::make_shared<cf_utility::run_loop_thread>();
@@ -49,8 +51,8 @@ public:
     }
   }
 
-  ~file_monitor(void) {
-    run_loop_thread_->enqueue(^{
+  virtual ~file_monitor(void) {
+    detach_from_dispatcher([this] {
       unregister_stream();
     });
 
@@ -68,18 +70,19 @@ public:
   }
 
   void async_start(void) {
-    run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this] {
       register_stream();
     });
   }
 
   void enqueue_file_changed(const std::string& file_path) {
-    run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this, file_path] {
       call_file_changed_slots(file_path);
     });
   }
 
 private:
+  // This method is executed in the dispatcher thread.
   void register_stream(void) {
     // Skip if already started.
 
@@ -141,9 +144,12 @@ private:
       if (!FSEventStreamStart(stream_)) {
         logger::get_logger().error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
       }
+
+      // run_loop_thread_->wake();
     }
   }
 
+  // This method is executed in the dispatcher thread.
   void unregister_stream(void) {
     if (stream_) {
       FSEventStreamStop(stream_);
@@ -172,51 +178,66 @@ private:
                        const char* event_paths[],
                        const FSEventStreamEventFlags event_flags[],
                        const FSEventStreamEventId event_ids[]) {
+    struct event {
+      std::string file_path;
+      FSEventStreamEventFlags flags;
+    };
+    auto events = std::make_shared<std::vector<event>>(num_events);
+
     for (size_t i = 0; i < num_events; ++i) {
-      if (event_flags[i] & (kFSEventStreamEventFlagRootChanged |
-                            kFSEventStreamEventFlagKernelDropped |
-                            kFSEventStreamEventFlagUserDropped)) {
-        logger::get_logger().info("The configuration directory is updated.");
-
-        // re-register stream
-        unregister_stream();
-        register_stream();
-
-      } else {
-        // FSEvents passes realpathed file path to callback.
-        // Thus, we should to convert it to file path in `files_`.
-
-        std::string file_path(event_paths[i]);
-        boost::optional<std::string> changed_file_path;
-
-        if (auto realpath = filesystem::realpath(file_path)) {
-          auto it = std::find_if(std::begin(files_),
-                                 std::end(files_),
-                                 [&](auto&& p) {
-                                   return *realpath == filesystem::realpath(p);
-                                 });
-          if (it != std::end(files_)) {
-            stream_file_paths_[file_path] = *it;
-            changed_file_path = *it;
-          }
-        } else {
-          // file_path might be removed.
-          // (`realpath` fails if file does not exist.)
-
-          auto it = stream_file_paths_.find(file_path);
-          if (it != std::end(stream_file_paths_)) {
-            changed_file_path = it->second;
-            stream_file_paths_.erase(it);
-          }
-        }
-
-        if (changed_file_path) {
-          call_file_changed_slots(*changed_file_path);
-        }
+      if (event_paths[i]) {
+        events->push_back({event_paths[i],
+                           event_flags[i]});
       }
     }
+
+    enqueue_to_dispatcher([this, events] {
+      for (auto e : *events) {
+        if (e.flags & (kFSEventStreamEventFlagRootChanged |
+                       kFSEventStreamEventFlagKernelDropped |
+                       kFSEventStreamEventFlagUserDropped)) {
+          logger::get_logger().info("The configuration directory is updated.");
+
+          // re-register stream
+          unregister_stream();
+          register_stream();
+
+        } else {
+          // FSEvents passes realpathed file path to callback.
+          // Thus, we should to convert it to file path in `files_`.
+
+          boost::optional<std::string> changed_file_path;
+
+          if (auto realpath = filesystem::realpath(e.file_path)) {
+            auto it = std::find_if(std::begin(files_),
+                                   std::end(files_),
+                                   [&](auto&& p) {
+                                     return *realpath == filesystem::realpath(p);
+                                   });
+            if (it != std::end(files_)) {
+              stream_file_paths_[e.file_path] = *it;
+              changed_file_path = *it;
+            }
+          } else {
+            // file_path might be removed.
+            // (`realpath` fails if file does not exist.)
+
+            auto it = stream_file_paths_.find(e.file_path);
+            if (it != std::end(stream_file_paths_)) {
+              changed_file_path = it->second;
+              stream_file_paths_.erase(it);
+            }
+          }
+
+          if (changed_file_path) {
+            call_file_changed_slots(*changed_file_path);
+          }
+        }
+      }
+    });
   }
 
+  // This method is executed in the dispatcher thread.
   void call_file_changed_slots(const std::string& file_path) {
     if (std::any_of(std::begin(files_),
                     std::end(files_),
@@ -238,8 +259,10 @@ private:
       }
       file_bodies_[file_path] = file_body;
 
-      file_changed(file_path,
-                   file_utility::read_file(file_path));
+      enqueue_to_dispatcher([this, file_path] {
+        file_changed(file_path,
+                     file_utility::read_file(file_path));
+      });
     }
   }
 
