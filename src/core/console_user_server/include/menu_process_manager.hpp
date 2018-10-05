@@ -4,14 +4,16 @@
 
 #include "application_launcher.hpp"
 #include "boost_utility.hpp"
+#include "dispatcher.hpp"
 #include "monitor/configuration_monitor.hpp"
 
 namespace krbn {
-class menu_process_manager final {
+class menu_process_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   menu_process_manager(const menu_process_manager&) = delete;
 
-  menu_process_manager(std::weak_ptr<configuration_monitor> weak_configuration_monitor) : weak_configuration_monitor_(weak_configuration_monitor) {
+  menu_process_manager(std::weak_ptr<configuration_monitor> weak_configuration_monitor) : dispatcher_client(),
+                                                                                          weak_configuration_monitor_(weak_configuration_monitor) {
     if (auto configuration_monitor = weak_configuration_monitor_.lock()) {
       // core_configuration_updated
       {
@@ -31,17 +33,9 @@ public:
   }
 
   ~menu_process_manager(void) {
-    // Disconnect `configuration_monitor_connections_`.
-
-    if (auto configuration_monitor = weak_configuration_monitor_.lock()) {
-      configuration_monitor->get_run_loop_thread()->enqueue(^{
-        configuration_monitor_connections_.disconnect_all_connections();
-      });
-    } else {
+    detach_from_dispatcher([this] {
       configuration_monitor_connections_.disconnect_all_connections();
-    }
-
-    configuration_monitor_connections_.wait_disconnect_all_connections();
+    });
   }
 
 private:
