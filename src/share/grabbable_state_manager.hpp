@@ -16,7 +16,7 @@ class grabbable_state_manager final : public pqrs::dispatcher::extra::dispatcher
 public:
 #include "grabbable_state_manager/entry.hpp"
 
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(const grabbable_state&)> grabbable_state_changed;
 
@@ -24,7 +24,7 @@ public:
 
   grabbable_state_manager(const grabbable_state_manager&) = delete;
 
-  grabbable_state_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  grabbable_state_manager(void) : dispatcher_client() {
   }
 
   virtual ~grabbable_state_manager(void) {

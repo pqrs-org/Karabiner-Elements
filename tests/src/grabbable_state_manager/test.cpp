@@ -16,7 +16,7 @@ auto registry_entry_id2 = krbn::registry_entry_id(4002);
 TEST_CASE("initialize") {
   using namespace std::string_literals;
 
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   {
     auto device_detail = std::make_shared<krbn::device_detail>(krbn::vendor_id(1001),
@@ -57,7 +57,7 @@ TEST_CASE("grabbable_state_manager") {
   auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
   auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
-  auto grabbable_state_manager = std::make_unique<krbn::grabbable_state_manager>(dispatcher);
+  auto grabbable_state_manager = std::make_unique<krbn::grabbable_state_manager>();
 
   krbn::event_queue::queue event_queue;
 
@@ -444,7 +444,7 @@ TEST_CASE("device_error") {
   auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
   auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
-  auto grabbable_state_manager = std::make_unique<krbn::grabbable_state_manager>(dispatcher);
+  auto grabbable_state_manager = std::make_unique<krbn::grabbable_state_manager>();
 
   krbn::event_queue::queue event_queue;
 
@@ -507,4 +507,8 @@ TEST_CASE("device_error") {
 
   dispatcher->terminate();
   dispatcher = nullptr;
+}
+
+TEST_CASE("terminate") {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }

@@ -18,12 +18,11 @@ class device_observer final : public pqrs::dispatcher::extra::dispatcher_client 
 public:
   device_observer(const device_observer&) = delete;
 
-  device_observer(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                  std::weak_ptr<grabber_client> grabber_client) : dispatcher_client(weak_dispatcher),
+  device_observer(std::weak_ptr<grabber_client> grabber_client) : dispatcher_client(),
                                                                   grabber_client_(grabber_client) {
     // grabbable_state_manager_
 
-    grabbable_state_manager_ = std::make_unique<grabbable_state_manager>(weak_dispatcher);
+    grabbable_state_manager_ = std::make_unique<grabbable_state_manager>();
 
     grabbable_state_manager_->grabbable_state_changed.connect([this](auto&& grabbable_state) {
       enqueue_to_dispatcher([this, grabbable_state] {
@@ -41,8 +40,7 @@ public:
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
     });
 
-    hid_manager_ = std::make_unique<hid_manager>(weak_dispatcher_,
-                                                 targets);
+    hid_manager_ = std::make_unique<hid_manager>(targets);
 
     hid_manager_->device_detecting.connect([](auto&& device) {
       if (iokit_utility::is_karabiner_virtual_hid_device(device)) {
@@ -70,8 +68,7 @@ public:
             });
           });
 
-          auto observer = std::make_shared<hid_observer>(weak_dispatcher_,
-                                                         hid);
+          auto observer = std::make_shared<hid_observer>(hid);
 
           observer->device_observed.connect([this, weak_hid] {
             enqueue_to_dispatcher([this, weak_hid] {
