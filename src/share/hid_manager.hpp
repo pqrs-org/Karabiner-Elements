@@ -16,7 +16,7 @@
 namespace krbn {
 class hid_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   // Return false to ignore device.
   boost::signals2::signal<bool(IOHIDDeviceRef _Nonnull), boost_utility::signals2_combiner_call_while_true> device_detecting;
@@ -227,7 +227,9 @@ private:
           hids_.push_back(hid);
         }
 
-        device_detected(hid);
+        enqueue_to_dispatcher([this, hid] {
+          device_detected(hid);
+        });
       }
 
     finish:
@@ -282,7 +284,10 @@ private:
 
         if (hid) {
           hid->set_removed();
-          device_removed(hid);
+
+          enqueue_to_dispatcher([this, hid] {
+            device_removed(hid);
+          });
         }
 
         // There might be multiple devices for one registry_entry_id.

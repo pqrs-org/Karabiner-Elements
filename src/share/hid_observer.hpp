@@ -11,7 +11,7 @@
 namespace krbn {
 class hid_observer final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(void)> device_observed;
   boost::signals2::signal<void(void)> device_unobserved;
@@ -31,7 +31,9 @@ public:
           if (auto hid = weak_hid_.lock()) {
             observed_ = true;
 
-            device_observed();
+            enqueue_to_dispatcher([this] {
+              device_observed();
+            });
 
             hid->async_queue_start();
             hid->async_schedule();
@@ -58,7 +60,9 @@ public:
       {
         auto c = hid->closed.connect([this] {
           if (auto hid = weak_hid_.lock()) {
-            device_unobserved();
+            enqueue_to_dispatcher([this] {
+              device_unobserved();
+            });
           }
         });
         human_interface_device_connections_.push_back(c);
@@ -74,7 +78,9 @@ public:
                                        hid->get_name_for_log());
             logger_unique_filter_.error(message);
 
-            device_unobserved();
+            enqueue_to_dispatcher([this] {
+              device_unobserved();
+            });
           }
         });
         human_interface_device_connections_.push_back(c);

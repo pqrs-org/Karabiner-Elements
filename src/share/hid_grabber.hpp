@@ -27,7 +27,7 @@ public:
     }
   };
 
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<grabbable_state::state(void), signal2_combiner_call_while_grabbable> device_grabbing;
   boost::signals2::signal<void(void)> device_grabbed;
@@ -49,7 +49,9 @@ public:
             if (auto hid = weak_hid_.lock()) {
               grabbed_ = true;
 
-              device_grabbed();
+              enqueue_to_dispatcher([this] {
+                device_grabbed();
+              });
 
               hid->async_queue_start();
               hid->async_schedule();
@@ -80,7 +82,9 @@ public:
         auto c = hid->closed.connect([this] {
           enqueue_to_dispatcher([this] {
             if (auto hid = weak_hid_.lock()) {
-              device_ungrabbed();
+              enqueue_to_dispatcher([this] {
+                device_ungrabbed();
+              });
             }
           });
         });
@@ -98,7 +102,9 @@ public:
                                          hid->get_name_for_log());
               logger_unique_filter_.error(message);
 
-              device_ungrabbed();
+              enqueue_to_dispatcher([this] {
+                device_ungrabbed();
+              });
             }
           });
         });
