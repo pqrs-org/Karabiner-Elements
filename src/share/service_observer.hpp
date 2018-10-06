@@ -28,7 +28,7 @@ public:
     }
 
     if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-      CFRunLoopAddSource(CFRunLoopGetMain(), loop_source, kCFRunLoopDefaultMode);
+      CFRunLoopAddSource(CFRunLoopGetMain(), loop_source, kCFRunLoopCommonModes);
     } else {
       logger::get_logger().error("IONotificationPortGetRunLoopSource is failed @ {0}", __PRETTY_FUNCTION__);
     }
@@ -83,7 +83,7 @@ public:
 
       if (notification_port_) {
         if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-          CFRunLoopRemoveSource(CFRunLoopGetMain(), loop_source, kCFRunLoopDefaultMode);
+          CFRunLoopRemoveSource(CFRunLoopGetMain(), loop_source, kCFRunLoopCommonModes);
         }
 
         IONotificationPortDestroy(notification_port_);

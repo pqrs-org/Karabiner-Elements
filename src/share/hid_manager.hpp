@@ -85,7 +85,7 @@ private:
 
     IOHIDManagerScheduleWithRunLoop(manager_,
                                     run_loop_thread_->get_run_loop(),
-                                    kCFRunLoopDefaultMode);
+                                    kCFRunLoopCommonModes);
 
     // We need to call `wake` after `IOHIDManagerScheduleWithRunLoop`.
 
@@ -114,7 +114,7 @@ private:
 
     IOHIDManagerUnscheduleFromRunLoop(manager_,
                                       run_loop_thread_->get_run_loop(),
-                                      kCFRunLoopDefaultMode);
+                                      kCFRunLoopCommonModes);
     CFRelease(manager_);
     manager_ = nullptr;
 

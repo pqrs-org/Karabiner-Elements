@@ -455,11 +455,11 @@ private:
 
     IOHIDDeviceScheduleWithRunLoop(device_,
                                    run_loop_thread_->get_run_loop(),
-                                   kCFRunLoopDefaultMode);
+                                   kCFRunLoopCommonModes);
     if (queue_) {
       IOHIDQueueScheduleWithRunLoop(queue_,
                                     run_loop_thread_->get_run_loop(),
-                                    kCFRunLoopDefaultMode);
+                                    kCFRunLoopCommonModes);
     }
 
     run_loop_thread_->wake();
@@ -474,11 +474,11 @@ private:
     if (queue_) {
       IOHIDQueueUnscheduleFromRunLoop(queue_,
                                       run_loop_thread_->get_run_loop(),
-                                      kCFRunLoopDefaultMode);
+                                      kCFRunLoopCommonModes);
     }
     IOHIDDeviceUnscheduleFromRunLoop(device_,
                                      run_loop_thread_->get_run_loop(),
-                                     kCFRunLoopDefaultMode);
+                                     kCFRunLoopCommonModes);
   }
 
   // This method is executed in the dispatcher thread.

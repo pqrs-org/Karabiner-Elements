@@ -140,7 +140,7 @@ private:
     } else {
       FSEventStreamScheduleWithRunLoop(stream_,
                                        run_loop_thread_->get_run_loop(),
-                                       kCFRunLoopDefaultMode);
+                                       kCFRunLoopCommonModes);
       if (!FSEventStreamStart(stream_)) {
         logger::get_logger().error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
       }

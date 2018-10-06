@@ -148,12 +148,12 @@ public:
 
         CFRunLoopAddSource(run_loop_,
                            source,
-                           kCFRunLoopDefaultMode);
+                           kCFRunLoopCommonModes);
 
         // Run
 
         CFRunLoopPerformBlock(run_loop_,
-                              kCFRunLoopDefaultMode,
+                              kCFRunLoopCommonModes,
                               ^{
                                 {
                                   std::lock_guard<std::mutex> lock(running_mutex_);
@@ -169,7 +169,7 @@ public:
 
         CFRunLoopRemoveSource(run_loop_,
                               source,
-                              kCFRunLoopDefaultMode);
+                              kCFRunLoopCommonModes);
 
         CFRelease(source);
       });
@@ -211,7 +211,7 @@ public:
       wait_until_running();
 
       CFRunLoopPerformBlock(run_loop_,
-                            kCFRunLoopDefaultMode,
+                            kCFRunLoopCommonModes,
                             block);
 
       CFRunLoopWakeUp(run_loop_);

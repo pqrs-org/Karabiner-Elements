@@ -43,7 +43,7 @@ void device_matching_callback(void* _Nullable context,
 
   IOHIDDeviceOpen(device, kIOHIDOptionsTypeNone);
   IOHIDDeviceRegisterInputReportCallback(device, buffer, sizeof(buffer), input_report_callback, nullptr);
-  IOHIDDeviceScheduleWithRunLoop(device, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+  IOHIDDeviceScheduleWithRunLoop(device, CFRunLoopGetMain(), kCFRunLoopCommonModes);
 }
 } // namespace
 
@@ -67,7 +67,7 @@ int main(int argc, const char* argv[]) {
     if (auto manager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone)) {
       IOHIDManagerSetDeviceMatching(manager, device_matching_dictionary);
       IOHIDManagerRegisterDeviceMatchingCallback(manager, device_matching_callback, nullptr);
-      IOHIDManagerScheduleWithRunLoop(manager, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+      IOHIDManagerScheduleWithRunLoop(manager, CFRunLoopGetMain(), kCFRunLoopCommonModes);
     }
 
     CFRelease(device_matching_dictionary);
