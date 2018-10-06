@@ -5,14 +5,15 @@
 #include "boost_defs.hpp"
 
 #include "cf_utility.hpp"
+#include "dispatcher.hpp"
 #include "event_tap_utility.hpp"
 #include "logger.hpp"
 #include <boost/signals2.hpp>
 
 namespace krbn {
-class event_tap_monitor final {
+class event_tap_monitor final : pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(bool)> caps_lock_state_changed;
   boost::signals2::signal<void(event_type, event_queue::event)> pointing_device_event_arrived;
@@ -21,13 +22,14 @@ public:
 
   event_tap_monitor(const event_tap_monitor&) = delete;
 
-  event_tap_monitor(void) : event_tap_(nullptr),
+  event_tap_monitor(void) : dispatcher_client(),
+                            event_tap_(nullptr),
                             run_loop_source_(nullptr) {
     run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
   }
 
   ~event_tap_monitor(void) {
-    run_loop_thread_->enqueue(^{
+    detach_from_dispatcher([this] {
       if (event_tap_) {
         CGEventTapEnable(event_tap_, false);
 
@@ -50,7 +52,7 @@ public:
   }
 
   void async_start(void) {
-    run_loop_thread_->enqueue(^{
+    enqueue_to_dispatcher([this] {
       if (event_tap_) {
         return;
       }
@@ -88,6 +90,8 @@ public:
                              run_loop_source_,
                              kCFRunLoopCommonModes);
           CGEventTapEnable(event_tap_, true);
+
+          run_loop_thread_->wake();
 
           logger::get_logger().info("event_tap_monitor initialized");
         }
@@ -127,7 +131,9 @@ private:
               *old_caps_lock_state == *new_caps_lock_state) {
             // the caps lock state is not changed.
           } else {
-            caps_lock_state_changed(*new_caps_lock_state);
+            enqueue_to_dispatcher([this, new_caps_lock_state] {
+              caps_lock_state_changed(*new_caps_lock_state);
+            });
           }
         }
         break;
@@ -144,7 +150,9 @@ private:
       case kCGEventOtherMouseUp:
       case kCGEventOtherMouseDragged:
         if (auto pair = event_tap_utility::make_event(type, event)) {
-          pointing_device_event_arrived(pair->first, pair->second);
+          enqueue_to_dispatcher([this, pair] {
+            pointing_device_event_arrived(pair->first, pair->second);
+          });
         }
         break;
 
