@@ -145,7 +145,7 @@ private:
         logger::get_logger().error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
       }
 
-      // run_loop_thread_->wake();
+      run_loop_thread_->wake();
     }
   }
 
