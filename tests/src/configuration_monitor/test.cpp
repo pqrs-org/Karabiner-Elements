@@ -47,7 +47,7 @@ private:
 } // namespace
 
 TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 }
 
 TEST_CASE("configuration_monitor") {
@@ -206,4 +206,8 @@ TEST_CASE("configuration_monitor") {
     REQUIRE(monitor.get_count() == 2);
     REQUIRE(monitor.get_selected_profile_name() == "user1");
   }
+}
+
+TEST_CASE("terminate") {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }

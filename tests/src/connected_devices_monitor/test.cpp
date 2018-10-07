@@ -42,7 +42,7 @@ private:
 } // namespace
 
 TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 }
 
 TEST_CASE("connected_devices_monitor") {
@@ -157,4 +157,8 @@ TEST_CASE("connected_devices_monitor") {
     REQUIRE(monitor.get_last_connected_devices()->get_devices().size() == 1);
     REQUIRE(monitor.get_last_connected_devices()->get_devices()[0].get_descriptions().get_manufacturer() == "test1");
   }
+}
+
+TEST_CASE("terminate") {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }

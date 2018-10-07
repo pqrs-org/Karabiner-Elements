@@ -5,7 +5,7 @@
 #include "thread_utility.hpp"
 
 TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 }
 
 TEST_CASE("version_monitor") {
@@ -102,4 +102,8 @@ TEST_CASE("version_monitor") {
 
     REQUIRE(last_changed_version == "1.3.0");
   }
+}
+
+TEST_CASE("terminate") {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }

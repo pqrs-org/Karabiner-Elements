@@ -4,11 +4,10 @@
 #include "boost_defs.hpp"
 
 #include "monitor/grabber_alerts_monitor.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 }
 
 TEST_CASE("grabber_alerts_monitor") {
@@ -79,4 +78,8 @@ TEST_CASE("grabber_alerts_monitor") {
       REQUIRE(!last_alerts);
     }
   }
+}
+
+TEST_CASE("terminate") {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }

@@ -2,12 +2,7 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "connected_devices.hpp"
-#include "thread_utility.hpp"
 #include <iostream>
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("connected_devices::device::descriptions") {
   {
