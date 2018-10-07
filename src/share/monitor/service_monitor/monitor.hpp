@@ -69,6 +69,7 @@ public:
   }
 
 private:
+  // This method is executed in the dispatcher thread.
   void start(void) {
     if (!notification_port_) {
       notification_port_ = IONotificationPortCreate(kIOMasterPortDefault);
@@ -125,6 +126,7 @@ private:
     }
   }
 
+  // This method is executed in the dispatcher thread.
   void stop(void) {
     if (matched_notification_) {
       IOObjectRelease(matched_notification_);

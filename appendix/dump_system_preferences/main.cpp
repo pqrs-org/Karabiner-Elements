@@ -5,18 +5,15 @@
 #include <iostream>
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   auto configuration_monitor = std::make_shared<krbn::configuration_monitor>(krbn::constants::get_user_core_configuration_file_path());
 
-  auto monitor = std::make_unique<krbn::system_preferences_monitor>(dispatcher, configuration_monitor);
+  auto monitor = std::make_unique<krbn::system_preferences_monitor>(configuration_monitor);
 
   monitor->system_preferences_changed.connect([](auto&& system_preferences) {
     std::cout << "system_preferences_updated_callback:" << std::endl;
@@ -35,8 +32,7 @@ int main(int argc, const char* argv[]) {
 
   monitor = nullptr;
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }

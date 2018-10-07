@@ -13,9 +13,9 @@
 #include <fstream>
 
 namespace krbn {
-class version_monitor final {
+class version_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(const std::string& version)> changed;
 
@@ -51,13 +51,17 @@ public:
 
         version_ = changed_file_body;
 
-        changed(version_string);
+        enqueue_to_dispatcher([this, version_string] {
+          changed(version_string);
+        });
       }
     });
   }
 
-  ~version_monitor(void) {
-    file_monitor_ = nullptr;
+  virtual ~version_monitor(void) {
+    detach_from_dispatcher([this] {
+      file_monitor_ = nullptr;
+    });
   }
 
   void async_start() {

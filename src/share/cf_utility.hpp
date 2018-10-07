@@ -204,6 +204,16 @@ public:
       return run_loop_;
     }
 
+    void wake(void) const {
+      // Do not touch run_loop_ until `CFRunLoopRun` is called.
+      // A segmentation fault occurs if we touch `run_loop_` while `CFRunLoopRun' is processing.
+
+      wait_until_running();
+
+      CFRunLoopWakeUp(run_loop_);
+    }
+
+  private:
     void enqueue(void (^_Nonnull block)(void)) const {
       // Do not call `CFRunLoopPerformBlock` until `CFRunLoopRun` is called.
       // A segmentation fault occurs if we call `CFRunLoopPerformBlock` while `CFRunLoopRun' is processing.
@@ -217,16 +227,6 @@ public:
       CFRunLoopWakeUp(run_loop_);
     }
 
-    void wake(void) const {
-      // Do not touch run_loop_ until `CFRunLoopRun` is called.
-      // A segmentation fault occurs if we touch `run_loop_` while `CFRunLoopRun' is processing.
-
-      wait_until_running();
-
-      CFRunLoopWakeUp(run_loop_);
-    }
-
-  private:
     void wait_until_running(void) const {
       std::unique_lock<std::mutex> lock(running_mutex_);
 

@@ -171,8 +171,7 @@ private:
 
     // system_preferences_monitor_
 
-    system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(weak_dispatcher_,
-                                                                               configuration_monitor_);
+    system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(configuration_monitor_);
 
     system_preferences_monitor_->system_preferences_changed.connect([this](auto&& system_preferences) {
       enqueue_to_dispatcher([this, system_preferences] {

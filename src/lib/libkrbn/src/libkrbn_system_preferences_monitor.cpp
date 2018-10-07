@@ -11,8 +11,7 @@ public:
   libkrbn_system_preferences_monitor_class(libkrbn_system_preferences_monitor_callback callback,
                                            void* refcon,
                                            std::weak_ptr<krbn::configuration_monitor> weak_configuration_monitor) {
-    system_preferences_monitor_ = std::make_unique<krbn::system_preferences_monitor>(libkrbn_cpp::get_weak_dispatcher(),
-                                                                                     weak_configuration_monitor);
+    system_preferences_monitor_ = std::make_unique<krbn::system_preferences_monitor>(weak_configuration_monitor);
 
     system_preferences_monitor_->system_preferences_changed.connect([callback, refcon](auto&& system_preferences) {
       if (callback) {
