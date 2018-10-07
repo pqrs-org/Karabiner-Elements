@@ -60,17 +60,17 @@ private:
   mutable std::mutex mutex_;
 };
 
-void initialize_shared_dispatcher(void) {
+inline void initialize_shared_dispatcher(void) {
   auto p = shared_dispatcher::get_shared_dispatcher();
   p->initialize();
 }
 
-void terminate_shared_dispatcher(void) {
+inline void terminate_shared_dispatcher(void) {
   auto p = shared_dispatcher::get_shared_dispatcher();
   p->terminate();
 }
 
-std::shared_ptr<dispatcher> get_shared_dispatcher(void) {
+inline std::shared_ptr<dispatcher> get_shared_dispatcher(void) {
   auto p = shared_dispatcher::get_shared_dispatcher();
   return p->get_dispatcher();
 }
