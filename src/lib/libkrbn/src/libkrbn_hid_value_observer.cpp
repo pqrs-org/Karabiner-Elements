@@ -17,8 +17,7 @@ public:
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
     });
 
-    hid_manager_ = std::make_unique<krbn::hid_manager>(libkrbn_cpp::get_weak_dispatcher(),
-                                                       targets);
+    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
       if (auto hid = weak_hid.lock()) {
@@ -26,8 +25,7 @@ public:
           values_arrived(event_queue);
         });
 
-        auto hid_observer = std::make_shared<krbn::hid_observer>(libkrbn_cpp::get_weak_dispatcher(),
-                                                                 hid);
+        auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
 
         hid_observer->device_observed.connect([this, weak_hid] {
           if (auto hid = weak_hid.lock()) {

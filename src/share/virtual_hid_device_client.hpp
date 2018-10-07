@@ -24,7 +24,7 @@ public:
                                     virtual_hid_keyboard_ready_(false) {
   }
 
-  ~virtual_hid_device_client(void) {
+  virtual ~virtual_hid_device_client(void) {
     detach_from_dispatcher([this] {
       close_connection();
 
@@ -38,10 +38,10 @@ public:
         service_monitor_ = std::make_unique<monitor::service_monitor::monitor>(matching_dictionary);
 
         service_monitor_->service_detected.connect([this](auto&& services) {
-          // Use first matched service.
           if (!services->get_services().empty()) {
             close_connection();
 
+            // Use first matched service.
             open_connection(services->get_services().front());
           }
         });
@@ -49,6 +49,9 @@ public:
         service_monitor_->service_removed.connect([this](auto&& services) {
           if (!services->get_services().empty()) {
             close_connection();
+
+            // Use the next service
+            service_monitor_->async_invoke_service_detected();
           }
         });
 

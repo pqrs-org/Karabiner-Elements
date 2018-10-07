@@ -1,8 +1,11 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
 #include "dispatcher.hpp"
 #include "logger.hpp"
 #include "services.hpp"
+#include <boost/signals2.hpp>
 
 namespace krbn {
 namespace monitor {
@@ -27,7 +30,7 @@ public:
     }
   }
 
-  ~monitor(void) {
+  virtual ~monitor(void) {
     detach_from_dispatcher([this] {
       stop();
     });
@@ -46,6 +49,22 @@ public:
   void async_stop(void) {
     enqueue_to_dispatcher([this] {
       stop();
+    });
+  }
+
+  void async_invoke_service_detected(void) {
+    enqueue_to_dispatcher([this] {
+      if (matching_dictionary_) {
+        CFRetain(matching_dictionary_);
+        io_iterator_t it;
+        auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, matching_dictionary_, &it);
+        if (kr != KERN_SUCCESS) {
+          logger::get_logger().error("IOServiceGetMatchingServices error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        } else {
+          matched_callback(it);
+          IOObjectRelease(it);
+        }
+      }
     });
   }
 

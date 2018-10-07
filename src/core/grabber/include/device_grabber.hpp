@@ -54,20 +54,16 @@ public:
     virtual_hid_device_client_ = std::make_shared<virtual_hid_device_client>();
 
     client_connected_connection_ = virtual_hid_device_client_->client_connected.connect([this] {
-      enqueue_to_dispatcher([this] {
-        logger::get_logger().info("virtual_hid_device_client_ is connected");
+      logger::get_logger().info("virtual_hid_device_client_ is connected");
 
-        update_virtual_hid_keyboard();
-        update_virtual_hid_pointing();
-      });
+      update_virtual_hid_keyboard();
+      update_virtual_hid_pointing();
     });
 
     client_disconnected_connection_ = virtual_hid_device_client_->client_disconnected.connect([this] {
-      enqueue_to_dispatcher([this] {
-        logger::get_logger().info("virtual_hid_device_client_ is disconnected");
+      logger::get_logger().info("virtual_hid_device_client_ is disconnected");
 
-        stop();
-      });
+      stop();
     });
 
     if (auto m = weak_grabbable_state_queues_manager_.lock()) {
@@ -221,10 +217,10 @@ public:
 
           if (hid->is_keyboard() &&
               hid->is_karabiner_virtual_hid_device()) {
-            virtual_hid_device_client_->close();
+            virtual_hid_device_client_->async_close();
             async_ungrab_devices();
 
-            virtual_hid_device_client_->connect();
+            virtual_hid_device_client_->async_connect();
             async_grab_devices();
           }
 
@@ -311,7 +307,7 @@ public:
 
       configuration_monitor_->async_start();
 
-      virtual_hid_device_client_->connect();
+      virtual_hid_device_client_->async_connect();
     });
   }
 
@@ -445,7 +441,7 @@ private:
 
     event_tap_monitor_ = nullptr;
 
-    virtual_hid_device_client_->close();
+    virtual_hid_device_client_->async_close();
   }
 
   std::shared_ptr<device_state> find_device_state(registry_entry_id registry_entry_id) const {
@@ -734,7 +730,7 @@ private:
       pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
       properties.country_code = profile_.get_virtual_hid_keyboard().get_country_code();
 
-      virtual_hid_device_client_->initialize_virtual_hid_keyboard(properties);
+      virtual_hid_device_client_->async_initialize_virtual_hid_keyboard(properties);
     }
   }
 
@@ -742,11 +738,11 @@ private:
     if (virtual_hid_device_client_->is_connected()) {
       if (is_pointing_device_grabbed() ||
           manipulator_managers_connector_.needs_virtual_hid_pointing()) {
-        virtual_hid_device_client_->initialize_virtual_hid_pointing();
+        virtual_hid_device_client_->async_initialize_virtual_hid_pointing();
         return;
       }
 
-      virtual_hid_device_client_->terminate_virtual_hid_pointing();
+      virtual_hid_device_client_->async_terminate_virtual_hid_pointing();
     }
   }
 

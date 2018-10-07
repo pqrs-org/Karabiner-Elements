@@ -68,7 +68,11 @@ int main(int argc, const char* argv[]) {
 
   auto p = std::make_unique<control_led>(std::string(argv[1]) == "on");
 
+  // ------------------------------------------------------------
+
   CFRunLoopRun();
+
+  // ------------------------------------------------------------
 
   p = nullptr;
 

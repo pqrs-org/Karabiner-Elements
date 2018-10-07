@@ -75,7 +75,11 @@ int main(int argc, const char* argv[]) {
 
   auto d = std::make_unique<dump_hid_report>();
 
+  // ------------------------------------------------------------
+
   CFRunLoopRun();
+
+  // ------------------------------------------------------------
 
   d = nullptr;
 
