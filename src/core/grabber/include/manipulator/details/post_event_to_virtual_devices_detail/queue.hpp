@@ -417,27 +417,27 @@ public:
 
             if (auto input = e.get_keyboard_input()) {
               if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->post_keyboard_input_report(*input);
+                client->async_post_keyboard_input_report(*input);
               }
             }
             if (auto input = e.get_consumer_input()) {
               if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->post_keyboard_input_report(*input);
+                client->async_post_keyboard_input_report(*input);
               }
             }
             if (auto input = e.get_apple_vendor_top_case_input()) {
               if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->post_keyboard_input_report(*input);
+                client->async_post_keyboard_input_report(*input);
               }
             }
             if (auto input = e.get_apple_vendor_keyboard_input()) {
               if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->post_keyboard_input_report(*input);
+                client->async_post_keyboard_input_report(*input);
               }
             }
             if (auto pointing_input = e.get_pointing_input()) {
               if (auto client = weak_virtual_hid_device_client.lock()) {
-                client->post_pointing_input_report(*pointing_input);
+                client->async_post_pointing_input_report(*pointing_input);
               }
             }
             if (auto shell_command = e.get_shell_command()) {

@@ -5,7 +5,7 @@
 #include "virtual_hid_device_client.hpp"
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -27,7 +27,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "connected" << std::endl;
 
     pqrs::karabiner_virtual_hid_device::properties::keyboard_initialization properties;
-    virtual_hid_device_client->initialize_virtual_hid_keyboard(properties);
+    virtual_hid_device_client->async_initialize_virtual_hid_keyboard(properties);
   });
 
   virtual_hid_device_client->virtual_hid_keyboard_ready.connect([&] {
@@ -155,7 +155,7 @@ int main(int argc, const char* argv[]) {
     }
   });
 
-  virtual_hid_device_client->connect();
+  virtual_hid_device_client->async_connect();
 
   // ------------------------------------------------------------
 
@@ -168,6 +168,8 @@ int main(int argc, const char* argv[]) {
 
   dispatcher->terminate();
   dispatcher = nullptr;
+
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }
