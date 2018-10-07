@@ -12,7 +12,7 @@
 namespace krbn {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(void)> bound;
   boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
@@ -22,8 +22,8 @@ public:
 
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                          last_select_input_source_time_stamp_(0) {
+  receiver(void) : dispatcher_client(),
+                   last_select_input_source_time_stamp_(0) {
   }
 
   virtual ~receiver(void) {
@@ -74,66 +74,64 @@ public:
       });
 
       server_manager_->received.connect([this](auto&& buffer) {
-        enqueue_to_dispatcher([this, buffer] {
-          if (auto type = types::find_operation_type(*buffer)) {
-            switch (*type) {
-              case operation_type::shell_command_execution:
-                if (buffer->size() != sizeof(operation_type_shell_command_execution_struct)) {
-                  logger::get_logger().error("invalid size for operation_type::shell_command_execution");
-                } else {
-                  auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(&((*buffer)[0]));
+        if (auto type = types::find_operation_type(*buffer)) {
+          switch (*type) {
+            case operation_type::shell_command_execution:
+              if (buffer->size() != sizeof(operation_type_shell_command_execution_struct)) {
+                logger::get_logger().error("invalid size for operation_type::shell_command_execution");
+              } else {
+                auto p = reinterpret_cast<operation_type_shell_command_execution_struct*>(&((*buffer)[0]));
 
-                  // Ensure shell_command is null-terminated string even if corrupted data is sent.
-                  p->shell_command[sizeof(p->shell_command) - 1] = '\0';
+                // Ensure shell_command is null-terminated string even if corrupted data is sent.
+                p->shell_command[sizeof(p->shell_command) - 1] = '\0';
 
-                  std::string background_shell_command = shell_utility::make_background_command(p->shell_command);
-                  system(background_shell_command.c_str());
+                std::string background_shell_command = shell_utility::make_background_command(p->shell_command);
+                system(background_shell_command.c_str());
+              }
+              break;
+
+            case operation_type::select_input_source:
+              if (buffer->size() != sizeof(operation_type_select_input_source_struct)) {
+                logger::get_logger().error("invalid size for operation_type::select_input_source");
+              } else {
+                auto p = reinterpret_cast<operation_type_select_input_source_struct*>(&((*buffer)[0]));
+
+                // Ensure input_source_selector's strings are null-terminated string even if corrupted data is sent.
+                p->language[sizeof(p->language) - 1] = '\0';
+                p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
+                p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
+
+                auto time_stamp = p->time_stamp;
+                boost::optional<std::string> language(std::string(p->language));
+                boost::optional<std::string> input_source_id(std::string(p->input_source_id));
+                boost::optional<std::string> input_mode_id(std::string(p->input_mode_id));
+                if (language && language->empty()) {
+                  language = boost::none;
                 }
-                break;
-
-              case operation_type::select_input_source:
-                if (buffer->size() != sizeof(operation_type_select_input_source_struct)) {
-                  logger::get_logger().error("invalid size for operation_type::select_input_source");
-                } else {
-                  auto p = reinterpret_cast<operation_type_select_input_source_struct*>(&((*buffer)[0]));
-
-                  // Ensure input_source_selector's strings are null-terminated string even if corrupted data is sent.
-                  p->language[sizeof(p->language) - 1] = '\0';
-                  p->input_source_id[sizeof(p->input_source_id) - 1] = '\0';
-                  p->input_mode_id[sizeof(p->input_mode_id) - 1] = '\0';
-
-                  auto time_stamp = p->time_stamp;
-                  boost::optional<std::string> language(std::string(p->language));
-                  boost::optional<std::string> input_source_id(std::string(p->input_source_id));
-                  boost::optional<std::string> input_mode_id(std::string(p->input_mode_id));
-                  if (language && language->empty()) {
-                    language = boost::none;
-                  }
-                  if (input_source_id && input_source_id->empty()) {
-                    input_source_id = boost::none;
-                  }
-                  if (input_mode_id && input_mode_id->empty()) {
-                    input_mode_id = boost::none;
-                  }
-
-                  input_source_selector input_source_selector(language,
-                                                              input_source_id,
-                                                              input_mode_id);
-
-                  if (last_select_input_source_time_stamp_ == time_stamp) {
-                    return;
-                  }
-                  if (input_source_manager_.select(input_source_selector)) {
-                    last_select_input_source_time_stamp_ = time_stamp;
-                  }
+                if (input_source_id && input_source_id->empty()) {
+                  input_source_id = boost::none;
                 }
-                break;
+                if (input_mode_id && input_mode_id->empty()) {
+                  input_mode_id = boost::none;
+                }
 
-              default:
-                break;
-            }
+                input_source_selector input_source_selector(language,
+                                                            input_source_id,
+                                                            input_mode_id);
+
+                if (last_select_input_source_time_stamp_ == time_stamp) {
+                  return;
+                }
+                if (input_source_manager_.select(input_source_selector)) {
+                  last_select_input_source_time_stamp_ = time_stamp;
+                }
+              }
+              break;
+
+            default:
+              break;
           }
-        });
+        }
       });
 
       server_manager_->async_start();

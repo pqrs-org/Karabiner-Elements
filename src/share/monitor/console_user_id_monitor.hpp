@@ -15,7 +15,7 @@
 namespace krbn {
 class console_user_id_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(boost::optional<uid_t>)> console_user_id_changed;
 
@@ -23,8 +23,8 @@ public:
 
   console_user_id_monitor(const console_user_id_monitor&) = delete;
 
-  console_user_id_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                                         timer_(*this) {
+  console_user_id_monitor(void) : dispatcher_client(),
+                                  timer_(*this) {
   }
 
   virtual ~console_user_id_monitor(void) {
@@ -49,11 +49,14 @@ public:
   }
 
 private:
+  // This method is executed in the dispatcher thread.
   void check(void) {
     auto u = session::get_current_console_user_id();
     if (!uid_ || *uid_ != u) {
       uid_ = std::make_unique<boost::optional<uid_t>>(u);
-      console_user_id_changed(u);
+      enqueue_to_dispatcher([this, u] {
+        console_user_id_changed(u);
+      });
     }
   }
 

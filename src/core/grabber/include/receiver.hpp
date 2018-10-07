@@ -82,7 +82,7 @@ public:
                 logger::get_logger().info("karabiner_console_user_server is connected (pid:{0})", p->pid);
 
                 console_user_server_client_ = nullptr;
-                console_user_server_client_ = std::make_shared<console_user_server_client>(weak_dispatcher_);
+                console_user_server_client_ = std::make_shared<console_user_server_client>();
 
                 console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
                   enqueue_to_dispatcher([this, user_core_configuration_file_path] {

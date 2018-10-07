@@ -91,7 +91,7 @@ private:
       return it->second;
     }
 
-    auto queue = std::make_shared<grabbable_state_queue>(weak_dispatcher_);
+    auto queue = std::make_shared<grabbable_state_queue>();
     queue->grabbable_state_changed.connect([this, registry_entry_id](auto&& grabbable_state) {
       grabbable_state_changed(registry_entry_id, grabbable_state);
     });

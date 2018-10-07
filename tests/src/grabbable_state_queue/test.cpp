@@ -12,15 +12,12 @@ auto registry_entry_id1 = krbn::registry_entry_id(1);
 } // namespace
 
 TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 }
 
 TEST_CASE("grabbable_state_queue") {
   {
-    auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-    auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
-    auto queue = std::make_unique<krbn::grabbable_state_queue>(dispatcher);
+    auto queue = std::make_unique<krbn::grabbable_state_queue>();
 
     boost::optional<krbn::grabbable_state> last_changed_grabbable_state;
     int grabbable_state_changed_count = 0;
@@ -120,17 +117,11 @@ TEST_CASE("grabbable_state_queue") {
     REQUIRE(grabbable_state_changed_count == 4);
 
     queue = nullptr;
-
-    dispatcher->terminate();
-    dispatcher = nullptr;
   }
 }
 
 TEST_CASE("grabbable_state_queue.circular_buffer") {
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
-  auto queue = std::make_unique<krbn::grabbable_state_queue>(dispatcher);
+  auto queue = std::make_unique<krbn::grabbable_state_queue>();
 
   for (int i = 0; i < 10000; ++i) {
     queue->push_back_grabbable_state(krbn::grabbable_state(registry_entry_id1,
@@ -142,7 +133,8 @@ TEST_CASE("grabbable_state_queue.circular_buffer") {
   }
 
   queue = nullptr;
+}
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
+TEST_CASE("terminate") {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }

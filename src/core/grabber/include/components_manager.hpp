@@ -22,7 +22,7 @@ public:
 
     grabbable_state_queues_manager_ = std::make_shared<grabbable_state_queues_manager>(weak_dispatcher_);
 
-    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>(weak_dispatcher_);
+    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
       enqueue_to_dispatcher([this, uid] {

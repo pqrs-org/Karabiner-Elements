@@ -18,7 +18,7 @@ int main(int argc, const char* argv[]) {
   auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
   auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
-  auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(dispatcher);
+  auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
 
   auto virtual_hid_device_client = std::make_shared<krbn::virtual_hid_device_client>();
   krbn::manipulator::details::post_event_to_virtual_devices_detail::queue queue(dispatcher);

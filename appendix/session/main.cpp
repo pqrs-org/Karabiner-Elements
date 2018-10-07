@@ -6,16 +6,13 @@
 #include <thread>
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
-  auto console_user_id_monitor = std::make_unique<krbn::console_user_id_monitor>(dispatcher);
+  auto console_user_id_monitor = std::make_unique<krbn::console_user_id_monitor>();
 
   console_user_id_monitor->console_user_id_changed.connect([](auto&& uid) {
     if (uid) {
@@ -35,8 +32,7 @@ int main(int argc, const char* argv[]) {
 
   console_user_id_monitor = nullptr;
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }

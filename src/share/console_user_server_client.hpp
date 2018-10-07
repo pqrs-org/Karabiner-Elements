@@ -13,7 +13,7 @@
 namespace krbn {
 class console_user_server_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   // Note: These signals are fired on local_datagram::client's thread.
 
@@ -25,48 +25,46 @@ public:
 
   console_user_server_client(const console_user_server_client&) = delete;
 
-  console_user_server_client(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
-    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>(weak_dispatcher_);
+  console_user_server_client(void) : dispatcher_client() {
+    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
     console_user_id_monitor_->console_user_id_changed.connect([this](boost::optional<uid_t> uid) {
-      enqueue_to_dispatcher([this, uid] {
-        if (uid) {
-          client_manager_ = nullptr;
+      if (uid) {
+        client_manager_ = nullptr;
 
-          auto socket_file_path = make_console_user_server_socket_file_path(*uid);
-          std::chrono::milliseconds server_check_interval(3000);
-          std::chrono::milliseconds reconnect_interval(1000);
+        auto socket_file_path = make_console_user_server_socket_file_path(*uid);
+        std::chrono::milliseconds server_check_interval(3000);
+        std::chrono::milliseconds reconnect_interval(1000);
 
-          client_manager_ = std::make_unique<local_datagram::client_manager>(weak_dispatcher_,
-                                                                             socket_file_path,
-                                                                             server_check_interval,
-                                                                             reconnect_interval);
+        client_manager_ = std::make_unique<local_datagram::client_manager>(weak_dispatcher_,
+                                                                           socket_file_path,
+                                                                           server_check_interval,
+                                                                           reconnect_interval);
 
-          client_manager_->connected.connect([this, uid] {
-            enqueue_to_dispatcher([this, uid] {
-              logger::get_logger().info("console_user_server_client is connected. (uid:{0})", *uid);
+        client_manager_->connected.connect([this, uid] {
+          logger::get_logger().info("console_user_server_client is connected. (uid:{0})", *uid);
 
-              connected();
-            });
+          enqueue_to_dispatcher([this] {
+            connected();
           });
+        });
 
-          client_manager_->connect_failed.connect([this](auto&& error_code) {
-            enqueue_to_dispatcher([this, error_code] {
-              connect_failed(error_code);
-            });
+        client_manager_->connect_failed.connect([this](auto&& error_code) {
+          enqueue_to_dispatcher([this, error_code] {
+            connect_failed(error_code);
           });
+        });
 
-          client_manager_->closed.connect([this, uid] {
-            enqueue_to_dispatcher([this, uid] {
-              logger::get_logger().info("console_user_server_client is closed. (uid:{0})", *uid);
+        client_manager_->closed.connect([this, uid] {
+          logger::get_logger().info("console_user_server_client is closed. (uid:{0})", *uid);
 
-              closed();
-            });
+          enqueue_to_dispatcher([this] {
+            closed();
           });
+        });
 
-          client_manager_->async_start();
-        }
-      });
+        client_manager_->async_start();
+      }
     });
   }
 

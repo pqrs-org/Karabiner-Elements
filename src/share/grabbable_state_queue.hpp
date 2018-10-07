@@ -16,7 +16,7 @@
 namespace krbn {
 class grabbable_state_queue final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(boost::optional<grabbable_state>)> grabbable_state_changed;
 
@@ -26,8 +26,8 @@ public:
 
   grabbable_state_queue(const grabbable_state_queue&) = delete;
 
-  grabbable_state_queue(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                                       grabbable_states_(max_entries) {
+  grabbable_state_queue(void) : dispatcher_client(),
+                                grabbable_states_(max_entries) {
   }
 
   virtual ~grabbable_state_queue(void) {

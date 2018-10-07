@@ -5,16 +5,13 @@
 #include "virtual_hid_device_client.hpp"
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
-  auto client = std::make_shared<krbn::console_user_server_client>(dispatcher);
+  auto client = std::make_shared<krbn::console_user_server_client>();
   std::weak_ptr<krbn::console_user_server_client> weak_client = client;
 
   client->connected.connect([weak_client] {
@@ -38,8 +35,7 @@ int main(int argc, const char* argv[]) {
 
   client = nullptr;
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }

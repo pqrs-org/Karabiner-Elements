@@ -30,7 +30,7 @@ public:
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
     start_grabber_alerts_monitor();
 
-    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>(weak_dispatcher_);
+    console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
       enqueue_to_dispatcher([this, uid] {
@@ -49,7 +49,7 @@ public:
           return;
         }
 
-        receiver_ = std::make_unique<receiver>(weak_dispatcher_);
+        receiver_ = std::make_unique<receiver>();
 
         receiver_->bound.connect([this] {
           enqueue_to_dispatcher([this] {
