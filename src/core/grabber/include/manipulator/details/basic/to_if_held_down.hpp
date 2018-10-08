@@ -2,9 +2,8 @@
 
 class to_if_held_down final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  to_if_held_down(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                  basic& basic,
-                  const nlohmann::json& json) : dispatcher_client(weak_dispatcher),
+  to_if_held_down(basic& basic,
+                  const nlohmann::json& json) : dispatcher_client(),
                                                 basic_(basic),
                                                 current_held_down_id_(0) {
     if (json.is_array()) {

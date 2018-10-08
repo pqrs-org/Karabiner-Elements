@@ -21,7 +21,7 @@ TEST_CASE("grabber_alerts_monitor") {
     boost::optional<std::string> last_alerts;
 
     grabber_alerts_monitor.alerts_changed.connect([&](auto&& alerts) {
-      last_alerts = alerts.dump();
+      last_alerts = alerts->dump();
     });
 
     grabber_alerts_monitor.async_start();

@@ -49,7 +49,9 @@ public:
   }
 
   virtual ~connected_devices_monitor(void) {
-    file_monitor_ = nullptr;
+    detach_from_dispatcher([this] {
+      file_monitor_ = nullptr;
+    });
   }
 
   void async_start() {

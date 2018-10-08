@@ -10,18 +10,14 @@ using krbn::manipulator::details::modifier_definition;
 using krbn::manipulator::details::to_event_definition;
 
 TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 }
 
 TEST_CASE("manipulator.manipulator_factory") {
-  auto time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   {
     nlohmann::json json;
     krbn::core_configuration::profile::complex_modifications::parameters parameters;
-    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(dispatcher,
-                                                                                json,
+    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                 parameters);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) == nullptr);
@@ -65,8 +61,7 @@ TEST_CASE("manipulator.manipulator_factory") {
         },
     });
     krbn::core_configuration::profile::complex_modifications::parameters parameters;
-    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(dispatcher,
-                                                                                json,
+    auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                 parameters);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) != nullptr);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) == nullptr);
@@ -91,22 +86,13 @@ TEST_CASE("manipulator.manipulator_factory") {
     REQUIRE(basic->get_to()[0].get_event_definition().get_pointing_button() == krbn::pointing_button::button1);
     REQUIRE(basic->get_to()[0].get_modifiers() == std::unordered_set<modifier_definition::modifier>());
   }
-
-  dispatcher->terminate();
-  dispatcher = nullptr;
 }
 
 TEST_CASE("manipulator.manipulator_manager") {
-  auto time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-  auto helper = std::make_unique<krbn::unit_testing::manipulator_helper>(time_source,
-                                                                         dispatcher);
+  auto helper = std::make_unique<krbn::unit_testing::manipulator_helper>();
   helper->run_tests(nlohmann::json::parse(std::ifstream("json/manipulator_manager/tests.json")));
 
   helper = nullptr;
-
-  dispatcher->terminate();
-  dispatcher = nullptr;
 }
 
 TEST_CASE("min_input_event_time_stamp") {
@@ -173,9 +159,6 @@ TEST_CASE("min_input_event_time_stamp") {
 }
 
 TEST_CASE("needs_virtual_hid_pointing") {
-  auto time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   for (const auto& file_name : {
            std::string("json/needs_virtual_hid_pointing_test1.json"),
            std::string("json/needs_virtual_hid_pointing_test2.json"),
@@ -188,8 +171,7 @@ TEST_CASE("needs_virtual_hid_pointing") {
     auto manager = std::make_shared<krbn::manipulator::manipulator_manager>();
     for (const auto& j : json) {
       krbn::core_configuration::profile::complex_modifications::parameters parameters;
-      auto m = krbn::manipulator::manipulator_factory::make_manipulator(dispatcher,
-                                                                        j,
+      auto m = krbn::manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters);
       manager->push_back_manipulator(m);
     }
@@ -206,7 +188,8 @@ TEST_CASE("needs_virtual_hid_pointing") {
 
     manager = nullptr;
   }
+}
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
+TEST_CASE("terminate") {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }

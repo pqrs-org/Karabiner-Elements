@@ -24,15 +24,19 @@ public:
       // thread1 (loop)
 
       for (int j = 0; j < 5; ++j) {
-        thread1_->enqueue(^{
-          ++count1_;
-          // krbn::logger::get_logger().info("thread1 {0} {1}", j, count1);
-        });
+        CFRunLoopPerformBlock(thread1_->get_run_loop(),
+                              kCFRunLoopCommonModes,
+                              ^{
+                                ++count1_;
+                                // krbn::logger::get_logger().info("thread1 {0} {1}", j, count1);
+                              });
       }
+      thread1_->wake();
 
       // thread2 (recursive)
 
       enqueue2();
+      thread2_->wake();
 
       // Verify counts
 
@@ -48,12 +52,14 @@ public:
 
 private:
   void enqueue2(void) {
-    thread2_->enqueue(^{
-      ++count2_;
-      if (count2_ < 3) {
-        enqueue2();
-      }
-    });
+    CFRunLoopPerformBlock(thread2_->get_run_loop(),
+                          kCFRunLoopCommonModes,
+                          ^{
+                            ++count2_;
+                            if (count2_ < 3) {
+                              enqueue2();
+                            }
+                          });
   }
 
 private:

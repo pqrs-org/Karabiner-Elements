@@ -17,7 +17,7 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  components_manager(void) : dispatcher_client() {
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
 
     grabbable_state_queues_manager_ = std::make_shared<grabbable_state_queues_manager>();
@@ -48,8 +48,7 @@ public:
         }
 
         receiver_ = nullptr;
-        receiver_ = std::make_unique<receiver>(weak_dispatcher_,
-                                               grabbable_state_queues_manager_);
+        receiver_ = std::make_unique<receiver>(grabbable_state_queues_manager_);
       });
     });
 

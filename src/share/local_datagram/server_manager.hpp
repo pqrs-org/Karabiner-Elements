@@ -65,7 +65,7 @@ private:
       return;
     }
 
-    server_ = std::make_unique<server>(weak_dispatcher_);
+    server_ = std::make_unique<server>();
 
     server_->bound.connect([this] {
       enqueue_to_dispatcher([this] {

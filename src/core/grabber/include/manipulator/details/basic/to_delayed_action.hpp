@@ -2,9 +2,8 @@
 
 class to_delayed_action final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  to_delayed_action(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                    basic& basic,
-                    const nlohmann::json& json) : dispatcher_client(weak_dispatcher),
+  to_delayed_action(basic& basic,
+                    const nlohmann::json& json) : dispatcher_client(),
                                                   basic_(basic),
                                                   current_delayed_action_id_(0) {
     if (json.is_object()) {

@@ -176,7 +176,7 @@ private:
   // This method is executed in `io_service_thread_`.
   void check_server(const std::string& path) {
     if (!server_check_client_) {
-      server_check_client_ = std::make_unique<client>(weak_dispatcher_);
+      server_check_client_ = std::make_unique<client>();
 
       server_check_client_->connected.connect([this] {
         io_service_.post([this] {

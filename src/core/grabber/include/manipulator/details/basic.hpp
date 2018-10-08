@@ -21,10 +21,9 @@ public:
 #include "basic/to_delayed_action.hpp"
 #include "basic/to_if_held_down.hpp"
 
-  basic(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-        const nlohmann::json& json,
+  basic(const nlohmann::json& json,
         const core_configuration::profile::complex_modifications::parameters& parameters) : base(),
-                                                                                            dispatcher_client(weak_dispatcher),
+                                                                                            dispatcher_client(),
                                                                                             parameters_(parameters),
                                                                                             from_(json_utility::find_copy(json, "from", nlohmann::json())) {
     for (auto it = std::begin(json); it != std::end(json); std::advance(it, 1)) {
@@ -63,16 +62,12 @@ public:
         }
 
       } else if (key == "to_if_held_down") {
-        to_if_held_down_ = std::make_unique<to_if_held_down>(
-            weak_dispatcher_,
-            *this,
-            value);
+        to_if_held_down_ = std::make_unique<to_if_held_down>(*this,
+                                                             value);
 
       } else if (key == "to_delayed_action") {
-        to_delayed_action_ = std::make_unique<to_delayed_action>(
-            weak_dispatcher_,
-            *this,
-            value);
+        to_delayed_action_ = std::make_unique<to_delayed_action>(*this,
+                                                                 value);
 
       } else if (key == "description" ||
                  key == "conditions" ||
@@ -86,10 +81,9 @@ public:
     }
   }
 
-  basic(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-        const from_event_definition& from,
+  basic(const from_event_definition& from,
         const to_event_definition& to) : base(),
-                                         dispatcher_client(weak_dispatcher),
+                                         dispatcher_client(),
                                          from_(from),
                                          to_({to}) {
   }

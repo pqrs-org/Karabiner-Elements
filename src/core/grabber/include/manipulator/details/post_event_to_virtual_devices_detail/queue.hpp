@@ -225,9 +225,9 @@ public:
     absolute_time time_stamp_;
   };
 
-  queue(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                       last_event_type_(event_type::single),
-                                                                       last_event_time_stamp_(0) {
+  queue(void) : dispatcher_client(),
+                last_event_type_(event_type::single),
+                last_event_time_stamp_(0) {
   }
 
   virtual ~queue(void) {

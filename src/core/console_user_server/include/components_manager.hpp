@@ -26,7 +26,7 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  components_manager(void) : dispatcher_client() {
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
     start_grabber_alerts_monitor();
 
@@ -99,7 +99,7 @@ private:
     grabber_alerts_monitor_->alerts_changed.connect([this](auto&& alerts) {
       enqueue_to_dispatcher([alerts] {
         logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
-        if (!alerts.empty()) {
+        if (!alerts->empty()) {
           application_launcher::launch_preferences();
         }
       });
@@ -204,7 +204,7 @@ private:
 
     // input_source_monitor_
 
-    input_source_monitor_ = std::make_unique<input_source_monitor>(weak_dispatcher_);
+    input_source_monitor_ = std::make_unique<input_source_monitor>();
 
     input_source_monitor_->input_source_changed.connect([this](auto&& input_source_identifiers) {
       enqueue_to_dispatcher([this, input_source_identifiers] {

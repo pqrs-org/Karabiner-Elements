@@ -49,8 +49,7 @@ public:
       std::chrono::milliseconds server_check_interval(3000);
       std::chrono::milliseconds reconnect_interval(1000);
 
-      server_manager_ = std::make_unique<local_datagram::server_manager>(weak_dispatcher_,
-                                                                         socket_file_path,
+      server_manager_ = std::make_unique<local_datagram::server_manager>(socket_file_path,
                                                                          buffer_size,
                                                                          server_check_interval,
                                                                          reconnect_interval);

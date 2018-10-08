@@ -11,13 +11,20 @@ namespace krbn {
 namespace unit_testing {
 class manipulator_helper final : pqrs::dispatcher::extra::dispatcher_client {
 public:
-  manipulator_helper(std::weak_ptr<pqrs::dispatcher::pseudo_time_source> weak_time_source,
-                     std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                                    weak_time_source_(weak_time_source) {
+  manipulator_helper(void) : dispatcher_client() {
+    pseudo_time_source_ = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
+
+    if (auto d = weak_dispatcher_.lock()) {
+      original_weak_time_source_ = d->lock_weak_time_source();
+      d->set_weak_time_source(pseudo_time_source_);
+    }
   }
 
   virtual ~manipulator_helper(void) {
-    detach_from_dispatcher([] {
+    detach_from_dispatcher([this] {
+      if (auto d = weak_dispatcher_.lock()) {
+        d->set_weak_time_source(original_weak_time_source_);
+      }
     });
   }
 
@@ -28,12 +35,10 @@ public:
     for (const auto& test : json) {
       logger::get_logger().info("{0}", test["description"].get<std::string>());
 
-      if (auto s = weak_time_source_.lock()) {
-        s->set_now(std::chrono::milliseconds(0));
-      }
+      pseudo_time_source_->set_now(std::chrono::milliseconds(0));
 
       system_preferences system_preferences;
-      auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(weak_dispatcher_);
+      auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
       manipulator::manipulator_managers_connector connector;
       std::vector<std::shared_ptr<manipulator::manipulator_manager>> manipulator_managers;
       std::vector<std::shared_ptr<event_queue::queue>> event_queues;
@@ -47,8 +52,7 @@ public:
           std::ifstream ifs(rule.get<std::string>());
           REQUIRE(ifs);
           for (const auto& j : nlohmann::json::parse(ifs)) {
-            auto m = manipulator::manipulator_factory::make_manipulator(weak_dispatcher_,
-                                                                        j,
+            auto m = manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters);
 
             if (auto conditions = json_utility::find_array(j, "conditions")) {
@@ -75,8 +79,7 @@ public:
       }
 
       if (json_utility::find_optional<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
-        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(weak_dispatcher_,
-                                                                                                                                system_preferences,
+        post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::details::post_event_to_virtual_devices>(system_preferences,
                                                                                                                                 console_user_server_client);
 
         manipulator_managers.push_back(std::make_unique<manipulator::manipulator_manager>());
@@ -110,9 +113,7 @@ public:
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
                 time_stamp = time_utility::to_absolute_time(std::chrono::milliseconds(*t));
 
-                if (auto s = weak_time_source_.lock()) {
-                  s->set_now(time_utility::to_milliseconds(time_stamp));
-                }
+                pseudo_time_source_->set_now(time_utility::to_milliseconds(time_stamp));
 
                 if (auto d = weak_dispatcher_.lock()) {
                   d->invoke();
@@ -126,9 +127,7 @@ public:
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
                 auto ms = std::chrono::milliseconds(*t);
                 time_stamp = time_utility::to_absolute_time(ms);
-                if (auto s = weak_time_source_.lock()) {
-                  s->set_now(ms);
-                }
+                pseudo_time_source_->set_now(ms);
               }
 
               connector.manipulate(time_stamp);
@@ -145,9 +144,7 @@ public:
             now = e.get_event_time_stamp().get_time_stamp();
             event_queues.front()->push_back_event(e);
 
-            if (auto s = weak_time_source_.lock()) {
-              s->set_now(time_utility::to_milliseconds(now));
-            }
+            pseudo_time_source_->set_now(time_utility::to_milliseconds(now));
 
             if (!pause_manipulation) {
               connector.manipulate(now);
@@ -158,9 +155,7 @@ public:
 
           {
             auto now = std::chrono::milliseconds(0);
-            if (auto s = weak_time_source_.lock()) {
-              now = s->now();
-            }
+            pseudo_time_source_->now();
 
             auto wait = pqrs::dispatcher::make_wait();
             enqueue_to_dispatcher(
@@ -216,7 +211,8 @@ public:
   }
 
 private:
-  std::weak_ptr<pqrs::dispatcher::pseudo_time_source> weak_time_source_;
+  std::weak_ptr<pqrs::dispatcher::time_source> original_weak_time_source_;
+  std::shared_ptr<pqrs::dispatcher::pseudo_time_source> pseudo_time_source_;
 };
 } // namespace unit_testing
 } // namespace krbn

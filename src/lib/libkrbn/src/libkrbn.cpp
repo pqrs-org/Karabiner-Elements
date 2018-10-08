@@ -15,7 +15,11 @@
 #include <string>
 
 void libkrbn_initialize(void) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+}
+
+void libkrbn_terminate(void) {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }
 
 const char* libkrbn_get_distributed_notification_observed_object(void) {
@@ -117,26 +121,4 @@ bool libkrbn_device_identifiers_is_apple(const libkrbn_device_identifiers* p) {
     return libkrbn_cpp::make_device_identifiers(*p).is_apple();
   }
   return false;
-}
-
-namespace {
-std::shared_ptr<pqrs::dispatcher::dispatcher> get_dispatcher(void) {
-  static std::mutex mutex;
-  std::lock_guard<std::mutex> lock(mutex);
-
-  static std::shared_ptr<pqrs::dispatcher::time_source> time_source;
-  static std::shared_ptr<pqrs::dispatcher::dispatcher> dispatcher;
-  if (!time_source) {
-    time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  }
-  if (!dispatcher) {
-    dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-  }
-
-  return dispatcher;
-}
-} // namespace
-
-std::weak_ptr<pqrs::dispatcher::dispatcher> libkrbn_cpp::get_weak_dispatcher(void) {
-  return get_dispatcher();
 }

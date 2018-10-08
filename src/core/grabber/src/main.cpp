@@ -12,6 +12,8 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 
 int main(int argc, const char* argv[]) {
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+
   if (getuid() != 0) {
     std::cerr << "fatal: karabiner_grabber requires root privilege." << std::endl;
     exit(1);
@@ -91,9 +93,7 @@ int main(int argc, const char* argv[]) {
 
   // Run components_manager
 
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-  auto components_manager = std::make_unique<krbn::components_manager>(dispatcher);
+  auto components_manager = std::make_unique<krbn::components_manager>();
 
   krbn::apple_notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
 
@@ -101,12 +101,9 @@ int main(int argc, const char* argv[]) {
 
   components_manager = nullptr;
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
-
-  time_source = nullptr;
-
   krbn::logger::get_logger().info("karabiner_grabber is terminated.");
+
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }

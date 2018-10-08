@@ -4,28 +4,25 @@
 #include <Carbon/Carbon.h>
 
 int main(int argc, char** argv) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   krbn::logger::get_logger().set_level(spdlog::level::off);
 
   for (int i = 0; i < 100; ++i) {
     // Check destructor working properly.
-    krbn::input_source_monitor m(dispatcher);
+    krbn::input_source_monitor m;
     m.async_start();
   }
 
   krbn::logger::get_logger().set_level(spdlog::level::info);
 
-  krbn::input_source_monitor m(dispatcher);
+  auto m = std::make_unique<krbn::input_source_monitor>();
 
-  m.input_source_changed.connect([](auto&& input_source_identifiers) {
+  m->input_source_changed.connect([](auto&& input_source_identifiers) {
     krbn::logger::get_logger().info("callback");
     if (auto& v = input_source_identifiers.get_language()) {
       krbn::logger::get_logger().info("  language: {0}", *v);
@@ -38,12 +35,17 @@ int main(int argc, char** argv) {
     }
   });
 
-  m.async_start();
+  m->async_start();
+
+  // ------------------------------------------------------------
 
   CFRunLoopRun();
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
+  // ------------------------------------------------------------
+
+  m = nullptr;
+
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }

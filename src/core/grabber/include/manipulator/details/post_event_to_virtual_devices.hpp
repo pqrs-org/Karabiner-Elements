@@ -26,16 +26,12 @@ namespace manipulator {
 namespace details {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  post_event_to_virtual_devices(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                                const system_preferences& system_preferences,
+  post_event_to_virtual_devices(const system_preferences& system_preferences,
                                 std::weak_ptr<console_user_server_client> weak_console_user_server_client) : base(),
-                                                                                                             dispatcher_client(weak_dispatcher),
-                                                                                                             weak_console_user_server_client_(weak_console_user_server_client),
-                                                                                                             queue_(weak_dispatcher) {
-    mouse_key_handler_ = std::make_unique<post_event_to_virtual_devices_detail::mouse_key_handler>(
-        weak_dispatcher_,
-        queue_,
-        system_preferences);
+                                                                                                             dispatcher_client(),
+                                                                                                             weak_console_user_server_client_(weak_console_user_server_client) {
+    mouse_key_handler_ = std::make_unique<post_event_to_virtual_devices_detail::mouse_key_handler>(queue_,
+                                                                                                   system_preferences);
   }
 
   virtual ~post_event_to_virtual_devices(void) {

@@ -94,7 +94,7 @@ private:
   void input_source_changed_callback(void) {
     enqueue_to_dispatcher([this] {
       if (auto p = TISCopyCurrentKeyboardInputSource()) {
-        input_source_identifiers identifiers(p);
+        input_source_identifiers identifiers(p);
 
         enqueue_to_dispatcher([this, identifiers] {
           input_source_changed(identifiers);

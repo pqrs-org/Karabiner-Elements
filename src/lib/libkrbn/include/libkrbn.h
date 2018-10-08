@@ -17,6 +17,7 @@ typedef struct {
 } libkrbn_device_identifiers;
 
 void libkrbn_initialize(void);
+void libkrbn_terminate(void);
 
 const char* _Nonnull libkrbn_get_distributed_notification_observed_object(void);
 const char* _Nonnull libkrbn_get_distributed_notification_grabber_is_launched(void);

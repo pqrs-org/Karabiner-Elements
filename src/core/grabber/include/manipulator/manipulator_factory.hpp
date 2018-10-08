@@ -18,15 +18,13 @@ namespace krbn {
 namespace manipulator {
 class manipulator_factory final {
 public:
-  static std::shared_ptr<details::base> make_manipulator(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                                                         const nlohmann::json& json,
+  static std::shared_ptr<details::base> make_manipulator(const nlohmann::json& json,
                                                          const core_configuration::profile::complex_modifications::parameters& parameters) {
     try {
       {
         if (auto value = json_utility::find_optional<std::string>(json, "type")) {
           if (*value == "basic") {
-            return std::make_shared<details::basic>(weak_dispatcher,
-                                                    json,
+            return std::make_shared<details::basic>(json,
                                                     parameters);
           } else {
             logger::get_logger().error("complex_modifications json error: Unknown `type` {0} in {1}", *value, json.dump());

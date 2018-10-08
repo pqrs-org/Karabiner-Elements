@@ -14,11 +14,9 @@ public:
   ~manipulator_manager(void) {
   }
 
-  void push_back_manipulator(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                             const nlohmann::json& json,
+  void push_back_manipulator(const nlohmann::json& json,
                              const core_configuration::profile::complex_modifications::parameters& parameters) {
-    auto m = manipulator_factory::make_manipulator(weak_dispatcher,
-                                                   json,
+    auto m = manipulator_factory::make_manipulator(json,
                                                    parameters);
 
     {

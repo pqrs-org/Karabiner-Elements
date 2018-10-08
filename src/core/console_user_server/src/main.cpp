@@ -9,9 +9,10 @@
 #include "thread_utility.hpp"
 
 int main(int argc, const char* argv[]) {
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
-  krbn::thread_utility::register_main_thread();
 
   // Setup logger
 
@@ -41,20 +42,15 @@ int main(int argc, const char* argv[]) {
 
   // Run components_manager
 
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-  auto components_manager = std::make_unique<krbn::components_manager>(dispatcher);
+  auto components_manager = std::make_unique<krbn::components_manager>();
 
   CFRunLoopRun();
 
   components_manager = nullptr;
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
-
-  time_source = nullptr;
-
   krbn::logger::get_logger().info("karabiner_console_user_server is terminated.");
+
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }

@@ -6,8 +6,6 @@
 
 class libkrbn_cpp final {
 public:
-  static std::weak_ptr<pqrs::dispatcher::dispatcher> get_weak_dispatcher(void);
-
   static krbn::device_identifiers make_device_identifiers(const libkrbn_device_identifiers& device_identifiers) {
     krbn::device_identifiers identifiers(krbn::vendor_id(device_identifiers.vendor_id),
                                          krbn::product_id(device_identifiers.product_id),

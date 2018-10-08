@@ -17,8 +17,7 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-           std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager) : dispatcher_client(weak_dispatcher),
+  receiver(std::weak_ptr<grabbable_state_queues_manager> weak_grabbable_state_queues_manager) : dispatcher_client(),
                                                                                                 weak_grabbable_state_queues_manager_(weak_grabbable_state_queues_manager) {
     std::string socket_file_path(constants::get_grabber_socket_file_path());
 
@@ -28,8 +27,7 @@ public:
     std::chrono::milliseconds server_check_interval(3000);
     std::chrono::milliseconds reconnect_interval(1000);
 
-    server_manager_ = std::make_unique<local_datagram::server_manager>(weak_dispatcher_,
-                                                                       socket_file_path,
+    server_manager_ = std::make_unique<local_datagram::server_manager>(socket_file_path,
                                                                        buffer_size,
                                                                        server_check_interval,
                                                                        reconnect_interval);
@@ -208,8 +206,7 @@ private:
       return;
     }
 
-    device_grabber_ = std::make_unique<device_grabber>(weak_dispatcher_,
-                                                       weak_grabbable_state_queues_manager_,
+    device_grabber_ = std::make_unique<device_grabber>(weak_grabbable_state_queues_manager_,
                                                        console_user_server_client_);
 
     device_grabber_->async_set_system_preferences(system_preferences_);

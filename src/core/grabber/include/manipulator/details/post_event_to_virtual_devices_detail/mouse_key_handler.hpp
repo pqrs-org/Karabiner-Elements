@@ -40,9 +40,8 @@ public:
     int count_;
   };
 
-  mouse_key_handler(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                    queue& queue,
-                    const system_preferences& system_preferences) : dispatcher_client(weak_dispatcher),
+  mouse_key_handler(queue& queue,
+                    const system_preferences& system_preferences) : dispatcher_client(),
                                                                     queue_(queue),
                                                                     system_preferences_(system_preferences),
                                                                     active_(false),
