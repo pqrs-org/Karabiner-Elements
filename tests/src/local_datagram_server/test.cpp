@@ -12,7 +12,7 @@
 #include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 }
 
 namespace {
@@ -22,11 +22,11 @@ const std::chrono::milliseconds server_check_interval(100);
 
 class test_server final {
 public:
-  test_server(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : closed_(false),
-                                                                             received_count_(0) {
+  test_server(void) : closed_(false),
+                      received_count_(0) {
     unlink(socket_path.c_str());
 
-    server_ = std::make_unique<krbn::local_datagram::server>(weak_dispatcher);
+    server_ = std::make_unique<krbn::local_datagram::server>();
 
     server_->bound.connect([this] {
       bound_ = true;
@@ -85,8 +85,8 @@ private:
 
 class test_client final {
 public:
-  test_client(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : closed_(false) {
-    client_ = std::make_unique<krbn::local_datagram::client>(weak_dispatcher);
+  test_client(void) : closed_(false) {
+    client_ = std::make_unique<krbn::local_datagram::client>();
 
     client_->connected.connect([this] {
       connected_ = true;
@@ -140,14 +140,11 @@ private:
 } // namespace
 
 TEST_CASE("socket file") {
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   unlink(socket_path.c_str());
   REQUIRE(!krbn::filesystem::exists(socket_path));
 
   {
-    krbn::local_datagram::server server(dispatcher);
+    krbn::local_datagram::server server;
 
     server.async_bind(socket_path,
                       server_buffer_size,
@@ -162,10 +159,7 @@ TEST_CASE("socket file") {
 }
 
 TEST_CASE("fail to create socket file") {
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
-  krbn::local_datagram::server server(dispatcher);
+  krbn::local_datagram::server server;
 
   bool failed = false;
 
@@ -183,9 +177,6 @@ TEST_CASE("fail to create socket file") {
 }
 
 TEST_CASE("keep existing file in destructor") {
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   std::string regular_file_path("tmp/regular_file");
 
   {
@@ -196,7 +187,7 @@ TEST_CASE("keep existing file in destructor") {
   REQUIRE(krbn::filesystem::exists(regular_file_path));
 
   {
-    krbn::local_datagram::server server(dispatcher);
+    krbn::local_datagram::server server;
     server.async_bind(regular_file_path,
                       server_buffer_size,
                       server_check_interval);
@@ -208,17 +199,14 @@ TEST_CASE("keep existing file in destructor") {
 }
 
 TEST_CASE("permission error") {
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   {
-    auto server = std::make_unique<test_server>(dispatcher);
+    auto server = std::make_unique<test_server>();
 
     // ----
     chmod(socket_path.c_str(), 0000);
 
     {
-      auto client = std::make_unique<test_client>(dispatcher);
+      auto client = std::make_unique<test_client>();
       REQUIRE(client->get_connected() == false);
     }
 
@@ -226,13 +214,13 @@ TEST_CASE("permission error") {
   }
 
   {
-    auto server = std::make_unique<test_server>(dispatcher);
+    auto server = std::make_unique<test_server>();
 
     // -r--
     chmod(socket_path.c_str(), 0400);
 
     {
-      auto client = std::make_unique<test_client>(dispatcher);
+      auto client = std::make_unique<test_client>();
       REQUIRE(client->get_connected() == false);
     }
 
@@ -240,13 +228,13 @@ TEST_CASE("permission error") {
   }
 
   {
-    auto server = std::make_unique<test_server>(dispatcher);
+    auto server = std::make_unique<test_server>();
 
     // -rw-
     chmod(socket_path.c_str(), 0600);
 
     {
-      auto client = std::make_unique<test_client>(dispatcher);
+      auto client = std::make_unique<test_client>();
       REQUIRE(client->get_connected() == true);
     }
 
@@ -255,10 +243,7 @@ TEST_CASE("permission error") {
 }
 
 TEST_CASE("close when socket erased") {
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
-  auto server = std::make_unique<test_server>(dispatcher);
+  auto server = std::make_unique<test_server>();
 
   unlink(socket_path.c_str());
 
@@ -268,12 +253,9 @@ TEST_CASE("close when socket erased") {
 }
 
 TEST_CASE("local_datagram::server") {
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   {
-    auto server = std::make_unique<test_server>(dispatcher);
-    auto client = std::make_unique<test_client>(dispatcher);
+    auto server = std::make_unique<test_server>();
+    auto client = std::make_unique<test_client>();
 
     REQUIRE(client->get_connected() == true);
 
@@ -299,7 +281,7 @@ TEST_CASE("local_datagram::server") {
   {
     REQUIRE(!krbn::filesystem::exists(socket_path));
 
-    test_client client(dispatcher);
+    test_client client;
 
     REQUIRE(client.get_connected() == false);
 
@@ -312,11 +294,11 @@ TEST_CASE("local_datagram::server") {
 
   // Create client before server
   {
-    test_client client(dispatcher);
+    test_client client;
 
     REQUIRE(client.get_connected() == false);
 
-    test_server server(dispatcher);
+    test_server server;
 
     REQUIRE(server.get_received_count() == 0);
 
@@ -329,9 +311,6 @@ TEST_CASE("local_datagram::server") {
 }
 
 TEST_CASE("local_datagram::client_manager") {
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   {
     size_t connected_count = 0;
     size_t connect_failed_count = 0;
@@ -339,10 +318,7 @@ TEST_CASE("local_datagram::client_manager") {
 
     std::chrono::milliseconds reconnect_interval(100);
 
-    auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-    auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-    auto client_manager = std::make_unique<krbn::local_datagram::client_manager>(dispatcher,
-                                                                                 socket_path,
+    auto client_manager = std::make_unique<krbn::local_datagram::client_manager>(socket_path,
                                                                                  server_check_interval,
                                                                                  reconnect_interval);
 
@@ -373,7 +349,7 @@ TEST_CASE("local_datagram::client_manager") {
 
     // Create server
 
-    auto server = std::make_unique<test_server>(dispatcher);
+    auto server = std::make_unique<test_server>();
 
     REQUIRE(connected_count == 1);
 
@@ -391,16 +367,13 @@ TEST_CASE("local_datagram::client_manager") {
 
     // Recreate server
 
-    server = std::make_unique<test_server>(dispatcher);
+    server = std::make_unique<test_server>();
 
     REQUIRE(connected_count == 2);
   }
 }
 
 TEST_CASE("local_datagram::server_manager") {
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   {
     size_t bound_count = 0;
     size_t bind_failed_count = 0;
@@ -408,10 +381,7 @@ TEST_CASE("local_datagram::server_manager") {
 
     std::chrono::milliseconds reconnect_interval(100);
 
-    auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-    auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-    auto server_manager = std::make_unique<krbn::local_datagram::server_manager>(dispatcher,
-                                                                                 socket_path,
+    auto server_manager = std::make_unique<krbn::local_datagram::server_manager>(socket_path,
                                                                                  server_buffer_size,
                                                                                  server_check_interval,
                                                                                  reconnect_interval);
@@ -447,4 +417,8 @@ TEST_CASE("local_datagram::server_manager") {
     REQUIRE(bind_failed_count == 0);
     REQUIRE(closed_count == 1);
   }
+}
+
+TEST_CASE("terminate") {
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 }

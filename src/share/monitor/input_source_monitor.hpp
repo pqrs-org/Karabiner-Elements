@@ -16,7 +16,7 @@
 namespace krbn {
 class input_source_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(const input_source_identifiers& input_source_identifiers)> input_source_changed;
 
@@ -24,8 +24,8 @@ public:
 
   input_source_monitor(const input_source_monitor&) = delete;
 
-  input_source_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                                      started_(false) {
+  input_source_monitor(void) : dispatcher_client(),
+                               started_(false) {
   }
 
   virtual ~input_source_monitor(void) {
@@ -94,7 +94,11 @@ private:
   void input_source_changed_callback(void) {
     enqueue_to_dispatcher([this] {
       if (auto p = TISCopyCurrentKeyboardInputSource()) {
-        input_source_changed(input_source_identifiers(p));
+        input_source_identifiers identifiers(p);
+
+        enqueue_to_dispatcher([this, identifiers] {
+          input_source_changed(identifiers);
+        });
 
         CFRelease(p);
       }

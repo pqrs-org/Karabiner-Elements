@@ -10,11 +10,11 @@
 #include <fstream>
 
 namespace krbn {
-class grabber_alerts_monitor final {
+class grabber_alerts_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(const nlohmann::json& alerts)> alerts_changed;
+  boost::signals2::signal<void(std::shared_ptr<nlohmann::json> alerts)> alerts_changed;
 
   // Methods
 
@@ -45,13 +45,23 @@ public:
             auto s = v->dump();
             if (last_json_string_ != s) {
               last_json_string_ = s;
-              alerts_changed(*v);
+
+              auto alerts = std::make_shared<nlohmann::json>(*v);
+              enqueue_to_dispatcher([this, alerts] {
+                alerts_changed(alerts);
+              });
             }
           }
         } catch (std::exception& e) {
           logger::get_logger().error("parse error in {0}: {1}", changed_file_path, e.what());
         }
       }
+    });
+  }
+
+  virtual ~grabber_alerts_monitor(void) {
+    detach_from_dispatcher([this] {
+      file_monitor_ = nullptr;
     });
   }
 

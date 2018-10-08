@@ -27,7 +27,7 @@ public:
                                                         files_(files),
                                                         directories_(cf_utility::create_cfmutablearray()),
                                                         stream_(nullptr) {
-    run_loop_thread_ = std::make_shared<cf_utility::run_loop_thread>();
+    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
 
     std::vector<std::string> directories;
     for (const auto& f : files) {
@@ -63,10 +63,6 @@ public:
       CFRelease(directories_);
       directories_ = nullptr;
     }
-  }
-
-  std::shared_ptr<cf_utility::run_loop_thread> get_run_loop_thread(void) const {
-    return run_loop_thread_;
   }
 
   void async_start(void) {
@@ -268,7 +264,7 @@ private:
 
   std::vector<std::string> files_;
 
-  std::shared_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
   CFMutableArrayRef directories_;
   FSEventStreamRef stream_;
   // FSEventStreamEventPath -> file in files_

@@ -185,7 +185,7 @@ private:
 
     // frontmost_application_monitor_
 
-    frontmost_application_monitor_ = std::make_unique<frontmost_application_monitor>(weak_dispatcher_);
+    frontmost_application_monitor_ = std::make_unique<frontmost_application_monitor>();
 
     frontmost_application_monitor_->frontmost_application_changed.connect([this](auto&& bundle_identifier, auto&& file_path) {
       enqueue_to_dispatcher([this, bundle_identifier, file_path] {

@@ -10,7 +10,7 @@ namespace krbn {
 namespace local_datagram {
 class client_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(void)> connected;
   boost::signals2::signal<void(const boost::system::error_code&)> connect_failed;
@@ -18,10 +18,9 @@ public:
 
   // Methods
 
-  client_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                 const std::string& path,
+  client_manager(const std::string& path,
                  boost::optional<std::chrono::milliseconds> server_check_interval,
-                 std::chrono::milliseconds reconnect_interval) : dispatcher_client(weak_dispatcher),
+                 std::chrono::milliseconds reconnect_interval) : dispatcher_client(),
                                                                  path_(path),
                                                                  server_check_interval_(server_check_interval),
                                                                  reconnect_interval_(reconnect_interval),
@@ -71,7 +70,7 @@ private:
 
     {
       std::lock_guard<std::mutex> lock(client_mutex_);
-      client_ = std::make_shared<client>(weak_dispatcher_);
+      client_ = std::make_shared<client>();
 
       client_->connected.connect([this] {
         enqueue_to_dispatcher([this] {
@@ -82,19 +81,19 @@ private:
       client_->connect_failed.connect([this](auto&& error_code) {
         enqueue_to_dispatcher([this, error_code] {
           connect_failed(error_code);
-
-          close();
-          enqueue_reconnect();
         });
+
+        close();
+        enqueue_reconnect();
       });
 
       client_->closed.connect([this] {
         enqueue_to_dispatcher([this] {
           closed();
-
-          close();
-          enqueue_reconnect();
         });
+
+        close();
+        enqueue_reconnect();
       });
 
       client_->async_connect(path_,

@@ -10,7 +10,7 @@ namespace krbn {
 namespace local_datagram {
 class server final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(void)> bound;
   boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
@@ -21,12 +21,12 @@ public:
 
   server(const server&) = delete;
 
-  server(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                        io_service_(),
-                                                                        work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
-                                                                        socket_(io_service_),
-                                                                        bound_(false),
-                                                                        server_check_timer_(*this) {
+  server(void) : dispatcher_client(),
+                 io_service_(),
+                 work_(std::make_unique<boost::asio::io_service::work>(io_service_)),
+                 socket_(io_service_),
+                 bound_(false),
+                 server_check_timer_(*this) {
     io_service_thread_ = std::thread([this] {
       (this->io_service_).run();
     });

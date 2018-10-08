@@ -13,14 +13,14 @@
 namespace krbn {
 class frontmost_application_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(const std::string& bundle_identifier, const std::string& file_path)> frontmost_application_changed;
 
   // Methods
 
-  frontmost_application_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                                               monitor_(nullptr) {
+  frontmost_application_monitor(void) : dispatcher_client(),
+                                        monitor_(nullptr) {
   }
 
   virtual ~frontmost_application_monitor(void) {

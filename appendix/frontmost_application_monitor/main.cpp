@@ -7,7 +7,7 @@ namespace {
 } // namespace
 
 int main(int argc, char** argv) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -15,18 +15,15 @@ int main(int argc, char** argv) {
 
   krbn::logger::get_logger().set_level(spdlog::level::off);
 
-  auto time_source = std::make_shared<pqrs::dispatcher::hardware_time_source>();
-  auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
-
   for (int i = 0; i < 100; ++i) {
     // Check destructor working properly.
-    auto m = std::make_unique<krbn::frontmost_application_monitor>(dispatcher);
+    auto m = std::make_unique<krbn::frontmost_application_monitor>();
     m->async_start();
   }
 
   krbn::logger::get_logger().set_level(spdlog::level::info);
 
-  auto m = std::make_unique<krbn::frontmost_application_monitor>(dispatcher);
+  auto m = std::make_unique<krbn::frontmost_application_monitor>();
 
   m->frontmost_application_changed.connect([](auto&& bundle_identifier, auto&& file_path) {
     krbn::logger::get_logger().info("callback");
@@ -40,8 +37,7 @@ int main(int argc, char** argv) {
 
   m = nullptr;
 
-  dispatcher->terminate();
-  dispatcher = nullptr;
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }

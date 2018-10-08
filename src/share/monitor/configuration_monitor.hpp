@@ -8,16 +8,16 @@
 #include "monitor/file_monitor.hpp"
 
 namespace krbn {
-class configuration_monitor final {
+class configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(std::weak_ptr<core_configuration>)> core_configuration_updated;
 
   // Methods
 
   configuration_monitor(const std::string& user_core_configuration_file_path,
-                        const std::string& system_core_configuration_file_path = constants::get_system_core_configuration_file_path()) {
+                        const std::string& system_core_configuration_file_path = constants::get_system_core_configuration_file_path()) : dispatcher_client() {
     std::vector<std::string> targets = {
         user_core_configuration_file_path,
         system_core_configuration_file_path,
@@ -65,12 +65,16 @@ public:
 
       logger::get_logger().info("core_configuration is updated.");
 
-      core_configuration_updated(c);
+      enqueue_to_dispatcher([this, c] {
+        core_configuration_updated(c);
+      });
     });
   }
 
-  ~configuration_monitor(void) {
-    file_monitor_ = nullptr;
+  virtual ~configuration_monitor(void) {
+    detach_from_dispatcher([this] {
+      file_monitor_ = nullptr;
+    });
   }
 
   void async_start() {
@@ -81,10 +85,6 @@ public:
     std::lock_guard<std::mutex> lock(core_configuration_mutex_);
 
     return core_configuration_;
-  }
-
-  std::shared_ptr<cf_utility::run_loop_thread> get_run_loop_thread(void) const {
-    return file_monitor_->get_run_loop_thread();
   }
 
 private:

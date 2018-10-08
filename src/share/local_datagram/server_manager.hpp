@@ -10,7 +10,7 @@ namespace krbn {
 namespace local_datagram {
 class server_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(void)> bound;
   boost::signals2::signal<void(const boost::system::error_code&)> bind_failed;
@@ -19,11 +19,10 @@ public:
 
   // Methods
 
-  server_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                 const std::string& path,
+  server_manager(const std::string& path,
                  size_t buffer_size,
                  boost::optional<std::chrono::milliseconds> server_check_interval,
-                 std::chrono::milliseconds reconnect_interval) : dispatcher_client(weak_dispatcher),
+                 std::chrono::milliseconds reconnect_interval) : dispatcher_client(),
                                                                  path_(path),
                                                                  buffer_size_(buffer_size),
                                                                  server_check_interval_(server_check_interval),
@@ -52,6 +51,7 @@ public:
   }
 
 private:
+  // This method is executed in the dispatcher thread.
   void stop(void) {
     // We have to unset reconnect_enabled_ before `close` to prevent `enqueue_reconnect` by `closed` signal.
     reconnect_enabled_ = false;
@@ -59,6 +59,7 @@ private:
     close();
   }
 
+  // This method is executed in the dispatcher thread.
   void bind(void) {
     if (server_) {
       return;
@@ -75,19 +76,19 @@ private:
     server_->bind_failed.connect([this](auto&& error_code) {
       enqueue_to_dispatcher([this, error_code] {
         bind_failed(error_code);
-
-        close();
-        enqueue_reconnect();
       });
+
+      close();
+      enqueue_reconnect();
     });
 
     server_->closed.connect([this] {
       enqueue_to_dispatcher([this] {
         closed();
-
-        close();
-        enqueue_reconnect();
       });
+
+      close();
+      enqueue_reconnect();
     });
 
     server_->received.connect([this](auto&& buffer) {
@@ -101,6 +102,7 @@ private:
                         server_check_interval_);
   }
 
+  // This method is executed in the dispatcher thread.
   void close(void) {
     if (!server_) {
       return;
@@ -109,6 +111,7 @@ private:
     server_ = nullptr;
   }
 
+  // This method is executed in the dispatcher thread.
   void enqueue_reconnect(void) {
     enqueue_to_dispatcher(
         [this] {

@@ -7,15 +7,15 @@
 #include "monitor/file_monitor.hpp"
 
 namespace krbn {
-class connected_devices_monitor final {
+class connected_devices_monitor final : pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(std::weak_ptr<const connected_devices>)> connected_devices_updated;
 
   // Methods
 
-  connected_devices_monitor(const std::string& devices_json_file_path) {
+  connected_devices_monitor(const std::string& devices_json_file_path) : dispatcher_client() {
     std::vector<std::string> targets = {
         devices_json_file_path,
     };
@@ -42,11 +42,13 @@ public:
 
       logger::get_logger().info("connected_devices are updated.");
 
-      connected_devices_updated(c);
+      enqueue_to_dispatcher([this, c] {
+        connected_devices_updated(c);
+      });
     });
   }
 
-  ~connected_devices_monitor(void) {
+  virtual ~connected_devices_monitor(void) {
     file_monitor_ = nullptr;
   }
 
@@ -58,10 +60,6 @@ public:
     std::lock_guard<std::mutex> lock(connected_devices_mutex_);
 
     return connected_devices_;
-  }
-
-  std::shared_ptr<cf_utility::run_loop_thread> get_run_loop_thread(void) const {
-    return file_monitor_->get_run_loop_thread();
   }
 
 private:
