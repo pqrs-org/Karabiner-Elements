@@ -20,7 +20,7 @@ public:
   components_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
     version_monitor_ = version_monitor_utility::make_version_monitor_stops_main_run_loop_when_version_changed();
 
-    grabbable_state_queues_manager_ = std::make_shared<grabbable_state_queues_manager>(weak_dispatcher_);
+    grabbable_state_queues_manager_ = std::make_shared<grabbable_state_queues_manager>();
 
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 

@@ -113,7 +113,7 @@ private:
       return;
     }
 
-    grabber_client_ = std::make_shared<grabber_client>(weak_dispatcher_);
+    grabber_client_ = std::make_shared<grabber_client>();
 
     grabber_client_->connected.connect([this] {
       enqueue_to_dispatcher([this] {

@@ -15,7 +15,7 @@
 namespace krbn {
 class grabbable_state_queues_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(registry_entry_id, boost::optional<grabbable_state>)> grabbable_state_changed;
 
@@ -23,7 +23,7 @@ public:
 
   grabbable_state_queues_manager(const grabbable_state_queues_manager&) = delete;
 
-  grabbable_state_queues_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  grabbable_state_queues_manager(void) : dispatcher_client() {
   }
 
   virtual ~grabbable_state_queues_manager(void) {
@@ -93,7 +93,9 @@ private:
 
     auto queue = std::make_shared<grabbable_state_queue>();
     queue->grabbable_state_changed.connect([this, registry_entry_id](auto&& grabbable_state) {
-      grabbable_state_changed(registry_entry_id, grabbable_state);
+      enqueue_to_dispatcher([this, registry_entry_id, grabbable_state] {
+        grabbable_state_changed(registry_entry_id, grabbable_state);
+      });
     });
 
     queues_[registry_entry_id] = queue;

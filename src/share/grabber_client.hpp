@@ -16,7 +16,7 @@
 namespace krbn {
 class grabber_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   // Note: These signals are fired on local_datagram::client's thread.
 
@@ -28,7 +28,7 @@ public:
 
   grabber_client(const grabber_client&) = delete;
 
-  grabber_client(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  grabber_client(void) : dispatcher_client() {
   }
 
   virtual ~grabber_client(void) {
@@ -56,17 +56,23 @@ public:
       client_manager_->connected.connect([this] {
         logger::get_logger().info("grabber_client is connected.");
 
-        connected();
+        enqueue_to_dispatcher([this] {
+          connected();
+        });
       });
 
       client_manager_->connect_failed.connect([this](auto&& error_code) {
-        connect_failed(error_code);
+        enqueue_to_dispatcher([this, error_code] {
+          connect_failed(error_code);
+        });
       });
 
       client_manager_->closed.connect([this] {
         logger::get_logger().info("grabber_client is closed.");
 
-        closed();
+        enqueue_to_dispatcher([this] {
+          closed();
+        });
       });
 
       client_manager_->async_start();

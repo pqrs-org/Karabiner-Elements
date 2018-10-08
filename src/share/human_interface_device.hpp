@@ -32,7 +32,7 @@
 namespace krbn {
 class human_interface_device final : pqrs::dispatcher::extra::dispatcher_client {
 public:
-  // Signals
+  // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(void)> opened;
   boost::signals2::signal<void(IOReturn error)> open_failed;
@@ -423,9 +423,13 @@ private:
       if (r == kIOReturnSuccess) {
         opened_ = true;
 
-        opened();
+        enqueue_to_dispatcher([this] {
+          opened();
+        });
       } else {
-        open_failed(r);
+        enqueue_to_dispatcher([this, r] {
+          open_failed(r);
+        });
       }
     }
   }
@@ -439,9 +443,13 @@ private:
     if (opened_) {
       auto r = IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
       if (r == kIOReturnSuccess) {
-        closed();
+        enqueue_to_dispatcher([this] {
+          closed();
+        });
       } else {
-        close_failed(r);
+        enqueue_to_dispatcher([this, r] {
+          close_failed(r);
+        });
       }
       opened_ = false;
     }
@@ -594,7 +602,9 @@ private:
         }
       }
 
-      values_arrived(input_event_queue);
+      enqueue_to_dispatcher([this, input_event_queue] {
+        values_arrived(input_event_queue);
+      });
     });
   }
 
