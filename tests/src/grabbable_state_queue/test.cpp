@@ -4,7 +4,6 @@
 #include "boost_defs.hpp"
 
 #include "grabbable_state_queue.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
 namespace {

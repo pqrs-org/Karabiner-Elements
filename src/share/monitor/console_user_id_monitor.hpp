@@ -7,7 +7,6 @@
 #include "dispatcher.hpp"
 #include "logger.hpp"
 #include "session.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <memory>

@@ -5,7 +5,6 @@
 #include "logger.hpp"
 #include "process_utility.hpp"
 #include "spdlog_utility.hpp"
-#include "thread_utility.hpp"
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -20,7 +19,6 @@ int main(int argc, const char* argv[]) {
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
-  krbn::thread_utility::register_main_thread();
 
   // Setup logger
 

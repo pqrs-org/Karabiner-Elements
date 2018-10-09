@@ -7,7 +7,6 @@
 #include "dispatcher.hpp"
 #include "frontmost_application_monitor_objc.h"
 #include "logger.hpp"
-#include "thread_utility.hpp"
 #include <boost/signals2.hpp>
 
 namespace krbn {

@@ -2,7 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "modifier_flag_manager.hpp"
-#include "thread_utility.hpp"
 
 namespace {
 krbn::modifier_flag_manager::active_modifier_flag left_shift_1(krbn::modifier_flag_manager::active_modifier_flag::type::increase,
@@ -37,10 +36,6 @@ krbn::modifier_flag_manager::active_modifier_flag right_command_1(krbn::modifier
                                                                   krbn::modifier_flag::right_command,
                                                                   krbn::device_id(1));
 } // namespace
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("modifier_flag_manager") {
   // ----------------------------------------

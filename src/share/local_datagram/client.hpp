@@ -11,7 +11,6 @@ END_BOOST_INCLUDE
 
 #include "dispatcher.hpp"
 #include "logger.hpp"
-#include "thread_utility.hpp"
 
 namespace krbn {
 namespace local_datagram {

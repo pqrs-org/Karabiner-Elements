@@ -8,7 +8,6 @@
 #include "dispatcher.hpp"
 #include "input_source_utility.hpp"
 #include "logger.hpp"
-#include "thread_utility.hpp"
 #include "types.hpp"
 #include <Carbon/Carbon.h>
 #include <boost/signals2.hpp>

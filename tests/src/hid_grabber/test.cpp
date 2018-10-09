@@ -2,11 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "hid_grabber.hpp"
-#include "thread_utility.hpp"
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("signal2_combiner_call_while_grabbable") {
   boost::signals2::signal<krbn::grabbable_state::state(void), krbn::hid_grabber::signal2_combiner_call_while_grabbable> signal;

@@ -1,6 +1,5 @@
 #include "logger.hpp"
 #include "monitor/event_tap_monitor.hpp"
-#include "thread_utility.hpp"
 
 int main(int argc, const char* argv[]) {
   pqrs::dispatcher::extra::initialize_shared_dispatcher();

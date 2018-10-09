@@ -6,7 +6,6 @@
 #include "dispatcher.hpp"
 #include "human_interface_device.hpp"
 #include "logger.hpp"
-#include "thread_utility.hpp"
 
 namespace krbn {
 class hid_observer final : public pqrs::dispatcher::extra::dispatcher_client {

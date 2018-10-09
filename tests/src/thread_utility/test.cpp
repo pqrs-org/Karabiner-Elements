@@ -3,10 +3,6 @@
 
 #include "thread_utility.hpp"
 
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
-
 TEST_CASE("wait") {
   std::cout << "wait" << std::endl;
 

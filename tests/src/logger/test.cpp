@@ -2,12 +2,7 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "logger.hpp"
-#include "thread_utility.hpp"
 #include <ostream>
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("unique_filter") {
   krbn::logger::unique_filter unique_filter;

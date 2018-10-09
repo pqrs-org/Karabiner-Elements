@@ -4,12 +4,7 @@
 #include "../share/json_helper.hpp"
 #include "manipulator/condition_manager.hpp"
 #include "manipulator/manipulator_factory.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("manipulator.manipulator_factory") {
   {
@@ -302,10 +297,10 @@ TEST_CASE("conditions.device") {
   })));
 
 #define ENTRY(DEVICE_ID)                                                                \
-  krbn::event_queue::entry(DEVICE_ID,                                                          \
+  krbn::event_queue::entry(DEVICE_ID,                                                   \
                            krbn::event_queue::event_time_stamp(krbn::absolute_time(0)), \
                            krbn::event_queue::event(krbn::key_code::a),                 \
-                           krbn::event_type::key_down,                                         \
+                           krbn::event_type::key_down,                                  \
                            krbn::event_queue::event(krbn::key_code::a))
 
   {

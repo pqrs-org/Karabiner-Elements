@@ -4,12 +4,10 @@
 #include "boost_defs.hpp"
 
 #include "filesystem.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 #include <ostream>
 
 TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
   system("rm -rf mkdir_example");
 }
 

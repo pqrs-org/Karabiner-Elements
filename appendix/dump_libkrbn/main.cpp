@@ -1,6 +1,4 @@
 #include "../../src/lib/libkrbn/include/libkrbn.h"
-#include "gcd_utility.hpp"
-#include "thread_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <iostream>
 
@@ -66,13 +64,16 @@ int main(int argc, const char* argv[]) {
   libkrbn_hid_value_observer* observer = nullptr;
   libkrbn_hid_value_observer_initialize(&observer, hid_value_observer_callback, nullptr);
 
-  krbn::gcd_utility::main_queue_after_timer timer(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC),
-                                                  false,
-                                                  ^{
-                                                    std::cout << "observed_device_count: "
-                                                              << libkrbn_hid_value_observer_calculate_observed_device_count(observer)
-                                                              << std::endl;
-                                                  });
+  std::cout << std::endl;
+  for (int i = 0; i < 10; ++i) {
+    std::cout << "." << std::flush;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+  std::cout << std::endl;
+
+  std::cout << "observed_device_count: "
+            << libkrbn_hid_value_observer_calculate_observed_device_count(observer)
+            << std::endl;
 
   CFRunLoopRun();
 

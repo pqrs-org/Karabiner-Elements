@@ -2,7 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "monitor/version_monitor.hpp"
-#include "thread_utility.hpp"
 
 TEST_CASE("initialize") {
   pqrs::dispatcher::extra::initialize_shared_dispatcher();

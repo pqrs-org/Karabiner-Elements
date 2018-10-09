@@ -3,7 +3,6 @@
 
 #include "grabbable_state_manager.hpp"
 #include "stream_utility.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
 namespace {

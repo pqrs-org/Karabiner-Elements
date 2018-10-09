@@ -2,7 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "event_queue.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
 #define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)           \
@@ -40,10 +39,6 @@ krbn::event_queue::event caps_lock_state_changed_0_event(krbn::event_queue::even
 
 auto device_keys_and_pointing_buttons_are_released_event = krbn::event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
 } // namespace
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("event_time_stamp") {
   {

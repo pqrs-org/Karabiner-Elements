@@ -8,7 +8,6 @@
 #include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
 #include "session.hpp"
-#include "thread_utility.hpp"
 #include "types.hpp"
 #include <unistd.h>
 #include <vector>

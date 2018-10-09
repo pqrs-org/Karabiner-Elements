@@ -7,7 +7,6 @@
 #include "dispatcher.hpp"
 #include "grabber_client.hpp"
 #include "monitor/version_monitor_utility.hpp"
-#include "thread_utility.hpp"
 
 namespace krbn {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {

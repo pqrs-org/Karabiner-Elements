@@ -2,11 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "boost_utility.hpp"
-#include "thread_utility.hpp"
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("signals2_combiner_call_while_true") {
   boost::signals2::signal<bool(void), krbn::boost_utility::signals2_combiner_call_while_true> signal;

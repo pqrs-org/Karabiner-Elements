@@ -8,7 +8,6 @@
 #include "dispatcher.hpp"
 #include "event_queue.hpp"
 #include "keyboard_repeat_detector.hpp"
-#include "thread_utility.hpp"
 #include <boost/signals2.hpp>
 
 namespace krbn {

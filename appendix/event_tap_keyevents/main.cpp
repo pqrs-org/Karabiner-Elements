@@ -1,5 +1,4 @@
 #include "logger.hpp"
-#include "thread_utility.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 #include <iostream>
 
@@ -31,8 +30,6 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
 } // namespace
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
-
   if (getuid() != 0) {
     krbn::logger::get_logger().error("eventtap requires root privilege to use kCGHIDEventTap.");
     return 0;

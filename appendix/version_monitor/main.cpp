@@ -1,10 +1,7 @@
-#include "boost_defs.hpp"
-
 #include "monitor/version_monitor.hpp"
-#include "thread_utility.hpp"
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -21,6 +18,8 @@ int main(int argc, const char* argv[]) {
   CFRunLoopRun();
 
   monitor = nullptr;
+
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
 
   return 0;
 }

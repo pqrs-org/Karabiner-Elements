@@ -1,6 +1,5 @@
 #include "monitor/console_user_id_monitor.hpp"
 #include "session.hpp"
-#include "thread_utility.hpp"
 #include <chrono>
 #include <iostream>
 #include <thread>

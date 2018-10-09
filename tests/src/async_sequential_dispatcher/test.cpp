@@ -2,11 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "async_sequential_dispatcher.hpp"
-#include "thread_utility.hpp"
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("async_sequential_dispatcher") {
   int expected = 10;

@@ -7,7 +7,6 @@
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
-#include "thread_utility.hpp"
 #include <spdlog/async.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 
@@ -21,7 +20,6 @@ int main(int argc, const char* argv[]) {
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
-  krbn::thread_utility::register_main_thread();
 
   // Setup logger
 

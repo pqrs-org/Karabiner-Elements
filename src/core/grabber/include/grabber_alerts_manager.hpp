@@ -5,7 +5,6 @@
 #include "filesystem.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
-#include "thread_utility.hpp"
 #include <json/json.hpp>
 #include <unordered_set>
 

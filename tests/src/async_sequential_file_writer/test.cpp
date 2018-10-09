@@ -2,11 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "async_sequential_file_writer.hpp"
-#include "thread_utility.hpp"
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("async_sequential_file_writer") {
   krbn::async_sequential_file_writer writer;

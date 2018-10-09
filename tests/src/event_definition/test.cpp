@@ -4,7 +4,6 @@
 #include "filesystem.hpp"
 #include "manipulator/details/basic.hpp"
 #include "manipulator/details/types.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
 namespace {
@@ -37,10 +36,6 @@ void set_null_logger(void) {
   krbn::logger::set_logger(l);
 }
 } // namespace
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("modifier_definition.make_modifiers") {
   using krbn::manipulator::details::event_definition;

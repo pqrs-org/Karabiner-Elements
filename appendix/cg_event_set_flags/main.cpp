@@ -1,4 +1,3 @@
-#include "thread_utility.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 #include <iostream>
 
@@ -23,8 +22,6 @@ CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type,
 } // namespace
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
-
   // Observe all mouse events
   auto mask = CGEventMaskBit(kCGEventLeftMouseDown) |
               CGEventMaskBit(kCGEventLeftMouseUp) |

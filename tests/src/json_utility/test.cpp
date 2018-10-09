@@ -4,12 +4,7 @@
 #include "boost_defs.hpp"
 
 #include "json_utility.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("find_optional") {
   using namespace std::string_literals;

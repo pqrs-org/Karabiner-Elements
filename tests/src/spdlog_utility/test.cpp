@@ -4,13 +4,8 @@
 #include "boost_defs.hpp"
 
 #include "spdlog_utility.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 #include <ostream>
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("get_timestamp_number") {
   {

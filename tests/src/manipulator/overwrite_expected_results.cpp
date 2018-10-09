@@ -2,7 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "../share/manipulator_helper.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {

@@ -2,7 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "monitor/connected_devices_monitor.hpp"
-#include "thread_utility.hpp"
 
 namespace {
 class test_connected_devices_monitor final {

@@ -1,6 +1,5 @@
 #include "logger.hpp"
 #include "monitor/input_source_monitor.hpp"
-#include "thread_utility.hpp"
 #include <Carbon/Carbon.h>
 
 int main(int argc, char** argv) {

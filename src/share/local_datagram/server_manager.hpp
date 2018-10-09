@@ -4,7 +4,6 @@
 
 #include "dispatcher.hpp"
 #include "local_datagram/server.hpp"
-#include "thread_utility.hpp"
 
 namespace krbn {
 namespace local_datagram {

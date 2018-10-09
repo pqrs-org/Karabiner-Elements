@@ -1,6 +1,5 @@
 #include "logger.hpp"
 #include "monitor/frontmost_application_monitor.hpp"
-#include "thread_utility.hpp"
 #include <Carbon/Carbon.h>
 
 namespace {

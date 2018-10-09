@@ -7,7 +7,6 @@
 #include "dispatcher.hpp"
 #include "logger.hpp"
 #include "system_preferences_utility.hpp"
-#include "thread_utility.hpp"
 
 namespace krbn {
 class system_preferences_monitor final : public pqrs::dispatcher::extra::dispatcher_client {

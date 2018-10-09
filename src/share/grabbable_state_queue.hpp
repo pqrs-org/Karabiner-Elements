@@ -6,7 +6,6 @@
 
 #include "dispatcher.hpp"
 #include "event_queue.hpp"
-#include "thread_utility.hpp"
 #include "types.hpp"
 #include <boost/circular_buffer.hpp>
 #include <boost/optional.hpp>

@@ -1,6 +1,5 @@
 #include "logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
-#include "thread_utility.hpp"
 #include "time_utility.hpp"
 #include "virtual_hid_device_client.hpp"
 

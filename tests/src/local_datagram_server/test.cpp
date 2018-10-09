@@ -8,7 +8,6 @@
 #include "local_datagram/client_manager.hpp"
 #include "local_datagram/server.hpp"
 #include "local_datagram/server_manager.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {

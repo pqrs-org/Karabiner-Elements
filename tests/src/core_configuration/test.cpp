@@ -4,15 +4,10 @@
 #include "core_configuration.hpp"
 #include "manipulator/details/basic.hpp"
 #include "manipulator/details/types.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 #include <iostream>
 
 using simple_modifications = krbn::core_configuration::profile::simple_modifications;
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("valid") {
   krbn::core_configuration configuration("json/example.json");

@@ -6,7 +6,6 @@
 #include "logger.hpp"
 #include "migration.hpp"
 #include "process_utility.hpp"
-#include "thread_utility.hpp"
 
 int main(int argc, const char* argv[]) {
   pqrs::dispatcher::extra::initialize_shared_dispatcher();

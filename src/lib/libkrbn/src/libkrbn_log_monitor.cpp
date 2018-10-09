@@ -18,27 +18,24 @@ public:
       targets.push_back(log_directory + "/console_user_server.log");
     }
 
-    log_monitor_ = std::make_unique<krbn::log_monitor>(targets,
-                                                       [this](const std::string& line) {
-                                                         cpp_callback(line);
-                                                       });
+    log_monitor_ = std::make_unique<krbn::log_monitor>(targets);
+
+    log_monitor_->new_log_line_arrived.connect([this](auto&& line) {
+      if (callback_) {
+        callback_(line.c_str(), refcon_);
+      }
+    });
   }
 
   const std::vector<std::pair<uint64_t, std::string>>& get_initial_lines(void) const {
     return log_monitor_->get_initial_lines();
   }
 
-  void start(void) {
-    log_monitor_->start();
+  void async_start(void) {
+    log_monitor_->async_start();
   }
 
 private:
-  void cpp_callback(const std::string& line) {
-    if (callback_) {
-      callback_(line.c_str(), refcon_);
-    }
-  }
-
   libkrbn_log_monitor_callback callback_;
   void* refcon_;
 
@@ -92,7 +89,7 @@ void libkrbn_log_monitor_start(libkrbn_log_monitor* p) {
     return;
   }
 
-  log_monitor->start();
+  log_monitor->async_start();
 }
 
 bool libkrbn_is_warn_log(const char* line) {

@@ -6,7 +6,6 @@
 #include "launchctl_utility.hpp"
 #include "libkrbn_cpp.hpp"
 #include "process_utility.hpp"
-#include "thread_utility.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
 #include <fstream>

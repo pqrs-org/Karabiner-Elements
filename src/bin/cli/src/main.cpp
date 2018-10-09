@@ -58,7 +58,9 @@ int remove_system_default_profile(void) {
 } // namespace
 
 int main(int argc, const char** argv) {
-  krbn::thread_utility::register_main_thread();
+  int exit_code = 0;
+
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
 
   {
     auto l = spdlog::stdout_color_mt("karabiner_cli");
@@ -81,7 +83,7 @@ int main(int argc, const char** argv) {
       std::string key = "select-profile";
       if (parse_result.count(key)) {
         select_profile(parse_result[key].as<std::string>());
-        return 0;
+        goto finish;
       }
     }
 
@@ -90,7 +92,8 @@ int main(int argc, const char** argv) {
       if (parse_result.count(key)) {
         if (getuid() != 0) {
           krbn::logger::get_logger().error("--{0} requires root privilege.", key);
-          return 1;
+          exit_code = 1;
+          goto finish;
         }
         return copy_current_profile_to_system_default_profile();
       }
@@ -101,7 +104,8 @@ int main(int argc, const char** argv) {
       if (parse_result.count(key)) {
         if (getuid() != 0) {
           krbn::logger::get_logger().error("--{0} requires root privilege.", key);
-          return 1;
+          exit_code = 1;
+          goto finish;
         }
         return remove_system_default_profile();
       }
@@ -109,7 +113,8 @@ int main(int argc, const char** argv) {
 
   } catch (const cxxopts::OptionException& e) {
     std::cout << "error parsing options: " << e.what() << std::endl;
-    return 2;
+    exit_code = 2;
+    goto finish;
   }
 
   std::cout << options.help() << std::endl;
@@ -117,5 +122,10 @@ int main(int argc, const char** argv) {
   std::cout << "  karabiner_cli --select-profile 'Default profile'" << std::endl;
   std::cout << std::endl;
 
-  return 1;
+  exit_code = 1;
+
+finish:
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+
+  return exit_code;
 }

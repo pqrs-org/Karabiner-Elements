@@ -4,12 +4,7 @@
 #include "boost_defs.hpp"
 
 #include "device_detail.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("to_json") {
   using namespace std::string_literals;

@@ -4,7 +4,6 @@
 #include "boost_defs.hpp"
 
 #include "monitor/file_monitor.hpp"
-#include "thread_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
 namespace {

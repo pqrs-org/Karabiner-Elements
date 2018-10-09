@@ -3,11 +3,6 @@
 
 #include "cf_utility.hpp"
 #include "logger.hpp"
-#include "thread_utility.hpp"
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 namespace {
 class run_loop_thread_test final {

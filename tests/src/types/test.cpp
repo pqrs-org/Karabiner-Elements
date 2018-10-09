@@ -2,13 +2,8 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "device_detail.hpp"
-#include "thread_utility.hpp"
 #include "types.hpp"
 #include <boost/optional/optional_io.hpp>
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("sizeof") {
   REQUIRE(sizeof(krbn::absolute_time) == 8);

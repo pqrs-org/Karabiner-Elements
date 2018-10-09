@@ -2,11 +2,6 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "event_tap_utility.hpp"
-#include "thread_utility.hpp"
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("make_event") {
   {

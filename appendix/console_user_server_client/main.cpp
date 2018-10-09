@@ -1,6 +1,5 @@
 #include "console_user_server_client.hpp"
 #include "logger.hpp"
-#include "thread_utility.hpp"
 #include "time_utility.hpp"
 #include "virtual_hid_device_client.hpp"
 

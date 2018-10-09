@@ -3,12 +3,7 @@
 
 #include "../share/json_helper.hpp"
 #include "grabber_alerts_manager.hpp"
-#include "thread_utility.hpp"
 #include <unistd.h>
-
-TEST_CASE("initialize") {
-  krbn::thread_utility::register_main_thread();
-}
 
 TEST_CASE("set_alert") {
   using namespace std::string_literals;
