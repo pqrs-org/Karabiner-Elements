@@ -1,17 +1,25 @@
 #pragma once
 
+#include "boost_defs.hpp"
+
+#include "dispatcher.hpp"
 #include "filesystem.hpp"
-#include "gcd_utility.hpp"
 #include "spdlog_utility.hpp"
+#include <boost/signals2.hpp>
 #include <deque>
 #include <fstream>
 #include <thread>
+#include <type_safe/strong_typedef.hpp>
 #include <vector>
 
 namespace krbn {
-class log_monitor final {
+class log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  typedef std::function<void(const std::string& line)> new_log_line_callback;
+  // Signals (invoked from the shared dispatcher thread)
+
+  boost::signals2::signal<void(const std::string& line)> new_log_line_arrived;
+
+  // Methods
 
   log_monitor(const log_monitor&) = delete;
 
@@ -20,8 +28,9 @@ public:
   //
   // We use timer to observe file changes instead.
 
-  log_monitor(const std::vector<std::string>& targets,
-              const new_log_line_callback& callback) : callback_(callback), timer_count_(timer_count(0)) {
+  log_monitor(const std::vector<std::string>& targets) : dispatcher_client(),
+                                                         timer_(*this),
+                                                         timer_count_(0) {
     // setup initial_lines_
 
     for (const auto& target : targets) {
@@ -32,29 +41,31 @@ public:
     }
   }
 
-  ~log_monitor(void) {
-    timer_ = nullptr;
+  virtual ~log_monitor(void) {
+    detach_from_dispatcher([this] {
+      timer_.stop();
+    });
   }
 
-  void start(void) {
-    timer_ = std::make_unique<gcd_utility::main_queue_timer>(
-        dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
-        1.0 * NSEC_PER_SEC,
-        0,
-        ^{
-          timer_count_ = timer_count(static_cast<uint64_t>(timer_count_) + 1);
-          for (const auto& file : files_) {
-            if (auto size = filesystem::file_size(file)) {
-              auto it = read_position_.find(file);
-              if (it != read_position_.end()) {
-                if (it->second != *size) {
-                  add_lines(file);
+  void async_start(void) {
+    enqueue_to_dispatcher([this] {
+      timer_.start(
+          [this] {
+            ++timer_count_;
+            for (const auto& file : files_) {
+              if (auto size = filesystem::file_size(file)) {
+                auto it = read_position_.find(file);
+                if (it != read_position_.end()) {
+                  if (it->second != *size) {
+                    add_lines(file);
+                  }
                 }
               }
             }
-          }
-          call_callback();
-        });
+            call_slots();
+          },
+          std::chrono::milliseconds(1000));
+    });
   }
 
   const std::vector<std::pair<uint64_t, std::string>>& get_initial_lines(void) const {
@@ -62,7 +73,12 @@ public:
   }
 
 private:
-  enum class timer_count : uint64_t {};
+  struct timer_count : type_safe::strong_typedef<timer_count, uint64_t>,
+                       type_safe::strong_typedef_op::equality_comparison<timer_count>,
+                       type_safe::strong_typedef_op::relational_comparison<timer_count>,
+                       type_safe::strong_typedef_op::integer_arithmetic<timer_count> {
+    using strong_typedef::strong_typedef;
+  };
 
   void add_initial_lines(const std::string& file_path) {
     std::ifstream stream(file_path);
@@ -153,7 +169,7 @@ private:
     });
   }
 
-  void call_callback(void) {
+  void call_slots(void) {
     while (true) {
       if (added_lines_.empty()) {
         return;
@@ -166,17 +182,16 @@ private:
         return;
       }
 
-      if (callback_) {
-        callback_(std::get<2>(front));
-      }
+      auto line = std::get<2>(front);
+      enqueue_to_dispatcher([this, line] {
+        new_log_line_arrived(line);
+      });
 
       added_lines_.pop_front();
     }
   }
 
-  new_log_line_callback callback_;
-
-  std::unique_ptr<gcd_utility::main_queue_timer> timer_;
+  pqrs::dispatcher::extra::timer timer_;
   timer_count timer_count_;
 
   std::vector<std::pair<uint64_t, std::string>> initial_lines_;

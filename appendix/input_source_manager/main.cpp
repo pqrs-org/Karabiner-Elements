@@ -1,10 +1,13 @@
+#include "dispatcher.hpp"
 #include "input_source_manager.hpp"
 #include "logger.hpp"
-#include "thread_utility.hpp"
-#include <Carbon/Carbon.h>
 
 int main(int argc, char** argv) {
-  krbn::thread_utility::register_main_thread();
+  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+
+  signal(SIGINT, [](int) {
+    CFRunLoopStop(CFRunLoopGetMain());
+  });
 
   krbn::input_source_manager input_source_manager;
 
@@ -24,5 +27,8 @@ int main(int argc, char** argv) {
   std::cout << "type control-c" << std::endl;
 
   CFRunLoopRun();
+
+  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+
   return 0;
 }

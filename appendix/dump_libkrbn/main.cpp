@@ -32,7 +32,11 @@ void hid_value_observer_callback(libkrbn_hid_value_type type,
 } // namespace
 
 int main(int argc, const char* argv[]) {
-  krbn::thread_utility::register_main_thread();
+  libkrbn_initialize();
+
+  signal(SIGINT, [](int) {
+    CFRunLoopStop(CFRunLoopGetMain());
+  });
 
   {
     libkrbn_complex_modifications_assets_manager* manager = nullptr;
@@ -75,6 +79,8 @@ int main(int argc, const char* argv[]) {
   libkrbn_hid_value_observer_terminate(&observer);
 
   std::cout << std::endl;
+
+  libkrbn_terminate();
 
   return 0;
 }

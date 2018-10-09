@@ -1,56 +1,101 @@
 #pragma once
 
-#include "gcd_utility.hpp"
+#include "boost_defs.hpp"
+
+#include "cf_utility.hpp"
+#include "dispatcher.hpp"
 #include "logger.hpp"
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOMessage.h>
 #include <IOKit/pwr_mgt/IOPMLib.h>
+#include <boost/signals2.hpp>
 
 namespace krbn {
-class iopm_client final {
+class iopm_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  typedef std::function<void(uint32_t message_type)> system_power_event_callback;
+  // Signals (invoked from the shared dispatcher thread)
+
+  boost::signals2::signal<void(uint32_t)> system_power_event_arrived;
+
+  // Methods
 
   iopm_client(const iopm_client&) = delete;
 
-  iopm_client(const system_power_event_callback& system_power_event_callback) : system_power_event_callback_(system_power_event_callback),
-                                                                                notification_port_(nullptr),
-                                                                                notifier_(IO_OBJECT_NULL),
-                                                                                connect_(IO_OBJECT_NULL) {
-    auto connect = IORegisterForSystemPower(this, &notification_port_, static_callback, &notifier_);
-    if (connect == MACH_PORT_NULL) {
-      logger::get_logger().error("IORegisterForSystemPower error @ {0}", __PRETTY_FUNCTION__);
-
-    } else {
-      if (auto run_loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-        CFRunLoopAddSource(CFRunLoopGetMain(), run_loop_source, kCFRunLoopCommonModes);
-      }
-    }
+  iopm_client(void) : dispatcher_client(),
+                      notification_port_(nullptr),
+                      notifier_(IO_OBJECT_NULL),
+                      connect_(IO_OBJECT_NULL) {
+    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
   }
 
-  ~iopm_client(void) {
-    // Release notifier_ in main thread to avoid callback invocations after object has been destroyed.
-    gcd_utility::dispatch_sync_in_main_queue(^{
-      if (notifier_) {
-        auto kr = IODeregisterForSystemPower(&notifier_);
-        if (kr != kIOReturnSuccess) {
-          logger::get_logger().error("IODeregisterForSystemPower error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
-        }
-      }
-      if (notification_port_) {
-        IONotificationPortDestroy(notification_port_);
-      }
-      if (connect_) {
-        auto kr = IOServiceClose(connect_);
-        if (kr != kIOReturnSuccess) {
-          logger::get_logger().error("IOServiceClose error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
-        }
-        connect_ = IO_OBJECT_NULL;
-      }
+  virtual ~iopm_client(void) {
+    detach_from_dispatcher([this] {
+      stop();
+    });
+
+    run_loop_thread_->terminate();
+    run_loop_thread_ = nullptr;
+  }
+
+  void async_start(void) {
+    enqueue_to_dispatcher([this] {
+      start();
+    });
+  }
+
+  void async_stop(void) {
+    enqueue_to_dispatcher([this] {
+      stop();
     });
   }
 
 private:
+  // This method is executed in the dispatcher thread.
+  void start(void) {
+    if (notification_port_) {
+      return;
+    }
+
+    auto connect = IORegisterForSystemPower(this,
+                                            &notification_port_,
+                                            static_callback,
+                                            &notifier_);
+    if (connect == MACH_PORT_NULL) {
+      logger::get_logger().error("IORegisterForSystemPower error @ {0}", __PRETTY_FUNCTION__);
+      return;
+    }
+
+    if (auto run_loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
+      CFRunLoopAddSource(run_loop_thread_->get_run_loop(),
+                         run_loop_source,
+                         kCFRunLoopCommonModes);
+    }
+  }
+
+  // This method is executed in the dispatcher thread.
+  void stop(void) {
+    if (notifier_) {
+      auto kr = IODeregisterForSystemPower(&notifier_);
+      if (kr != kIOReturnSuccess) {
+        logger::get_logger().error("IODeregisterForSystemPower error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+      }
+      notifier_ = IO_OBJECT_NULL;
+    }
+
+    if (notification_port_) {
+      IONotificationPortDestroy(notification_port_);
+      notification_port_ = nullptr;
+    }
+
+    if (connect_) {
+      auto kr = IOServiceClose(connect_);
+      if (kr != kIOReturnSuccess) {
+        logger::get_logger().error("IOServiceClose error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+      }
+      connect_ = IO_OBJECT_NULL;
+    }
+  }
+
   static void static_callback(void* refcon, io_service_t service, uint32_t message_type, void* message_argument) {
     iopm_client* self = static_cast<iopm_client*>(refcon);
     if (self) {
@@ -93,13 +138,12 @@ private:
         break;
     }
 
-    if (system_power_event_callback_) {
-      system_power_event_callback_(message_type);
-    }
+    enqueue_to_dispatcher([this, message_type] {
+      system_power_event_arrived(message_type);
+    });
   }
 
-  system_power_event_callback system_power_event_callback_;
-
+  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
   IONotificationPortRef notification_port_;
   io_object_t notifier_;
   io_connect_t connect_;
