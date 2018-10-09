@@ -1,6 +1,7 @@
 #include "../../src/lib/libkrbn/include/libkrbn.h"
 #include <CoreFoundation/CoreFoundation.h>
 #include <iostream>
+#include <thread>
 
 namespace {
 void hid_value_observer_callback(libkrbn_hid_value_type type,
