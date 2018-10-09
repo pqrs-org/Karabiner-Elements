@@ -1,7 +1,8 @@
 #import "EventQueue.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "PreferencesKeys.h"
-#include "libkrbn.h"
+#import "libkrbn.h"
+#import "weakify.h"
 
 @interface EventQueue ()
 
@@ -21,7 +22,17 @@ static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
                                         enum libkrbn_hid_value_event_type event_type,
                                         void* refcon) {
   EventQueue* queue = (__bridge EventQueue*)(refcon);
-  if (queue) {
+  if (!queue) {
+    return;
+  }
+
+  @weakify(queue);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    @strongify(queue);
+    if (!queue) {
+      return;
+    }
+
     NSString* code = [NSString stringWithFormat:@"0x%x", value];
     NSMutableDictionary* simpleModificationJson = [NSMutableDictionary new];
 
@@ -61,7 +72,7 @@ static void hid_value_observer_callback(enum libkrbn_hid_value_type type,
       queue.simpleModificationJsonString = [KarabinerKitJsonUtility createJsonString:simpleModificationJson];
       [queue updateAddSimpleModificationButton:[NSString stringWithFormat:@"Add `%@` to Karabiner-Elements", name]];
     }
-  }
+  });
 }
 
 @implementation EventQueue

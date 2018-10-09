@@ -6,16 +6,15 @@
 #include "constants.hpp"
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
-#include "thread_utility.hpp"
 #include <iostream>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace {
 void select_profile(const std::string& name) {
-  krbn::thread_utility::wait wait;
+  auto wait = pqrs::dispatcher::make_wait();
   krbn::configuration_monitor monitor(krbn::constants::get_user_core_configuration_file_path());
 
-  monitor.core_configuration_updated.connect([name, &wait](auto&& weak_core_configuration) {
+  monitor.core_configuration_updated.connect([name, wait](auto&& weak_core_configuration) {
     if (auto core_configuration = weak_core_configuration.lock()) {
       auto& profiles = core_configuration->get_profiles();
       for (size_t i = 0; i < profiles.size(); ++i) {
@@ -29,12 +28,12 @@ void select_profile(const std::string& name) {
     }
 
   finish:
-    wait.notify();
+    wait->notify();
   });
 
   monitor.async_start();
 
-  wait.wait_notice();
+  wait->wait_notice();
 }
 
 int copy_current_profile_to_system_default_profile(void) {

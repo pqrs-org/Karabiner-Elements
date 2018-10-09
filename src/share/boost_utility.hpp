@@ -5,6 +5,7 @@
 #include "boost_defs.hpp"
 
 #include <boost/signals2.hpp>
+#include <thread>
 
 namespace krbn {
 class boost_utility final {
