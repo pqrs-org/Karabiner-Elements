@@ -39,8 +39,12 @@ public:
     output_event_queue_ = output_event_queue;
 
     auto held_down_id = current_held_down_id_;
+    auto now = time_utility::mach_absolute_time();
     auto time_stamp = front_input_event.get_event_time_stamp().get_time_stamp();
-    auto when = time_utility::to_milliseconds(time_stamp) + threshold_milliseconds;
+    auto duration = time_utility::to_absolute_time_duration(threshold_milliseconds);
+    if (now < time_stamp) {
+      duration += time_stamp - now;
+    }
 
     enqueue_to_dispatcher(
         [this, held_down_id] {
@@ -51,7 +55,7 @@ public:
           if (front_input_event_) {
             if (auto oeq = output_event_queue_.lock()) {
               if (auto cmoe = current_manipulated_original_event_.lock()) {
-                absolute_time time_stamp_delay(0);
+                absolute_time_duration time_stamp_delay(0);
 
                 // ----------------------------------------
                 // Post events_at_key_up_
@@ -94,7 +98,7 @@ public:
             }
           }
         },
-        when);
+        when_now() + time_utility::to_milliseconds(duration));
   }
 
   void async_cancel(const event_queue::entry& front_input_event) {

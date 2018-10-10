@@ -191,7 +191,7 @@ public:
                 std::vector<event_queue::event> ordered_key_up_events;
                 std::chrono::milliseconds simultaneous_threshold_milliseconds(parameters_.get_basic_simultaneous_threshold_milliseconds());
                 auto end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() +
-                                      time_utility::to_absolute_time(simultaneous_threshold_milliseconds);
+                                      time_utility::to_absolute_time_duration(simultaneous_threshold_milliseconds);
 
                 for (const auto& entry : input_event_queue.get_entries()) {
                   if (!is_target) {
@@ -391,7 +391,7 @@ public:
         if (current_manipulated_original_event) {
           front_input_event.set_valid(false);
 
-          absolute_time time_stamp_delay(0);
+          absolute_time_duration time_stamp_delay(0);
 
           // Send events
 
@@ -544,8 +544,8 @@ public:
 
           // increase_time_stamp_delay
 
-          if (time_stamp_delay > absolute_time(0)) {
-            output_event_queue->increase_time_stamp_delay(time_stamp_delay - absolute_time(1));
+          if (time_stamp_delay > absolute_time_duration(0)) {
+            output_event_queue->increase_time_stamp_delay(time_stamp_delay - absolute_time_duration(1));
           }
 
           return manipulate_result::manipulated;
@@ -623,7 +623,7 @@ public:
 
   void post_from_mandatory_modifiers_key_up(const event_queue::entry& front_input_event,
                                             manipulated_original_event& current_manipulated_original_event,
-                                            absolute_time& time_stamp_delay,
+                                            absolute_time_duration& time_stamp_delay,
                                             event_queue::queue& output_event_queue) const {
     // ----------------------------------------
     // Make target modifiers
@@ -674,7 +674,7 @@ public:
 
   void post_from_mandatory_modifiers_key_down(const event_queue::entry& front_input_event,
                                               manipulated_original_event& current_manipulated_original_event,
-                                              absolute_time& time_stamp_delay,
+                                              absolute_time_duration& time_stamp_delay,
                                               event_queue::queue& output_event_queue) const {
     // ----------------------------------------
     // Make target modifiers
@@ -704,7 +704,7 @@ public:
   void post_events_at_key_down(const event_queue::entry& front_input_event,
                                std::vector<to_event_definition> to_events,
                                manipulated_original_event& current_manipulated_original_event,
-                               absolute_time& time_stamp_delay,
+                               absolute_time_duration& time_stamp_delay,
                                event_queue::queue& output_event_queue) const {
     if (current_manipulated_original_event.get_halted()) {
       return;
@@ -761,7 +761,7 @@ public:
         // Post key_up event
 
         if (it != std::end(to_events) - 1 || !it->get_repeat()) {
-          time_stamp_delay += time_utility::to_absolute_time(it->get_hold_down_milliseconds());
+          time_stamp_delay += time_utility::to_absolute_time_duration(it->get_hold_down_milliseconds());
 
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
@@ -807,7 +807,7 @@ public:
 
   void post_events_at_key_up(const event_queue::entry& front_input_event,
                              manipulated_original_event& current_manipulated_original_event,
-                             absolute_time& time_stamp_delay,
+                             absolute_time_duration& time_stamp_delay,
                              event_queue::queue& output_event_queue) const {
     for (const auto& e : current_manipulated_original_event.get_events_at_key_up().get_events()) {
       auto t = front_input_event.get_event_time_stamp();
@@ -851,7 +851,7 @@ private:
   void post_lazy_modifier_key_events(const event_queue::entry& front_input_event,
                                      const std::unordered_set<modifier_flag>& modifiers,
                                      event_type event_type,
-                                     absolute_time& time_stamp_delay,
+                                     absolute_time_duration& time_stamp_delay,
                                      event_queue::queue& output_event_queue) const {
     for (const auto& m : modifiers) {
       if (auto key_code = types::make_key_code(m)) {
@@ -872,7 +872,7 @@ private:
   void post_extra_to_events(const event_queue::entry& front_input_event,
                             const std::vector<to_event_definition>& to_events,
                             manipulated_original_event& current_manipulated_original_event,
-                            absolute_time& time_stamp_delay,
+                            absolute_time_duration& time_stamp_delay,
                             event_queue::queue& output_event_queue) const {
     if (current_manipulated_original_event.get_halted()) {
       return;
@@ -918,7 +918,7 @@ private:
         // Post key_up event
 
         {
-          time_stamp_delay += time_utility::to_absolute_time(it->get_hold_down_milliseconds());
+          time_stamp_delay += time_utility::to_absolute_time_duration(it->get_hold_down_milliseconds());
 
           auto t = front_input_event.get_event_time_stamp();
           t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);

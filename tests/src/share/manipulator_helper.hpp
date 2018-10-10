@@ -111,7 +111,8 @@ public:
             } else if (*s == "invoke_dispatcher") {
               absolute_time time_stamp(0);
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
-                time_stamp = time_utility::to_absolute_time(std::chrono::milliseconds(*t));
+                time_stamp = absolute_time(0) +
+                             time_utility::to_absolute_time_duration(std::chrono::milliseconds(*t));
 
                 pseudo_time_source_->set_now(time_utility::to_milliseconds(time_stamp));
 
@@ -126,7 +127,8 @@ public:
               absolute_time time_stamp(0);
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
                 auto ms = std::chrono::milliseconds(*t);
-                time_stamp = time_utility::to_absolute_time(ms);
+                time_stamp = absolute_time(0) +
+                             time_utility::to_absolute_time(ms);
                 pseudo_time_source_->set_now(ms);
               }
 
