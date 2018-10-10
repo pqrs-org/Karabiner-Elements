@@ -6,7 +6,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "input_delay_time_stamp": 0,
+            "input_delay_duration": 0,
             "time_stamp": 100
         },
         "event_type": "key_down",
@@ -24,7 +24,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "input_delay_time_stamp": 0,
+            "input_delay_duration": 0,
             "time_stamp": 200
         },
         "event_type": "key_up",
@@ -42,7 +42,7 @@
             "type": "key_code"
         },
         "event_time_stamp": {
-            "input_delay_time_stamp": 0,
+            "input_delay_duration": 0,
             "time_stamp": 300
         },
         "event_type": "key_down",

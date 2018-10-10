@@ -101,7 +101,7 @@ public:
 
   void clear_events(void) {
     events_.clear();
-    time_stamp_delay_ = absolute_time(0);
+    time_stamp_delay_ = absolute_time_duration(0);
   }
 
   entry& get_front_event(void) {
@@ -111,7 +111,7 @@ public:
   void erase_front_event(void) {
     events_.erase(std::begin(events_));
     if (events_.empty()) {
-      time_stamp_delay_ = absolute_time(0);
+      time_stamp_delay_ = absolute_time_duration(0);
     }
   }
 
@@ -159,11 +159,11 @@ public:
     manipulator_environment_.disable_json_output();
   }
 
-  absolute_time get_time_stamp_delay(void) const {
+  absolute_time_duration get_time_stamp_delay(void) const {
     return time_stamp_delay_;
   }
 
-  void increase_time_stamp_delay(absolute_time value) {
+  void increase_time_stamp_delay(absolute_time_duration value) {
     time_stamp_delay_ += value;
   }
 
@@ -369,7 +369,7 @@ private:
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
   manipulator_environment manipulator_environment_;
-  absolute_time time_stamp_delay_;
+  absolute_time_duration time_stamp_delay_;
 };
 } // namespace event_queue
 } // namespace krbn

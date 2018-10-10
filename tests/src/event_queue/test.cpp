@@ -43,25 +43,25 @@ auto device_keys_and_pointing_buttons_are_released_event = krbn::event_queue::ev
 TEST_CASE("event_time_stamp") {
   {
     krbn::event_queue::event_time_stamp event_time_stamp1(krbn::absolute_time(100),
-                                                          krbn::absolute_time(10));
+                                                          krbn::absolute_time_duration(10));
     krbn::event_queue::event_time_stamp event_time_stamp2(krbn::absolute_time(200),
-                                                          krbn::absolute_time(10));
+                                                          krbn::absolute_time_duration(10));
     krbn::event_queue::event_time_stamp event_time_stamp3(krbn::absolute_time(100),
-                                                          krbn::absolute_time(20));
+                                                          krbn::absolute_time_duration(20));
     krbn::event_queue::event_time_stamp event_time_stamp4(krbn::absolute_time(200),
-                                                          krbn::absolute_time(20));
+                                                          krbn::absolute_time_duration(20));
 
     REQUIRE(event_time_stamp1.get_time_stamp() == krbn::absolute_time(100));
-    REQUIRE(event_time_stamp1.get_input_delay_time_stamp() == krbn::absolute_time(10));
+    REQUIRE(event_time_stamp1.get_input_delay_duration() == krbn::absolute_time_duration(10));
 
     REQUIRE(event_time_stamp2.get_time_stamp() == krbn::absolute_time(200));
-    REQUIRE(event_time_stamp2.get_input_delay_time_stamp() == krbn::absolute_time(10));
+    REQUIRE(event_time_stamp2.get_input_delay_duration() == krbn::absolute_time_duration(10));
 
     REQUIRE(event_time_stamp3.get_time_stamp() == krbn::absolute_time(100));
-    REQUIRE(event_time_stamp3.get_input_delay_time_stamp() == krbn::absolute_time(20));
+    REQUIRE(event_time_stamp3.get_input_delay_duration() == krbn::absolute_time_duration(20));
 
     REQUIRE(event_time_stamp4.get_time_stamp() == krbn::absolute_time(200));
-    REQUIRE(event_time_stamp4.get_input_delay_time_stamp() == krbn::absolute_time(20));
+    REQUIRE(event_time_stamp4.get_input_delay_duration() == krbn::absolute_time_duration(20));
 
     REQUIRE(event_time_stamp1 == event_time_stamp1);
     REQUIRE(event_time_stamp1 != event_time_stamp2);
@@ -79,7 +79,7 @@ TEST_CASE("event_time_stamp") {
 TEST_CASE("entry") {
   krbn::event_queue::entry entry1(krbn::device_id(1),
                                   krbn::event_queue::event_time_stamp(krbn::absolute_time(100),
-                                                                      krbn::absolute_time(10)),
+                                                                      krbn::absolute_time_duration(10)),
                                   krbn::event_queue::event(krbn::key_code::a),
                                   krbn::event_type::key_down,
                                   krbn::event_queue::event(krbn::key_code::a),
@@ -455,7 +455,7 @@ TEST_CASE("increase_time_stamp_delay") {
 
     ENQUEUE_EVENT(event_queue, 1, 100, tab_event, key_down, tab_event);
 
-    event_queue.increase_time_stamp_delay(krbn::absolute_time(10));
+    event_queue.increase_time_stamp_delay(krbn::absolute_time_duration(10));
 
     ENQUEUE_EVENT(event_queue, 1, 200, tab_event, key_up, tab_event);
 
@@ -473,7 +473,7 @@ TEST_CASE("increase_time_stamp_delay") {
     while (!event_queue.empty()) {
       event_queue.erase_front_event();
     }
-    REQUIRE(event_queue.get_time_stamp_delay() == krbn::absolute_time(0));
+    REQUIRE(event_queue.get_time_stamp_delay() == krbn::absolute_time_duration(0));
   }
 }
 

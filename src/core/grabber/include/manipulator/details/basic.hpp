@@ -305,14 +305,14 @@ public:
                 }
 
                 // Wait if the front_input_event is `simultaneous` target and `simultaneous` is not canceled.
-                // Update input_delay_time_stamp
+                // Update input_delay_duration
 
                 if (is_target) {
                   auto found = all_from_events_found(from_events);
                   if (needs_wait_key_up || !found) {
-                    auto t = std::max(front_input_event.get_event_time_stamp().get_input_delay_time_stamp(),
-                                      time_utility::to_absolute_time(simultaneous_threshold_milliseconds));
-                    front_input_event.get_event_time_stamp().set_input_delay_time_stamp(t);
+                    auto d = std::max(front_input_event.get_event_time_stamp().get_input_delay_duration(),
+                                      time_utility::to_absolute_time_duration(simultaneous_threshold_milliseconds));
+                    front_input_event.get_event_time_stamp().set_input_delay_duration(d);
 
                     if (now < front_input_event.get_event_time_stamp().make_time_stamp_with_input_delay()) {
 
