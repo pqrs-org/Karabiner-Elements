@@ -24,7 +24,21 @@ typedef enum {
 
 static void log_updated_callback(const char* line, void* refcon) {
   LogFileTextViewController* controller = (__bridge LogFileTextViewController*)(refcon);
-  [controller appendLogLine:line];
+  if (!controller) {
+    return;
+  }
+
+  NSString* lineString = [controller logLineString:line];
+
+  @weakify(controller);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    @strongify(controller);
+    if (!controller) {
+      return;
+    }
+
+    [controller appendLogLine:lineString];
+  });
 }
 
 @implementation LogFileTextViewController
@@ -45,7 +59,7 @@ static void log_updated_callback(const char* line, void* refcon) {
   {
     size_t size = libkrbn_log_monitor_initial_lines_size(self.libkrbn_log_monitor);
     for (size_t i = 0; i < size; ++i) {
-      const char* line = libkrbn_log_monitor_initial_line(self.libkrbn_log_monitor, i);
+      NSString* line = [self logLineString:libkrbn_log_monitor_initial_line(self.libkrbn_log_monitor, i)];
       LogLevel level = [self getLogLevel:line];
       if (line) {
         [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:[self logLineString:line]
@@ -101,8 +115,7 @@ static void log_updated_callback(const char* line, void* refcon) {
   return lineString;
 }
 
-- (void)appendLogLine:(const char*)line {
-  NSString* lineString = [self logLineString:line];
+- (void)appendLogLine:(NSString*)line {
   LogLevel level = [self getLogLevel:line];
 
   if (level == LogLevelErr) {
@@ -112,7 +125,9 @@ static void log_updated_callback(const char* line, void* refcon) {
   @weakify(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     @strongify(self);
-    if (!self) return;
+    if (!self) {
+      return;
+    }
 
     [self.textView.textStorage beginEditing];
 
@@ -121,7 +136,7 @@ static void log_updated_callback(const char* line, void* refcon) {
       [self.textView.textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
     }
 
-    [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:lineString
+    [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:line
                                                                                       attributes:[self stringAttributes:level]]];
     [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
                                                                                       attributes:[self stringAttributes:level]]];
@@ -145,11 +160,11 @@ static void log_updated_callback(const char* line, void* refcon) {
   self.logTabViewItem.label = @"Log";
 }
 
-- (LogLevel)getLogLevel:(const char*)line {
-  if (libkrbn_is_warn_log(line)) {
+- (LogLevel)getLogLevel:(NSString*)line {
+  if (libkrbn_is_warn_log([line UTF8String])) {
     return LogLevelWarn;
   }
-  if (libkrbn_is_err_log(line)) {
+  if (libkrbn_is_err_log([line UTF8String])) {
     return LogLevelErr;
   }
   return LogLevelInfo;

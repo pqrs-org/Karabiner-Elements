@@ -4,7 +4,9 @@
 static libkrbn_version_monitor* libkrbn_version_monitor_ = NULL;
 
 static void version_changed_callback(void* refcon) {
-  [KarabinerKit relaunch];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [KarabinerKit relaunch];
+  });
 }
 
 @implementation KarabinerKit

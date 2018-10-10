@@ -41,7 +41,9 @@
       @weakify(self);
       dispatch_async(dispatch_get_main_queue(), ^{
         @strongify(self);
-        if (!self) return;
+        if (!self) {
+          return;
+        }
 
         @try {
           const char* b = [bundleIdentifier UTF8String];

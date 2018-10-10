@@ -1,6 +1,7 @@
 #import "KarabinerKit/DeviceManager.h"
 #import "KarabinerKit/NotificationKeys.h"
 #import "libkrbn.h"
+#import "weakify.h"
 
 @interface KarabinerKitDeviceManager ()
 
@@ -12,9 +13,23 @@
 static void connected_devices_updated_callback(libkrbn_connected_devices* initializedConnectedDevices,
                                                void* refcon) {
   KarabinerKitDeviceManager* manager = (__bridge KarabinerKitDeviceManager*)(refcon);
-  manager.connectedDevices = [[KarabinerKitConnectedDevices alloc] initWithInitializedConnectedDevices:initializedConnectedDevices];
+  if (!manager) {
+    return;
+  }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitDevicesAreUpdated object:nil];
+  KarabinerKitConnectedDevices* devices = [[KarabinerKitConnectedDevices alloc] initWithInitializedConnectedDevices:initializedConnectedDevices];
+
+  @weakify(manager);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    @strongify(manager);
+    if (!manager) {
+      return;
+    }
+
+    manager.connectedDevices = devices;
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitDevicesAreUpdated object:nil];
+  });
 }
 
 @implementation KarabinerKitDeviceManager

@@ -8,8 +8,6 @@
 @property libkrbn_system_preferences_monitor* libkrbn_system_preferences_monitor;
 @property(readwrite) SystemPreferencesModel* systemPreferencesModel;
 
-- (void)updateSystemPreferencesModel:(const struct libkrbn_system_preferences* _Nonnull)system_preferences;
-
 @end
 
 static void configuration_file_updated_callback(libkrbn_core_configuration* initializedCoreConfiguration,
@@ -19,8 +17,23 @@ static void configuration_file_updated_callback(libkrbn_core_configuration* init
 static void system_preferences_updated_callback(const struct libkrbn_system_preferences* _Nonnull system_preferences,
                                                 void* _Nullable refcon) {
   SystemPreferencesManager* manager = (__bridge SystemPreferencesManager*)(refcon);
-  [manager updateSystemPreferencesModel:system_preferences];
-  [[NSNotificationCenter defaultCenter] postNotificationName:kSystemPreferencesValuesAreUpdated object:nil];
+  if (!manager) {
+    return;
+  }
+
+  SystemPreferencesModel* model = [[SystemPreferencesModel alloc] initWithValues:system_preferences];
+
+  @weakify(manager);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    @strongify(manager);
+    if (!manager) {
+      return;
+    }
+
+    manager.systemPreferencesModel = model;
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSystemPreferencesValuesAreUpdated object:nil];
+  });
 }
 
 @implementation SystemPreferencesManager
@@ -51,10 +64,6 @@ static void system_preferences_updated_callback(const struct libkrbn_system_pref
     libkrbn_configuration_monitor* p = self.libkrbn_configuration_monitor;
     libkrbn_configuration_monitor_terminate(&p);
   }
-}
-
-- (void)updateSystemPreferencesModel:(const struct libkrbn_system_preferences* _Nonnull)system_preferences {
-  self.systemPreferencesModel = [[SystemPreferencesModel alloc] initWithValues:system_preferences];
 }
 
 - (void)updateSystemPreferencesValues:(SystemPreferencesModel*)model {
