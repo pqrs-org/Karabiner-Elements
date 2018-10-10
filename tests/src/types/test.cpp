@@ -13,6 +13,38 @@ TEST_CASE("sizeof") {
   REQUIRE(sizeof(krbn::location_id) == 4);
 }
 
+TEST_CASE("absolute_time") {
+  krbn::absolute_time t1(1000);
+  krbn::absolute_time t2(2000);
+
+  {
+    auto d = t2 - t1;
+    REQUIRE(d == krbn::absolute_time_duration(1000));
+  }
+  {
+    auto d = t1 - t2;
+    REQUIRE(d == krbn::absolute_time_duration(-1000));
+  }
+  {
+    auto t = t1 + krbn::absolute_time_duration(100);
+    REQUIRE(t == krbn::absolute_time(1100));
+  }
+  {
+    auto t = t1 - krbn::absolute_time_duration(100);
+    REQUIRE(t == krbn::absolute_time(900));
+  }
+  {
+    auto t = t1;
+    t += krbn::absolute_time_duration(100);
+    REQUIRE(t == krbn::absolute_time(1100));
+  }
+  {
+    auto t = t1;
+    t -= krbn::absolute_time_duration(100);
+    REQUIRE(t == krbn::absolute_time(900));
+  }
+}
+
 TEST_CASE("operation_type") {
   krbn::operation_type_connect_console_user_server_struct s;
   std::vector<uint8_t> buffer(sizeof(s));

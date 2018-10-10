@@ -10,6 +10,7 @@
 #include "logger.hpp"
 #include "stream_utility.hpp"
 #include "types/absolute_time.hpp"
+#include "types/absolute_time_duration.hpp"
 #include "types/consumer_key_code.hpp"
 #include "types/device_identifiers.hpp"
 #include "types/event_type.hpp"
