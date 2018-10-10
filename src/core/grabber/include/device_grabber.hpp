@@ -93,11 +93,7 @@ public:
 
     input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this] {
       enqueue_to_dispatcher([this] {
-        if (auto d = weak_dispatcher_.lock()) {
-          if (auto s = d->lock_weak_time_source()) {
-            manipulate(time_utility::to_absolute_time(s->now()));
-          }
-        }
+        manipulate(time_utility::mach_absolute_time());
       });
     });
 
@@ -527,11 +523,16 @@ private:
     }
 
     if (auto min = manipulator_managers_connector_.min_input_event_time_stamp()) {
+      auto when = when_now();
+      if (now < *min) {
+        when += time_utility::to_milliseconds(*min - now);
+      }
+
       enqueue_to_dispatcher(
           [this, min] {
             manipulate(*min);
           },
-          time_utility::to_milliseconds(*min));
+          when);
     }
   }
 
