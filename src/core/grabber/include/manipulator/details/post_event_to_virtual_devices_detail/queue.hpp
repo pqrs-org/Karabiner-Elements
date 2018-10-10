@@ -73,7 +73,7 @@ public:
     nlohmann::json to_json(void) const {
       nlohmann::json json;
       json["type"] = to_c_string(type_);
-      json["time_stamp"] = time_utility::to_milliseconds(time_stamp_).count();
+      json["time_stamp"] = time_utility::to_milliseconds(time_stamp_ - absolute_time(0)).count();
 
       switch (type_) {
         case type::keyboard_input:
@@ -402,15 +402,18 @@ public:
             if (e.get_time_stamp() > now) {
               // If e.get_time_stamp() is too large, we reduce the delay to 3 seconds.
 
-              auto when = std::min(time_utility::to_milliseconds(e.get_time_stamp()),
-                                   time_utility::to_milliseconds(now) + std::chrono::milliseconds(3000));
+              absolute_time_duration duration(0);
+              if (now < e.get_time_stamp()) {
+                duration = std::min(e.get_time_stamp() - now,
+                                    time_utility::to_absolute_time_duration(std::chrono::milliseconds(3000)));
+              }
 
               enqueue_to_dispatcher(
                   [this, weak_virtual_hid_device_client, weak_console_user_server_client] {
                     async_post_events(weak_virtual_hid_device_client,
                                       weak_console_user_server_client);
                   },
-                  when);
+                  when_now() + time_utility::to_milliseconds(duration));
 
               return;
             }
@@ -481,7 +484,7 @@ private:
     // * If wait is 1 millisecond, Google Chrome issue below is sometimes happen.
     //
 
-    auto wait = time_utility::to_absolute_time(std::chrono::milliseconds(5));
+    auto wait = time_utility::to_absolute_time_duration(std::chrono::milliseconds(5));
 
     bool skip = false;
     switch (et) {

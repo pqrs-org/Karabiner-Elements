@@ -112,7 +112,7 @@ int main(int argc, const char* argv[]) {
 
     {
       auto time_stamp = krbn::time_utility::mach_absolute_time() +
-                        krbn::time_utility::to_absolute_time(std::chrono::milliseconds(1000));
+                        krbn::time_utility::to_absolute_time_duration(std::chrono::milliseconds(1000));
       queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
                                    krbn::hid_usage(kHIDUsage_KeyboardA),
                                    krbn::event_type::key_down,
@@ -122,7 +122,7 @@ int main(int argc, const char* argv[]) {
     }
     {
       auto time_stamp = krbn::time_utility::mach_absolute_time() +
-                        krbn::time_utility::to_absolute_time(std::chrono::milliseconds(2000));
+                        krbn::time_utility::to_absolute_time_duration(std::chrono::milliseconds(2000));
       queue.emplace_back_key_event(krbn::hid_usage_page::keyboard_or_keypad,
                                    krbn::hid_usage(kHIDUsage_KeyboardA),
                                    krbn::event_type::key_up,

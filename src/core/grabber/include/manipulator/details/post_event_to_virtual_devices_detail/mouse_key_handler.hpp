@@ -153,13 +153,18 @@ private:
                                            event_type::single,
                                            time_stamp);
 
-        auto when = time_utility::to_milliseconds(time_stamp) + std::chrono::milliseconds(20);
+        auto now = time_utility::mach_absolute_time();
+        auto duration = time_utility::to_absolute_time_duration(std::chrono::milliseconds(20));
+        if (now < time_stamp) {
+          duration += time_stamp - now;
+        }
+
         enqueue_to_dispatcher(
-            [this, when] {
-              post_event(time_utility::to_absolute_time(when));
+            [this, now, duration] {
+              post_event(now + duration);
               krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
             },
-            when);
+            when_now() + time_utility::to_milliseconds(duration));
       }
     }
   }
