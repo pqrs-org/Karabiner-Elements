@@ -18,7 +18,8 @@ typedef enum {
 @property libkrbn_log_monitor* libkrbn_log_monitor;
 @property NSInteger errorLogCount;
 
-- (void)appendLogLine:(const char*)line;
+- (NSString*)logLineString:(const char*)line;
+- (void)appendLogLine:(NSString*)line;
 
 @end
 
@@ -62,7 +63,7 @@ static void log_updated_callback(const char* line, void* refcon) {
       NSString* line = [self logLineString:libkrbn_log_monitor_initial_line(self.libkrbn_log_monitor, i)];
       LogLevel level = [self getLogLevel:line];
       if (line) {
-        [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:[self logLineString:line]
+        [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:line
                                                                                           attributes:[self stringAttributes:level]]];
         [self.textView.textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
                                                                                           attributes:[self stringAttributes:level]]];

@@ -1,6 +1,7 @@
 #import "SystemPreferencesManager.h"
 #import "NotificationKeys.h"
 #import "libkrbn.h"
+#import "weakify.h"
 
 @interface SystemPreferencesManager ()
 
