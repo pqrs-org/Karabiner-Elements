@@ -48,57 +48,52 @@ public:
                                                                     x_count_converter_(128),
                                                                     y_count_converter_(128),
                                                                     vertical_wheel_count_converter_(128),
-                                                                    horizontal_wheel_count_converter_(128) {
+                                                                    horizontal_wheel_count_converter_(128),
+                                                                    timer_(*this) {
   }
 
   virtual ~mouse_key_handler(void) {
-    detach_from_dispatcher([] {
+    detach_from_dispatcher([this] {
+      timer_.stop();
     });
   }
 
-  void async_push_back_mouse_key(device_id device_id,
-                                 const mouse_key& mouse_key,
-                                 const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
-                                 absolute_time time_stamp) {
-    enqueue_to_dispatcher(
-        [this, device_id, mouse_key, weak_output_event_queue, time_stamp] {
-          erase_entry(device_id, mouse_key);
+  void push_back_mouse_key(device_id device_id,
+                           const mouse_key& mouse_key,
+                           const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
+                           absolute_time time_stamp) {
+    erase_entry(device_id, mouse_key);
 
-          entries_.emplace_back(device_id, mouse_key);
-          active_ = !entries_.empty();
+    entries_.emplace_back(device_id, mouse_key);
+    active_ = !entries_.empty();
 
-          weak_output_event_queue_ = weak_output_event_queue;
+    weak_output_event_queue_ = weak_output_event_queue;
 
-          post_event(time_stamp);
-        });
+    start_timer(time_stamp);
   }
 
-  void async_erase_mouse_key(device_id device_id,
-                             const mouse_key& mouse_key,
-                             const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
-                             absolute_time time_stamp) {
-    enqueue_to_dispatcher([this, device_id, mouse_key, weak_output_event_queue, time_stamp] {
-      erase_entry(device_id, mouse_key);
+  void erase_mouse_key(device_id device_id,
+                       const mouse_key& mouse_key,
+                       const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
+                       absolute_time time_stamp) {
+    erase_entry(device_id, mouse_key);
 
-      weak_output_event_queue_ = weak_output_event_queue;
+    weak_output_event_queue_ = weak_output_event_queue;
 
-      post_event(time_stamp);
-    });
+    start_timer(time_stamp);
   }
 
-  void async_erase_mouse_keys_by_device_id(device_id device_id,
-                                           absolute_time time_stamp) {
-    enqueue_to_dispatcher([this, device_id, time_stamp] {
-      entries_.erase(std::remove_if(std::begin(entries_),
-                                    std::end(entries_),
-                                    [&](const auto& pair) {
-                                      return pair.first == device_id;
-                                    }),
-                     std::end(entries_));
-      active_ = !entries_.empty();
+  void erase_mouse_keys_by_device_id(device_id device_id,
+                                     absolute_time time_stamp) {
+    entries_.erase(std::remove_if(std::begin(entries_),
+                                  std::end(entries_),
+                                  [&](const auto& pair) {
+                                    return pair.first == device_id;
+                                  }),
+                   std::end(entries_));
+    active_ = !entries_.empty();
 
-      post_event(time_stamp);
-    });
+    start_timer(time_stamp);
   }
 
   bool active(void) const {
@@ -118,7 +113,22 @@ private:
     active_ = !entries_.empty();
   }
 
-  void post_event(absolute_time time_stamp) {
+  void start_timer(absolute_time time_stamp) {
+    timer_.start(
+        [this, time_stamp] {
+          absolute_time t = time_stamp;
+          if (post_event(t)) {
+            t += time_utility::to_absolute_time_duration(std::chrono::milliseconds(20));
+            krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+
+          } else {
+            timer_.stop();
+          }
+        },
+        std::chrono::milliseconds(20));
+  }
+
+  bool post_event(absolute_time time_stamp) {
     if (auto oeq = weak_output_event_queue_.lock()) {
       mouse_key total;
       for (const auto& pair : entries_) {
@@ -131,6 +141,7 @@ private:
 
       if (total.is_zero()) {
         last_mouse_key_total_ = boost::none;
+        return false;
 
       } else {
         if (last_mouse_key_total_ != total) {
@@ -153,20 +164,11 @@ private:
                                            event_type::single,
                                            time_stamp);
 
-        auto now = time_utility::mach_absolute_time();
-        auto duration = time_utility::to_absolute_time_duration(std::chrono::milliseconds(20));
-        if (now < time_stamp) {
-          duration += time_stamp - now;
-        }
-
-        enqueue_to_dispatcher(
-            [this, now, duration] {
-              post_event(now + duration);
-              krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-            },
-            when_now() + time_utility::to_milliseconds(duration));
+        return true;
       }
     }
+
+    return false;
   }
 
   queue& queue_;
@@ -180,6 +182,7 @@ private:
   count_converter y_count_converter_;
   count_converter vertical_wheel_count_converter_;
   count_converter horizontal_wheel_count_converter_;
+  pqrs::dispatcher::extra::timer timer_;
 };
 } // namespace post_event_to_virtual_devices_detail
 } // namespace details

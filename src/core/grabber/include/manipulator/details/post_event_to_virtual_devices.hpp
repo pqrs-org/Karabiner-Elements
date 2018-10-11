@@ -208,15 +208,15 @@ public:
         case event_queue::event::type::mouse_key:
           if (auto mouse_key = front_input_event.get_event().get_mouse_key()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
-              mouse_key_handler_->async_push_back_mouse_key(front_input_event.get_device_id(),
-                                                            *mouse_key,
-                                                            output_event_queue,
-                                                            front_input_event.get_event_time_stamp().get_time_stamp());
+              mouse_key_handler_->push_back_mouse_key(front_input_event.get_device_id(),
+                                                      *mouse_key,
+                                                      output_event_queue,
+                                                      front_input_event.get_event_time_stamp().get_time_stamp());
             } else {
-              mouse_key_handler_->async_erase_mouse_key(front_input_event.get_device_id(),
-                                                        *mouse_key,
-                                                        output_event_queue,
-                                                        front_input_event.get_event_time_stamp().get_time_stamp());
+              mouse_key_handler_->erase_mouse_key(front_input_event.get_device_id(),
+                                                  *mouse_key,
+                                                  output_event_queue,
+                                                  front_input_event.get_event_time_stamp().get_time_stamp());
             }
           }
           break;
@@ -288,8 +288,8 @@ public:
 
     // mouse keys
 
-    mouse_key_handler_->async_erase_mouse_keys_by_device_id(front_input_event.get_device_id(),
-                                                            front_input_event.get_event_time_stamp().get_time_stamp());
+    mouse_key_handler_->erase_mouse_keys_by_device_id(front_input_event.get_device_id(),
+                                                      front_input_event.get_event_time_stamp().get_time_stamp());
   }
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
@@ -323,8 +323,8 @@ public:
 
     // Release mouse_key_handler_
 
-    mouse_key_handler_->async_erase_mouse_keys_by_device_id(device_id,
-                                                            time_stamp);
+    mouse_key_handler_->erase_mouse_keys_by_device_id(device_id,
+                                                      time_stamp);
   }
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
