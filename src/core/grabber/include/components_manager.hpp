@@ -25,31 +25,29 @@ public:
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
-      enqueue_to_dispatcher([this, uid] {
-        uid_t console_user_server_socket_uid = 0;
+      uid_t console_user_server_socket_uid = 0;
 
-        if (uid) {
-          logger::get_logger().info("current_console_user_id: {0}", *uid);
-          console_user_server_socket_uid = *uid;
-        } else {
-          logger::get_logger().info("current_console_user_id: none");
-        }
+      if (uid) {
+        logger::get_logger().info("current_console_user_id: {0}", *uid);
+        console_user_server_socket_uid = *uid;
+      } else {
+        logger::get_logger().info("current_console_user_id: none");
+      }
 
-        if (version_monitor_) {
-          version_monitor_->async_manual_check();
-        }
+      if (version_monitor_) {
+        version_monitor_->async_manual_check();
+      }
 
-        // Prepare console_user_server_socket_directory
-        {
-          auto socket_file_path = console_user_server_client::make_console_user_server_socket_directory(console_user_server_socket_uid);
-          mkdir(socket_file_path.c_str(), 0700);
-          chown(socket_file_path.c_str(), console_user_server_socket_uid, 0);
-          chmod(socket_file_path.c_str(), 0700);
-        }
+      // Prepare console_user_server_socket_directory
+      {
+        auto socket_file_path = console_user_server_client::make_console_user_server_socket_directory(console_user_server_socket_uid);
+        mkdir(socket_file_path.c_str(), 0700);
+        chown(socket_file_path.c_str(), console_user_server_socket_uid, 0);
+        chmod(socket_file_path.c_str(), 0700);
+      }
 
-        receiver_ = nullptr;
-        receiver_ = std::make_unique<receiver>(grabbable_state_queues_manager_);
-      });
+      receiver_ = nullptr;
+      receiver_ = std::make_unique<receiver>(grabbable_state_queues_manager_);
     });
 
     console_user_id_monitor_->async_start();

@@ -19,50 +19,40 @@ public:
     hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      enqueue_to_dispatcher([this, weak_hid] {
-        if (auto hid = weak_hid.lock()) {
-          hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
-            enqueue_to_dispatcher([this, weak_hid, shared_event_queue] {
-              if (auto hid = weak_hid.lock()) {
-                values_arrived(hid, shared_event_queue);
-              }
-            });
-          });
+      if (auto hid = weak_hid.lock()) {
+        hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
+          if (auto hid = weak_hid.lock()) {
+            values_arrived(hid, shared_event_queue);
+          }
+        });
 
-          // Observe
+        // Observe
 
-          auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
+        auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
 
-          hid_observer->device_observed.connect([this, weak_hid] {
-            enqueue_to_dispatcher([weak_hid] {
-              if (auto hid = weak_hid.lock()) {
-                krbn::logger::get_logger().info("{0} is observed.", hid->get_name_for_log());
-              }
-            });
-          });
+        hid_observer->device_observed.connect([weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            krbn::logger::get_logger().info("{0} is observed.", hid->get_name_for_log());
+          }
+        });
 
-          hid_observer->device_unobserved.connect([this, weak_hid] {
-            enqueue_to_dispatcher([weak_hid] {
-              if (auto hid = weak_hid.lock()) {
-                krbn::logger::get_logger().info("{0} is unobserved.", hid->get_name_for_log());
-              }
-            });
-          });
+        hid_observer->device_unobserved.connect([weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            krbn::logger::get_logger().info("{0} is unobserved.", hid->get_name_for_log());
+          }
+        });
 
-          hid_observer->async_observe();
+        hid_observer->async_observe();
 
-          hid_observers_[hid->get_registry_entry_id()] = hid_observer;
-        }
-      });
+        hid_observers_[hid->get_registry_entry_id()] = hid_observer;
+      }
     });
 
     hid_manager_->device_removed.connect([this](auto&& weak_hid) {
-      enqueue_to_dispatcher([this, weak_hid] {
-        if (auto hid = weak_hid.lock()) {
-          krbn::logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
-          hid_observers_.erase(hid->get_registry_entry_id());
-        }
-      });
+      if (auto hid = weak_hid.lock()) {
+        krbn::logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
+        hid_observers_.erase(hid->get_registry_entry_id());
+      }
     });
 
     hid_manager_->async_start();

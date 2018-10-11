@@ -38,33 +38,27 @@ private:
       grabber_client_ = std::make_shared<grabber_client>();
 
       grabber_client_->connected.connect([this] {
-        enqueue_to_dispatcher([this] {
-          if (version_monitor_) {
-            version_monitor_->async_manual_check();
-          }
+        if (version_monitor_) {
+          version_monitor_->async_manual_check();
+        }
 
-          async_start_device_observer();
-        });
+        async_start_device_observer();
       });
 
       grabber_client_->connect_failed.connect([this](auto&& error_code) {
-        enqueue_to_dispatcher([this] {
-          if (version_monitor_) {
-            version_monitor_->async_manual_check();
-          }
+        if (version_monitor_) {
+          version_monitor_->async_manual_check();
+        }
 
-          async_stop_device_observer();
-        });
+        async_stop_device_observer();
       });
 
       grabber_client_->closed.connect([this] {
-        enqueue_to_dispatcher([this] {
-          if (version_monitor_) {
-            version_monitor_->async_manual_check();
-          }
+        if (version_monitor_) {
+          version_monitor_->async_manual_check();
+        }
 
-          async_stop_device_observer();
-        });
+        async_stop_device_observer();
       });
 
       grabber_client_->async_start();

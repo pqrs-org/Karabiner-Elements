@@ -44,18 +44,16 @@ public:
       // opened
       {
         auto c = hid->opened.connect([this] {
-          enqueue_to_dispatcher([this] {
-            if (auto hid = weak_hid_.lock()) {
-              grabbed_ = true;
+          if (auto hid = weak_hid_.lock()) {
+            grabbed_ = true;
 
-              enqueue_to_dispatcher([this] {
-                device_grabbed();
-              });
+            enqueue_to_dispatcher([this] {
+              device_grabbed();
+            });
 
-              hid->async_queue_start();
-              hid->async_schedule();
-            }
-          });
+            hid->async_queue_start();
+            hid->async_schedule();
+          }
         });
         human_interface_device_connections_.push_back(c);
       }
@@ -63,15 +61,13 @@ public:
       // open_failed
       {
         auto c = hid->open_failed.connect([this](auto&& error) {
-          enqueue_to_dispatcher([this, error] {
-            if (auto hid = weak_hid_.lock()) {
-              auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
-                                         iokit_utility::get_error_name(error),
-                                         error,
-                                         hid->get_name_for_log());
-              logger_unique_filter_.error(message);
-            }
-          });
+          if (auto hid = weak_hid_.lock()) {
+            auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
+                                       iokit_utility::get_error_name(error),
+                                       error,
+                                       hid->get_name_for_log());
+            logger_unique_filter_.error(message);
+          }
         });
         human_interface_device_connections_.push_back(c);
       }
@@ -79,13 +75,11 @@ public:
       // closed
       {
         auto c = hid->closed.connect([this] {
-          enqueue_to_dispatcher([this] {
-            if (auto hid = weak_hid_.lock()) {
-              enqueue_to_dispatcher([this] {
-                device_ungrabbed();
-              });
-            }
-          });
+          if (auto hid = weak_hid_.lock()) {
+            enqueue_to_dispatcher([this] {
+              device_ungrabbed();
+            });
+          }
         });
         human_interface_device_connections_.push_back(c);
       }
@@ -93,19 +87,17 @@ public:
       // close_failed
       {
         auto c = hid->close_failed.connect([this](auto&& error) {
-          enqueue_to_dispatcher([this, error] {
-            if (auto hid = weak_hid_.lock()) {
-              auto message = fmt::format("IOHIDDeviceClose error: {0} ({1}) {2}",
-                                         iokit_utility::get_error_name(error),
-                                         error,
-                                         hid->get_name_for_log());
-              logger_unique_filter_.error(message);
+          if (auto hid = weak_hid_.lock()) {
+            auto message = fmt::format("IOHIDDeviceClose error: {0} ({1}) {2}",
+                                       iokit_utility::get_error_name(error),
+                                       error,
+                                       hid->get_name_for_log());
+            logger_unique_filter_.error(message);
 
-              enqueue_to_dispatcher([this] {
-                device_ungrabbed();
-              });
-            }
-          });
+            enqueue_to_dispatcher([this] {
+              device_ungrabbed();
+            });
+          }
         });
         human_interface_device_connections_.push_back(c);
       }

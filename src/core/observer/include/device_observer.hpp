@@ -25,11 +25,9 @@ public:
     grabbable_state_manager_ = std::make_unique<grabbable_state_manager>();
 
     grabbable_state_manager_->grabbable_state_changed.connect([this](auto&& grabbable_state) {
-      enqueue_to_dispatcher([this, grabbable_state] {
-        if (auto client = grabber_client_.lock()) {
-          client->async_grabbable_state_changed(grabbable_state);
-        }
-      });
+      if (auto client = grabber_client_.lock()) {
+        client->async_grabbable_state_changed(grabbable_state);
+      }
     });
 
     // hid_manager_
@@ -53,57 +51,49 @@ public:
     });
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      enqueue_to_dispatcher([this, weak_hid] {
-        if (auto hid = weak_hid.lock()) {
-          logger::get_logger().info("{0} is detected.", hid->get_name_for_log());
+      if (auto hid = weak_hid.lock()) {
+        logger::get_logger().info("{0} is detected.", hid->get_name_for_log());
 
-          grabbable_state_manager_->update(grabbable_state(hid->get_registry_entry_id(),
-                                                           grabbable_state::state::device_error,
-                                                           grabbable_state::ungrabbable_temporarily_reason::none,
-                                                           time_utility::mach_absolute_time()));
+        grabbable_state_manager_->update(grabbable_state(hid->get_registry_entry_id(),
+                                                         grabbable_state::state::device_error,
+                                                         grabbable_state::ungrabbable_temporarily_reason::none,
+                                                         time_utility::mach_absolute_time()));
 
-          hid->values_arrived.connect([this](auto&& shared_event_queue) {
-            enqueue_to_dispatcher([this, shared_event_queue] {
-              grabbable_state_manager_->update(*shared_event_queue);
-            });
-          });
+        hid->values_arrived.connect([this](auto&& shared_event_queue) {
+          grabbable_state_manager_->update(*shared_event_queue);
+        });
 
-          auto observer = std::make_shared<hid_observer>(hid);
+        auto observer = std::make_shared<hid_observer>(hid);
 
-          observer->device_observed.connect([this, weak_hid] {
-            enqueue_to_dispatcher([this, weak_hid] {
-              if (auto hid = weak_hid.lock()) {
-                logger::get_logger().info("{0} is observed.",
-                                          hid->get_name_for_log());
+        observer->device_observed.connect([this, weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            logger::get_logger().info("{0} is observed.",
+                                      hid->get_name_for_log());
 
-                if (auto state = grabbable_state_manager_->get_grabbable_state(hid->get_registry_entry_id())) {
-                  // Keep grabbable_state if the state is already changed by value_callback.
-                  if (state->get_state() == grabbable_state::state::device_error) {
-                    grabbable_state_manager_->update(grabbable_state(hid->get_registry_entry_id(),
-                                                                     grabbable_state::state::grabbable,
-                                                                     grabbable_state::ungrabbable_temporarily_reason::none,
-                                                                     time_utility::mach_absolute_time()));
-                  }
-                }
+            if (auto state = grabbable_state_manager_->get_grabbable_state(hid->get_registry_entry_id())) {
+              // Keep grabbable_state if the state is already changed by value_callback.
+              if (state->get_state() == grabbable_state::state::device_error) {
+                grabbable_state_manager_->update(grabbable_state(hid->get_registry_entry_id(),
+                                                                 grabbable_state::state::grabbable,
+                                                                 grabbable_state::ungrabbable_temporarily_reason::none,
+                                                                 time_utility::mach_absolute_time()));
               }
-            });
-          });
+            }
+          }
+        });
 
-          observer->async_observe();
+        observer->async_observe();
 
-          hid_observers_[hid->get_registry_entry_id()] = observer;
-        }
-      });
+        hid_observers_[hid->get_registry_entry_id()] = observer;
+      }
     });
 
     hid_manager_->device_removed.connect([this](auto&& weak_hid) {
-      enqueue_to_dispatcher([this, weak_hid] {
-        if (auto hid = weak_hid.lock()) {
-          logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
+      if (auto hid = weak_hid.lock()) {
+        logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
 
-          hid_observers_.erase(hid->get_registry_entry_id());
-        }
-      });
+        hid_observers_.erase(hid->get_registry_entry_id());
+      }
     });
 
     hid_manager_->async_start();

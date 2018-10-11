@@ -67,9 +67,7 @@ public:
 
     if (auto m = weak_grabbable_state_queues_manager_.lock()) {
       grabbable_state_changed_connection_ = m->grabbable_state_changed.connect([this](auto&& registry_entry_id, auto&& grabbable_state) {
-        enqueue_to_dispatcher([this, registry_entry_id, grabbable_state] {
-          retry_grab(registry_entry_id, grabbable_state);
-        });
+        retry_grab(registry_entry_id, grabbable_state);
       });
     }
 
@@ -92,9 +90,7 @@ public:
                                                             posted_event_queue_);
 
     input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this] {
-      enqueue_to_dispatcher([this] {
-        manipulate(time_utility::mach_absolute_time());
-      });
+      manipulate(time_utility::mach_absolute_time());
     });
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
@@ -124,110 +120,100 @@ public:
     });
 
     hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      enqueue_to_dispatcher([this, weak_hid] {
-        if (auto hid = weak_hid.lock()) {
-          hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
-            enqueue_to_dispatcher([this, weak_hid, shared_event_queue] {
-              if (auto hid = weak_hid.lock()) {
-                values_arrived(hid, shared_event_queue);
-              }
-            });
-          });
+      if (auto hid = weak_hid.lock()) {
+        hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
+          if (auto hid = weak_hid.lock()) {
+            values_arrived(hid, shared_event_queue);
+          }
+        });
 
-          auto grabber = std::make_shared<hid_grabber>(weak_hid);
+        auto grabber = std::make_shared<hid_grabber>(weak_hid);
 
-          grabber->device_grabbing.connect([this, weak_hid] {
-            if (auto hid = weak_hid.lock()) {
-              return is_grabbable_callback(hid);
+        grabber->device_grabbing.connect([this, weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            return is_grabbable_callback(hid);
+          }
+          return grabbable_state::state::ungrabbable_permanently;
+        });
+
+        grabber->device_grabbed.connect([this, weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            logger::get_logger().info("{0} is grabbed.", hid->get_name_for_log());
+
+            set_grabbed(hid->get_registry_entry_id(), true);
+
+            update_caps_lock_led();
+
+            update_virtual_hid_pointing();
+
+            apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
+          }
+        });
+
+        grabber->device_ungrabbed.connect([this, weak_hid] {
+          if (auto hid = weak_hid.lock()) {
+            logger::get_logger().info("{0} is ungrabbed.", hid->get_name_for_log());
+
+            set_grabbed(hid->get_registry_entry_id(), false);
+
+            if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+              m->unset_first_grabbed_event_time_stamp(hid->get_registry_entry_id());
             }
-            return grabbable_state::state::ungrabbable_permanently;
-          });
 
-          grabber->device_grabbed.connect([this, weak_hid] {
-            enqueue_to_dispatcher([this, weak_hid] {
-              if (auto hid = weak_hid.lock()) {
-                logger::get_logger().info("{0} is grabbed.", hid->get_name_for_log());
+            post_device_ungrabbed_event(hid->get_device_id());
 
-                set_grabbed(hid->get_registry_entry_id(), true);
+            update_virtual_hid_pointing();
 
-                update_caps_lock_led();
+            apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
+          }
+        });
 
-                update_virtual_hid_pointing();
+        hid_grabbers_[hid->get_registry_entry_id()] = grabber;
 
-                apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
-              }
-            });
-          });
+        output_devices_json();
+        output_device_details_json();
 
-          grabber->device_ungrabbed.connect([this, weak_hid] {
-            enqueue_to_dispatcher([this, weak_hid] {
-              if (auto hid = weak_hid.lock()) {
-                logger::get_logger().info("{0} is ungrabbed.", hid->get_name_for_log());
+        update_virtual_hid_pointing();
 
-                set_grabbed(hid->get_registry_entry_id(), false);
-
-                if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-                  m->unset_first_grabbed_event_time_stamp(hid->get_registry_entry_id());
-                }
-
-                post_device_ungrabbed_event(hid->get_device_id());
-
-                update_virtual_hid_pointing();
-
-                apple_notification_center::post_distributed_notification_to_all_sessions(constants::get_distributed_notification_device_grabbing_state_is_changed());
-              }
-            });
-          });
-
-          hid_grabbers_[hid->get_registry_entry_id()] = grabber;
-
-          output_devices_json();
-          output_device_details_json();
-
-          update_virtual_hid_pointing();
-
-          // ----------------------------------------
-          async_grab_devices();
-        }
-      });
+        // ----------------------------------------
+        async_grab_devices();
+      }
     });
 
     hid_manager_->device_removed.connect([this](auto&& weak_hid) {
-      enqueue_to_dispatcher([this, weak_hid] {
-        if (auto hid = weak_hid.lock()) {
-          logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
+      if (auto hid = weak_hid.lock()) {
+        logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
 
-          auto registry_entry_id = hid->get_registry_entry_id();
+        auto registry_entry_id = hid->get_registry_entry_id();
 
-          hid_grabbers_.erase(registry_entry_id);
-          device_states_.erase(registry_entry_id);
+        hid_grabbers_.erase(registry_entry_id);
+        device_states_.erase(registry_entry_id);
 
-          if (auto m = weak_grabbable_state_queues_manager_.lock()) {
-            m->erase_queue(registry_entry_id);
-          }
+        if (auto m = weak_grabbable_state_queues_manager_.lock()) {
+          m->erase_queue(registry_entry_id);
+        }
 
-          output_devices_json();
-          output_device_details_json();
+        output_devices_json();
+        output_device_details_json();
 
-          // ----------------------------------------
+        // ----------------------------------------
 
-          if (hid->is_keyboard() &&
-              hid->is_karabiner_virtual_hid_device()) {
-            virtual_hid_device_client_->async_close();
-            async_ungrab_devices();
+        if (hid->is_keyboard() &&
+            hid->is_karabiner_virtual_hid_device()) {
+          virtual_hid_device_client_->async_close();
+          async_ungrab_devices();
 
-            virtual_hid_device_client_->async_connect();
-            async_grab_devices();
-          }
-
-          update_virtual_hid_pointing();
-
-          // ----------------------------------------
-          // Refresh grab state in order to apply disable_built_in_keyboard_if_exists.
-
+          virtual_hid_device_client_->async_connect();
           async_grab_devices();
         }
-      });
+
+        update_virtual_hid_pointing();
+
+        // ----------------------------------------
+        // Refresh grab state in order to apply disable_built_in_keyboard_if_exists.
+
+        async_grab_devices();
+      }
     });
 
     hid_manager_->async_start();
@@ -265,26 +251,22 @@ public:
       event_tap_monitor_ = std::make_unique<event_tap_monitor>();
 
       event_tap_monitor_->caps_lock_state_changed.connect([this](auto&& state) {
-        enqueue_to_dispatcher([this, state] {
-          last_caps_lock_state_ = state;
-          post_caps_lock_state_changed_event(state);
-          update_caps_lock_led();
-        });
+        last_caps_lock_state_ = state;
+        post_caps_lock_state_changed_event(state);
+        update_caps_lock_led();
       });
 
       event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
-        enqueue_to_dispatcher([this, event_type, event] {
-          auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
-          event_queue::entry entry(device_id(0),
-                                   event_queue::event_time_stamp(time_utility::mach_absolute_time()),
-                                   e,
-                                   event_type,
-                                   event);
+        auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
+        event_queue::entry entry(device_id(0),
+                                 event_queue::event_time_stamp(time_utility::mach_absolute_time()),
+                                 e,
+                                 event_type,
+                                 event);
 
-          merged_input_event_queue_->push_back_event(entry);
+        merged_input_event_queue_->push_back_event(entry);
 
-          krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-        });
+        krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
       });
 
       event_tap_monitor_->async_start();
@@ -292,15 +274,13 @@ public:
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path);
 
       configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
-        enqueue_to_dispatcher([this, weak_core_configuration] {
-          if (auto core_configuration = weak_core_configuration.lock()) {
-            core_configuration_ = core_configuration;
+        if (auto core_configuration = weak_core_configuration.lock()) {
+          core_configuration_ = core_configuration;
 
-            logger_unique_filter_.reset();
-            set_profile(core_configuration->get_selected_profile());
-            async_grab_devices();
-          }
-        });
+          logger_unique_filter_.reset();
+          set_profile(core_configuration->get_selected_profile());
+          async_grab_devices();
+        }
       });
 
       configuration_monitor_->async_start();

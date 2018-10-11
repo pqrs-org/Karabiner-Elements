@@ -33,45 +33,37 @@ public:
     console_user_id_monitor_ = std::make_unique<console_user_id_monitor>();
 
     console_user_id_monitor_->console_user_id_changed.connect([this](auto&& uid) {
-      enqueue_to_dispatcher([this, uid] {
-        if (version_monitor_) {
-          version_monitor_->async_manual_check();
-        }
+      if (version_monitor_) {
+        version_monitor_->async_manual_check();
+      }
 
-        filesystem::create_directory_with_intermediate_directories(
-            constants::get_user_configuration_directory(),
-            0700);
+      filesystem::create_directory_with_intermediate_directories(
+          constants::get_user_configuration_directory(),
+          0700);
 
-        receiver_ = nullptr;
+      receiver_ = nullptr;
+      stop_grabber_client();
+
+      if (uid != getuid()) {
+        return;
+      }
+
+      receiver_ = std::make_unique<receiver>();
+
+      receiver_->bound.connect([this] {
         stop_grabber_client();
-
-        if (uid != getuid()) {
-          return;
-        }
-
-        receiver_ = std::make_unique<receiver>();
-
-        receiver_->bound.connect([this] {
-          enqueue_to_dispatcher([this] {
-            stop_grabber_client();
-            start_grabber_client();
-          });
-        });
-
-        receiver_->bind_failed.connect([this](auto&& error_code) {
-          enqueue_to_dispatcher([this] {
-            stop_grabber_client();
-          });
-        });
-
-        receiver_->closed.connect([this] {
-          enqueue_to_dispatcher([this] {
-            stop_grabber_client();
-          });
-        });
-
-        receiver_->async_start();
+        start_grabber_client();
       });
+
+      receiver_->bind_failed.connect([this](auto&& error_code) {
+        stop_grabber_client();
+      });
+
+      receiver_->closed.connect([this] {
+        stop_grabber_client();
+      });
+
+      receiver_->async_start();
     });
 
     console_user_id_monitor_->async_start();
@@ -96,13 +88,11 @@ private:
 
     grabber_alerts_monitor_ = std::make_unique<grabber_alerts_monitor>(constants::get_grabber_alerts_json_file_path());
 
-    grabber_alerts_monitor_->alerts_changed.connect([this](auto&& alerts) {
-      enqueue_to_dispatcher([alerts] {
-        logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
-        if (!alerts->empty()) {
-          application_launcher::launch_preferences();
-        }
-      });
+    grabber_alerts_monitor_->alerts_changed.connect([](auto&& alerts) {
+      logger::get_logger().info("karabiner_grabber_alerts.json is updated.");
+      if (!alerts->empty()) {
+        application_launcher::launch_preferences();
+      }
     });
 
     grabber_alerts_monitor_->async_start();
@@ -116,38 +106,32 @@ private:
     grabber_client_ = std::make_shared<grabber_client>();
 
     grabber_client_->connected.connect([this] {
-      enqueue_to_dispatcher([this] {
-        if (version_monitor_) {
-          version_monitor_->async_manual_check();
-        }
+      if (version_monitor_) {
+        version_monitor_->async_manual_check();
+      }
 
-        if (grabber_client_) {
-          grabber_client_->async_connect_console_user_server();
-        }
+      if (grabber_client_) {
+        grabber_client_->async_connect_console_user_server();
+      }
 
-        stop_child_components();
-        start_child_components();
-      });
+      stop_child_components();
+      start_child_components();
     });
 
     grabber_client_->connect_failed.connect([this](auto&& error_code) {
-      enqueue_to_dispatcher([this] {
-        if (version_monitor_) {
-          version_monitor_->async_manual_check();
-        }
+      if (version_monitor_) {
+        version_monitor_->async_manual_check();
+      }
 
-        stop_child_components();
-      });
+      stop_child_components();
     });
 
     grabber_client_->closed.connect([this] {
-      enqueue_to_dispatcher([this] {
-        if (version_monitor_) {
-          version_monitor_->async_manual_check();
-        }
+      if (version_monitor_) {
+        version_monitor_->async_manual_check();
+      }
 
-        stop_child_components();
-      });
+      stop_child_components();
     });
 
     grabber_client_->async_start();
@@ -174,11 +158,9 @@ private:
     system_preferences_monitor_ = std::make_unique<system_preferences_monitor>(configuration_monitor_);
 
     system_preferences_monitor_->system_preferences_changed.connect([this](auto&& system_preferences) {
-      enqueue_to_dispatcher([this, system_preferences] {
-        if (grabber_client_) {
-          grabber_client_->async_system_preferences_updated(system_preferences);
-        }
-      });
+      if (grabber_client_) {
+        grabber_client_->async_system_preferences_updated(system_preferences);
+      }
     });
 
     system_preferences_monitor_->async_start();
@@ -188,16 +170,14 @@ private:
     frontmost_application_monitor_ = std::make_unique<frontmost_application_monitor>();
 
     frontmost_application_monitor_->frontmost_application_changed.connect([this](auto&& bundle_identifier, auto&& file_path) {
-      enqueue_to_dispatcher([this, bundle_identifier, file_path] {
-        if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
-            bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
-          return;
-        }
+      if (bundle_identifier == "org.pqrs.Karabiner.EventViewer" ||
+          bundle_identifier == "org.pqrs.Karabiner-EventViewer") {
+        return;
+      }
 
-        if (grabber_client_) {
-          grabber_client_->async_frontmost_application_changed(bundle_identifier, file_path);
-        }
-      });
+      if (grabber_client_) {
+        grabber_client_->async_frontmost_application_changed(bundle_identifier, file_path);
+      }
     });
 
     frontmost_application_monitor_->async_start();
@@ -207,11 +187,9 @@ private:
     input_source_monitor_ = std::make_unique<input_source_monitor>();
 
     input_source_monitor_->input_source_changed.connect([this](auto&& input_source_identifiers) {
-      enqueue_to_dispatcher([this, input_source_identifiers] {
-        if (grabber_client_) {
-          grabber_client_->async_input_source_changed(input_source_identifiers);
-        }
-      });
+      if (grabber_client_) {
+        grabber_client_->async_input_source_changed(input_source_identifiers);
+      }
     });
 
     input_source_monitor_->async_start();
