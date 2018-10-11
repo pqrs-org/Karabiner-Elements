@@ -42,7 +42,7 @@ private:
           version_monitor_->async_manual_check();
         }
 
-        async_start_device_observer();
+        start_device_observer();
       });
 
       grabber_client_->connect_failed.connect([this](auto&& error_code) {
@@ -50,7 +50,7 @@ private:
           version_monitor_->async_manual_check();
         }
 
-        async_stop_device_observer();
+        stop_device_observer();
       });
 
       grabber_client_->closed.connect([this] {
@@ -58,7 +58,7 @@ private:
           version_monitor_->async_manual_check();
         }
 
-        async_stop_device_observer();
+        stop_device_observer();
       });
 
       grabber_client_->async_start();
@@ -79,20 +79,12 @@ private:
     grabber_client_ = nullptr;
   }
 
-  void async_start_device_observer(void) {
-    enqueue_to_dispatcher([this] {
-      if (device_observer_) {
-        return;
-      }
+  void start_device_observer(void) {
+    if (device_observer_) {
+      return;
+    }
 
-      device_observer_ = std::make_shared<device_observer>(grabber_client_);
-    });
-  }
-
-  void async_stop_device_observer(void) {
-    enqueue_to_dispatcher([this] {
-      async_stop_device_observer();
-    });
+    device_observer_ = std::make_shared<device_observer>(grabber_client_);
   }
 
   void stop_device_observer(void) {
