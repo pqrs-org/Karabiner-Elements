@@ -146,7 +146,7 @@ public:
           grabber->device_grabbed.connect([this, weak_hid] {
             enqueue_to_dispatcher([this, weak_hid] {
               if (auto hid = weak_hid.lock()) {
-                logger::get_logger().info("{0} is grabbed", hid->get_name_for_log());
+                logger::get_logger().info("{0} is grabbed.", hid->get_name_for_log());
 
                 set_grabbed(hid->get_registry_entry_id(), true);
 
@@ -162,7 +162,7 @@ public:
           grabber->device_ungrabbed.connect([this, weak_hid] {
             enqueue_to_dispatcher([this, weak_hid] {
               if (auto hid = weak_hid.lock()) {
-                logger::get_logger().info("{0} is ungrabbed", hid->get_name_for_log());
+                logger::get_logger().info("{0} is ungrabbed.", hid->get_name_for_log());
 
                 set_grabbed(hid->get_registry_entry_id(), false);
 
@@ -195,6 +195,8 @@ public:
     hid_manager_->device_removed.connect([this](auto&& weak_hid) {
       enqueue_to_dispatcher([this, weak_hid] {
         if (auto hid = weak_hid.lock()) {
+          logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
+
           auto registry_entry_id = hid->get_registry_entry_id();
 
           hid_grabbers_.erase(registry_entry_id);
@@ -234,6 +236,8 @@ public:
   virtual ~device_grabber(void) {
     detach_from_dispatcher([this] {
       stop();
+
+      led_monitor_timer_.stop();
 
       hid_manager_ = nullptr;
       hid_grabbers_.clear();
@@ -457,6 +461,7 @@ private:
     auto s = find_device_state(registry_entry_id);
     if (!s) {
       s = std::make_shared<device_state>();
+      device_states_[registry_entry_id] = s;
     }
     s->set_grabbed(value);
   }
@@ -472,6 +477,7 @@ private:
     auto s = find_device_state(registry_entry_id);
     if (!s) {
       s = std::make_shared<device_state>();
+      device_states_[registry_entry_id] = s;
     }
     s->set_disabled(value);
   }
