@@ -111,10 +111,7 @@ public:
             } else if (*s == "invoke_dispatcher") {
               absolute_time time_stamp(0);
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
-                time_stamp = absolute_time(0) +
-                             time_utility::to_absolute_time_duration(std::chrono::milliseconds(*t));
-
-                pseudo_time_source_->set_now(time_utility::to_milliseconds(time_stamp));
+                pseudo_time_source_->set_now(std::chrono::milliseconds(*t));
 
                 if (auto d = weak_dispatcher_.lock()) {
                   d->invoke();
@@ -128,7 +125,7 @@ public:
               if (auto t = json_utility::find_optional<uint64_t>(j, "time_stamp")) {
                 auto ms = std::chrono::milliseconds(*t);
                 time_stamp = absolute_time(0) +
-                             time_utility::to_absolute_time(ms);
+                             time_utility::to_absolute_time_duration(ms);
                 pseudo_time_source_->set_now(ms);
               }
 
@@ -146,7 +143,7 @@ public:
             now = e.get_event_time_stamp().get_time_stamp();
             event_queues.front()->push_back_event(e);
 
-            pseudo_time_source_->set_now(time_utility::to_milliseconds(now));
+            pseudo_time_source_->set_now(time_utility::to_milliseconds(now - absolute_time(0)));
 
             if (!pause_manipulation) {
               connector.manipulate(now);

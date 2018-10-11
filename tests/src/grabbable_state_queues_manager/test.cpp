@@ -86,7 +86,7 @@ TEST_CASE("grabbable_state_queues_manager") {
     }
 
     // `update_grabbable_state`
-    for (krbn::absolute_time time_stamp(1000); time_stamp < krbn::absolute_time(10000); time_stamp += krbn::absolute_time(1000)) {
+    for (krbn::absolute_time time_stamp(1000); time_stamp < krbn::absolute_time(10000); time_stamp += krbn::absolute_time_duration(1000)) {
       krbn::grabbable_state state(registry_entry_id1,
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
