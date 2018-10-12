@@ -91,9 +91,6 @@ public:
 
     first_grabbed_event_time_stamp_ = time_stamp;
 
-    logger::get_logger().info("first grabbed event: time_stamp:{0}",
-                              type_safe::get(time_stamp));
-
     auto old_state = find_current_grabbable_state_();
 
     // Erase states after first_grabbed_event_time_stamp_.

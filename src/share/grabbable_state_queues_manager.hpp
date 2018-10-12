@@ -62,6 +62,10 @@ public:
           auto queue = find_or_create_queue(*registry_entry_id);
           auto time_stamp = entry.get_event_time_stamp().get_time_stamp();
           if (queue->update_first_grabbed_event_time_stamp(time_stamp)) {
+            logger::get_logger().info("first grabbed event: registry_entry_id:{0} time_stamp:{1}",
+                                      type_safe::get(*registry_entry_id),
+                                      type_safe::get(time_stamp));
+
             result = true;
           }
         }
