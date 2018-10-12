@@ -1,0 +1,31 @@
+{
+  "title": "Change left_shift to f18 if press alone",
+  "rules": [
+    {
+      "description": "Change left_shift to f18 if press alone",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "left_shift",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "left_shift"
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "f18"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    }
+  ]
+}
