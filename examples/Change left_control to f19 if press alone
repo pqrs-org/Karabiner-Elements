@@ -1,0 +1,31 @@
+{
+  "title": "Change left_control to f19 if press alone",
+  "rules": [
+    {
+      "description": "Change left_control to f19 if press alone",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "left_control",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "left_control"
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "f19”
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    }
+  ]
+}
