@@ -20,10 +20,10 @@ public:
     });
   }
 
-  void async_setup(const event_queue::entry& front_input_event,
-                   std::weak_ptr<manipulated_original_event> current_manipulated_original_event,
-                   std::weak_ptr<event_queue::queue> output_event_queue,
-                   std::chrono::milliseconds threshold_milliseconds) {
+  void setup(const event_queue::entry& front_input_event,
+             std::weak_ptr<manipulated_original_event> current_manipulated_original_event,
+             std::weak_ptr<event_queue::queue> output_event_queue,
+             std::chrono::milliseconds threshold_milliseconds) {
     ++current_held_down_id_;
 
     if (front_input_event.get_event_type() != event_type::key_down) {
@@ -101,7 +101,7 @@ public:
         when_now() + time_utility::to_milliseconds(duration));
   }
 
-  void async_cancel(const event_queue::entry& front_input_event) {
+  void cancel(const event_queue::entry& front_input_event) {
     if (front_input_event.get_event_type() != event_type::key_down) {
       return;
     }

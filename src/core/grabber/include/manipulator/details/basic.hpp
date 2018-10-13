@@ -129,7 +129,7 @@ public:
                             front_input_event.get_event_type());
 
       if (to_if_held_down_) {
-        to_if_held_down_->async_cancel(front_input_event);
+        to_if_held_down_->cancel(front_input_event);
       }
 
       if (to_delayed_action_) {
@@ -527,10 +527,10 @@ public:
           // to_if_held_down_
 
           if (to_if_held_down_) {
-            to_if_held_down_->async_setup(front_input_event,
-                                          current_manipulated_original_event,
-                                          output_event_queue,
-                                          std::chrono::milliseconds(parameters_.get_basic_to_if_held_down_threshold_milliseconds()));
+            to_if_held_down_->setup(front_input_event,
+                                    current_manipulated_original_event,
+                                    output_event_queue,
+                                    std::chrono::milliseconds(parameters_.get_basic_to_if_held_down_threshold_milliseconds()));
           }
 
           // to_delayed_action_
