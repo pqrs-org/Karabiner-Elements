@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
-        <capability name="box content view" minToolsVersion="7.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -500,7 +498,7 @@
                                             <rect key="frame" x="17" y="43" width="920" height="394"/>
                                             <clipView key="contentView" id="fPj-Ru-opD">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="393"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="bin-92-FO9" viewBased="YES" id="qEO-TG-yM2">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="370"/>
@@ -708,7 +706,7 @@
                                             <rect key="frame" x="17" y="60" width="920" height="377"/>
                                             <clipView key="contentView" id="LCo-MQ-oMD">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="376"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="RPX-X6-Et1" viewBased="YES" id="OWP-Cf-tc8">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="353"/>
@@ -866,7 +864,7 @@
                                                                 <rect key="frame" x="17" y="41" width="880" height="384"/>
                                                                 <clipView key="contentView" id="Z0i-ZA-lV3">
                                                                     <rect key="frame" x="1" y="0.0" width="878" height="383"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="sIp-xu-x1n" viewBased="YES" id="v5W-RF-1fL">
                                                                             <rect key="frame" x="0.0" y="0.0" width="878" height="360"/>
@@ -1046,7 +1044,7 @@
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
                                                                                 <font key="font" metaFont="system"/>
-                                                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                             <connections>
@@ -1087,7 +1085,7 @@
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
                                                                                 <font key="font" metaFont="system"/>
-                                                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                             <connections>
@@ -1128,7 +1126,7 @@
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
                                                                                 <font key="font" metaFont="system"/>
-                                                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                             <connections>
@@ -1169,7 +1167,7 @@
                                                                                     <real key="maximum" value="10000"/>
                                                                                 </numberFormatter>
                                                                                 <font key="font" metaFont="system"/>
-                                                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
                                                                             <connections>
@@ -1265,7 +1263,7 @@
                                             <rect key="frame" x="17" y="220" width="920" height="260"/>
                                             <clipView key="contentView" id="FOg-OF-77U">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="259"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="PyG-O0-i8x" viewBased="YES" id="W1W-Xd-0KJ">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="236"/>
@@ -1507,7 +1505,7 @@
                                                         <rect key="frame" x="8" y="8" width="902" height="137"/>
                                                         <clipView key="contentView" id="tle-ie-uoi">
                                                             <rect key="frame" x="1" y="1" width="900" height="135"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
                                                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" id="aIG-lD-1bK">
                                                                     <rect key="frame" x="0.0" y="0.0" width="900" height="135"/>
@@ -1649,7 +1647,7 @@
                                                                 <real key="maximum" value="255"/>
                                                             </numberFormatter>
                                                             <font key="font" metaFont="system"/>
-                                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                         <connections>
@@ -1720,7 +1718,7 @@ In this case, you have to change the country code to avoid the conflict.
                                             <rect key="frame" x="17" y="34" width="920" height="446"/>
                                             <clipView key="contentView" id="KqJ-JT-0VB">
                                                 <rect key="frame" x="1" y="0.0" width="918" height="445"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" headerView="4rB-73-cgf" viewBased="YES" id="Y8t-wV-kQb" customClass="ProfilesTableView">
                                                         <rect key="frame" x="0.0" y="0.0" width="918" height="422"/>
@@ -1730,7 +1728,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                         <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn identifier="" width="915" minWidth="40" maxWidth="10000" id="hdQ-pY-WkB">
+                                                            <tableColumn width="915" minWidth="40" maxWidth="10000" id="hdQ-pY-WkB">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Profile name">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1751,7 +1749,7 @@ In this case, you have to change the country code to avoid the conflict.
                                                                                 <rect key="frame" x="4" y="2" width="613" height="22"/>
                                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="Name" drawsBackground="YES" id="q4k-Om-bR0">
                                                                                     <font key="font" metaFont="system"/>
-                                                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                 </textFieldCell>
                                                                             </textField>
@@ -2141,20 +2139,20 @@ In this case, you have to change the country code to avoid the conflict.
                                     <subviews>
                                         <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T7K-bf-5ph">
                                             <rect key="frame" x="17" y="48" width="920" height="432"/>
-                                            <clipView key="contentView" id="h3K-SC-sFn">
+                                            <clipView key="contentView" drawsBackground="NO" id="h3K-SC-sFn">
                                                 <rect key="frame" x="1" y="1" width="903" height="430"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <textView editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" id="vyq-xs-cqF">
                                                         <rect key="frame" x="0.0" y="0.0" width="903" height="430"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         <size key="minSize" width="903" height="430"/>
-                                                        <size key="maxSize" width="903" height="10000000"/>
+                                                        <size key="maxSize" width="920" height="10000000"/>
                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     </textView>
                                                 </subviews>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             </clipView>
                                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="uuc-E9-iVK">
                                                 <rect key="frame" x="-100" y="-100" width="87" height="18"/>
@@ -2211,7 +2209,7 @@ In this case, you have to change the country code to avoid the conflict.
             </view>
             <point key="canvasLocation" x="117" y="245"/>
         </window>
-        <window title="Add rule" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqN-OP-TO2" customClass="NSPanel">
+        <window title="Add rule" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqN-OP-TO2" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="400"/>
@@ -2236,7 +2234,7 @@ In this case, you have to change the country code to avoid the conflict.
                         <rect key="frame" x="17" y="61" width="866" height="288"/>
                         <clipView key="contentView" id="F9L-6l-7CJ">
                             <rect key="frame" x="1" y="1" width="864" height="286"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="26" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="nlS-o3-ZB6" id="eIx-lp-xHQ">
                                     <rect key="frame" x="0.0" y="0.0" width="864" height="286"/>
@@ -2412,7 +2410,7 @@ Gw
             </view>
             <point key="canvasLocation" x="-20" y="-264"/>
         </window>
-        <window title="Import complex modifications file" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="ZY4-nd-9zB" userLabel="Import Complex Modifications File Panel" customClass="NSPanel">
+        <window title="Import complex modifications file" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="ZY4-nd-9zB" userLabel="Import Complex Modifications File Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="200"/>
@@ -2447,20 +2445,20 @@ Gw
                     </progressIndicator>
                     <scrollView wantsLayer="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A3J-XY-x60">
                         <rect key="frame" x="80" y="58" width="740" height="85"/>
-                        <clipView key="contentView" id="uNg-oR-13T">
+                        <clipView key="contentView" drawsBackground="NO" id="uNg-oR-13T">
                             <rect key="frame" x="1" y="1" width="723" height="83"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" id="iV7-bm-Yxd">
                                     <rect key="frame" x="0.0" y="0.0" width="723" height="83"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <size key="minSize" width="723" height="83"/>
                                     <size key="maxSize" width="740" height="10000000"/>
                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </clipView>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="2ec-D0-U5S">
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
@@ -2525,7 +2523,7 @@ Gw
             </view>
             <point key="canvasLocation" x="46" y="640"/>
         </window>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="WRr-7z-BZH" userLabel="Alert Panel" customClass="NSPanel">
+        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="WRr-7z-BZH" userLabel="Alert Panel" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="900" height="600"/>
@@ -2661,7 +2659,7 @@ You have to allow the system software from developer "Fumihiko Takayama" (the au
             </view>
             <point key="canvasLocation" x="75.5" y="888"/>
         </window>
-        <window title="ManipulateCapsLockLED Confirmation Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Q4d-fj-0zt" customClass="NSPanel">
+        <window title="ManipulateCapsLockLED Confirmation Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Q4d-fj-0zt" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="600" height="300"/>
