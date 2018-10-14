@@ -5,6 +5,7 @@
 #include "dispatcher.hpp"
 #include "filesystem.hpp"
 #include "spdlog_utility.hpp"
+#include <CoreFoundation/CoreFoundation.h>
 #include <boost/signals2.hpp>
 #include <deque>
 #include <fstream>

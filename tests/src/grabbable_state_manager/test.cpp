@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
+#include "dispatcher_utility.hpp"
 #include "grabbable_state_manager.hpp"
 #include "stream_utility.hpp"
 #include <boost/optional/optional_io.hpp>
@@ -15,7 +16,7 @@ auto registry_entry_id2 = krbn::registry_entry_id(4002);
 TEST_CASE("initialize") {
   using namespace std::string_literals;
 
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   {
     auto device_detail = std::make_shared<krbn::device_detail>(krbn::vendor_id(1001),
@@ -509,5 +510,5 @@ TEST_CASE("device_error") {
 }
 
 TEST_CASE("terminate") {
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 }

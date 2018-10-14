@@ -1,9 +1,10 @@
+#include "dispatcher_utility.hpp"
 #include "iokit_utility.hpp"
 #include "monitor/service_monitor.hpp"
 #include <iostream>
 
 int main(int argc, const char* argv[]) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -45,7 +46,7 @@ int main(int argc, const char* argv[]) {
 
   service_monitor = nullptr;
 
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

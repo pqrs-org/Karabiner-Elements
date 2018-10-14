@@ -1,10 +1,11 @@
+#include "dispatcher_utility.hpp"
 #include "logger.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include "time_utility.hpp"
 #include "virtual_hid_device_client.hpp"
 
 int main(int argc, const char* argv[]) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -162,7 +163,7 @@ int main(int argc, const char* argv[]) {
   virtual_hid_device_client = nullptr;
   console_user_server_client = nullptr;
 
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

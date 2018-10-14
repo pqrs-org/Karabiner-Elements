@@ -3,6 +3,7 @@
 
 #include "boost_defs.hpp"
 
+#include "dispatcher_utility.hpp"
 #include "grabbable_state_queues_manager.hpp"
 #include <boost/optional/optional_io.hpp>
 
@@ -16,7 +17,7 @@ auto registry_entry_id2 = krbn::registry_entry_id(2);
 TEST_CASE("initialize") {
   using namespace std::string_literals;
 
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   {
     auto device_detail = std::make_shared<krbn::device_detail>(krbn::vendor_id(1001),
@@ -153,5 +154,5 @@ TEST_CASE("grabbable_state_queues_manager") {
 }
 
 TEST_CASE("terminate") {
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 }

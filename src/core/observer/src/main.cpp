@@ -1,5 +1,6 @@
 #include "components_manager.hpp"
 #include "constants.hpp"
+#include "dispatcher_utility.hpp"
 #include "filesystem.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -10,7 +11,7 @@
 #include <unistd.h>
 
 int main(int argc, const char* argv[]) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   if (getuid() != 0) {
     std::cerr << "fatal: karabiner_observer requires root privilege." << std::endl;
@@ -50,7 +51,7 @@ int main(int argc, const char* argv[]) {
 
   krbn::logger::get_logger().info("karabiner_observer is terminated.");
 
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

@@ -1,9 +1,9 @@
-#include "dispatcher.hpp"
+#include "dispatcher_utility.hpp"
 #include "input_source_manager.hpp"
 #include "logger.hpp"
 
 int main(int argc, char** argv) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 
   CFRunLoopRun();
 
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

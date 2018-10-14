@@ -2,6 +2,7 @@
 #include "components_manager.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
+#include "dispatcher_utility.hpp"
 #include "filesystem.hpp"
 #include "grabber_alerts_manager.hpp"
 #include "karabiner_version.h"
@@ -11,7 +12,7 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 
 int main(int argc, const char* argv[]) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   if (getuid() != 0) {
     std::cerr << "fatal: karabiner_grabber requires root privilege." << std::endl;
@@ -99,7 +100,7 @@ int main(int argc, const char* argv[]) {
 
   krbn::logger::get_logger().info("karabiner_grabber is terminated.");
 
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

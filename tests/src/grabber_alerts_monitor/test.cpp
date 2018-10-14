@@ -3,11 +3,12 @@
 
 #include "boost_defs.hpp"
 
+#include "dispatcher_utility.hpp"
 #include "monitor/grabber_alerts_monitor.hpp"
 #include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 }
 
 TEST_CASE("grabber_alerts_monitor") {
@@ -81,5 +82,5 @@ TEST_CASE("grabber_alerts_monitor") {
 }
 
 TEST_CASE("terminate") {
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 }

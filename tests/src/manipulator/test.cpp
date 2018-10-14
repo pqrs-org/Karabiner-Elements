@@ -2,6 +2,7 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "../share/manipulator_helper.hpp"
+#include "dispatcher_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
 using krbn::manipulator::details::event_definition;
@@ -9,7 +10,7 @@ using krbn::manipulator::details::modifier_definition;
 using krbn::manipulator::details::to_event_definition;
 
 TEST_CASE("initialize") {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 }
 
 TEST_CASE("manipulator.manipulator_factory") {
@@ -190,5 +191,5 @@ TEST_CASE("needs_virtual_hid_pointing") {
 }
 
 TEST_CASE("terminate") {
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 }

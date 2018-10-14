@@ -3,6 +3,7 @@
 
 #include "boost_defs.hpp"
 
+#include "dispatcher_utility.hpp"
 #include "monitor/file_monitor.hpp"
 #include <boost/optional/optional_io.hpp>
 
@@ -113,7 +114,7 @@ private:
 } // namespace
 
 TEST_CASE("initialize") {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 }
 
 TEST_CASE("file_monitor") {
@@ -409,5 +410,5 @@ TEST_CASE("file_monitor") {
 }
 
 TEST_CASE("terminate") {
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 }

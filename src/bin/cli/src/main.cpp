@@ -4,6 +4,7 @@
 #pragma clang diagnostic pop
 
 #include "constants.hpp"
+#include "dispatcher_utility.hpp"
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include <iostream>
@@ -59,7 +60,7 @@ int remove_system_default_profile(void) {
 int main(int argc, const char** argv) {
   int exit_code = 0;
 
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   {
     auto l = spdlog::stdout_color_mt("karabiner_cli");
@@ -124,7 +125,7 @@ int main(int argc, const char** argv) {
   exit_code = 1;
 
 finish:
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return exit_code;
 }

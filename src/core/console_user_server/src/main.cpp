@@ -1,6 +1,7 @@
 #include "components_manager.hpp"
 #include "constants.hpp"
 #include "dispatcher.hpp"
+#include "dispatcher_utility.hpp"
 #include "filesystem.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -8,7 +9,7 @@
 #include "process_utility.hpp"
 
 int main(int argc, const char* argv[]) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
@@ -49,7 +50,7 @@ int main(int argc, const char* argv[]) {
 
   krbn::logger::get_logger().info("karabiner_console_user_server is terminated.");
 
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

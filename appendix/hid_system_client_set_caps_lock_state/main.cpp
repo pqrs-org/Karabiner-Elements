@@ -1,8 +1,9 @@
+#include "dispatcher_utility.hpp"
 #include "hid_system_client.hpp"
 #include "logger.hpp"
 
 int main(int argc, const char* argv[]) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   if (getuid() != 0) {
     krbn::logger::get_logger().error("dump_caps_lock_state requires root privilege.");
@@ -28,7 +29,7 @@ int main(int argc, const char* argv[]) {
 
   client = nullptr;
 
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

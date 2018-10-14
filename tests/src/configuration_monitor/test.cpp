@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
+#include "dispatcher_utility.hpp"
 #include "monitor/configuration_monitor.hpp"
 
 namespace {
@@ -46,7 +47,7 @@ private:
 } // namespace
 
 TEST_CASE("initialize") {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 }
 
 TEST_CASE("configuration_monitor") {
@@ -208,5 +209,5 @@ TEST_CASE("configuration_monitor") {
 }
 
 TEST_CASE("terminate") {
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 }

@@ -3,6 +3,7 @@
 
 #include "boost_defs.hpp"
 
+#include "dispatcher_utility.hpp"
 #include "grabbable_state_queue.hpp"
 #include <boost/optional/optional_io.hpp>
 
@@ -11,7 +12,7 @@ auto registry_entry_id1 = krbn::registry_entry_id(1);
 } // namespace
 
 TEST_CASE("initialize") {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 }
 
 TEST_CASE("grabbable_state_queue") {
@@ -135,5 +136,5 @@ TEST_CASE("grabbable_state_queue.circular_buffer") {
 }
 
 TEST_CASE("terminate") {
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 }

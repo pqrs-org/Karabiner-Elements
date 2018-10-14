@@ -1,11 +1,10 @@
+#include "dispatcher_utility.hpp"
 #include "monitor/console_user_id_monitor.hpp"
 #include "session.hpp"
-#include <chrono>
 #include <iostream>
-#include <thread>
 
 int main(int argc, const char* argv[]) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -31,7 +30,7 @@ int main(int argc, const char* argv[]) {
 
   console_user_id_monitor = nullptr;
 
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

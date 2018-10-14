@@ -2,6 +2,7 @@
 #include "application_launcher.hpp"
 #include "constants.hpp"
 #include "core_configuration.hpp"
+#include "dispatcher_utility.hpp"
 #include "json_utility.hpp"
 #include "launchctl_utility.hpp"
 #include "libkrbn_cpp.hpp"
@@ -14,11 +15,11 @@
 #include <string>
 
 void libkrbn_initialize(void) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 }
 
 void libkrbn_terminate(void) {
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 }
 
 const char* libkrbn_get_distributed_notification_observed_object(void) {

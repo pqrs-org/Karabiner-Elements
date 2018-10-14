@@ -1,5 +1,6 @@
 #include "boost_defs.hpp"
 
+#include "dispatcher_utility.hpp"
 #include "hid_manager.hpp"
 #include "hid_observer.hpp"
 #include <boost/optional/optional_io.hpp>
@@ -176,7 +177,7 @@ private:
 } // namespace
 
 int main(int argc, const char* argv[]) {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
@@ -192,7 +193,7 @@ int main(int argc, const char* argv[]) {
 
   d = nullptr;
 
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 
   return 0;
 }

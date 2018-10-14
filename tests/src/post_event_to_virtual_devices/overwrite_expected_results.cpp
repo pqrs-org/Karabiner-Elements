@@ -2,11 +2,12 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "../share/manipulator_helper.hpp"
+#include "dispatcher_utility.hpp"
 #include "manipulator/details/post_event_to_virtual_devices.hpp"
 #include <boost/optional/optional_io.hpp>
 
 TEST_CASE("initialize") {
-  pqrs::dispatcher::extra::initialize_shared_dispatcher();
+  krbn::dispatcher_utility::initialize_dispatchers();
 }
 
 TEST_CASE("actual examples") {
@@ -18,5 +19,5 @@ TEST_CASE("actual examples") {
 }
 
 TEST_CASE("terminate") {
-  pqrs::dispatcher::extra::terminate_shared_dispatcher();
+  krbn::dispatcher_utility::terminate_dispatchers();
 }
