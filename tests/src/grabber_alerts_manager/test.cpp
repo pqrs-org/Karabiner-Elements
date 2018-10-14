@@ -2,8 +2,13 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "../share/json_helper.hpp"
+#include "dispatcher_utility.hpp"
 #include "grabber_alerts_manager.hpp"
 #include <unistd.h>
+
+TEST_CASE("initialize") {
+  krbn::dispatcher_utility::initialize_dispatchers();
+}
 
 TEST_CASE("set_alert") {
   using namespace std::string_literals;
@@ -43,4 +48,8 @@ TEST_CASE("set_alert") {
     REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/"s + file_name,
                                                            "expected/"s + file_name));
   }
+}
+
+TEST_CASE("terminate") {
+  krbn::dispatcher_utility::terminate_dispatchers();
 }
