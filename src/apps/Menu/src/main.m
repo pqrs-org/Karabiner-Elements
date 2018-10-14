@@ -1,4 +1,3 @@
-#import "libkrbn.h"
 @import Cocoa;
 
 int main(int argc, const char* argv[]) {
