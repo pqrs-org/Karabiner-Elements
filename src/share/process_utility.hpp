@@ -1,8 +1,11 @@
 #pragma once
 
+// `krbn::process_utility` can be used safely in a multi-threaded environment.
+
 #include "constants.hpp"
 #include "filesystem.hpp"
 #include <fcntl.h>
+#include <mutex>
 #include <sstream>
 #include <string>
 #include <sys/file.h>
@@ -11,6 +14,8 @@ namespace krbn {
 class process_utility final {
 public:
   static bool lock_single_application(const std::string& pid_file_path) {
+    std::lock_guard<std::mutex> lock(get_mutex());
+
     auto pid_directory = filesystem::dirname(pid_file_path);
     if (pid_directory.empty()) {
       throw std::runtime_error("failed to get user pid directory");
@@ -41,6 +46,8 @@ public:
   }
 
   static void unlock_single_application(void) {
+    std::lock_guard<std::mutex> lock(get_mutex());
+
     auto& fd = get_single_application_lock_pid_file_descriptor();
     if (fd >= 0) {
       flock(fd, LOCK_UN);
@@ -60,6 +67,11 @@ public:
   }
 
 private:
+  static std::mutex& get_mutex(void) {
+    static std::mutex mutex;
+    return mutex;
+  }
+
   static int& get_single_application_lock_pid_file_descriptor(void) {
     static int fd = -1;
     return fd;
