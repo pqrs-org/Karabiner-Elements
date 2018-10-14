@@ -2,7 +2,7 @@
 
 #include "boost_defs.hpp"
 
-#include "async_sequential_file_writer.hpp"
+#include "async_file_writer.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
 #include <boost/optional.hpp>
@@ -72,10 +72,10 @@ public:
                                  const std::string& file_path,
                                  mode_t parent_directory_mode,
                                  mode_t file_mode) {
-    async_sequential_file_writer::get_instance().push_back(file_path,
-                                                           json.dump(4),
-                                                           parent_directory_mode,
-                                                           file_mode);
+    async_file_writer::enqueue(file_path,
+                               json.dump(4),
+                               parent_directory_mode,
+                               file_mode);
   }
 
   static void sync_save_to_file(const nlohmann::json& json,
@@ -87,7 +87,7 @@ public:
                        parent_directory_mode,
                        file_mode);
 
-    async_sequential_file_writer::get_instance().wait();
+    async_file_writer::wait();
   }
 };
 } // namespace krbn

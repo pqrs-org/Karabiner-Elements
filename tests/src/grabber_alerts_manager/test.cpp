@@ -37,7 +37,7 @@ TEST_CASE("set_alert") {
     grabber_alerts_manager->set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
   }
 
-  krbn::async_sequential_file_writer::get_instance().wait();
+  krbn::async_file_writer::wait();
 
   for (const auto& file_name : file_names) {
     REQUIRE(krbn::unit_testing::json_helper::compare_files("tmp/"s + file_name,
