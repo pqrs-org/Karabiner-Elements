@@ -1,5 +1,6 @@
 #import "FrontmostApplicationController.h"
 #import "monitor/frontmost_application_monitor_objc.h"
+#import "weakify.h"
 
 @interface FrontmostApplicationController ()
 
@@ -41,25 +42,33 @@ static void staticCallback(const char* bundle_identifier,
     return;
   }
 
-  NSTextStorage* textStorage = self.textView.textStorage;
+  @weakify(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    @strongify(self);
+    if (!self) {
+      return;
+    }
 
-  [textStorage beginEditing];
+    NSTextStorage* textStorage = self.textView.textStorage;
 
-  // Clear if text is huge.
-  if (textStorage.length > 1024 * 1024) {
-    [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
-  }
+    [textStorage beginEditing];
 
-  NSString* bundleIdentifierLine = [NSString stringWithFormat:@"Bundle Identifier:  %@\n", bundleIdentifier];
-  NSString* filePathLine = [NSString stringWithFormat:@"File Path:          %@\n\n", filePath];
-  NSFont* font = [NSFont fontWithName:@"Menlo" size:11];
-  [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:bundleIdentifierLine
-                                                                      attributes:@{NSFontAttributeName : font}]];
-  [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:filePathLine
-                                                                      attributes:@{NSFontAttributeName : font}]];
+    // Clear if text is huge.
+    if (textStorage.length > 1024 * 1024) {
+      [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:@""]];
+    }
 
-  [textStorage endEditing];
-  [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
+    NSString* bundleIdentifierLine = [NSString stringWithFormat:@"Bundle Identifier:  %@\n", bundleIdentifier];
+    NSString* filePathLine = [NSString stringWithFormat:@"File Path:          %@\n\n", filePath];
+    NSFont* font = [NSFont fontWithName:@"Menlo" size:11];
+    [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:bundleIdentifierLine
+                                                                        attributes:@{NSFontAttributeName : font}]];
+    [textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:filePathLine
+                                                                        attributes:@{NSFontAttributeName : font}]];
+
+    [textStorage endEditing];
+    [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
+  });
 }
 
 @end

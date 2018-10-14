@@ -1,5 +1,6 @@
 #import "VariablesController.h"
 #import "libkrbn.h"
+#import "weakify.h"
 
 @interface VariablesController ()
 
@@ -33,18 +34,26 @@ static void staticCallback(void* context) {
 }
 
 - (void)callback {
-  NSString* string = [NSString stringWithContentsOfFile:[NSString stringWithUTF8String:libkrbn_get_manipulator_environment_json_file_path()]
-                                               encoding:NSUTF8StringEncoding
-                                                  error:nil];
-  if (string) {
-    NSTextStorage* textStorage = self.textView.textStorage;
-    NSFont* font = [NSFont fontWithName:@"Menlo" size:11];
+  @weakify(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    @strongify(self);
+    if (!self) {
+      return;
+    }
 
-    [textStorage beginEditing];
-    [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:string
-                                                                     attributes:@{NSFontAttributeName : font}]];
-    [textStorage endEditing];
-  }
+    NSString* string = [NSString stringWithContentsOfFile:[NSString stringWithUTF8String:libkrbn_get_manipulator_environment_json_file_path()]
+                                                 encoding:NSUTF8StringEncoding
+                                                    error:nil];
+    if (string) {
+      NSTextStorage* textStorage = self.textView.textStorage;
+      NSFont* font = [NSFont fontWithName:@"Menlo" size:11];
+
+      [textStorage beginEditing];
+      [textStorage setAttributedString:[[NSAttributedString alloc] initWithString:string
+                                                                       attributes:@{NSFontAttributeName : font}]];
+      [textStorage endEditing];
+    }
+  });
 }
 
 @end
