@@ -35,16 +35,21 @@ public:
       configuration_monitor_ = std::make_shared<krbn::configuration_monitor>(
           krbn::constants::get_user_core_configuration_file_path());
 
-      configuration_monitor_->core_configuration_updated.connect([callback, refcon](auto&& weak_core_configuration) {
+      auto wait = pqrs::dispatcher::make_wait();
+
+      configuration_monitor_->core_configuration_updated.connect([callback, refcon, wait](auto&& weak_core_configuration) {
         if (auto core_configuration = weak_core_configuration.lock()) {
           if (callback) {
             auto* p = new libkrbn_core_configuration_class(core_configuration);
             callback(p, refcon);
           }
         }
+        wait->notify();
       });
 
       configuration_monitor_->async_start();
+
+      wait->wait_notice();
     }
 
     std::shared_ptr<krbn::configuration_monitor> get_configuration_monitor(void) const {
