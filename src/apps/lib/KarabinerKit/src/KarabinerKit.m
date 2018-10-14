@@ -58,7 +58,16 @@ static void version_changed_callback(void* refcon) {
 + (void)relaunch {
   libkrbn_unlock_single_application();
 
-  [NSTask launchedTaskWithLaunchPath:[[NSBundle mainBundle] executablePath] arguments:@[]];
+  for (int i = 0; i < 5; ++i) {
+    @try {
+      [NSTask launchedTaskWithLaunchPath:[[NSBundle mainBundle] executablePath] arguments:@[]];
+      break;
+    } @catch (NSException* exception) {
+      NSLog(@"KarabinerKit relaunch error %@", exception);
+      [NSThread sleepForTimeInterval:1.0];
+    }
+  }
+
   [NSApp terminate:nil];
 }
 
