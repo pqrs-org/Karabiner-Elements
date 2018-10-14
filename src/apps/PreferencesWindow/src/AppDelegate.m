@@ -30,6 +30,8 @@
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
+  libkrbn_initialize();
+
   [KarabinerKit setup];
   [KarabinerKit exitIfAnotherProcessIsRunning:"preferences_window.pid"];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];
@@ -39,6 +41,10 @@
   [self.preferencesWindowController setup];
 
   [self.alertWindowController setup];
+}
+
+- (void)applicationWillTerminate:(NSNotification*)notification {
+  libkrbn_terminate();
 }
 
 - (void)handleGetURLEvent:(NSAppleEventDescriptor*)event withReplyEvent:(NSAppleEventDescriptor*)replyEvent {
