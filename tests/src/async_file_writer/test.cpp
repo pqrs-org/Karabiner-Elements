@@ -15,7 +15,7 @@ TEST_CASE("async_file_writer") {
   krbn::async_file_writer::enqueue("tmp/mode666", "mode666", 0755, 0666);
   krbn::async_file_writer::enqueue("tmp/mode644", "mode644", 0755, 0644);
   krbn::async_file_writer::enqueue("tmp/not_found/example", "example", 0755, 0600);
-  krbn::async_file_writer::enqueue::wait();
+  krbn::async_file_writer::wait();
 }
 
 TEST_CASE("terminate") {

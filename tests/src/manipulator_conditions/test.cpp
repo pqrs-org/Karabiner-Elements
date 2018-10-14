@@ -2,9 +2,14 @@
 #include "../../vendor/catch/catch.hpp"
 
 #include "../share/json_helper.hpp"
+#include "dispatcher_utility.hpp"
 #include "manipulator/condition_manager.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include <boost/optional/optional_io.hpp>
+
+TEST_CASE("initialize") {
+  krbn::dispatcher_utility::initialize_dispatchers();
+}
 
 TEST_CASE("manipulator.manipulator_factory") {
   {
@@ -440,4 +445,8 @@ TEST_CASE("conditions.keyboard_type") {
     REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                         manipulator_environment) == true);
   }
+}
+
+TEST_CASE("terminate") {
+  krbn::dispatcher_utility::terminate_dispatchers();
 }
