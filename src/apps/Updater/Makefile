@@ -8,6 +8,6 @@ all:
 clean: clean_builds
 
 run:
-	open "./build_xcode/build/Release/Karabiner-Elements.app"
+	./build_xcode/build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements
 
 include ../../Makefile.rules
