@@ -9,14 +9,7 @@ add_compile_options(
 )
 
 include_directories(
-  ../../lib/libkrbn/include
-  ../lib/KarabinerKit/include
   ../share
-)
-
-link_directories(
-  ../../lib/libkrbn/build_xcode/build
-  ../lib/KarabinerKit/build_xcode/build
 )
 
 add_executable(
@@ -62,8 +55,6 @@ set_target_properties(
 
 target_link_libraries(
   Karabiner-Elements
-  KarabinerKit
-  krbn
   "-framework SystemConfiguration"
   -F${CMAKE_CURRENT_LIST_DIR}/../../vendor/Sparkle
   "-framework Sparkle"
