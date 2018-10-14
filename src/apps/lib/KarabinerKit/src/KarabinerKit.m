@@ -18,7 +18,6 @@ static void version_changed_callback(void* refcon) {
     [KarabinerKitDeviceManager sharedManager];
 
     libkrbn_version_monitor_initialize(&libkrbn_version_monitor_, version_changed_callback, NULL);
-    [self observeGrabberIsLaunchedNotification];
   });
 }
 
@@ -54,21 +53,6 @@ static void version_changed_callback(void* refcon) {
 
 + (void)consoleUserServerIsDisabledCallback {
   [NSApp terminate:nil];
-}
-
-+ (void)observeGrabberIsLaunchedNotification {
-  NSString* name = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_grabber_is_launched()];
-  NSString* object = [NSString stringWithUTF8String:libkrbn_get_distributed_notification_observed_object()];
-
-  [[NSDistributedNotificationCenter defaultCenter] addObserver:self
-                                                      selector:@selector(grabberIsLaunchedCallback)
-                                                          name:name
-                                                        object:object
-                                            suspensionBehavior:NSNotificationSuspensionBehaviorDeliverImmediately];
-}
-
-+ (void)grabberIsLaunchedCallback {
-  [KarabinerKit relaunch];
 }
 
 + (void)relaunch {

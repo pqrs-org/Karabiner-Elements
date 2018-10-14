@@ -93,8 +93,6 @@ int main(int argc, const char* argv[]) {
 
   auto components_manager = std::make_unique<krbn::components_manager>();
 
-  krbn::apple_notification_center::post_distributed_notification_to_all_sessions(krbn::constants::get_distributed_notification_grabber_is_launched());
-
   CFRunLoopRun();
 
   components_manager = nullptr;

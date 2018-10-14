@@ -25,10 +25,6 @@ const char* libkrbn_get_distributed_notification_observed_object(void) {
   return krbn::constants::get_distributed_notification_observed_object();
 }
 
-const char* libkrbn_get_distributed_notification_grabber_is_launched(void) {
-  return krbn::constants::get_distributed_notification_grabber_is_launched();
-}
-
 const char* libkrbn_get_distributed_notification_console_user_server_is_disabled(void) {
   return krbn::constants::get_distributed_notification_console_user_server_is_disabled();
 }

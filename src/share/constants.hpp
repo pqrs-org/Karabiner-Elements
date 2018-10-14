@@ -198,10 +198,6 @@ public:
     return "org.pqrs.karabiner";
   }
 
-  static const char* get_distributed_notification_grabber_is_launched(void) {
-    return "grabber_is_launched";
-  }
-
   static const char* get_distributed_notification_console_user_server_is_disabled(void) {
     return "console_user_server_is_disabled";
   }
