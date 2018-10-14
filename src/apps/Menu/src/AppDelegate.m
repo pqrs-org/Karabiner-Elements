@@ -11,8 +11,6 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
-  libkrbn_initialize();
-
   [KarabinerKit setup];
   [KarabinerKit exitIfAnotherProcessIsRunning:"menu.pid"];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];

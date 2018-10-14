@@ -24,8 +24,6 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
-  libkrbn_initialize();
-
   [KarabinerKit setup];
   [KarabinerKit exitIfAnotherProcessIsRunning:"eventviewer.pid"];
 

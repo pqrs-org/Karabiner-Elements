@@ -30,8 +30,6 @@
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
   [[NSApplication sharedApplication] disableRelaunchOnLogin];
 
-  libkrbn_initialize();
-
   [KarabinerKit setup];
   [KarabinerKit exitIfAnotherProcessIsRunning:"preferences_window.pid"];
   [KarabinerKit observeConsoleUserServerIsDisabledNotification];
