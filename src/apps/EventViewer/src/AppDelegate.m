@@ -3,9 +3,11 @@
 #import "DevicesController.h"
 #import "EventQueue.h"
 #import "FrontmostApplicationController.h"
+#import "KarabinerKit/KarabinerKit.h"
 #import "KeyResponder.h"
 #import "PreferencesKeys.h"
 #import "VariablesController.h"
+#import "libkrbn.h"
 #import "weakify.h"
 
 @interface AppDelegate ()
@@ -22,6 +24,11 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification*)aNotification {
+  libkrbn_initialize();
+
+  [KarabinerKit setup];
+  [KarabinerKit exitIfAnotherProcessIsRunning:"eventviewer.pid"];
+
   [self setKeyResponder];
   [self setWindowProperty:self];
   [self.eventQueue setup];
@@ -47,6 +54,10 @@
                     completionHandler:^(NSModalResponse returnCode){}];
     }
   });
+}
+
+- (void)applicationWillTerminate:(NSNotification*)notification {
+  libkrbn_terminate();
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)theApplication {
