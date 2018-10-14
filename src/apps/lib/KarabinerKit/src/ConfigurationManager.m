@@ -2,7 +2,6 @@
 #import "KarabinerKit/JsonUtility.h"
 #import "KarabinerKit/NotificationKeys.h"
 #import "libkrbn.h"
-#import "weakify.h"
 
 @interface KarabinerKitConfigurationManager ()
 
@@ -19,18 +18,9 @@ static void configuration_file_updated_callback(libkrbn_core_configuration* init
   }
 
   KarabinerKitCoreConfigurationModel* model = [[KarabinerKitCoreConfigurationModel alloc] initWithInitializedCoreConfiguration:initializedCoreConfiguration];
+  manager.coreConfigurationModel = model;
 
-  @weakify(manager);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    @strongify(manager);
-    if (!manager) {
-      return;
-    }
-
-    manager.coreConfigurationModel = model;
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitConfigurationIsLoaded object:nil];
-  });
+  [[NSNotificationCenter defaultCenter] postNotificationName:kKarabinerKitConfigurationIsLoaded object:nil];
 }
 
 @implementation KarabinerKitConfigurationManager
