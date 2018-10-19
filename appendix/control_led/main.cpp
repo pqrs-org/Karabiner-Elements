@@ -57,25 +57,19 @@ int main(int argc, const char* argv[]) {
 
   if (getuid() != 0) {
     krbn::logger::get_logger().error("control_led requires root privilege.");
-    return 1;
+  } else {
+    if (argc == 1) {
+      krbn::logger::get_logger().error("Usage: control_led on|off");
+      krbn::logger::get_logger().error("  Example: control_led on");
+      krbn::logger::get_logger().error("  Example: control_led off");
+    } else {
+      auto p = std::make_unique<control_led>(std::string(argv[1]) == "on");
+
+      CFRunLoopRun();
+
+      p = nullptr;
+    }
   }
-
-  if (argc == 1) {
-    krbn::logger::get_logger().error("Usage: control_led on|off");
-    krbn::logger::get_logger().error("  Example: control_led on");
-    krbn::logger::get_logger().error("  Example: control_led off");
-    return 1;
-  }
-
-  auto p = std::make_unique<control_led>(std::string(argv[1]) == "on");
-
-  // ------------------------------------------------------------
-
-  CFRunLoopRun();
-
-  // ------------------------------------------------------------
-
-  p = nullptr;
 
   krbn::dispatcher_utility::terminate_dispatchers();
 
