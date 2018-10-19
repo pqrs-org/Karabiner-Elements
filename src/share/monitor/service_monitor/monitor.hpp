@@ -3,6 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "dispatcher.hpp"
+#include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "services.hpp"
 #include <boost/signals2.hpp>
@@ -59,7 +60,8 @@ public:
         io_iterator_t it;
         auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, matching_dictionary_, &it);
         if (kr != KERN_SUCCESS) {
-          logger::get_logger().error("IOServiceGetMatchingServices error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+          logger::get_logger().error("IOServiceGetMatchingServices is failed: {0}",
+                                     iokit_utility::get_error_name(kr));
         } else {
           matched_callback(it);
           IOObjectRelease(it);
@@ -74,14 +76,14 @@ private:
     if (!notification_port_) {
       notification_port_ = IONotificationPortCreate(kIOMasterPortDefault);
       if (!notification_port_) {
-        logger::get_logger().error("IONotificationPortCreate is failed @ {0}", __PRETTY_FUNCTION__);
+        logger::get_logger().error("IONotificationPortCreate is failed.");
         return;
       }
 
       if (auto loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
         CFRunLoopAddSource(CFRunLoopGetMain(), loop_source, kCFRunLoopCommonModes);
       } else {
-        logger::get_logger().error("IONotificationPortGetRunLoopSource is failed @ {0}", __PRETTY_FUNCTION__);
+        logger::get_logger().error("IONotificationPortGetRunLoopSource is failed.");
       }
     }
 
@@ -97,7 +99,8 @@ private:
                                                    static_cast<void*>(this),
                                                    &matched_notification_);
         if (kr != kIOReturnSuccess) {
-          logger::get_logger().error("IOServiceAddMatchingNotification error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+          logger::get_logger().error("IOServiceAddMatchingNotification is failed: {0}",
+                                     iokit_utility::get_error_name(kr));
           CFRelease(matching_dictionary_);
         } else {
           matched_callback(matched_notification_);
@@ -117,7 +120,8 @@ private:
                                                    static_cast<void*>(this),
                                                    &terminated_notification_);
         if (kr != kIOReturnSuccess) {
-          logger::get_logger().error("IOServiceAddMatchingNotification error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+          logger::get_logger().error("IOServiceAddMatchingNotification is failed: {0}",
+                                     iokit_utility::get_error_name(kr));
           CFRelease(matching_dictionary_);
         } else {
           terminated_callback(terminated_notification_);

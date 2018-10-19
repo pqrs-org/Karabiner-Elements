@@ -214,7 +214,7 @@ private:
 
     auto kr = IOServiceOpen(service_, mach_task_self(), kIOHIDServerConnectType, &connect_);
     if (kr == KERN_SUCCESS) {
-      logger::get_logger().info("IOServiceOpen is succeeded @ {0}", __PRETTY_FUNCTION__);
+      logger::get_logger().info("virtual_hid_device_client is opened.");
 
       connected_ = true;
 
@@ -223,7 +223,8 @@ private:
       });
 
     } else {
-      logger::get_logger().error("IOServiceOpen error: {1} ({2}) @ {0}", __PRETTY_FUNCTION__, iokit_utility::get_error_name(kr), kr);
+      logger::get_logger().error("virtual_hid_device_client::open_connection is failed: {0}",
+                                 iokit_utility::get_error_name(kr));
       connect_ = IO_OBJECT_NULL;
     }
   }
@@ -233,7 +234,8 @@ private:
     if (connect_) {
       auto kr = IOServiceClose(connect_);
       if (kr != kIOReturnSuccess) {
-        logger::get_logger().error("IOConnectRelease error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        logger::get_logger().error("virtual_hid_device_client::close_connection error: {0}",
+                                   iokit_utility::get_error_name(kr));
       }
       connect_ = IO_OBJECT_NULL;
 
@@ -243,7 +245,7 @@ private:
         client_disconnected();
       });
 
-      logger::get_logger().info("virtual_hid_device_client connection is closed.");
+      logger::get_logger().info("virtual_hid_device_client is closed.");
     }
 
     if (service_) {

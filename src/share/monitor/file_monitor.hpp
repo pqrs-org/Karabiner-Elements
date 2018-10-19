@@ -132,13 +132,13 @@ private:
                                   0.1, // 100 ms
                                   flags);
     if (!stream_) {
-      logger::get_logger().error("FSEventStreamCreate error @ {0}", __PRETTY_FUNCTION__);
+      logger::get_logger().error("FSEventStreamCreate is failed.");
     } else {
       FSEventStreamScheduleWithRunLoop(stream_,
                                        run_loop_thread_->get_run_loop(),
                                        kCFRunLoopCommonModes);
       if (!FSEventStreamStart(stream_)) {
-        logger::get_logger().error("FSEventStreamStart error @ {0}", __PRETTY_FUNCTION__);
+        logger::get_logger().error("FSEventStreamStart is failed.");
       }
 
       run_loop_thread_->wake();

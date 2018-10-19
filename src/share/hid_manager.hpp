@@ -70,7 +70,7 @@ private:
 
     manager_ = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
     if (!manager_) {
-      logger::get_logger().error("{0}: failed to IOHIDManagerCreate", __PRETTY_FUNCTION__);
+      logger::get_logger().error("IOHIDManagerCreate is failed.");
       return;
     }
 

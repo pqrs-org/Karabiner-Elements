@@ -179,7 +179,7 @@ public:
     const CFIndex depth = 1024;
     queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
     if (!queue_) {
-      logger::get_logger().error("IOHIDQueueCreate error @ {0}", __PRETTY_FUNCTION__);
+      logger::get_logger().error("IOHIDQueueCreate is failed.");
     } else {
       // Add elements into queue_.
       for (const auto& e : elements_) {

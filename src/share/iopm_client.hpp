@@ -4,6 +4,7 @@
 
 #include "cf_utility.hpp"
 #include "dispatcher.hpp"
+#include "iokit_utility.hpp"
 #include "logger.hpp"
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOMessage.h>
@@ -61,7 +62,7 @@ private:
                                             static_callback,
                                             &notifier_);
     if (connect == MACH_PORT_NULL) {
-      logger::get_logger().error("IORegisterForSystemPower error @ {0}", __PRETTY_FUNCTION__);
+      logger::get_logger().error("IORegisterForSystemPower is failed.");
       return;
     }
 
@@ -77,7 +78,8 @@ private:
     if (notifier_) {
       auto kr = IODeregisterForSystemPower(&notifier_);
       if (kr != kIOReturnSuccess) {
-        logger::get_logger().error("IODeregisterForSystemPower error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        logger::get_logger().error("IODeregisterForSystemPower is failed: {0}",
+                                   iokit_utility::get_error_name(kr));
       }
       notifier_ = IO_OBJECT_NULL;
     }
@@ -90,7 +92,8 @@ private:
     if (connect_) {
       auto kr = IOServiceClose(connect_);
       if (kr != kIOReturnSuccess) {
-        logger::get_logger().error("IOServiceClose error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+        logger::get_logger().error("IOServiceClose is failed: {0}",
+                                   iokit_utility::get_error_name(kr));
       }
       connect_ = IO_OBJECT_NULL;
     }
@@ -110,7 +113,8 @@ private:
         if (connect_) {
           auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
           if (kr != kIOReturnSuccess) {
-            logger::get_logger().error("IOAllowPowerChange error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+            logger::get_logger().error("IOAllowPowerChange is failed: {0}",
+                                       iokit_utility::get_error_name(kr));
           }
         }
         break;
@@ -128,7 +132,8 @@ private:
         if (connect_) {
           auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
           if (kr != kIOReturnSuccess) {
-            logger::get_logger().error("IOAllowPowerChange error: {1} @ {0}", __PRETTY_FUNCTION__, kr);
+            logger::get_logger().error("IOAllowPowerChange is failed: {0}",
+                                       iokit_utility::get_error_name(kr));
           }
         }
         break;
