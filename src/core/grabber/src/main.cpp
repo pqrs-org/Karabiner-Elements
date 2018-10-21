@@ -57,14 +57,18 @@ int main(int argc, const char* argv[]) {
     int exit_status = system(ss.str().c_str());
     exit_status >>= 8;
     krbn::logger::get_logger().info("kextload exit status: {0}", exit_status);
+
+    if (exit_status == 0) {
+      break;
+    }
+
     if (exit_status == 27) {
       // kextload is blocked by macOS.
       // https://developer.apple.com/library/content/technotes/tn2459/_index.html
       grabber_alerts_manager->set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, true);
-      std::this_thread::sleep_for(std::chrono::seconds(3));
-      continue;
     }
-    break;
+
+    std::this_thread::sleep_for(std::chrono::seconds(3));
   }
 
   grabber_alerts_manager->set_alert(krbn::grabber_alerts_manager::alert::system_policy_prevents_loading_kext, false);
