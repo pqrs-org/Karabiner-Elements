@@ -60,5 +60,48 @@ public:
 
   // ----------------------------------------
 
+  virtual IOReturn setReport(IOMemoryDescriptor* report,
+                             IOHIDReportType reportType,
+                             IOOptionBits options) override {
+    IOReturn result = kIOReturnError;
+
+    uint8_t report_id = 0;
+    if (report->readBytes(0, &report_id, sizeof(report_id)) == 0) {
+      return kIOReturnBadArgument;
+    }
+
+    // The report_id is described at `reportDescriptor_` in `VirtualHIDKeyboard.cpp`.
+
+    switch (report_id) {
+    case 5: {
+      // LED
+
+      struct __attribute__((packed)) led_report {
+        uint8_t report_id;
+        uint8_t state;
+      } led_report;
+
+      led_report.report_id = 6;
+      // report[0] is report_id. (The LED output report id == 5)
+      // The led state is stored in `report[1]`.
+      report->readBytes(1, &(led_report.state), sizeof(led_report.state));
+
+      // Post LED report
+
+      if (auto buffer = IOBufferMemoryDescriptor::withBytes(&led_report, sizeof(led_report), kIODirectionNone)) {
+        result = handleReport(buffer, kIOHIDReportTypeInput, kIOHIDOptionsTypeNone);
+
+        buffer->release();
+      }
+
+      break;
+    }
+    }
+
+    return result;
+  }
+
+  // ----------------------------------------
+
   static void setCountryCode(uint8_t value);
 };

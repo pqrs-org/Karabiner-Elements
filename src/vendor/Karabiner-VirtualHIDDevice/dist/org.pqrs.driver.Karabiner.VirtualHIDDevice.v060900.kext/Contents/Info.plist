@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>16G1314</string>
+	<string>17G65</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
 	<string>VirtualHIDDevice</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.pqrs.driver.Karabiner.VirtualHIDDevice.v060800</string>
+	<string>org.pqrs.driver.Karabiner.VirtualHIDDevice.v060900</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>KEXT</string>
 	<key>CFBundleShortVersionString</key>
-	<string>6.8.0</string>
+	<string>6.9.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleSupportedPlatforms</key>
@@ -25,39 +25,39 @@
 		<string>MacOSX</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>6.8.0</string>
+	<string>6.9.0</string>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
-	<string>9C40b</string>
+	<string>10A255</string>
 	<key>DTPlatformVersion</key>
 	<string>GM</string>
 	<key>DTSDKBuild</key>
-	<string>17C76</string>
+	<string>18A384</string>
 	<key>DTSDKName</key>
-	<string>macosx10.13</string>
+	<string>macosx10.14</string>
 	<key>DTXcode</key>
-	<string>0920</string>
+	<string>1000</string>
 	<key>DTXcodeBuild</key>
-	<string>9C40b</string>
+	<string>10A255</string>
 	<key>IOKitPersonalities</key>
 	<dict>
 		<key>VirtualHIDRoot</key>
 		<dict>
 			<key>CFBundleIdentifier</key>
-			<string>org.pqrs.driver.Karabiner.VirtualHIDDevice.v060800</string>
+			<string>org.pqrs.driver.Karabiner.VirtualHIDDevice.v060900</string>
 			<key>IOClass</key>
-			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060800</string>
+			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060900</string>
 			<key>IOKitDebug</key>
 			<integer>0</integer>
 			<key>IOMatchCategory</key>
-			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060800</string>
+			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_v060900</string>
 			<key>IOProviderClass</key>
 			<string>IOResources</string>
 			<key>IOResourceMatch</key>
 			<string>IOKit</string>
 			<key>IOUserClientClass</key>
-			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_UserClient_v060800</string>
+			<string>org_pqrs_driver_Karabiner_VirtualHIDDevice_VirtualHIDRoot_UserClient_v060900</string>
 		</dict>
 	</dict>
 	<key>OSBundleLibraries</key>

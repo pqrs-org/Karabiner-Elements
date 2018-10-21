@@ -73,6 +73,36 @@ const uint8_t reportDescriptor_[] = {
     0x29, 0xff,       //   Usage Maximum........... (255)
     0x81, 0x00,       //   Input...................(Data, Array, Absolute)
     0xc0,             // End Collection
+
+    0x05, 0x01, // Usage Page (Generic Desktop)
+    0x09, 0x06, // Usage (Keyboard)
+    0xa1, 0x01, // Collection (Application)
+    0x85, 0x05, //   Report Id (5)
+    0x05, 0x08, //   Usage Page (LED)
+    0x95, 0x02, //   Report Count............ (2)
+    0x75, 0x01, //   Report Size............. (1)
+    0x19, 0x01, //   Usage Minimum........... (1)
+    0x29, 0x02, //   Usage Maximum........... (2)
+    0x91, 0x02, //   Output..................(Data, Variable, Absolute)
+    0x95, 0x01, //   Report Count............ (1)
+    0x75, 0x06, //   Report Size............. (6)
+    0x91, 0x01, //   Output..................(Constant)
+    0xc0,       // End Collection
+
+    0x05, 0x01, // Usage Page (Generic Desktop)
+    0x09, 0x06, // Usage (Keyboard)
+    0xa1, 0x01, // Collection (Application)
+    0x85, 0x06, //   Report Id (6)
+    0x05, 0x08, //   Usage Page (LED)
+    0x95, 0x02, //   Report Count............ (2)
+    0x75, 0x01, //   Report Size............. (1)
+    0x19, 0x01, //   Usage Minimum........... (1)
+    0x29, 0x02, //   Usage Maximum........... (2)
+    0x81, 0x02, //   Input...................(Data, Variable, Absolute)
+    0x95, 0x01, //   Report Count............ (1)
+    0x75, 0x06, //   Report Size............. (6)
+    0x81, 0x01, //   Input...................(Constant)
+    0xc0,       // End Collection
 };
 
 int countryCode_;
