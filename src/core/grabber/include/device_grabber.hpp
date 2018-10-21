@@ -250,12 +250,6 @@ public:
       // So, we create event_tap_monitor here.
       event_tap_monitor_ = std::make_unique<event_tap_monitor>();
 
-      event_tap_monitor_->caps_lock_state_changed.connect([this](auto&& state) {
-        last_caps_lock_state_ = state;
-        post_caps_lock_state_changed_event(state);
-        update_caps_lock_led();
-      });
-
       event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
         auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
         event_queue::entry entry(device_id(0),
@@ -324,6 +318,14 @@ public:
       profile_ = core_configuration::profile(nlohmann::json());
 
       manipulator_managers_connector_.invalidate_manipulators();
+    });
+  }
+
+  void async_set_caps_lock_state(bool state) {
+    enqueue_to_dispatcher([this, state] {
+      last_caps_lock_state_ = state;
+      post_caps_lock_state_changed_event(state);
+      update_caps_lock_led();
     });
   }
 

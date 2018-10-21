@@ -62,6 +62,20 @@ public:
             }
             break;
 
+          case operation_type::caps_lock_state_changed:
+            if (buffer->size() != sizeof(operation_type_caps_lock_state_changed_struct)) {
+              logger::get_logger().error("Invalid size for `operation_type::caps_lock_state_changed`.");
+            } else {
+              auto p = reinterpret_cast<operation_type_caps_lock_state_changed_struct*>(&((*buffer)[0]));
+
+              if (device_grabber_) {
+                device_grabber_->async_set_caps_lock_state(p->state);
+              }
+
+              logger::get_logger().info("`caps_lock_state` is updated.");
+            }
+            break;
+
           case operation_type::connect_console_user_server:
             if (buffer->size() != sizeof(operation_type_connect_console_user_server_struct)) {
               logger::get_logger().error("Invalid size for `operation_type::connect_console_user_server`.");

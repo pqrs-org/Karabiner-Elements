@@ -36,15 +36,12 @@ public:
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_keyboard),
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_mouse),
         std::make_pair(hid_usage_page::generic_desktop, hid_usage::gd_pointer),
+        std::make_pair(krbn::hid_usage_page::leds, krbn::hid_usage::led_caps_lock),
     });
 
     hid_manager_ = std::make_unique<hid_manager>(targets);
 
     hid_manager_->device_detecting.connect([](auto&& device) {
-      if (iokit_utility::is_karabiner_virtual_hid_device(device)) {
-        return false;
-      }
-
       iokit_utility::log_matching_device(device);
 
       return true;
@@ -59,9 +56,24 @@ public:
                                                          grabbable_state::ungrabbable_temporarily_reason::none,
                                                          time_utility::mach_absolute_time()));
 
-        hid->values_arrived.connect([this](auto&& shared_event_queue) {
-          grabbable_state_manager_->update(*shared_event_queue);
-        });
+        if (hid->is_karabiner_virtual_hid_device()) {
+          // Handle caps_lock_state_changed event only if the hid is Karabiner-VirtualHIDDevice.
+          hid->values_arrived.connect([this](auto&& shared_event_queue) {
+            for (const auto& e : shared_event_queue->get_entries()) {
+              if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
+                if (auto client = grabber_client_.lock()) {
+                  if (auto state = e.get_event().get_integer_value()) {
+                    client->async_caps_lock_state_changed(*state);
+                  }
+                }
+              }
+            }
+          });
+        } else {
+          hid->values_arrived.connect([this](auto&& shared_event_queue) {
+            grabbable_state_manager_->update(*shared_event_queue);
+          });
+        }
 
         auto observer = std::make_shared<hid_observer>(hid);
 
