@@ -144,7 +144,7 @@ TEST_CASE("json") {
   {
     nlohmann::json expected;
     expected["type"] = "caps_lock_state_changed";
-    expected["integer_value"] = 1;
+    expected["caps_lock_state_changed"] = 1;
     auto json = caps_lock_state_changed_1_event.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);

@@ -81,7 +81,7 @@ public:
         break;
 
       case type::caps_lock_state_changed:
-        if (auto v = json_utility::find_optional<int>(json, "integer_value")) {
+        if (auto v = json_utility::find_optional<int>(json, "caps_lock_state_changed")) {
           result.value_ = *v;
         }
         break;
@@ -189,7 +189,7 @@ public:
 
       case type::caps_lock_state_changed:
         if (auto v = get_integer_value()) {
-          json["integer_value"] = *v;
+          json["caps_lock_state_changed"] = *v;
         }
         break;
 
