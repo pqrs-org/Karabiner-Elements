@@ -54,6 +54,9 @@ TEST_CASE("grabbable_state_queue") {
       REQUIRE(grabbable_state_changed_count == 1);
     }
 
+    // Ignore too small time_stamp from first_grabbed_event_time_stamp_.
+    REQUIRE(!queue->update_first_grabbed_event_time_stamp(krbn::absolute_time(0)));
+
     // Remove states after first_grabbed_event_time_stamp_.
     REQUIRE(queue->update_first_grabbed_event_time_stamp(krbn::absolute_time(5000)));
     REQUIRE(*(queue->get_first_grabbed_event_time_stamp()) == krbn::absolute_time(5000));

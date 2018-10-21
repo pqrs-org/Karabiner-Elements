@@ -89,6 +89,18 @@ public:
       return false;
     }
 
+    // Pointing device sometimes send event with time_stamp(0) just after the device is connected.
+    // We have to ignore the event, so compare the time_stamp with the first queued event.
+
+    if (grabbable_states_.empty()) {
+      return false;
+    }
+    if (grabbable_states_.front().get_time_stamp() > time_stamp) {
+      return false;
+    }
+
+    // Set first_grabbed_event_time_stamp_
+
     first_grabbed_event_time_stamp_ = time_stamp;
 
     auto old_state = find_current_grabbable_state_();
