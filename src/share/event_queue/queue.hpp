@@ -341,6 +341,16 @@ public:
             }
             pointing_motion_time_stamp = v.get_time_stamp();
             pointing_motion_horizontal_wheel = static_cast<int>(v.get_integer_value());
+          } else if (*usage_page == hid_usage_page::leds &&
+                     *usage == hid_usage::led_caps_lock) {
+            event_queue::event event(event_queue::event::type::caps_lock_state_changed,
+                                     v.get_integer_value());
+            result.emplace_back(v,
+                                entry(device_id,
+                                      event_time_stamp(v.get_time_stamp()),
+                                      event,
+                                      event_type::single,
+                                      event));
           }
         }
       }
