@@ -15,6 +15,7 @@ public:
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
         std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
+        std::make_pair(krbn::hid_usage_page::leds, krbn::hid_usage::led_caps_lock),
     });
 
     hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
