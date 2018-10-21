@@ -94,6 +94,15 @@ public:
     });
   }
 
+  void async_caps_lock_state_changed(bool state) const {
+    enqueue_to_dispatcher([this, state] {
+      operation_type_caps_lock_state_changed_struct s;
+      s.state = state;
+
+      call_async_send(reinterpret_cast<uint8_t*>(&s), sizeof(s));
+    });
+  }
+
   void async_connect_console_user_server(void) const {
     enqueue_to_dispatcher([this] {
       operation_type_connect_console_user_server_struct s;

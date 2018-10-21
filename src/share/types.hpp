@@ -55,6 +55,7 @@ enum class operation_type : uint8_t {
   none,
   // observer -> grabber
   grabbable_state_changed,
+  caps_lock_state_changed,
   // console_user_server -> grabber
   connect_console_user_server,
   system_preferences_updated,
@@ -877,6 +878,13 @@ struct operation_type_grabbable_state_changed_struct {
 
   const operation_type operation_type;
   grabbable_state grabbable_state;
+};
+
+struct operation_type_caps_lock_state_changed_struct {
+  operation_type_caps_lock_state_changed_struct(void) : operation_type(operation_type::caps_lock_state_changed) {}
+
+  const operation_type operation_type;
+  bool state;
 };
 
 struct operation_type_connect_console_user_server_struct {
