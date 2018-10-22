@@ -1,6 +1,7 @@
 #!/bin/sh
 
-PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export PATH
 
 # ------------------------------------------------------------
 # Relaunch karabiner_grabber
@@ -8,6 +9,12 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
 killall karabiner_grabber
 killall karabiner_observer
 killall karabiner_console_user_server
+
+# Update version file
+
+cp \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/package-version' \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/version'
 
 # If plistFilePath is already bootstrapped and disabled, launchctl bootstrap will fail until it is enabled again.
 # So we should enable it first, and then bootstrap and enable it.
