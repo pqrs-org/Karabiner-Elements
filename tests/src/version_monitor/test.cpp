@@ -53,6 +53,24 @@ TEST_CASE("version_monitor") {
     REQUIRE(last_changed_version.empty());
 
     // ========================================
+    // The callback is not called if the file is removed.
+    // ========================================
+
+    last_changed_version.clear();
+
+    system("rm target/version");
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(last_changed_version.empty());
+
+    system("echo 1.0.0 > target/version");
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    REQUIRE(last_changed_version == "1.0.0");
+
+    // ========================================
     // `manual_check` does not invoke callback if the version file is not actually changed.
     // ========================================
 
