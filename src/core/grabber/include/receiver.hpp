@@ -71,8 +71,6 @@ public:
               if (device_grabber_) {
                 device_grabber_->async_set_caps_lock_state(p->state);
               }
-
-              logger::get_logger().info("`caps_lock_state` is updated.");
             }
             break;
 
