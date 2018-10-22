@@ -4,6 +4,7 @@
 
 #include "boost_defs.hpp"
 
+#include "dispatcher.hpp"
 #include "logger.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <boost/optional.hpp>
@@ -132,8 +133,9 @@ public:
    */
   class run_loop_thread final {
   public:
-    run_loop_thread(void) : run_loop_(nullptr),
-                            running_(false) {
+    run_loop_thread(void) : run_loop_(nullptr) {
+      running_wait_ = pqrs::dispatcher::make_wait();
+
       thread_ = std::thread([this] {
         run_loop_ = CFRunLoopGetCurrent();
         CFRetain(run_loop_);
@@ -155,12 +157,7 @@ public:
         CFRunLoopPerformBlock(run_loop_,
                               kCFRunLoopCommonModes,
                               ^{
-                                {
-                                  std::lock_guard<std::mutex> lock(running_mutex_);
-
-                                  running_ = true;
-                                }
-                                running_cv_.notify_one();
+                                running_wait_->notify();
                               });
 
         CFRunLoopRun();
@@ -213,6 +210,18 @@ public:
       CFRunLoopWakeUp(run_loop_);
     }
 
+    void enqueue_and_wait(const std::function<void(void)>& function) const {
+      auto wait = pqrs::dispatcher::make_wait();
+
+      enqueue(^{
+        function();
+
+        wait->notify();
+      });
+
+      wait->wait_notice();
+    }
+
   private:
     void enqueue(void (^_Nonnull block)(void)) const {
       // Do not call `CFRunLoopPerformBlock` until `CFRunLoopRun` is called.
@@ -228,11 +237,7 @@ public:
     }
 
     void wait_until_running(void) const {
-      std::unique_lock<std::mutex> lock(running_mutex_);
-
-      running_cv_.wait(lock, [this] {
-        return running_;
-      });
+      running_wait_->wait_notice();
     }
 
     static void perform(void* _Nullable info) {
@@ -241,10 +246,7 @@ public:
     std::thread thread_;
 
     CFRunLoopRef _Nullable run_loop_;
-
-    bool running_;
-    mutable std::mutex running_mutex_;
-    mutable std::condition_variable running_cv_;
+    std::shared_ptr<pqrs::dispatcher::wait> running_wait_;
   };
 };
 } // namespace krbn

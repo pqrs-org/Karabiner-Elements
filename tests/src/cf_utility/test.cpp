@@ -13,6 +13,9 @@ public:
       count1_ = 0;
       count2_ = 0;
 
+      wait1_ = pqrs::dispatcher::make_wait();
+      wait2_ = pqrs::dispatcher::make_wait();
+
       thread1_ = std::make_shared<krbn::cf_utility::run_loop_thread>();
       thread2_ = std::make_shared<krbn::cf_utility::run_loop_thread>();
 
@@ -26,14 +29,21 @@ public:
                                 // krbn::logger::get_logger().info("thread1 {0} {1}", j, count1);
                               });
       }
+      CFRunLoopPerformBlock(thread1_->get_run_loop(),
+                            kCFRunLoopCommonModes,
+                            ^{
+                              wait1_->notify();
+                            });
       thread1_->wake();
 
       // thread2 (recursive)
 
       enqueue2();
-      thread2_->wake();
 
       // Verify counts
+
+      wait1_->wait_notice();
+      wait2_->wait_notice();
 
       thread1_->terminate();
       thread1_ = nullptr;
@@ -53,8 +63,11 @@ private:
                             ++count2_;
                             if (count2_ < 3) {
                               enqueue2();
+                            } else {
+                              wait2_->notify();
                             }
                           });
+    thread2_->wake();
   }
 
 private:
@@ -63,6 +76,9 @@ private:
 
   int count1_;
   int count2_;
+
+  std::shared_ptr<pqrs::dispatcher::wait> wait1_;
+  std::shared_ptr<pqrs::dispatcher::wait> wait2_;
 };
 } // namespace
 
