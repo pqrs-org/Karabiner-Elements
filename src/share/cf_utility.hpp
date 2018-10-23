@@ -124,6 +124,15 @@ public:
                                      &kCFTypeDictionaryValueCallBacks);
   }
 
+  static void set_cfmutabledictionary_value(CFMutableDictionaryRef _Nonnull dictionary,
+                                            CFStringRef _Nonnull key,
+                                            int64_t value) {
+    if (auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &value)) {
+      CFDictionarySetValue(dictionary, key, number);
+      CFRelease(number);
+    }
+  }
+
   // ========================================
   // CFRunLoop
   // ========================================
