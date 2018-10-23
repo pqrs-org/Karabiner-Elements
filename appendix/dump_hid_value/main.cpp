@@ -184,6 +184,14 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
+#if 0
+  for (int i = 0; i < 500; ++i) {
+    krbn::logger::get_logger().info("i:{0}", i);
+    auto d = std::make_unique<dump_hid_value>();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+#endif
+
   auto d = std::make_unique<dump_hid_value>();
 
   // ------------------------------------------------------------
