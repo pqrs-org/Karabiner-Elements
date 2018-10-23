@@ -93,7 +93,7 @@ private:
       if (matching_dictionary_) {
         CFRetain(matching_dictionary_);
         auto kr = IOServiceAddMatchingNotification(notification_port_,
-                                                   kIOMatchedNotification,
+                                                   kIOFirstMatchNotification,
                                                    matching_dictionary_,
                                                    &(monitor::static_matched_callback),
                                                    static_cast<void*>(this),
