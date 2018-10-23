@@ -1,6 +1,7 @@
 #import "AlertWindowController.h"
 #import "KarabinerKit/KarabinerKit.h"
 #import "libkrbn.h"
+#import "weakify.h"
 
 @interface AlertWindowController ()
 
@@ -54,7 +55,15 @@ static void staticCallback(void* context) {
 }
 
 - (void)callback {
-  [self showIfNeeded];
+  @weakify(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    @strongify(self);
+    if (!self) {
+      return;
+    }
+
+    [self showIfNeeded];
+  });
 }
 
 - (IBAction)openSystemPreferencesSecurity:(id)sender {
