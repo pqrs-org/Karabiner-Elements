@@ -56,6 +56,7 @@ public:
                                                                 device_id_(types::make_new_device_id(std::make_shared<device_detail>(device))),
                                                                 removed_(false),
                                                                 opened_(false),
+                                                                scheduled_(false),
                                                                 queue_(nullptr) {
     // ----------------------------------------
 
@@ -457,16 +458,20 @@ private:
       return;
     }
 
-    IOHIDDeviceScheduleWithRunLoop(device_,
-                                   run_loop_thread_->get_run_loop(),
-                                   kCFRunLoopCommonModes);
-    if (queue_) {
-      IOHIDQueueScheduleWithRunLoop(queue_,
-                                    run_loop_thread_->get_run_loop(),
-                                    kCFRunLoopCommonModes);
-    }
+    if (!scheduled_) {
+      scheduled_ = true;
 
-    run_loop_thread_->wake();
+      IOHIDDeviceScheduleWithRunLoop(device_,
+                                     run_loop_thread_->get_run_loop(),
+                                     kCFRunLoopCommonModes);
+      if (queue_) {
+        IOHIDQueueScheduleWithRunLoop(queue_,
+                                      run_loop_thread_->get_run_loop(),
+                                      kCFRunLoopCommonModes);
+      }
+
+      run_loop_thread_->wake();
+    }
   }
 
   // This method is executed in the dispatcher thread.
@@ -475,14 +480,18 @@ private:
       return;
     }
 
-    if (queue_) {
-      IOHIDQueueUnscheduleFromRunLoop(queue_,
-                                      run_loop_thread_->get_run_loop(),
-                                      kCFRunLoopCommonModes);
+    if (scheduled_) {
+      if (queue_) {
+        IOHIDQueueUnscheduleFromRunLoop(queue_,
+                                        run_loop_thread_->get_run_loop(),
+                                        kCFRunLoopCommonModes);
+      }
+      IOHIDDeviceUnscheduleFromRunLoop(device_,
+                                       run_loop_thread_->get_run_loop(),
+                                       kCFRunLoopCommonModes);
+
+      scheduled_ = false;
     }
-    IOHIDDeviceUnscheduleFromRunLoop(device_,
-                                     run_loop_thread_->get_run_loop(),
-                                     kCFRunLoopCommonModes);
   }
 
   // This method is executed in the dispatcher thread.
@@ -667,7 +676,8 @@ private:
   device_id device_id_;
   std::string name_for_log_;
   std::atomic<bool> removed_;
-  std::atomic<bool> opened_;
+  bool opened_;
+  bool scheduled_;
   std::shared_ptr<connected_devices::device> connected_device_;
 
   IOHIDQueueRef _Nullable queue_;
