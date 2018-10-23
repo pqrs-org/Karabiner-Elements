@@ -185,7 +185,7 @@ int main(int argc, const char* argv[]) {
   });
 
 #if 0
-  for (int i = 0; i < 500; ++i) {
+  for (int i = 0; i < 1000; ++i) {
     krbn::logger::get_logger().info("i:{0}", i);
     auto d = std::make_unique<dump_hid_value>();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
