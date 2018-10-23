@@ -125,30 +125,6 @@ public:
     return find_string_property(service, CFSTR(kIOHIDSerialNumberKey));
   }
 
-  static CFArrayRef _Nullable create_device_matching_dictionaries(const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) {
-    auto device_matching_dictionaries = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-    if (!device_matching_dictionaries) {
-      return nullptr;
-    }
-
-    for (const auto& usage_pair : usage_pairs) {
-      if (auto dictionary = cf_utility::create_cfmutabledictionary()) {
-        cf_utility::set_cfmutabledictionary_value(dictionary,
-                                                  CFSTR(kIOHIDDeviceUsagePageKey),
-                                                  static_cast<int64_t>(usage_pair.first));
-        cf_utility::set_cfmutabledictionary_value(dictionary,
-                                                  CFSTR(kIOHIDDeviceUsageKey),
-                                                  static_cast<int64_t>(usage_pair.second));
-
-        CFArrayAppendValue(device_matching_dictionaries, dictionary);
-
-        CFRelease(dictionary);
-      }
-    }
-
-    return device_matching_dictionaries;
-  }
-
   static IOHIDDeviceRef _Nullable create_hid_device(IOHIDDeviceRef _Nonnull device) {
     if (auto service = IOHIDDeviceGetService(device)) {
       return IOHIDDeviceCreate(kCFAllocatorDefault, service);
