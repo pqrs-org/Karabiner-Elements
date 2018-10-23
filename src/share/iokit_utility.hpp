@@ -125,36 +125,6 @@ public:
     return find_string_property(service, CFSTR(kIOHIDSerialNumberKey));
   }
 
-  static CFDictionaryRef _Nullable create_matching_dictionary(CFStringRef _Nonnull usage_page_key, hid_usage_page usage_page,
-                                                              CFStringRef _Nonnull usage_key, hid_usage usage) {
-    if (auto device_matching_dictionary = cf_utility::create_cfmutabledictionary()) {
-      // usage_page
-      if (usage_page != hid_usage_page::zero) {
-        if (auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage_page)) {
-          CFDictionarySetValue(device_matching_dictionary, usage_page_key, number);
-          CFRelease(number);
-        }
-      }
-
-      // usage (The usage is only valid if the usage page is also defined)
-      if (usage != hid_usage::zero) {
-        if (auto number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage)) {
-          CFDictionarySetValue(device_matching_dictionary, usage_key, number);
-          CFRelease(number);
-        }
-      }
-
-      return device_matching_dictionary;
-    }
-
-    return nullptr;
-  }
-
-  static CFDictionaryRef _Nullable create_device_matching_dictionary(hid_usage_page usage_page, hid_usage usage) {
-    return create_matching_dictionary(CFSTR(kIOHIDDeviceUsagePageKey), usage_page,
-                                      CFSTR(kIOHIDDeviceUsageKey), usage);
-  }
-
   static CFArrayRef _Nullable create_device_matching_dictionaries(const std::vector<std::pair<hid_usage_page, hid_usage>>& usage_pairs) {
     auto device_matching_dictionaries = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
     if (!device_matching_dictionaries) {
@@ -162,18 +132,21 @@ public:
     }
 
     for (const auto& usage_pair : usage_pairs) {
-      if (auto device_matching_dictionary = create_device_matching_dictionary(usage_pair.first, usage_pair.second)) {
-        CFArrayAppendValue(device_matching_dictionaries, device_matching_dictionary);
-        CFRelease(device_matching_dictionary);
+      if (auto dictionary = cf_utility::create_cfmutabledictionary()) {
+        cf_utility::set_cfmutabledictionary_value(dictionary,
+                                                  CFSTR(kIOHIDDeviceUsagePageKey),
+                                                  static_cast<int64_t>(usage_pair.first));
+        cf_utility::set_cfmutabledictionary_value(dictionary,
+                                                  CFSTR(kIOHIDDeviceUsageKey),
+                                                  static_cast<int64_t>(usage_pair.second));
+
+        CFArrayAppendValue(device_matching_dictionaries, dictionary);
+
+        CFRelease(dictionary);
       }
     }
 
     return device_matching_dictionaries;
-  }
-
-  static CFDictionaryRef _Nullable create_element_matching_dictionary(hid_usage_page usage_page, hid_usage usage) {
-    return create_matching_dictionary(CFSTR(kIOHIDElementUsagePageKey), usage_page,
-                                      CFSTR(kIOHIDElementUsageKey), usage);
   }
 
   static IOHIDDeviceRef _Nullable create_hid_device(IOHIDDeviceRef _Nonnull device) {
