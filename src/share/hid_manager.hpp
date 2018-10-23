@@ -13,6 +13,7 @@
 #include <unordered_map>
 
 namespace krbn {
+
 class hid_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
@@ -86,8 +87,6 @@ private:
                                     run_loop_thread_->get_run_loop(),
                                     kCFRunLoopCommonModes);
 
-    IOHIDManagerOpen(manager_, kIOHIDOptionsTypeNone);
-
     // We need to call `wake` after `IOHIDManagerScheduleWithRunLoop`.
 
     run_loop_thread_->wake();
@@ -116,7 +115,6 @@ private:
     run_loop_thread_->enqueue_and_wait(^{
       // Release manager_ in run_loop_thread_ to avoid accessing released manager_ in run_loop_thread_.
 
-      IOHIDManagerClose(manager_, kIOHIDOptionsTypeNone);
       IOHIDManagerUnscheduleFromRunLoop(manager_,
                                         run_loop_thread_->get_run_loop(),
                                         kCFRunLoopCommonModes);
