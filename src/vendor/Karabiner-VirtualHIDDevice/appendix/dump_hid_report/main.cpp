@@ -41,7 +41,6 @@ void device_matching_callback(void* _Nullable context,
 
   std::cout << "device_matching_callback" << std::endl;
 
-  IOHIDDeviceOpen(device, kIOHIDOptionsTypeNone);
   IOHIDDeviceRegisterInputReportCallback(device, buffer, sizeof(buffer), input_report_callback, nullptr);
   IOHIDDeviceScheduleWithRunLoop(device, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
 }
@@ -68,6 +67,7 @@ int main(int argc, const char* argv[]) {
       IOHIDManagerSetDeviceMatching(manager, device_matching_dictionary);
       IOHIDManagerRegisterDeviceMatchingCallback(manager, device_matching_callback, nullptr);
       IOHIDManagerScheduleWithRunLoop(manager, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+      IOHIDManagerOpen(manager, kIOHIDOptionsTypeNone);
     }
 
     CFRelease(device_matching_dictionary);

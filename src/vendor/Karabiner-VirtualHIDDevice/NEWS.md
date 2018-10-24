@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 6.10.0
+
+- The kext binary has been built with macOS 10.12 SDK in order to avoid kextload issue on macOS 10.12.
+
 ## Version 6.9.0
 
 - LED has been supported on VirtualHIDKeyboard. <br>

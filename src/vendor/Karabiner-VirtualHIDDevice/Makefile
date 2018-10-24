@@ -2,7 +2,13 @@ VERSIONSIGNATURE = $(shell scripts/makeversionsignature.sh)
 KEXT_DIRECTORY = /Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice/Extensions
 KEXT = $(KEXT_DIRECTORY)/org.pqrs.driver.Karabiner.VirtualHIDDevice.$(VERSIONSIGNATURE).kext
 
-all: gitclean
+all: check
+	make build
+
+check:
+	@bash scripts/check-xcode-version.sh
+
+build: gitclean
 	bash scripts/setversion.sh
 	make -C src
 	rm -rf dist
