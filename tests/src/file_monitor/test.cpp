@@ -129,7 +129,7 @@ TEST_CASE("file_monitor") {
 
     test_file_monitor monitor;
 
-    REQUIRE(monitor.get_count() == 3);
+    REQUIRE(monitor.get_count() >= 3);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_0"s);
     REQUIRE(monitor.get_last_file_body1_2() == "1_2_0"s);
@@ -145,7 +145,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_1"s);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -161,7 +161,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_2"s);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -177,7 +177,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_2);
     REQUIRE(monitor.get_last_file_body1_1() == boost::none);
     REQUIRE(monitor.get_last_file_body1_2() == "1_2_1"s);
@@ -193,7 +193,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_2);
     REQUIRE(monitor.get_last_file_body1_1() == boost::none);
     REQUIRE(monitor.get_last_file_body1_2() == "1_2_2"s);
@@ -209,7 +209,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_3"s);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -225,7 +225,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
     REQUIRE(monitor.get_last_file_body1_1() == boost::none);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -241,7 +241,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_2);
     REQUIRE(monitor.get_last_file_body1_1() == boost::none);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -257,7 +257,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
     REQUIRE(monitor.get_last_file_body1_1() == boost::none);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -273,7 +273,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == boost::none);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -293,7 +293,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_4"s);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -310,7 +310,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_5"s);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -326,7 +326,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
 
     system("mkdir -p target.new/sub1");
     system("/bin/echo -n 1_1_6 > target.new/sub1/file1_1");
@@ -334,7 +334,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 2);
+    REQUIRE(monitor.get_count() >= 2);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_6"s);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -368,7 +368,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_7"s);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -384,7 +384,7 @@ TEST_CASE("file_monitor") {
 
     test_file_monitor monitor;
 
-    REQUIRE(monitor.get_count() == 3);
+    REQUIRE(monitor.get_count() >= 3);
     REQUIRE(monitor.get_last_file_path() == file_path_2_1);
     REQUIRE(monitor.get_last_file_body1_1() == boost::none);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
@@ -401,7 +401,7 @@ TEST_CASE("file_monitor") {
 
     monitor.wait();
 
-    REQUIRE(monitor.get_count() == 1);
+    REQUIRE(monitor.get_count() >= 1);
     REQUIRE(monitor.get_last_file_path() == file_path_1_1);
     REQUIRE(monitor.get_last_file_body1_1() == "1_1_0"s);
     REQUIRE(monitor.get_last_file_body1_2() == boost::none);
