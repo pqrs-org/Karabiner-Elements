@@ -192,8 +192,6 @@ private:
         if (e.flags & (kFSEventStreamEventFlagRootChanged |
                        kFSEventStreamEventFlagKernelDropped |
                        kFSEventStreamEventFlagUserDropped)) {
-          logger::get_logger().info("The configuration directory is updated.");
-
           // re-register stream
           unregister_stream();
           register_stream();
