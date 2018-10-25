@@ -95,7 +95,8 @@ int main(int argc, const char** argv) {
           exit_code = 1;
           goto finish;
         }
-        return copy_current_profile_to_system_default_profile();
+        exit_code = copy_current_profile_to_system_default_profile();
+        goto finish;
       }
     }
 
@@ -107,7 +108,8 @@ int main(int argc, const char** argv) {
           exit_code = 1;
           goto finish;
         }
-        return remove_system_default_profile();
+        exit_code = remove_system_default_profile();
+        goto finish;
       }
     }
 
