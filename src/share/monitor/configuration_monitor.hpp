@@ -30,7 +30,14 @@ public:
       auto file_path = changed_file_path;
 
       if (filesystem::exists(user_core_configuration_file_path)) {
-        if (changed_file_path == system_core_configuration_file_path) {
+        // Note:
+        // user_core_configuration_file_path == system_core_configuration_file_path
+        // if console_user_server is not running.
+
+        if (changed_file_path != user_core_configuration_file_path &&
+            changed_file_path == system_core_configuration_file_path) {
+          // system_core_configuration_file_path is updated.
+          // We ignore it because we are using user_core_configuration_file_path.
           return;
         }
       } else {
