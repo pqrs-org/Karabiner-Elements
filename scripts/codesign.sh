@@ -3,7 +3,8 @@
 set -e
 
 readonly CODESIGN_IDENTITY='8D660191481C98F5C56630847A6C39D95C166F22'
-readonly PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
+readonly PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export PATH
 
 err() {
     echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
@@ -26,6 +27,7 @@ main() {
         codesign \
             --force \
             --deep \
+            --options runtime \
             --sign "$CODESIGN_IDENTITY" \
             "$f"
         echo -ne '\033[0m'
@@ -40,4 +42,3 @@ main() {
 }
 
 main "$1"
-
