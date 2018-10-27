@@ -26,7 +26,7 @@ public:
     return count_;
   }
 
-  std::shared_ptr<const krbn::connected_devices> get_last_connected_devices(void) const {
+  std::shared_ptr<const krbn::connected_devices::connected_devices> get_last_connected_devices(void) const {
     return last_connected_devices_;
   }
 
@@ -37,7 +37,7 @@ public:
 private:
   std::unique_ptr<krbn::connected_devices_monitor> connected_devices_monitor_;
   size_t count_;
-  std::shared_ptr<const krbn::connected_devices> last_connected_devices_;
+  std::shared_ptr<const krbn::connected_devices::connected_devices> last_connected_devices_;
 };
 } // namespace
 

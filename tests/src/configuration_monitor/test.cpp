@@ -27,7 +27,7 @@ public:
     return count_;
   }
 
-  std::shared_ptr<const krbn::core_configuration> get_last_core_configuration(void) const {
+  std::shared_ptr<const krbn::core_configuration::core_configuration> get_last_core_configuration(void) const {
     return last_core_configuration_;
   }
 
@@ -42,7 +42,7 @@ public:
 private:
   std::unique_ptr<krbn::configuration_monitor> configuration_monitor_;
   size_t count_;
-  std::shared_ptr<const krbn::core_configuration> last_core_configuration_;
+  std::shared_ptr<const krbn::core_configuration::core_configuration> last_core_configuration_;
 };
 } // namespace
 

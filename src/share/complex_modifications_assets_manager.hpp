@@ -3,7 +3,7 @@
 #include "boost_defs.hpp"
 
 #include "constants.hpp"
-#include "core_configuration.hpp"
+#include "core_configuration/core_configuration.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 #include <dirent.h>
 #include <unistd.h>
@@ -25,7 +25,7 @@ public:
         }
 
         if (auto v = json_utility::find_array(json, "rules")) {
-          core_configuration::profile::complex_modifications::parameters parameters;
+          core_configuration::details::complex_modifications::parameters parameters;
           for (const auto& j : *v) {
             rules_.emplace_back(j, parameters);
           }
@@ -41,11 +41,11 @@ public:
       return title_;
     }
 
-    const std::vector<core_configuration::profile::complex_modifications::rule>& get_rules(void) const {
+    const std::vector<core_configuration::details::complex_modifications::rule>& get_rules(void) const {
       return rules_;
     }
 
-    void push_back_rule_to_core_configuration_profile(core_configuration::profile& profile,
+    void push_back_rule_to_core_configuration_profile(core_configuration::core_configuration::profile& profile,
                                                       size_t index) {
       if (index < rules_.size()) {
         profile.push_back_complex_modifications_rule(rules_[index]);
@@ -63,7 +63,7 @@ public:
   private:
     std::string file_path_;
     std::string title_;
-    std::vector<core_configuration::profile::complex_modifications::rule> rules_;
+    std::vector<core_configuration::details::complex_modifications::rule> rules_;
   };
 
   void reload(const std::string& directory, bool load_system_example_file = true) {

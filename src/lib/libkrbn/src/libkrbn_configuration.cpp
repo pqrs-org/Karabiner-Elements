@@ -1,7 +1,7 @@
 #include "libkrbn_cpp.hpp"
 
 namespace {
-krbn::core_configuration::profile::simple_modifications* find_simple_modifications(libkrbn_core_configuration* p,
+krbn::core_configuration::details::simple_modifications* find_simple_modifications(libkrbn_core_configuration* p,
                                                                                    const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
@@ -13,7 +13,7 @@ krbn::core_configuration::profile::simple_modifications* find_simple_modificatio
   return nullptr;
 }
 
-krbn::core_configuration::profile::simple_modifications* find_fn_function_keys(libkrbn_core_configuration* p,
+krbn::core_configuration::details::simple_modifications* find_fn_function_keys(libkrbn_core_configuration* p,
                                                                                const libkrbn_device_identifiers* device_identifiers) {
   if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
     if (device_identifiers) {
@@ -250,7 +250,7 @@ size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rul
 }
 
 void libkrbn_core_configuration_push_back_complex_modifications_rule_to_selected_profile(libkrbn_core_configuration* p,
-                                                                                         const krbn::core_configuration::profile::complex_modifications::rule& rule) {
+                                                                                         const krbn::core_configuration::details::complex_modifications::rule& rule) {
   if (auto c = reinterpret_cast<libkrbn_cpp::libkrbn_core_configuration_class*>(p)) {
     c->get_core_configuration().get_selected_profile().push_back_complex_modifications_rule(rule);
   }

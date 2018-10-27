@@ -5,15 +5,15 @@
 namespace {
 class libkrbn_connected_devices_class final {
 public:
-  libkrbn_connected_devices_class(const krbn::connected_devices& connected_devices) : connected_devices_(connected_devices) {
+  libkrbn_connected_devices_class(const krbn::connected_devices::connected_devices& connected_devices) : connected_devices_(connected_devices) {
   }
 
-  krbn::connected_devices& get_connected_devices(void) {
+  krbn::connected_devices::connected_devices& get_connected_devices(void) {
     return connected_devices_;
   }
 
 private:
-  krbn::connected_devices connected_devices_;
+  krbn::connected_devices::connected_devices connected_devices_;
 };
 
 class libkrbn_connected_devices_monitor_class final {

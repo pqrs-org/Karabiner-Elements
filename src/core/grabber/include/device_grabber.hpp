@@ -315,7 +315,7 @@ public:
 
   void async_unset_profile(void) {
     enqueue_to_dispatcher([this] {
-      profile_ = core_configuration::profile(nlohmann::json());
+      profile_ = core_configuration::core_configuration::profile(nlohmann::json());
 
       manipulator_managers_connector_.invalidate_manipulators();
     });
@@ -771,7 +771,7 @@ private:
 
   void output_devices_json(void) const {
     if (hid_manager_) {
-      connected_devices connected_devices;
+      connected_devices::connected_devices connected_devices;
       for (const auto& hid : hid_manager_->copy_hids()) {
         connected_devices.push_back_device(*(hid->get_connected_device()));
       }
@@ -799,7 +799,7 @@ private:
     }
   }
 
-  void set_profile(const core_configuration::profile& profile) {
+  void set_profile(const core_configuration::core_configuration::profile& profile) {
     profile_ = profile;
 
     update_simple_modifications_manipulators();
@@ -830,7 +830,7 @@ private:
     }
   }
 
-  std::shared_ptr<manipulator::details::conditions::base> make_device_if_condition(const core_configuration::profile::device& device) const {
+  std::shared_ptr<manipulator::details::conditions::base> make_device_if_condition(const core_configuration::details::device& device) const {
     nlohmann::json json;
     json["type"] = "device_if";
     json["identifiers"] = nlohmann::json::array();
@@ -1024,7 +1024,7 @@ private:
   boost::signals2::connection grabbable_state_changed_connection_;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
-  std::shared_ptr<const core_configuration> core_configuration_;
+  std::shared_ptr<const core_configuration::core_configuration> core_configuration_;
 
   std::unique_ptr<event_tap_monitor> event_tap_monitor_;
   boost::optional<bool> last_caps_lock_state_;
@@ -1032,7 +1032,7 @@ private:
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_grabber>> hid_grabbers_;
   std::unordered_map<registry_entry_id, std::shared_ptr<device_state>> device_states_;
 
-  core_configuration::profile profile_;
+  core_configuration::core_configuration::profile profile_;
   system_preferences system_preferences_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;

@@ -1,5 +1,10 @@
 #pragma once
 
+#include "json_utility.hpp"
+
+namespace krbn {
+namespace core_configuration {
+namespace details {
 class complex_modifications final {
 public:
   class parameters final {
@@ -215,7 +220,7 @@ public:
   nlohmann::json to_json(void) const {
     auto j = json_;
     j["rules"] = rules_;
-    j["parameters"] = parameters_;
+    j["parameters"] = parameters_.to_json();
     return j;
   }
 
@@ -283,3 +288,18 @@ private:
   parameters parameters_;
   std::vector<rule> rules_;
 };
+
+inline void to_json(nlohmann::json& json, const complex_modifications& complex_modifications) {
+  json = complex_modifications.to_json();
+}
+
+inline void to_json(nlohmann::json& json, const complex_modifications::rule& rule) {
+  json = rule.get_json();
+}
+
+inline void to_json(nlohmann::json& json, const complex_modifications::parameters& parameters) {
+  json = parameters.to_json();
+}
+} // namespace details
+} // namespace core_configuration
+} // namespace krbn

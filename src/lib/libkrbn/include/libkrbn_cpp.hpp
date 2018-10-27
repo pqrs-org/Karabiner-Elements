@@ -16,15 +16,15 @@ public:
 
   class libkrbn_core_configuration_class final {
   public:
-    libkrbn_core_configuration_class(std::shared_ptr<krbn::core_configuration> core_configuration) : core_configuration_(core_configuration) {
+    libkrbn_core_configuration_class(std::shared_ptr<krbn::core_configuration::core_configuration> core_configuration) : core_configuration_(core_configuration) {
     }
 
-    krbn::core_configuration& get_core_configuration(void) {
+    krbn::core_configuration::core_configuration& get_core_configuration(void) {
       return *core_configuration_;
     }
 
   private:
-    std::shared_ptr<krbn::core_configuration> core_configuration_;
+    std::shared_ptr<krbn::core_configuration::core_configuration> core_configuration_;
   };
 
   class libkrbn_configuration_monitor_class final {

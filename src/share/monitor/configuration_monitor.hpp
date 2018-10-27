@@ -3,7 +3,7 @@
 // `krbn::configuration_monitor` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
-#include "core_configuration.hpp"
+#include "core_configuration/core_configuration.hpp"
 #include "logger.hpp"
 #include "monitor/file_monitor.hpp"
 
@@ -12,7 +12,7 @@ class configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_c
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(std::weak_ptr<core_configuration>)> core_configuration_updated;
+  boost::signals2::signal<void(std::weak_ptr<core_configuration::core_configuration>)> core_configuration_updated;
 
   // Methods
 
@@ -54,7 +54,7 @@ public:
         logger::get_logger().info("Load {0}...", file_path);
       }
 
-      auto c = std::make_shared<core_configuration>(file_path);
+      auto c = std::make_shared<core_configuration::core_configuration>(file_path);
 
       if (core_configuration_ && !c->is_loaded()) {
         return;
@@ -88,7 +88,7 @@ public:
     file_monitor_->async_start();
   }
 
-  std::shared_ptr<core_configuration> get_core_configuration(void) const {
+  std::shared_ptr<core_configuration::core_configuration> get_core_configuration(void) const {
     std::lock_guard<std::mutex> lock(core_configuration_mutex_);
 
     return core_configuration_;
@@ -97,7 +97,7 @@ public:
 private:
   std::unique_ptr<file_monitor> file_monitor_;
 
-  std::shared_ptr<core_configuration> core_configuration_;
+  std::shared_ptr<core_configuration::core_configuration> core_configuration_;
   mutable std::mutex core_configuration_mutex_;
 };
 } // namespace krbn

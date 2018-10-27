@@ -1,16 +1,16 @@
 #define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
-#include "core_configuration.hpp"
+#include "core_configuration/core_configuration.hpp"
 #include "manipulator/details/basic.hpp"
 #include "manipulator/details/types.hpp"
 #include <boost/optional/optional_io.hpp>
 #include <iostream>
 
-using simple_modifications = krbn::core_configuration::profile::simple_modifications;
+using simple_modifications = krbn::core_configuration::details::simple_modifications;
 
 TEST_CASE("valid") {
-  krbn::core_configuration configuration("json/example.json");
+  krbn::core_configuration::core_configuration configuration("json/example.json");
 
   {
     std::vector<std::pair<std::string, std::string>> expected;
@@ -115,7 +115,7 @@ TEST_CASE("valid") {
 
 TEST_CASE("not found") {
   {
-    krbn::core_configuration configuration("json/not_found.json");
+    krbn::core_configuration::core_configuration configuration("json/not_found.json");
     REQUIRE(configuration.get_selected_profile().get_name() == "Default profile");
     REQUIRE(configuration.is_loaded() == false);
   }
@@ -123,7 +123,7 @@ TEST_CASE("not found") {
 
 TEST_CASE("broken.json") {
   {
-    krbn::core_configuration configuration("json/broken.json");
+    krbn::core_configuration::core_configuration configuration("json/broken.json");
 
     REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
     REQUIRE(configuration.is_loaded() == false);
@@ -144,7 +144,7 @@ TEST_CASE("broken.json") {
     }
   }
   {
-    krbn::core_configuration configuration("/bin/ls");
+    krbn::core_configuration::core_configuration configuration("/bin/ls");
 
     REQUIRE(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
     REQUIRE(configuration.is_loaded() == false);
@@ -152,7 +152,7 @@ TEST_CASE("broken.json") {
 }
 
 TEST_CASE("invalid_key_code_name.json") {
-  krbn::core_configuration configuration("json/invalid_key_code_name.json");
+  krbn::core_configuration::core_configuration configuration("json/invalid_key_code_name.json");
 
   std::vector<std::pair<std::string, std::string>> expected;
 
@@ -170,7 +170,7 @@ TEST_CASE("global_configuration") {
   // empty json
   {
     nlohmann::json json;
-    krbn::core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::details::global_configuration global_configuration(json);
     REQUIRE(global_configuration.get_check_for_updates_on_startup() == true);
     REQUIRE(global_configuration.get_show_in_menu_bar() == true);
     REQUIRE(global_configuration.get_show_profile_name_in_menu_bar() == false);
@@ -183,7 +183,7 @@ TEST_CASE("global_configuration") {
         {"show_in_menu_bar", false},
         {"show_profile_name_in_menu_bar", true},
     };
-    krbn::core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::details::global_configuration global_configuration(json);
     REQUIRE(global_configuration.get_check_for_updates_on_startup() == false);
     REQUIRE(global_configuration.get_show_in_menu_bar() == false);
     REQUIRE(global_configuration.get_show_profile_name_in_menu_bar() == true);
@@ -196,7 +196,7 @@ TEST_CASE("global_configuration") {
         {"show_in_menu_bar", 0},
         {"show_profile_name_in_menu_bar", nlohmann::json::object()},
     };
-    krbn::core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::details::global_configuration global_configuration(json);
     REQUIRE(global_configuration.get_check_for_updates_on_startup() == true);
     REQUIRE(global_configuration.get_show_in_menu_bar() == true);
     REQUIRE(global_configuration.get_show_profile_name_in_menu_bar() == false);
@@ -206,7 +206,7 @@ TEST_CASE("global_configuration") {
 TEST_CASE("global_configuration.to_json") {
   {
     nlohmann::json json;
-    krbn::core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::details::global_configuration global_configuration(json);
     nlohmann::json expected({
         {"check_for_updates_on_startup", true},
         {"show_in_menu_bar", true},
@@ -214,14 +214,14 @@ TEST_CASE("global_configuration.to_json") {
     });
     REQUIRE(global_configuration.to_json() == expected);
 
-    nlohmann::json actual = global_configuration;
+    auto actual = global_configuration.to_json();
     REQUIRE(actual == expected);
   }
   {
     nlohmann::json json{
         {"dummy", {{"keep_me", true}}},
     };
-    krbn::core_configuration::global_configuration global_configuration(json);
+    krbn::core_configuration::details::global_configuration global_configuration(json);
     global_configuration.set_check_for_updates_on_startup(false);
     global_configuration.set_show_in_menu_bar(false);
     global_configuration.set_show_profile_name_in_menu_bar(true);
@@ -294,7 +294,7 @@ TEST_CASE("profile") {
   // empty json
   {
     nlohmann::json json;
-    krbn::core_configuration::profile profile(json);
+    krbn::core_configuration::core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().get_pairs().size() == 0);
@@ -421,7 +421,7 @@ TEST_CASE("profile") {
                         },
                     }},
     });
-    krbn::core_configuration::profile profile(json);
+    krbn::core_configuration::core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string("profile 1"));
     REQUIRE(profile.get_selected() == true);
     {
@@ -576,7 +576,7 @@ TEST_CASE("profile") {
         {"fn_function_keys", nlohmann::json::array()},
         {"devices", ""},
     });
-    krbn::core_configuration::profile profile(json);
+    krbn::core_configuration::core_configuration::profile profile(json);
     REQUIRE(profile.get_name() == std::string(""));
     REQUIRE(profile.get_selected() == false);
     REQUIRE(profile.get_simple_modifications().get_pairs().size() == 0);
@@ -603,7 +603,7 @@ TEST_CASE("profile") {
                                      },
                                  }},
     });
-    krbn::core_configuration::profile profile(json);
+    krbn::core_configuration::core_configuration::profile profile(json);
     {
       std::vector<std::pair<std::string, std::string>> expected;
 
@@ -618,7 +618,7 @@ TEST_CASE("profile") {
 TEST_CASE("profile.to_json") {
   {
     nlohmann::json json;
-    krbn::core_configuration::profile profile(json);
+    krbn::core_configuration::core_configuration::profile profile(json);
     nlohmann::json expected({
         {"complex_modifications", nlohmann::json::object({
                                       {"rules", nlohmann::json::array()},
@@ -667,7 +667,7 @@ TEST_CASE("profile.to_json") {
                         },
                     }},
     });
-    krbn::core_configuration::profile profile(json);
+    krbn::core_configuration::core_configuration::profile profile(json);
     profile.set_name("profile 1");
     profile.set_selected(true);
 
@@ -859,7 +859,7 @@ TEST_CASE("simple_modifications") {
   // empty json
   {
     nlohmann::json json;
-    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::details::simple_modifications simple_modifications(json);
     REQUIRE(simple_modifications.get_pairs().size() == 0);
   }
 
@@ -884,7 +884,7 @@ TEST_CASE("simple_modifications") {
     json.push_back(nlohmann::json::object());
     json.back()["dummy"]["key_code"] = nlohmann::json();
 
-    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::details::simple_modifications simple_modifications(json);
     REQUIRE(simple_modifications.get_pairs().size() == 5);
 
     {
@@ -917,7 +917,7 @@ TEST_CASE("simple_modifications") {
         {"dummy", "f3"},
         {"f4", "dummy"},
     });
-    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::details::simple_modifications simple_modifications(json);
     REQUIRE(simple_modifications.get_pairs().size() == 4);
 
     {
@@ -941,13 +941,13 @@ TEST_CASE("simple_modifications") {
 
   // invalid values in json
   {
-    krbn::core_configuration::profile::simple_modifications simple_modifications(10);
+    krbn::core_configuration::details::simple_modifications simple_modifications(10);
     REQUIRE(simple_modifications.get_pairs().size() == 0);
   }
 
   // replace_pair
   {
-    krbn::core_configuration::profile::simple_modifications simple_modifications(nlohmann::json::object());
+    krbn::core_configuration::details::simple_modifications simple_modifications(nlohmann::json::object());
     simple_modifications.push_back_pair();
     simple_modifications.replace_pair(0,
                                       "{ \"key_code\" : \"a\" }",
@@ -972,7 +972,7 @@ TEST_CASE("simple_modifications") {
 
   // replace_second
   {
-    krbn::core_configuration::profile::simple_modifications simple_modifications(nlohmann::json::object());
+    krbn::core_configuration::details::simple_modifications simple_modifications(nlohmann::json::object());
     simple_modifications.push_back_pair();
     simple_modifications.replace_pair(0,
                                       "{ \"key_code\" : \"a\" }",
@@ -1003,7 +1003,7 @@ TEST_CASE("simple_modifications") {
 TEST_CASE("simple_modifications.to_json") {
   {
     nlohmann::json json;
-    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::details::simple_modifications simple_modifications(json);
     REQUIRE(simple_modifications.to_json() == nlohmann::json::array());
   }
   {
@@ -1013,7 +1013,7 @@ TEST_CASE("simple_modifications.to_json") {
         {"dummy", "f3"},
         {"f4", "dummy"},
     });
-    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::details::simple_modifications simple_modifications(json);
     simple_modifications.push_back_pair();
     // will be ignored since "a" already exists.
     simple_modifications.replace_pair(4,
@@ -1058,7 +1058,7 @@ TEST_CASE("simple_modifications.to_json") {
     json.back()["from"]["key_code"] = "a";
     json.back()["to"]["key_code"] = "f1";
 
-    krbn::core_configuration::profile::simple_modifications simple_modifications(json);
+    krbn::core_configuration::details::simple_modifications simple_modifications(json);
     {
       krbn::manipulator::details::basic::from_event_definition from_event_definition(nlohmann::json::parse(simple_modifications.get_pairs()[0].first));
       REQUIRE(from_event_definition.get_event_definitions().size() == 1);
@@ -1084,7 +1084,7 @@ TEST_CASE("complex_modifications") {
   // empty json
   {
     nlohmann::json json;
-    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    krbn::core_configuration::details::complex_modifications complex_modifications(json);
     REQUIRE(complex_modifications.get_rules().empty());
     REQUIRE(complex_modifications.get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 1000);
   }
@@ -1107,7 +1107,7 @@ TEST_CASE("complex_modifications") {
             },
         },
     });
-    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    krbn::core_configuration::details::complex_modifications complex_modifications(json);
     REQUIRE(complex_modifications.get_rules().size() == 3);
   }
 
@@ -1120,11 +1120,11 @@ TEST_CASE("complex_modifications") {
               "rule 1",
           },
       });
-      krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+      krbn::core_configuration::details::complex_modifications complex_modifications(json);
       REQUIRE(complex_modifications.get_rules().empty());
     }
     {
-      krbn::core_configuration::profile::complex_modifications complex_modifications(nlohmann::json::array());
+      krbn::core_configuration::details::complex_modifications complex_modifications(nlohmann::json::array());
       REQUIRE(complex_modifications.get_rules().empty());
     }
   }
@@ -1148,17 +1148,17 @@ TEST_CASE("complex_modifications.push_back_rule") {
             },
         },
     });
-    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    krbn::core_configuration::details::complex_modifications complex_modifications(json);
     auto& rules = complex_modifications.get_rules();
     REQUIRE(rules.size() == 3);
     REQUIRE(rules[0].get_description() == "rule 1");
     REQUIRE(rules[1].get_description() == "rule 2");
     REQUIRE(rules[2].get_description() == "rule 3");
 
-    krbn::core_configuration::profile::complex_modifications::parameters parameters;
+    krbn::core_configuration::details::complex_modifications::parameters parameters;
     nlohmann::json rule_json;
     rule_json["description"] = "rule 4";
-    krbn::core_configuration::profile::complex_modifications::rule rule(rule_json, parameters);
+    krbn::core_configuration::details::complex_modifications::rule rule(rule_json, parameters);
 
     complex_modifications.push_back_rule(rule);
     REQUIRE(rules.size() == 4);
@@ -1187,7 +1187,7 @@ TEST_CASE("complex_modifications.erase_rule") {
             },
         },
     });
-    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    krbn::core_configuration::details::complex_modifications complex_modifications(json);
     auto& rules = complex_modifications.get_rules();
     REQUIRE(rules.size() == 3);
     REQUIRE(rules[0].get_description() == "rule 1");
@@ -1226,7 +1226,7 @@ TEST_CASE("complex_modifications.swap_rules") {
             },
         },
     });
-    krbn::core_configuration::profile::complex_modifications complex_modifications(json);
+    krbn::core_configuration::details::complex_modifications complex_modifications(json);
     auto& rules = complex_modifications.get_rules();
     REQUIRE(rules.size() == 3);
     REQUIRE(rules[0].get_description() == "rule 1");
@@ -1245,7 +1245,7 @@ TEST_CASE("complex_modifications.parameters") {
   // empty json
   {
     nlohmann::json json;
-    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    krbn::core_configuration::details::complex_modifications::parameters parameters(json);
     REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1000);
   }
 
@@ -1253,7 +1253,7 @@ TEST_CASE("complex_modifications.parameters") {
   {
     nlohmann::json json;
     json["basic.to_if_alone_timeout_milliseconds"] = 1234;
-    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    krbn::core_configuration::details::complex_modifications::parameters parameters(json);
     REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1234);
   }
 
@@ -1261,13 +1261,13 @@ TEST_CASE("complex_modifications.parameters") {
   {
     nlohmann::json json;
     json["basic.to_if_alone_timeout_milliseconds"] = "1234";
-    krbn::core_configuration::profile::complex_modifications::parameters parameters(json);
+    krbn::core_configuration::details::complex_modifications::parameters parameters(json);
     REQUIRE(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1000);
   }
 
   // normalize
   {
-    krbn::core_configuration::profile::complex_modifications::parameters parameters(nlohmann::json::object({
+    krbn::core_configuration::details::complex_modifications::parameters parameters(nlohmann::json::object({
         {"basic.simultaneous_threshold_milliseconds", -1000},
         {"basic.to_if_alone_timeout_milliseconds", -1000},
         {"basic.to_if_held_down_threshold_milliseconds", -1000},
@@ -1280,7 +1280,7 @@ TEST_CASE("complex_modifications.parameters") {
     REQUIRE(parameters.get_basic_to_delayed_action_delay_milliseconds() == 0);
   }
   {
-    krbn::core_configuration::profile::complex_modifications::parameters parameters(nlohmann::json::object({
+    krbn::core_configuration::details::complex_modifications::parameters parameters(nlohmann::json::object({
         {"basic.simultaneous_threshold_milliseconds", 100000},
         {"basic.to_if_alone_timeout_milliseconds", 100000},
         {"basic.to_if_held_down_threshold_milliseconds", 100000},
@@ -1293,7 +1293,7 @@ TEST_CASE("complex_modifications.parameters") {
     REQUIRE(parameters.get_basic_to_delayed_action_delay_milliseconds() == 100000);
   }
   {
-    krbn::core_configuration::profile::complex_modifications::parameters parameters(nlohmann::json::object({}));
+    krbn::core_configuration::details::complex_modifications::parameters parameters(nlohmann::json::object({}));
 
     parameters.set_value("basic.simultaneous_threshold_milliseconds", -1000);
     parameters.set_value("basic.to_if_alone_timeout_milliseconds", -1000);
@@ -1319,26 +1319,26 @@ TEST_CASE("complex_modifications.parameters") {
 
 TEST_CASE("complex_modifications.minmax_parameter_value") {
   {
-    krbn::core_configuration configuration("json/minmax_parameter_value_test1.json");
+    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json");
     auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
     REQUIRE(actual->first == 101);
     REQUIRE(actual->second == 401);
   }
   {
-    krbn::core_configuration configuration("json/minmax_parameter_value_test2.json");
+    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test2.json");
     auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
     REQUIRE(actual->first == 102);
     REQUIRE(actual->second == 402);
   }
   {
-    krbn::core_configuration configuration("json/minmax_parameter_value_test3.json");
+    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test3.json");
     auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
     REQUIRE(actual->first == 103);
     REQUIRE(actual->second == 403);
   }
 
   {
-    krbn::core_configuration configuration("json/minmax_parameter_value_test1.json");
+    krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json");
     REQUIRE(!configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("unknown"));
   }
 }
@@ -1347,7 +1347,7 @@ TEST_CASE("virtual_hid_keyboard") {
   // empty json
   {
     nlohmann::json json;
-    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
     REQUIRE(virtual_hid_keyboard.get_country_code() == 0);
   }
 
@@ -1356,7 +1356,7 @@ TEST_CASE("virtual_hid_keyboard") {
     nlohmann::json json({
         {"country_code", 10},
     });
-    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
     REQUIRE(virtual_hid_keyboard.get_country_code() == 10);
   }
 
@@ -1365,7 +1365,7 @@ TEST_CASE("virtual_hid_keyboard") {
     nlohmann::json json({
         {"country_code", nlohmann::json::object()},
     });
-    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
     REQUIRE(virtual_hid_keyboard.get_country_code() == 0);
   }
 }
@@ -1373,17 +1373,17 @@ TEST_CASE("virtual_hid_keyboard") {
 TEST_CASE("virtual_hid_keyboard.to_json") {
   {
     nlohmann::json json;
-    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
     REQUIRE(virtual_hid_keyboard.to_json() == get_default_virtual_hid_keyboard_json());
 
-    nlohmann::json actual = virtual_hid_keyboard;
+    auto actual = virtual_hid_keyboard.to_json();
     REQUIRE(actual == get_default_virtual_hid_keyboard_json());
   }
   {
     nlohmann::json json({
         {"dummy", {{"keep_me", true}}},
     });
-    krbn::core_configuration::profile::virtual_hid_keyboard virtual_hid_keyboard(json);
+    krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
     virtual_hid_keyboard.set_country_code(10);
 
     nlohmann::json expected({
@@ -1464,7 +1464,7 @@ TEST_CASE("device.identifiers.to_json") {
     });
     REQUIRE(identifiers.to_json() == expected);
 
-    nlohmann::json actual = identifiers;
+    nlohmann::json actual = identifiers.to_json();
     REQUIRE(actual == expected);
   }
   {
@@ -1488,7 +1488,7 @@ TEST_CASE("device") {
   // empty json
   {
     nlohmann::json json;
-    krbn::core_configuration::profile::device device(json);
+    krbn::core_configuration::details::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
     REQUIRE(device.get_identifiers().get_is_keyboard() == false);
@@ -1522,7 +1522,7 @@ TEST_CASE("device") {
         {"ignore", true},
         {"manipulate_caps_lock_led", false},
     });
-    krbn::core_configuration::profile::device device(json);
+    krbn::core_configuration::details::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(1234));
     REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(5678));
     REQUIRE(device.get_identifiers().get_is_keyboard() == true);
@@ -1539,7 +1539,7 @@ TEST_CASE("device") {
         {"ignore", 1},
         {"manipulate_caps_lock_led", false},
     });
-    krbn::core_configuration::profile::device device(json);
+    krbn::core_configuration::details::device device(json);
     REQUIRE(device.get_identifiers().get_vendor_id() == krbn::vendor_id(0));
     REQUIRE(device.get_identifiers().get_product_id() == krbn::product_id(0));
     REQUIRE(device.get_identifiers().get_is_keyboard() == false);
@@ -1552,7 +1552,7 @@ TEST_CASE("device") {
 TEST_CASE("device.to_json") {
   {
     nlohmann::json json;
-    krbn::core_configuration::profile::device device(json);
+    krbn::core_configuration::details::device device(json);
     nlohmann::json expected({
         {"disable_built_in_keyboard_if_exists", false},
         {"identifiers", {
@@ -1580,7 +1580,7 @@ TEST_CASE("device.to_json") {
     });
     REQUIRE(device.to_json() == expected);
 
-    nlohmann::json actual = device;
+    nlohmann::json actual = device.to_json();
     REQUIRE(actual == expected);
   }
   {
@@ -1599,7 +1599,7 @@ TEST_CASE("device.to_json") {
         {"ignore", true},
         {"manipulate_caps_lock_led", true},
     });
-    krbn::core_configuration::profile::device device(json);
+    krbn::core_configuration::details::device device(json);
     nlohmann::json expected({
         {"disable_built_in_keyboard_if_exists", false},
         {"dummy", {{"keep_me", true}}},

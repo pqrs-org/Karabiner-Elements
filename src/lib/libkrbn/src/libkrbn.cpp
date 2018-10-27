@@ -1,7 +1,7 @@
 #include "libkrbn.h"
 #include "application_launcher.hpp"
 #include "constants.hpp"
-#include "core_configuration.hpp"
+#include "core_configuration/core_configuration.hpp"
 #include "dispatcher_utility.hpp"
 #include "json_utility.hpp"
 #include "launchctl_utility.hpp"

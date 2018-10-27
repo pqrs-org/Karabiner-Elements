@@ -6,8 +6,8 @@
 
 #include "apple_hid_usage_tables.hpp"
 #include "cf_utility.hpp"
-#include "connected_devices.hpp"
-#include "core_configuration.hpp"
+#include "connected_devices/connected_devices.hpp"
+#include "core_configuration/core_configuration.hpp"
 #include "device_detail.hpp"
 #include "event_queue.hpp"
 #include "iokit_utility.hpp"
@@ -99,7 +99,7 @@ public:
       if (auto p = iokit_utility::find_product(device_)) {
         product = *p;
       }
-      connected_devices::device::descriptions descriptions(manufacturer, product);
+      connected_devices::details::descriptions descriptions(manufacturer, product);
 
       auto vendor_id = iokit_utility::find_vendor_id(device_);
       auto product_id = iokit_utility::find_product_id(device_);
@@ -124,10 +124,10 @@ public:
         is_built_in_trackpad = true;
       }
 
-      connected_device_ = std::make_shared<connected_devices::device>(descriptions,
-                                                                      identifiers,
-                                                                      is_built_in_keyboard,
-                                                                      is_built_in_trackpad);
+      connected_device_ = std::make_shared<connected_devices::details::device>(descriptions,
+                                                                               identifiers,
+                                                                               is_built_in_keyboard,
+                                                                               is_built_in_trackpad);
     }
 
     // ----------------------------------------
@@ -249,7 +249,7 @@ public:
     removed_ = true;
   }
 
-  std::shared_ptr<connected_devices::device> get_connected_device(void) const {
+  std::shared_ptr<connected_devices::details::device> get_connected_device(void) const {
     return connected_device_;
   }
 
@@ -678,7 +678,7 @@ private:
   std::atomic<bool> removed_;
   bool opened_;
   bool scheduled_;
-  std::shared_ptr<connected_devices::device> connected_device_;
+  std::shared_ptr<connected_devices::details::device> connected_device_;
 
   IOHIDQueueRef _Nullable queue_;
   std::vector<IOHIDElementRef> elements_;

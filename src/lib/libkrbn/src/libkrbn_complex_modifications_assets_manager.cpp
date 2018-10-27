@@ -3,7 +3,7 @@
 
 // libkrbn_configuration.cpp
 void libkrbn_core_configuration_push_back_complex_modifications_rule_to_selected_profile(libkrbn_core_configuration* p,
-                                                                                         const krbn::core_configuration::profile::complex_modifications::rule& rule);
+                                                                                         const krbn::core_configuration::details::complex_modifications::rule& rule);
 
 bool libkrbn_complex_modifications_assets_manager_initialize(libkrbn_complex_modifications_assets_manager** out) {
   if (!out) return false;
@@ -45,7 +45,7 @@ const krbn::complex_modifications_assets_manager::file* get_file(libkrbn_complex
   return nullptr;
 }
 
-const std::vector<krbn::core_configuration::profile::complex_modifications::rule>* get_rules(libkrbn_complex_modifications_assets_manager* p,
+const std::vector<krbn::core_configuration::details::complex_modifications::rule>* get_rules(libkrbn_complex_modifications_assets_manager* p,
                                                                                              size_t index) {
   if (auto files = get_files(p)) {
     if (index < files->size()) {
@@ -56,7 +56,7 @@ const std::vector<krbn::core_configuration::profile::complex_modifications::rule
   return nullptr;
 }
 
-const krbn::core_configuration::profile::complex_modifications::rule* get_rule(libkrbn_complex_modifications_assets_manager* p,
+const krbn::core_configuration::details::complex_modifications::rule* get_rule(libkrbn_complex_modifications_assets_manager* p,
                                                                                size_t file_index,
                                                                                size_t index) {
   if (auto rules = get_rules(p, file_index)) {

@@ -53,7 +53,7 @@ public:
           std::ifstream ifs(rule.get<std::string>());
           REQUIRE(ifs);
           for (const auto& j : nlohmann::json::parse(ifs)) {
-            core_configuration::profile::complex_modifications::parameters parameters;
+            core_configuration::details::complex_modifications::parameters parameters;
             auto m = manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters);
 

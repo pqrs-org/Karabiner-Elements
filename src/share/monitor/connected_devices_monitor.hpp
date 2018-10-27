@@ -2,7 +2,7 @@
 
 // `krbn::connected_devices_monitor` can be used safely in a multi-threaded environment.
 
-#include "connected_devices.hpp"
+#include "connected_devices/connected_devices.hpp"
 #include "logger.hpp"
 #include "monitor/file_monitor.hpp"
 
@@ -11,7 +11,7 @@ class connected_devices_monitor final : pqrs::dispatcher::extra::dispatcher_clie
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(std::weak_ptr<const connected_devices>)> connected_devices_updated;
+  boost::signals2::signal<void(std::weak_ptr<const connected_devices::connected_devices>)> connected_devices_updated;
 
   // Methods
 
@@ -28,7 +28,7 @@ public:
         logger::get_logger().info("Load {0}...", changed_file_path);
       }
 
-      auto c = std::make_shared<connected_devices>(changed_file_path);
+      auto c = std::make_shared<connected_devices::connected_devices>(changed_file_path);
 
       if (connected_devices_ && !c->is_loaded()) {
         return;
@@ -58,7 +58,7 @@ public:
     file_monitor_->async_start();
   }
 
-  std::shared_ptr<connected_devices> get_connected_devices(void) const {
+  std::shared_ptr<connected_devices::connected_devices> get_connected_devices(void) const {
     std::lock_guard<std::mutex> lock(connected_devices_mutex_);
 
     return connected_devices_;
@@ -67,7 +67,7 @@ public:
 private:
   std::unique_ptr<file_monitor> file_monitor_;
 
-  std::shared_ptr<connected_devices> connected_devices_;
+  std::shared_ptr<connected_devices::connected_devices> connected_devices_;
   mutable std::mutex connected_devices_mutex_;
 };
 } // namespace krbn

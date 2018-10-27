@@ -57,7 +57,7 @@ int remove_system_default_profile(void) {
 }
 } // namespace
 
-int main(int argc, const char** argv) {
+int main(int argc, char** argv) {
   int exit_code = 0;
 
   krbn::dispatcher_utility::initialize_dispatchers();

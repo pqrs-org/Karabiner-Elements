@@ -1,17 +1,17 @@
 #define CATCH_CONFIG_MAIN
 #include "../../vendor/catch/catch.hpp"
 
-#include "connected_devices.hpp"
+#include "connected_devices/connected_devices.hpp"
 #include <iostream>
 
-TEST_CASE("connected_devices::device::descriptions") {
+TEST_CASE("connected_devices::details::descriptions") {
   {
-    krbn::connected_devices::device::descriptions descriptions1("manufacturer1",
-                                                                "product1");
-    krbn::connected_devices::device::descriptions descriptions2("manufacturer2",
-                                                                "product2");
-    krbn::connected_devices::device::descriptions descriptions3("manufacturer1",
-                                                                "product1");
+    krbn::connected_devices::details::descriptions descriptions1("manufacturer1",
+                                                                 "product1");
+    krbn::connected_devices::details::descriptions descriptions2("manufacturer2",
+                                                                 "product2");
+    krbn::connected_devices::details::descriptions descriptions3("manufacturer1",
+                                                                 "product1");
 
     REQUIRE(descriptions1.get_manufacturer() == "manufacturer1");
     REQUIRE(descriptions1.get_product() == "product1");
@@ -25,8 +25,8 @@ TEST_CASE("connected_devices::device::descriptions") {
     REQUIRE(descriptions1 != descriptions2);
   }
   {
-    krbn::connected_devices::device::descriptions descriptions1(nlohmann::json(nullptr));
-    krbn::connected_devices::device::descriptions descriptions2(nlohmann::json({
+    krbn::connected_devices::details::descriptions descriptions1(nlohmann::json(nullptr));
+    krbn::connected_devices::details::descriptions descriptions2(nlohmann::json({
         {"manufacturer", "manufacturer2"},
         {"product", "product2"},
     }));
@@ -39,18 +39,18 @@ TEST_CASE("connected_devices::device::descriptions") {
   }
 }
 
-TEST_CASE("connected_devices::device") {
+TEST_CASE("connected_devices::details::device") {
   {
-    krbn::connected_devices::device::descriptions descriptions("manufacturer1",
-                                                               "product1");
+    krbn::connected_devices::details::descriptions descriptions("manufacturer1",
+                                                                "product1");
     krbn::device_identifiers identifiers(krbn::vendor_id(1234),
                                          krbn::product_id(5678),
                                          true,
                                          false);
-    krbn::connected_devices::device device(descriptions,
-                                           identifiers,
-                                           true,
-                                           true);
+    krbn::connected_devices::details::device device(descriptions,
+                                                    identifiers,
+                                                    true,
+                                                    true);
 
     REQUIRE(device.get_descriptions() == descriptions);
     REQUIRE(device.get_identifiers() == identifiers);
@@ -102,8 +102,8 @@ TEST_CASE("connected_devices::device") {
                                      }}));
   }
   {
-    krbn::connected_devices::device device1(nlohmann::json(nullptr));
-    krbn::connected_devices::device device2(nlohmann::json(
+    krbn::connected_devices::details::device device1(nlohmann::json(nullptr));
+    krbn::connected_devices::details::device device2(nlohmann::json(
         {{
              "descriptions",
              {
@@ -169,88 +169,88 @@ TEST_CASE("connected_devices::device") {
 
 TEST_CASE("connected_devices") {
   {
-    krbn::connected_devices connected_devices;
+    krbn::connected_devices::connected_devices connected_devices;
     REQUIRE(connected_devices.to_json() == nlohmann::json::array());
   }
   {
-    krbn::connected_devices connected_devices;
+    krbn::connected_devices::connected_devices connected_devices;
 
     {
-      krbn::connected_devices::device::descriptions descriptions("manufacturer1",
-                                                                 "product1");
+      krbn::connected_devices::details::descriptions descriptions("manufacturer1",
+                                                                  "product1");
       krbn::device_identifiers identifiers(krbn::vendor_id(1234),
                                            krbn::product_id(5678),
                                            true,
                                            false);
-      krbn::connected_devices::device device(descriptions,
-                                             identifiers,
-                                             true,
-                                             false);
+      krbn::connected_devices::details::device device(descriptions,
+                                                      identifiers,
+                                                      true,
+                                                      false);
       connected_devices.push_back_device(device);
     }
     {
-      krbn::connected_devices::device::descriptions descriptions("manufacturer1 (ignored)",
-                                                                 "product1 (ignored)");
+      krbn::connected_devices::details::descriptions descriptions("manufacturer1 (ignored)",
+                                                                  "product1 (ignored)");
       krbn::device_identifiers identifiers(krbn::vendor_id(1234),
                                            krbn::product_id(5678),
                                            true,
                                            false);
-      krbn::connected_devices::device device(descriptions,
-                                             identifiers,
-                                             true,
-                                             false);
+      krbn::connected_devices::details::device device(descriptions,
+                                                      identifiers,
+                                                      true,
+                                                      false);
       connected_devices.push_back_device(device);
     }
     {
-      krbn::connected_devices::device::descriptions descriptions("manufacturer3",
-                                                                 "product3");
+      krbn::connected_devices::details::descriptions descriptions("manufacturer3",
+                                                                  "product3");
       krbn::device_identifiers identifiers(krbn::vendor_id(2345),
                                            krbn::product_id(6789),
                                            false,
                                            true);
-      krbn::connected_devices::device device(descriptions,
-                                             identifiers,
-                                             false,
-                                             false);
+      krbn::connected_devices::details::device device(descriptions,
+                                                      identifiers,
+                                                      false,
+                                                      false);
       connected_devices.push_back_device(device);
     }
     {
-      krbn::connected_devices::device::descriptions descriptions("manufacturer2",
-                                                                 "product2");
+      krbn::connected_devices::details::descriptions descriptions("manufacturer2",
+                                                                  "product2");
       krbn::device_identifiers identifiers(krbn::vendor_id(1234),
                                            krbn::product_id(5679),
                                            false,
                                            true);
-      krbn::connected_devices::device device(descriptions,
-                                             identifiers,
-                                             false,
-                                             true);
+      krbn::connected_devices::details::device device(descriptions,
+                                                      identifiers,
+                                                      false,
+                                                      true);
       connected_devices.push_back_device(device);
     }
     {
-      krbn::connected_devices::device::descriptions descriptions("manufacturer1",
-                                                                 "product4");
+      krbn::connected_devices::details::descriptions descriptions("manufacturer1",
+                                                                  "product4");
       krbn::device_identifiers identifiers(krbn::vendor_id(123),
                                            krbn::product_id(678),
                                            false,
                                            true);
-      krbn::connected_devices::device device(descriptions,
-                                             identifiers,
-                                             false,
-                                             true);
+      krbn::connected_devices::details::device device(descriptions,
+                                                      identifiers,
+                                                      false,
+                                                      true);
       connected_devices.push_back_device(device);
     }
     {
-      krbn::connected_devices::device::descriptions descriptions("manufacturer1",
-                                                                 "product4");
+      krbn::connected_devices::details::descriptions descriptions("manufacturer1",
+                                                                  "product4");
       krbn::device_identifiers identifiers(krbn::vendor_id(123),
                                            krbn::product_id(678),
                                            true,
                                            false);
-      krbn::connected_devices::device device(descriptions,
-                                             identifiers,
-                                             true,
-                                             false);
+      krbn::connected_devices::details::device device(descriptions,
+                                                      identifiers,
+                                                      true,
+                                                      false);
       connected_devices.push_back_device(device);
     }
 
@@ -269,7 +269,7 @@ TEST_CASE("connected_devices") {
   }
 
   {
-    krbn::connected_devices connected_devices("json/connected_devices.json");
+    krbn::connected_devices::connected_devices connected_devices("json/connected_devices.json");
 
     REQUIRE(connected_devices.is_loaded() == true);
     REQUIRE(connected_devices.get_devices().size() == 5);
@@ -280,14 +280,14 @@ TEST_CASE("connected_devices") {
   }
 
   {
-    krbn::connected_devices connected_devices("json/not_found.json");
+    krbn::connected_devices::connected_devices connected_devices("json/not_found.json");
 
     REQUIRE(connected_devices.is_loaded() == false);
     REQUIRE(connected_devices.get_devices().size() == 0);
   }
 
   {
-    krbn::connected_devices connected_devices("json/broken.json");
+    krbn::connected_devices::connected_devices connected_devices("json/broken.json");
 
     REQUIRE(connected_devices.is_loaded() == false);
     REQUIRE(connected_devices.get_devices().size() == 0);

@@ -1,7 +1,12 @@
 #pragma once
 
-#include "connected_devices.hpp"
+#include "connected_devices/connected_devices.hpp"
 #include "constants.hpp"
+#include "details/global_configuration.hpp"
+#include "details/profile/complex_modifications.hpp"
+#include "details/profile/device.hpp"
+#include "details/profile/simple_modifications.hpp"
+#include "details/profile/virtual_hid_keyboard.hpp"
 #include "filesystem.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
@@ -11,27 +16,19 @@
 #include <fstream>
 #include <glob.h>
 #include <json/json.hpp>
-#include <natural_sort/natural_sort.hpp>
 #include <string>
 #include <unordered_map>
 
 // Example: tests/src/core_configuration/json/example.json
 
 namespace krbn {
+namespace core_configuration {
 using namespace std::string_literals;
 
 class core_configuration final {
 public:
-#include "core_configuration/global_configuration.hpp"
-
   class profile final {
   public:
-#include "core_configuration/profile/complex_modifications.hpp"
-#include "core_configuration/profile/simple_modifications.hpp"
-#include "core_configuration/profile/virtual_hid_keyboard.hpp"
-
-#include "core_configuration/profile/device.hpp"
-
     profile(const nlohmann::json& json) : json_(json),
                                           selected_(false),
                                           simple_modifications_(json_utility::find_copy(json, "simple_modifications", nlohmann::json::array())),
@@ -115,10 +112,10 @@ public:
       auto j = json_;
       j["name"] = name_;
       j["selected"] = selected_;
-      j["simple_modifications"] = simple_modifications_;
-      j["fn_function_keys"] = fn_function_keys_;
-      j["complex_modifications"] = complex_modifications_;
-      j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
+      j["simple_modifications"] = simple_modifications_.to_json();
+      j["fn_function_keys"] = fn_function_keys_.to_json();
+      j["complex_modifications"] = complex_modifications_.to_json();
+      j["virtual_hid_keyboard"] = virtual_hid_keyboard_.to_json();
       j["devices"] = devices_;
       return j;
     }
@@ -137,14 +134,14 @@ public:
       selected_ = value;
     }
 
-    const simple_modifications& get_simple_modifications(void) const {
+    const details::simple_modifications& get_simple_modifications(void) const {
       return simple_modifications_;
     }
-    simple_modifications& get_simple_modifications(void) {
-      return const_cast<simple_modifications&>(static_cast<const profile&>(*this).get_simple_modifications());
+    details::simple_modifications& get_simple_modifications(void) {
+      return const_cast<details::simple_modifications&>(static_cast<const profile&>(*this).get_simple_modifications());
     }
 
-    const simple_modifications* find_simple_modifications(const device_identifiers& identifiers) const {
+    const details::simple_modifications* find_simple_modifications(const device_identifiers& identifiers) const {
       for (const auto& d : devices_) {
         if (d.get_identifiers() == identifiers) {
           return &(d.get_simple_modifications());
@@ -152,20 +149,20 @@ public:
       }
       return nullptr;
     }
-    simple_modifications* find_simple_modifications(const device_identifiers& identifiers) {
+    details::simple_modifications* find_simple_modifications(const device_identifiers& identifiers) {
       add_device(identifiers);
 
-      return const_cast<simple_modifications*>(static_cast<const profile&>(*this).find_simple_modifications(identifiers));
+      return const_cast<details::simple_modifications*>(static_cast<const profile&>(*this).find_simple_modifications(identifiers));
     }
 
-    const simple_modifications& get_fn_function_keys(void) const {
+    const details::simple_modifications& get_fn_function_keys(void) const {
       return fn_function_keys_;
     }
-    simple_modifications& get_fn_function_keys(void) {
-      return const_cast<simple_modifications&>(static_cast<const profile&>(*this).get_fn_function_keys());
+    details::simple_modifications& get_fn_function_keys(void) {
+      return const_cast<details::simple_modifications&>(static_cast<const profile&>(*this).get_fn_function_keys());
     }
 
-    const simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) const {
+    const details::simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) const {
       for (const auto& d : devices_) {
         if (d.get_identifiers() == identifiers) {
           return &(d.get_fn_function_keys());
@@ -173,16 +170,16 @@ public:
       }
       return nullptr;
     }
-    simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) {
+    details::simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) {
       add_device(identifiers);
 
-      return const_cast<simple_modifications*>(static_cast<const profile&>(*this).find_fn_function_keys(identifiers));
+      return const_cast<details::simple_modifications*>(static_cast<const profile&>(*this).find_fn_function_keys(identifiers));
     }
 
-    const complex_modifications& get_complex_modifications(void) const {
+    const details::complex_modifications& get_complex_modifications(void) const {
       return complex_modifications_;
     }
-    void push_back_complex_modifications_rule(const profile::complex_modifications::rule& rule) {
+    void push_back_complex_modifications_rule(const details::complex_modifications::rule& rule) {
       complex_modifications_.push_back_rule(rule);
     }
     void erase_complex_modifications_rule(size_t index) {
@@ -195,14 +192,14 @@ public:
       complex_modifications_.set_parameter_value(name, value);
     }
 
-    const virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
+    const details::virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
       return virtual_hid_keyboard_;
     }
-    virtual_hid_keyboard& get_virtual_hid_keyboard(void) {
+    details::virtual_hid_keyboard& get_virtual_hid_keyboard(void) {
       return virtual_hid_keyboard_;
     }
 
-    const std::vector<device>& get_devices(void) const {
+    const std::vector<details::device>& get_devices(void) const {
       return devices_;
     }
 
@@ -213,7 +210,7 @@ public:
         }
       }
 
-      device d(nlohmann::json({
+      details::device d(nlohmann::json({
           {"identifiers", identifiers.to_json()},
       }));
       return d.get_ignore();
@@ -237,7 +234,7 @@ public:
         }
       }
 
-      device d(nlohmann::json({
+      details::device d(nlohmann::json({
           {"identifiers", identifiers.to_json()},
       }));
       return d.get_manipulate_caps_lock_led();
@@ -291,11 +288,11 @@ public:
     nlohmann::json json_;
     std::string name_;
     bool selected_;
-    simple_modifications simple_modifications_;
-    simple_modifications fn_function_keys_;
-    complex_modifications complex_modifications_;
-    virtual_hid_keyboard virtual_hid_keyboard_;
-    std::vector<device> devices_;
+    details::simple_modifications simple_modifications_;
+    details::simple_modifications fn_function_keys_;
+    details::complex_modifications complex_modifications_;
+    details::virtual_hid_keyboard virtual_hid_keyboard_;
+    std::vector<details::device> devices_;
   };
 
   core_configuration(const core_configuration&) = delete;
@@ -326,7 +323,7 @@ public:
             json_ = nlohmann::json::parse(input);
 
             if (auto v = json_utility::find_object(json_, "global")) {
-              global_configuration_ = global_configuration(*v);
+              global_configuration_ = details::global_configuration(*v);
             }
 
             if (auto v = json_utility::find_array(json_, "profiles")) {
@@ -358,17 +355,17 @@ public:
 
   nlohmann::json to_json(void) const {
     auto j = json_;
-    j["global"] = global_configuration_;
+    j["global"] = global_configuration_.to_json();
     j["profiles"] = profiles_;
     return j;
   }
 
   bool is_loaded(void) const { return loaded_; }
 
-  const global_configuration& get_global_configuration(void) const {
+  const details::global_configuration& get_global_configuration(void) const {
     return global_configuration_;
   }
-  global_configuration& get_global_configuration(void) {
+  details::global_configuration& get_global_configuration(void) {
     return global_configuration_;
   }
 
@@ -475,39 +472,12 @@ private:
   nlohmann::json json_;
   bool loaded_;
 
-  global_configuration global_configuration_;
+  details::global_configuration global_configuration_;
   std::vector<profile> profiles_;
 };
-
-inline void to_json(nlohmann::json& json, const core_configuration::global_configuration& global_configuration) {
-  json = global_configuration.to_json();
-}
 
 inline void to_json(nlohmann::json& json, const core_configuration::profile& profile) {
   json = profile.to_json();
 }
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::simple_modifications& simple_modifications) {
-  json = simple_modifications.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications& complex_modifications) {
-  json = complex_modifications.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::rule& rule) {
-  json = rule.get_json();
-}
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::complex_modifications::parameters& parameters) {
-  json = parameters.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::virtual_hid_keyboard& virtual_hid_keyboard) {
-  json = virtual_hid_keyboard.to_json();
-}
-
-inline void to_json(nlohmann::json& json, const core_configuration::profile::device& device) {
-  json = device.to_json();
-}
+} // namespace core_configuration
 } // namespace krbn

@@ -1,5 +1,11 @@
 #pragma once
 
+#include "json_utility.hpp"
+#include "simple_modifications.hpp"
+
+namespace krbn {
+namespace core_configuration {
+namespace details {
 class device final {
 public:
   device(const nlohmann::json& json) : json_(json),
@@ -71,8 +77,8 @@ public:
     j["ignore"] = ignore_;
     j["manipulate_caps_lock_led"] = manipulate_caps_lock_led_;
     j["disable_built_in_keyboard_if_exists"] = disable_built_in_keyboard_if_exists_;
-    j["simple_modifications"] = simple_modifications_;
-    j["fn_function_keys"] = fn_function_keys_;
+    j["simple_modifications"] = simple_modifications_.to_json();
+    j["fn_function_keys"] = fn_function_keys_.to_json();
     return j;
   }
 
@@ -124,3 +130,10 @@ private:
   simple_modifications simple_modifications_;
   simple_modifications fn_function_keys_;
 };
+
+inline void to_json(nlohmann::json& json, const device& device) {
+  json = device.to_json();
+}
+} // namespace details
+} // namespace core_configuration
+} // namespace krbn

@@ -1,5 +1,10 @@
 #pragma once
 
+#include "json_utility.hpp"
+
+namespace krbn {
+namespace core_configuration {
+namespace details {
 class global_configuration final {
 public:
   global_configuration(const nlohmann::json& json) : json_(json),
@@ -54,3 +59,10 @@ private:
   bool show_in_menu_bar_;
   bool show_profile_name_in_menu_bar_;
 };
+
+inline void to_json(nlohmann::json& json, const global_configuration& global_configuration) {
+  json = global_configuration.to_json();
+}
+} // namespace details
+} // namespace core_configuration
+} // namespace krbn

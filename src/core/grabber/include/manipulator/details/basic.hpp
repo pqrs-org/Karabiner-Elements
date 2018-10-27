@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core_configuration.hpp"
+#include "core_configuration/core_configuration.hpp"
 #include "dispatcher.hpp"
 #include "krbn_notification_center.hpp"
 #include "manipulator/details/base.hpp"
@@ -22,7 +22,7 @@ public:
 #include "basic/to_if_held_down.hpp"
 
   basic(const nlohmann::json& json,
-        const core_configuration::profile::complex_modifications::parameters& parameters) : base(),
+        const core_configuration::details::complex_modifications::parameters& parameters) : base(),
                                                                                             dispatcher_client(),
                                                                                             parameters_(parameters),
                                                                                             from_(json_utility::find_copy(json, "from", nlohmann::json())) {
@@ -972,7 +972,7 @@ private:
     }
   }
 
-  core_configuration::profile::complex_modifications::parameters parameters_;
+  core_configuration::details::complex_modifications::parameters parameters_;
 
   from_event_definition from_;
   std::vector<to_event_definition> to_;

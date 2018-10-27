@@ -1,5 +1,13 @@
 #pragma once
 
+#include "json_utility.hpp"
+#include <natural_sort/natural_sort.hpp>
+
+namespace krbn {
+namespace core_configuration {
+namespace details {
+using namespace std::string_literals;
+
 class simple_modifications final {
 public:
   simple_modifications(const nlohmann::json& json) {
@@ -128,8 +136,8 @@ private:
       for (auto it = json.begin(); it != json.end(); ++it) {
         // it.key() is always std::string.
         if (it.value().is_string()) {
-          std::string from_json_string = "{}"s;
-          std::string to_json_string = "{}"s;
+          auto from_json_string = "{}"s;
+          auto to_json_string = "{}"s;
 
           if (!it.key().empty()) {
             nlohmann::json from_json({{"key_code", it.key()}});
@@ -176,3 +184,10 @@ private:
 
   std::vector<std::pair<std::string, std::string>> pairs_;
 };
+
+inline void to_json(nlohmann::json& json, const simple_modifications& simple_modifications) {
+  json = simple_modifications.to_json();
+}
+} // namespace details
+} // namespace core_configuration
+} // namespace krbn
