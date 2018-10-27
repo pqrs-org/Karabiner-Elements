@@ -16,7 +16,7 @@
   - version: 12f74beb58d9b18a41b25339d994da0e222fe80f
   - url: <https://github.com/scopeInfinity/NaturalSort>
 - cxxopts:
-  - version: v2.1.0
+  - version: v2.1.1
   - url: <https://github.com/jarro2783/cxxopts/releases>
 - Sparkle:
   - version: 1.20.0
