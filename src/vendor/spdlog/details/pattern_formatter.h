@@ -69,7 +69,7 @@ static const char *ampm(const tm &t)
     return t.tm_hour >= 12 ? "PM" : "AM";
 }
 
-static unsigned int to12h(const tm &t)
+static int to12h(const tm &t)
 {
     return t.tm_hour > 12 ? t.tm_hour - 12 : t.tm_hour;
 }
@@ -116,7 +116,7 @@ class B_formatter : public flag_formatter
 };
 
 // Date and time representation (Thu Aug 23 15:35:46 2014)
-class c_formatter SPDLOG_FINAL : public flag_formatter
+class c_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -142,7 +142,7 @@ class c_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // year - 2 digit
-class C_formatter SPDLOG_FINAL : public flag_formatter
+class C_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -151,7 +151,7 @@ class C_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // Short MM/DD/YY date, equivalent to %m/%d/%y 08/23/01
-class D_formatter SPDLOG_FINAL : public flag_formatter
+class D_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -164,7 +164,7 @@ class D_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // year - 4 digit
-class Y_formatter SPDLOG_FINAL : public flag_formatter
+class Y_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -173,7 +173,7 @@ class Y_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // month 1-12
-class m_formatter SPDLOG_FINAL : public flag_formatter
+class m_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -182,7 +182,7 @@ class m_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // day of month 1-31
-class d_formatter SPDLOG_FINAL : public flag_formatter
+class d_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -191,7 +191,7 @@ class d_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // hours in 24 format 0-23
-class H_formatter SPDLOG_FINAL : public flag_formatter
+class H_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -200,7 +200,7 @@ class H_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // hours in 12 format 1-12
-class I_formatter SPDLOG_FINAL : public flag_formatter
+class I_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -209,7 +209,7 @@ class I_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // minutes 0-59
-class M_formatter SPDLOG_FINAL : public flag_formatter
+class M_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -218,7 +218,7 @@ class M_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // seconds 0-59
-class S_formatter SPDLOG_FINAL : public flag_formatter
+class S_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -227,7 +227,7 @@ class S_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // milliseconds
-class e_formatter SPDLOG_FINAL : public flag_formatter
+class e_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -237,17 +237,17 @@ class e_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // microseconds
-class f_formatter SPDLOG_FINAL : public flag_formatter
+class f_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
         auto micros = fmt_helper::time_fraction<std::chrono::microseconds>(msg.time);
-        fmt_helper::pad6(static_cast<int>(micros.count()), dest);
+        fmt_helper::pad6(static_cast<size_t>(micros.count()), dest);
     }
 };
 
 // nanoseconds
-class F_formatter SPDLOG_FINAL : public flag_formatter
+class F_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -257,7 +257,7 @@ class F_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // seconds since epoch
-class E_formatter SPDLOG_FINAL : public flag_formatter
+class E_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -268,7 +268,7 @@ class E_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // AM/PM
-class p_formatter SPDLOG_FINAL : public flag_formatter
+class p_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -277,7 +277,7 @@ class p_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // 12 hour clock 02:55:02 pm
-class r_formatter SPDLOG_FINAL : public flag_formatter
+class r_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -292,7 +292,7 @@ class r_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // 24-hour HH:MM time, equivalent to %H:%M
-class R_formatter SPDLOG_FINAL : public flag_formatter
+class R_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -303,7 +303,7 @@ class R_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // ISO 8601 time format (HH:MM:SS), equivalent to %H:%M:%S
-class T_formatter SPDLOG_FINAL : public flag_formatter
+class T_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
@@ -318,7 +318,7 @@ class T_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // ISO 8601 offset from UTC in timezone (+-HH:MM)
-class z_formatter SPDLOG_FINAL : public flag_formatter
+class z_formatter final : public flag_formatter
 {
 public:
     const std::chrono::seconds cache_refresh = std::chrono::seconds(5);
@@ -371,7 +371,7 @@ private:
 };
 
 // Thread id
-class t_formatter SPDLOG_FINAL : public flag_formatter
+class t_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -380,7 +380,7 @@ class t_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // Current pid
-class pid_formatter SPDLOG_FINAL : public flag_formatter
+class pid_formatter final : public flag_formatter
 {
     void format(const details::log_msg &, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -389,7 +389,7 @@ class pid_formatter SPDLOG_FINAL : public flag_formatter
 };
 
 // message counter formatter
-class i_formatter SPDLOG_FINAL : public flag_formatter
+class i_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -397,7 +397,7 @@ class i_formatter SPDLOG_FINAL : public flag_formatter
     }
 };
 
-class v_formatter SPDLOG_FINAL : public flag_formatter
+class v_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -405,7 +405,7 @@ class v_formatter SPDLOG_FINAL : public flag_formatter
     }
 };
 
-class ch_formatter SPDLOG_FINAL : public flag_formatter
+class ch_formatter final : public flag_formatter
 {
 public:
     explicit ch_formatter(char ch)
@@ -422,7 +422,7 @@ private:
 };
 
 // aggregate user chars to display as is
-class aggregate_formatter SPDLOG_FINAL : public flag_formatter
+class aggregate_formatter final : public flag_formatter
 {
 public:
     aggregate_formatter() = default;
@@ -441,14 +441,14 @@ private:
 };
 
 // mark the color range. expect it to be in the form of "%^colored text%$"
-class color_start_formatter SPDLOG_FINAL : public flag_formatter
+class color_start_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
         msg.color_range_start = dest.size();
     }
 };
-class color_stop_formatter SPDLOG_FINAL : public flag_formatter
+class color_stop_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &, fmt::memory_buffer &dest) override
     {
@@ -458,11 +458,14 @@ class color_stop_formatter SPDLOG_FINAL : public flag_formatter
 
 // Full info formatter
 // pattern: [%Y-%m-%d %H:%M:%S.%e] [%n] [%l] %v
-class full_formatter SPDLOG_FINAL : public flag_formatter
+class full_formatter final : public flag_formatter
 {
     void format(const details::log_msg &msg, const std::tm &tm_time, fmt::memory_buffer &dest) override
     {
-        using namespace std::chrono;
+        using std::chrono::duration_cast;
+        using std::chrono::milliseconds;
+        using std::chrono::seconds;
+
 #ifndef SPDLOG_NO_DATETIME
 
         // cache the date/time part for the next second.
@@ -471,7 +474,7 @@ class full_formatter SPDLOG_FINAL : public flag_formatter
 
         if (cache_timestamp_ != secs || cached_datetime_.size() == 0)
         {
-            cached_datetime_.resize(0);
+            cached_datetime_.clear();
             cached_datetime_.push_back('[');
             fmt_helper::append_int(tm_time.tm_year + 1900, cached_datetime_);
             cached_datetime_.push_back('-');
@@ -528,7 +531,7 @@ private:
 
 } // namespace details
 
-class pattern_formatter SPDLOG_FINAL : public formatter
+class pattern_formatter final : public formatter
 {
 public:
     explicit pattern_formatter(
@@ -545,9 +548,9 @@ public:
     pattern_formatter(const pattern_formatter &other) = delete;
     pattern_formatter &operator=(const pattern_formatter &other) = delete;
 
-    virtual std::unique_ptr<formatter> clone() const override
+    std::unique_ptr<formatter> clone() const override
     {
-        return std::unique_ptr<formatter>(new pattern_formatter(pattern_, pattern_time_type_, eol_));
+        return details::make_unique<pattern_formatter>(pattern_, pattern_time_type_, eol_);
     }
 
     void format(const details::log_msg &msg, fmt::memory_buffer &dest) override
@@ -592,141 +595,141 @@ private:
         {
         // logger name
         case 'n':
-            formatters_.emplace_back(new details::name_formatter());
+            formatters_.push_back(details::make_unique<details::name_formatter>());
             break;
 
         case 'l':
-            formatters_.emplace_back(new details::level_formatter());
+            formatters_.push_back(details::make_unique<details::level_formatter>());
             break;
 
         case 'L':
-            formatters_.emplace_back(new details::short_level_formatter());
+            formatters_.push_back(details::make_unique<details::short_level_formatter>());
             break;
 
         case ('t'):
-            formatters_.emplace_back(new details::t_formatter());
+            formatters_.push_back(details::make_unique<details::t_formatter>());
             break;
 
         case ('v'):
-            formatters_.emplace_back(new details::v_formatter());
+            formatters_.push_back(details::make_unique<details::v_formatter>());
             break;
 
         case ('a'):
-            formatters_.emplace_back(new details::a_formatter());
+            formatters_.push_back(details::make_unique<details::a_formatter>());
             break;
 
         case ('A'):
-            formatters_.emplace_back(new details::A_formatter());
+            formatters_.push_back(details::make_unique<details::A_formatter>());
             break;
 
         case ('b'):
         case ('h'):
-            formatters_.emplace_back(new details::b_formatter());
+            formatters_.push_back(details::make_unique<details::b_formatter>());
             break;
 
         case ('B'):
-            formatters_.emplace_back(new details::B_formatter());
+            formatters_.push_back(details::make_unique<details::B_formatter>());
             break;
         case ('c'):
-            formatters_.emplace_back(new details::c_formatter());
+            formatters_.push_back(details::make_unique<details::c_formatter>());
             break;
 
         case ('C'):
-            formatters_.emplace_back(new details::C_formatter());
+            formatters_.push_back(details::make_unique<details::C_formatter>());
             break;
 
         case ('Y'):
-            formatters_.emplace_back(new details::Y_formatter());
+            formatters_.push_back(details::make_unique<details::Y_formatter>());
             break;
 
         case ('D'):
         case ('x'):
-            formatters_.emplace_back(new details::D_formatter());
+            formatters_.push_back(details::make_unique<details::D_formatter>());
             break;
 
         case ('m'):
-            formatters_.emplace_back(new details::m_formatter());
+            formatters_.push_back(details::make_unique<details::m_formatter>());
             break;
 
         case ('d'):
-            formatters_.emplace_back(new details::d_formatter());
+            formatters_.push_back(details::make_unique<details::d_formatter>());
             break;
 
         case ('H'):
-            formatters_.emplace_back(new details::H_formatter());
+            formatters_.push_back(details::make_unique<details::H_formatter>());
             break;
 
         case ('I'):
-            formatters_.emplace_back(new details::I_formatter());
+            formatters_.push_back(details::make_unique<details::I_formatter>());
             break;
 
         case ('M'):
-            formatters_.emplace_back(new details::M_formatter());
+            formatters_.push_back(details::make_unique<details::M_formatter>());
             break;
 
         case ('S'):
-            formatters_.emplace_back(new details::S_formatter());
+            formatters_.push_back(details::make_unique<details::S_formatter>());
             break;
 
         case ('e'):
-            formatters_.emplace_back(new details::e_formatter());
+            formatters_.push_back(details::make_unique<details::e_formatter>());
             break;
 
         case ('f'):
-            formatters_.emplace_back(new details::f_formatter());
+            formatters_.push_back(details::make_unique<details::f_formatter>());
             break;
         case ('F'):
-            formatters_.emplace_back(new details::F_formatter());
+            formatters_.push_back(details::make_unique<details::F_formatter>());
             break;
 
         case ('E'):
-            formatters_.emplace_back(new details::E_formatter());
+            formatters_.push_back(details::make_unique<details::E_formatter>());
             break;
 
         case ('p'):
-            formatters_.emplace_back(new details::p_formatter());
+            formatters_.push_back(details::make_unique<details::p_formatter>());
             break;
 
         case ('r'):
-            formatters_.emplace_back(new details::r_formatter());
+            formatters_.push_back(details::make_unique<details::r_formatter>());
             break;
 
         case ('R'):
-            formatters_.emplace_back(new details::R_formatter());
+            formatters_.push_back(details::make_unique<details::R_formatter>());
             break;
 
         case ('T'):
         case ('X'):
-            formatters_.emplace_back(new details::T_formatter());
+            formatters_.push_back(details::make_unique<details::T_formatter>());
             break;
 
         case ('z'):
-            formatters_.emplace_back(new details::z_formatter());
+            formatters_.push_back(details::make_unique<details::z_formatter>());
             break;
 
         case ('+'):
-            formatters_.emplace_back(new details::full_formatter());
+            formatters_.push_back(details::make_unique<details::full_formatter>());
             break;
 
         case ('P'):
-            formatters_.emplace_back(new details::pid_formatter());
+            formatters_.push_back(details::make_unique<details::pid_formatter>());
             break;
-
+#ifdef SPDLOG_ENABLE_MESSAGE_COUNTER
         case ('i'):
-            formatters_.emplace_back(new details::i_formatter());
+            formatters_.push_back(details::make_unique<details::i_formatter>());
             break;
-
+#endif
         case ('^'):
-            formatters_.emplace_back(new details::color_start_formatter());
+            formatters_.push_back(details::make_unique<details::color_start_formatter>());
             break;
 
         case ('$'):
-            formatters_.emplace_back(new details::color_stop_formatter());
+            formatters_.push_back(details::make_unique<details::color_stop_formatter>());
             break;
 
         default: // Unknown flag appears as is
-            formatters_.emplace_back(new details::ch_formatter('%'));
-            formatters_.emplace_back(new details::ch_formatter(flag));
+            formatters_.push_back(details::make_unique<details::ch_formatter>('%'));
+            formatters_.push_back(details::make_unique<details::ch_formatter>(flag));
             break;
         }
     }
@@ -744,7 +747,6 @@ private:
                 {
                     formatters_.push_back(std::move(user_chars));
                 }
-                // if(
                 if (++it != end)
                 {
                     handle_flag_(*it);
@@ -758,7 +760,7 @@ private:
             {
                 if (!user_chars)
                 {
-                    user_chars = std::unique_ptr<details::aggregate_formatter>(new details::aggregate_formatter());
+                    user_chars = details::make_unique<details::aggregate_formatter>();
                 }
                 user_chars->add_ch(*it);
             }

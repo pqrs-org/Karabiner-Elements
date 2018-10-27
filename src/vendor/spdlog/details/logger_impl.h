@@ -5,13 +5,15 @@
 
 #pragma once
 
+#include "spdlog/details/fmt_helper.h"
+
 #include <memory>
 #include <string>
 
 // create logger with given name, sinks and the default pattern formatter
 // all other ctors will call this one
 template<typename It>
-inline spdlog::logger::logger(std::string logger_name, const It &begin, const It &end)
+inline spdlog::logger::logger(std::string logger_name, It begin, It end)
     : name_(std::move(logger_name))
     , sinks_(begin, end)
     , level_(level::info)
@@ -47,7 +49,8 @@ inline void spdlog::logger::set_formatter(std::unique_ptr<spdlog::formatter> f)
 
 inline void spdlog::logger::set_pattern(std::string pattern, pattern_time_type time_type)
 {
-    set_formatter(std::unique_ptr<spdlog::formatter>(new pattern_formatter(std::move(pattern), time_type)));
+    auto new_formatter = details::make_unique<spdlog::pattern_formatter>(std::move(pattern), time_type);
+    set_formatter(std::move(new_formatter));
 }
 
 template<typename... Args>
@@ -77,7 +80,7 @@ inline void spdlog::logger::log(level::level_enum lvl, const char *msg)
     try
     {
         details::log_msg log_msg(&name_, lvl);
-        fmt::format_to(log_msg.raw, "{}", msg);
+        details::fmt_helper::append_c_str(msg, log_msg.raw);
         sink_it_(log_msg);
     }
     SPDLOG_CATCH_AND_HANDLE
@@ -172,6 +175,28 @@ inline void spdlog::logger::critical(const T &msg)
 }
 
 #ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
+
+inline void wbuf_to_utf8buf(const fmt::wmemory_buffer &wbuf, fmt::memory_buffer &target)
+{
+    int wbuf_size = static_cast<int>(wbuf.size());
+    if (wbuf_size == 0)
+    {
+        return;
+    }
+
+    auto result_size = ::WideCharToMultiByte(CP_UTF8, 0, wbuf.data(), wbuf_size, NULL, 0, NULL, NULL);
+
+    if (result_size > 0)
+    {
+        target.resize(result_size);
+        ::WideCharToMultiByte(CP_UTF8, 0, wbuf.data(), wbuf_size, &target.data()[0], result_size, NULL, NULL);
+    }
+    else
+    {
+        throw spdlog::spdlog_ex(fmt::format("WideCharToMultiByte failed. Last error: {}", ::GetLastError()));
+    }
+}
+
 template<typename... Args>
 inline void spdlog::logger::log(level::level_enum lvl, const wchar_t *fmt, const Args &... args)
 {
@@ -180,15 +205,14 @@ inline void spdlog::logger::log(level::level_enum lvl, const wchar_t *fmt, const
         return;
     }
 
-    decltype(wstring_converter_)::byte_string utf8_string;
-
     try
     {
-        {
-            std::lock_guard<std::mutex> lock(wstring_converter_mutex_);
-            utf8_string = wstring_converter_.to_bytes(fmt);
-        }
-        log(lvl, utf8_string.c_str(), args...);
+        // format to wmemory_buffer and convert to utf8
+        details::log_msg log_msg(&name_, lvl);
+        fmt::wmemory_buffer wbuf;
+        fmt::format_to(wbuf, fmt, args...);
+        wbuf_to_utf8buf(wbuf, log_msg.raw);
+        sink_it_(log_msg);
     }
     SPDLOG_CATCH_AND_HANDLE
 }
@@ -268,6 +292,11 @@ inline void spdlog::logger::flush_on(level::level_enum log_level)
     flush_level_.store(log_level);
 }
 
+inline spdlog::level::level_enum spdlog::logger::flush_level() const
+{
+    return static_cast<spdlog::level::level_enum>(flush_level_.load(std::memory_order_relaxed));
+}
+
 inline bool spdlog::logger::should_flush_(const details::log_msg &msg)
 {
     auto flush_level = flush_level_.load(std::memory_order_relaxed);
@@ -342,4 +371,13 @@ inline const std::vector<spdlog::sink_ptr> &spdlog::logger::sinks() const
 inline std::vector<spdlog::sink_ptr> &spdlog::logger::sinks()
 {
     return sinks_;
+}
+
+inline std::shared_ptr<spdlog::logger> spdlog::logger::clone(std::string logger_name)
+{
+    auto cloned = std::make_shared<spdlog::logger>(std::move(logger_name), sinks_.begin(), sinks_.end());
+    cloned->set_level(this->level());
+    cloned->flush_on(this->flush_level());
+    cloned->set_error_handler(this->error_handler());
+    return cloned;
 }

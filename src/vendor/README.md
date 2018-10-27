@@ -7,7 +7,7 @@
   - version: version_1.11.0
   - url: <https://github.com/tekezo/dispatcher/releases>
 - spdlog:
-  - version: v1.0.0
+  - version: v1.2.1
   - url: <https://github.com/gabime/spdlog/releases>
 - json:
   - version: v3.1.2
