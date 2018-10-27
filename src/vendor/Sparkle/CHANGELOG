@@ -1,3 +1,21 @@
+# 1.20.0
+
+ * `generate_appcast` option to read private key directly from the keychain (Tamás Lustyik)
+ * Add delegate callbacks for fininshed download and extraction related events (Csaba Horony)
+ * Don't check for updates if Do Not Disturb is on (Kornel)
+ * Expose `CodesigningVerifier`, add codesign info API (sunuslee)
+ * Threading fixes:
+   * Fix potential hang with `dispatch_sync` to main thread (Brian Bergstrand)
+   * Fix closeCheckingWindow called from background thread (Alexey Martemyanov)
+ * Improve 'read-only' error message (#1192) (Adrian Thomas)
+ * New Spanish localisation (Ken Arroyo Ohori)
+ * Updated Finnish language resources (Jason Pollack)
+ * Hungarian localization (Csaba Horony)
+ * Log more information about authentication requests (Kornel)
+ * Explicitly specify types to silence "Messaging unqualified id" warning that's new in Xcode 10. Removed __has_feature(objc_generics) check and use generisc to help silence the warnings. (Kent Sutherland)
+ * Fix binary delta creation on network drives (sagecook)
+ * Fix compilation issues on Xcode 10 with new build system (Leo Natan)
+
 # 1.19.0
 
  * Refactoring of downloader code to avoid deprecated methods (Deadpikle)

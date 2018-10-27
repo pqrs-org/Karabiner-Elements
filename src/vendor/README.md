@@ -19,7 +19,7 @@
   - version: v2.1.0
   - url: <https://github.com/jarro2783/cxxopts/releases>
 - Sparkle:
-  - version: 1.19.0
+  - version: 1.20.0
   - url: <https://github.com/sparkle-project/Sparkle/releases>
 - type_safe:
   - version: 0.2
