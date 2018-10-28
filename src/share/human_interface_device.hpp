@@ -53,19 +53,13 @@ public:
                          registry_entry_id registry_entry_id) : dispatcher_client(),
                                                                 device_(device),
                                                                 registry_entry_id_(registry_entry_id),
-                                                                device_id_(types::make_new_device_id(std::make_shared<device_detail>(device))),
+                                                                device_id_(types::make_new_device_id(std::make_shared<device_detail>(*device_))),
                                                                 removed_(false),
                                                                 opened_(false),
-                                                                scheduled_(false),
-                                                                queue_(nullptr) {
+                                                                scheduled_(false) {
     // ----------------------------------------
 
     run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
-
-    // ----------------------------------------
-    // Retain device_
-
-    CFRetain(device_);
 
     // Set name_for_log_
     {
@@ -93,18 +87,18 @@ public:
     {
       std::string manufacturer;
       std::string product;
-      if (auto m = iokit_utility::find_manufacturer(device_)) {
+      if (auto m = iokit_utility::find_manufacturer(*device_)) {
         manufacturer = *m;
       }
-      if (auto p = iokit_utility::find_product(device_)) {
+      if (auto p = iokit_utility::find_product(*device_)) {
         product = *p;
       }
       connected_devices::details::descriptions descriptions(manufacturer, product);
 
-      auto vendor_id = iokit_utility::find_vendor_id(device_);
-      auto product_id = iokit_utility::find_product_id(device_);
-      bool is_keyboard = iokit_utility::is_keyboard(device_);
-      bool is_pointing_device = iokit_utility::is_pointing_device(device_);
+      auto vendor_id = iokit_utility::find_vendor_id(*device_);
+      auto product_id = iokit_utility::find_product_id(*device_);
+      bool is_keyboard = iokit_utility::is_keyboard(*device_);
+      bool is_pointing_device = iokit_utility::is_pointing_device(*device_);
       device_identifiers identifiers(vendor_id,
                                      product_id,
                                      is_keyboard,
@@ -153,7 +147,7 @@ public:
     //   * Microsoft Designer Mouse usage_page 1 usage 48
     //   * Microsoft Designer Mouse usage_page 1 usage 49
 
-    if (auto elements = IOHIDDeviceCopyMatchingElements(device_, nullptr, kIOHIDOptionsTypeNone)) {
+    if (auto elements = IOHIDDeviceCopyMatchingElements(*device_, nullptr, kIOHIDOptionsTypeNone)) {
       for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
         // Add to elements_.
         if (auto e = cf_utility::get_value<IOHIDElementRef>(elements, i)) {
@@ -176,15 +170,16 @@ public:
     // setup queue_
 
     const CFIndex depth = 1024;
-    queue_ = IOHIDQueueCreate(kCFAllocatorDefault, device_, depth, kIOHIDOptionsTypeNone);
-    if (!queue_) {
-      logger::get_logger().error("IOHIDQueueCreate is failed.");
-    } else {
+    if (auto q = IOHIDQueueCreate(kCFAllocatorDefault, *device_, depth, kIOHIDOptionsTypeNone)) {
+      queue_ = cf_utility::cf_ptr<IOHIDQueueRef>(q);
+
       // Add elements into queue_.
       for (const auto& e : elements_) {
-        IOHIDQueueAddElement(queue_, *e);
+        IOHIDQueueAddElement(*queue_, *e);
       }
-      IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
+      IOHIDQueueRegisterValueAvailableCallback(*queue_, static_queue_value_available_callback, this);
+    } else {
+      logger::get_logger().error("IOHIDQueueCreate is failed.");
     }
   }
 
@@ -199,23 +194,8 @@ public:
 
       types::detach_device_id(device_id_);
 
-      // ----------------------------------------
-      // Release queue_
-
-      if (queue_) {
-        CFRelease(queue_);
-        queue_ = nullptr;
-      }
-
-      // ----------------------------------------
-      // Release elements_
-
+      queue_ = nullptr;
       elements_.clear();
-
-      // ----------------------------------------
-      // Release device_
-
-      CFRelease(device_);
     });
 
     run_loop_thread_->terminate();
@@ -265,13 +245,13 @@ public:
   }
 
   device_detail make_device_detail(void) const {
-    return device_detail(device_);
+    return device_detail(*device_);
   }
 
   bool validate(void) const {
     // `iokit_utility::find_registry_entry_id` is failed after `device_` is removed.
 
-    if (!iokit_utility::find_registry_entry_id(device_)) {
+    if (!iokit_utility::find_registry_entry_id(*device_)) {
       return false;
     }
 
@@ -337,39 +317,39 @@ public:
   }
 
   boost::optional<long> find_max_input_report_size(void) const {
-    return iokit_utility::find_max_input_report_size(device_);
+    return iokit_utility::find_max_input_report_size(*device_);
   }
 
   boost::optional<vendor_id> find_vendor_id(void) const {
-    return iokit_utility::find_vendor_id(device_);
+    return iokit_utility::find_vendor_id(*device_);
   }
 
   boost::optional<product_id> find_product_id(void) const {
-    return iokit_utility::find_product_id(device_);
+    return iokit_utility::find_product_id(*device_);
   }
 
   boost::optional<location_id> find_location_id(void) const {
-    return iokit_utility::find_location_id(device_);
+    return iokit_utility::find_location_id(*device_);
   }
 
   boost::optional<std::string> find_manufacturer(void) const {
-    return iokit_utility::find_manufacturer(device_);
+    return iokit_utility::find_manufacturer(*device_);
   }
 
   boost::optional<std::string> find_product(void) const {
-    return iokit_utility::find_product(device_);
+    return iokit_utility::find_product(*device_);
   }
 
   boost::optional<std::string> find_serial_number(void) const {
-    return iokit_utility::find_serial_number(device_);
+    return iokit_utility::find_serial_number(*device_);
   }
 
   boost::optional<std::string> find_transport(void) const {
-    return iokit_utility::find_transport(device_);
+    return iokit_utility::find_transport(*device_);
   }
 
   bool is_karabiner_virtual_hid_device(void) const {
-    return iokit_utility::is_karabiner_virtual_hid_device(device_);
+    return iokit_utility::is_karabiner_virtual_hid_device(*device_);
   }
 
 #pragma mark - usage specific utilities
@@ -394,7 +374,7 @@ public:
                                                             *e,
                                                             mach_absolute_time(),
                                                             integer_value)) {
-            IOHIDDeviceSetValue(device_, *e, value);
+            IOHIDDeviceSetValue(*device_, *e, value);
 
             CFRelease(value);
           }
@@ -411,7 +391,7 @@ private:
     }
 
     if (!opened_) {
-      auto r = IOHIDDeviceOpen(device_, options);
+      auto r = IOHIDDeviceOpen(*device_, options);
       if (r == kIOReturnSuccess) {
         opened_ = true;
 
@@ -433,7 +413,7 @@ private:
     }
 
     if (opened_) {
-      auto r = IOHIDDeviceClose(device_, kIOHIDOptionsTypeNone);
+      auto r = IOHIDDeviceClose(*device_, kIOHIDOptionsTypeNone);
       if (r == kIOReturnSuccess) {
         enqueue_to_dispatcher([this] {
           closed();
@@ -456,11 +436,11 @@ private:
     if (!scheduled_) {
       scheduled_ = true;
 
-      IOHIDDeviceScheduleWithRunLoop(device_,
+      IOHIDDeviceScheduleWithRunLoop(*device_,
                                      run_loop_thread_->get_run_loop(),
                                      kCFRunLoopCommonModes);
-      if (queue_) {
-        IOHIDQueueScheduleWithRunLoop(queue_,
+      if (*queue_) {
+        IOHIDQueueScheduleWithRunLoop(*queue_,
                                       run_loop_thread_->get_run_loop(),
                                       kCFRunLoopCommonModes);
       }
@@ -476,12 +456,12 @@ private:
     }
 
     if (scheduled_) {
-      if (queue_) {
-        IOHIDQueueUnscheduleFromRunLoop(queue_,
+      if (*queue_) {
+        IOHIDQueueUnscheduleFromRunLoop(*queue_,
                                         run_loop_thread_->get_run_loop(),
                                         kCFRunLoopCommonModes);
       }
-      IOHIDDeviceUnscheduleFromRunLoop(device_,
+      IOHIDDeviceUnscheduleFromRunLoop(*device_,
                                        run_loop_thread_->get_run_loop(),
                                        kCFRunLoopCommonModes);
 
@@ -496,7 +476,7 @@ private:
     }
 
     resize_report_buffer();
-    IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
+    IOHIDDeviceRegisterInputReportCallback(*device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
   }
 
   // This method is executed in the dispatcher thread.
@@ -506,7 +486,7 @@ private:
     }
 
     resize_report_buffer();
-    IOHIDDeviceRegisterInputReportCallback(device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
+    IOHIDDeviceRegisterInputReportCallback(*device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
   }
 
   // This method is executed in the dispatcher thread.
@@ -515,8 +495,8 @@ private:
       return;
     }
 
-    if (queue_) {
-      IOHIDQueueStart(queue_);
+    if (*queue_) {
+      IOHIDQueueStart(*queue_);
     }
   }
 
@@ -526,8 +506,8 @@ private:
       return;
     }
 
-    if (queue_) {
-      IOHIDQueueStop(queue_);
+    if (*queue_) {
+      IOHIDQueueStop(*queue_);
     }
   }
 
@@ -540,7 +520,7 @@ private:
     }
 
     if (report) {
-      IOHIDDeviceSetReport(device_,
+      IOHIDDeviceSetReport(*device_,
                            report_type,
                            report_id,
                            &((*report)[0]),
@@ -566,10 +546,12 @@ private:
       auto input_event_queue = std::make_shared<event_queue::queue>();
       std::vector<hid_value> hid_values;
 
-      while (auto value = IOHIDQueueCopyNextValueWithTimeout(queue_, 0.)) {
-        hid_values.emplace_back(value);
+      if (*queue_) {
+        while (auto value = IOHIDQueueCopyNextValueWithTimeout(*queue_, 0.)) {
+          hid_values.emplace_back(value);
 
-        CFRelease(value);
+          CFRelease(value);
+        }
       }
 
       for (const auto& pair : event_queue::queue::make_entries(hid_values, device_id_)) {
@@ -664,7 +646,7 @@ private:
     report_buffer_.resize(buffer_size);
   }
 
-  IOHIDDeviceRef _Nonnull device_;
+  cf_utility::cf_ptr<IOHIDDeviceRef> device_;
   registry_entry_id registry_entry_id_;
 
   std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
@@ -675,7 +657,7 @@ private:
   bool scheduled_;
   std::shared_ptr<connected_devices::details::device> connected_device_;
 
-  IOHIDQueueRef _Nullable queue_;
+  cf_utility::cf_ptr<IOHIDQueueRef> queue_;
   std::vector<cf_utility::cf_ptr<IOHIDElementRef>> elements_;
   std::vector<uint8_t> report_buffer_;
   std::unordered_set<uint64_t> pressed_keys_;
