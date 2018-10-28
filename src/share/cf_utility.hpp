@@ -15,23 +15,32 @@
 namespace krbn {
 class cf_utility final {
 public:
+  template <typename T>
   class cf_ptr final {
   public:
     cf_ptr(void) : cf_ptr(nullptr) {
     }
 
-    cf_ptr(CFTypeRef _Nullable p) : p_(p) {
+    cf_ptr(T _Nullable p) : p_(p) {
       if (p_) {
         CFRetain(p_);
       }
     }
 
-    cf_ptr& operator=(cf_ptr other) {
-      reset();
+    cf_ptr(const cf_ptr& other) : p_(nullptr) {
+      *this = other;
+    }
+
+    cf_ptr& operator=(const cf_ptr& other) {
+      auto old = p_;
 
       p_ = other.p_;
       if (p_) {
         CFRetain(p_);
+      }
+
+      if (old) {
+        CFRelease(old);
       }
 
       return *this;
@@ -41,6 +50,10 @@ public:
       reset();
     }
 
+    T get(void) {
+      return p_;
+    }
+
     void reset(void) {
       if (p_) {
         CFRelease(p_);
@@ -48,8 +61,12 @@ public:
       }
     }
 
+    T operator*(void) {
+      return p_;
+    }
+
   private:
-    CFTypeRef _Nullable p_;
+    T _Nullable p_;
   };
 
   // ========================================
