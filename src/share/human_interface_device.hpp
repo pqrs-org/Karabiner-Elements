@@ -5,6 +5,7 @@
 #include "boost_defs.hpp"
 
 #include "apple_hid_usage_tables.hpp"
+#include "cf_ptr.hpp"
 #include "cf_utility.hpp"
 #include "connected_devices/connected_devices.hpp"
 #include "core_configuration/core_configuration.hpp"
@@ -160,7 +161,7 @@ public:
                                     IOHIDElementGetLogicalMax(e));
 #endif
 
-          elements_.push_back(cf_utility::cf_ptr<IOHIDElementRef>(e));
+          elements_.push_back(cf_ptr<IOHIDElementRef>(e));
         }
       }
       CFRelease(elements);
@@ -171,7 +172,7 @@ public:
 
     const CFIndex depth = 1024;
     if (auto q = IOHIDQueueCreate(kCFAllocatorDefault, *device_, depth, kIOHIDOptionsTypeNone)) {
-      queue_ = cf_utility::cf_ptr<IOHIDQueueRef>(q);
+      queue_ = cf_ptr<IOHIDQueueRef>(q);
 
       // Add elements into queue_.
       for (const auto& e : elements_) {
@@ -646,7 +647,7 @@ private:
     report_buffer_.resize(buffer_size);
   }
 
-  cf_utility::cf_ptr<IOHIDDeviceRef> device_;
+  cf_ptr<IOHIDDeviceRef> device_;
   registry_entry_id registry_entry_id_;
 
   std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
@@ -657,8 +658,8 @@ private:
   bool scheduled_;
   std::shared_ptr<connected_devices::details::device> connected_device_;
 
-  cf_utility::cf_ptr<IOHIDQueueRef> queue_;
-  std::vector<cf_utility::cf_ptr<IOHIDElementRef>> elements_;
+  cf_ptr<IOHIDQueueRef> queue_;
+  std::vector<cf_ptr<IOHIDElementRef>> elements_;
   std::vector<uint8_t> report_buffer_;
   std::unordered_set<uint64_t> pressed_keys_;
 };

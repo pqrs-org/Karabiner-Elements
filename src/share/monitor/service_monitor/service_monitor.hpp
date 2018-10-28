@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "cf_ptr.hpp"
 #include "cf_utility.hpp"
 #include "dispatcher.hpp"
 #include "iokit_utility.hpp"
@@ -178,7 +179,7 @@ private:
     });
   }
 
-  cf_utility::cf_ptr<CFDictionaryRef> matching_dictionary_;
+  cf_ptr<CFDictionaryRef> matching_dictionary_;
 
   IONotificationPortRef _Nullable notification_port_;
   io_iterator_t matched_notification_;

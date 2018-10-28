@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cf_ptr.hpp"
 #include "cf_utility.hpp"
 #include "input_source_utility.hpp"
 #include "logger.hpp"
@@ -61,7 +62,7 @@ private:
 
   private:
     input_source_identifiers input_source_identifiers_;
-    cf_utility::cf_ptr<TISInputSourceRef> tis_input_source_ref_;
+    cf_ptr<TISInputSourceRef> tis_input_source_ref_;
   };
 
   static void static_enabled_input_sources_changed_callback(CFNotificationCenterRef center,
