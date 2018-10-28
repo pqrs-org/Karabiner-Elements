@@ -49,15 +49,6 @@ private:
 
     entry(TISInputSourceRef tis_input_source_ref) : input_source_identifiers_(tis_input_source_ref),
                                                     tis_input_source_ref_(tis_input_source_ref) {
-      if (tis_input_source_ref_) {
-        CFRetain(tis_input_source_ref_);
-      }
-    }
-
-    ~entry(void) {
-      if (tis_input_source_ref_) {
-        CFRelease(tis_input_source_ref_);
-      }
     }
 
     const input_source_identifiers& get_input_source_identifiers(void) const {
@@ -65,12 +56,12 @@ private:
     }
 
     TISInputSourceRef get_tis_input_source_ref(void) const {
-      return tis_input_source_ref_;
+      return *tis_input_source_ref_;
     }
 
   private:
     input_source_identifiers input_source_identifiers_;
-    TISInputSourceRef tis_input_source_ref_;
+    cf_utility::cf_ptr<TISInputSourceRef> tis_input_source_ref_;
   };
 
   static void static_enabled_input_sources_changed_callback(CFNotificationCenterRef center,
