@@ -50,8 +50,12 @@ public:
       reset();
     }
 
-    T get(void) {
+    const T& get(void) const {
       return p_;
+    }
+
+    T& get(void) {
+      return const_cast<T&>((static_cast<const cf_ptr&>(*this)).get());
     }
 
     void reset(void) {
@@ -61,8 +65,12 @@ public:
       }
     }
 
-    T operator*(void) {
+    const T& operator*(void)const {
       return p_;
+    }
+
+    T& operator*(void) {
+      return const_cast<T&>(*(static_cast<const cf_ptr&>(*this)));
     }
 
   private:
