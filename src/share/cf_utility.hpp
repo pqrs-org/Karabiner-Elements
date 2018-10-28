@@ -15,15 +15,41 @@
 namespace krbn {
 class cf_utility final {
 public:
-  template <typename T>
-  class deleter final {
+  class cf_ptr final {
   public:
-    using pointer = T;
-    void operator()(T _Nullable ref) {
-      if (ref) {
-        CFRelease(ref);
+    cf_ptr(void) : cf_ptr(nullptr) {
+    }
+
+    cf_ptr(CFTypeRef _Nullable p) : p_(p) {
+      if (p_) {
+        CFRetain(p_);
       }
     }
+
+    cf_ptr& operator=(cf_ptr other) {
+      reset();
+
+      p_ = other.p_;
+      if (p_) {
+        CFRetain(p_);
+      }
+
+      return *this;
+    }
+
+    ~cf_ptr(void) {
+      reset();
+    }
+
+    void reset(void) {
+      if (p_) {
+        CFRelease(p_);
+        p_ = nullptr;
+      }
+    }
+
+  private:
+    CFTypeRef _Nullable p_;
   };
 
   // ========================================

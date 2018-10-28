@@ -4,6 +4,46 @@
 #include "cf_utility.hpp"
 #include "logger.hpp"
 
+TEST_CASE("deleter") {
+  auto cfstring1 = krbn::cf_utility::create_cfstring("cfstring1");
+  auto cfstring2 = krbn::cf_utility::create_cfstring("cfstring2");
+  REQUIRE(CFGetRetainCount(cfstring1) == 1);
+  REQUIRE(CFGetRetainCount(cfstring2) == 1);
+
+  {
+    krbn::cf_utility::cf_ptr ptr1(cfstring1);
+    REQUIRE(CFGetRetainCount(cfstring1) == 2);
+
+    ptr1.reset();
+    REQUIRE(CFGetRetainCount(cfstring1) == 1);
+  }
+
+  REQUIRE(CFGetRetainCount(cfstring1) == 1);
+
+  {
+    krbn::cf_utility::cf_ptr ptr1(cfstring1);
+    REQUIRE(CFGetRetainCount(cfstring1) == 2);
+
+    ptr1 = nullptr;
+    REQUIRE(CFGetRetainCount(cfstring1) == 1);
+  }
+
+  {
+    krbn::cf_utility::cf_ptr ptr1(cfstring1);
+    REQUIRE(CFGetRetainCount(cfstring1) == 2);
+    krbn::cf_utility::cf_ptr ptr2(cfstring2);
+    REQUIRE(CFGetRetainCount(cfstring2) == 2);
+
+    ptr1 = ptr2;
+    REQUIRE(CFGetRetainCount(cfstring1) == 1);
+    REQUIRE(CFGetRetainCount(cfstring2) == 2);
+
+    ptr1 = nullptr;
+    REQUIRE(CFGetRetainCount(cfstring1) == 1);
+    REQUIRE(CFGetRetainCount(cfstring2) == 1);
+  }
+}
+
 namespace {
 class run_loop_thread_test final {
 public:
