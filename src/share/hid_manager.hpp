@@ -75,8 +75,7 @@ private:
           for (const auto& service : services->get_services()) {
             if (devices_.find(service) == std::end(devices_)) {
               if (auto device = IOHIDDeviceCreate(kCFAllocatorDefault, service)) {
-                CFRetain(device);
-                devices_[service] = device;
+                devices_[service] = cf_utility::cf_ptr<IOHIDDeviceRef>(device);
 
                 device_matching_callback(device);
 
@@ -90,10 +89,9 @@ private:
           for (const auto& service : services->get_services()) {
             auto it = devices_.find(service);
             if (it != std::end(devices_)) {
-              device_removal_callback(it->second);
+              device_removal_callback(*(it->second));
 
               devices_.erase(it);
-              CFRelease(it->second);
             }
           }
         });
@@ -121,10 +119,6 @@ private:
     service_monitors_.clear();
     hids_.clear();
     registry_entry_ids_.clear();
-
-    for (const auto& pair : devices_) {
-      CFRelease(pair.second);
-    }
     devices_.clear();
   }
 
@@ -293,7 +287,7 @@ private:
   std::vector<std::shared_ptr<monitor::service_monitor::service_monitor>> service_monitors_;
   pqrs::dispatcher::extra::timer refresh_timer_;
 
-  std::unordered_map<io_service_t, IOHIDDeviceRef> devices_;
+  std::unordered_map<io_service_t, cf_utility::cf_ptr<IOHIDDeviceRef>> devices_;
   std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
 
   std::vector<std::shared_ptr<human_interface_device>> hids_;
