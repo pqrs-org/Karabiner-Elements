@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "cf_utility.hpp"
 #include "dispatcher.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
@@ -26,19 +27,12 @@ public:
                                                                   notification_port_(nullptr),
                                                                   matched_notification_(IO_OBJECT_NULL),
                                                                   terminated_notification_(IO_OBJECT_NULL) {
-    if (matching_dictionary_) {
-      CFRetain(matching_dictionary_);
-    }
   }
 
   virtual ~service_monitor(void) {
     detach_from_dispatcher([this] {
       stop();
     });
-
-    if (matching_dictionary_) {
-      CFRelease(matching_dictionary_);
-    }
   }
 
   void async_start(void) {
@@ -55,10 +49,10 @@ public:
 
   void async_invoke_service_detected(void) {
     enqueue_to_dispatcher([this] {
-      if (matching_dictionary_) {
-        CFRetain(matching_dictionary_);
+      if (*matching_dictionary_) {
+        CFRetain(*matching_dictionary_);
         io_iterator_t it;
-        auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, matching_dictionary_, &it);
+        auto kr = IOServiceGetMatchingServices(kIOMasterPortDefault, *matching_dictionary_, &it);
         if (kr != KERN_SUCCESS) {
           logger::get_logger().error("IOServiceGetMatchingServices is failed: {0}",
                                      iokit_utility::get_error_name(kr));
@@ -90,18 +84,18 @@ private:
     // kIOMatchedNotification
 
     if (!matched_notification_) {
-      if (matching_dictionary_) {
-        CFRetain(matching_dictionary_);
+      if (*matching_dictionary_) {
+        CFRetain(*matching_dictionary_);
         auto kr = IOServiceAddMatchingNotification(notification_port_,
                                                    kIOFirstMatchNotification,
-                                                   matching_dictionary_,
+                                                   *matching_dictionary_,
                                                    &(service_monitor::static_matched_callback),
                                                    static_cast<void*>(this),
                                                    &matched_notification_);
         if (kr != kIOReturnSuccess) {
           logger::get_logger().error("IOServiceAddMatchingNotification is failed: {0}",
                                      iokit_utility::get_error_name(kr));
-          CFRelease(matching_dictionary_);
+          CFRelease(*matching_dictionary_);
         } else {
           matched_callback(matched_notification_);
         }
@@ -111,18 +105,18 @@ private:
     // kIOTerminatedNotification
 
     if (!terminated_notification_) {
-      if (matching_dictionary_) {
-        CFRetain(matching_dictionary_);
+      if (*matching_dictionary_) {
+        CFRetain(*matching_dictionary_);
         auto kr = IOServiceAddMatchingNotification(notification_port_,
                                                    kIOTerminatedNotification,
-                                                   matching_dictionary_,
+                                                   *matching_dictionary_,
                                                    &(service_monitor::static_terminated_callback),
                                                    static_cast<void*>(this),
                                                    &terminated_notification_);
         if (kr != kIOReturnSuccess) {
           logger::get_logger().error("IOServiceAddMatchingNotification is failed: {0}",
                                      iokit_utility::get_error_name(kr));
-          CFRelease(matching_dictionary_);
+          CFRelease(*matching_dictionary_);
         } else {
           terminated_callback(terminated_notification_);
         }
@@ -184,7 +178,7 @@ private:
     });
   }
 
-  CFDictionaryRef _Nonnull matching_dictionary_;
+  cf_utility::cf_ptr<CFDictionaryRef> matching_dictionary_;
 
   IONotificationPortRef _Nullable notification_port_;
   io_iterator_t matched_notification_;
