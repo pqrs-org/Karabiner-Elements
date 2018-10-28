@@ -11,7 +11,7 @@
 namespace krbn {
 namespace monitor {
 namespace service_monitor {
-class monitor final : pqrs::dispatcher::extra::dispatcher_client {
+class service_monitor final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -20,18 +20,18 @@ public:
 
   // Methods
 
-  monitor(const monitor&) = delete;
+  service_monitor(const service_monitor&) = delete;
 
-  monitor(CFDictionaryRef _Nonnull matching_dictionary) : matching_dictionary_(matching_dictionary),
-                                                          notification_port_(nullptr),
-                                                          matched_notification_(IO_OBJECT_NULL),
-                                                          terminated_notification_(IO_OBJECT_NULL) {
+  service_monitor(CFDictionaryRef _Nonnull matching_dictionary) : matching_dictionary_(matching_dictionary),
+                                                                  notification_port_(nullptr),
+                                                                  matched_notification_(IO_OBJECT_NULL),
+                                                                  terminated_notification_(IO_OBJECT_NULL) {
     if (matching_dictionary_) {
       CFRetain(matching_dictionary_);
     }
   }
 
-  virtual ~monitor(void) {
+  virtual ~service_monitor(void) {
     detach_from_dispatcher([this] {
       stop();
     });
@@ -95,7 +95,7 @@ private:
         auto kr = IOServiceAddMatchingNotification(notification_port_,
                                                    kIOFirstMatchNotification,
                                                    matching_dictionary_,
-                                                   &(monitor::static_matched_callback),
+                                                   &(service_monitor::static_matched_callback),
                                                    static_cast<void*>(this),
                                                    &matched_notification_);
         if (kr != kIOReturnSuccess) {
@@ -116,7 +116,7 @@ private:
         auto kr = IOServiceAddMatchingNotification(notification_port_,
                                                    kIOTerminatedNotification,
                                                    matching_dictionary_,
-                                                   &(monitor::static_terminated_callback),
+                                                   &(service_monitor::static_terminated_callback),
                                                    static_cast<void*>(this),
                                                    &terminated_notification_);
         if (kr != kIOReturnSuccess) {
@@ -153,7 +153,7 @@ private:
   }
 
   static void static_matched_callback(void* _Nonnull refcon, io_iterator_t iterator) {
-    auto self = static_cast<monitor*>(refcon);
+    auto self = static_cast<service_monitor*>(refcon);
     if (!self) {
       return;
     }
@@ -169,7 +169,7 @@ private:
   }
 
   static void static_terminated_callback(void* _Nonnull refcon, io_iterator_t iterator) {
-    auto self = static_cast<monitor*>(refcon);
+    auto self = static_cast<service_monitor*>(refcon);
     if (!self) {
       return;
     }

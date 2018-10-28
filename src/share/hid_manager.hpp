@@ -69,7 +69,7 @@ private:
                                                   CFSTR(kIOHIDDeviceUsageKey),
                                                   static_cast<int64_t>(pair.second));
 
-        auto monitor = std::make_shared<monitor::service_monitor::monitor>(dictionary);
+        auto monitor = std::make_shared<monitor::service_monitor::service_monitor>(dictionary);
 
         monitor->service_detected.connect([this](auto&& services) {
           for (const auto& service : services->get_services()) {
@@ -290,7 +290,7 @@ private:
 
   std::vector<std::pair<hid_usage_page, hid_usage>> usage_pairs_;
 
-  std::vector<std::shared_ptr<monitor::service_monitor::monitor>> service_monitors_;
+  std::vector<std::shared_ptr<monitor::service_monitor::service_monitor>> service_monitors_;
   pqrs::dispatcher::extra::timer refresh_timer_;
 
   std::unordered_map<io_service_t, IOHIDDeviceRef> devices_;

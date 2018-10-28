@@ -38,7 +38,7 @@ public:
                             connect_(IO_OBJECT_NULL),
                             caps_lock_state_check_timer_(*this) {
     if (auto matching_dictionary = IOServiceNameMatching(kIOHIDSystemClass)) {
-      service_monitor_ = std::make_unique<monitor::service_monitor::monitor>(matching_dictionary);
+      service_monitor_ = std::make_unique<monitor::service_monitor::service_monitor>(matching_dictionary);
 
       service_monitor_->service_detected.connect([this](auto&& services) {
         if (!services->get_services().empty()) {
@@ -165,7 +165,7 @@ private:
     }
   }
 
-  std::unique_ptr<monitor::service_monitor::monitor> service_monitor_;
+  std::unique_ptr<monitor::service_monitor::service_monitor> service_monitor_;
   io_service_t service_;
   io_connect_t connect_;
 

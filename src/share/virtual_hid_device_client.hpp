@@ -35,7 +35,7 @@ public:
   void async_connect(void) {
     enqueue_to_dispatcher([this] {
       if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name())) {
-        service_monitor_ = std::make_unique<monitor::service_monitor::monitor>(matching_dictionary);
+        service_monitor_ = std::make_unique<monitor::service_monitor::service_monitor>(matching_dictionary);
 
         service_monitor_->service_detected.connect([this](auto&& services) {
           if (!services->get_services().empty()) {
@@ -257,7 +257,7 @@ private:
     virtual_hid_keyboard_ready_ = false;
   }
 
-  std::unique_ptr<monitor::service_monitor::monitor> service_monitor_;
+  std::unique_ptr<monitor::service_monitor::service_monitor> service_monitor_;
   io_service_t service_;
   io_connect_t connect_;
   std::atomic<bool> connected_;

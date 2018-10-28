@@ -10,12 +10,12 @@ int main(int argc, const char* argv[]) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 
-  std::unique_ptr<krbn::monitor::service_monitor::monitor> service_monitor;
+  std::unique_ptr<krbn::monitor::service_monitor::service_monitor> service_monitor;
 
   auto service_name = "IOHIDSystem";
 
   if (auto matching_dictionary = IOServiceNameMatching(service_name)) {
-    service_monitor = std::make_unique<krbn::monitor::service_monitor::monitor>(matching_dictionary);
+    service_monitor = std::make_unique<krbn::monitor::service_monitor::service_monitor>(matching_dictionary);
 
     service_monitor->service_detected.connect([](auto&& services) {
       for (const auto& s : services->get_services()) {
