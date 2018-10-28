@@ -157,8 +157,6 @@ public:
       for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
         // Add to elements_.
         if (auto e = cf_utility::get_value<IOHIDElementRef>(elements, i)) {
-          CFRetain(e);
-
 #if 0
           logger::get_logger().info("{0} usage_page:{1} usage:{2} min:{3} max:{4}",
                                     name_for_log_,
@@ -168,7 +166,7 @@ public:
                                     IOHIDElementGetLogicalMax(e));
 #endif
 
-          elements_.push_back(e);
+          elements_.push_back(cf_utility::cf_ptr<IOHIDElementRef>(e));
         }
       }
       CFRelease(elements);
@@ -184,7 +182,7 @@ public:
     } else {
       // Add elements into queue_.
       for (const auto& e : elements_) {
-        IOHIDQueueAddElement(queue_, e);
+        IOHIDQueueAddElement(queue_, *e);
       }
       IOHIDQueueRegisterValueAvailableCallback(queue_, static_queue_value_available_callback, this);
     }
@@ -212,9 +210,6 @@ public:
       // ----------------------------------------
       // Release elements_
 
-      for (const auto& e : elements_) {
-        CFRelease(e);
-      }
       elements_.clear();
 
       // ----------------------------------------
@@ -383,23 +378,23 @@ public:
   void async_set_caps_lock_led_state(led_state state) {
     enqueue_to_dispatcher([this, state] {
       for (const auto& e : elements_) {
-        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(e));
-        auto usage = hid_usage(IOHIDElementGetUsage(e));
+        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(*e));
+        auto usage = hid_usage(IOHIDElementGetUsage(*e));
 
         if (usage_page == hid_usage_page::leds &&
             usage == hid_usage::led_caps_lock) {
           CFIndex integer_value = 0;
           if (state == led_state::on) {
-            integer_value = IOHIDElementGetLogicalMax(e);
+            integer_value = IOHIDElementGetLogicalMax(*e);
           } else {
-            integer_value = IOHIDElementGetLogicalMin(e);
+            integer_value = IOHIDElementGetLogicalMin(*e);
           }
 
           if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault,
-                                                            e,
+                                                            *e,
                                                             mach_absolute_time(),
                                                             integer_value)) {
-            IOHIDDeviceSetValue(device_, e, value);
+            IOHIDDeviceSetValue(device_, *e, value);
 
             CFRelease(value);
           }
@@ -681,7 +676,7 @@ private:
   std::shared_ptr<connected_devices::details::device> connected_device_;
 
   IOHIDQueueRef _Nullable queue_;
-  std::vector<IOHIDElementRef> elements_;
+  std::vector<cf_utility::cf_ptr<IOHIDElementRef>> elements_;
   std::vector<uint8_t> report_buffer_;
   std::unordered_set<uint64_t> pressed_keys_;
 };
