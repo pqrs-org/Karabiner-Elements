@@ -13,12 +13,14 @@ TEST_CASE("deleter") {
   {
     krbn::cf_utility::cf_ptr<CFStringRef> ptr1(cfstring1);
     REQUIRE(CFGetRetainCount(cfstring1) == 2);
+    REQUIRE(ptr1 == true);
 
     REQUIRE(CFGetRetainCount(ptr1.get()) == 2);
     REQUIRE(CFGetRetainCount(*ptr1) == 2);
 
     ptr1.reset();
     REQUIRE(CFGetRetainCount(cfstring1) == 1);
+    REQUIRE(ptr1 == false);
   }
 
   REQUIRE(CFGetRetainCount(cfstring1) == 1);

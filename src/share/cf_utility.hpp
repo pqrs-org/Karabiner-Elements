@@ -65,6 +65,10 @@ public:
       }
     }
 
+    operator bool(void) const {
+      return p_ != nullptr;
+    }
+
     const T& operator*(void)const {
       return p_;
     }
