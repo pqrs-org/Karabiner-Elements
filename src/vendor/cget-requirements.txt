@@ -1,0 +1,9 @@
+foonathan/type_safe@v0.2 --cmake header
+gabime/spdlog@v1.2.1 --cmake header
+jarro2783/cxxopts@v2.1.1 --cmake header
+nlohmann/json@v3.4.0 --cmake header
+pqrs-org/cpp-dispatcher@v2.0.0 --cmake header
+pqrs-org/cpp-osx-cf_ptr@v1.1.0 --cmake header
+pqrs-org/cpp-osx-cf_run_loop_thread@v1.1.0 --cmake header
+pqrs-org/cpp-thread_wait@v1.1.0 --cmake header
+scopeInfinity/NaturalSort@12f74beb58d9b18a41b25339d994da0e222fe80f --cmake header

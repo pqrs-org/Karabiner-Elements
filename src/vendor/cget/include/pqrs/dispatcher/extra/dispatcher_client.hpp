@@ -1,0 +1,1 @@
+../../../../cget/pkg/pqrs-org__cpp-dispatcher/install/include/pqrs/dispatcher/extra/dispatcher_client.hpp

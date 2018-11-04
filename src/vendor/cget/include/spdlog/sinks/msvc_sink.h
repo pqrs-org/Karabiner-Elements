@@ -1,0 +1,1 @@
+../../../cget/pkg/gabime__spdlog/install/include/spdlog/sinks/msvc_sink.h
