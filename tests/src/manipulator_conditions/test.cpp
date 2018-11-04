@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include "../../vendor/catch/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include "../share/json_helper.hpp"
 #include "dispatcher_utility.hpp"

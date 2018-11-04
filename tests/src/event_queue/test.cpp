@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include "../../vendor/catch/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include "event_queue.hpp"
 #include <boost/optional/optional_io.hpp>

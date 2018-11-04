@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include "../../vendor/catch/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include "device_detail.hpp"
 #include "types.hpp"
@@ -534,13 +534,6 @@ TEST_CASE("make_new_device_id") {
       {"product_id", 6789},
       {"is_keyboard", false},
       {"is_pointing_device", true},
-  })));
-
-  auto device_id3 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-      {"vendor_id", 1452},
-      {"product_id", 610},
-      {"is_keyboard", true},
-      {"is_pointing_device", false},
   })));
 
   REQUIRE(krbn::types::find_device_detail(device_id1));

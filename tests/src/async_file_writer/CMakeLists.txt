@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.9)
 
-include (../../../src/common.cmake)
+include (../../tests.cmake)
 
 project (karabiner_test)
 
