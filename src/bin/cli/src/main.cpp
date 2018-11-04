@@ -8,11 +8,12 @@
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include <iostream>
+#include <pqrs/thread_wait.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace {
 void select_profile(const std::string& name) {
-  auto wait = pqrs::dispatcher::make_wait();
+  auto wait = pqrs::make_thread_wait();
   krbn::configuration_monitor monitor(krbn::constants::get_user_core_configuration_file_path());
 
   monitor.core_configuration_updated.connect([name, wait](auto&& weak_core_configuration) {

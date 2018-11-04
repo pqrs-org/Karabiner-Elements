@@ -6,6 +6,7 @@
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
+#include <pqrs/thread_wait.hpp>
 
 namespace krbn {
 namespace unit_testing {
@@ -148,7 +149,7 @@ public:
         // Wait immediate queues
 
         {
-          auto wait = pqrs::dispatcher::make_wait();
+          auto wait = pqrs::make_thread_wait();
           enqueue_to_dispatcher([wait] {
             wait->notify();
           });
@@ -164,7 +165,7 @@ public:
                 advance_now(ms);
               });
 
-              auto wait = pqrs::dispatcher::make_wait();
+              auto wait = pqrs::make_thread_wait();
               enqueue_to_dispatcher(
                   [wait] {
                     wait->notify();

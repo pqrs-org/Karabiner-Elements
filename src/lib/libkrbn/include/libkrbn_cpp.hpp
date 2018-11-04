@@ -1,8 +1,8 @@
 #pragma once
 
-#include "dispatcher.hpp"
 #include "libkrbn.h"
 #include "monitor/configuration_monitor.hpp"
+#include <pqrs/thread_wait.hpp>
 
 class libkrbn_cpp final {
 public:
@@ -35,7 +35,7 @@ public:
       configuration_monitor_ = std::make_shared<krbn::configuration_monitor>(
           krbn::constants::get_user_core_configuration_file_path());
 
-      auto wait = pqrs::dispatcher::make_wait();
+      auto wait = pqrs::make_thread_wait();
 
       configuration_monitor_->core_configuration_updated.connect([callback, refcon, wait](auto&& weak_core_configuration) {
         if (auto core_configuration = weak_core_configuration.lock()) {

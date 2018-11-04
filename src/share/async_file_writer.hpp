@@ -6,6 +6,7 @@
 #include "filesystem.hpp"
 #include "logger.hpp"
 #include <fstream>
+#include <pqrs/thread_wait.hpp>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -47,7 +48,7 @@ public:
   }
 
   static void wait(void) {
-    auto wait = pqrs::dispatcher::make_wait();
+    auto wait = pqrs::make_thread_wait();
 
     dispatcher_utility::enqueue_to_file_writer_dispatcher([wait] {
       wait->notify();
