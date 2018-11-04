@@ -4,11 +4,11 @@
 
 #include "boost_defs.hpp"
 
-#include "cf_utility.hpp"
 #include "dispatcher.hpp"
 #include "event_tap_utility.hpp"
 #include "logger.hpp"
 #include <boost/signals2.hpp>
+#include <pqrs/cf_run_loop_thread.hpp>
 
 namespace krbn {
 class event_tap_monitor final : pqrs::dispatcher::extra::dispatcher_client {
@@ -24,7 +24,7 @@ public:
   event_tap_monitor(void) : dispatcher_client(),
                             event_tap_(nullptr),
                             run_loop_source_(nullptr) {
-    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
+    cf_run_loop_thread_ = std::make_unique<pqrs::cf_run_loop_thread>();
   }
 
   ~event_tap_monitor(void) {
@@ -33,7 +33,7 @@ public:
         CGEventTapEnable(event_tap_, false);
 
         if (run_loop_source_) {
-          CFRunLoopRemoveSource(run_loop_thread_->get_run_loop(),
+          CFRunLoopRemoveSource(cf_run_loop_thread_->get_run_loop(),
                                 run_loop_source_,
                                 kCFRunLoopCommonModes);
           CFRelease(run_loop_source_);
@@ -46,8 +46,8 @@ public:
       logger::get_logger().info("event_tap_monitor terminated");
     });
 
-    run_loop_thread_->terminate();
-    run_loop_thread_ = nullptr;
+    cf_run_loop_thread_->terminate();
+    cf_run_loop_thread_ = nullptr;
   }
 
   void async_start(void) {
@@ -85,12 +85,12 @@ public:
       if (event_tap_) {
         run_loop_source_ = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, event_tap_, 0);
         if (run_loop_source_) {
-          CFRunLoopAddSource(run_loop_thread_->get_run_loop(),
+          CFRunLoopAddSource(cf_run_loop_thread_->get_run_loop(),
                              run_loop_source_,
                              kCFRunLoopCommonModes);
           CGEventTapEnable(event_tap_, true);
 
-          run_loop_thread_->wake();
+          cf_run_loop_thread_->wake();
 
           logger::get_logger().info("event_tap_monitor initialized");
         }
@@ -148,7 +148,7 @@ private:
     return event;
   }
 
-  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  std::unique_ptr<pqrs::cf_run_loop_thread> cf_run_loop_thread_;
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;
 };

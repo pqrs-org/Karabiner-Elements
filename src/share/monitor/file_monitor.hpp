@@ -11,6 +11,7 @@
 #include "logger.hpp"
 #include <CoreServices/CoreServices.h>
 #include <boost/signals2.hpp>
+#include <pqrs/cf_run_loop_thread.hpp>
 #include <utility>
 #include <vector>
 
@@ -27,7 +28,7 @@ public:
                                                         files_(files),
                                                         directories_(cf_utility::create_cfmutablearray()),
                                                         stream_(nullptr) {
-    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
+    cf_run_loop_thread_ = std::make_unique<pqrs::cf_run_loop_thread>();
 
     std::vector<std::string> directories;
     for (const auto& f : files) {
@@ -56,8 +57,8 @@ public:
       unregister_stream();
     });
 
-    run_loop_thread_->terminate();
-    run_loop_thread_ = nullptr;
+    cf_run_loop_thread_->terminate();
+    cf_run_loop_thread_ = nullptr;
 
     if (directories_) {
       CFRelease(directories_);
@@ -135,13 +136,13 @@ private:
       logger::get_logger().error("FSEventStreamCreate is failed.");
     } else {
       FSEventStreamScheduleWithRunLoop(stream_,
-                                       run_loop_thread_->get_run_loop(),
+                                       cf_run_loop_thread_->get_run_loop(),
                                        kCFRunLoopCommonModes);
       if (!FSEventStreamStart(stream_)) {
         logger::get_logger().error("FSEventStreamStart is failed.");
       }
 
-      run_loop_thread_->wake();
+      cf_run_loop_thread_->wake();
     }
   }
 
@@ -262,7 +263,7 @@ private:
 
   std::vector<std::string> files_;
 
-  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  std::unique_ptr<pqrs::cf_run_loop_thread> cf_run_loop_thread_;
   CFMutableArrayRef directories_;
   FSEventStreamRef stream_;
   // FSEventStreamEventPath -> file in files_

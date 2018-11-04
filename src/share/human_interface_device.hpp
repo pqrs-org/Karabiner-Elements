@@ -27,6 +27,7 @@
 #include <list>
 #include <mach/mach_time.h>
 #include <pqrs/cf_ptr.hpp>
+#include <pqrs/cf_run_loop_thread.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -60,7 +61,7 @@ public:
                                                                 scheduled_(false) {
     // ----------------------------------------
 
-    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
+    cf_run_loop_thread_ = std::make_unique<pqrs::cf_run_loop_thread>();
 
     // Set name_for_log_
     {
@@ -199,8 +200,8 @@ public:
       elements_.clear();
     });
 
-    run_loop_thread_->terminate();
-    run_loop_thread_ = nullptr;
+    cf_run_loop_thread_->terminate();
+    cf_run_loop_thread_ = nullptr;
 
     logger::get_logger().info("human_interface_device:{0} is destroyed.", name_for_log_);
   }
@@ -438,15 +439,15 @@ private:
       scheduled_ = true;
 
       IOHIDDeviceScheduleWithRunLoop(*device_,
-                                     run_loop_thread_->get_run_loop(),
+                                     cf_run_loop_thread_->get_run_loop(),
                                      kCFRunLoopCommonModes);
       if (*queue_) {
         IOHIDQueueScheduleWithRunLoop(*queue_,
-                                      run_loop_thread_->get_run_loop(),
+                                      cf_run_loop_thread_->get_run_loop(),
                                       kCFRunLoopCommonModes);
       }
 
-      run_loop_thread_->wake();
+      cf_run_loop_thread_->wake();
     }
   }
 
@@ -459,11 +460,11 @@ private:
     if (scheduled_) {
       if (*queue_) {
         IOHIDQueueUnscheduleFromRunLoop(*queue_,
-                                        run_loop_thread_->get_run_loop(),
+                                        cf_run_loop_thread_->get_run_loop(),
                                         kCFRunLoopCommonModes);
       }
       IOHIDDeviceUnscheduleFromRunLoop(*device_,
-                                       run_loop_thread_->get_run_loop(),
+                                       cf_run_loop_thread_->get_run_loop(),
                                        kCFRunLoopCommonModes);
 
       scheduled_ = false;
@@ -650,7 +651,7 @@ private:
   pqrs::cf_ptr<IOHIDDeviceRef> device_;
   registry_entry_id registry_entry_id_;
 
-  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  std::unique_ptr<pqrs::cf_run_loop_thread> cf_run_loop_thread_;
   device_id device_id_;
   std::string name_for_log_;
   std::atomic<bool> removed_;

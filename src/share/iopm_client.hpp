@@ -2,7 +2,6 @@
 
 #include "boost_defs.hpp"
 
-#include "cf_utility.hpp"
 #include "dispatcher.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
@@ -10,6 +9,7 @@
 #include <IOKit/IOMessage.h>
 #include <IOKit/pwr_mgt/IOPMLib.h>
 #include <boost/signals2.hpp>
+#include <pqrs/cf_run_loop_thread.hpp>
 
 namespace krbn {
 class iopm_client final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -26,7 +26,7 @@ public:
                       notification_port_(nullptr),
                       notifier_(IO_OBJECT_NULL),
                       connect_(IO_OBJECT_NULL) {
-    run_loop_thread_ = std::make_unique<cf_utility::run_loop_thread>();
+    cf_run_loop_thread_ = std::make_unique<pqrs::cf_run_loop_thread>();
   }
 
   virtual ~iopm_client(void) {
@@ -34,8 +34,8 @@ public:
       stop();
     });
 
-    run_loop_thread_->terminate();
-    run_loop_thread_ = nullptr;
+    cf_run_loop_thread_->terminate();
+    cf_run_loop_thread_ = nullptr;
   }
 
   void async_start(void) {
@@ -67,10 +67,12 @@ private:
     }
 
     if (auto run_loop_source = IONotificationPortGetRunLoopSource(notification_port_)) {
-      CFRunLoopAddSource(run_loop_thread_->get_run_loop(),
+      CFRunLoopAddSource(cf_run_loop_thread_->get_run_loop(),
                          run_loop_source,
                          kCFRunLoopCommonModes);
     }
+
+    logger::get_logger().error("iopm_client is started.");
   }
 
   // This method is executed in the dispatcher thread.
@@ -97,6 +99,8 @@ private:
       }
       connect_ = IO_OBJECT_NULL;
     }
+
+    logger::get_logger().error("iopm_client is stopped.");
   }
 
   static void static_callback(void* refcon, io_service_t service, uint32_t message_type, void* message_argument) {
@@ -148,7 +152,7 @@ private:
     });
   }
 
-  std::unique_ptr<cf_utility::run_loop_thread> run_loop_thread_;
+  std::unique_ptr<pqrs::cf_run_loop_thread> cf_run_loop_thread_;
   IONotificationPortRef notification_port_;
   io_object_t notifier_;
   io_connect_t connect_;
