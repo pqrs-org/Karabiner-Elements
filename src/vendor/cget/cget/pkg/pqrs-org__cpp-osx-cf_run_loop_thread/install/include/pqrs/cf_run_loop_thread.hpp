@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf_run_loop_thread v1.1.0
+// pqrs::cf_run_loop_thread v1.2.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -112,6 +112,6 @@ private:
 
   std::thread thread_;
   cf_ptr<CFRunLoopRef> run_loop_;
-  std::shared_ptr<pqrs::thread_wait> running_wait_;
+  std::shared_ptr<thread_wait> running_wait_;
 };
 } // namespace pqrs
