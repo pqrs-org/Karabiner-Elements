@@ -12,7 +12,7 @@ public:
                                hid_usage_page hid_usage_page,
                                hid_usage hid_usage,
                                queue& queue,
-                               absolute_time time_stamp) {
+                               absolute_time_point time_stamp) {
     // Enqueue key_down event if it is not sent yet.
 
     if (!key_event_exists(hid_usage_page, hid_usage)) {
@@ -24,7 +24,7 @@ public:
   void dispatch_key_up_event(hid_usage_page hid_usage_page,
                              hid_usage hid_usage,
                              queue& queue,
-                             absolute_time time_stamp) {
+                             absolute_time_point time_stamp) {
     // Enqueue key_up event if it is already sent.
 
     if (key_event_exists(hid_usage_page, hid_usage)) {
@@ -41,7 +41,7 @@ public:
 
   void dispatch_modifier_key_event(const modifier_flag_manager& modifier_flag_manager,
                                    queue& queue,
-                                   absolute_time time_stamp) {
+                                   absolute_time_point time_stamp) {
     auto modifier_flags = {
         modifier_flag::left_control,
         modifier_flag::left_shift,
@@ -85,7 +85,7 @@ public:
 
   void dispatch_key_up_events_by_device_id(device_id device_id,
                                            queue& queue,
-                                           absolute_time time_stamp) {
+                                           absolute_time_point time_stamp) {
     while (true) {
       bool found = false;
       for (const auto& k : pressed_keys_) {
@@ -124,7 +124,7 @@ private:
                          hid_usage usage,
                          event_type event_type,
                          queue& queue,
-                         absolute_time time_stamp) {
+                         absolute_time_point time_stamp) {
     queue.emplace_back_key_event(usage_page, usage, event_type, time_stamp);
   }
 

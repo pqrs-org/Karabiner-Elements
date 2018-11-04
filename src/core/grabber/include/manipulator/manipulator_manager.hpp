@@ -34,7 +34,7 @@ public:
 
   void manipulate(std::weak_ptr<event_queue::queue> weak_input_event_queue,
                   std::weak_ptr<event_queue::queue> weak_output_event_queue,
-                  absolute_time now) {
+                  absolute_time_point now) {
     if (auto input_event_queue = weak_input_event_queue.lock()) {
       if (auto output_event_queue = weak_output_event_queue.lock()) {
         while (!input_event_queue->empty()) {

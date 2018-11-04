@@ -110,12 +110,12 @@ public:
 
   manipulated_original_event(const std::unordered_set<from_event, from_event_hash>& from_events,
                              const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
-                             absolute_time key_down_time_stamp) : from_events_(from_events),
-                                                                  from_mandatory_modifiers_(from_mandatory_modifiers),
-                                                                  key_down_time_stamp_(key_down_time_stamp),
-                                                                  alone_(true),
-                                                                  halted_(false),
-                                                                  key_up_posted_(false) {
+                             absolute_time_point key_down_time_stamp) : from_events_(from_events),
+                                                                        from_mandatory_modifiers_(from_mandatory_modifiers),
+                                                                        key_down_time_stamp_(key_down_time_stamp),
+                                                                        alone_(true),
+                                                                        halted_(false),
+                                                                        key_up_posted_(false) {
   }
 
   const std::unordered_set<from_event, from_event_hash>& get_from_events(void) const {
@@ -130,7 +130,7 @@ public:
     return key_up_posted_from_mandatory_modifiers_;
   }
 
-  absolute_time get_key_down_time_stamp(void) const {
+  absolute_time_point get_key_down_time_stamp(void) const {
     return key_down_time_stamp_;
   }
 
@@ -197,7 +197,7 @@ private:
   std::unordered_set<from_event, from_event_hash> from_events_;
   std::unordered_set<modifier_flag> from_mandatory_modifiers_;
   std::unordered_set<modifier_flag> key_up_posted_from_mandatory_modifiers_;
-  absolute_time key_down_time_stamp_;
+  absolute_time_point key_down_time_stamp_;
   bool alone_;
   bool halted_;
   events_at_key_up events_at_key_up_;

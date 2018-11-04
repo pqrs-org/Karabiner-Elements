@@ -9,8 +9,8 @@
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "stream_utility.hpp"
-#include "types/absolute_time.hpp"
 #include "types/absolute_time_duration.hpp"
+#include "types/absolute_time_point.hpp"
 #include "types/consumer_key_code.hpp"
 #include "types/device_identifiers.hpp"
 #include "types/event_type.hpp"
@@ -947,7 +947,7 @@ struct operation_type_select_input_source_struct {
   }
 
   const operation_type operation_type;
-  absolute_time time_stamp;
+  absolute_time_point time_stamp;
   char language[256];
   char input_source_id[256];
   char input_mode_id[256];

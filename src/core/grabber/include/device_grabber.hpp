@@ -90,7 +90,7 @@ public:
                                                             posted_event_queue_);
 
     input_event_arrived_connection_ = krbn_notification_center::get_instance().input_event_arrived.connect([this] {
-      manipulate(time_utility::mach_absolute_time());
+      manipulate(time_utility::mach_absolute_time_point());
     });
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
@@ -253,7 +253,7 @@ public:
       event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
         auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
         event_queue::entry entry(device_id(0),
-                                 event_queue::event_time_stamp(time_utility::mach_absolute_time()),
+                                 event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
                                  e,
                                  event_type,
                                  event);
@@ -344,7 +344,7 @@ public:
       auto event = event_queue::event::make_frontmost_application_changed_event(bundle_identifier,
                                                                                 file_path);
       event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(time_utility::mach_absolute_time()),
+                               event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
                                event,
                                event_type::single,
                                event);
@@ -359,7 +359,7 @@ public:
     enqueue_to_dispatcher([this, input_source_identifiers] {
       auto event = event_queue::event::make_input_source_changed_event(input_source_identifiers);
       event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(time_utility::mach_absolute_time()),
+                               event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
                                event,
                                event_type::single,
                                event);
@@ -375,7 +375,7 @@ public:
       auto keyboard_type_string = system_preferences_utility::get_keyboard_type_string(system_preferences_.get_keyboard_type());
       auto event = event_queue::event::make_keyboard_type_changed_event(keyboard_type_string);
       event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(time_utility::mach_absolute_time()),
+                               event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
                                event,
                                event_type::single,
                                event);
@@ -497,7 +497,7 @@ private:
     return nullptr;
   }
 
-  void manipulate(absolute_time now) {
+  void manipulate(absolute_time_point now) {
     {
       // Avoid recursive call
       std::unique_lock<std::mutex> lock(manipulate_mutex_, std::try_to_lock);
@@ -555,7 +555,7 @@ private:
   void post_device_ungrabbed_event(device_id device_id) {
     auto event = event_queue::event::make_device_ungrabbed_event();
     event_queue::entry entry(device_id,
-                             event_queue::event_time_stamp(time_utility::mach_absolute_time()),
+                             event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
                              event,
                              event_type::single,
                              event);
@@ -568,7 +568,7 @@ private:
   void post_caps_lock_state_changed_event(bool caps_lock_state) {
     event_queue::event event(event_queue::event::type::caps_lock_state_changed, caps_lock_state);
     event_queue::entry entry(device_id(0),
-                             event_queue::event_time_stamp(time_utility::mach_absolute_time()),
+                             event_queue::event_time_stamp(time_utility::mach_absolute_time_point()),
                              event,
                              event_type::single,
                              event);

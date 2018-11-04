@@ -54,7 +54,7 @@ public:
         grabbable_state_manager_->update(grabbable_state(hid->get_registry_entry_id(),
                                                          grabbable_state::state::device_error,
                                                          grabbable_state::ungrabbable_temporarily_reason::none,
-                                                         time_utility::mach_absolute_time()));
+                                                         time_utility::mach_absolute_time_point()));
 
         if (hid->is_karabiner_virtual_hid_device()) {
           // Handle caps_lock_state_changed event only if the hid is Karabiner-VirtualHIDDevice.
@@ -88,7 +88,7 @@ public:
                 grabbable_state_manager_->update(grabbable_state(hid->get_registry_entry_id(),
                                                                  grabbable_state::state::grabbable,
                                                                  grabbable_state::ungrabbable_temporarily_reason::none,
-                                                                 time_utility::mach_absolute_time()));
+                                                                 time_utility::mach_absolute_time_point()));
               }
             }
           }

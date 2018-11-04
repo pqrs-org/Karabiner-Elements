@@ -22,7 +22,7 @@ public:
   virtual manipulate_result manipulate(event_queue::entry& front_input_event,
                                        const event_queue::queue& input_event_queue,
                                        const std::shared_ptr<event_queue::queue>& output_event_queue,
-                                       absolute_time now) = 0;
+                                       absolute_time_point now) = 0;
 
   virtual bool active(void) const = 0;
 
@@ -33,7 +33,7 @@ public:
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue::queue& output_event_queue,
-                                             absolute_time time_stamp) = 0;
+                                             absolute_time_point time_stamp) = 0;
 
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
                                                            event_queue::queue& output_event_queue) = 0;

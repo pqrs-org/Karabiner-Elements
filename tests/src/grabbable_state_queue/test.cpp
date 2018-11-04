@@ -33,7 +33,7 @@ TEST_CASE("grabbable_state_queue") {
     queue->clear();
     REQUIRE(grabbable_state_changed_count == 0);
 
-    for (krbn::absolute_time time_stamp(1000); time_stamp < krbn::absolute_time(10000); time_stamp += krbn::absolute_time_duration(1000)) {
+    for (krbn::absolute_time_point time_stamp(1000); time_stamp < krbn::absolute_time_point(10000); time_stamp += krbn::absolute_time_duration(1000)) {
       krbn::grabbable_state state(registry_entry_id1,
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
@@ -48,23 +48,23 @@ TEST_CASE("grabbable_state_queue") {
       krbn::grabbable_state expected(registry_entry_id1,
                                      krbn::grabbable_state::state::grabbable,
                                      krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                     krbn::absolute_time(1000));
+                                     krbn::absolute_time_point(1000));
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
       REQUIRE(last_changed_grabbable_state == expected);
       REQUIRE(grabbable_state_changed_count == 1);
     }
 
     // Ignore too small time_stamp from first_grabbed_event_time_stamp_.
-    REQUIRE(!queue->update_first_grabbed_event_time_stamp(krbn::absolute_time(0)));
+    REQUIRE(!queue->update_first_grabbed_event_time_stamp(krbn::absolute_time_point(0)));
 
     // Remove states after first_grabbed_event_time_stamp_.
-    REQUIRE(queue->update_first_grabbed_event_time_stamp(krbn::absolute_time(5000)));
-    REQUIRE(*(queue->get_first_grabbed_event_time_stamp()) == krbn::absolute_time(5000));
-    REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time(4000));
+    REQUIRE(queue->update_first_grabbed_event_time_stamp(krbn::absolute_time_point(5000)));
+    REQUIRE(*(queue->get_first_grabbed_event_time_stamp()) == krbn::absolute_time_point(5000));
+    REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time_point(4000));
 
-    REQUIRE(!queue->update_first_grabbed_event_time_stamp(krbn::absolute_time(3000)));
-    REQUIRE(*(queue->get_first_grabbed_event_time_stamp()) == krbn::absolute_time(5000));
-    REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time(4000));
+    REQUIRE(!queue->update_first_grabbed_event_time_stamp(krbn::absolute_time_point(3000)));
+    REQUIRE(*(queue->get_first_grabbed_event_time_stamp()) == krbn::absolute_time_point(5000));
+    REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time_point(4000));
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     REQUIRE(grabbable_state_changed_count == 1);
@@ -74,17 +74,17 @@ TEST_CASE("grabbable_state_queue") {
       krbn::grabbable_state state(registry_entry_id1,
                                   krbn::grabbable_state::state::grabbable,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                  krbn::absolute_time(6000));
+                                  krbn::absolute_time_point(6000));
       REQUIRE(!queue->push_back_grabbable_state(state));
-      REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time(4000));
+      REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time_point(4000));
     }
     {
       krbn::grabbable_state state(registry_entry_id1,
                                   krbn::grabbable_state::state::ungrabbable_temporarily,
                                   krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
-                                  krbn::absolute_time(4500));
+                                  krbn::absolute_time_point(4500));
       REQUIRE(queue->push_back_grabbable_state(state));
-      REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time(4500));
+      REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time_point(4500));
 
       // Check `grabbable_state_changed` signal
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -96,16 +96,16 @@ TEST_CASE("grabbable_state_queue") {
     queue->unset_first_grabbed_event_time_stamp();
     REQUIRE(!queue->get_first_grabbed_event_time_stamp());
 
-    REQUIRE(queue->update_first_grabbed_event_time_stamp(krbn::absolute_time(3000)));
-    REQUIRE(*(queue->get_first_grabbed_event_time_stamp()) == krbn::absolute_time(3000));
-    REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time(2000));
+    REQUIRE(queue->update_first_grabbed_event_time_stamp(krbn::absolute_time_point(3000)));
+    REQUIRE(*(queue->get_first_grabbed_event_time_stamp()) == krbn::absolute_time_point(3000));
+    REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time_point(2000));
 
     // Check `grabbable_state_changed` signal
     {
       krbn::grabbable_state expected(registry_entry_id1,
                                      krbn::grabbable_state::state::grabbable,
                                      krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                     krbn::absolute_time(2000));
+                                     krbn::absolute_time_point(2000));
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
       REQUIRE(last_changed_grabbable_state == expected);
       REQUIRE(grabbable_state_changed_count == 3);
@@ -130,9 +130,9 @@ TEST_CASE("grabbable_state_queue.circular_buffer") {
     queue->push_back_grabbable_state(krbn::grabbable_state(registry_entry_id1,
                                                            krbn::grabbable_state::state::grabbable,
                                                            krbn::grabbable_state::ungrabbable_temporarily_reason::none,
-                                                           krbn::absolute_time(i)));
+                                                           krbn::absolute_time_point(i)));
 
-    REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time(i));
+    REQUIRE(queue->find_current_grabbable_state()->get_time_stamp() == krbn::absolute_time_point(i));
   }
 
   queue = nullptr;

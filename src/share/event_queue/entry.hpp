@@ -44,7 +44,7 @@ public:
 
   static entry make_from_json(const nlohmann::json& json) {
     entry result(device_id::zero,
-                 event_time_stamp(absolute_time(0)),
+                 event_time_stamp(absolute_time_point(0)),
                  event(),
                  event_type::key_down,
                  event());

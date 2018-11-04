@@ -57,7 +57,7 @@ TEST_CASE("is_repeating") {
   // hid_value
 
   {
-    krbn::hid_value hid_value(krbn::absolute_time(0),
+    krbn::hid_value hid_value(krbn::absolute_time_point(0),
                               1,
                               *(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
                               *(krbn::types::make_hid_usage(krbn::key_code::spacebar)));
@@ -65,7 +65,7 @@ TEST_CASE("is_repeating") {
     REQUIRE(keyboard_repeat_detector.is_repeating() == true);
   }
   {
-    krbn::hid_value hid_value(krbn::absolute_time(0),
+    krbn::hid_value hid_value(krbn::absolute_time_point(0),
                               0,
                               *(krbn::types::make_hid_usage_page(krbn::key_code::spacebar)),
                               *(krbn::types::make_hid_usage(krbn::key_code::spacebar)));

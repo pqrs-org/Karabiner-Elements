@@ -23,37 +23,37 @@ public:
     };
 
     event(const pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input& value,
-          absolute_time time_stamp) : type_(type::keyboard_input),
-                                      value_(value),
-                                      time_stamp_(time_stamp) {
+          absolute_time_point time_stamp) : type_(type::keyboard_input),
+                                            value_(value),
+                                            time_stamp_(time_stamp) {
     }
 
     event(const pqrs::karabiner_virtual_hid_device::hid_report::consumer_input& value,
-          absolute_time time_stamp) : type_(type::consumer_input),
-                                      value_(value),
-                                      time_stamp_(time_stamp) {
+          absolute_time_point time_stamp) : type_(type::consumer_input),
+                                            value_(value),
+                                            time_stamp_(time_stamp) {
     }
 
     event(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_top_case_input& value,
-          absolute_time time_stamp) : type_(type::apple_vendor_top_case_input),
-                                      value_(value),
-                                      time_stamp_(time_stamp) {
+          absolute_time_point time_stamp) : type_(type::apple_vendor_top_case_input),
+                                            value_(value),
+                                            time_stamp_(time_stamp) {
     }
 
     event(const pqrs::karabiner_virtual_hid_device::hid_report::apple_vendor_keyboard_input& value,
-          absolute_time time_stamp) : type_(type::apple_vendor_keyboard_input),
-                                      value_(value),
-                                      time_stamp_(time_stamp) {
+          absolute_time_point time_stamp) : type_(type::apple_vendor_keyboard_input),
+                                            value_(value),
+                                            time_stamp_(time_stamp) {
     }
 
     event(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& value,
-          absolute_time time_stamp) : type_(type::pointing_input),
-                                      value_(value),
-                                      time_stamp_(time_stamp) {
+          absolute_time_point time_stamp) : type_(type::pointing_input),
+                                            value_(value),
+                                            time_stamp_(time_stamp) {
     }
 
     static event make_shell_command_event(const std::string& shell_command,
-                                          absolute_time time_stamp) {
+                                          absolute_time_point time_stamp) {
       event e;
       e.type_ = type::shell_command;
       e.value_ = shell_command;
@@ -62,7 +62,7 @@ public:
     }
 
     static event make_select_input_source_event(const std::vector<input_source_selector>& input_source_selector,
-                                                absolute_time time_stamp) {
+                                                absolute_time_point time_stamp) {
       event e;
       e.type_ = type::select_input_source;
       e.value_ = input_source_selector;
@@ -73,7 +73,7 @@ public:
     nlohmann::json to_json(void) const {
       nlohmann::json json;
       json["type"] = to_c_string(type_);
-      json["time_stamp"] = time_utility::to_milliseconds(time_stamp_ - absolute_time(0)).count();
+      json["time_stamp"] = time_utility::to_milliseconds(time_stamp_ - absolute_time_point(0)).count();
 
       switch (type_) {
         case type::keyboard_input:
@@ -180,7 +180,7 @@ public:
       return boost::none;
     }
 
-    absolute_time get_time_stamp(void) const {
+    absolute_time_point get_time_stamp(void) const {
       return time_stamp_;
     }
 
@@ -222,7 +222,7 @@ public:
                    std::vector<input_source_selector> // For select_input_source
                    >
         value_;
-    absolute_time time_stamp_;
+    absolute_time_point time_stamp_;
   };
 
   queue(void) : dispatcher_client(),
@@ -246,7 +246,7 @@ public:
   void emplace_back_key_event(hid_usage_page hid_usage_page,
                               hid_usage hid_usage,
                               event_type event_type,
-                              absolute_time time_stamp) {
+                              absolute_time_point time_stamp) {
     adjust_time_stamp(time_stamp,
                       event_type,
                       types::make_modifier_flag(hid_usage_page, hid_usage) != boost::none);
@@ -362,7 +362,7 @@ public:
 
   void emplace_back_pointing_input(const pqrs::karabiner_virtual_hid_device::hid_report::pointing_input& pointing_input,
                                    event_type event_type,
-                                   absolute_time time_stamp) {
+                                   absolute_time_point time_stamp) {
     adjust_time_stamp(time_stamp, event_type);
 
     events_.emplace_back(pointing_input,
@@ -370,7 +370,7 @@ public:
   }
 
   void push_back_shell_command_event(const std::string& shell_command,
-                                     absolute_time time_stamp) {
+                                     absolute_time_point time_stamp) {
     // Do not call adjust_time_stamp.
     auto e = event::make_shell_command_event(shell_command,
                                              time_stamp);
@@ -379,7 +379,7 @@ public:
   }
 
   void push_back_select_input_source_event(const std::vector<input_source_selector>& input_source_selectors,
-                                           absolute_time time_stamp) {
+                                           absolute_time_point time_stamp) {
     // Do not call adjust_time_stamp.
     auto e = event::make_select_input_source_event(input_source_selectors,
                                                    time_stamp);
@@ -395,7 +395,7 @@ public:
                          std::weak_ptr<console_user_server_client> weak_console_user_server_client) {
     enqueue_to_dispatcher(
         [this, weak_virtual_hid_device_client, weak_console_user_server_client] {
-          auto now = time_utility::mach_absolute_time();
+          auto now = time_utility::mach_absolute_time_point();
 
           while (!events_.empty()) {
             auto& e = events_.front();
@@ -475,7 +475,7 @@ public:
   }
 
 private:
-  void adjust_time_stamp(absolute_time& time_stamp,
+  void adjust_time_stamp(absolute_time_point& time_stamp,
                          event_type et,
                          bool is_modifier_key_event = false) {
     // Wait is 5 milliseconds
@@ -558,7 +558,7 @@ private:
   // Without wait, control-space (Select the previous input source) does not work properly.
 
   event_type last_event_type_;
-  absolute_time last_event_time_stamp_;
+  absolute_time_point last_event_time_stamp_;
 
   pqrs::karabiner_virtual_hid_device::hid_report::keyboard_input keyboard_input_;
   pqrs::karabiner_virtual_hid_device::hid_report::consumer_input consumer_input_;

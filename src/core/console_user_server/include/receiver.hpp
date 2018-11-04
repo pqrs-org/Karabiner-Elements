@@ -142,6 +142,6 @@ public:
 private:
   std::unique_ptr<local_datagram::server_manager> server_manager_;
   input_source_manager input_source_manager_;
-  absolute_time last_select_input_source_time_stamp_;
+  absolute_time_point last_select_input_source_time_stamp_;
 };
 } // namespace krbn

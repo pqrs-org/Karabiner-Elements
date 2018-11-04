@@ -2,7 +2,7 @@
 
 #include "boost_defs.hpp"
 
-#include "types/absolute_time.hpp"
+#include "types/absolute_time_point.hpp"
 #include "types/hid_usage.hpp"
 #include "types/hid_usage_page.hpp"
 #include <IOKit/hid/IOHIDElement.h>
@@ -13,7 +13,7 @@
 namespace krbn {
 class hid_value final {
 public:
-  hid_value(absolute_time time_stamp,
+  hid_value(absolute_time_point time_stamp,
             CFIndex integer_value,
             boost::optional<hid_usage_page> hid_usage_page,
             boost::optional<hid_usage> hid_usage) : time_stamp_(time_stamp),
@@ -23,7 +23,7 @@ public:
   }
 
   hid_value(IOHIDValueRef value) {
-    time_stamp_ = absolute_time(IOHIDValueGetTimeStamp(value));
+    time_stamp_ = absolute_time_point(IOHIDValueGetTimeStamp(value));
     integer_value_ = IOHIDValueGetIntegerValue(value);
     if (auto element = IOHIDValueGetElement(value)) {
       hid_usage_page_ = hid_usage_page(IOHIDElementGetUsagePage(element));
@@ -44,7 +44,7 @@ public:
     return j;
   }
 
-  absolute_time get_time_stamp(void) const {
+  absolute_time_point get_time_stamp(void) const {
     return time_stamp_;
   }
 
@@ -74,7 +74,7 @@ public:
   }
 
 private:
-  absolute_time time_stamp_;
+  absolute_time_point time_stamp_;
   CFIndex integer_value_;
   boost::optional<hid_usage_page> hid_usage_page_;
   boost::optional<hid_usage> hid_usage_;

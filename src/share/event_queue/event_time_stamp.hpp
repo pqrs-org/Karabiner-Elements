@@ -13,14 +13,14 @@ class event_time_stamp final {
 public:
   // Constructors
 
-  event_time_stamp(void) : event_time_stamp(absolute_time(0)) {
+  event_time_stamp(void) : event_time_stamp(absolute_time_point(0)) {
   }
 
-  event_time_stamp(absolute_time time_stamp) : time_stamp_(time_stamp),
-                                               input_delay_duration_(0) {
+  event_time_stamp(absolute_time_point time_stamp) : time_stamp_(time_stamp),
+                                                     input_delay_duration_(0) {
   }
 
-  event_time_stamp(absolute_time time_stamp,
+  event_time_stamp(absolute_time_point time_stamp,
                    absolute_time_duration input_delay_duration) : time_stamp_(time_stamp),
                                                                   input_delay_duration_(input_delay_duration) {
   }
@@ -36,7 +36,7 @@ public:
   }
 
   static event_time_stamp make_from_json(const nlohmann::json& json) {
-    event_time_stamp result(absolute_time(0),
+    event_time_stamp result(absolute_time_point(0),
                             absolute_time_duration(0));
 
     if (auto v = json_utility::find_optional<uint64_t>(json, "time_stamp")) {
@@ -52,13 +52,13 @@ public:
 
   // Methods
 
-  absolute_time get_time_stamp(void) const {
+  absolute_time_point get_time_stamp(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return time_stamp_;
   }
 
-  void set_time_stamp(absolute_time value) {
+  void set_time_stamp(absolute_time_point value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     time_stamp_ = value;
@@ -76,7 +76,7 @@ public:
     input_delay_duration_ = value;
   }
 
-  absolute_time make_time_stamp_with_input_delay(void) const {
+  absolute_time_point make_time_stamp_with_input_delay(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return time_stamp_ + input_delay_duration_;
@@ -84,7 +84,7 @@ public:
 
   nlohmann::json to_json(void) const {
     return nlohmann::json::object({
-        {"time_stamp", time_utility::to_milliseconds(get_time_stamp() - absolute_time(0)).count()},
+        {"time_stamp", time_utility::to_milliseconds(get_time_stamp() - absolute_time_point(0)).count()},
         {"input_delay_duration", time_utility::to_milliseconds(get_input_delay_duration()).count()},
     });
   }
@@ -106,7 +106,7 @@ public:
   }
 
 private:
-  absolute_time time_stamp_;
+  absolute_time_point time_stamp_;
   absolute_time_duration input_delay_duration_;
   mutable std::mutex mutex_;
 };

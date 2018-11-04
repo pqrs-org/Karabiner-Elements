@@ -249,7 +249,7 @@ public:
     // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.
     // We have to join them into one pointing_motion event to avoid VMware Remote Console problem that VMRC ignores frequently events.
 
-    boost::optional<absolute_time> pointing_motion_time_stamp;
+    boost::optional<absolute_time_point> pointing_motion_time_stamp;
     boost::optional<int> pointing_motion_x;
     boost::optional<int> pointing_motion_y;
     boost::optional<int> pointing_motion_vertical_wheel;

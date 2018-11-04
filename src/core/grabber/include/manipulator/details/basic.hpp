@@ -123,7 +123,7 @@ public:
   virtual manipulate_result manipulate(event_queue::entry& front_input_event,
                                        const event_queue::queue& input_event_queue,
                                        const std::shared_ptr<event_queue::queue>& output_event_queue,
-                                       absolute_time now) {
+                                       absolute_time_point now) {
     if (output_event_queue) {
       unset_alone_if_needed(front_input_event.get_event(),
                             front_input_event.get_event_type());
@@ -594,7 +594,7 @@ public:
 
   virtual void handle_device_ungrabbed_event(device_id device_id,
                                              const event_queue::queue& output_event_queue,
-                                             absolute_time time_stamp) {
+                                             absolute_time_point time_stamp) {
     for (auto&& e : manipulated_original_events_) {
       e->erase_from_events_by_device_id(device_id);
     }

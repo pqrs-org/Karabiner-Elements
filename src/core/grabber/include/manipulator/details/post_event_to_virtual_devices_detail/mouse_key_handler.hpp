@@ -61,7 +61,7 @@ public:
   void push_back_mouse_key(device_id device_id,
                            const mouse_key& mouse_key,
                            const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
-                           absolute_time time_stamp) {
+                           absolute_time_point time_stamp) {
     erase_entry(device_id, mouse_key);
 
     entries_.emplace_back(device_id, mouse_key);
@@ -75,7 +75,7 @@ public:
   void erase_mouse_key(device_id device_id,
                        const mouse_key& mouse_key,
                        const std::weak_ptr<event_queue::queue>& weak_output_event_queue,
-                       absolute_time time_stamp) {
+                       absolute_time_point time_stamp) {
     erase_entry(device_id, mouse_key);
 
     weak_output_event_queue_ = weak_output_event_queue;
@@ -84,7 +84,7 @@ public:
   }
 
   void erase_mouse_keys_by_device_id(device_id device_id,
-                                     absolute_time time_stamp) {
+                                     absolute_time_point time_stamp) {
     entries_.erase(std::remove_if(std::begin(entries_),
                                   std::end(entries_),
                                   [&](const auto& pair) {
@@ -113,10 +113,10 @@ private:
     active_ = !entries_.empty();
   }
 
-  void start_timer(absolute_time time_stamp) {
+  void start_timer(absolute_time_point time_stamp) {
     timer_.start(
         [this, time_stamp] {
-          absolute_time t = time_stamp;
+          absolute_time_point t = time_stamp;
           if (post_event(t)) {
             t += time_utility::to_absolute_time_duration(std::chrono::milliseconds(20));
             krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
@@ -128,7 +128,7 @@ private:
         std::chrono::milliseconds(20));
   }
 
-  bool post_event(absolute_time time_stamp) {
+  bool post_event(absolute_time_point time_stamp) {
     if (auto oeq = weak_output_event_queue_.lock()) {
       mouse_key total;
       for (const auto& pair : entries_) {

@@ -9,8 +9,8 @@
 namespace krbn {
 class time_utility final {
 public:
-  static absolute_time mach_absolute_time(void) {
-    return absolute_time(::mach_absolute_time());
+  static absolute_time_point mach_absolute_time_point(void) {
+    return absolute_time_point(mach_absolute_time());
   }
 
   static std::chrono::nanoseconds to_nanoseconds(absolute_time_duration time) {

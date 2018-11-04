@@ -4,18 +4,18 @@
 #include "event_queue.hpp"
 #include <boost/optional/optional_io.hpp>
 
-#define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)           \
-  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                           \
-                           krbn::event_queue::event_time_stamp(krbn::absolute_time(TIME_STAMP)), \
-                           EVENT,                                                                \
-                           krbn::event_type::EVENT_TYPE,                                         \
+#define ENQUEUE_EVENT(QUEUE, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)                 \
+  QUEUE.emplace_back_event(krbn::device_id(DEVICE_ID),                                                 \
+                           krbn::event_queue::event_time_stamp(krbn::absolute_time_point(TIME_STAMP)), \
+                           EVENT,                                                                      \
+                           krbn::event_type::EVENT_TYPE,                                               \
                            ORIGINAL_EVENT)
 
-#define PUSH_BACK_ENTRY(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)                         \
-  VECTOR.push_back(krbn::event_queue::entry(krbn::device_id(DEVICE_ID),                                           \
-                                            krbn::event_queue::event_time_stamp(krbn::absolute_time(TIME_STAMP)), \
-                                            EVENT,                                                                \
-                                            krbn::event_type::EVENT_TYPE,                                         \
+#define PUSH_BACK_ENTRY(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)                               \
+  VECTOR.push_back(krbn::event_queue::entry(krbn::device_id(DEVICE_ID),                                                 \
+                                            krbn::event_queue::event_time_stamp(krbn::absolute_time_point(TIME_STAMP)), \
+                                            EVENT,                                                                      \
+                                            krbn::event_type::EVENT_TYPE,                                               \
                                             ORIGINAL_EVENT))
 
 namespace {
@@ -42,25 +42,25 @@ auto device_keys_and_pointing_buttons_are_released_event = krbn::event_queue::ev
 
 TEST_CASE("event_time_stamp") {
   {
-    krbn::event_queue::event_time_stamp event_time_stamp1(krbn::absolute_time(100),
+    krbn::event_queue::event_time_stamp event_time_stamp1(krbn::absolute_time_point(100),
                                                           krbn::absolute_time_duration(10));
-    krbn::event_queue::event_time_stamp event_time_stamp2(krbn::absolute_time(200),
+    krbn::event_queue::event_time_stamp event_time_stamp2(krbn::absolute_time_point(200),
                                                           krbn::absolute_time_duration(10));
-    krbn::event_queue::event_time_stamp event_time_stamp3(krbn::absolute_time(100),
+    krbn::event_queue::event_time_stamp event_time_stamp3(krbn::absolute_time_point(100),
                                                           krbn::absolute_time_duration(20));
-    krbn::event_queue::event_time_stamp event_time_stamp4(krbn::absolute_time(200),
+    krbn::event_queue::event_time_stamp event_time_stamp4(krbn::absolute_time_point(200),
                                                           krbn::absolute_time_duration(20));
 
-    REQUIRE(event_time_stamp1.get_time_stamp() == krbn::absolute_time(100));
+    REQUIRE(event_time_stamp1.get_time_stamp() == krbn::absolute_time_point(100));
     REQUIRE(event_time_stamp1.get_input_delay_duration() == krbn::absolute_time_duration(10));
 
-    REQUIRE(event_time_stamp2.get_time_stamp() == krbn::absolute_time(200));
+    REQUIRE(event_time_stamp2.get_time_stamp() == krbn::absolute_time_point(200));
     REQUIRE(event_time_stamp2.get_input_delay_duration() == krbn::absolute_time_duration(10));
 
-    REQUIRE(event_time_stamp3.get_time_stamp() == krbn::absolute_time(100));
+    REQUIRE(event_time_stamp3.get_time_stamp() == krbn::absolute_time_point(100));
     REQUIRE(event_time_stamp3.get_input_delay_duration() == krbn::absolute_time_duration(20));
 
-    REQUIRE(event_time_stamp4.get_time_stamp() == krbn::absolute_time(200));
+    REQUIRE(event_time_stamp4.get_time_stamp() == krbn::absolute_time_point(200));
     REQUIRE(event_time_stamp4.get_input_delay_duration() == krbn::absolute_time_duration(20));
 
     REQUIRE(event_time_stamp1 == event_time_stamp1);
@@ -78,7 +78,7 @@ TEST_CASE("event_time_stamp") {
 
 TEST_CASE("entry") {
   krbn::event_queue::entry entry1(krbn::device_id(1),
-                                  krbn::event_queue::event_time_stamp(krbn::absolute_time(100),
+                                  krbn::event_queue::event_time_stamp(krbn::absolute_time_point(100),
                                                                       krbn::absolute_time_duration(10)),
                                   krbn::event_queue::event(krbn::key_code::a),
                                   krbn::event_type::key_down,
@@ -403,31 +403,31 @@ TEST_CASE("emplace_back_event") {
 TEST_CASE("needs_swap") {
   krbn::event_queue::entry spacebar_down(krbn::device_id(1),
                                          krbn::event_queue::event_time_stamp(
-                                             krbn::absolute_time(100)),
+                                             krbn::absolute_time_point(100)),
                                          spacebar_event,
                                          krbn::event_type::key_down,
                                          spacebar_event);
   krbn::event_queue::entry right_shift_down(krbn::device_id(1),
                                             krbn::event_queue::event_time_stamp(
-                                                krbn::absolute_time(100)),
+                                                krbn::absolute_time_point(100)),
                                             right_shift_event,
                                             krbn::event_type::key_down,
                                             right_shift_event);
   krbn::event_queue::entry escape_down(krbn::device_id(1),
                                        krbn::event_queue::event_time_stamp(
-                                           krbn::absolute_time(200)),
+                                           krbn::absolute_time_point(200)),
                                        escape_event,
                                        krbn::event_type::key_down,
                                        escape_event);
   krbn::event_queue::entry spacebar_up(krbn::device_id(1),
                                        krbn::event_queue::event_time_stamp(
-                                           krbn::absolute_time(300)),
+                                           krbn::absolute_time_point(300)),
                                        spacebar_event,
                                        krbn::event_type::key_up,
                                        spacebar_event);
   krbn::event_queue::entry right_shift_up(krbn::device_id(1),
                                           krbn::event_queue::event_time_stamp(
-                                              krbn::absolute_time(300)),
+                                              krbn::absolute_time_point(300)),
                                           right_shift_event,
                                           krbn::event_type::key_up,
                                           right_shift_event);
@@ -509,64 +509,64 @@ TEST_CASE("caps_lock_state_changed") {
 TEST_CASE("make_entries") {
   std::vector<krbn::hid_value> hid_values;
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(1000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(1000),
                                           1,
                                           *krbn::types::make_hid_usage_page(krbn::key_code::spacebar),
                                           *krbn::types::make_hid_usage(krbn::key_code::spacebar)));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(2000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(2000),
                                           0,
                                           *krbn::types::make_hid_usage_page(krbn::key_code::spacebar),
                                           *krbn::types::make_hid_usage(krbn::key_code::spacebar)));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(3000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(3000),
                                           1,
                                           *krbn::types::make_hid_usage_page(krbn::consumer_key_code::mute),
                                           *krbn::types::make_hid_usage(krbn::consumer_key_code::mute)));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(4000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(4000),
                                           0,
                                           *krbn::types::make_hid_usage_page(krbn::consumer_key_code::mute),
                                           *krbn::types::make_hid_usage(krbn::consumer_key_code::mute)));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(5000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(5000),
                                           10,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(5000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(5000),
                                           20,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_y));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(5000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(5000),
                                           30,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_wheel));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(5000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(5000),
                                           40,
                                           krbn::hid_usage_page::consumer,
                                           krbn::hid_usage::csmr_acpan));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(6000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(6000),
                                           -10,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(6000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(6000),
                                           -20,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_y));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(6000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(6000),
                                           -30,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_wheel));
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(6000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(6000),
                                           -40,
                                           krbn::hid_usage_page::consumer,
                                           krbn::hid_usage::csmr_acpan));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(7000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(7000),
                                           10,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
 
-  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time(8000),
+  hid_values.emplace_back(krbn::hid_value(krbn::absolute_time_point(8000),
                                           0,
                                           krbn::hid_usage_page::generic_desktop,
                                           krbn::hid_usage::gd_x));
@@ -584,42 +584,42 @@ TEST_CASE("make_entries") {
   REQUIRE(!entrys[7].first);
 
   REQUIRE(entrys[0].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[0].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(1000));
+  REQUIRE(entrys[0].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
   REQUIRE(entrys[0].second.get_event().get_key_code() == krbn::key_code::spacebar);
   REQUIRE(entrys[0].second.get_event_type() == krbn::event_type::key_down);
 
   REQUIRE(entrys[1].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[1].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(2000));
+  REQUIRE(entrys[1].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(2000));
   REQUIRE(entrys[1].second.get_event().get_key_code() == krbn::key_code::spacebar);
   REQUIRE(entrys[1].second.get_event_type() == krbn::event_type::key_up);
 
   REQUIRE(entrys[2].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[2].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(3000));
+  REQUIRE(entrys[2].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(3000));
   REQUIRE(entrys[2].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
   REQUIRE(entrys[2].second.get_event_type() == krbn::event_type::key_down);
 
   REQUIRE(entrys[3].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[3].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(4000));
+  REQUIRE(entrys[3].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(4000));
   REQUIRE(entrys[3].second.get_event().get_consumer_key_code() == krbn::consumer_key_code::mute);
   REQUIRE(entrys[3].second.get_event_type() == krbn::event_type::key_up);
 
   REQUIRE(entrys[4].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[4].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(5000));
+  REQUIRE(entrys[4].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(5000));
   REQUIRE(entrys[4].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 20, 30, 40));
   REQUIRE(entrys[4].second.get_event_type() == krbn::event_type::single);
 
   REQUIRE(entrys[5].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[5].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(6000));
+  REQUIRE(entrys[5].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(6000));
   REQUIRE(entrys[5].second.get_event().get_pointing_motion() == krbn::pointing_motion(-10, -20, -30, -40));
   REQUIRE(entrys[5].second.get_event_type() == krbn::event_type::single);
 
   REQUIRE(entrys[6].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[6].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(7000));
+  REQUIRE(entrys[6].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(7000));
   REQUIRE(entrys[6].second.get_event().get_pointing_motion() == krbn::pointing_motion(10, 0, 0, 0));
   REQUIRE(entrys[6].second.get_event_type() == krbn::event_type::single);
 
   REQUIRE(entrys[7].second.get_device_id() == krbn::device_id(1));
-  REQUIRE(entrys[7].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time(8000));
+  REQUIRE(entrys[7].second.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(8000));
   REQUIRE(entrys[7].second.get_event().get_pointing_motion() == krbn::pointing_motion(0, 0, 0, 0));
   REQUIRE(entrys[7].second.get_event_type() == krbn::event_type::single);
 }

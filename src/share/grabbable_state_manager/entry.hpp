@@ -5,7 +5,7 @@ public:
   entry(registry_entry_id registry_entry_id) : grabbable_state_(registry_entry_id,
                                                                 grabbable_state::state::none,
                                                                 grabbable_state::ungrabbable_temporarily_reason::none,
-                                                                absolute_time(0)) {
+                                                                absolute_time_point(0)) {
   }
 
   const grabbable_state& get_grabbable_state(void) const {
@@ -17,7 +17,7 @@ public:
   }
 
   void update(registry_entry_id registry_entry_id,
-              absolute_time time_stamp,
+              absolute_time_point time_stamp,
               const event_queue::entry& entry) {
     if (auto key_code = entry.get_event().get_key_code()) {
       if (auto hid_usage_page = types::make_hid_usage_page(*key_code)) {
@@ -61,7 +61,7 @@ public:
 
 private:
   void update_grabbable_state(registry_entry_id registry_entry_id,
-                              absolute_time time_stamp) {
+                              absolute_time_point time_stamp) {
     // Ungrabbable while key repeating
 
     if (keyboard_repeat_detector_.is_repeating()) {

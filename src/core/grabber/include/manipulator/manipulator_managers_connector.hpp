@@ -27,7 +27,7 @@ public:
       return weak_output_event_queue_;
     }
 
-    void manipulate(absolute_time now) const {
+    void manipulate(absolute_time_point now) const {
       if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
         manipulator_manager->manipulate(weak_input_event_queue_,
                                         weak_output_event_queue_,
@@ -48,7 +48,7 @@ public:
       return false;
     }
 
-    boost::optional<absolute_time> make_input_event_time_stamp_with_input_delay(void) const {
+    boost::optional<absolute_time_point> make_input_event_time_stamp_with_input_delay(void) const {
       if (auto input_event_queue = weak_input_event_queue_.lock()) {
         if (!input_event_queue->get_entries().empty()) {
           return input_event_queue->get_entries().front().get_event_time_stamp().make_time_stamp_with_input_delay();
@@ -98,7 +98,7 @@ public:
                               weak_output_event_queue);
   }
 
-  void manipulate(absolute_time now) const {
+  void manipulate(absolute_time_point now) const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     for (auto&& c : connections_) {
@@ -124,10 +124,10 @@ public:
                        });
   }
 
-  boost::optional<absolute_time> min_input_event_time_stamp(void) const {
+  boost::optional<absolute_time_point> min_input_event_time_stamp(void) const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
-    boost::optional<absolute_time> result;
+    boost::optional<absolute_time_point> result;
 
     for (const auto& c : connections_) {
       if (auto t = c.make_input_event_time_stamp_with_input_delay()) {

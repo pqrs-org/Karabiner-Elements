@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types/absolute_time.hpp"
+#include "types/absolute_time_point.hpp"
 #include "types/registry_entry_id.hpp"
 #include <cstdint>
 #include <ostream>
@@ -26,16 +26,16 @@ public:
   grabbable_state(void) : grabbable_state(registry_entry_id(0),
                                           state::grabbable,
                                           ungrabbable_temporarily_reason::none,
-                                          absolute_time(0)) {
+                                          absolute_time_point(0)) {
   }
 
   grabbable_state(registry_entry_id registry_entry_id,
                   state state,
                   ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
-                  absolute_time time_stamp) : registry_entry_id_(registry_entry_id),
-                                              state_(state),
-                                              ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
-                                              time_stamp_(time_stamp) {
+                  absolute_time_point time_stamp) : registry_entry_id_(registry_entry_id),
+                                                    state_(state),
+                                                    ungrabbable_temporarily_reason_(ungrabbable_temporarily_reason),
+                                                    time_stamp_(time_stamp) {
   }
 
   registry_entry_id get_registry_entry_id(void) const {
@@ -50,7 +50,7 @@ public:
     return ungrabbable_temporarily_reason_;
   }
 
-  absolute_time get_time_stamp(void) const {
+  absolute_time_point get_time_stamp(void) const {
     return time_stamp_;
   }
 
@@ -73,7 +73,7 @@ private:
   registry_entry_id registry_entry_id_;
   state state_;
   ungrabbable_temporarily_reason ungrabbable_temporarily_reason_;
-  absolute_time time_stamp_;
+  absolute_time_point time_stamp_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const grabbable_state::state& value) {
