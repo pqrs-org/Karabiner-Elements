@@ -40,7 +40,7 @@
 #include <boost/optional.hpp>
 #include <cstring>
 #include <iostream>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <thread>
 #include <type_safe/strong_typedef.hpp>

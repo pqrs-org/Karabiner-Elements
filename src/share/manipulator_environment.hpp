@@ -9,7 +9,7 @@
 #include <boost/functional/hash.hpp>
 #include <fstream>
 #include <iostream>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <string>
 
 namespace krbn {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <fstream>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <string>
 
 namespace krbn {

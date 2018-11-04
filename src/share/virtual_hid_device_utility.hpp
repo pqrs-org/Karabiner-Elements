@@ -2,7 +2,7 @@
 
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "types.hpp"
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 
 namespace krbn {
 class virtual_hid_device_utility final {

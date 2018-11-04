@@ -19,7 +19,7 @@ namespace manipulator {
 class manipulator_factory final {
 public:
   static std::shared_ptr<details::base> make_manipulator(const nlohmann::json& json,
-                                                         const core_configuration::details::complex_modifications::parameters& parameters) {
+                                                         const core_configuration::details::complex_modifications_parameters& parameters) {
     try {
       {
         if (auto value = json_utility::find_optional<std::string>(json, "type")) {

@@ -4,7 +4,7 @@
 
 #include "time_utility.hpp"
 #include "types.hpp"
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <ostream>
 
 namespace krbn {

@@ -25,7 +25,7 @@
 #include <boost/algorithm/string.hpp>
 #include <deque>
 #include <fstream>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <thread>
 #include <time.h>
 
@@ -315,7 +315,7 @@ public:
 
   void async_unset_profile(void) {
     enqueue_to_dispatcher([this] {
-      profile_ = core_configuration::core_configuration::profile(nlohmann::json());
+      profile_ = core_configuration::details::profile(nlohmann::json());
 
       manipulator_managers_connector_.invalidate_manipulators();
     });
@@ -799,7 +799,7 @@ private:
     }
   }
 
-  void set_profile(const core_configuration::core_configuration::profile& profile) {
+  void set_profile(const core_configuration::details::profile& profile) {
     profile_ = profile;
 
     update_simple_modifications_manipulators();
@@ -1032,7 +1032,7 @@ private:
   std::unordered_map<registry_entry_id, std::shared_ptr<hid_grabber>> hid_grabbers_;
   std::unordered_map<registry_entry_id, std::shared_ptr<device_state>> device_states_;
 
-  core_configuration::core_configuration::profile profile_;
+  core_configuration::details::profile profile_;
   system_preferences system_preferences_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;

@@ -2,7 +2,7 @@
 
 #include "stream_utility.hpp"
 #include <cstdint>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 
 namespace krbn {
 enum class event_type : uint32_t {

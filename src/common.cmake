@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 include_directories(SYSTEM /opt/local/include)
 include_directories(SYSTEM /usr/local/include)
 include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/vendor)
+include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/vendor/cget/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/share)
 
 add_compile_options(-Wall)

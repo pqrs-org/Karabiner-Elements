@@ -7,7 +7,7 @@
 #include "types.hpp"
 #include <algorithm>
 #include <fstream>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 
 // Json example:
 //

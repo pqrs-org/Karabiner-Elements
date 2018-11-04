@@ -7,7 +7,7 @@
 #include "stream_utility.hpp"
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <unordered_set>
 
 namespace krbn {

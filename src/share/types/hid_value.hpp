@@ -8,7 +8,7 @@
 #include <IOKit/hid/IOHIDElement.h>
 #include <IOKit/hid/IOHIDValue.h>
 #include <boost/optional.hpp>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 
 namespace krbn {
 class hid_value final {

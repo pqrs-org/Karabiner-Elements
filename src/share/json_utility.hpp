@@ -7,7 +7,7 @@
 #include "logger.hpp"
 #include <boost/optional.hpp>
 #include <fstream>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <unistd.h>
 
 namespace krbn {

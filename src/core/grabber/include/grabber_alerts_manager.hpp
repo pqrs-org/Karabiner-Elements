@@ -5,7 +5,7 @@
 #include "filesystem.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <unordered_set>
 
 namespace krbn {

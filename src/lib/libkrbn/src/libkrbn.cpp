@@ -11,7 +11,7 @@
 #include "update_utility.hpp"
 #include <fstream>
 #include <iostream>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include <string>
 
 void libkrbn_initialize(void) {

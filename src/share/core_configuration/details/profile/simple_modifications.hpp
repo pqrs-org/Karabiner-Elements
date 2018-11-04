@@ -1,7 +1,7 @@
 #pragma once
 
 #include "json_utility.hpp"
-#include <natural_sort/natural_sort.hpp>
+#include <natural_sort.hpp>
 
 namespace krbn {
 namespace core_configuration {

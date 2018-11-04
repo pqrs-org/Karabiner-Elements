@@ -1,6 +1,6 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#include "cxxopts/cxxopts.hpp"
+#include <cxxopts.hpp>
 #pragma clang diagnostic pop
 
 #include "constants.hpp"

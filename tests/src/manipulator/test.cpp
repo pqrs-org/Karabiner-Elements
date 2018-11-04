@@ -16,7 +16,7 @@ TEST_CASE("initialize") {
 TEST_CASE("manipulator.manipulator_factory") {
   {
     nlohmann::json json;
-    krbn::core_configuration::details::complex_modifications::parameters parameters;
+    krbn::core_configuration::details::complex_modifications_parameters parameters;
     auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                 parameters);
     REQUIRE(dynamic_cast<krbn::manipulator::details::nop*>(manipulator.get()) != nullptr);
@@ -60,7 +60,7 @@ TEST_CASE("manipulator.manipulator_factory") {
             },
         },
     });
-    krbn::core_configuration::details::complex_modifications::parameters parameters;
+    krbn::core_configuration::details::complex_modifications_parameters parameters;
     auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                 parameters);
     REQUIRE(dynamic_cast<krbn::manipulator::details::basic*>(manipulator.get()) != nullptr);
@@ -170,7 +170,7 @@ TEST_CASE("needs_virtual_hid_pointing") {
     auto json = nlohmann::json::parse(json_file);
     auto manager = std::make_shared<krbn::manipulator::manipulator_manager>();
     for (const auto& j : json) {
-      krbn::core_configuration::details::complex_modifications::parameters parameters;
+      krbn::core_configuration::details::complex_modifications_parameters parameters;
       auto m = krbn::manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters);
       manager->push_back_manipulator(m);

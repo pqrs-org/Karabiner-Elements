@@ -6,7 +6,7 @@
 #include "types/vendor_id.hpp"
 #include <boost/functional/hash.hpp>
 #include <cstdint>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 
 namespace krbn {
 class input_source_identifiers final {

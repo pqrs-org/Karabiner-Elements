@@ -15,7 +15,7 @@ public:
   }
 
   void push_back_manipulator(const nlohmann::json& json,
-                             const core_configuration::details::complex_modifications::parameters& parameters) {
+                             const core_configuration::details::complex_modifications_parameters& parameters) {
     auto m = manipulator_factory::make_manipulator(json,
                                                    parameters);
 

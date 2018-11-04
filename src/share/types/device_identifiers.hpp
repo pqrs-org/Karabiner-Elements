@@ -3,7 +3,7 @@
 #include "types/product_id.hpp"
 #include "types/vendor_id.hpp"
 #include <cstdint>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 
 namespace krbn {
 class device_identifiers final {

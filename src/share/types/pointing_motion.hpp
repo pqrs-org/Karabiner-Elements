@@ -5,7 +5,7 @@
 #include "stream_utility.hpp"
 #include <boost/functional/hash.hpp>
 #include <cstdint>
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 
 namespace krbn {
 class pointing_motion final {
