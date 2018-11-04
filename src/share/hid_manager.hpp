@@ -3,7 +3,6 @@
 // `krbn::hid_manager` can be used safely in a multi-threaded environment.
 
 #include "boost_utility.hpp"
-#include "cf_ptr.hpp"
 #include "cf_utility.hpp"
 #include "device_detail.hpp"
 #include "dispatcher.hpp"
@@ -12,6 +11,7 @@
 #include "monitor/service_monitor.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
+#include <pqrs/cf_ptr.hpp>
 #include <unordered_map>
 
 namespace krbn {
@@ -76,7 +76,7 @@ private:
           for (const auto& service : services->get_services()) {
             if (devices_.find(service) == std::end(devices_)) {
               if (auto device = IOHIDDeviceCreate(kCFAllocatorDefault, service)) {
-                devices_[service] = cf_ptr<IOHIDDeviceRef>(device);
+                devices_[service] = pqrs::cf_ptr<IOHIDDeviceRef>(device);
 
                 device_matching_callback(device);
 
@@ -288,7 +288,7 @@ private:
   std::vector<std::shared_ptr<monitor::service_monitor::service_monitor>> service_monitors_;
   pqrs::dispatcher::extra::timer refresh_timer_;
 
-  std::unordered_map<io_service_t, cf_ptr<IOHIDDeviceRef>> devices_;
+  std::unordered_map<io_service_t, pqrs::cf_ptr<IOHIDDeviceRef>> devices_;
   std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
 
   std::vector<std::shared_ptr<human_interface_device>> hids_;

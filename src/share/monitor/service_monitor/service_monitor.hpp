@@ -2,13 +2,13 @@
 
 #include "boost_defs.hpp"
 
-#include "cf_ptr.hpp"
 #include "cf_utility.hpp"
 #include "dispatcher.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "services.hpp"
 #include <boost/signals2.hpp>
+#include <pqrs/cf_ptr.hpp>
 
 namespace krbn {
 namespace monitor {
@@ -179,7 +179,7 @@ private:
     });
   }
 
-  cf_ptr<CFDictionaryRef> matching_dictionary_;
+  pqrs::cf_ptr<CFDictionaryRef> matching_dictionary_;
 
   IONotificationPortRef _Nullable notification_port_;
   io_iterator_t matched_notification_;
