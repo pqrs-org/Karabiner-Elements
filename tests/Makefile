@@ -12,3 +12,6 @@ clean:
 			make -C $$d clean; \
 		fi; \
 	done
+
+update_vendor:
+	cget install -f cget-requirements.txt --prefix vendor
