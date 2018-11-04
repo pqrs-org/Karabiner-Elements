@@ -4,8 +4,8 @@
 
 #include "application_launcher.hpp"
 #include "boost_utility.hpp"
-#include "dispatcher.hpp"
 #include "monitor/configuration_monitor.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class menu_process_manager final : public pqrs::dispatcher::extra::dispatcher_client {

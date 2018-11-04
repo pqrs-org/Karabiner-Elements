@@ -2,11 +2,11 @@
 
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "dispatcher.hpp"
 #include "input_source_manager.hpp"
 #include "local_datagram/server_manager.hpp"
 #include "shell_utility.hpp"
 #include "types.hpp"
+#include <pqrs/dispatcher.hpp>
 #include <vector>
 
 namespace krbn {

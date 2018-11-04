@@ -1,9 +1,9 @@
 #pragma once
 
 #include "boost_utility.hpp"
-#include "dispatcher.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "update_utility.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class updater_process_manager final : public pqrs::dispatcher::extra::dispatcher_client {

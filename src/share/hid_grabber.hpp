@@ -3,9 +3,9 @@
 // `krbn::hid_grabber` can be used safely in a multi-threaded environment.
 
 #include "boost_utility.hpp"
-#include "dispatcher.hpp"
 #include "human_interface_device.hpp"
 #include "logger.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class hid_grabber final : public pqrs::dispatcher::extra::dispatcher_client {

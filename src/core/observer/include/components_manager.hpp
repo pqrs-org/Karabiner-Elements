@@ -4,9 +4,9 @@
 
 #include "constants.hpp"
 #include "device_observer.hpp"
-#include "dispatcher.hpp"
 #include "grabber_client.hpp"
 #include "monitor/version_monitor_utility.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {

@@ -4,9 +4,9 @@
 
 #include "boost_utility.hpp"
 #include "configuration_monitor.hpp"
-#include "dispatcher.hpp"
 #include "logger.hpp"
 #include "system_preferences_utility.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class system_preferences_monitor final : public pqrs::dispatcher::extra::dispatcher_client {

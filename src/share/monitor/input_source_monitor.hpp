@@ -5,12 +5,12 @@
 #include "boost_defs.hpp"
 
 #include "cf_utility.hpp"
-#include "dispatcher.hpp"
 #include "input_source_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <Carbon/Carbon.h>
 #include <boost/signals2.hpp>
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class input_source_monitor final : public pqrs::dispatcher::extra::dispatcher_client {

@@ -1,12 +1,12 @@
 #include "components_manager.hpp"
 #include "constants.hpp"
-#include "dispatcher.hpp"
 #include "dispatcher_utility.hpp"
 #include "filesystem.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "migration.hpp"
 #include "process_utility.hpp"
+#include <pqrs/dispatcher.hpp>
 
 int main(int argc, const char* argv[]) {
   krbn::dispatcher_utility::initialize_dispatchers();

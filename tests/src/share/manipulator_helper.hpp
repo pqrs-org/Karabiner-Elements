@@ -36,7 +36,7 @@ public:
     for (const auto& test : json) {
       logger::get_logger().info("{0}", test["description"].get<std::string>());
 
-      pseudo_time_source_->set_now(std::chrono::milliseconds(0));
+      pseudo_time_source_->set_now(pqrs::dispatcher::time_point(std::chrono::milliseconds(0)));
 
       system_preferences system_preferences;
       auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
@@ -170,7 +170,7 @@ public:
                   [wait] {
                     wait->notify();
                   },
-                  ms);
+                  pqrs::dispatcher::time_point(std::chrono::milliseconds(0)) + ms);
               wait->wait_notice();
             }
           }
@@ -223,8 +223,8 @@ public:
 
 private:
   void advance_now(std::chrono::milliseconds ms) {
-    if (ms > pseudo_time_source_->now()) {
-      pseudo_time_source_->set_now(ms);
+    if (pqrs::dispatcher::time_point(ms) > pseudo_time_source_->now()) {
+      pseudo_time_source_->set_now(pqrs::dispatcher::time_point(ms));
       now_ = absolute_time(0) + time_utility::to_absolute_time_duration(ms);
     }
   }

@@ -4,11 +4,11 @@
 
 #include "boost_defs.hpp"
 
-#include "dispatcher.hpp"
 #include "event_tap_utility.hpp"
 #include "logger.hpp"
 #include <boost/signals2.hpp>
 #include <pqrs/cf_run_loop_thread.hpp>
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class event_tap_monitor final : pqrs::dispatcher::extra::dispatcher_client {

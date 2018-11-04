@@ -4,13 +4,13 @@
 
 #include "boost_defs.hpp"
 
-#include "dispatcher.hpp"
 #include "event_queue.hpp"
 #include "types.hpp"
 #include <boost/circular_buffer.hpp>
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <memory>
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class grabbable_state_queue final : public pqrs::dispatcher::extra::dispatcher_client {

@@ -5,13 +5,13 @@
 #include "boost_utility.hpp"
 #include "cf_utility.hpp"
 #include "device_detail.hpp"
-#include "dispatcher.hpp"
 #include "human_interface_device.hpp"
 #include "logger.hpp"
 #include "monitor/service_monitor.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
 #include <pqrs/cf_ptr.hpp>
+#include <pqrs/dispatcher.hpp>
 #include <unordered_map>
 
 namespace krbn {

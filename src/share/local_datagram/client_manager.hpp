@@ -2,8 +2,8 @@
 
 // `krbn::local_datagram::client_manager` can be used safely in a multi-threaded environment.
 
-#include "dispatcher.hpp"
 #include "local_datagram/client.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 namespace local_datagram {

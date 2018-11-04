@@ -4,13 +4,13 @@
 
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "dispatcher.hpp"
 #include "logger.hpp"
 #include "monitor/console_user_id_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "monitor/version_monitor_utility.hpp"
 #include "receiver.hpp"
 #include "session.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {

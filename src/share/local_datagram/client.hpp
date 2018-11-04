@@ -9,8 +9,8 @@ BEGIN_BOOST_INCLUDE
 #include <boost/signals2.hpp>
 END_BOOST_INCLUDE
 
-#include "dispatcher.hpp"
 #include "logger.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 namespace local_datagram {

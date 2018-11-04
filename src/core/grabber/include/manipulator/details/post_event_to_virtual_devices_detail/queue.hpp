@@ -1,8 +1,8 @@
 #pragma once
 
-#include "dispatcher.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_client.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 namespace manipulator {

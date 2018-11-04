@@ -4,12 +4,12 @@
 
 #include "boost_defs.hpp"
 
-#include "dispatcher.hpp"
 #include "logger.hpp"
 #include "session.hpp"
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <memory>
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class console_user_id_monitor final : public pqrs::dispatcher::extra::dispatcher_client {

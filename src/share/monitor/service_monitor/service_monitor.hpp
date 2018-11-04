@@ -3,12 +3,12 @@
 #include "boost_defs.hpp"
 
 #include "cf_utility.hpp"
-#include "dispatcher.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "services.hpp"
 #include <boost/signals2.hpp>
 #include <pqrs/cf_ptr.hpp>
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 namespace monitor {

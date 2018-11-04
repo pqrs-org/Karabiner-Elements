@@ -5,13 +5,13 @@
 #include "boost_defs.hpp"
 
 #include "cf_utility.hpp"
-#include "dispatcher.hpp"
 #include "file_utility.hpp"
 #include "filesystem.hpp"
 #include "logger.hpp"
 #include <CoreServices/CoreServices.h>
 #include <boost/signals2.hpp>
 #include <pqrs/cf_run_loop_thread.hpp>
+#include <pqrs/dispatcher.hpp>
 #include <utility>
 #include <vector>
 

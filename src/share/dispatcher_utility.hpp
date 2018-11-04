@@ -2,7 +2,7 @@
 
 // `krbn::dispatcher_utility` can be used safely in a multi-threaded environment.
 
-#include "dispatcher.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class dispatcher_utility final {

@@ -4,7 +4,6 @@
 
 #include "boost_defs.hpp"
 
-#include "dispatcher.hpp"
 #include "grabbable_state_manager.hpp"
 #include "grabber_client.hpp"
 #include "hid_manager.hpp"
@@ -12,6 +11,7 @@
 #include "logger.hpp"
 #include "time_utility.hpp"
 #include "types.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class device_observer final : public pqrs::dispatcher::extra::dispatcher_client {

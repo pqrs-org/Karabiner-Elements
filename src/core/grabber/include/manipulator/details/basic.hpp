@@ -1,12 +1,12 @@
 #pragma once
 
 #include "core_configuration/core_configuration.hpp"
-#include "dispatcher.hpp"
 #include "krbn_notification_center.hpp"
 #include "manipulator/details/base.hpp"
 #include "manipulator/details/types.hpp"
 #include "time_utility.hpp"
 #include <nlohmann/json.hpp>
+#include <pqrs/dispatcher.hpp>
 #include <unordered_set>
 #include <vector>
 

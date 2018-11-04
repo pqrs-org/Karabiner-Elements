@@ -3,12 +3,12 @@
 // `krbn::grabber_client` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
-#include "dispatcher.hpp"
 #include "filesystem.hpp"
 #include "local_datagram/client_manager.hpp"
 #include "logger.hpp"
 #include "session.hpp"
 #include "types.hpp"
+#include <pqrs/dispatcher.hpp>
 #include <unistd.h>
 #include <vector>
 

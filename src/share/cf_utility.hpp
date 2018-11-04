@@ -2,7 +2,6 @@
 
 #include "boost_defs.hpp"
 
-#include "dispatcher.hpp"
 #include "logger.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <boost/optional.hpp>

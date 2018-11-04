@@ -2,7 +2,6 @@
 
 #include "boost_defs.hpp"
 
-#include "dispatcher.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include <IOKit/IOKitLib.h>
@@ -10,6 +9,7 @@
 #include <IOKit/pwr_mgt/IOPMLib.h>
 #include <boost/signals2.hpp>
 #include <pqrs/cf_run_loop_thread.hpp>
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class iopm_client final : public pqrs::dispatcher::extra::dispatcher_client {

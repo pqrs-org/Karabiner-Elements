@@ -4,10 +4,10 @@
 
 #include "boost_defs.hpp"
 
-#include "dispatcher.hpp"
 #include "frontmost_application_monitor_objc.h"
 #include "logger.hpp"
 #include <boost/signals2.hpp>
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class frontmost_application_monitor final : public pqrs::dispatcher::extra::dispatcher_client {

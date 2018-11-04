@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dispatcher.hpp"
 #include <boost/signals2.hpp>
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn {
 class krbn_notification_center final {

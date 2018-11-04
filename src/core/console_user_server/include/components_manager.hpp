@@ -4,7 +4,6 @@
 
 #include "application_launcher.hpp"
 #include "constants.hpp"
-#include "dispatcher.hpp"
 #include "grabber_client.hpp"
 #include "logger.hpp"
 #include "menu_process_manager.hpp"
@@ -19,6 +18,7 @@
 #include "receiver.hpp"
 #include "session.hpp"
 #include "updater_process_manager.hpp"
+#include <pqrs/dispatcher.hpp>
 #include <thread>
 
 namespace krbn {

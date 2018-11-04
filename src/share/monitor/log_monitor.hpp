@@ -2,13 +2,13 @@
 
 #include "boost_defs.hpp"
 
-#include "dispatcher.hpp"
 #include "filesystem.hpp"
 #include "spdlog_utility.hpp"
 #include <CoreFoundation/CoreFoundation.h>
 #include <boost/signals2.hpp>
 #include <deque>
 #include <fstream>
+#include <pqrs/dispatcher.hpp>
 #include <thread>
 #include <type_safe/strong_typedef.hpp>
 #include <vector>
