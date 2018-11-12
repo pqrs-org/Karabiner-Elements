@@ -6,7 +6,7 @@
 - Karabiner-Elements makes a backup file of karabiner.json before updating it if the backup file does not exists.
   (~/.config/karabiner/automatic_backups/karabiner_YYYYMMDD.json)
 - A device grabbing process has been improved. (Observing device state by a separated `karabiner_observer` process.)
-- The task dispatcher has been improved by using [pqrs::dispatcher](https://github.com/tekezo/dispatcher).
+- The task dispatcher has been improved by using [pqrs::dispatcher](https://github.com/pqrs-org/dispatcher).
 
 ## Version 12.1.0
 
