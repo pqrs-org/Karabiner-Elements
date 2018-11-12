@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf_run_loop_thread v1.2.0
+// pqrs::cf_run_loop_thread v1.3.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -15,6 +15,8 @@
 namespace pqrs {
 class cf_run_loop_thread final {
 public:
+  cf_run_loop_thread(const cf_run_loop_thread&) = delete;
+
   cf_run_loop_thread(void) {
     running_wait_ = make_thread_wait();
 

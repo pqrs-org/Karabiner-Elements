@@ -1,1 +1,1 @@
-../../cget/pkg/pqrs-org__cpp-osx-cf_ptr/install/include/pqrs/cf_ptr.hpp
+../../cget/pkg/pqrs-org__cpp-cf_ptr/install/include/pqrs/cf_ptr.hpp
