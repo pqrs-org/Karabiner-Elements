@@ -6,78 +6,49 @@
 #include "json_utility.hpp"
 #include "types.hpp"
 #include <boost/optional.hpp>
+#include <pqrs/osx/iokit_types.hpp>
 
 namespace krbn {
 class device_detail final {
 public:
-  device_detail(boost::optional<vendor_id> vendor_id,
+  device_detail(pqrs::osx::iokit_registry_entry_id registry_entry_id,
+                boost::optional<vendor_id> vendor_id,
                 boost::optional<product_id> product_id,
                 boost::optional<location_id> location_id,
                 boost::optional<std::string> manufacturer,
                 boost::optional<std::string> product,
                 boost::optional<std::string> serial_number,
                 boost::optional<std::string> transport,
-                boost::optional<registry_entry_id> registry_entry_id,
                 boost::optional<bool> is_keyboard,
-                boost::optional<bool> is_pointing_device) : vendor_id_(vendor_id),
+                boost::optional<bool> is_pointing_device) : registry_entry_id_(registry_entry_id),
+                                                            vendor_id_(vendor_id),
                                                             product_id_(product_id),
                                                             location_id_(location_id),
                                                             manufacturer_(manufacturer),
                                                             product_(product),
                                                             serial_number_(serial_number),
                                                             transport_(transport),
-                                                            registry_entry_id_(registry_entry_id),
                                                             is_keyboard_(is_keyboard),
                                                             is_pointing_device_(is_pointing_device) {
   }
 
-  device_detail(IOHIDDeviceRef device) : device_detail(iokit_utility::find_vendor_id(device),
+  device_detail(pqrs::osx::iokit_registry_entry_id registry_entry_id,
+                IOHIDDeviceRef device) : device_detail(registry_entry_id,
+                                                       iokit_utility::find_vendor_id(device),
                                                        iokit_utility::find_product_id(device),
                                                        iokit_utility::find_location_id(device),
                                                        iokit_utility::find_manufacturer(device),
                                                        iokit_utility::find_product(device),
                                                        iokit_utility::find_serial_number(device),
                                                        iokit_utility::find_transport(device),
-                                                       iokit_utility::find_registry_entry_id(device),
                                                        iokit_utility::is_keyboard(device),
                                                        iokit_utility::is_pointing_device(device)) {
   }
 
-  device_detail(const nlohmann::json& json) {
-    if (auto v = json_utility::find_optional<uint32_t>(json, "vendor_id")) {
-      vendor_id_ = vendor_id(*v);
-    }
-    if (auto v = json_utility::find_optional<uint32_t>(json, "product_id")) {
-      product_id_ = product_id(*v);
-    }
-    if (auto v = json_utility::find_optional<uint32_t>(json, "location_id")) {
-      location_id_ = location_id(*v);
-    }
-    if (auto v = json_utility::find_optional<std::string>(json, "manufacturer")) {
-      manufacturer_ = *v;
-    }
-    if (auto v = json_utility::find_optional<std::string>(json, "product")) {
-      product_ = *v;
-    }
-    if (auto v = json_utility::find_optional<std::string>(json, "serial_number")) {
-      serial_number_ = *v;
-    }
-    if (auto v = json_utility::find_optional<std::string>(json, "transport")) {
-      transport_ = *v;
-    }
-    if (auto v = json_utility::find_optional<uint64_t>(json, "registry_entry_id")) {
-      registry_entry_id_ = registry_entry_id(*v);
-    }
-    if (auto v = json_utility::find_optional<bool>(json, "is_keyboard")) {
-      is_keyboard_ = *v;
-    }
-    if (auto v = json_utility::find_optional<bool>(json, "is_pointing_device")) {
-      is_pointing_device_ = *v;
-    }
-  }
-
   nlohmann::json to_json(void) const {
     nlohmann::json json;
+
+    json["registry_entry_id"] = type_safe::get(registry_entry_id_);
 
     if (vendor_id_) {
       json["vendor_id"] = type_safe::get(*vendor_id_);
@@ -99,9 +70,6 @@ public:
     }
     if (transport_) {
       json["transport"] = *transport_;
-    }
-    if (registry_entry_id_) {
-      json["registry_entry_id"] = type_safe::get(*registry_entry_id_);
     }
     if (is_keyboard_) {
       json["is_keyboard"] = *is_keyboard_;
@@ -141,7 +109,7 @@ public:
     return transport_;
   }
 
-  boost::optional<registry_entry_id> get_registry_entry_id(void) const {
+  boost::optional<pqrs::osx::iokit_registry_entry_id> get_registry_entry_id(void) const {
     return registry_entry_id_;
   }
 
@@ -192,8 +160,8 @@ public:
 
     // registry_entry_id
     {
-      auto r1 = make_registry_entry_id_value();
-      auto r2 = other.make_registry_entry_id_value();
+      auto r1 = registry_entry_id_;
+      auto r2 = other.registry_entry_id_;
       if (r1 != r2) {
         return r1 < r2;
       }
@@ -231,13 +199,7 @@ private:
     return false;
   }
 
-  registry_entry_id make_registry_entry_id_value(void) const {
-    if (registry_entry_id_) {
-      return *registry_entry_id_;
-    }
-    return registry_entry_id(0);
-  }
-
+  pqrs::osx::iokit_registry_entry_id registry_entry_id_;
   boost::optional<vendor_id> vendor_id_;
   boost::optional<product_id> product_id_;
   boost::optional<location_id> location_id_;
@@ -245,7 +207,6 @@ private:
   boost::optional<std::string> product_;
   boost::optional<std::string> serial_number_;
   boost::optional<std::string> transport_;
-  boost::optional<registry_entry_id> registry_entry_id_;
   boost::optional<bool> is_keyboard_;
   boost::optional<bool> is_pointing_device_;
 };

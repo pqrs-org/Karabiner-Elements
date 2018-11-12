@@ -264,48 +264,84 @@ TEST_CASE("conditions.input_source") {
 
 TEST_CASE("conditions.device") {
   krbn::manipulator_environment manipulator_environment;
-  auto device_id_8888_9999 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-      {"vendor_id", 8888},
-      {"product_id", 9999},
-      {"is_keyboard", true},
-      {"is_pointing_device", false},
-  })));
-  auto device_id_1000_2000 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-      {"vendor_id", 1000},
-      {"product_id", 2000},
-      {"is_keyboard", true},
-      {"is_pointing_device", false},
-  })));
-  auto device_id_1000_2001 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-      {"vendor_id", 1000},
-      {"product_id", 2001},
-      {"is_keyboard", true},
-      {"is_pointing_device", false},
-  })));
-  auto device_id_1001_2000 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-      {"vendor_id", 1001},
-      {"product_id", 2000},
-      {"is_keyboard", true},
-      {"is_pointing_device", false},
-  })));
-  auto device_id_1001_2001 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-      {"vendor_id", 1001},
-      {"product_id", 2001},
-      {"is_keyboard", true},
-      {"is_pointing_device", false},
-  })));
-  auto device_id_1099_9999 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-      {"vendor_id", 1099},
-      {"product_id", 9999},
-      {"is_keyboard", true},
-      {"is_pointing_device", false},
-  })));
+  auto device_id_8888_9999 = krbn::types::make_new_device_id(
+      std::make_shared<krbn::device_detail>(
+          pqrs::osx::iokit_registry_entry_id(0),
+          krbn::vendor_id(8888),
+          krbn::product_id(9999),
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          true,
+          false));
+  auto device_id_1000_2000 = krbn::types::make_new_device_id(
+      std::make_shared<krbn::device_detail>(
+          pqrs::osx::iokit_registry_entry_id(0),
+          krbn::vendor_id(1000),
+          krbn::product_id(2000),
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          true,
+          false));
+  auto device_id_1000_2001 = krbn::types::make_new_device_id(
+      std::make_shared<krbn::device_detail>(
+          pqrs::osx::iokit_registry_entry_id(0),
+          krbn::vendor_id(1000),
+          krbn::product_id(2001),
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          true,
+          false));
+  auto device_id_1001_2000 = krbn::types::make_new_device_id(
+      std::make_shared<krbn::device_detail>(
+          pqrs::osx::iokit_registry_entry_id(0),
+          krbn::vendor_id(1001),
+          krbn::product_id(2000),
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          true,
+          false));
+  auto device_id_1001_2001 = krbn::types::make_new_device_id(
+      std::make_shared<krbn::device_detail>(
+          pqrs::osx::iokit_registry_entry_id(0),
+          krbn::vendor_id(1001),
+          krbn::product_id(2001),
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          true,
+          false));
+  auto device_id_1099_9999 = krbn::types::make_new_device_id(
+      std::make_shared<krbn::device_detail>(
+          pqrs::osx::iokit_registry_entry_id(0),
+          krbn::vendor_id(1099),
+          krbn::product_id(9999),
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          true,
+          false));
 
-#define ENTRY(DEVICE_ID)                                                                \
-  krbn::event_queue::entry(DEVICE_ID,                                                   \
+#define ENTRY(DEVICE_ID)                                                                      \
+  krbn::event_queue::entry(DEVICE_ID,                                                         \
                            krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)), \
-                           krbn::event_queue::event(krbn::key_code::a),                 \
-                           krbn::event_type::key_down,                                  \
+                           krbn::event_queue::event(krbn::key_code::a),                       \
+                           krbn::event_type::key_down,                                        \
                            krbn::event_queue::event(krbn::key_code::a))
 
   {
@@ -354,33 +390,57 @@ TEST_CASE("conditions.device") {
     REQUIRE(condition.is_fulfilled(ENTRY(device_id_1000_2001),
                                    manipulator_environment) == false);
 
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-                                       {"vendor_id", 1000},
-                                       {"product_id", 2000},
-                                       {"is_keyboard", true},
-                                       {"is_pointing_device", false},
-                                   })))),
+    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
+                                       std::make_shared<krbn::device_detail>(
+                                           pqrs::osx::iokit_registry_entry_id(0),
+                                           krbn::vendor_id(1000),
+                                           krbn::product_id(2000),
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           true,
+                                           false))),
                                    manipulator_environment) == true);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-                                       {"vendor_id", 1000},
-                                       {"product_id", 2000},
-                                       {"is_keyboard", false},
-                                       {"is_pointing_device", false},
-                                   })))),
+    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
+                                       std::make_shared<krbn::device_detail>(
+                                           pqrs::osx::iokit_registry_entry_id(0),
+                                           krbn::vendor_id(1000),
+                                           krbn::product_id(2000),
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           false,
+                                           false))),
                                    manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-                                       {"vendor_id", 1000},
-                                       {"product_id", 2000},
-                                       {"is_keyboard", true},
-                                       {"is_pointing_device", true},
-                                   })))),
+    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
+                                       std::make_shared<krbn::device_detail>(
+                                           pqrs::osx::iokit_registry_entry_id(0),
+                                           krbn::vendor_id(1000),
+                                           krbn::product_id(2000),
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           true,
+                                           true))),
                                    manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-                                       {"vendor_id", 1000},
-                                       {"product_id", 2000},
-                                       {"is_keyboard", false},
-                                       {"is_pointing_device", true},
-                                   })))),
+    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
+                                       std::make_shared<krbn::device_detail>(
+                                           pqrs::osx::iokit_registry_entry_id(0),
+                                           krbn::vendor_id(1000),
+                                           krbn::product_id(2000),
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           false,
+                                           true))),
                                    manipulator_environment) == false);
   }
   {
@@ -393,22 +453,44 @@ TEST_CASE("conditions.device") {
     json["identifiers"].back()["location_id"] = 3000;
     krbn::manipulator::details::conditions::device condition(json);
 
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-                                       {"vendor_id", 1000},
-                                       {"product_id", 2000},
-                                       {"location_id", 3000},
-                                   })))),
+    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
+                                       std::make_shared<krbn::device_detail>(
+                                           pqrs::osx::iokit_registry_entry_id(0),
+                                           krbn::vendor_id(1000),
+                                           krbn::product_id(2000),
+                                           krbn::location_id(3000),
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none))),
                                    manipulator_environment) == true);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-                                       {"vendor_id", 1000},
-                                       {"product_id", 2000},
-                                   })))),
+    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
+                                       std::make_shared<krbn::device_detail>(
+                                           pqrs::osx::iokit_registry_entry_id(0),
+                                           krbn::vendor_id(1000),
+                                           krbn::product_id(2000),
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none))),
                                    manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-                                       {"vendor_id", 1000},
-                                       {"product_id", 2000},
-                                       {"location_id", 4000},
-                                   })))),
+    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
+                                       std::make_shared<krbn::device_detail>(
+                                           pqrs::osx::iokit_registry_entry_id(0),
+                                           krbn::vendor_id(1000),
+                                           krbn::product_id(2000),
+                                           krbn::location_id(4000),
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none,
+                                           boost::none))),
                                    manipulator_environment) == false);
   }
 

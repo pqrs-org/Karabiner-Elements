@@ -7,7 +7,6 @@
 
 TEST_CASE("sizeof") {
   REQUIRE(sizeof(krbn::absolute_time_point) == 8);
-  REQUIRE(sizeof(krbn::registry_entry_id) == 8);
   REQUIRE(sizeof(krbn::vendor_id) == 4);
   REQUIRE(sizeof(krbn::product_id) == 4);
   REQUIRE(sizeof(krbn::location_id) == 4);
@@ -161,17 +160,17 @@ TEST_CASE("pointing_motion::clear") {
 TEST_CASE("grabbable_state") {
   {
     krbn::grabbable_state grabbable_state;
-    REQUIRE(grabbable_state.get_registry_entry_id() == krbn::registry_entry_id(0));
+    REQUIRE(grabbable_state.get_registry_entry_id() == pqrs::osx::iokit_registry_entry_id(0));
     REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::grabbable);
     REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::none);
     REQUIRE(grabbable_state.get_time_stamp() == krbn::absolute_time_point(0));
   }
   {
-    krbn::grabbable_state grabbable_state(krbn::registry_entry_id(1234),
+    krbn::grabbable_state grabbable_state(pqrs::osx::iokit_registry_entry_id(1234),
                                           krbn::grabbable_state::state::ungrabbable_temporarily,
                                           krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
                                           krbn::absolute_time_point(1000));
-    REQUIRE(grabbable_state.get_registry_entry_id() == krbn::registry_entry_id(1234));
+    REQUIRE(grabbable_state.get_registry_entry_id() == pqrs::osx::iokit_registry_entry_id(1234));
     REQUIRE(grabbable_state.get_state() == krbn::grabbable_state::state::ungrabbable_temporarily);
     REQUIRE(grabbable_state.get_ungrabbable_temporarily_reason() == krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating);
     REQUIRE(grabbable_state.get_time_stamp() == krbn::absolute_time_point(1000));
@@ -180,15 +179,15 @@ TEST_CASE("grabbable_state") {
 
 TEST_CASE("grabbable_state::equals_except_time_stamp") {
   {
-    krbn::grabbable_state grabbable_state1(krbn::registry_entry_id(1234),
+    krbn::grabbable_state grabbable_state1(pqrs::osx::iokit_registry_entry_id(1234),
                                            krbn::grabbable_state::state::ungrabbable_temporarily,
                                            krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
                                            krbn::absolute_time_point(1000));
-    krbn::grabbable_state grabbable_state2(krbn::registry_entry_id(1234),
+    krbn::grabbable_state grabbable_state2(pqrs::osx::iokit_registry_entry_id(1234),
                                            krbn::grabbable_state::state::ungrabbable_temporarily,
                                            krbn::grabbable_state::ungrabbable_temporarily_reason::key_repeating,
                                            krbn::absolute_time_point(2000));
-    krbn::grabbable_state grabbable_state3(krbn::registry_entry_id(1234),
+    krbn::grabbable_state grabbable_state3(pqrs::osx::iokit_registry_entry_id(1234),
                                            krbn::grabbable_state::state::device_error,
                                            krbn::grabbable_state::ungrabbable_temporarily_reason::none,
                                            krbn::absolute_time_point(3000));
@@ -522,19 +521,31 @@ TEST_CASE("make_pointing_button") {
 }
 
 TEST_CASE("make_new_device_id") {
-  auto device_id1 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-      {"vendor_id", 1234},
-      {"product_id", 5678},
-      {"is_keyboard", true},
-      {"is_pointing_device", false},
-  })));
+  auto device_id1 = krbn::types::make_new_device_id(
+      std::make_shared<krbn::device_detail>(
+          pqrs::osx::iokit_registry_entry_id(0),
+          krbn::vendor_id(1234),
+          krbn::product_id(5678),
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          true,
+          false));
 
-  auto device_id2 = krbn::types::make_new_device_id(std::make_shared<krbn::device_detail>(nlohmann::json({
-      {"vendor_id", 2345},
-      {"product_id", 6789},
-      {"is_keyboard", false},
-      {"is_pointing_device", true},
-  })));
+  auto device_id2 = krbn::types::make_new_device_id(
+      std::make_shared<krbn::device_detail>(
+          pqrs::osx::iokit_registry_entry_id(0),
+          krbn::vendor_id(2345),
+          krbn::product_id(6789),
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          boost::none,
+          false,
+          true));
 
   REQUIRE(krbn::types::find_device_detail(device_id1));
   REQUIRE(krbn::types::find_device_detail(device_id1)->get_vendor_id() == krbn::vendor_id(1234));

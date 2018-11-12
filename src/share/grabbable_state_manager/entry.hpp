@@ -2,10 +2,10 @@
 
 class entry final {
 public:
-  entry(registry_entry_id registry_entry_id) : grabbable_state_(registry_entry_id,
-                                                                grabbable_state::state::none,
-                                                                grabbable_state::ungrabbable_temporarily_reason::none,
-                                                                absolute_time_point(0)) {
+  entry(pqrs::osx::iokit_registry_entry_id registry_entry_id) : grabbable_state_(registry_entry_id,
+                                                                                 grabbable_state::state::none,
+                                                                                 grabbable_state::ungrabbable_temporarily_reason::none,
+                                                                                 absolute_time_point(0)) {
   }
 
   const grabbable_state& get_grabbable_state(void) const {
@@ -16,7 +16,7 @@ public:
     grabbable_state_ = grabbable_state;
   }
 
-  void update(registry_entry_id registry_entry_id,
+  void update(pqrs::osx::iokit_registry_entry_id registry_entry_id,
               absolute_time_point time_stamp,
               const event_queue::entry& entry) {
     if (auto key_code = entry.get_event().get_key_code()) {
@@ -60,7 +60,7 @@ public:
   }
 
 private:
-  void update_grabbable_state(registry_entry_id registry_entry_id,
+  void update_grabbable_state(pqrs::osx::iokit_registry_entry_id registry_entry_id,
                               absolute_time_point time_stamp) {
     // Ungrabbable while key repeating
 

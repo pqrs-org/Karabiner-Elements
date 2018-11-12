@@ -29,6 +29,7 @@
 #include <pqrs/cf_ptr.hpp>
 #include <pqrs/cf_run_loop_thread.hpp>
 #include <pqrs/osx/iokit_return.hpp>
+#include <pqrs/osx/iokit_types.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -53,13 +54,14 @@ public:
   human_interface_device(const human_interface_device&) = delete;
 
   human_interface_device(IOHIDDeviceRef _Nonnull device,
-                         registry_entry_id registry_entry_id) : dispatcher_client(),
-                                                                device_(device),
-                                                                registry_entry_id_(registry_entry_id),
-                                                                device_id_(types::make_new_device_id(std::make_shared<device_detail>(*device_))),
-                                                                removed_(false),
-                                                                opened_(false),
-                                                                scheduled_(false) {
+                         pqrs::osx::iokit_registry_entry_id registry_entry_id) : dispatcher_client(),
+                                                                                 device_(device),
+                                                                                 registry_entry_id_(registry_entry_id),
+                                                                                 device_id_(types::make_new_device_id(std::make_shared<device_detail>(registry_entry_id,
+                                                                                                                                                      *device_))),
+                                                                                 removed_(false),
+                                                                                 opened_(false),
+                                                                                 scheduled_(false) {
     // ----------------------------------------
 
     cf_run_loop_thread_ = std::make_unique<pqrs::cf_run_loop_thread>();
@@ -207,7 +209,7 @@ public:
     logger::get_logger().info("human_interface_device:{0} is destroyed.", name_for_log_);
   }
 
-  registry_entry_id get_registry_entry_id(void) const {
+  pqrs::osx::iokit_registry_entry_id get_registry_entry_id(void) const {
     return registry_entry_id_;
   }
 
@@ -248,17 +250,8 @@ public:
   }
 
   device_detail make_device_detail(void) const {
-    return device_detail(*device_);
-  }
-
-  bool validate(void) const {
-    // `iokit_utility::find_registry_entry_id` is failed after `device_` is removed.
-
-    if (!iokit_utility::find_registry_entry_id(*device_)) {
-      return false;
-    }
-
-    return true;
+    return device_detail(registry_entry_id_,
+                         *device_);
   }
 
   void async_open(IOOptionBits options = kIOHIDOptionsTypeNone) {
@@ -650,7 +643,7 @@ private:
   }
 
   pqrs::cf_ptr<IOHIDDeviceRef> device_;
-  registry_entry_id registry_entry_id_;
+  pqrs::osx::iokit_registry_entry_id registry_entry_id_;
 
   std::unique_ptr<pqrs::cf_run_loop_thread> cf_run_loop_thread_;
   device_id device_id_;

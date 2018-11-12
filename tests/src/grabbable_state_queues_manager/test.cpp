@@ -10,8 +10,8 @@
 namespace {
 auto device_id1 = krbn::device_id::zero;
 auto device_id2 = krbn::device_id::zero;
-auto registry_entry_id1 = krbn::registry_entry_id(1);
-auto registry_entry_id2 = krbn::registry_entry_id(2);
+auto registry_entry_id1 = pqrs::osx::iokit_registry_entry_id(1);
+auto registry_entry_id2 = pqrs::osx::iokit_registry_entry_id(2);
 } // namespace
 
 TEST_CASE("initialize") {
@@ -20,14 +20,14 @@ TEST_CASE("initialize") {
   krbn::dispatcher_utility::initialize_dispatchers();
 
   {
-    auto device_detail = std::make_shared<krbn::device_detail>(krbn::vendor_id(1001),
+    auto device_detail = std::make_shared<krbn::device_detail>(registry_entry_id1,
+                                                               krbn::vendor_id(1001),
                                                                krbn::product_id(2001),
                                                                krbn::location_id(3001),
                                                                "manufacturer_1"s,
                                                                "product_1"s,
                                                                "serial_number_1"s,
                                                                "transport_1"s,
-                                                               registry_entry_id1,
                                                                true,
                                                                true);
     device_id1 = krbn::types::make_new_device_id(device_detail);
@@ -37,14 +37,14 @@ TEST_CASE("initialize") {
   }
 
   {
-    auto device_detail = std::make_shared<krbn::device_detail>(krbn::vendor_id(1002),
+    auto device_detail = std::make_shared<krbn::device_detail>(registry_entry_id2,
+                                                               krbn::vendor_id(1002),
                                                                krbn::product_id(2002),
                                                                krbn::location_id(3002),
                                                                "manufacturer_2"s,
                                                                "product_2"s,
                                                                "serial_number_2"s,
                                                                "transport_2"s,
-                                                               registry_entry_id2,
                                                                true,
                                                                true);
     device_id2 = krbn::types::make_new_device_id(device_detail);
@@ -58,11 +58,11 @@ TEST_CASE("grabbable_state_queues_manager") {
   {
     auto manager = std::make_unique<krbn::grabbable_state_queues_manager>();
 
-    std::unordered_map<krbn::registry_entry_id, boost::optional<krbn::grabbable_state>> last_changed_grabbable_states;
+    std::unordered_map<pqrs::osx::iokit_registry_entry_id, boost::optional<krbn::grabbable_state>> last_changed_grabbable_states;
     last_changed_grabbable_states[registry_entry_id1] = boost::none;
     last_changed_grabbable_states[registry_entry_id2] = boost::none;
 
-    std::unordered_map<krbn::registry_entry_id, int> changed_counts;
+    std::unordered_map<pqrs::osx::iokit_registry_entry_id, int> changed_counts;
     changed_counts[registry_entry_id1] = 0;
     changed_counts[registry_entry_id2] = 0;
 

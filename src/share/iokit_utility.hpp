@@ -10,25 +10,13 @@
 #include <IOKit/hid/IOHIDKeys.h>
 #include <boost/optional.hpp>
 #include <cstdint>
+#include <pqrs/osx/iokit_types.hpp>
 #include <string>
 #include <vector>
 
 namespace krbn {
 class iokit_utility final {
 public:
-  static boost::optional<registry_entry_id> find_registry_entry_id(io_registry_entry_t registry_entry) {
-    // Note:
-    // IORegistryEntryGetRegistryEntryID returns MACH_SEND_INVALID_DEST in callback of IOHIDManagerRegisterDeviceRemovalCallback.
-    // Thus, we cannot use it as a unique id for device matching/removal.
-
-    uint64_t value;
-    auto kr = IORegistryEntryGetRegistryEntryID(registry_entry, &value);
-    if (kr != KERN_SUCCESS) {
-      return boost::none;
-    }
-    return registry_entry_id(value);
-  }
-
   static boost::optional<std::string> find_string_property(io_service_t service, CFStringRef _Nonnull key) {
     if (!service) {
       return boost::none;
@@ -64,10 +52,6 @@ public:
       return IOHIDDeviceCreate(kCFAllocatorDefault, service);
     }
     return nullptr;
-  }
-
-  static boost::optional<registry_entry_id> find_registry_entry_id(IOHIDDeviceRef _Nonnull device) {
-    return find_registry_entry_id(IOHIDDeviceGetService(device));
   }
 
   static boost::optional<long> find_long_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key) {
@@ -153,8 +137,11 @@ public:
     return false;
   }
 
-  static void log_matching_device(IOHIDDeviceRef _Nonnull device) {
+  static void log_matching_device(pqrs::osx::iokit_registry_entry_id registry_entry_id,
+                                  IOHIDDeviceRef _Nonnull device) {
     logger::get_logger().info("matching device:");
+    logger::get_logger().info("  registry_entry_id: {0}", type_safe::get(registry_entry_id));
+
     if (auto manufacturer = find_manufacturer(device)) {
       logger::get_logger().info("  manufacturer: {0}", *manufacturer);
     }
@@ -169,20 +156,8 @@ public:
     if (auto serial_number = find_serial_number(device)) {
       logger::get_logger().info("  serial_number: {0}", *serial_number);
     }
-    if (auto registry_entry_id = find_registry_entry_id(device)) {
-      logger::get_logger().info("  registry_entry_id: {0}", static_cast<uint64_t>(*registry_entry_id));
-    }
     logger::get_logger().info("  is_keyboard: {0}", is_keyboard(device));
     logger::get_logger().info("  is_pointing_device: {0}", is_pointing_device(device));
-  }
-
-  static void log_removal_device(IOHIDDeviceRef _Nonnull device) {
-    logger::get_logger().info("removal device:");
-    logger::get_logger().info("  vendor_id: {0}", static_cast<uint32_t>(find_vendor_id(device)));
-    logger::get_logger().info("  product_id: {0}", static_cast<uint32_t>(find_product_id(device)));
-    if (auto location_id = find_location_id(device)) {
-      logger::get_logger().info("  location_id: {0:#x}", static_cast<uint32_t>(*location_id));
-    }
   }
 };
 } // namespace krbn

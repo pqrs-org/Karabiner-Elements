@@ -9,8 +9,8 @@
 namespace {
 auto device_id1 = krbn::device_id::zero;
 auto device_id2 = krbn::device_id::zero;
-auto registry_entry_id1 = krbn::registry_entry_id(4001);
-auto registry_entry_id2 = krbn::registry_entry_id(4002);
+auto registry_entry_id1 = pqrs::osx::iokit_registry_entry_id(4001);
+auto registry_entry_id2 = pqrs::osx::iokit_registry_entry_id(4002);
 } // namespace
 
 TEST_CASE("initialize") {
@@ -19,14 +19,14 @@ TEST_CASE("initialize") {
   krbn::dispatcher_utility::initialize_dispatchers();
 
   {
-    auto device_detail = std::make_shared<krbn::device_detail>(krbn::vendor_id(1001),
+    auto device_detail = std::make_shared<krbn::device_detail>(registry_entry_id1,
+                                                               krbn::vendor_id(1001),
                                                                krbn::product_id(2001),
                                                                krbn::location_id(3001),
                                                                "manufacturer_1"s,
                                                                "product_1"s,
                                                                "serial_number_1"s,
                                                                "transport_1"s,
-                                                               registry_entry_id1,
                                                                true,
                                                                true);
     device_id1 = krbn::types::make_new_device_id(device_detail);
@@ -36,14 +36,14 @@ TEST_CASE("initialize") {
   }
 
   {
-    auto device_detail = std::make_shared<krbn::device_detail>(krbn::vendor_id(1002),
+    auto device_detail = std::make_shared<krbn::device_detail>(registry_entry_id2,
+                                                               krbn::vendor_id(1002),
                                                                krbn::product_id(2002),
                                                                krbn::location_id(3002),
                                                                "manufacturer_2"s,
                                                                "product_2"s,
                                                                "serial_number_2"s,
                                                                "transport_2"s,
-                                                               registry_entry_id2,
                                                                true,
                                                                true);
     device_id2 = krbn::types::make_new_device_id(device_detail);

@@ -112,7 +112,7 @@ public:
 
     hid_manager_ = std::make_unique<hid_manager>(targets);
 
-    hid_manager_->device_detecting.connect([](auto&& device) {
+    hid_manager_->device_detecting.connect([](auto&& registry_entry_id, auto&& device) {
       if (iokit_utility::is_karabiner_virtual_hid_device(device)) {
         return false;
       }
@@ -424,7 +424,7 @@ private:
     virtual_hid_device_client_->async_close();
   }
 
-  std::shared_ptr<device_state> find_device_state(registry_entry_id registry_entry_id) const {
+  std::shared_ptr<device_state> find_device_state(pqrs::osx::iokit_registry_entry_id registry_entry_id) const {
     auto it = device_states_.find(registry_entry_id);
     if (it != std::end(device_states_)) {
       return it->second;
@@ -432,14 +432,14 @@ private:
     return nullptr;
   }
 
-  bool grabbed(registry_entry_id registry_entry_id) const {
+  bool grabbed(pqrs::osx::iokit_registry_entry_id registry_entry_id) const {
     if (auto s = find_device_state(registry_entry_id)) {
       return s->get_grabbed();
     }
     return false;
   }
 
-  void set_grabbed(registry_entry_id registry_entry_id, bool value) {
+  void set_grabbed(pqrs::osx::iokit_registry_entry_id registry_entry_id, bool value) {
     auto s = find_device_state(registry_entry_id);
     if (!s) {
       s = std::make_shared<device_state>();
@@ -448,14 +448,14 @@ private:
     s->set_grabbed(value);
   }
 
-  bool disabled(registry_entry_id registry_entry_id) const {
+  bool disabled(pqrs::osx::iokit_registry_entry_id registry_entry_id) const {
     if (auto s = find_device_state(registry_entry_id)) {
       return s->get_disabled();
     }
     return false;
   }
 
-  void set_disabled(registry_entry_id registry_entry_id, bool value) {
+  void set_disabled(pqrs::osx::iokit_registry_entry_id registry_entry_id, bool value) {
     auto s = find_device_state(registry_entry_id);
     if (!s) {
       s = std::make_shared<device_state>();
@@ -464,7 +464,7 @@ private:
     s->set_disabled(value);
   }
 
-  void retry_grab(registry_entry_id registry_entry_id, boost::optional<grabbable_state> grabbable_state) {
+  void retry_grab(pqrs::osx::iokit_registry_entry_id registry_entry_id, boost::optional<grabbable_state> grabbable_state) {
     if (auto grabber = find_hid_grabber(registry_entry_id)) {
       // Check grabbable state
 
@@ -489,7 +489,7 @@ private:
     }
   }
 
-  std::shared_ptr<hid_grabber> find_hid_grabber(registry_entry_id registry_entry_id) {
+  std::shared_ptr<hid_grabber> find_hid_grabber(pqrs::osx::iokit_registry_entry_id registry_entry_id) {
     auto it = hid_grabbers_.find(registry_entry_id);
     if (it != std::end(hid_grabbers_)) {
       return it->second;
@@ -1029,8 +1029,8 @@ private:
   std::unique_ptr<event_tap_monitor> event_tap_monitor_;
   boost::optional<bool> last_caps_lock_state_;
   std::unique_ptr<hid_manager> hid_manager_;
-  std::unordered_map<registry_entry_id, std::shared_ptr<hid_grabber>> hid_grabbers_;
-  std::unordered_map<registry_entry_id, std::shared_ptr<device_state>> device_states_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<hid_grabber>> hid_grabbers_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<device_state>> device_states_;
 
   core_configuration::details::profile profile_;
   system_preferences system_preferences_;

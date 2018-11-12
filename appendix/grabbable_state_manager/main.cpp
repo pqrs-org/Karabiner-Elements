@@ -80,7 +80,7 @@ public:
 private:
   std::unique_ptr<krbn::grabbable_state_manager> grabbable_state_manager_;
   std::unique_ptr<krbn::hid_manager> hid_manager_;
-  std::unordered_map<krbn::registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 };
 } // namespace
 

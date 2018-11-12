@@ -9,6 +9,7 @@
 #include "keyboard_repeat_detector.hpp"
 #include <boost/signals2.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/iokit_types.hpp>
 
 namespace krbn {
 class grabbable_state_manager final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -93,13 +94,13 @@ public:
     }
   }
 
-  void erase(registry_entry_id registry_entry_id) {
+  void erase(pqrs::osx::iokit_registry_entry_id registry_entry_id) {
     std::lock_guard<std::mutex> lock(entries_mutex_);
 
     entries_.erase(registry_entry_id);
   }
 
-  boost::optional<grabbable_state> get_grabbable_state(registry_entry_id registry_entry_id) const {
+  boost::optional<grabbable_state> get_grabbable_state(pqrs::osx::iokit_registry_entry_id registry_entry_id) const {
     std::lock_guard<std::mutex> lock(entries_mutex_);
 
     auto it = entries_.find(registry_entry_id);
@@ -110,7 +111,7 @@ public:
   }
 
 private:
-  std::unordered_map<registry_entry_id, entry> entries_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, entry> entries_;
   mutable std::mutex entries_mutex_;
 };
 } // namespace krbn

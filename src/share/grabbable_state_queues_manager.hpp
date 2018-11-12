@@ -10,6 +10,7 @@
 #include <boost/optional.hpp>
 #include <boost/signals2.hpp>
 #include <mutex>
+#include <pqrs/osx/iokit_types.hpp>
 #include <unordered_map>
 
 namespace krbn {
@@ -17,7 +18,7 @@ class grabbable_state_queues_manager final : public pqrs::dispatcher::extra::dis
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  boost::signals2::signal<void(registry_entry_id, boost::optional<grabbable_state>)> grabbable_state_changed;
+  boost::signals2::signal<void(pqrs::osx::iokit_registry_entry_id, boost::optional<grabbable_state>)> grabbable_state_changed;
 
   // Methods
 
@@ -31,7 +32,7 @@ public:
     });
   }
 
-  boost::optional<grabbable_state> find_current_grabbable_state(registry_entry_id registry_entry_id) const {
+  boost::optional<grabbable_state> find_current_grabbable_state(pqrs::osx::iokit_registry_entry_id registry_entry_id) const {
     std::lock_guard<std::mutex> lock(queues_mutex_);
 
     auto it = queues_.find(registry_entry_id);
@@ -75,19 +76,19 @@ public:
     return result;
   }
 
-  void unset_first_grabbed_event_time_stamp(registry_entry_id registry_entry_id) {
+  void unset_first_grabbed_event_time_stamp(pqrs::osx::iokit_registry_entry_id registry_entry_id) {
     auto queue = find_or_create_queue(registry_entry_id);
     queue->unset_first_grabbed_event_time_stamp();
   }
 
-  void erase_queue(registry_entry_id registry_entry_id) {
+  void erase_queue(pqrs::osx::iokit_registry_entry_id registry_entry_id) {
     std::lock_guard<std::mutex> lock(queues_mutex_);
 
     queues_.erase(registry_entry_id);
   }
 
 private:
-  std::shared_ptr<grabbable_state_queue> find_or_create_queue(registry_entry_id registry_entry_id) {
+  std::shared_ptr<grabbable_state_queue> find_or_create_queue(pqrs::osx::iokit_registry_entry_id registry_entry_id) {
     std::lock_guard<std::mutex> lock(queues_mutex_);
 
     auto it = queues_.find(registry_entry_id);
@@ -106,7 +107,7 @@ private:
     return queue;
   }
 
-  std::unordered_map<registry_entry_id, std::shared_ptr<grabbable_state_queue>> queues_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<grabbable_state_queue>> queues_;
   mutable std::mutex queues_mutex_;
 };
 } // namespace krbn

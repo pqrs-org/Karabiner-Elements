@@ -12,6 +12,7 @@
 #include "time_utility.hpp"
 #include "types.hpp"
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/iokit_types.hpp>
 
 namespace krbn {
 class device_observer final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -41,8 +42,8 @@ public:
 
     hid_manager_ = std::make_unique<hid_manager>(targets);
 
-    hid_manager_->device_detecting.connect([](auto&& device) {
-      iokit_utility::log_matching_device(device);
+    hid_manager_->device_detecting.connect([](auto&& registry_entry_id, auto&& device) {
+      iokit_utility::log_matching_device(registry_entry_id, device);
 
       return true;
     });
@@ -129,7 +130,7 @@ private:
   std::weak_ptr<grabber_client> grabber_client_;
 
   std::unique_ptr<hid_manager> hid_manager_;
-  std::unordered_map<registry_entry_id, std::shared_ptr<hid_observer>> hid_observers_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<hid_observer>> hid_observers_;
   std::unique_ptr<grabbable_state_manager> grabbable_state_manager_;
 };
 } // namespace krbn

@@ -8,7 +8,7 @@
 #include <boost/optional/optional_io.hpp>
 
 namespace {
-auto registry_entry_id1 = krbn::registry_entry_id(1);
+auto registry_entry_id1 = pqrs::osx::iokit_registry_entry_id(1);
 } // namespace
 
 TEST_CASE("initialize") {

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "types/absolute_time_point.hpp"
-#include "types/registry_entry_id.hpp"
 #include <cstdint>
 #include <ostream>
+#include <pqrs/osx/iokit_types.hpp>
 
 namespace krbn {
 class grabbable_state final {
@@ -23,13 +23,13 @@ public:
     pointing_button_pressed,
   };
 
-  grabbable_state(void) : grabbable_state(registry_entry_id(0),
+  grabbable_state(void) : grabbable_state(pqrs::osx::iokit_registry_entry_id(0),
                                           state::grabbable,
                                           ungrabbable_temporarily_reason::none,
                                           absolute_time_point(0)) {
   }
 
-  grabbable_state(registry_entry_id registry_entry_id,
+  grabbable_state(pqrs::osx::iokit_registry_entry_id registry_entry_id,
                   state state,
                   ungrabbable_temporarily_reason ungrabbable_temporarily_reason,
                   absolute_time_point time_stamp) : registry_entry_id_(registry_entry_id),
@@ -38,7 +38,7 @@ public:
                                                     time_stamp_(time_stamp) {
   }
 
-  registry_entry_id get_registry_entry_id(void) const {
+  pqrs::osx::iokit_registry_entry_id get_registry_entry_id(void) const {
     return registry_entry_id_;
   }
 
@@ -70,7 +70,7 @@ public:
   bool operator!=(const grabbable_state& other) const { return !(*this == other); }
 
 private:
-  registry_entry_id registry_entry_id_;
+  pqrs::osx::iokit_registry_entry_id registry_entry_id_;
   state state_;
   ungrabbable_temporarily_reason ungrabbable_temporarily_reason_;
   absolute_time_point time_stamp_;
