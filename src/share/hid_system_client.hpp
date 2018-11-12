@@ -4,9 +4,10 @@
 
 #include "iokit_utility.hpp"
 #include "logger.hpp"
-#include "monitor/service_monitor.hpp"
 #include "types.hpp"
 #include <boost/signals2.hpp>
+#include <pqrs/osx/iokit_return.hpp>
+#include <pqrs/osx/iokit_service_monitor.hpp>
 
 namespace krbn {
 class hid_system_client final : pqrs::dispatcher::extra::dispatcher_client {
@@ -38,24 +39,21 @@ public:
                             connect_(IO_OBJECT_NULL),
                             caps_lock_state_check_timer_(*this) {
     if (auto matching_dictionary = IOServiceNameMatching(kIOHIDSystemClass)) {
-      service_monitor_ = std::make_unique<monitor::service_monitor::service_monitor>(matching_dictionary);
+      service_monitor_ = std::make_unique<pqrs::osx::iokit_service_monitor>(weak_dispatcher_,
+                                                                            matching_dictionary);
 
-      service_monitor_->service_detected.connect([this](auto&& services) {
-        if (!services->get_services().empty()) {
-          close_connection();
+      service_monitor_->service_detected.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
+        close_connection();
 
-          // Use first matched service.
-          open_connection(services->get_services().front());
-        }
+        // Use the last matched service.
+        open_connection(*service_ptr);
       });
 
-      service_monitor_->service_removed.connect([this](auto&& services) {
-        if (!services->get_services().empty()) {
-          close_connection();
+      service_monitor_->service_removed.connect([this](auto&& registry_entry_id) {
+        close_connection();
 
-          // Use the next service
-          service_monitor_->async_invoke_service_detected();
-        }
+        // Use the next service
+        service_monitor_->async_invoke_service_detected();
       });
 
       service_monitor_->async_start();
@@ -103,13 +101,13 @@ private:
     service_ = s;
     IOObjectRetain(service_);
 
-    auto kr = IOServiceOpen(service_, mach_task_self(), kIOHIDParamConnectType, &connect_);
-    if (kr == KERN_SUCCESS) {
+    pqrs::osx::iokit_return r = IOServiceOpen(service_, mach_task_self(), kIOHIDParamConnectType, &connect_);
+    if (r) {
       logger::get_logger().info("hid_system_client is opened.");
 
     } else {
       logger::get_logger().error("hid_system_client::open_connection is failed: {0}",
-                                 iokit_utility::get_error_name(kr));
+                                 r.to_string());
       connect_ = IO_OBJECT_NULL;
     }
   }
@@ -117,10 +115,10 @@ private:
   // This method is executed in the dispatcher thread.
   void close_connection(void) {
     if (connect_) {
-      auto kr = IOServiceClose(connect_);
-      if (kr != kIOReturnSuccess) {
+      pqrs::osx::iokit_return r = IOServiceClose(connect_);
+      if (!r) {
         logger::get_logger().error("hid_system_client::close_connection error: {0}",
-                                   iokit_utility::get_error_name(kr));
+                                   r.to_string());
       }
       connect_ = IO_OBJECT_NULL;
     }
@@ -141,10 +139,10 @@ private:
     }
 
     bool state = false;
-    auto kr = IOHIDGetModifierLockState(connect_, selector, &state);
-    if (kr != KERN_SUCCESS) {
+    pqrs::osx::iokit_return r = IOHIDGetModifierLockState(connect_, selector, &state);
+    if (!r) {
       logger::get_logger().error("IOHIDGetModifierLockState is failed: {0}",
-                                 iokit_utility::get_error_name(kr));
+                                 r.to_string());
       return boost::none;
     }
 
@@ -158,14 +156,14 @@ private:
       return;
     }
 
-    auto kr = IOHIDSetModifierLockState(connect_, selector, state);
-    if (kr != KERN_SUCCESS) {
+    pqrs::osx::iokit_return r = IOHIDSetModifierLockState(connect_, selector, state);
+    if (!r) {
       logger::get_logger().error("IOHIDSetModifierLockState is failed: {0}",
-                                 iokit_utility::get_error_name(kr));
+                                 r.to_string());
     }
   }
 
-  std::unique_ptr<monitor::service_monitor::service_monitor> service_monitor_;
+  std::unique_ptr<pqrs::osx::iokit_service_monitor> service_monitor_;
   io_service_t service_;
   io_connect_t connect_;
 

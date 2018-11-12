@@ -62,9 +62,8 @@ public:
       {
         auto c = hid->open_failed.connect([this](auto&& error) {
           if (auto hid = weak_hid_.lock()) {
-            auto message = fmt::format("IOHIDDeviceOpen error: {0} ({1}) {2}",
-                                       iokit_utility::get_error_name(error),
-                                       error,
+            auto message = fmt::format("IOHIDDeviceOpen error:{0} device:{1}",
+                                       error.to_string(),
                                        hid->get_name_for_log());
             logger_unique_filter_.error(message);
           }
@@ -88,9 +87,8 @@ public:
       {
         auto c = hid->close_failed.connect([this](auto&& error) {
           if (auto hid = weak_hid_.lock()) {
-            auto message = fmt::format("IOHIDDeviceClose error: {0} ({1}) {2}",
-                                       iokit_utility::get_error_name(error),
-                                       error,
+            auto message = fmt::format("IOHIDDeviceClose error:{0} device:{1}",
+                                       error.to_string(),
                                        hid->get_name_for_log());
             logger_unique_filter_.error(message);
 

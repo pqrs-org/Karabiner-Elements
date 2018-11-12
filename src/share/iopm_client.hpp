@@ -10,6 +10,7 @@
 #include <boost/signals2.hpp>
 #include <pqrs/cf_run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/iokit_return.hpp>
 
 namespace krbn {
 class iopm_client final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -78,10 +79,10 @@ private:
   // This method is executed in the dispatcher thread.
   void stop(void) {
     if (notifier_) {
-      auto kr = IODeregisterForSystemPower(&notifier_);
-      if (kr != kIOReturnSuccess) {
+      pqrs::osx::iokit_return r = IODeregisterForSystemPower(&notifier_);
+      if (!r) {
         logger::get_logger().error("IODeregisterForSystemPower is failed: {0}",
-                                   iokit_utility::get_error_name(kr));
+                                   r.to_string());
       }
       notifier_ = IO_OBJECT_NULL;
     }
@@ -92,10 +93,10 @@ private:
     }
 
     if (connect_) {
-      auto kr = IOServiceClose(connect_);
-      if (kr != kIOReturnSuccess) {
+      pqrs::osx::iokit_return r = IOServiceClose(connect_);
+      if (!r) {
         logger::get_logger().error("IOServiceClose is failed: {0}",
-                                   iokit_utility::get_error_name(kr));
+                                   r.to_string());
       }
       connect_ = IO_OBJECT_NULL;
     }
@@ -115,10 +116,10 @@ private:
       case kIOMessageSystemWillSleep:
         logger::get_logger().info("iopm_client::callback kIOMessageSystemWillSleep");
         if (connect_) {
-          auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
-          if (kr != kIOReturnSuccess) {
+          pqrs::osx::iokit_return r = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
+          if (!r) {
             logger::get_logger().error("IOAllowPowerChange is failed: {0}",
-                                       iokit_utility::get_error_name(kr));
+                                       r.to_string());
           }
         }
         break;
@@ -134,10 +135,10 @@ private:
       case kIOMessageCanSystemSleep:
         logger::get_logger().info("iopm_client::callback kIOMessageCanSystemSleep");
         if (connect_) {
-          auto kr = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
-          if (kr != kIOReturnSuccess) {
+          pqrs::osx::iokit_return r = IOAllowPowerChange(connect_, reinterpret_cast<intptr_t>(message_argument));
+          if (!r) {
             logger::get_logger().error("IOAllowPowerChange is failed: {0}",
-                                       iokit_utility::get_error_name(kr));
+                                       r.to_string());
           }
         }
         break;

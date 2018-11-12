@@ -2,8 +2,7 @@
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version")
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED on)
+set(CMAKE_CXX_STANDARD 17)
 
 include_directories(SYSTEM /opt/local/include)
 include_directories(SYSTEM /usr/local/include)

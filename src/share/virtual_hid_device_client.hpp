@@ -4,8 +4,9 @@
 
 #include "Karabiner-VirtualHIDDevice/dist/include/karabiner_virtual_hid_device_methods.hpp"
 #include "iokit_utility.hpp"
-#include "monitor/service_monitor.hpp"
 #include <boost/signals2.hpp>
+#include <pqrs/osx/iokit_return.hpp>
+#include <pqrs/osx/iokit_service_monitor.hpp>
 
 namespace krbn {
 class virtual_hid_device_client final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -35,24 +36,21 @@ public:
   void async_connect(void) {
     enqueue_to_dispatcher([this] {
       if (auto matching_dictionary = IOServiceNameMatching(pqrs::karabiner_virtual_hid_device::get_virtual_hid_root_name())) {
-        service_monitor_ = std::make_unique<monitor::service_monitor::service_monitor>(matching_dictionary);
+        service_monitor_ = std::make_unique<pqrs::osx::iokit_service_monitor>(weak_dispatcher_,
+                                                                              matching_dictionary);
 
-        service_monitor_->service_detected.connect([this](auto&& services) {
-          if (!services->get_services().empty()) {
-            close_connection();
+        service_monitor_->service_detected.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
+          close_connection();
 
-            // Use first matched service.
-            open_connection(services->get_services().front());
-          }
+          // Use the last matched service.
+          open_connection(*service_ptr);
         });
 
-        service_monitor_->service_removed.connect([this](auto&& services) {
-          if (!services->get_services().empty()) {
-            close_connection();
+        service_monitor_->service_removed.connect([this](auto&& registry_entry_id) {
+          close_connection();
 
-            // Use the next service
-            service_monitor_->async_invoke_service_detected();
-          }
+          // Use the next service
+          service_monitor_->async_invoke_service_detected();
         });
 
         service_monitor_->async_start();
@@ -212,8 +210,8 @@ private:
     service_ = s;
     IOObjectRetain(service_);
 
-    auto kr = IOServiceOpen(service_, mach_task_self(), kIOHIDServerConnectType, &connect_);
-    if (kr == KERN_SUCCESS) {
+    pqrs::osx::iokit_return r = IOServiceOpen(service_, mach_task_self(), kIOHIDServerConnectType, &connect_);
+    if (r) {
       logger::get_logger().info("virtual_hid_device_client is opened.");
 
       connected_ = true;
@@ -224,7 +222,7 @@ private:
 
     } else {
       logger::get_logger().error("virtual_hid_device_client::open_connection is failed: {0}",
-                                 iokit_utility::get_error_name(kr));
+                                 r.to_string());
       connect_ = IO_OBJECT_NULL;
     }
   }
@@ -232,10 +230,10 @@ private:
   // This method is executed in the dispatcher thread.
   void close_connection(void) {
     if (connect_) {
-      auto kr = IOServiceClose(connect_);
-      if (kr != kIOReturnSuccess) {
+      pqrs::osx::iokit_return r = IOServiceClose(connect_);
+      if (!r) {
         logger::get_logger().error("virtual_hid_device_client::close_connection error: {0}",
-                                   iokit_utility::get_error_name(kr));
+                                   r.to_string());
       }
       connect_ = IO_OBJECT_NULL;
 
@@ -257,7 +255,7 @@ private:
     virtual_hid_keyboard_ready_ = false;
   }
 
-  std::unique_ptr<monitor::service_monitor::service_monitor> service_monitor_;
+  std::unique_ptr<pqrs::osx::iokit_service_monitor> service_monitor_;
   io_service_t service_;
   io_connect_t connect_;
   std::atomic<bool> connected_;

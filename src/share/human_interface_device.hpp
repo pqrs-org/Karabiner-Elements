@@ -28,6 +28,7 @@
 #include <mach/mach_time.h>
 #include <pqrs/cf_ptr.hpp>
 #include <pqrs/cf_run_loop_thread.hpp>
+#include <pqrs/osx/iokit_return.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -37,10 +38,10 @@ public:
   // Signals (invoked from the shared dispatcher thread)
 
   boost::signals2::signal<void(void)> opened;
-  boost::signals2::signal<void(IOReturn error)> open_failed;
+  boost::signals2::signal<void(pqrs::osx::iokit_return error)> open_failed;
 
   boost::signals2::signal<void(void)> closed;
-  boost::signals2::signal<void(IOReturn error)> close_failed;
+  boost::signals2::signal<void(pqrs::osx::iokit_return error)> close_failed;
 
   // `event_queue` is not owned by `human_interface_device`.
   boost::signals2::signal<void(std::shared_ptr<event_queue::queue>)> values_arrived;

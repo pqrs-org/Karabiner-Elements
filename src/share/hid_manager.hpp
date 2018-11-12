@@ -7,11 +7,11 @@
 #include "device_detail.hpp"
 #include "human_interface_device.hpp"
 #include "logger.hpp"
-#include "monitor/service_monitor.hpp"
 #include "types.hpp"
 #include <IOKit/hid/IOHIDManager.h>
 #include <pqrs/cf_ptr.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/iokit_service_monitor.hpp>
 #include <unordered_map>
 
 namespace krbn {
@@ -70,30 +70,27 @@ private:
                                                   CFSTR(kIOHIDDeviceUsageKey),
                                                   static_cast<int64_t>(pair.second));
 
-        auto monitor = std::make_shared<monitor::service_monitor::service_monitor>(dictionary);
+        auto monitor = std::make_shared<pqrs::osx::iokit_service_monitor>(weak_dispatcher_,
+                                                                          dictionary);
 
-        monitor->service_detected.connect([this](auto&& services) {
-          for (const auto& service : services->get_services()) {
-            if (devices_.find(service) == std::end(devices_)) {
-              if (auto device = IOHIDDeviceCreate(kCFAllocatorDefault, service)) {
-                devices_[service] = pqrs::cf_ptr<IOHIDDeviceRef>(device);
+        monitor->service_detected.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
+          if (devices_.find(registry_entry_id) == std::end(devices_)) {
+            if (auto device = IOHIDDeviceCreate(kCFAllocatorDefault, *service_ptr)) {
+              devices_[registry_entry_id] = pqrs::cf_ptr<IOHIDDeviceRef>(device);
 
-                device_matching_callback(device);
+              device_matching_callback(device);
 
-                CFRelease(device);
-              }
+              CFRelease(device);
             }
           }
         });
 
-        monitor->service_removed.connect([this](auto&& services) {
-          for (const auto& service : services->get_services()) {
-            auto it = devices_.find(service);
-            if (it != std::end(devices_)) {
-              device_removal_callback(*(it->second));
+        monitor->service_removed.connect([this](auto&& registry_entry_id) {
+          auto it = devices_.find(registry_entry_id);
+          if (it != std::end(devices_)) {
+            device_removal_callback(*(it->second));
 
-              devices_.erase(it);
-            }
+            devices_.erase(it);
           }
         });
 
@@ -285,10 +282,10 @@ private:
 
   std::vector<std::pair<hid_usage_page, hid_usage>> usage_pairs_;
 
-  std::vector<std::shared_ptr<monitor::service_monitor::service_monitor>> service_monitors_;
+  std::vector<std::shared_ptr<pqrs::osx::iokit_service_monitor>> service_monitors_;
   pqrs::dispatcher::extra::timer refresh_timer_;
 
-  std::unordered_map<io_service_t, pqrs::cf_ptr<IOHIDDeviceRef>> devices_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, pqrs::cf_ptr<IOHIDDeviceRef>> devices_;
   std::unordered_map<IOHIDDeviceRef, registry_entry_id> registry_entry_ids_;
 
   std::vector<std::shared_ptr<human_interface_device>> hids_;
