@@ -1,6 +1,7 @@
 all:
-	@echo 'Type "make update_vendor"'
+	@echo 'Type "make update_cget"'
 
-update_vendor:
+update_cget:
 	rm -rf cget
+	cget install pqrs-org/cpp-cget-recipes
 	cget install -f cget-requirements.txt

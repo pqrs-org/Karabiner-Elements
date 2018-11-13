@@ -1,0 +1,1 @@
+../../../../../cget/pkg/pqrs-org__cpp-cget-recipes/install/etc/cget/recipes/pqrs-org/cpp-osx-iokit_service_monitor/requirements.txt

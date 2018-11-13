@@ -1,0 +1,1 @@
+../../../../../cget/pkg/pqrs-org__cpp-cget-recipes/install/etc/cget/recipes/pqrs-org/cpp-osx-iokit_hid_manager/requirements.txt

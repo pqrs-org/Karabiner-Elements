@@ -1,0 +1,6 @@
+fr00b0/nod@v0.5.0 --cmake header
+pqrs-org/cpp-cf_run_loop_thread
+pqrs-org/cpp-dispatcher
+pqrs-org/cpp-osx-iokit_object_ptr
+pqrs-org/cpp-osx-iokit_return
+pqrs-org/cpp-osx-iokit_types

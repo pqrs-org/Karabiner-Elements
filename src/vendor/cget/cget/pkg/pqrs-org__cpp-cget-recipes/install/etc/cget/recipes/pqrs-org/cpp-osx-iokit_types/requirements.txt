@@ -1,0 +1,1 @@
+foonathan/type_safe@v0.2 --cmake header
