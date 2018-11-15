@@ -1,1 +1,1 @@
-pqrs-org/cpp-osx-iokit_service_monitor@v2.2.1 --cmake header
+pqrs-org/cpp-osx-iokit_service_monitor@v2.2.2 --cmake header

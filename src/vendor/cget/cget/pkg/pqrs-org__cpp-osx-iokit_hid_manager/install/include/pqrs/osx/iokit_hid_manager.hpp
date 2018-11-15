@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_manager v1.1
+// pqrs::iokit_hid_manager v1.2
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -21,6 +21,7 @@ public:
 
   nod::signal<void(iokit_registry_entry_id, cf_ptr<IOHIDDeviceRef>)> device_detected;
   nod::signal<void(iokit_registry_entry_id)> device_removed;
+  nod::signal<void(const std::string&, iokit_return)> error_occurred;
 
   // Methods
 
@@ -71,6 +72,12 @@ private:
 
           enqueue_to_dispatcher([this, registry_entry_id] {
             device_removed(registry_entry_id);
+          });
+        });
+
+        monitor->error_occurred.connect([this](auto&& message, auto&& r) {
+          enqueue_to_dispatcher([this, message, r] {
+            error_occurred(message, r);
           });
         });
 

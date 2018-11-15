@@ -1,1 +1,1 @@
-pqrs-org/cpp-osx-iokit_hid_manager@v1.1.0 --cmake header
+pqrs-org/cpp-osx-iokit_hid_manager@v1.2.0 --cmake header
