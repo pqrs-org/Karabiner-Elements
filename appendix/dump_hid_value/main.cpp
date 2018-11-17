@@ -2,8 +2,8 @@
 
 #include "dispatcher_utility.hpp"
 #include "hid_observer.hpp"
-#include "iokit_utility.hpp"
 #include <boost/optional/optional_io.hpp>
+#include <csignal>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 
 namespace {
@@ -12,22 +12,19 @@ public:
   dump_hid_value(const dump_hid_value&) = delete;
 
   dump_hid_value(void) : dispatcher_client() {
-    std::vector<pqrs::cf_ptr<CFDictionaryRef>> matching_dictionaries;
-
-    matching_dictionaries.push_back(
+    std::vector<pqrs::cf_ptr<CFDictionaryRef>> matching_dictionaries{
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::osx::iokit_hid_usage_page_generic_desktop,
-            pqrs::osx::iokit_hid_usage_generic_desktop_keyboard));
+            pqrs::osx::iokit_hid_usage_generic_desktop_keyboard),
 
-    matching_dictionaries.push_back(
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::osx::iokit_hid_usage_page_generic_desktop,
-            pqrs::osx::iokit_hid_usage_generic_desktop_mouse));
+            pqrs::osx::iokit_hid_usage_generic_desktop_mouse),
 
-    matching_dictionaries.push_back(
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::osx::iokit_hid_usage_page_generic_desktop,
-            pqrs::osx::iokit_hid_usage_generic_desktop_pointer));
+            pqrs::osx::iokit_hid_usage_generic_desktop_pointer),
+    };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
                                                                   matching_dictionaries);
@@ -189,26 +186,30 @@ private:
   std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::human_interface_device>> hids_;
   std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 };
+
+auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::dispatcher_utility::initialize_dispatchers();
 
-  signal(SIGINT, [](int) {
-    CFRunLoopStop(CFRunLoopGetMain());
+  std::signal(SIGINT, [](int) {
+    global_wait->notify();
   });
 
   auto d = std::make_unique<dump_hid_value>();
 
   // ------------------------------------------------------------
 
-  CFRunLoopRun();
+  global_wait->wait_notice();
 
   // ------------------------------------------------------------
 
   d = nullptr;
 
   krbn::dispatcher_utility::terminate_dispatchers();
+
+  std::cout << "finished" << std::endl;
 
   return 0;
 }
