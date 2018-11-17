@@ -1,9 +1,10 @@
 #include "boost_defs.hpp"
 
 #include "dispatcher_utility.hpp"
-#include "hid_manager.hpp"
 #include "hid_observer.hpp"
+#include "iokit_utility.hpp"
 #include <boost/optional/optional_io.hpp>
+#include <pqrs/osx/iokit_hid_manager.hpp>
 
 namespace {
 class dump_hid_value final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -11,50 +12,65 @@ public:
   dump_hid_value(const dump_hid_value&) = delete;
 
   dump_hid_value(void) : dispatcher_client() {
-    std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
-        std::make_pair(krbn::hid_usage_page::leds, krbn::hid_usage::led_caps_lock),
+    std::vector<pqrs::cf_ptr<CFDictionaryRef>> matching_dictionaries;
+
+    matching_dictionaries.push_back(
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::osx::iokit_hid_usage_page_generic_desktop,
+            pqrs::osx::iokit_hid_usage_generic_desktop_keyboard));
+
+    matching_dictionaries.push_back(
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::osx::iokit_hid_usage_page_generic_desktop,
+            pqrs::osx::iokit_hid_usage_generic_desktop_mouse));
+
+    matching_dictionaries.push_back(
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::osx::iokit_hid_usage_page_generic_desktop,
+            pqrs::osx::iokit_hid_usage_generic_desktop_pointer));
+
+    hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
+                                                                  matching_dictionaries);
+
+    hid_manager_->device_detected.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
+      auto hid = std::make_shared<krbn::human_interface_device>(*device_ptr,
+                                                                registry_entry_id);
+      auto weak_hid = std::weak_ptr<krbn::human_interface_device>(hid);
+
+      hids_[registry_entry_id] = hid;
+
+      hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
+        if (auto hid = weak_hid.lock()) {
+          values_arrived(hid, shared_event_queue);
+        }
+      });
+
+      // Observe
+
+      auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
+
+      hid_observer->device_observed.connect([weak_hid] {
+        if (auto hid = weak_hid.lock()) {
+          krbn::logger::get_logger().info("{0} is observed.", hid->get_name_for_log());
+        }
+      });
+
+      hid_observer->device_unobserved.connect([weak_hid] {
+        if (auto hid = weak_hid.lock()) {
+          krbn::logger::get_logger().info("{0} is unobserved.", hid->get_name_for_log());
+        }
+      });
+
+      hid_observer->async_observe();
+
+      hid_observers_[hid->get_registry_entry_id()] = hid_observer;
     });
 
-    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
+    hid_manager_->device_removed.connect([this](auto&& registry_entry_id) {
+      krbn::logger::get_logger().info("registry_entry_id:{0} is removed.", type_safe::get(registry_entry_id));
 
-    hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      if (auto hid = weak_hid.lock()) {
-        hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
-          if (auto hid = weak_hid.lock()) {
-            values_arrived(hid, shared_event_queue);
-          }
-        });
-
-        // Observe
-
-        auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
-
-        hid_observer->device_observed.connect([weak_hid] {
-          if (auto hid = weak_hid.lock()) {
-            krbn::logger::get_logger().info("{0} is observed.", hid->get_name_for_log());
-          }
-        });
-
-        hid_observer->device_unobserved.connect([weak_hid] {
-          if (auto hid = weak_hid.lock()) {
-            krbn::logger::get_logger().info("{0} is unobserved.", hid->get_name_for_log());
-          }
-        });
-
-        hid_observer->async_observe();
-
-        hid_observers_[hid->get_registry_entry_id()] = hid_observer;
-      }
-    });
-
-    hid_manager_->device_removed.connect([this](auto&& weak_hid) {
-      if (auto hid = weak_hid.lock()) {
-        krbn::logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
-        hid_observers_.erase(hid->get_registry_entry_id());
-      }
+      hids_.erase(registry_entry_id);
+      hid_observers_.erase(registry_entry_id);
     });
 
     hid_manager_->async_start();
@@ -172,7 +188,8 @@ private:
     }
   }
 
-  std::unique_ptr<krbn::hid_manager> hid_manager_;
+  std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::human_interface_device>> hids_;
   std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 };
 } // namespace
@@ -183,14 +200,6 @@ int main(int argc, const char* argv[]) {
   signal(SIGINT, [](int) {
     CFRunLoopStop(CFRunLoopGetMain());
   });
-
-#if 0
-  for (int i = 0; i < 1000; ++i) {
-    krbn::logger::get_logger().info("i:{0}", i);
-    auto d = std::make_unique<dump_hid_value>();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  }
-#endif
 
   auto d = std::make_unique<dump_hid_value>();
 
