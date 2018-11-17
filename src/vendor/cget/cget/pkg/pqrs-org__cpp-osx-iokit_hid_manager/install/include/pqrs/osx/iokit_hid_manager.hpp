@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_manager v1.3
+// pqrs::iokit_hid_manager v1.4
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -9,6 +9,7 @@
 // `pqrs::osx::iokit_hid_manager` can be used safely in a multi-threaded environment.
 
 #include <IOKit/hid/IOHIDDevice.h>
+#include <pqrs/cf_number.hpp>
 #include <pqrs/osx/iokit_service_monitor.hpp>
 #include <unordered_map>
 #include <vector>
