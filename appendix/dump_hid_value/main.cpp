@@ -35,30 +35,27 @@ public:
     hid_manager_->device_detected.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
       auto hid = std::make_shared<krbn::human_interface_device>(*device_ptr,
                                                                 registry_entry_id);
-      auto weak_hid = std::weak_ptr<krbn::human_interface_device>(hid);
-
       hids_[registry_entry_id] = hid;
+      auto device_name = hid->get_name_for_log();
 
-      hid->values_arrived.connect([this, weak_hid](auto&& shared_event_queue) {
-        if (auto hid = weak_hid.lock()) {
-          values_arrived(hid, shared_event_queue);
-        }
+      hid->values_arrived.connect([this, registry_entry_id](auto&& shared_event_queue) {
+        values_arrived(shared_event_queue, registry_entry_id);
       });
 
       // Observe
 
       auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
 
-      hid_observer->device_observed.connect([weak_hid] {
-        if (auto hid = weak_hid.lock()) {
-          krbn::logger::get_logger().info("{0} is observed.", hid->get_name_for_log());
-        }
+      hid_observer->device_observed.connect([device_name, registry_entry_id] {
+        krbn::logger::get_logger().info("{0}:{1} is observed.",
+                                        device_name,
+                                        type_safe::get(registry_entry_id));
       });
 
-      hid_observer->device_unobserved.connect([weak_hid] {
-        if (auto hid = weak_hid.lock()) {
-          krbn::logger::get_logger().info("{0} is unobserved.", hid->get_name_for_log());
-        }
+      hid_observer->device_unobserved.connect([device_name, registry_entry_id] {
+        krbn::logger::get_logger().info("{0}:{1} is unobserved.",
+                                        device_name,
+                                        type_safe::get(registry_entry_id));
       });
 
       hid_observer->async_observe();
@@ -84,8 +81,8 @@ public:
   }
 
 private:
-  void values_arrived(std::shared_ptr<krbn::human_interface_device> hid,
-                      std::shared_ptr<krbn::event_queue::queue> event_queue) const {
+  void values_arrived(std::shared_ptr<krbn::event_queue::queue> event_queue,
+                      pqrs::osx::iokit_registry_entry_id registry_entry_id) const {
     for (const auto& entry : event_queue->get_entries()) {
       std::cout << entry.get_event_time_stamp().get_time_stamp() << " ";
 
@@ -145,11 +142,11 @@ private:
           break;
 
         case krbn::event_queue::event::type::device_keys_and_pointing_buttons_are_released:
-          std::cout << "device_keys_and_pointing_buttons_are_released for " << hid->get_name_for_log() << " (" << hid->get_device_id() << ")" << std::endl;
+          std::cout << "device_keys_and_pointing_buttons_are_released: " << registry_entry_id << std::endl;
           break;
 
         case krbn::event_queue::event::type::device_ungrabbed:
-          std::cout << "device_ungrabbed for " << hid->get_name_for_log() << " (" << hid->get_device_id() << ")" << std::endl;
+          std::cout << "device_ungrabbed: " << registry_entry_id << std::endl;
           break;
 
         case krbn::event_queue::event::type::caps_lock_state_changed:
@@ -159,7 +156,7 @@ private:
           break;
 
         case krbn::event_queue::event::type::pointing_device_event_from_event_tap:
-          std::cout << "pointing_device_event_from_event_tap from " << hid->get_name_for_log() << " (" << hid->get_device_id() << ")" << std::endl;
+          std::cout << "pointing_device_event_from_event_tap: " << registry_entry_id << std::endl;
           break;
 
         case krbn::event_queue::event::type::frontmost_application_changed:
