@@ -1,5 +1,7 @@
 #include "dispatcher_utility.hpp"
-#include "hid_manager.hpp"
+#include "human_interface_device.hpp"
+#include <csignal>
+#include <pqrs/osx/iokit_hid_manager.hpp>
 
 namespace {
 class dump_hid_report final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -7,29 +9,43 @@ public:
   dump_hid_report(const dump_hid_report&) = delete;
 
   dump_hid_report(void) : dispatcher_client() {
-    std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_mouse),
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_pointer),
-        std::make_pair(krbn::hid_usage_page::leds, krbn::hid_usage::led_caps_lock),
+    std::vector<pqrs::cf_ptr<CFDictionaryRef>> matching_dictionaries{
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::osx::iokit_hid_usage_page_generic_desktop,
+            pqrs::osx::iokit_hid_usage_generic_desktop_keyboard),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::osx::iokit_hid_usage_page_generic_desktop,
+            pqrs::osx::iokit_hid_usage_generic_desktop_mouse),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::osx::iokit_hid_usage_page_generic_desktop,
+            pqrs::osx::iokit_hid_usage_generic_desktop_pointer),
+    };
+
+    hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
+                                                                  matching_dictionaries);
+
+    hid_manager_->device_detected.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
+      auto hid = std::make_shared<krbn::human_interface_device>(*device_ptr,
+                                                                registry_entry_id);
+      hids_[registry_entry_id] = hid;
+      auto manufacturer = hid->find_manufacturer();
+      auto product = hid->find_product();
+
+      hid->report_arrived.connect([this, manufacturer, product](auto&& type,
+                                                                auto&& report_id,
+                                                                auto&& report) {
+        report_arrived(manufacturer, product, type, report_id, report);
+      });
+
+      hid->async_enable_report_callback();
+      hid->async_open();
+      hid->async_schedule();
     });
 
-    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
-
-    hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      if (auto hid = weak_hid.lock()) {
-        hid->report_arrived.connect([this, weak_hid](auto&& type,
-                                                     auto&& report_id,
-                                                     auto&& report) {
-          if (auto hid = weak_hid.lock()) {
-            report_arrived(hid, type, report_id, report);
-          }
-        });
-
-        hid->async_enable_report_callback();
-        hid->async_open();
-        hid->async_schedule();
-      }
+    hid_manager_->device_removed.connect([this](auto&& registry_entry_id) {
+      hids_.erase(registry_entry_id);
     });
 
     hid_manager_->async_start();
@@ -42,13 +58,14 @@ public:
   }
 
 private:
-  void report_arrived(std::shared_ptr<krbn::human_interface_device> hid,
+  void report_arrived(boost::optional<std::string> manufacturer,
+                      boost::optional<std::string> product,
                       IOHIDReportType type,
                       uint32_t report_id,
                       std::shared_ptr<std::vector<uint8_t>> report) const {
     // Logitech Unifying Receiver sends a lot of null report. We ignore them.
-    if (auto manufacturer = hid->find_manufacturer()) {
-      if (auto product = hid->find_product()) {
+    if (manufacturer) {
+      if (product) {
         if (*manufacturer == "Logitech" && *product == "USB Receiver") {
           if (report_id == 0) {
             return;
@@ -64,28 +81,33 @@ private:
     }
   }
 
-  std::unique_ptr<krbn::hid_manager> hid_manager_;
+  std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::human_interface_device>> hids_;
 };
+
+auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
 int main(int argc, const char* argv[]) {
   krbn::dispatcher_utility::initialize_dispatchers();
 
-  signal(SIGINT, [](int) {
-    CFRunLoopStop(CFRunLoopGetMain());
+  std::signal(SIGINT, [](int) {
+    global_wait->notify();
   });
 
   auto d = std::make_unique<dump_hid_report>();
 
   // ------------------------------------------------------------
 
-  CFRunLoopRun();
+  global_wait->wait_notice();
 
   // ------------------------------------------------------------
 
   d = nullptr;
 
   krbn::dispatcher_utility::terminate_dispatchers();
+
+  std::cout << "finished" << std::endl;
 
   return 0;
 }
