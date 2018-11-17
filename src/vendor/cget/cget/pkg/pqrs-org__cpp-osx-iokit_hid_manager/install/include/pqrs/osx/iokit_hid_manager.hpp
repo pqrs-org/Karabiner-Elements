@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_manager v1.2
+// pqrs::iokit_hid_manager v1.3
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -42,6 +42,48 @@ public:
     enqueue_to_dispatcher([this] {
       start();
     });
+  }
+
+  static cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page hid_usage_page,
+                                                          iokit_hid_usage hid_usage) {
+    cf_ptr<CFDictionaryRef> result;
+
+    if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {
+      if (auto number = pqrs::make_cf_number(type_safe::get(hid_usage_page))) {
+        CFDictionarySetValue(matching_dictionary,
+                             CFSTR(kIOHIDDeviceUsagePageKey),
+                             *number);
+      }
+      if (auto number = pqrs::make_cf_number(type_safe::get(hid_usage))) {
+        CFDictionarySetValue(matching_dictionary,
+                             CFSTR(kIOHIDDeviceUsageKey),
+                             *number);
+      }
+
+      result = matching_dictionary;
+
+      CFRelease(matching_dictionary);
+    }
+
+    return result;
+  }
+
+  static cf_ptr<CFDictionaryRef> make_matching_dictionary(iokit_hid_usage_page hid_usage_page) {
+    cf_ptr<CFDictionaryRef> result;
+
+    if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {
+      if (auto number = pqrs::make_cf_number(type_safe::get(hid_usage_page))) {
+        CFDictionarySetValue(matching_dictionary,
+                             CFSTR(kIOHIDDeviceUsagePageKey),
+                             *number);
+      }
+
+      result = matching_dictionary;
+
+      CFRelease(matching_dictionary);
+    }
+
+    return result;
   }
 
 private:
