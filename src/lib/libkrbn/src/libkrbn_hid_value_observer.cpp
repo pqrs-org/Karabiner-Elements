@@ -49,14 +49,18 @@ public:
     });
 
     hid_manager_->device_removed.connect([this](auto&& registry_entry_id) {
-      hids_.erase(registry_entry_id);
       hid_observers_.erase(registry_entry_id);
+      hids_.erase(registry_entry_id);
 
       {
         std::lock_guard<std::mutex> lock(observed_devices_mutex_);
 
         observed_devices_.erase(registry_entry_id);
       }
+    });
+
+    hid_manager_->error_occurred.connect([](auto&& message, auto&& iokit_return) {
+      krbn::logger::get_logger().error("{0}: {1}", message, iokit_return.to_string());
     });
 
     hid_manager_->async_start();
