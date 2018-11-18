@@ -47,13 +47,6 @@ public:
     return find_string_property(service, CFSTR(kIOHIDSerialNumberKey));
   }
 
-  static IOHIDDeviceRef _Nullable create_hid_device(IOHIDDeviceRef _Nonnull device) {
-    if (auto service = IOHIDDeviceGetService(device)) {
-      return IOHIDDeviceCreate(kCFAllocatorDefault, service);
-    }
-    return nullptr;
-  }
-
   static boost::optional<long> find_long_property(IOHIDDeviceRef _Nonnull device, CFStringRef _Nonnull key) {
     auto property = IOHIDDeviceGetProperty(device, key);
     if (!property) {

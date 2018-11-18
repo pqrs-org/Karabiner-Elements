@@ -47,8 +47,6 @@ public:
   // `event_queue` is not owned by `human_interface_device`.
   boost::signals2::signal<void(std::shared_ptr<event_queue::queue>)> values_arrived;
 
-  boost::signals2::signal<void(IOHIDReportType type, uint32_t report_id, std::shared_ptr<std::vector<uint8_t>>)> report_arrived;
-
   // Methods
 
   human_interface_device(const human_interface_device&) = delete;
@@ -191,7 +189,6 @@ public:
   virtual ~human_interface_device(void) {
     detach_from_dispatcher([this] {
       unschedule();
-      disable_report_callback();
       queue_stop();
       close();
 
@@ -275,18 +272,6 @@ public:
   void async_unschedule(void) {
     enqueue_to_dispatcher([this] {
       unschedule();
-    });
-  }
-
-  void async_enable_report_callback(void) {
-    enqueue_to_dispatcher([this] {
-      enable_report_callback();
-    });
-  }
-
-  void async_disable_report_callback(void) {
-    enqueue_to_dispatcher([this] {
-      disable_report_callback();
     });
   }
 
@@ -466,26 +451,6 @@ private:
   }
 
   // This method is executed in the dispatcher thread.
-  void enable_report_callback(void) {
-    if (removed_) {
-      return;
-    }
-
-    resize_report_buffer();
-    IOHIDDeviceRegisterInputReportCallback(*device_, &(report_buffer_[0]), report_buffer_.size(), static_input_report_callback, this);
-  }
-
-  // This method is executed in the dispatcher thread.
-  void disable_report_callback(void) {
-    if (removed_) {
-      return;
-    }
-
-    resize_report_buffer();
-    IOHIDDeviceRegisterInputReportCallback(*device_, &(report_buffer_[0]), report_buffer_.size(), nullptr, this);
-  }
-
-  // This method is executed in the dispatcher thread.
   void queue_start(void) {
     if (removed_) {
       return;
@@ -598,48 +563,8 @@ private:
     }
   }
 
-  static void static_input_report_callback(void* _Nullable context,
-                                           IOReturn result,
-                                           void* _Nullable sender,
-                                           IOHIDReportType type,
-                                           uint32_t report_id,
-                                           uint8_t* _Nullable report,
-                                           CFIndex report_length) {
-    if (result != kIOReturnSuccess) {
-      return;
-    }
-
-    auto self = static_cast<human_interface_device*>(context);
-    if (!self) {
-      return;
-    }
-
-    self->input_report_callback(type, report_id, report, report_length);
-  }
-
-  void input_report_callback(IOHIDReportType type,
-                             uint32_t report_id,
-                             uint8_t* _Nullable report,
-                             CFIndex report_length) {
-    auto r = std::make_shared<std::vector<uint8_t>>(report_length);
-    memcpy(&((*r)[0]), report, report_length);
-
-    enqueue_to_dispatcher([this, type, report_id, r] {
-      report_arrived(type, report_id, r);
-    });
-  }
-
   uint64_t elements_key(hid_usage_page usage_page, hid_usage usage) const {
     return ((static_cast<uint64_t>(usage_page) << 32) | static_cast<uint32_t>(usage));
-  }
-
-  void resize_report_buffer(void) {
-    size_t buffer_size = 32; // use this provisional value if we cannot get max input report size from device.
-    if (auto size = find_max_input_report_size()) {
-      buffer_size = *size;
-    }
-
-    report_buffer_.resize(buffer_size);
   }
 
   pqrs::cf_ptr<IOHIDDeviceRef> device_;
@@ -655,7 +580,6 @@ private:
 
   pqrs::cf_ptr<IOHIDQueueRef> queue_;
   std::vector<pqrs::cf_ptr<IOHIDElementRef>> elements_;
-  std::vector<uint8_t> report_buffer_;
   std::unordered_set<uint64_t> pressed_keys_;
 };
 } // namespace krbn
