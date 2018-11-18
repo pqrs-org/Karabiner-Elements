@@ -1,8 +1,7 @@
-#include "hid_manager.hpp"
 #include "hid_observer.hpp"
 #include "libkrbn.h"
 #include "libkrbn_cpp.hpp"
-#include <mutex>
+#include <pqrs/osx/iokit_hid_manager.hpp>
 #include <unordered_set>
 
 namespace {
@@ -13,51 +12,50 @@ public:
   libkrbn_hid_value_observer_class(libkrbn_hid_value_observer_callback callback,
                                    void* refcon) : callback_(callback),
                                                    refcon_(refcon) {
-    std::vector<std::pair<krbn::hid_usage_page, krbn::hid_usage>> targets({
-        std::make_pair(krbn::hid_usage_page::generic_desktop, krbn::hid_usage::gd_keyboard),
+    std::vector<pqrs::cf_ptr<CFDictionaryRef>> matching_dictionaries{
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::osx::iokit_hid_usage_page_generic_desktop,
+            pqrs::osx::iokit_hid_usage_generic_desktop_keyboard),
+    };
+
+    hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                                                  matching_dictionaries);
+
+    hid_manager_->device_detected.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
+      auto hid = std::make_shared<krbn::human_interface_device>(*device_ptr,
+                                                                registry_entry_id);
+      hids_[registry_entry_id] = hid;
+
+      hid->values_arrived.connect([this](auto&& event_queue) {
+        values_arrived(event_queue);
+      });
+
+      auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
+      hid_observers_[hid->get_registry_entry_id()] = hid_observer;
+
+      hid_observer->device_observed.connect([this, registry_entry_id] {
+        std::lock_guard<std::mutex> lock(observed_devices_mutex_);
+
+        observed_devices_.insert(registry_entry_id);
+      });
+
+      hid_observer->device_unobserved.connect([this, registry_entry_id] {
+        std::lock_guard<std::mutex> lock(observed_devices_mutex_);
+
+        observed_devices_.erase(registry_entry_id);
+      });
+
+      hid_observer->async_observe();
     });
 
-    hid_manager_ = std::make_unique<krbn::hid_manager>(targets);
+    hid_manager_->device_removed.connect([this](auto&& registry_entry_id) {
+      hids_.erase(registry_entry_id);
+      hid_observers_.erase(registry_entry_id);
 
-    hid_manager_->device_detected.connect([this](auto&& weak_hid) {
-      if (auto hid = weak_hid.lock()) {
-        hid->values_arrived.connect([this](auto&& event_queue) {
-          values_arrived(event_queue);
-        });
+      {
+        std::lock_guard<std::mutex> lock(observed_devices_mutex_);
 
-        auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
-
-        hid_observer->device_observed.connect([this, weak_hid] {
-          if (auto hid = weak_hid.lock()) {
-            std::lock_guard<std::mutex> lock(observed_devices_mutex_);
-
-            observed_devices_.insert(hid->get_registry_entry_id());
-          }
-        });
-
-        hid_observer->device_unobserved.connect([this, weak_hid] {
-          if (auto hid = weak_hid.lock()) {
-            std::lock_guard<std::mutex> lock(observed_devices_mutex_);
-
-            observed_devices_.erase(hid->get_registry_entry_id());
-          }
-        });
-
-        hid_observer->async_observe();
-
-        hid_observers_[hid->get_registry_entry_id()] = hid_observer;
-      }
-    });
-
-    hid_manager_->device_removed.connect([this](auto&& weak_hid) {
-      if (auto hid = weak_hid.lock()) {
-        hid_observers_.erase(hid->get_registry_entry_id());
-
-        {
-          std::lock_guard<std::mutex> lock(observed_devices_mutex_);
-
-          observed_devices_.erase(hid->get_registry_entry_id());
-        }
+        observed_devices_.erase(registry_entry_id);
       }
     });
 
@@ -68,6 +66,7 @@ public:
     hid_manager_ = nullptr;
 
     hid_observers_.clear();
+    hids_.clear();
   }
 
   size_t calculate_observed_device_count(void) const {
@@ -134,7 +133,8 @@ private:
   libkrbn_hid_value_observer_callback callback_;
   void* refcon_;
 
-  std::unique_ptr<krbn::hid_manager> hid_manager_;
+  std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::human_interface_device>> hids_;
   std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
 
   std::unordered_set<pqrs::osx::iokit_registry_entry_id> observed_devices_;

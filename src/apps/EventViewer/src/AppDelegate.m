@@ -41,7 +41,10 @@
       return;
     }
 
-    if (self.eventQueue.observedDeviceCount == 0) {
+    NSInteger observedDeviceCount = self.eventQueue.observedDeviceCount;
+    NSLog(@"observedDeviceCount = %d", (int)(observedDeviceCount));
+
+    if (observedDeviceCount == 0) {
       NSAlert* alert = [NSAlert new];
       alert.messageText = @"Warning";
       alert.informativeText = @"EventViewer failed to observe keyboard devices.\n"
