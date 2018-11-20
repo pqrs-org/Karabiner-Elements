@@ -39,18 +39,18 @@ public:
         service_monitor_ = std::make_unique<pqrs::osx::iokit_service_monitor>(weak_dispatcher_,
                                                                               matching_dictionary);
 
-        service_monitor_->service_detected.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
+        service_monitor_->service_matched.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
           close_connection();
 
           // Use the last matched service.
           open_connection(*service_ptr);
         });
 
-        service_monitor_->service_removed.connect([this](auto&& registry_entry_id) {
+        service_monitor_->service_terminated.connect([this](auto&& registry_entry_id) {
           close_connection();
 
           // Use the next service
-          service_monitor_->async_invoke_service_detected();
+          service_monitor_->async_invoke_service_matched();
         });
 
         service_monitor_->async_start();

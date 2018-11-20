@@ -18,14 +18,14 @@ public:
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
                                                                   matching_dictionaries);
 
-    hid_manager_->device_detected.connect([this, led_state](auto&& registry_entry_id, auto&& device_ptr) {
+    hid_manager_->device_matched.connect([this, led_state](auto&& registry_entry_id, auto&& device_ptr) {
       auto hid = std::make_shared<krbn::human_interface_device>(*device_ptr,
                                                                 registry_entry_id);
       hids_[registry_entry_id] = hid;
       auto device_name = hid->get_name_for_log();
       auto weak_hid = std::weak_ptr<krbn::human_interface_device>(hid);
 
-      krbn::logger::get_logger().info("{0}:{1} is detected.", device_name,
+      krbn::logger::get_logger().info("{0}:{1} is matched.", device_name,
                                       type_safe::get(registry_entry_id));
 
       hid->opened.connect([led_state, weak_hid] {
@@ -44,8 +44,8 @@ public:
       hid->async_open();
     });
 
-    hid_manager_->device_removed.connect([this](auto&& registry_entry_id) {
-      krbn::logger::get_logger().info("registry_entry_id:{0} is removed.",
+    hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
+      krbn::logger::get_logger().info("registry_entry_id:{0} is terminated.",
                                       type_safe::get(registry_entry_id));
 
       hids_.erase(registry_entry_id);

@@ -50,7 +50,7 @@ public:
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
                                                                   matching_dictionaries);
 
-    hid_manager_->device_detected.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
+    hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
       iokit_utility::log_matching_device(registry_entry_id, *device_ptr);
 
       auto hid = std::make_shared<krbn::human_interface_device>(*device_ptr,
@@ -58,7 +58,7 @@ public:
       hids_[registry_entry_id] = hid;
       auto device_name = hid->get_name_for_log();
 
-      logger::get_logger().info("{0} is detected.", device_name);
+      logger::get_logger().info("{0} is matched.", device_name);
 
       grabbable_state_manager_->update(grabbable_state(hid->get_registry_entry_id(),
                                                        grabbable_state::state::device_error,
@@ -104,10 +104,10 @@ public:
       observer->async_observe();
     });
 
-    hid_manager_->device_removed.connect([this](auto&& registry_entry_id) {
+    hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
       auto it = hids_.find(registry_entry_id);
       if (it != std::end(hids_)) {
-        logger::get_logger().info("{0} is removed.", it->second->get_name_for_log());
+        logger::get_logger().info("{0} is terminated.", it->second->get_name_for_log());
       }
 
       hid_observers_.erase(registry_entry_id);

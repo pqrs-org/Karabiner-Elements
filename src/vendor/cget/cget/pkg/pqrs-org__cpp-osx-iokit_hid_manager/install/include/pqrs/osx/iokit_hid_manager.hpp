@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_manager v1.4
+// pqrs::iokit_hid_manager v2.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -20,8 +20,8 @@ class iokit_hid_manager final : public pqrs::dispatcher::extra::dispatcher_clien
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  nod::signal<void(iokit_registry_entry_id, cf_ptr<IOHIDDeviceRef>)> device_detected;
-  nod::signal<void(iokit_registry_entry_id)> device_removed;
+  nod::signal<void(iokit_registry_entry_id, cf_ptr<IOHIDDeviceRef>)> device_matched;
+  nod::signal<void(iokit_registry_entry_id)> device_terminated;
   nod::signal<void(const std::string&, iokit_return)> error_occurred;
 
   // Methods
@@ -95,14 +95,14 @@ private:
         auto monitor = std::make_shared<pqrs::osx::iokit_service_monitor>(weak_dispatcher_,
                                                                           *matching_dictionary);
 
-        monitor->service_detected.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
+        monitor->service_matched.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
           if (devices_.find(registry_entry_id) == std::end(devices_)) {
             if (auto device = IOHIDDeviceCreate(kCFAllocatorDefault, *service_ptr)) {
               auto device_ptr = pqrs::cf_ptr<IOHIDDeviceRef>(device);
               devices_[registry_entry_id] = device_ptr;
 
               enqueue_to_dispatcher([this, registry_entry_id, device_ptr] {
-                device_detected(registry_entry_id, device_ptr);
+                device_matched(registry_entry_id, device_ptr);
               });
 
               CFRelease(device);
@@ -110,11 +110,11 @@ private:
           }
         });
 
-        monitor->service_removed.connect([this](auto&& registry_entry_id) {
+        monitor->service_terminated.connect([this](auto&& registry_entry_id) {
           devices_.erase(registry_entry_id);
 
           enqueue_to_dispatcher([this, registry_entry_id] {
-            device_removed(registry_entry_id);
+            device_terminated(registry_entry_id);
           });
         });
 

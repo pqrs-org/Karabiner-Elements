@@ -21,7 +21,7 @@ public:
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                                                   matching_dictionaries);
 
-    hid_manager_->device_detected.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
+    hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
       auto hid = std::make_shared<krbn::human_interface_device>(*device_ptr,
                                                                 registry_entry_id);
       hids_[registry_entry_id] = hid;
@@ -48,7 +48,7 @@ public:
       hid_observer->async_observe();
     });
 
-    hid_manager_->device_removed.connect([this](auto&& registry_entry_id) {
+    hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
       hid_observers_.erase(registry_entry_id);
       hids_.erase(registry_entry_id);
 

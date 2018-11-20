@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_service_monitor v2.2
+// pqrs::iokit_service_monitor v3.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -22,8 +22,8 @@ class iokit_service_monitor final : dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
 
-  nod::signal<void(iokit_registry_entry_id, iokit_object_ptr)> service_detected;
-  nod::signal<void(iokit_registry_entry_id)> service_removed;
+  nod::signal<void(iokit_registry_entry_id, iokit_object_ptr)> service_matched;
+  nod::signal<void(iokit_registry_entry_id)> service_terminated;
   nod::signal<void(const std::string&, iokit_return)> error_occurred;
 
   // Methods
@@ -58,7 +58,7 @@ public:
     });
   }
 
-  void async_invoke_service_detected(void) {
+  void async_invoke_service_matched(void) {
     enqueue_to_dispatcher([this] {
       if (*matching_dictionary_) {
         io_iterator_t it = IO_OBJECT_NULL;
@@ -185,7 +185,7 @@ private:
             iokit_object_ptr ptr(s);
 
             enqueue_to_dispatcher([this, registry_entry_id, ptr] {
-              service_detected(*registry_entry_id, ptr);
+              service_matched(*registry_entry_id, ptr);
             });
           }
 
@@ -210,7 +210,7 @@ private:
         if (s) {
           if (auto registry_entry_id = find_registry_entry_id(s)) {
             enqueue_to_dispatcher([this, registry_entry_id] {
-              service_removed(*registry_entry_id);
+              service_terminated(*registry_entry_id);
             });
           }
 

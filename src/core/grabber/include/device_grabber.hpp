@@ -121,7 +121,7 @@ public:
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
                                                                   matching_dictionaries);
 
-    hid_manager_->device_detected.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
+    hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
       if (iokit_utility::is_karabiner_virtual_hid_device(*device_ptr)) {
         return;
       }
@@ -188,12 +188,12 @@ public:
       async_grab_devices();
     });
 
-    hid_manager_->device_removed.connect([this](auto&& registry_entry_id) {
+    hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
       auto it = hids_.find(registry_entry_id);
       if (it != std::end(hids_)) {
         auto hid = it->second;
 
-        logger::get_logger().info("{0} is removed.", hid->get_name_for_log());
+        logger::get_logger().info("{0} is terminated.", hid->get_name_for_log());
 
         if (hid->is_keyboard() &&
             hid->is_karabiner_virtual_hid_device()) {
