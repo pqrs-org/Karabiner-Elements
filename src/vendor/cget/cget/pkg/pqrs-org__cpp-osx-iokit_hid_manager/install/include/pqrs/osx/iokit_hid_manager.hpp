@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_manager v2.0
+// pqrs::iokit_hid_manager v2.1
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -111,11 +111,14 @@ private:
         });
 
         monitor->service_terminated.connect([this](auto&& registry_entry_id) {
-          devices_.erase(registry_entry_id);
+          auto it = devices_.find(registry_entry_id);
+          if (it != std::end(devices_)) {
+            devices_.erase(registry_entry_id);
 
-          enqueue_to_dispatcher([this, registry_entry_id] {
-            device_terminated(registry_entry_id);
-          });
+            enqueue_to_dispatcher([this, registry_entry_id] {
+              device_terminated(registry_entry_id);
+            });
+          }
         });
 
         monitor->error_occurred.connect([this](auto&& message, auto&& r) {
