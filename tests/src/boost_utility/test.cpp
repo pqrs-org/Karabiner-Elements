@@ -3,38 +3,6 @@
 
 #include "boost_utility.hpp"
 
-TEST_CASE("signals2_combiner_call_while_true") {
-  boost::signals2::signal<bool(void), krbn::boost_utility::signals2_combiner_call_while_true> signal;
-
-  REQUIRE(signal() == true);
-
-  int counter = 0;
-
-  signal.connect([&] {
-    ++counter;
-    return true;
-  });
-
-  signal.connect([&] {
-    ++counter;
-    return true;
-  });
-
-  signal.connect([&] {
-    ++counter;
-    return false;
-  });
-
-  signal.connect([&] {
-    // never called
-    ++counter;
-    return true;
-  });
-
-  REQUIRE(signal() == false);
-  REQUIRE(counter == 3);
-}
-
 TEST_CASE("signals2_connections") {
   boost::signals2::signal<void(void)> signal;
   int counter = 0;
