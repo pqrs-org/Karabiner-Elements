@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <pqrs/osx/iokit_types.hpp>
 #include <type_safe/strong_typedef.hpp>
 #include <unordered_set>
 
@@ -14,6 +15,10 @@ struct vendor_id : type_safe::strong_typedef<vendor_id, uint32_t>,
 
 inline std::ostream& operator<<(std::ostream& stream, const vendor_id& value) {
   return stream << type_safe::get(value);
+}
+
+inline vendor_id make_vendor_id(const pqrs::osx::iokit_hid_vendor_id& value) {
+  return vendor_id(type_safe::get(value));
 }
 } // namespace krbn
 

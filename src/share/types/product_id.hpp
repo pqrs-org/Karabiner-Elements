@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <pqrs/osx/iokit_types.hpp>
 #include <type_safe/strong_typedef.hpp>
 #include <unordered_set>
 
@@ -14,6 +15,10 @@ struct product_id : type_safe::strong_typedef<product_id, uint32_t>,
 
 inline std::ostream& operator<<(std::ostream& stream, const product_id& value) {
   return stream << type_safe::get(value);
+}
+
+inline product_id make_product_id(const pqrs::osx::iokit_hid_product_id& value) {
+  return product_id(type_safe::get(value));
 }
 } // namespace krbn
 
