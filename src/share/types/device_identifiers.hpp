@@ -69,8 +69,8 @@ public:
 
   nlohmann::json to_json(void) const {
     auto j = json_;
-    j["vendor_id"] = static_cast<uint32_t>(vendor_id_);
-    j["product_id"] = static_cast<uint32_t>(product_id_);
+    j["vendor_id"] = type_safe::get(vendor_id_);
+    j["product_id"] = type_safe::get(product_id_);
     j["is_keyboard"] = is_keyboard_;
     j["is_pointing_device"] = is_pointing_device_;
     return j;
