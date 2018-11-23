@@ -1,8 +1,9 @@
 #pragma once
 
-#include "stream_utility.hpp"
 #include <cstdint>
+#include <iostream>
 #include <type_safe/strong_typedef.hpp>
+#include <unordered_set>
 
 namespace krbn {
 struct location_id : type_safe::strong_typedef<location_id, uint32_t>,
@@ -15,3 +16,9 @@ inline std::ostream& operator<<(std::ostream& stream, const location_id& value) 
   return stream << type_safe::get(value);
 }
 } // namespace krbn
+
+namespace std {
+template <>
+struct hash<krbn::location_id> : type_safe::hashable<krbn::location_id> {
+};
+} // namespace std
