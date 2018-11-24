@@ -4,4 +4,5 @@ nlohmann/json@v3.4.0 --cmake header
 pqrs-org/cpp-cf_number
 pqrs-org/cpp-osx-iokit_hid_manager
 pqrs-org/cpp-osx-iokit_hid_queue_value_monitor
+pqrs-org/cpp-string
 scopeInfinity/NaturalSort@12f74beb58d9b18a41b25339d994da0e222fe80f --cmake header
