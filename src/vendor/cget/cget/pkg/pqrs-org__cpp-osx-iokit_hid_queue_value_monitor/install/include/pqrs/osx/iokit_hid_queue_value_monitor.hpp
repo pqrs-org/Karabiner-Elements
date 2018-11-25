@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::iokit_hid_queue_value_monitor v1.2
+// pqrs::iokit_hid_queue_value_monitor v1.3
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -34,6 +34,7 @@ public:
 
   iokit_hid_queue_value_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
                                 IOHIDDeviceRef device) : hid_device_(device),
+                                                         device_scheduled_(false),
                                                          open_timer_(*this),
                                                          last_open_error_(kIOReturnSuccess) {
     cf_run_loop_thread_ = std::make_unique<cf_run_loop_thread>();
@@ -47,6 +48,8 @@ public:
         IOHIDDeviceScheduleWithRunLoop(*(hid_device_.get_device()),
                                        cf_run_loop_thread_->get_run_loop(),
                                        kCFRunLoopCommonModes);
+
+        device_scheduled_ = true;
       }
     });
   }
@@ -56,9 +59,15 @@ public:
       stop();
 
       if (hid_device_.get_device()) {
-        IOHIDDeviceUnscheduleFromRunLoop(*(hid_device_.get_device()),
-                                         cf_run_loop_thread_->get_run_loop(),
-                                         kCFRunLoopCommonModes);
+        // Note:
+        // IOHIDDeviceUnscheduleFromRunLoop causes SIGILL if IOHIDDeviceScheduleWithRunLoop is not called before.
+        // Thus, we have to check the state by `device_scheduled_`.
+
+        if (device_scheduled_) {
+          IOHIDDeviceUnscheduleFromRunLoop(*(hid_device_.get_device()),
+                                           cf_run_loop_thread_->get_run_loop(),
+                                           kCFRunLoopCommonModes);
+        }
       }
     });
 
@@ -223,6 +232,7 @@ private:
 
   iokit_hid_device hid_device_;
   std::unique_ptr<cf_run_loop_thread> cf_run_loop_thread_;
+  bool device_scheduled_;
   pqrs::dispatcher::extra::timer open_timer_;
   std::optional<IOOptionBits> open_options_;
   iokit_return last_open_error_;
