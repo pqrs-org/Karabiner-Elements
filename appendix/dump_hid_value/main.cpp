@@ -1,5 +1,7 @@
+#include "device_properties_manager.hpp"
 #include "dispatcher_utility.hpp"
 #include "event_queue.hpp"
+#include "iokit_utility.hpp"
 #include <csignal>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
@@ -29,21 +31,22 @@ public:
 
     hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
       if (device_ptr) {
+        auto device_id = krbn::make_device_id(registry_entry_id);
+        krbn::logger::get_logger().info("{0} is matched.",
+                                        krbn::iokit_utility::make_device_name_for_log(device_id,
+                                                                                      *device_ptr));
+
+        auto device_properties = std::make_shared<krbn::device_properties>(device_id,
+                                                                           *device_ptr);
+
         auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(weak_dispatcher_,
                                                                                                   *device_ptr);
-        hid_queue_value_monitors_[registry_entry_id] = hid_queue_value_monitor;
+        hid_queue_value_monitors_[device_id] = hid_queue_value_monitor;
 
-        hid_queue_value_monitor->values_arrived.connect([this, registry_entry_id](auto&& values) {
-          std::vector<krbn::hid_value> hid_values;
-          for (const auto& value_ptr : *values) {
-            hid_values.emplace_back(*value_ptr);
-          }
-
-          for (const auto& pair : krbn::event_queue::queue::make_entries(hid_values, krbn::device_id(0))) {
-            // auto& hid_value = pair.first;
-            auto& entry = pair.second;
-
-            output_value(entry, registry_entry_id);
+        hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
+          auto event_queue = krbn::event_queue::make_queue(device_id, values_ptr);
+          for (const auto& entry : event_queue->get_entries()) {
+            output_value(entry);
           }
         });
 
@@ -53,9 +56,11 @@ public:
     });
 
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
-      krbn::logger::get_logger().info("registry_entry_id:{0} is terminated.", type_safe::get(registry_entry_id));
+      auto device_id = krbn::make_device_id(registry_entry_id);
 
-      hid_queue_value_monitors_.erase(registry_entry_id);
+      krbn::logger::get_logger().info("device_id:{0} is terminated.", type_safe::get(device_id));
+
+      hid_queue_value_monitors_.erase(device_id);
     });
 
     hid_manager_->async_start();
@@ -69,8 +74,7 @@ public:
   }
 
 private:
-  void output_value(const krbn::event_queue::entry& entry,
-                    pqrs::osx::iokit_registry_entry_id registry_entry_id) const {
+  void output_value(const krbn::event_queue::entry& entry) const {
     std::cout << entry.get_event_time_stamp().get_time_stamp() << " ";
 
     switch (entry.get_event().get_type()) {
@@ -110,7 +114,7 @@ private:
   }
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
-  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
+  std::unordered_map<krbn::device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
 };
 
 auto global_wait = pqrs::make_thread_wait();
