@@ -12,6 +12,7 @@
 #include "types/absolute_time_duration.hpp"
 #include "types/absolute_time_point.hpp"
 #include "types/consumer_key_code.hpp"
+#include "types/device_id.hpp"
 #include "types/device_identifiers.hpp"
 #include "types/event_type.hpp"
 #include "types/grabbable_state.hpp"
@@ -48,8 +49,6 @@
 #include <vector>
 
 namespace krbn {
-class device_detail;
-
 enum class operation_type : uint8_t {
   none,
   // observer -> grabber
@@ -65,10 +64,6 @@ enum class operation_type : uint8_t {
   select_input_source,
 };
 
-enum class device_id : uint32_t {
-  zero = 0,
-};
-
 class types final {
 public:
   // Find operation_type from operation_type_*_struct .
@@ -77,42 +72,6 @@ public:
       return boost::none;
     }
     return operation_type(buffer[0]);
-  }
-
-  static device_id make_new_device_id(const std::shared_ptr<device_detail>& device_detail) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> guard(mutex);
-
-    static auto id = device_id::zero;
-
-    id = device_id(static_cast<uint32_t>(id) + 1);
-
-    {
-      std::lock_guard<std::mutex> lock(get_device_id_map_mutex());
-
-      auto& map = get_device_id_map();
-      map[id] = device_detail;
-    }
-
-    return id;
-  }
-
-  static void detach_device_id(device_id device_id) {
-    std::lock_guard<std::mutex> lock(get_device_id_map_mutex());
-
-    auto& map = get_device_id_map();
-    map.erase(device_id);
-  }
-
-  static const std::shared_ptr<device_detail> find_device_detail(device_id device_id) {
-    std::lock_guard<std::mutex> lock(get_device_id_map_mutex());
-
-    auto& map = get_device_id_map();
-    auto it = map.find(device_id);
-    if (it == std::end(map)) {
-      return nullptr;
-    }
-    return it->second;
   }
 
   static boost::optional<modifier_flag> make_modifier_flag(key_code key_code) {
@@ -859,17 +818,6 @@ public:
     }
     return boost::none;
   }
-
-private:
-  static std::unordered_map<device_id, std::shared_ptr<device_detail>>& get_device_id_map(void) {
-    static std::unordered_map<device_id, std::shared_ptr<device_detail>> map;
-    return map;
-  }
-
-  static std::mutex& get_device_id_map_mutex(void) {
-    static std::mutex mutex;
-    return mutex;
-  }
 };
 
 struct operation_type_grabbable_state_changed_struct {
@@ -970,7 +918,6 @@ struct operation_type_select_input_source_struct {
   }
 
 KRBN_TYPES_STREAM_OUTPUT(operation_type);
-KRBN_TYPES_STREAM_OUTPUT(device_id);
 
 #undef KRBN_TYPES_STREAM_OUTPUT
 } // namespace krbn

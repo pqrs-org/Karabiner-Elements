@@ -1,7 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "device_detail.hpp"
 #include "types.hpp"
 #include <boost/optional/optional_io.hpp>
 
@@ -518,50 +517,4 @@ TEST_CASE("make_pointing_button") {
                                                     krbn::hid_usage(kHIDUsage_KeyboardTab));
     REQUIRE(actual == boost::none);
   }
-}
-
-TEST_CASE("make_new_device_id") {
-  auto device_id1 = krbn::types::make_new_device_id(
-      std::make_shared<krbn::device_detail>(
-          pqrs::osx::iokit_registry_entry_id(0),
-          krbn::vendor_id(1234),
-          krbn::product_id(5678),
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          true,
-          false));
-
-  auto device_id2 = krbn::types::make_new_device_id(
-      std::make_shared<krbn::device_detail>(
-          pqrs::osx::iokit_registry_entry_id(0),
-          krbn::vendor_id(2345),
-          krbn::product_id(6789),
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          false,
-          true));
-
-  REQUIRE(krbn::types::find_device_detail(device_id1));
-  REQUIRE(krbn::types::find_device_detail(device_id1)->get_vendor_id() == krbn::vendor_id(1234));
-  REQUIRE(krbn::types::find_device_detail(device_id1)->get_product_id() == krbn::product_id(5678));
-  REQUIRE(krbn::types::find_device_detail(device_id1)->get_is_keyboard() == true);
-  REQUIRE(krbn::types::find_device_detail(device_id1)->get_is_pointing_device() == false);
-
-  REQUIRE(krbn::types::find_device_detail(device_id2)->get_vendor_id() == krbn::vendor_id(2345));
-  REQUIRE(krbn::types::find_device_detail(device_id2)->get_product_id() == krbn::product_id(6789));
-  REQUIRE(krbn::types::find_device_detail(device_id2)->get_is_keyboard() == false);
-  REQUIRE(krbn::types::find_device_detail(device_id2)->get_is_pointing_device() == true);
-
-  REQUIRE(krbn::types::find_device_detail(krbn::device_id(-1)) == nullptr);
-
-  krbn::types::detach_device_id(device_id1);
-  krbn::types::detach_device_id(krbn::device_id(-1));
-
-  REQUIRE(krbn::types::find_device_detail(device_id1) == nullptr);
 }
