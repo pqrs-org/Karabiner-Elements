@@ -4,7 +4,7 @@ class manipulated_original_event final {
 public:
   class from_event final {
   public:
-    from_event(void) : device_id_(device_id::zero) {
+    from_event(void) : device_id_(device_id(0)) {
     }
 
     from_event(device_id device_id,
@@ -33,11 +33,10 @@ public:
     }
 
     friend size_t hash_value(const from_event& value) {
-      size_t h = 0;
-      boost::hash_combine(h, value.device_id_);
-      boost::hash_combine(h, value.event_);
-      boost::hash_combine(h, value.original_event_);
-      return h;
+      auto h1 = std::hash<device_id>{}(value.device_id_);
+      auto h2 = std::hash<event_queue::event>{}(value.event_);
+      auto h3 = std::hash<event_queue::event>{}(value.original_event_);
+      return h1 ^ (h2 << 1) ^ (h3 << 2);
     }
 
   private:
