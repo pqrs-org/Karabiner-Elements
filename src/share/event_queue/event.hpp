@@ -4,6 +4,7 @@
 
 #include "boost_defs.hpp"
 
+#include "device_properties.hpp"
 #include "json_utility.hpp"
 #include "manipulator_environment.hpp"
 #include "types.hpp"
@@ -27,6 +28,7 @@ public:
     stop_keyboard_repeat,
     // virtual events (passive)
     device_keys_and_pointing_buttons_are_released,
+    device_grabbed,
     device_ungrabbed,
     caps_lock_state_changed,
     pointing_device_event_from_event_tap,
@@ -141,6 +143,7 @@ public:
 
       case type::stop_keyboard_repeat:
       case type::device_keys_and_pointing_buttons_are_released:
+      case type::device_grabbed:
       case type::device_ungrabbed:
       case type::pointing_device_event_from_event_tap:
         break;
@@ -238,6 +241,7 @@ public:
 
       case type::stop_keyboard_repeat:
       case type::device_keys_and_pointing_buttons_are_released:
+      case type::device_grabbed:
       case type::device_ungrabbed:
       case type::pointing_device_event_from_event_tap:
         break;
@@ -303,8 +307,18 @@ public:
     return make_virtual_event(type::device_keys_and_pointing_buttons_are_released);
   }
 
-  static event make_device_ungrabbed_event(void) {
-    return make_virtual_event(type::device_ungrabbed);
+  static event make_device_grabbed_event(device_properties device_properties) {
+    event e;
+    e.type_ = type::device_grabbed;
+    e.value_ = device_properties;
+    return e;
+  }
+
+  static event make_device_ungrabbed_event(device_id device_id) {
+    event e;
+    e.type_ = type::device_ungrabbed;
+    e.value_ = device_id;
+    return e;
   }
 
   static event make_pointing_device_event_from_event_tap_event(void) {
@@ -495,6 +509,7 @@ private:
       TO_C_STRING(mouse_key);
       TO_C_STRING(stop_keyboard_repeat);
       TO_C_STRING(device_keys_and_pointing_buttons_are_released);
+      TO_C_STRING(device_grabbed);
       TO_C_STRING(device_ungrabbed);
       TO_C_STRING(caps_lock_state_changed);
       TO_C_STRING(pointing_device_event_from_event_tap);
@@ -526,6 +541,7 @@ private:
     TO_TYPE(mouse_key);
     TO_TYPE(stop_keyboard_repeat);
     TO_TYPE(device_keys_and_pointing_buttons_are_released);
+    TO_TYPE(device_grabbed);
     TO_TYPE(device_ungrabbed);
     TO_TYPE(caps_lock_state_changed);
     TO_TYPE(pointing_device_event_from_event_tap);
@@ -551,6 +567,8 @@ private:
                  mouse_key,                                      // For mouse_key
                  manipulator_environment::frontmost_application, // For frontmost_application_changed
                  input_source_identifiers,                       // For input_source_changed
+                 device_properties,                              // For device_grabbed
+                 device_id,                                      // For device_ungrabbed
                  boost::blank>                                   // For virtual events
       value_;
 };
