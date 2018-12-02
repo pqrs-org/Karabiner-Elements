@@ -1,7 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "device_detail.hpp"
 #include "virtual_hid_device_utility.hpp"
 #include <boost/optional/optional_io.hpp>
 
