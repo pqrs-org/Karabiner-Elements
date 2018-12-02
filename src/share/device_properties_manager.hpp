@@ -13,17 +13,23 @@ public:
   device_properties_manager(void) {
   }
 
-  void insert(device_id device_id,
-              std::shared_ptr<device_properties> device_properties) {
+  void insert(device_id key,
+              std::shared_ptr<device_properties> value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    map_[device_id] = device_properties;
+    map_[key] = value;
   }
 
-  void erase(device_id device_id) {
+  void insert(device_id key,
+              const device_properties& value) {
+    insert(key,
+           std::make_shared<device_properties>(value));
+  }
+
+  void erase(device_id key) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    map_.erase(device_id);
+    map_.erase(key);
   }
 
   void clear(void) {
@@ -32,10 +38,10 @@ public:
     map_.clear();
   }
 
-  std::shared_ptr<device_properties> find(device_id device_id) const {
+  std::shared_ptr<device_properties> find(device_id key) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    auto it = map_.find(device_id);
+    auto it = map_.find(key);
     if (it != std::end(map_)) {
       return it->second;
     }

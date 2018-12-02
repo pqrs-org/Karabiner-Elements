@@ -7,9 +7,11 @@ TEST_CASE("device_properties_manager") {
   krbn::device_properties_manager manager;
 
   manager.insert(krbn::device_id(1),
-                 std::make_shared<krbn::device_properties>(krbn::device_id(1), nullptr));
+                 krbn::device_properties(krbn::device_id(1), nullptr));
   manager.insert(krbn::device_id(2),
-                 std::make_shared<krbn::device_properties>(krbn::device_id(2), nullptr));
+                 krbn::device_properties(krbn::device_id(2), nullptr));
+  manager.insert(krbn::device_id(3),
+                 std::make_shared<krbn::device_properties>(krbn::device_id(3), nullptr));
 
   // iokit_device_id(1)
 
@@ -33,6 +35,15 @@ TEST_CASE("device_properties_manager") {
 
   {
     auto dp = manager.find(krbn::device_id(3));
+    REQUIRE(dp);
+    REQUIRE(dp->get_device_id());
+    REQUIRE(*(dp->get_device_id()) == krbn::device_id(3));
+  }
+
+  // iokit_device_id(4)
+
+  {
+    auto dp = manager.find(krbn::device_id(4));
     REQUIRE(!dp);
   }
 
