@@ -72,6 +72,14 @@ public:
     }
 
     // Update manipulator_environment
+    if (event.get_type() == event::type::device_grabbed) {
+      if (auto v = event.find<device_properties>()) {
+        manipulator_environment_.insert_device_properties(device_id, *v);
+      }
+    }
+    if (event.get_type() == event::type::device_ungrabbed) {
+      manipulator_environment_.erase_device_properties(device_id);
+    }
     if (auto frontmost_application = event.get_frontmost_application()) {
       manipulator_environment_.set_frontmost_application(*frontmost_application);
     }

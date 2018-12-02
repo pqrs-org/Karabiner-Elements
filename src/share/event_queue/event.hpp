@@ -308,18 +308,15 @@ public:
     return make_virtual_event(type::device_keys_and_pointing_buttons_are_released);
   }
 
-  static event make_device_grabbed_event(device_properties device_properties) {
+  static event make_device_grabbed_event(const device_properties& device_properties) {
     event e;
     e.type_ = type::device_grabbed;
     e.value_ = device_properties;
     return e;
   }
 
-  static event make_device_ungrabbed_event(device_id device_id) {
-    event e;
-    e.type_ = type::device_ungrabbed;
-    e.value_ = device_id;
-    return e;
+  static event make_device_ungrabbed_event(void) {
+    return make_virtual_event(type::device_ungrabbed);
   }
 
   static event make_pointing_device_event_from_event_tap_event(void) {
@@ -351,6 +348,11 @@ public:
 
   type get_type(void) const {
     return type_;
+  }
+
+  template <typename T>
+  const T* find(void) const {
+    return boost::get<const T>(&value_);
   }
 
   std::optional<key_code> get_key_code(void) const {
@@ -569,7 +571,6 @@ private:
                  manipulator_environment::frontmost_application, // For frontmost_application_changed
                  input_source_identifiers,                       // For input_source_changed
                  device_properties,                              // For device_grabbed
-                 device_id,                                      // For device_ungrabbed
                  boost::blank>                                   // For virtual events
       value_;
 };
