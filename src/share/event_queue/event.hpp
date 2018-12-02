@@ -9,6 +9,7 @@
 #include "manipulator_environment.hpp"
 #include "types.hpp"
 #include <boost/variant.hpp>
+#include <optional>
 
 namespace krbn {
 namespace event_queue {
@@ -352,124 +353,124 @@ public:
     return type_;
   }
 
-  boost::optional<key_code> get_key_code(void) const {
+  std::optional<key_code> get_key_code(void) const {
     try {
       if (type_ == type::key_code) {
         return boost::get<key_code>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<consumer_key_code> get_consumer_key_code(void) const {
+  std::optional<consumer_key_code> get_consumer_key_code(void) const {
     try {
       if (type_ == type::consumer_key_code) {
         return boost::get<consumer_key_code>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<pointing_button> get_pointing_button(void) const {
+  std::optional<pointing_button> get_pointing_button(void) const {
     try {
       if (type_ == type::pointing_button) {
         return boost::get<pointing_button>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<pointing_motion> get_pointing_motion(void) const {
+  std::optional<pointing_motion> get_pointing_motion(void) const {
     try {
       if (type_ == type::pointing_motion) {
         return boost::get<pointing_motion>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<int64_t> get_integer_value(void) const {
+  std::optional<int64_t> get_integer_value(void) const {
     try {
       if (type_ == type::caps_lock_state_changed) {
         return boost::get<int64_t>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<std::string> get_shell_command(void) const {
+  std::optional<std::string> get_shell_command(void) const {
     try {
       if (type_ == type::shell_command) {
         return boost::get<std::string>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
+  std::optional<std::vector<input_source_selector>> get_input_source_selectors(void) const {
     try {
       if (type_ == type::select_input_source) {
         return boost::get<std::vector<input_source_selector>>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<std::pair<std::string, int>> get_set_variable(void) const {
+  std::optional<std::pair<std::string, int>> get_set_variable(void) const {
     try {
       if (type_ == type::set_variable) {
         return boost::get<std::pair<std::string, int>>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<mouse_key> get_mouse_key(void) const {
+  std::optional<mouse_key> get_mouse_key(void) const {
     try {
       if (type_ == type::mouse_key) {
         return boost::get<mouse_key>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<manipulator_environment::frontmost_application> get_frontmost_application(void) const {
+  std::optional<manipulator_environment::frontmost_application> get_frontmost_application(void) const {
     try {
       if (type_ == type::frontmost_application_changed) {
         return boost::get<manipulator_environment::frontmost_application>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<input_source_identifiers> get_input_source_identifiers(void) const {
+  std::optional<input_source_identifiers> get_input_source_identifiers(void) const {
     try {
       if (type_ == type::input_source_changed) {
         return boost::get<input_source_identifiers>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
-  boost::optional<std::string> get_keyboard_type(void) const {
+  std::optional<std::string> get_keyboard_type(void) const {
     try {
       if (type_ == type::keyboard_type_changed) {
         return boost::get<std::string>(value_);
       }
     } catch (boost::bad_get&) {
     }
-    return boost::none;
+    return std::nullopt;
   }
 
   bool operator==(const event& other) const {

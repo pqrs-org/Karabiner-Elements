@@ -1,17 +1,16 @@
 #pragma once
 
-#include "boost_defs.hpp"
-
 #include "cf_utility.hpp"
 #include <Security/CodeSigning.h>
-#include <boost/optional.hpp>
+#include <optional>
+#include <pqrs/cf_string.hpp>
 #include <string>
 
 namespace krbn {
 class codesign {
 public:
-  static boost::optional<std::string> get_common_name_of_process(pid_t pid) {
-    boost::optional<std::string> common_name;
+  static std::optional<std::string> get_common_name_of_process(pid_t pid) {
+    std::optional<std::string> common_name;
 
     if (auto attributes = cf_utility::create_cfmutabledictionary()) {
       if (auto pid_number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &pid)) {
@@ -26,7 +25,7 @@ public:
                 auto certificate = cf_utility::get_value<SecCertificateRef>(certificates, 0);
                 CFStringRef common_name_string;
                 if (SecCertificateCopyCommonName(certificate, &common_name_string) == errSecSuccess) {
-                  common_name = cf_utility::to_string(common_name_string);
+                  common_name = pqrs::make_string(common_name_string);
                   CFRelease(common_name_string);
                 }
               }

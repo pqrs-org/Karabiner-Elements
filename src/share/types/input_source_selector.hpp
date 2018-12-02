@@ -1,17 +1,18 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <ostream>
 #include <regex>
 
 namespace krbn {
 class input_source_selector final {
 public:
-  input_source_selector(const boost::optional<std::string>& language_string,
-                        const boost::optional<std::string>& input_source_id_string,
-                        const boost::optional<std::string>& input_mode_id_string) : language_string_(language_string),
-                                                                                    input_source_id_string_(input_source_id_string),
-                                                                                    input_mode_id_string_(input_mode_id_string) {
+  input_source_selector(const std::optional<std::string>& language_string,
+                        const std::optional<std::string>& input_source_id_string,
+                        const std::optional<std::string>& input_mode_id_string) : language_string_(language_string),
+                                                                                  input_source_id_string_(input_source_id_string),
+                                                                                  input_mode_id_string_(input_mode_id_string) {
     update_regexs();
   }
 
@@ -69,15 +70,15 @@ public:
     return json;
   }
 
-  const boost::optional<std::string>& get_language_string(void) const {
+  const std::optional<std::string>& get_language_string(void) const {
     return language_string_;
   }
 
-  const boost::optional<std::string>& get_input_source_id_string(void) const {
+  const std::optional<std::string>& get_input_source_id_string(void) const {
     return input_source_id_string_;
   }
 
-  const boost::optional<std::string>& get_input_mode_id_string(void) const {
+  const std::optional<std::string>& get_input_mode_id_string(void) const {
     return input_mode_id_string_;
   }
 
@@ -168,13 +169,13 @@ private:
     }
   }
 
-  boost::optional<std::string> language_string_;
-  boost::optional<std::string> input_source_id_string_;
-  boost::optional<std::string> input_mode_id_string_;
+  std::optional<std::string> language_string_;
+  std::optional<std::string> input_source_id_string_;
+  std::optional<std::string> input_mode_id_string_;
 
-  boost::optional<std::regex> language_regex_;
-  boost::optional<std::regex> input_source_id_regex_;
-  boost::optional<std::regex> input_mode_id_regex_;
+  std::optional<std::regex> language_regex_;
+  std::optional<std::regex> input_source_id_regex_;
+  std::optional<std::regex> input_mode_id_regex_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const input_source_selector& value) {

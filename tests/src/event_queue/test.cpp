@@ -166,8 +166,8 @@ TEST_CASE("json") {
     expected["input_source_selectors"].push_back(nlohmann::json::object());
     expected["input_source_selectors"].back()["language"] = "en";
     auto e = krbn::event_queue::event::make_select_input_source_event({krbn::input_source_selector(std::string("en"),
-                                                                                                   boost::none,
-                                                                                                   boost::none)});
+                                                                                                   std::nullopt,
+                                                                                                   std::nullopt)});
     auto json = e.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -200,9 +200,10 @@ TEST_CASE("json") {
     expected["type"] = "input_source_changed";
     expected["input_source_identifiers"]["language"] = "en";
     expected["input_source_identifiers"]["input_source_id"] = "com.apple.keylayout.US";
+
     auto e = krbn::event_queue::event::make_input_source_changed_event({std::string("en"),
                                                                         std::string("com.apple.keylayout.US"),
-                                                                        boost::none});
+                                                                        std::nullopt});
     auto json = e.to_json();
     REQUIRE(json == expected);
     auto event_from_json = krbn::event_queue::event::make_from_json(json);
@@ -230,26 +231,26 @@ TEST_CASE("json") {
 
 TEST_CASE("get_key_code") {
   REQUIRE(spacebar_event.get_key_code() == krbn::key_code::spacebar);
-  REQUIRE(button2_event.get_key_code() == boost::none);
-  REQUIRE(caps_lock_state_changed_1_event.get_key_code() == boost::none);
-  REQUIRE(caps_lock_state_changed_0_event.get_key_code() == boost::none);
-  REQUIRE(device_keys_and_pointing_buttons_are_released_event.get_key_code() == boost::none);
+  REQUIRE(button2_event.get_key_code() == std::nullopt);
+  REQUIRE(caps_lock_state_changed_1_event.get_key_code() == std::nullopt);
+  REQUIRE(caps_lock_state_changed_0_event.get_key_code() == std::nullopt);
+  REQUIRE(device_keys_and_pointing_buttons_are_released_event.get_key_code() == std::nullopt);
 }
 
 TEST_CASE("get_consumer_key_code") {
-  REQUIRE(spacebar_event.get_consumer_key_code() == boost::none);
+  REQUIRE(spacebar_event.get_consumer_key_code() == std::nullopt);
   REQUIRE(mute_event.get_consumer_key_code() == krbn::consumer_key_code::mute);
 }
 
 TEST_CASE("get_frontmost_application_bundle_identifier") {
-  REQUIRE(a_event.get_frontmost_application() == boost::none);
+  REQUIRE(a_event.get_frontmost_application() == std::nullopt);
 
   {
     std::string bundle_identifier = "org.pqrs.example";
     std::string file_path = "/opt/bin/examle";
     auto e = krbn::event_queue::event::make_frontmost_application_changed_event(bundle_identifier,
                                                                                 file_path);
-    REQUIRE(e.get_frontmost_application() != boost::none);
+    REQUIRE(e.get_frontmost_application() != std::nullopt);
     REQUIRE(e.get_frontmost_application()->get_bundle_identifier() == bundle_identifier);
     REQUIRE(e.get_frontmost_application()->get_file_path() == file_path);
   }

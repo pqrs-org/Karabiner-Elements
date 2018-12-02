@@ -7,6 +7,7 @@
 #include <boost/functional/hash.hpp>
 #include <cstdint>
 #include <nlohmann/json.hpp>
+#include <optional>
 
 namespace krbn {
 class input_source_identifiers final {
@@ -19,11 +20,11 @@ public:
                                                   input_mode_id_(input_source_utility::get_input_mode_id(p)) {
   }
 
-  input_source_identifiers(const boost::optional<std::string>& language,
-                           const boost::optional<std::string>& input_source_id,
-                           const boost::optional<std::string>& input_mode_id) : language_(language),
-                                                                                input_source_id_(input_source_id),
-                                                                                input_mode_id_(input_mode_id) {
+  input_source_identifiers(const std::optional<std::string>& language,
+                           const std::optional<std::string>& input_source_id,
+                           const std::optional<std::string>& input_mode_id) : language_(language),
+                                                                              input_source_id_(input_source_id),
+                                                                              input_mode_id_(input_mode_id) {
   }
 
   input_source_identifiers(const nlohmann::json& json) {
@@ -78,15 +79,15 @@ public:
     return json;
   }
 
-  const boost::optional<std::string>& get_language(void) const {
+  const std::optional<std::string>& get_language(void) const {
     return language_;
   }
 
-  const boost::optional<std::string>& get_input_source_id(void) const {
+  const std::optional<std::string>& get_input_source_id(void) const {
     return input_source_id_;
   }
 
-  const boost::optional<std::string>& get_input_mode_id(void) const {
+  const std::optional<std::string>& get_input_mode_id(void) const {
     return input_mode_id_;
   }
 
@@ -111,9 +112,9 @@ public:
   }
 
 private:
-  boost::optional<std::string> language_;
-  boost::optional<std::string> input_source_id_;
-  boost::optional<std::string> input_mode_id_;
+  std::optional<std::string> language_;
+  std::optional<std::string> input_source_id_;
+  std::optional<std::string> input_mode_id_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const input_source_identifiers& value) {
