@@ -233,6 +233,7 @@ public:
         case event_queue::event::type::none:
         case event_queue::event::type::set_variable:
         case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
+        case event_queue::event::type::device_grabbed:
         case event_queue::event::type::device_ungrabbed:
         case event_queue::event::type::caps_lock_state_changed:
         case event_queue::event::type::pointing_device_event_from_event_tap:
