@@ -1,6 +1,6 @@
 #pragma once
 
-#include "device_detail.hpp"
+#include "device_properties_manager.hpp"
 #include "manipulator/details/conditions/base.hpp"
 #include <boost/optional.hpp>
 #include <string>
@@ -55,23 +55,23 @@ public:
   virtual bool is_fulfilled(const event_queue::entry& entry,
                             const manipulator_environment& manipulator_environment) const {
     if (!definitions_.empty()) {
-      if (auto dd = types::find_device_detail(entry.get_device_id())) {
+      if (auto dp = manipulator_environment.find_device_properties(entry.get_device_id())) {
         for (const auto& d : definitions_) {
           bool fulfilled = true;
 
-          if (d.vendor_id && d.vendor_id != dd->get_vendor_id()) {
+          if (d.vendor_id && d.vendor_id != dp->get_vendor_id()) {
             fulfilled = false;
           }
-          if (d.product_id && d.product_id != dd->get_product_id()) {
+          if (d.product_id && d.product_id != dp->get_product_id()) {
             fulfilled = false;
           }
-          if (d.location_id && d.location_id != dd->get_location_id()) {
+          if (d.location_id && d.location_id != dp->get_location_id()) {
             fulfilled = false;
           }
-          if (d.is_keyboard && d.is_keyboard != dd->get_is_keyboard()) {
+          if (d.is_keyboard && d.is_keyboard != dp->get_is_keyboard()) {
             fulfilled = false;
           }
-          if (d.is_pointing_device && d.is_pointing_device != dd->get_is_pointing_device()) {
+          if (d.is_pointing_device && d.is_pointing_device != dp->get_is_pointing_device()) {
             fulfilled = false;
           }
 

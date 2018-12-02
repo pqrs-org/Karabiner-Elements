@@ -2,6 +2,7 @@
 
 #include "boost_defs.hpp"
 
+#include "device_properties_manager.hpp"
 #include "filesystem.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
@@ -107,6 +108,19 @@ public:
     output_json_file_path_.clear();
   }
 
+  const std::shared_ptr<device_properties> find_device_properties(device_id device_id) const {
+    return device_properties_manager_.find(device_id);
+  }
+
+  void insert_device_properties(device_id device_id,
+                                const device_properties& device_properties) {
+    device_properties_manager_.insert(device_id, device_properties);
+  }
+
+  void erase_device_properties(device_id device_id) {
+    device_properties_manager_.erase(device_id);
+  }
+
   const frontmost_application& get_frontmost_application(void) const {
     return frontmost_application_;
   }
@@ -156,6 +170,7 @@ private:
   }
 
   std::string output_json_file_path_;
+  device_properties_manager device_properties_manager_;
   frontmost_application frontmost_application_;
   input_source_identifiers input_source_identifiers_;
   std::unordered_map<std::string, int> variables_;

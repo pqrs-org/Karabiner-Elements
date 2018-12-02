@@ -156,7 +156,7 @@ TEST_CASE("manipulator_environment.save_to_file") {
                                                      "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"});
   manipulator_environment.set_input_source_identifiers({std::string("en"),
                                                         std::string("com.apple.keylayout.US"),
-                                                        boost::none});
+                                                        std::nullopt});
   manipulator_environment.set_variable("value1", 100);
   manipulator_environment.set_variable("value2", 200);
   manipulator_environment.set_keyboard_type("iso");
@@ -223,7 +223,7 @@ TEST_CASE("conditions.input_source") {
   // language matching
   manipulator_environment.set_input_source_identifiers({std::string("en"),
                                                         std::string("com.apple.keylayout.Australian"),
-                                                        boost::none});
+                                                        std::nullopt});
   REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                       manipulator_environment) == true);
   // use cache
@@ -233,7 +233,7 @@ TEST_CASE("conditions.input_source") {
   // Test regex escape works properly
   manipulator_environment.set_input_source_identifiers({std::string("ja"),
                                                         std::string("com/apple/keylayout/Australian"),
-                                                        boost::none});
+                                                        std::nullopt});
   REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                       manipulator_environment) == false);
   // use cache
@@ -243,7 +243,7 @@ TEST_CASE("conditions.input_source") {
   // input_source_id matching
   manipulator_environment.set_input_source_identifiers({std::string("ja"),
                                                         std::string("com.apple.keylayout.US"),
-                                                        boost::none});
+                                                        std::nullopt});
   REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                       manipulator_environment) == true);
 
@@ -257,85 +257,73 @@ TEST_CASE("conditions.input_source") {
   // input_source_unless
   manipulator_environment.set_input_source_identifiers({std::string("fr"),
                                                         std::string("com.apple.keylayout.US"),
-                                                        boost::none});
+                                                        std::nullopt});
   REQUIRE(helper.get_condition_manager().is_fulfilled(entry,
                                                       manipulator_environment) == false);
 }
 
 TEST_CASE("conditions.device") {
   krbn::manipulator_environment manipulator_environment;
-  auto device_id_8888_9999 = krbn::types::make_new_device_id(
-      std::make_shared<krbn::device_detail>(
-          pqrs::osx::iokit_registry_entry_id(0),
-          krbn::vendor_id(8888),
-          krbn::product_id(9999),
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          true,
-          false));
-  auto device_id_1000_2000 = krbn::types::make_new_device_id(
-      std::make_shared<krbn::device_detail>(
-          pqrs::osx::iokit_registry_entry_id(0),
-          krbn::vendor_id(1000),
-          krbn::product_id(2000),
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          true,
-          false));
-  auto device_id_1000_2001 = krbn::types::make_new_device_id(
-      std::make_shared<krbn::device_detail>(
-          pqrs::osx::iokit_registry_entry_id(0),
-          krbn::vendor_id(1000),
-          krbn::product_id(2001),
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          true,
-          false));
-  auto device_id_1001_2000 = krbn::types::make_new_device_id(
-      std::make_shared<krbn::device_detail>(
-          pqrs::osx::iokit_registry_entry_id(0),
-          krbn::vendor_id(1001),
-          krbn::product_id(2000),
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          true,
-          false));
-  auto device_id_1001_2001 = krbn::types::make_new_device_id(
-      std::make_shared<krbn::device_detail>(
-          pqrs::osx::iokit_registry_entry_id(0),
-          krbn::vendor_id(1001),
-          krbn::product_id(2001),
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          true,
-          false));
-  auto device_id_1099_9999 = krbn::types::make_new_device_id(
-      std::make_shared<krbn::device_detail>(
-          pqrs::osx::iokit_registry_entry_id(0),
-          krbn::vendor_id(1099),
-          krbn::product_id(9999),
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          boost::none,
-          true,
-          false));
+
+  auto device_id_8888_9999 = krbn::device_id(88889999);
+  auto device_properties_8888_9999 = krbn::device_properties()
+                                         .set(device_id_8888_9999)
+                                         .set(krbn::vendor_id(8888))
+                                         .set(krbn::product_id(9999))
+                                         .set_is_keyboard(true)
+                                         .set_is_pointing_device(false);
+  manipulator_environment.insert_device_properties(device_id_8888_9999,
+                                                   device_properties_8888_9999);
+
+  auto device_id_1000_2000 = krbn::device_id(10002000);
+  auto device_properties_1000_2000 = krbn::device_properties()
+                                         .set(device_id_1000_2000)
+                                         .set(krbn::vendor_id(1000))
+                                         .set(krbn::product_id(2000))
+                                         .set_is_keyboard(true)
+                                         .set_is_pointing_device(false);
+  manipulator_environment.insert_device_properties(device_id_1000_2000,
+                                                   device_properties_1000_2000);
+
+  auto device_id_1000_2001 = krbn::device_id(10002001);
+  auto device_properties_1000_2001 = krbn::device_properties()
+                                         .set(device_id_1000_2001)
+                                         .set(krbn::vendor_id(1000))
+                                         .set(krbn::product_id(2001))
+                                         .set_is_keyboard(true)
+                                         .set_is_pointing_device(false);
+  manipulator_environment.insert_device_properties(device_id_1000_2001,
+                                                   device_properties_1000_2001);
+
+  auto device_id_1001_2000 = krbn::device_id(10012000);
+  auto device_properties_1001_2000 = krbn::device_properties()
+                                         .set(device_id_1001_2000)
+                                         .set(krbn::vendor_id(1001))
+                                         .set(krbn::product_id(2000))
+                                         .set_is_keyboard(true)
+                                         .set_is_pointing_device(false);
+  manipulator_environment.insert_device_properties(device_id_1001_2000,
+                                                   device_properties_1001_2000);
+
+  auto device_id_1001_2001 = krbn::device_id(10012001);
+  auto device_properties_1001_2001 = krbn::device_properties()
+                                         .set(device_id_1001_2001)
+                                         .set(krbn::vendor_id(1001))
+                                         .set(krbn::product_id(2001))
+                                         .set_is_keyboard(true)
+                                         .set_is_pointing_device(false);
+  manipulator_environment.insert_device_properties(device_id_1001_2001,
+                                                   device_properties_1001_2001);
+
+  auto device_id_1099_9999 = krbn::device_id(10999999);
+  auto device_properties_1099_9999 = krbn::device_properties()
+                                         .set(device_id_1099_9999)
+                                         .set(krbn::vendor_id(1099))
+                                         .set(krbn::product_id(9999))
+                                         .set_is_keyboard(true)
+                                         .set_is_pointing_device(false);
+  manipulator_environment.insert_device_properties(device_id_1099_9999,
+                                                   device_properties_1099_9999);
 
 #define ENTRY(DEVICE_ID)                                                                      \
   krbn::event_queue::entry(DEVICE_ID,                                                         \
@@ -374,6 +362,7 @@ TEST_CASE("conditions.device") {
     REQUIRE(helper.get_condition_manager().is_fulfilled(ENTRY(device_id_1099_9999),
                                                         manipulator_environment) == false);
   }
+
   {
     nlohmann::json json;
     json["type"] = "device_if";
@@ -390,59 +379,56 @@ TEST_CASE("conditions.device") {
     REQUIRE(condition.is_fulfilled(ENTRY(device_id_1000_2001),
                                    manipulator_environment) == false);
 
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
-                                       std::make_shared<krbn::device_detail>(
-                                           pqrs::osx::iokit_registry_entry_id(0),
-                                           krbn::vendor_id(1000),
-                                           krbn::product_id(2000),
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           true,
-                                           false))),
-                                   manipulator_environment) == true);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
-                                       std::make_shared<krbn::device_detail>(
-                                           pqrs::osx::iokit_registry_entry_id(0),
-                                           krbn::vendor_id(1000),
-                                           krbn::product_id(2000),
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           false,
-                                           false))),
-                                   manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
-                                       std::make_shared<krbn::device_detail>(
-                                           pqrs::osx::iokit_registry_entry_id(0),
-                                           krbn::vendor_id(1000),
-                                           krbn::product_id(2000),
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           true,
-                                           true))),
-                                   manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
-                                       std::make_shared<krbn::device_detail>(
-                                           pqrs::osx::iokit_registry_entry_id(0),
-                                           krbn::vendor_id(1000),
-                                           krbn::product_id(2000),
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           false,
-                                           true))),
-                                   manipulator_environment) == false);
+    {
+      auto dp = krbn::device_properties()
+                    .set(krbn::device_id(0))
+                    .set(krbn::vendor_id(1000))
+                    .set(krbn::product_id(2000))
+                    .set_is_keyboard(true)
+                    .set_is_pointing_device(false);
+      manipulator_environment.insert_device_properties(krbn::device_id(0),
+                                                       dp);
+      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
+                                     manipulator_environment) == true);
+    }
+    {
+      auto dp = krbn::device_properties()
+                    .set(krbn::device_id(0))
+                    .set(krbn::vendor_id(1000))
+                    .set(krbn::product_id(2000))
+                    .set_is_keyboard(false)
+                    .set_is_pointing_device(false);
+      manipulator_environment.insert_device_properties(krbn::device_id(0),
+                                                       dp);
+      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
+                                     manipulator_environment) == false);
+    }
+    {
+      auto dp = krbn::device_properties()
+                    .set(krbn::device_id(0))
+                    .set(krbn::vendor_id(1000))
+                    .set(krbn::product_id(2000))
+                    .set_is_keyboard(true)
+                    .set_is_pointing_device(true);
+      manipulator_environment.insert_device_properties(krbn::device_id(0),
+                                                       dp);
+      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
+                                     manipulator_environment) == false);
+    }
+    {
+      auto dp = krbn::device_properties()
+                    .set(krbn::device_id(0))
+                    .set(krbn::vendor_id(1000))
+                    .set(krbn::product_id(2000))
+                    .set_is_keyboard(false)
+                    .set_is_pointing_device(true);
+      manipulator_environment.insert_device_properties(krbn::device_id(0),
+                                                       dp);
+      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
+                                     manipulator_environment) == false);
+    }
   }
+
   {
     nlohmann::json json;
     json["type"] = "device_if";
@@ -453,45 +439,38 @@ TEST_CASE("conditions.device") {
     json["identifiers"].back()["location_id"] = 3000;
     krbn::manipulator::details::conditions::device condition(json);
 
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
-                                       std::make_shared<krbn::device_detail>(
-                                           pqrs::osx::iokit_registry_entry_id(0),
-                                           krbn::vendor_id(1000),
-                                           krbn::product_id(2000),
-                                           krbn::location_id(3000),
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none))),
-                                   manipulator_environment) == true);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
-                                       std::make_shared<krbn::device_detail>(
-                                           pqrs::osx::iokit_registry_entry_id(0),
-                                           krbn::vendor_id(1000),
-                                           krbn::product_id(2000),
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none))),
-                                   manipulator_environment) == false);
-    REQUIRE(condition.is_fulfilled(ENTRY(krbn::types::make_new_device_id(
-                                       std::make_shared<krbn::device_detail>(
-                                           pqrs::osx::iokit_registry_entry_id(0),
-                                           krbn::vendor_id(1000),
-                                           krbn::product_id(2000),
-                                           krbn::location_id(4000),
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none,
-                                           boost::none))),
-                                   manipulator_environment) == false);
+    {
+      auto dp = krbn::device_properties()
+                    .set(krbn::device_id(0))
+                    .set(krbn::vendor_id(1000))
+                    .set(krbn::product_id(2000))
+                    .set(krbn::location_id(3000));
+      manipulator_environment.insert_device_properties(krbn::device_id(0),
+                                                       dp);
+      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
+                                     manipulator_environment) == true);
+    }
+    {
+      auto dp = krbn::device_properties()
+                    .set(krbn::device_id(0))
+                    .set(krbn::vendor_id(1000))
+                    .set(krbn::product_id(2000));
+      manipulator_environment.insert_device_properties(krbn::device_id(0),
+                                                       dp);
+      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
+                                     manipulator_environment) == false);
+    }
+    {
+      auto dp = krbn::device_properties()
+                    .set(krbn::device_id(0))
+                    .set(krbn::vendor_id(1000))
+                    .set(krbn::product_id(2000))
+                    .set(krbn::location_id(4000));
+      manipulator_environment.insert_device_properties(krbn::device_id(0),
+                                                       dp);
+      REQUIRE(condition.is_fulfilled(ENTRY(krbn::device_id(0)),
+                                     manipulator_environment) == false);
+    }
   }
 
 #undef ENTRY
