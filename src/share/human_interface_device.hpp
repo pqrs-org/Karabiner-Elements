@@ -287,20 +287,6 @@ public:
     });
   }
 
-  void async_set_report(IOHIDReportType report_type,
-                        CFIndex report_id,
-                        std::shared_ptr<std::vector<uint8_t>> report) {
-    enqueue_to_dispatcher([this, report_type, report_id, report] {
-      set_report(report_type,
-                 report_id,
-                 report);
-    });
-  }
-
-  boost::optional<long> find_max_input_report_size(void) const {
-    return iokit_utility::find_max_input_report_size(*device_);
-  }
-
   boost::optional<vendor_id> find_vendor_id(void) const {
     return iokit_utility::find_vendor_id(*device_);
   }
@@ -331,37 +317,6 @@ public:
 
   bool is_karabiner_virtual_hid_device(void) const {
     return iokit_utility::is_karabiner_virtual_hid_device(*device_);
-  }
-
-#pragma mark - usage specific utilities
-
-  // This method requires root privilege to use IOHIDDeviceSetValue for kHIDPage_LEDs usage.
-  void async_set_caps_lock_led_state(led_state state) {
-    enqueue_to_dispatcher([this, state] {
-      for (const auto& e : elements_) {
-        auto usage_page = hid_usage_page(IOHIDElementGetUsagePage(*e));
-        auto usage = hid_usage(IOHIDElementGetUsage(*e));
-
-        if (usage_page == hid_usage_page::leds &&
-            usage == hid_usage::led_caps_lock) {
-          CFIndex integer_value = 0;
-          if (state == led_state::on) {
-            integer_value = IOHIDElementGetLogicalMax(*e);
-          } else {
-            integer_value = IOHIDElementGetLogicalMin(*e);
-          }
-
-          if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault,
-                                                            *e,
-                                                            mach_absolute_time(),
-                                                            integer_value)) {
-            IOHIDDeviceSetValue(*device_, *e, value);
-
-            CFRelease(value);
-          }
-        }
-      }
-    });
   }
 
 private:
@@ -469,23 +424,6 @@ private:
 
     if (*queue_) {
       IOHIDQueueStop(*queue_);
-    }
-  }
-
-  // This method is executed in the dispatcher thread.
-  void set_report(IOHIDReportType report_type,
-                  CFIndex report_id,
-                  std::shared_ptr<std::vector<uint8_t>> report) {
-    if (removed_) {
-      return;
-    }
-
-    if (report) {
-      IOHIDDeviceSetReport(*device_,
-                           report_type,
-                           report_id,
-                           &((*report)[0]),
-                           report->size());
     }
   }
 
