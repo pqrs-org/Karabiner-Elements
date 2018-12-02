@@ -1,7 +1,9 @@
-#include "hid_observer.hpp"
+#include "device_properties_manager.hpp"
+#include "event_queue.hpp"
 #include "libkrbn.h"
 #include "libkrbn_cpp.hpp"
 #include <pqrs/osx/iokit_hid_manager.hpp>
+#include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 #include <unordered_set>
 
 namespace {
@@ -22,40 +24,50 @@ public:
                                                                   matching_dictionaries);
 
     hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
-      auto hid = std::make_shared<krbn::human_interface_device>(*device_ptr,
-                                                                registry_entry_id);
-      hids_[registry_entry_id] = hid;
+      if (device_ptr) {
+        auto device_id = krbn::make_device_id(registry_entry_id);
+        auto device_properties = std::make_shared<krbn::device_properties>(device_id,
+                                                                           *device_ptr);
 
-      hid->values_arrived.connect([this](auto&& event_queue) {
-        values_arrived(event_queue);
-      });
+        auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                                                                                  *device_ptr);
+        hid_queue_value_monitors_[device_id] = hid_queue_value_monitor;
 
-      auto hid_observer = std::make_shared<krbn::hid_observer>(hid);
-      hid_observers_[hid->get_registry_entry_id()] = hid_observer;
+        hid_queue_value_monitor->started.connect([this, device_id] {
+          std::lock_guard<std::mutex> lock(observed_devices_mutex_);
 
-      hid_observer->device_observed.connect([this, registry_entry_id] {
-        std::lock_guard<std::mutex> lock(observed_devices_mutex_);
+          observed_devices_.insert(device_id);
+        });
 
-        observed_devices_.insert(registry_entry_id);
-      });
+        hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
+          std::vector<krbn::hid_value> hid_values;
+          for (const auto& value_ptr : *values_ptr) {
+            hid_values.emplace_back(*value_ptr);
+          }
 
-      hid_observer->device_unobserved.connect([this, registry_entry_id] {
-        std::lock_guard<std::mutex> lock(observed_devices_mutex_);
+          krbn::event_queue::queue event_queue;
+          for (const auto& pair : krbn::event_queue::queue::make_entries(hid_values, device_id)) {
+            auto& entry = pair.second;
+            event_queue.push_back_event(entry);
+          }
 
-        observed_devices_.erase(registry_entry_id);
-      });
+          values_arrived(event_queue);
+        });
 
-      hid_observer->async_observe();
+        hid_queue_value_monitor->async_start(kIOHIDOptionsTypeNone,
+                                             std::chrono::milliseconds(3000));
+      }
     });
 
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
-      hid_observers_.erase(registry_entry_id);
-      hids_.erase(registry_entry_id);
+      auto device_id = krbn::make_device_id(registry_entry_id);
+
+      hid_queue_value_monitors_.erase(device_id);
 
       {
         std::lock_guard<std::mutex> lock(observed_devices_mutex_);
 
-        observed_devices_.erase(registry_entry_id);
+        observed_devices_.erase(device_id);
       }
     });
 
@@ -68,9 +80,7 @@ public:
 
   ~libkrbn_hid_value_observer_class(void) {
     hid_manager_ = nullptr;
-
-    hid_observers_.clear();
-    hids_.clear();
+    hid_queue_value_monitors_.clear();
   }
 
   size_t calculate_observed_device_count(void) const {
@@ -80,8 +90,8 @@ public:
   }
 
 private:
-  void values_arrived(std::shared_ptr<krbn::event_queue::queue> event_queue) {
-    for (const auto& entry : event_queue->get_entries()) {
+  void values_arrived(const krbn::event_queue::queue& event_queue) {
+    for (const auto& entry : event_queue.get_entries()) {
       libkrbn_hid_value_event_type event_type = libkrbn_hid_value_event_type_key_down;
       switch (entry.get_event_type()) {
         case krbn::event_type::key_down:
@@ -114,21 +124,7 @@ private:
           }
           break;
 
-        case krbn::event_queue::event::type::none:
-        case krbn::event_queue::event::type::pointing_button:
-        case krbn::event_queue::event::type::pointing_motion:
-        case krbn::event_queue::event::type::shell_command:
-        case krbn::event_queue::event::type::select_input_source:
-        case krbn::event_queue::event::type::set_variable:
-        case krbn::event_queue::event::type::mouse_key:
-        case krbn::event_queue::event::type::stop_keyboard_repeat:
-        case krbn::event_queue::event::type::device_keys_and_pointing_buttons_are_released:
-        case krbn::event_queue::event::type::device_ungrabbed:
-        case krbn::event_queue::event::type::caps_lock_state_changed:
-        case krbn::event_queue::event::type::pointing_device_event_from_event_tap:
-        case krbn::event_queue::event::type::frontmost_application_changed:
-        case krbn::event_queue::event::type::input_source_changed:
-        case krbn::event_queue::event::type::keyboard_type_changed:
+        default:
           break;
       }
     }
@@ -138,10 +134,9 @@ private:
   void* refcon_;
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
-  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::human_interface_device>> hids_;
-  std::unordered_map<pqrs::osx::iokit_registry_entry_id, std::shared_ptr<krbn::hid_observer>> hid_observers_;
+  std::unordered_map<krbn::device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
 
-  std::unordered_set<pqrs::osx::iokit_registry_entry_id> observed_devices_;
+  std::unordered_set<krbn::device_id> observed_devices_;
   mutable std::mutex observed_devices_mutex_;
 };
 } // namespace
