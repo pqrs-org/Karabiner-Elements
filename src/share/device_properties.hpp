@@ -211,6 +211,19 @@ public:
     return false;
   }
 
+  bool operator==(const device_properties& other) const {
+    return device_id_ == other.device_id_ &&
+           vendor_id_ == other.vendor_id_ &&
+           product_id_ == other.product_id_ &&
+           location_id_ == other.location_id_ &&
+           manufacturer_ == other.manufacturer_ &&
+           product_ == other.product_ &&
+           serial_number_ == other.serial_number_ &&
+           transport_ == other.transport_ &&
+           is_keyboard_ == other.is_keyboard_ &&
+           is_pointing_device_ == other.is_pointing_device_;
+  }
+
 private:
   std::string make_manufacturer_value(void) const {
     if (manufacturer_) {
@@ -254,5 +267,13 @@ private:
 
 inline void to_json(nlohmann::json& json, const device_properties& device_properties) {
   json = device_properties.to_json();
+}
+
+inline size_t hash_value(const device_properties& value) {
+  // We can treat device_id_ as the unique value of device_properties.
+  if (auto id = value.get_device_id()) {
+    return std::hash<device_id>{}(*id);
+  }
+  return 0;
 }
 } // namespace krbn
